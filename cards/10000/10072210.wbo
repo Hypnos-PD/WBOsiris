@@ -1,0 +1,67 @@
+wbo 0.1.0;
+
+card 10072210 {
+    type amulet;
+    cost 2;
+
+    effect {
+        countdown 2;
+        fanfare {
+            add 1 card 90071110 to hand;
+        }
+        when own turn ends {
+            add 1 card 90071110 to hand;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "人偶剧场";
+        text """
+        【入场曲】将1张『悬丝傀儡』加入手牌。
+        【吟唱_2】
+        自己的回合结束时，将1张『悬丝傀儡』加入手牌。
+        """;
+    }
+
+    locale eng {
+        name "Puppet Theater";
+        text """
+        Fanfare: Add a Puppet to your hand.
+        Countdown (2)
+        At the end of your turn, add a Puppet to your hand.
+        """;
+    }
+
+    locale jpn {
+        name "ドールズシアター";
+        text """
+        【ファンファーレ】『操り人形』1枚を自分の手札に加える。
+        【カウントダウン_2】
+        自分のターン終了時、『操り人形』1枚を自分の手札に加える。
+        """;
+    }
+
+    locale kor {
+        name "인형들의 극장";
+        text """
+        [출격] 꼭두각시 인형 1장을 내 패에 넣는다.
+        [카운트다운 2]
+        내 턴 종료시, 꼭두각시 인형 1장을 내 패에 넣는다.
+        """;
+    }
+
+    locale cht {
+        name "人偶劇院";
+        text """
+        【入場曲】增加1張『懸絲人偶』到自己的手牌中。
+        【倒數_2】
+        自己的回合結束時，增加1張『懸絲人偶』到自己的手牌中。
+        """;
+    }
+}

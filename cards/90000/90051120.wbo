@@ -1,0 +1,42 @@
+wbo 0.1.0;
+
+card 90051120 {
+    type follower;
+    cost 1;
+    stats 1/1;
+
+    effect {
+        drain;
+    }
+
+    meta {
+        pack 90000;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "蝙蝠";
+        text "【虹吸】";
+    }
+
+    locale eng {
+        name "Bat";
+        text "Drain";
+    }
+
+    locale jpn {
+        name "バット";
+        text "【ドレイン】";
+    }
+
+    locale kor {
+        name "박쥐";
+        text "[흡혈]";
+    }
+
+    locale cht {
+        name "蝙蝠";
+        text "【吸血】";
+    }
+}

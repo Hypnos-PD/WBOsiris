@@ -1,0 +1,60 @@
+wbo 0.1.0;
+
+card 10061110 {
+    type follower;
+    cost 6;
+    stats 3/5;
+
+    effect {
+        ward;
+        fanfare {
+            heal own.leader 5;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "治愈的修女";
+        text """
+        【入场曲】回复自己的主战者5点生命值。
+        【守护】
+        """;
+    }
+
+    locale eng {
+        name "Soulcure Sister";
+        text """
+        Fanfare: Restore 5 defense to your leader.
+        Ward
+        """;
+    }
+
+    locale jpn {
+        name "癒しのシスター";
+        text """
+        【ファンファーレ】自分のリーダーを5回復。
+        【守護】
+        """;
+    }
+
+    locale kor {
+        name "치유의 수녀";
+        text """
+        [출격] 내 리더를 5 회복.
+        [수호]
+        """;
+    }
+
+    locale cht {
+        name "治癒的修女";
+        text """
+        【入場曲】回復自己的主戰者5點生命值。
+        【守護】
+        """;
+    }
+}

@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 90071120 {
+    type follower;
+    cost 1;
+    stats 3/3;
+    trait puppetry;
+
+    effect {
+        rush;
+        when oppo turn ends {
+            destroy self;
+        }
+    }
+
+    meta {
+        pack 90000;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "改良型·悬丝傀儡";
+        text """
+        【突进】
+        对手的回合结束时，破坏本卡牌。
+        """;
+    }
+
+    locale eng {
+        name "Enhanced Puppet";
+        text """
+        Rush
+        At the end of your opponent's turn, destroy this card.
+        """;
+    }
+
+    locale jpn {
+        name "改良型・操り人形";
+        text """
+        【突進】
+        相手のターン終了時、これを破壊。
+        """;
+    }
+
+    locale kor {
+        name "개량형 꼭두각시 인형";
+        text """
+        [돌진]
+        상대방 턴 종료시, 이 추종자를 파괴.
+        """;
+    }
+
+    locale cht {
+        name "改良型‧懸絲人偶";
+        text """
+        【突進】
+        敵方的回合結束時，破壞這張卡片。
+        """;
+    }
+}

@@ -1,0 +1,44 @@
+wbo 0.1.0;
+
+card 10052110 {
+    type follower;
+    cost 1;
+    stats 1/1;
+
+    effect {
+        lastwords {
+            add 1 card 90051120 to hand;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class abysscraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "魅惑的魅魔·莉莉姆";
+        text "【谢幕曲】将1张『蝙蝠』加入手牌。";
+    }
+
+    locale eng {
+        name "Lilith, Enchanting Succubus";
+        text "Last Words: Add a Bat to your hand.";
+    }
+
+    locale jpn {
+        name "魅惑のサキュバス・リリム";
+        text "【ラストワード】『バット』1枚を自分の手札に加える。";
+    }
+
+    locale kor {
+        name "매혹적인 서큐버스 릴림";
+        text "[유언] 박쥐 1장을 내 패에 넣는다.";
+    }
+
+    locale cht {
+        name "妖惑魅魔‧莉莉姆";
+        text "【謝幕曲】增加1張『蝙蝠』到自己的手牌中。";
+    }
+}

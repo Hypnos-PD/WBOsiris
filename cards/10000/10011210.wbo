@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10011210 {
+    type amulet;
+    cost 2;
+
+    effect {
+        countdown 2;
+        fanfare {
+            add 1 card 90011110 to hand;
+        }
+        when own follower summoned where trait pixie {
+            random target from oppo.field.followers;
+            damage target 1;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "缭乱之庭";
+        text """
+        【入场曲】将1张『妖精』加入手牌。
+        【吟唱_2】
+        自己的妖精·随从进入战场时，对对手的战场上的随机1个随从造成1点伤害。
+        """;
+    }
+
+    locale eng {
+        name "Wild Profusion";
+        text """
+        Fanfare: Add a Fairy to your hand.
+        Countdown (2)
+        Whenever an allied Pixie follower enters the field, deal 1 damage to a random enemy follower.
+        """;
+    }
+
+    locale jpn {
+        name "繚乱の庭";
+        text """
+        【ファンファーレ】『フェアリー』1枚を自分の手札に加える。
+        【カウントダウン_2】
+        自分の妖精・フォロワーが場に出たとき、相手の場のフォロワーからランダム1枚に1ダメージ。
+        """;
+    }
+
+    locale kor {
+        name "꽃이 만발한 정원";
+        text """
+        [출격] 요정 1장을 내 패에 넣는다.
+        [카운트다운 2]
+        내 요정 추종자가 전장에 소환되었을 때, 상대방 전장의 추종자 중 무작위로 1장에게 1 피해.
+        """;
+    }
+
+    locale cht {
+        name "絢綻之庭";
+        text """
+        【入場曲】增加1張『妖精』到自己的手牌中。
+        【倒數_2】
+        當自己的妖精‧從者卡進入戰場時，隨機給予1張敵方戰場上的從者卡1點傷害。
+        """;
+    }
+}

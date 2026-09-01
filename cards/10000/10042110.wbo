@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10042110 {
+    type follower;
+    cost 4;
+    stats 4/5;
+
+    effect {
+        evolve {
+            choose target from oppo.field.followers;
+            damage target 4;
+        }
+        superevolve replaces evolve {
+            damage oppo.field.followers 4;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "猛攻的龙战士";
+        text """
+        【进化时】选择对手的战场上的1个随从，对其造成4点伤害。
+        【超进化时】改为对对手的战场上的所有随从造成4点伤害。
+        """;
+    }
+
+    locale eng {
+        name "Draconic Berserker";
+        text """
+        Evolve: Select an enemy follower on the field and deal it 4 damage.
+        Super-Evolve: Deal damage to all enemy followers instead.
+        """;
+    }
+
+    locale jpn {
+        name "猛撃のドラゴンウォーリアー";
+        text """
+        【進化時】相手の場のフォロワー1枚を選ぶ。それに4ダメージ。
+        【超進化時】1枚を選ぶのではなくすべて。
+        """;
+    }
+
+    locale kor {
+        name "맹격의 드래곤 워리어";
+        text """
+        [진화시] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 4 피해.
+        [초진화시] 1장을 선택하는 대신 모두.
+        """;
+    }
+
+    locale cht {
+        name "猛擊的龍族勇士";
+        text """
+        【進化時】指定1張敵方戰場上的從者卡。給予其4點傷害。
+        【超進化時】由原本的指定1張轉變為全部。
+        """;
+    }
+}

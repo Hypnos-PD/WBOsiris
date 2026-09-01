@@ -1,0 +1,46 @@
+wbo 0.1.0;
+
+card 10041310 {
+    type spell;
+    cost 1;
+
+    effect {
+        require target from oppo.field.followers;
+        if overflow {
+            damage target 4;
+        } else {
+            damage target 2;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "龙人碎击";
+        text "选择对手的战场上的1个随从，对其造成2点伤害。若为【觉醒】，则改为4点伤害。";
+    }
+
+    locale eng {
+        name "Strike of the Dragonewt";
+        text "Select an enemy follower on the field and deal it 2 damage. If you're in Overflow, deal 4 damage instead.";
+    }
+
+    locale jpn {
+        name "ドラゴニュートクラッシュ";
+        text "相手の場のフォロワー1枚を選ぶ。それに2ダメージ。【覚醒】なら、2ダメージではなく4ダメージ。";
+    }
+
+    locale kor {
+        name "드래고뉴트 크래시";
+        text "상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 2 피해. [각성]이라면, 2 피해 대신 4 피해.";
+    }
+
+    locale cht {
+        name "龍人的潰擊";
+        text "指定1張敵方戰場上的從者卡。給予其2點傷害。如果【覺醒】已發動，則會由原本的2點傷害轉變為4點傷害。";
+    }
+}

@@ -1,0 +1,42 @@
+wbo 0.1.0;
+
+card 10021130 {
+    type follower;
+    cost 8;
+    stats 7/5;
+
+    effect {
+        storm;
+    }
+
+    meta {
+        pack 10000;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "人马骑士";
+        text "【疾驰】";
+    }
+
+    locale eng {
+        name "Centaur Centurion";
+        text "Storm";
+    }
+
+    locale jpn {
+        name "ケンタウロスの騎士";
+        text "【疾走】";
+    }
+
+    locale kor {
+        name "켄타우로스 기사";
+        text "[질주]";
+    }
+
+    locale cht {
+        name "人馬騎士";
+        text "【疾馳】";
+    }
+}

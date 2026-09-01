@@ -1,0 +1,43 @@
+wbo 0.1.0;
+
+card 10052310 {
+    type spell;
+    cost 2;
+
+    effect {
+        require target from own.field.followers;
+        destroy target;
+        draw 2;
+    }
+
+    meta {
+        pack 10000;
+        class abysscraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "捕食灵魂";
+        text "选择自己的战场上的1个随从，破坏该随从。抽取2张卡牌。";
+    }
+
+    locale eng {
+        name "Soul Predation";
+        text "Select an allied follower on the field and destroy it. Draw 2 cards.";
+    }
+
+    locale jpn {
+        name "魂の捕食";
+        text "自分の場のフォロワー1枚を選ぶ。それを破壊。自分のデッキから2枚を引く。";
+    }
+
+    locale kor {
+        name "영혼 포식";
+        text "내 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴. 내 덱에서 2장을 뽑는다.";
+    }
+
+    locale cht {
+        name "捕食靈魂";
+        text "指定1張自己戰場上的從者卡。將其破壞。由自己的牌堆中抽取2張卡片。";
+    }
+}

@@ -1,0 +1,44 @@
+wbo 0.1.0;
+
+card 10051120 {
+    type follower;
+    cost 3;
+    stats 4/3;
+
+    effect {
+        fanfare {
+            damage own.leader 1;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "黑夜鬼人";
+        text "【入场曲】对自己的主战者造成1点伤害。";
+    }
+
+    locale eng {
+        name "Night Fiend";
+        text "Fanfare: Deal 1 damage to your leader.";
+    }
+
+    locale jpn {
+        name "夜の鬼人";
+        text "【ファンファーレ】自分のリーダーに1ダメージ。";
+    }
+
+    locale kor {
+        name "밤의 악귀";
+        text "[출격] 내 리더에게 1 피해.";
+    }
+
+    locale cht {
+        name "暗夜鬼人";
+        text "【入場曲】給予自己的主戰者1點傷害。";
+    }
+}

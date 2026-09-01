@@ -1,0 +1,45 @@
+wbo 0.1.0;
+
+card 10022120 {
+    type follower;
+    cost 3;
+    stats 3/3;
+
+    effect {
+        superevolve {
+            draw all from deck where card 10022120;
+            add storm to drawn;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "魔煌的诡谲者·拉斯提";
+        text "【超进化时】抽取所有『魔煌的诡谲者·拉斯提』，使其获得【疾驰】。";
+    }
+
+    locale eng {
+        name "Rusty, Luxcard Trickster";
+        text "Super-Evolve: Draw all copies of Rusty, Luxcard Trickster and give them Storm.";
+    }
+
+    locale jpn {
+        name "魔煌のトリックスター・ラスティ";
+        text "【超進化時】自分のデッキから『魔煌のトリックスター・ラスティ』すべてを引く。それは【疾走】を持つ。";
+    }
+
+    locale kor {
+        name "빛의 트릭스터 라스티";
+        text "[초진화시] 내 덱에서 빛의 트릭스터 라스티를 모두 뽑는다. 그 추종자는 [질주]를 갖는다.";
+    }
+
+    locale cht {
+        name "魔煌詭智者‧拉斯提";
+        text "【超進化時】由自己的牌堆中抽取全部的『魔煌詭智者‧拉斯提』。使其獲得【疾馳】。";
+    }
+}

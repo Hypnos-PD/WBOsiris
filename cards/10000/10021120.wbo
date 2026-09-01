@@ -1,0 +1,60 @@
+wbo 0.1.0;
+
+card 10021120 {
+    type follower;
+    cost 4;
+    stats 3/2;
+
+    effect {
+        rush;
+        lastwords {
+            draw 1;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "战斗商贩";
+        text """
+        【突进】
+        【谢幕曲】抽取1张卡牌。
+        """;
+    }
+
+    locale eng {
+        name "Arms Peddler";
+        text """
+        Rush
+        Last Words: Draw a card.
+        """;
+    }
+
+    locale jpn {
+        name "バトルマーチャント";
+        text """
+        【突進】
+        【ラストワード】自分のデッキから1枚を引く。
+        """;
+    }
+
+    locale kor {
+        name "전투 상인";
+        text """
+        [돌진]
+        [유언] 내 덱에서 1장을 뽑는다.
+        """;
+    }
+
+    locale cht {
+        name "戰鬥商販";
+        text """
+        【突進】
+        【謝幕曲】由自己的牌堆中抽取1張卡片。
+        """;
+    }
+}

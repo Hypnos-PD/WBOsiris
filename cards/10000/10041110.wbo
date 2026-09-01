@@ -1,0 +1,45 @@
+wbo 0.1.0;
+
+card 10041110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        fanfare {
+            choose target from oppo.field.followers;
+            damage target 1;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "烈焰火蜥蜴";
+        text "【入场曲】选择对手的战场上的1个随从，对其造成1点伤害。";
+    }
+
+    locale eng {
+        name "Searing Firenewt";
+        text "Fanfare: Select an enemy follower on the field and deal it 1 damage.";
+    }
+
+    locale jpn {
+        name "烈火のファイアリザード";
+        text "【ファンファーレ】相手の場のフォロワー1枚を選ぶ。それに1ダメージ。";
+    }
+
+    locale kor {
+        name "열화의 파이어 리저드";
+        text "[출격] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 1 피해.";
+    }
+
+    locale cht {
+        name "熾烈的火焰蜥蜴";
+        text "【入場曲】指定1張敵方戰場上的從者卡。給予其1點傷害。";
+    }
+}

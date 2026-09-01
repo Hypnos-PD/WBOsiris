@@ -1,0 +1,51 @@
+wbo 0.1.0;
+
+card 90073110 {
+    type follower;
+    cost 5;
+    stats 3/5;
+    trait artifact;
+
+    effect {
+        fusion material from own.hand where card 90073120 {
+            if fused.distinct == 2 {
+                transform self into card 90074110 preserving materials;
+            }
+        }
+        fusion material from own.hand where card 90073130 {
+            if fused.distinct == 2 {
+                transform self into card 90074110 preserving materials;
+            }
+        }
+        when own turn ends {
+            heal own.leader 3;
+        }
+    }
+
+    meta {
+        pack 90000;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "毁灭创造物α";
+        text "【融合】『毁灭创造物β』或『毁灭创造物γ』。融合种类为2时，变身为『卓越创造物Ω』。自己的回合结束时，回复自己的主战者3点生命值。";
+    }
+    locale eng {
+        name "Ominous Artifact alpha";
+        text "Fuse: Ominous Artifact beta or gamma. After both kinds have been fused, transform into Masterwork Artifact omega. At the end of your turn, restore 3 defense to your leader.";
+    }
+    locale jpn {
+        name "デストロイアーティファクトα";
+        text "【融合】『デストロイアーティファクトβ』や『デストロイアーティファクトγ』。融合した種類が2なら『イクシードアーティファクトΩ』に変身する。自分のターン終了時、自分のリーダーを3回復。";
+    }
+    locale kor {
+        name "디스트로이 아티팩트 알파";
+        text "[융합] 디스트로이 아티팩트 베타 또는 감마. 융합된 종류가 2라면 익시드 아티팩트 오메가로 변신한다. 내 턴 종료시, 내 리더를 3 회복.";
+    }
+    locale cht {
+        name "破滅的創造物α";
+        text "【融合】『破滅的創造物β』或『破滅的創造物γ』。融合種類為2時，變身為『卓絕的創造物Ω』。自己的回合結束時，回復自己的主戰者3點生命值。";
+    }
+}

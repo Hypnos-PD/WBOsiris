@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10001120 {
+    type follower;
+    cost 2;
+    stats 0/2;
+
+    effect {
+        ward;
+        lastwords {
+            draw 1;
+        }
+        evolve {
+            draw 1;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "叮当天使·莉亚";
+        text """
+        【守护】
+        【谢幕曲】抽取1张卡牌。
+        【进化时】抽取1张卡牌。
+        """;
+    }
+
+    locale eng {
+        name "Leah, Bellringer Angel";
+        text """
+        Ward
+        Last Words: Draw a card.
+        Evolve: Draw a card.
+        """;
+    }
+
+    locale jpn {
+        name "ベルエンジェル・リア";
+        text """
+        【守護】
+        【ラストワード】自分のデッキから1枚を引く。
+        【進化時】自分のデッキから1枚を引く。
+        """;
+    }
+
+    locale kor {
+        name "종소리의 천사 리아";
+        text """
+        [수호]
+        [유언] 내 덱에서 1장을 뽑는다.
+        [진화시] 내 덱에서 1장을 뽑는다.
+        """;
+    }
+
+    locale cht {
+        name "叮噹天使‧莉亞";
+        text """
+        【守護】
+        【謝幕曲】由自己的牌堆中抽取1張卡片。
+        【進化時】由自己的牌堆中抽取1張卡片。
+        """;
+    }
+}

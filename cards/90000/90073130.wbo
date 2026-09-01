@@ -1,0 +1,41 @@
+wbo 0.1.0;
+
+card 90073130 {
+    type follower;
+    cost 5;
+    stats 5/3;
+    trait artifact;
+
+    effect {
+        when own turn ends {
+            damage oppo.field.followers 3;
+        }
+    }
+
+    meta {
+        pack 90000;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "毁灭创造物γ";
+        text "自己的回合结束时，对对手战场上的所有随从造成3点伤害。";
+    }
+    locale eng {
+        name "Ominous Artifact gamma";
+        text "At the end of your turn, deal 3 damage to all enemy followers.";
+    }
+    locale jpn {
+        name "デストロイアーティファクトγ";
+        text "自分のターン終了時、相手の場のフォロワーすべてに3ダメージ。";
+    }
+    locale kor {
+        name "디스트로이 아티팩트 감마";
+        text "내 턴 종료시, 상대방 전장의 추종자 모두에게 3 피해.";
+    }
+    locale cht {
+        name "破滅的創造物γ";
+        text "自己的回合結束時，給予敵方戰場上全部的從者卡3點傷害。";
+    }
+}

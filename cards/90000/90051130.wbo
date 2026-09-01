@@ -1,0 +1,69 @@
+wbo 0.1.0;
+
+card 90051130 {
+    type follower;
+    cost 1;
+    stats 1/1;
+    trait departed;
+
+    effect {
+        storm;
+        replace self leaving field {
+            banish self;
+        }
+        when own turn ends {
+            banish self;
+        }
+    }
+
+    meta {
+        pack 90000;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "怨灵";
+        text """
+        【疾驰】
+        离场时，使本随从消失。
+        自己的回合结束时，使本随从消失。
+        """;
+    }
+
+    locale eng {
+        name "Ghost";
+        text """
+        Storm
+        When this card leaves the field, banish it.
+        At the end of your turn, banish this card.
+        """;
+    }
+
+    locale jpn {
+        name "ゴースト";
+        text """
+        【疾走】
+        場を離れる場合、これを消滅。
+        自分のターン終了時、これを消滅。
+        """;
+    }
+
+    locale kor {
+        name "유령";
+        text """
+        [질주]
+        전장을 이탈할 경우, 이 추종자를 소멸.
+        내 턴 종료시, 이 추종자를 소멸.
+        """;
+    }
+
+    locale cht {
+        name "怨靈";
+        text """
+        【疾馳】
+        離開戰場時，使這張卡片消失。
+        自己的回合結束時，使這張卡片消失。
+        """;
+    }
+}

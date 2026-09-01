@@ -1,0 +1,44 @@
+wbo 0.1.0;
+
+card 10022110 {
+    type follower;
+    cost 2;
+    stats 1/2;
+
+    effect {
+        lastwords {
+            summon 1 card 90021110;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "王室御用车夫";
+        text "【谢幕曲】召唤1个『骑士』。";
+    }
+
+    locale eng {
+        name "Royal Coachwoman";
+        text "Last Words: Summon a Knight.";
+    }
+
+    locale jpn {
+        name "王家の御者";
+        text "【ラストワード】『ナイト』1枚を自分の場に出す。";
+    }
+
+    locale kor {
+        name "왕가의 마부";
+        text "[유언] 기사 1장을 내 전장에 소환.";
+    }
+
+    locale cht {
+        name "王室車夫";
+        text "【謝幕曲】召喚1張『騎士』到自己的戰場上。";
+    }
+}

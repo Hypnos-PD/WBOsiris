@@ -1,0 +1,67 @@
+wbo 0.1.0;
+
+card 10061210 {
+    type amulet;
+    cost 4;
+
+    effect {
+        countdown 2;
+        lastwords {
+            summon 1 card 90061130;
+        }
+        engage 2 {
+            reduce countdown self 2;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "投影鸟像";
+        text """
+        【吟唱_2】
+        【谢幕曲】召唤1个『壮丽大神隼』。
+        费用2【启动】本护符的倒计数-2。
+        """;
+    }
+
+    locale eng {
+        name "Avian Statue";
+        text """
+        Countdown (2)
+        Last Words: Summon a Regal Falcon.
+        Engage (2): Advance this amulet's count by 2.
+        """;
+    }
+
+    locale jpn {
+        name "投影の鳥像";
+        text """
+        【カウントダウン_2】
+        【ラストワード】『壮麗なる隼』1枚を自分の場に出す。
+        コスト2【アクト】これのカウントを-2する。
+        """;
+    }
+
+    locale kor {
+        name "투영의 새 동상";
+        text """
+        [카운트다운 2]
+        [유언] 거대한 매 1장을 내 전장에 소환.
+        비용 2 [활성화] 이 마법진의 카운트를 -2.
+        """;
+    }
+
+    locale cht {
+        name "鳥像的投影";
+        text """
+        【倒數_2】
+        【謝幕曲】召喚1張『壯麗大神隼』到自己的戰場上。
+        消費2【策動】使這張卡片的倒數回合數-2。
+        """;
+    }
+}

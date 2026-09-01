@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10071130 {
+    type follower;
+    cost 6;
+    stats 4/9;
+
+    effect {
+        bane;
+        ward;
+    }
+
+    meta {
+        pack 10000;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "兽性铁人";
+        text """
+        【毁灭】
+        【守护】
+        """;
+    }
+
+    locale eng {
+        name "Mechanized Beast";
+        text """
+        Bane
+        Ward
+        """;
+    }
+
+    locale jpn {
+        name "獣性の鉄人";
+        text """
+        【必殺】
+        【守護】
+        """;
+    }
+
+    locale kor {
+        name "짐승형 철인";
+        text """
+        [필살]
+        [수호]
+        """;
+    }
+
+    locale cht {
+        name "獸性鐵人";
+        text """
+        【必殺】
+        【守護】
+        """;
+    }
+}

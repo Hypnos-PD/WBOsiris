@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10072120 {
+    type follower;
+    cost 5;
+    stats 4/4;
+
+    effect {
+        ward;
+        evolve {
+            summon 1 card 10072120;
+        }
+        superevolve replaces evolve {
+            summon 2 card 10072120;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "魔钢骑兵";
+        text """
+        【守护】
+        【进化时】召唤1个『魔钢骑兵』。
+        【超进化时】改为召唤2个。
+        """;
+    }
+
+    locale eng {
+        name "Mecha Cavalier";
+        text """
+        Ward
+        Evolve: Summon a Mecha Cavalier.
+        Super-Evolve: Summon 2 instead.
+        """;
+    }
+
+    locale jpn {
+        name "魔鋼の騎兵";
+        text """
+        【守護】
+        【進化時】『魔鋼の騎兵』1枚を自分の場に出す。
+        【超進化時】1枚ではなく2枚。
+        """;
+    }
+
+    locale kor {
+        name "마강의 기병";
+        text """
+        [수호]
+        [진화시] 마강의 기병 1장을 내 전장에 소환.
+        [초진화시] 1장 대신 2장.
+        """;
+    }
+
+    locale cht {
+        name "魔鋼騎兵";
+        text """
+        【守護】
+        【進化時】召喚1張『魔鋼騎兵』到自己的戰場上。
+        【超進化時】由原本的1張轉變為2張。
+        """;
+    }
+}

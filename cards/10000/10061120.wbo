@@ -1,0 +1,42 @@
+wbo 0.1.0;
+
+card 10061120 {
+    type follower;
+    cost 2;
+    stats 1/3;
+
+    effect {
+        ward;
+    }
+
+    meta {
+        pack 10000;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "纯洁白狐";
+        text "【守护】";
+    }
+
+    locale eng {
+        name "Fox of Purity";
+        text "Ward";
+    }
+
+    locale jpn {
+        name "清純なる白狐";
+        text "【守護】";
+    }
+
+    locale kor {
+        name "정결한 흰여우";
+        text "[수호]";
+    }
+
+    locale cht {
+        name "純淨白狐";
+        text "【守護】";
+    }
+}

@@ -1,0 +1,65 @@
+wbo 0.1.0;
+
+card 90071210 {
+    type amulet;
+    cost 1;
+    trait artifact;
+
+    effect {
+        unplayable;
+        fusion material from own.hand where type amulet and trait artifact {
+            transform self into card 90072110 preserving materials;
+        }
+    }
+
+    meta {
+        pack 90000;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "未来核心";
+        text """
+        【融合】创造物·护符
+        与本卡牌【融合】时，本卡牌变身为『攻击创造物』。
+        无法使用。
+        """;
+    }
+
+    locale eng {
+        name "Gear of Ambition";
+        text """
+        Fuse: Artifact amulets
+        When you Fuse to this card, transform it into a Striker Artifact.
+        Can't be played.
+        """;
+    }
+
+    locale jpn {
+        name "フューチャー・コア";
+        text """
+        【融合】アーティファクト・アミュレット
+        これに【融合】したとき、これは『アタックアーティファクト』に変身する。
+        プレイできない。
+        """;
+    }
+
+    locale kor {
+        name "퓨처 코어";
+        text """
+        [융합] 아티팩트 마법진
+        이 마법진에 [융합]했을 때, 이 마법진은 어택 아티팩트로 변신한다.
+        사용 불가.
+        """;
+    }
+
+    locale cht {
+        name "未來之核";
+        text """
+        【融合】創造物‧護符卡
+        與這張卡片進行【融合】時，使這張卡片變身為『進攻的創造物』。
+        無法使用這張卡片。
+        """;
+    }
+}

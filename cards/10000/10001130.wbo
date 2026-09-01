@@ -1,0 +1,42 @@
+wbo 0.1.0;
+
+card 10001130 {
+    type follower;
+    cost 4;
+    stats 4/5;
+
+    effect {
+        ward;
+    }
+
+    meta {
+        pack 10000;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "激震的歌利亚";
+        text "【守护】";
+    }
+
+    locale eng {
+        name "Quake Goliath";
+        text "Ward";
+    }
+
+    locale jpn {
+        name "激震のゴリアテ";
+        text "【守護】";
+    }
+
+    locale kor {
+        name "격진의 골리앗";
+        text "[수호]";
+    }
+
+    locale cht {
+        name "威撼的歌利亞";
+        text "【守護】";
+    }
+}

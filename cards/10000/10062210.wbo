@@ -1,0 +1,67 @@
+wbo 0.1.0;
+
+card 10062210 {
+    type amulet;
+    cost 1;
+
+    effect {
+        countdown 4;
+        lastwords {
+            summon 1 card 90061110;
+        }
+        engage 1 {
+            reduce countdown self 1;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "羽翼石像";
+        text """
+        【吟唱_4】
+        【谢幕曲】召唤1个『神圣猎鹰』。
+        费用1【启动】本护符的倒计数-1。
+        """;
+    }
+
+    locale eng {
+        name "Winged Statue";
+        text """
+        Countdown (4)
+        Last Words: Summon a Holy Falcon.
+        Engage (1): Advance this amulet's count by 1.
+        """;
+    }
+
+    locale jpn {
+        name "有翼の石像";
+        text """
+        【カウントダウン_4】
+        【ラストワード】『ホーリーファルコン』1枚を自分の場に出す。
+        コスト1【アクト】これのカウントを-1する。
+        """;
+    }
+
+    locale kor {
+        name "날개 달린 석상";
+        text """
+        [카운트다운 4]
+        [유언] 신성한 매 1장을 내 전장에 소환.
+        비용 1 [활성화] 이 마법진의 카운트를 -1.
+        """;
+    }
+
+    locale cht {
+        name "擁翼的石像";
+        text """
+        【倒數_4】
+        【謝幕曲】召喚1張『神聖獵鷹』到自己的戰場上。
+        消費1【策動】使這張卡片的倒數回合數-1。
+        """;
+    }
+}

@@ -1,0 +1,44 @@
+wbo 0.1.0;
+
+card 10011110 {
+    type follower;
+    cost 2;
+    stats 1/1;
+
+    effect {
+        fanfare {
+            add 2 card 90011110 to hand;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "妖精驯服者";
+        text "【入场曲】将2张『妖精』加入手牌。";
+    }
+
+    locale eng {
+        name "Fairy Tamer";
+        text "Fanfare: Add 2 copies of Fairy to your hand.";
+    }
+
+    locale jpn {
+        name "フェアリーテイマー";
+        text "【ファンファーレ】『フェアリー』2枚を自分の手札に加える。";
+    }
+
+    locale kor {
+        name "페어리 테이머";
+        text "[출격] 요정 2장을 내 패에 넣는다.";
+    }
+
+    locale cht {
+        name "妖精馴服者";
+        text "【入場曲】增加2張『妖精』到自己的手牌中。";
+    }
+}

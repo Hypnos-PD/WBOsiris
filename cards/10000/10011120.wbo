@@ -1,0 +1,44 @@
+wbo 0.1.0;
+
+card 10011120 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        fanfare {
+            add combo 1;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "流浪兽人";
+        text "【入场曲】使自己的【连击】+1。";
+    }
+
+    locale eng {
+        name "Stray Beastman";
+        text "Fanfare: Increase your Combo by 1.";
+    }
+
+    locale jpn {
+        name "ストレイビーストマン";
+        text "【ファンファーレ】自分の【コンボ】を+1する。";
+    }
+
+    locale kor {
+        name "야생 수인";
+        text "[출격] 내 [콤보]를 +1.";
+    }
+
+    locale cht {
+        name "獨行的獸人";
+        text "【入場曲】使自己的【連擊】+1。";
+    }
+}

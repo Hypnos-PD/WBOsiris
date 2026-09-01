@@ -1,0 +1,44 @@
+wbo 0.1.0;
+
+card 10032120 {
+    type follower;
+    cost 10;
+    stats 8/6;
+
+    effect {
+        spellboost {
+            reduce cost self 1 minimum 0;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "魔焰毁灭者";
+        text "【魔力增幅时】使本卡牌的费用-1。";
+    }
+
+    locale eng {
+        name "Blaze Destroyer";
+        text "On Spellboost: Reduce the cost of this card by 1.";
+    }
+
+    locale jpn {
+        name "ブレイズデストロイヤー";
+        text "【スペルブースト時】これのコストを-1する。";
+    }
+
+    locale kor {
+        name "화염의 파괴자";
+        text "[주문증폭시] 이 추종자의 비용을 -1.";
+    }
+
+    locale cht {
+        name "狂焰毀滅者";
+        text "【魔力增幅時】使這張卡片的消費-1。";
+    }
+}

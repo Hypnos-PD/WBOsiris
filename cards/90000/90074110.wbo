@@ -1,0 +1,45 @@
+wbo 0.1.0;
+
+card 90074110 {
+    type follower;
+    cost 10;
+    stats 10/10;
+    trait artifact;
+
+    effect {
+        storm;
+        ward;
+        intimidate;
+        fanfare {
+            damage oppo.field.followers 5;
+            heal own.leader 5;
+        }
+    }
+
+    meta {
+        pack 90000;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "卓越创造物Ω";
+        text "【入场曲】对对手战场上的所有随从造成5点伤害。回复自己的主战者5点生命值。【疾驰】【守护】【威慑】";
+    }
+    locale eng {
+        name "Masterwork Artifact omega";
+        text "Fanfare: Deal 5 damage to all enemy followers. Restore 5 defense to your leader. Storm. Ward. Aura.";
+    }
+    locale jpn {
+        name "イクシードアーティファクトΩ";
+        text "【ファンファーレ】相手の場のフォロワーすべてに5ダメージ。自分のリーダーを5回復。【疾走】【守護】【オーラ】";
+    }
+    locale kor {
+        name "익시드 아티팩트 오메가";
+        text "[출격] 상대방 전장의 추종자 모두에게 5 피해. 내 리더를 5 회복. [질주] [수호] [오라]";
+    }
+    locale cht {
+        name "卓絕的創造物Ω";
+        text "【入場曲】給予敵方戰場上全部的從者卡5點傷害。回復自己的主戰者5點生命值。【疾馳】【守護】【光紋】";
+    }
+}

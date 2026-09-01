@@ -1,0 +1,44 @@
+wbo 0.1.0;
+
+card 10012310 {
+    type spell;
+    cost 1;
+
+    effect {
+        require target from own.field;
+        return target to hand;
+        random target from oppo.field.followers;
+        damage target 2;
+    }
+
+    meta {
+        pack 10000;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "昆虫的忠告";
+        text "选择自己的战场上的1张卡牌，使其返回手牌。对对手的战场上的随机1个随从造成2点伤害。";
+    }
+
+    locale eng {
+        name "Bug Alert";
+        text "Select an allied card on the field and return it to hand. Deal 2 damage to a random enemy follower.";
+    }
+
+    locale jpn {
+        name "虫の知らせ";
+        text "自分の場のカード1枚を選ぶ。それを手札に戻す。相手の場のフォロワーからランダム1枚に2ダメージ。";
+    }
+
+    locale kor {
+        name "예감 충만";
+        text "내 전장에서 카드 1장을 선택한다. 그 카드를 패로 되돌린다. 상대방 전장의 추종자 중 무작위로 1장에게 2 피해.";
+    }
+
+    locale cht {
+        name "群蟲惡兆";
+        text "指定1張自己戰場上的卡片。使其返回手牌中。隨機給予1張敵方戰場上的從者卡2點傷害。";
+    }
+}

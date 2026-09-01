@@ -1,0 +1,64 @@
+wbo 0.1.0;
+
+card 10011130 {
+    type follower;
+    cost 4;
+    stats 4/4;
+
+    effect {
+        fanfare {
+            if combo >= 3 {
+                evolve self silent;
+            }
+        }
+        attack {
+            heal own.leader 2;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "温厚的树精";
+        text """
+        【入场曲】【连击_3】本随从进化。
+        【攻击时】回复自己的主战者2点生命值。
+        """;
+    }
+
+    locale eng {
+        name "Gentle Treant";
+        text """
+        Fanfare: Combo (3) - Evolve this follower.
+        Strike: Restore 2 defense to your leader.
+        """;
+    }
+
+    locale jpn {
+        name "温厚なるトレント";
+        text """
+        【ファンファーレ】【コンボ_3】これは進化する。
+        【攻撃時】自分のリーダーを2回復。
+        """;
+    }
+
+    locale kor {
+        name "온화한 트렌트";
+        text """
+        [출격] [콤보 3] 이 추종자는 진화한다.
+        [공격시] 내 리더를 2 회복.
+        """;
+    }
+
+    locale cht {
+        name "溫厚的樹精";
+        text """
+        【入場曲】【連擊_3】使這張卡片進化。
+        【攻擊時】回復自己的主戰者2點生命值。
+        """;
+    }
+}

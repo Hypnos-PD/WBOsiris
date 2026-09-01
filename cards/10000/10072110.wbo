@@ -1,0 +1,44 @@
+wbo 0.1.0;
+
+card 10072110 {
+    type follower;
+    cost 2;
+    stats 1/3;
+
+    effect {
+        fanfare {
+            add 1 card 90071220 to hand;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "电鞭手";
+        text "【入场曲】将1张『过往核心』加入手牌。";
+    }
+
+    locale eng {
+        name "Electric Whip Lass";
+        text "Fanfare: Add a Gear of Remembrance to your hand.";
+    }
+
+    locale jpn {
+        name "エレクトロウィッパー";
+        text "【ファンファーレ】『パスト・コア』1枚を自分の手札に加える。";
+    }
+
+    locale kor {
+        name "일렉트로 위퍼";
+        text "[출격] 패스트 코어 1장을 내 패에 넣는다.";
+    }
+
+    locale cht {
+        name "電鞭揮擊者";
+        text "【入場曲】增加1張『過往之核』到自己的手牌中。";
+    }
+}

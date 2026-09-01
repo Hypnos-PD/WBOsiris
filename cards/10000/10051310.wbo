@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10051310 {
+    type spell;
+    cost 2;
+
+    effect {
+        mode {
+            option 1 {
+                draw 1 from deck where type follower;
+            }
+            option 2 {
+                reanimate 2;
+            }
+        }
+    }
+
+    meta {
+        pack 10000;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "混沌诅咒";
+        text """
+        【模式】选择1个能力发动。
+        （1）抽取1张随从。
+        （2）发动【亡者召还_2】。
+        """;
+    }
+
+    locale eng {
+        name "Chaos Cyclone";
+        text """
+        Select a Mode to activate.
+        1. Draw a follower.
+        2. Reanimate (2).
+        """;
+    }
+
+    locale jpn {
+        name "カオティックカース";
+        text """
+        【モード】1つを選んでその能力が働く。
+        （1）自分のデッキからフォロワー1枚を引く。
+        （2）【リアニメイト_2】を行う。
+        """;
+    }
+
+    locale kor {
+        name "카오틱 커스";
+        text """
+        [모드] 1개를 선택하여 그 능력을 발동.
+        (1) 내 덱에서 추종자 1장을 뽑는다.
+        (2) [소생 2]를 발동.
+        """;
+    }
+
+    locale cht {
+        name "混沌怨咒";
+        text """
+        指定1個【模式】並發動該能力。
+        （1）由自己的牌堆中抽取1張從者卡。
+        （2）發動【亡者召還_2】。
+        """;
+    }
+}

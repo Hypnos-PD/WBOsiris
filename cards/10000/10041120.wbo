@@ -1,0 +1,42 @@
+wbo 0.1.0;
+
+card 10041120 {
+    type follower;
+    cost 6;
+    stats 5/10;
+
+    effect {
+        ward;
+    }
+
+    meta {
+        pack 10000;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "战斧屠龙者";
+        text "【守护】";
+    }
+
+    locale eng {
+        name "Axe-Wielding Dragonslayer";
+        text "Ward";
+    }
+
+    locale jpn {
+        name "戦斧の竜殺し";
+        text "【守護】";
+    }
+
+    locale kor {
+        name "전투 도끼 용살자";
+        text "[수호]";
+    }
+
+    locale cht {
+        name "戰斧弒龍者";
+        text "【守護】";
+    }
+}

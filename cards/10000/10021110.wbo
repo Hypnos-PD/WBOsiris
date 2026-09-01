@@ -1,0 +1,42 @@
+wbo 0.1.0;
+
+card 10021110 {
+    type follower;
+    cost 1;
+    stats 1/1;
+
+    effect {
+        storm;
+    }
+
+    meta {
+        pack 10000;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "须臾剑士";
+        text "【疾驰】";
+    }
+
+    locale eng {
+        name "Flashstep Quickblader";
+        text "Storm";
+    }
+
+    locale jpn {
+        name "刹那のクイックブレイダー";
+        text "【疾走】";
+    }
+
+    locale kor {
+        name "찰나의 쌍검사";
+        text "[질주]";
+    }
+
+    locale cht {
+        name "瞬息的迅捷劍士";
+        text "【疾馳】";
+    }
+}

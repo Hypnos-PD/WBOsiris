@@ -1,0 +1,42 @@
+wbo 0.1.0;
+
+card 90061130 {
+    type follower;
+    cost 6;
+    stats 4/4;
+
+    effect {
+        storm;
+    }
+
+    meta {
+        pack 90000;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "壮丽大神隼";
+        text "【疾驰】";
+    }
+
+    locale eng {
+        name "Regal Falcon";
+        text "Storm";
+    }
+
+    locale jpn {
+        name "壮麗なる隼";
+        text "【疾走】";
+    }
+
+    locale kor {
+        name "거대한 매";
+        text "[질주]";
+    }
+
+    locale cht {
+        name "壯麗大神隼";
+        text "【疾馳】";
+    }
+}

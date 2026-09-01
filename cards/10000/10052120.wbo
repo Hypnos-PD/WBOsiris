@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 10052120 {
+    type follower;
+    cost 4;
+    stats 5/4;
+
+    effect {
+        evolve {
+            summon 2 card 90051130;
+        }
+        superevolve extends evolve {
+            add drain to summoned;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class abysscraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "多情的唤灵师";
+        text """
+        【进化时】召唤2个『怨灵』。
+        【超进化时】使其获得【虹吸】。
+        """;
+    }
+
+    locale eng {
+        name "Amorous Necromancer";
+        text """
+        Evolve: Summon 2 copies of Ghost.
+        Super-Evolve: Give them Drain.
+        """;
+    }
+
+    locale jpn {
+        name "ラバーズネクロマンサー";
+        text """
+        【進化時】『ゴースト』2枚を自分の場に出す。
+        【超進化時】それは【ドレイン】を持つ。
+        """;
+    }
+
+    locale kor {
+        name "사랑꾼 네크로맨서";
+        text """
+        [진화시] 유령 2장을 내 전장에 소환.
+        [초진화시] 그 추종자는 [흡혈]을 갖는다.
+        """;
+    }
+
+    locale cht {
+        name "多情的死靈法師";
+        text """
+        【進化時】召喚2張『怨靈』到自己的戰場上。
+        【超進化時】使其獲得【吸血】。
+        """;
+    }
+}

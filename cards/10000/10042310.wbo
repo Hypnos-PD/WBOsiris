@@ -1,0 +1,44 @@
+wbo 0.1.0;
+
+card 10042310 {
+    type spell;
+    cost 3;
+
+    effect {
+        gain own.maxpp 1;
+        if own.maxpp >= 10 {
+            draw 1;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "龙之启示";
+        text "使自己的能量点最大值+1。之后，若自己的能量点最大值为10，则抽取1张卡牌。";
+    }
+
+    locale eng {
+        name "Dragonsign";
+        text "Gain 1 max play point. Then, if you have 10 max play points, draw a card.";
+    }
+
+    locale jpn {
+        name "竜の啓示";
+        text "自分のPP最大値を+1する。その後、自分のPP最大値が10なら、自分のデッキから1枚を引く。";
+    }
+
+    locale kor {
+        name "용의 계시";
+        text "내 PP 최대치를 +1. 그다음 내 PP 최대치가 10이라면, 내 덱에서 1장을 뽑는다.";
+    }
+
+    locale cht {
+        name "龍之啟迪";
+        text "使自己的PP最大值+1。隨後，如果自己的PP最大值為10，則會由自己的牌堆中抽取1張卡片。";
+    }
+}

@@ -1,0 +1,41 @@
+wbo 0.1.0;
+
+card 10031320 {
+    type spell;
+    cost 2;
+
+    effect {
+        summon 1 card 90031110;
+    }
+
+    meta {
+        pack 10000;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "召唤真理";
+        text "召唤1个『泥尘巨像』。";
+    }
+
+    locale eng {
+        name "Truth Summons";
+        text "Summon a Clay Golem.";
+    }
+
+    locale jpn {
+        name "真理の召喚";
+        text "『クレイゴーレム』1枚を自分の場に出す。";
+    }
+
+    locale kor {
+        name "진리의 소환";
+        text "진흙 골렘 1장을 내 전장에 소환.";
+    }
+
+    locale cht {
+        name "召喚真理";
+        text "召喚1張『泥塵巨像』到自己的戰場上。";
+    }
+}

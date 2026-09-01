@@ -1,0 +1,60 @@
+wbo 0.1.0;
+
+card 10062120 {
+    type follower;
+    cost 8;
+    stats 6/8;
+
+    effect {
+        ward;
+        when own amulet engaged {
+            add storm to self;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "神圣狮鹫";
+        text """
+        【守护】
+        自己【启动】护符时，本随从获得【疾驰】。
+        """;
+    }
+
+    locale eng {
+        name "Sacred Griffon";
+        text """
+        Ward
+        Whenever you Engage an amulet, give this follower Storm.
+        """;
+    }
+
+    locale jpn {
+        name "セイクリッドグリフォン";
+        text """
+        【守護】
+        自分がアミュレットを【アクト】したとき、これは【疾走】を持つ。
+        """;
+    }
+
+    locale kor {
+        name "세이크리드 그리폰";
+        text """
+        [수호]
+        내가 마법진을 [활성화]했을 때, 이 추종자는 [질주]를 갖는다.
+        """;
+    }
+
+    locale cht {
+        name "聖輝獅鷲獸";
+        text """
+        【守護】
+        當自己進行護符卡的【策動】時，使這張卡片獲得【疾馳】。
+        """;
+    }
+}

@@ -1,0 +1,45 @@
+wbo 0.1.0;
+
+card 10001210 {
+    type amulet;
+    cost 2;
+
+    effect {
+        engage 0 {
+            destroy self;
+            choose target from oppo.field.followers;
+            remove ward from target;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "侦探的放大镜";
+        text "【启动】破坏本卡牌。选择对手的战场上的1个随从，使其失去【守护】。";
+    }
+
+    locale eng {
+        name "Detective's Lens";
+        text "Engage: Destroy this card. Select an enemy follower on the field and remove Ward from it.";
+    }
+
+    locale jpn {
+        name "探偵のルーペ";
+        text "【アクト】これを破壊。相手の場のフォロワー1枚を選ぶ。それは【守護】を失う。";
+    }
+
+    locale kor {
+        name "탐정의 돋보기";
+        text "[활성화] 이 마법진을 파괴. 상대방 전장에서 추종자 1장을 선택한다. 그 추종자는 [수호]를 잃는다.";
+    }
+
+    locale cht {
+        name "偵探的放大鏡";
+        text "【策動】破壞這張卡片。指定1張敵方戰場上的從者卡。使其失去【守護】。";
+    }
+}

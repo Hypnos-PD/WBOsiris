@@ -1,0 +1,50 @@
+wbo 0.1.0;
+
+card 90072120 {
+    type follower;
+    cost 3;
+    stats 1/5;
+    trait artifact;
+
+    effect {
+        ward;
+        fusion material from own.hand where trait artifact {
+            if fused.cost == 1 {
+                transform self into card 90073110 preserving materials;
+            } else {
+                if fused.cost == 2 {
+                    transform self into card 90073120 preserving materials;
+                } else {
+                    transform self into card 90073130 preserving materials;
+                }
+            }
+        }
+    }
+
+    meta {
+        pack 90000;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "城堡创造物";
+        text "【融合】创造物·卡牌。根据已融合卡牌的费用合计变身：1为『毁灭创造物α』，2为『毁灭创造物β』，3或以上为『毁灭创造物γ』。【守护】";
+    }
+    locale eng {
+        name "Fortifier Artifact";
+        text "Fuse: Artifact cards. Transform based on the total cost fused: 1 into Ominous Artifact alpha, 2 into beta, and 3 or more into gamma. Ward.";
+    }
+    locale jpn {
+        name "キャッスルアーティファクト";
+        text "【融合】アーティファクト・カード。融合したカードのコストの合計が1ならα、2ならβ、3以上ならγに変身する。【守護】";
+    }
+    locale kor {
+        name "캐슬 아티팩트";
+        text "[융합] 아티팩트 카드. 융합된 카드의 비용 합계가 1이면 알파, 2면 베타, 3 이상이면 감마로 변신한다. [수호]";
+    }
+    locale cht {
+        name "堡壘的創造物";
+        text "【融合】創造物卡片。依已融合卡片的消費合計變身：1為『破滅的創造物α』，2為『破滅的創造物β』，3以上為『破滅的創造物γ』。【守護】";
+    }
+}

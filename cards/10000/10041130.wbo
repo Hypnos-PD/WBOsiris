@@ -1,0 +1,44 @@
+wbo 0.1.0;
+
+card 10041130 {
+    type follower;
+    cost 8;
+    stats 6/6;
+
+    effect {
+        fanfare {
+            damage oppo.leader 6;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "凶鲨战士";
+        text "【入场曲】对对手的主战者造成6点伤害。";
+    }
+
+    locale eng {
+        name "Warrior of the Deep";
+        text "Fanfare: Deal 6 damage to the enemy leader.";
+    }
+
+    locale jpn {
+        name "シャークソルジャー";
+        text "【ファンファーレ】相手のリーダーに6ダメージ。";
+    }
+
+    locale kor {
+        name "샤크 솔저";
+        text "[출격] 상대방 리더에게 6 피해.";
+    }
+
+    locale cht {
+        name "凶鯊戰士";
+        text "【入場曲】給予敵方的主戰者6點傷害。";
+    }
+}

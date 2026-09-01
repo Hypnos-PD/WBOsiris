@@ -1,0 +1,44 @@
+wbo 0.1.0;
+
+card 10042120 {
+    type follower;
+    cost 5;
+    stats 5/5;
+
+    effect {
+        enhance 7 {
+            summon 1 card 90041120;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "咆哮的驭龙使";
+        text "【爆能强化_7】召唤1个『巨翼飞龙』。";
+    }
+
+    locale eng {
+        name "Battleforged Dragon Keeper";
+        text "Enhance (7): Summon a Vastwing Dragon.";
+    }
+
+    locale jpn {
+        name "咆哮の竜使い";
+        text "【エンハンス_7】『大翼のドラゴン』1枚を自分の場に出す。";
+    }
+
+    locale kor {
+        name "포효의 용술사";
+        text "[증강 7] 대익룡 1장을 내 전장에 소환.";
+    }
+
+    locale cht {
+        name "咆哮馭龍使";
+        text "【爆能強化_7】召喚1張『巨翼飛龍』到自己的戰場上。";
+    }
+}

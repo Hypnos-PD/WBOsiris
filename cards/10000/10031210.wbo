@@ -1,0 +1,67 @@
+wbo 0.1.0;
+
+card 10031210 {
+    type amulet;
+    cost 1;
+
+    effect {
+        earthsigil;
+        fanfare {
+            draw 1;
+        }
+        engage 1 {
+            add 1 earthsigil;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "魔女的炼金炉";
+        text """
+        【入场曲】抽取1张卡牌。
+        【土之印】
+        费用1【启动】使自己的战场上的土之印+1。
+        """;
+    }
+
+    locale eng {
+        name "Witch's New Brew";
+        text """
+        Fanfare: Draw a card.
+        Earth Sigil
+        Engage (1): Gain an earth sigil.
+        """;
+    }
+
+    locale jpn {
+        name "魔女の錬金釜";
+        text """
+        【ファンファーレ】自分のデッキから1枚を引く。
+        【土の印】
+        コスト1【アクト】自分の場の土の印を+1する。
+        """;
+    }
+
+    locale kor {
+        name "마녀의 연금솥";
+        text """
+        [출격] 내 덱에서 1장을 뽑는다.
+        [대지의 인장]
+        비용 1 [활성화] 내 전장의 대지의 인장을 +1.
+        """;
+    }
+
+    locale cht {
+        name "魔女的鍊金釜";
+        text """
+        【入場曲】由自己的牌堆中抽取1張卡片。
+        【土之印】
+        消費1【策動】使自己戰場上的土之印+1。
+        """;
+    }
+}

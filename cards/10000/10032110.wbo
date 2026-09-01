@@ -1,0 +1,66 @@
+wbo 0.1.0;
+
+card 10032110 {
+    type follower;
+    cost 4;
+    stats 4/4;
+
+    effect {
+        fanfare {
+            earthrite 1 {
+                summon 1 card 90031120;
+            }
+        }
+        superevolve {
+            choose target from own.field.followers where trait golem;
+            evolve target silent;
+            buff target +3/+3;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "双面魔女·蕾米拉米";
+        text """
+        【入场曲】【土之秘术_1】召唤1个『守护者巨像』。
+        【超进化时】选择自己的战场上的1个巨像·随从，使其进化，使其+3/+3。
+        """;
+    }
+
+    locale eng {
+        name "Remi & Rami, Two-Faced Witch";
+        text """
+        Fanfare: Earth Rite (1) - Summon a Guardian Golem.
+        Super-Evolve: Select an allied Golem follower on the field, evolve it, and give it +3/+3.
+        """;
+    }
+
+    locale jpn {
+        name "相貌の魔女・レミラミ";
+        text """
+        【ファンファーレ】【土の秘術_1】『ガーディアンゴーレム』1枚を自分の場に出す。
+        【超進化時】自分の場のゴーレム・フォロワー1枚を選ぶ。それは進化する。それは+3/+3する。
+        """;
+    }
+
+    locale kor {
+        name "두 얼굴의 마녀 레미라미";
+        text """
+        [출격] [대지의 비술 1] 수호 골렘 1장을 내 전장에 소환.
+        [초진화시] 내 전장에서 골렘 추종자 1장을 선택한다. 그 추종자는 진화한다. 그 추종자는 +3/+3.
+        """;
+    }
+
+    locale cht {
+        name "雙貌魔女‧蕾米拉米";
+        text """
+        【入場曲】【土之秘術_1】召喚1張『守護者巨像』到自己的戰場上。
+        【超進化時】指定1張自己戰場上的巨像‧從者卡。使其進化。使其+3/+3。
+        """;
+    }
+}

@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10062110 {
+    type follower;
+    cost 4;
+    stats 5/4;
+
+    effect {
+        evolve {
+            choose target from oppo.field.followers where life <= 3;
+            banish target;
+        }
+        superevolve replaces evolve {
+            banish oppo.field.followers where life <= 3;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "铁拳神父";
+        text """
+        【进化时】选择对手的战场上的1个生命值为3或以下的随从，使其消失。
+        【超进化时】改为使对手的战场上的所有生命值为3或以下的随从消失。
+        """;
+    }
+
+    locale eng {
+        name "Ironfist Priest";
+        text """
+        Evolve: Select an enemy follower on the field with 3 defense or less and banish it.
+        Super-Evolve: Banish all enemy followers with 3 defense or less instead.
+        """;
+    }
+
+    locale jpn {
+        name "鉄拳の神父";
+        text """
+        【進化時】相手の場の体力3以下のフォロワー1枚を選ぶ。それを消滅。
+        【超進化時】1枚を選ぶのではなくすべて。
+        """;
+    }
+
+    locale kor {
+        name "철권 신부";
+        text """
+        [진화시] 상대방 전장에서 체력이 3 이하인 추종자 1장을 선택한다. 그 추종자를 소멸.
+        [초진화시] 1장을 선택하는 대신 모두.
+        """;
+    }
+
+    locale cht {
+        name "鐵拳神父";
+        text """
+        【進化時】指定1張敵方戰場上生命值為3以下的從者卡。使其消失。
+        【超進化時】由原本的指定1張轉變為全部。
+        """;
+    }
+}

@@ -1,0 +1,42 @@
+wbo 0.1.0;
+
+card 90041120 {
+    type follower;
+    cost 5;
+    stats 5/5;
+
+    effect {
+        intimidate;
+    }
+
+    meta {
+        pack 90000;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "巨翼飞龙";
+        text "【威慑】";
+    }
+
+    locale eng {
+        name "Vastwing Dragon";
+        text "Intimidate";
+    }
+
+    locale jpn {
+        name "大翼のドラゴン";
+        text "【威圧】";
+    }
+
+    locale kor {
+        name "대익룡";
+        text "[위압]";
+    }
+
+    locale cht {
+        name "巨翼飛龍";
+        text "【威懾】";
+    }
+}

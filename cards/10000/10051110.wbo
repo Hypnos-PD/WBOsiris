@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10051110 {
+    type follower;
+    cost 6;
+    stats 3/6;
+
+    effect {
+        storm;
+        bane;
+    }
+
+    meta {
+        pack 10000;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "魔狼首领";
+        text """
+        【疾驰】
+        【毁灭】
+        """;
+    }
+
+    locale eng {
+        name "Mistress of the Fanged";
+        text """
+        Storm
+        Bane
+        """;
+    }
+
+    locale jpn {
+        name "ウルフマスター";
+        text """
+        【疾走】
+        【必殺】
+        """;
+    }
+
+    locale kor {
+        name "울프 마스터";
+        text """
+        [질주]
+        [필살]
+        """;
+    }
+
+    locale cht {
+        name "魔狼首領";
+        text """
+        【疾馳】
+        【必殺】
+        """;
+    }
+}

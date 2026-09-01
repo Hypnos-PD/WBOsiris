@@ -1,0 +1,47 @@
+wbo 0.1.0;
+
+card 10012110 {
+    type follower;
+    cost 1;
+    stats 1/1;
+
+    effect {
+        fanfare {
+            if combo >= 3 {
+                choose target from oppo.field.followers;
+                damage target 3;
+            }
+        }
+    }
+
+    meta {
+        pack 10000;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "冒险精灵·小梅";
+        text "【入场曲】【连击_3】选择对手的战场上的1个随从，对其造成3点伤害。";
+    }
+
+    locale eng {
+        name "May, Journey Elf";
+        text "Fanfare: Combo (3) - Select an enemy follower on the field and deal it 3 damage.";
+    }
+
+    locale jpn {
+        name "アドベンチャーエルフ・メイ";
+        text "【ファンファーレ】【コンボ_3】相手の場のフォロワー1枚を選ぶ。それに3ダメージ。";
+    }
+
+    locale kor {
+        name "모험하는 엘프 메이";
+        text "[출격] [콤보 3] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 3 피해.";
+    }
+
+    locale cht {
+        name "冒險精靈‧小梅";
+        text "【入場曲】【連擊_3】指定1張敵方戰場上的從者卡。給予其3點傷害。";
+    }
+}

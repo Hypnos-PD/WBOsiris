@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 10002110 {
+    type follower;
+    cost 3;
+    stats 3/3;
+
+    effect {
+        evolve {
+            heal own.leader 2;
+        }
+        superevolve replaces evolve {
+            heal own.leader 4;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class neutral;
+        rarity silver;
+    }
+
+    locale chs {
+        name "煌响使者·亨莉雅妲";
+        text """
+        【进化时】回复自己的主战者2点生命值。
+        【超进化时】改为回复4点。
+        """;
+    }
+
+    locale eng {
+        name "Arriet, Luxminstrel";
+        text """
+        Evolve: Restore 2 defense to your leader.
+        Super-Evolve: Restore 4 defense instead.
+        """;
+    }
+
+    locale jpn {
+        name "煌響の使者・アンリエット";
+        text """
+        【進化時】自分のリーダーを2回復。
+        【超進化時】2回復ではなく4回復。
+        """;
+    }
+
+    locale kor {
+        name "빛의 연주자 앙리에트";
+        text """
+        [진화시] 내 리더를 2 회복.
+        [초진화시] 2 회복 대신 4 회복.
+        """;
+    }
+
+    locale cht {
+        name "煌響使者‧亨莉雅妲";
+        text """
+        【進化時】回復自己的主戰者2點生命值。
+        【超進化時】由原本的回復2點轉變為回復4點。
+        """;
+    }
+}

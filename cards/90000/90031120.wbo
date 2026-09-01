@@ -1,0 +1,43 @@
+wbo 0.1.0;
+
+card 90031120 {
+    type follower;
+    cost 3;
+    stats 3/3;
+    trait golem;
+
+    effect {
+        ward;
+    }
+
+    meta {
+        pack 90000;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "守护者巨像";
+        text "【守护】";
+    }
+
+    locale eng {
+        name "Guardian Golem";
+        text "Ward";
+    }
+
+    locale jpn {
+        name "ガーディアンゴーレム";
+        text "【守護】";
+    }
+
+    locale kor {
+        name "수호 골렘";
+        text "[수호]";
+    }
+
+    locale cht {
+        name "守護者巨像";
+        text "【守護】";
+    }
+}

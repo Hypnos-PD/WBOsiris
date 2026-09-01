@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10002210 {
+    type amulet;
+    cost 3;
+
+    effect {
+        fanfare {
+            draw 1 from deck where type follower;
+        }
+        engage 1 {
+            destroy self;
+            choose target from own.field.followers;
+            add rush to target;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class neutral;
+        rarity silver;
+    }
+
+    locale chs {
+        name "冒险者公会";
+        text """
+        【入场曲】抽取1张随从。
+        【启动】破坏本卡牌。选择自己的战场上的1个随从，使其获得【突进】。
+        """;
+    }
+
+    locale eng {
+        name "Adventurers' Guild";
+        text """
+        Fanfare: Draw a follower.
+        Engage: Destroy this card. Select an allied follower on the field and give it Rush.
+        """;
+    }
+
+    locale jpn {
+        name "冒険者のギルド";
+        text """
+        【ファンファーレ】自分のデッキからフォロワー1枚を引く。
+        【アクト】これを破壊。自分の場のフォロワー1枚を選ぶ。それは【突進】を持つ。
+        """;
+    }
+
+    locale kor {
+        name "모험가 길드";
+        text """
+        [출격] 내 덱에서 추종자 1장을 뽑는다.
+        [활성화] 이 마법진을 파괴. 내 전장에서 추종자 1장을 선택한다. 그 추종자는 [돌진]을 갖는다.
+        """;
+    }
+
+    locale cht {
+        name "冒險者公會";
+        text """
+        【入場曲】由自己的牌堆中抽取1張從者卡。
+        【策動】破壞這張卡片。指定1張自己戰場上的從者卡。使其獲得【突進】。
+        """;
+    }
+}

@@ -1,0 +1,44 @@
+wbo 0.1.0;
+
+card 10001110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        enhance 4 {
+            buff self +3/+3;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "不屈的剑斗士";
+        text "【爆能强化_4】本随从+3/+3。";
+    }
+
+    locale eng {
+        name "Indomitable Fighter";
+        text "Enhance (4): Give this follower +3/+3.";
+    }
+
+    locale jpn {
+        name "不屈のファイター";
+        text "【エンハンス_4】これは+3/+3する。";
+    }
+
+    locale kor {
+        name "불굴의 파이터";
+        text "[증강 4] 이 추종자는 +3/+3.";
+    }
+
+    locale cht {
+        name "不屈的劍鬥士";
+        text "【爆能強化_4】使這張卡片+3/+3。";
+    }
+}

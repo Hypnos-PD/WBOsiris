@@ -1,0 +1,41 @@
+wbo 0.1.0;
+
+card 10002120 {
+    type follower;
+    cost 7;
+    stats 10/10;
+
+    effect {
+    }
+
+    meta {
+        pack 10000;
+        class neutral;
+        rarity silver;
+    }
+
+    locale chs {
+        name "商队猛犸象";
+        text "";
+    }
+
+    locale eng {
+        name "Caravan Mammoth";
+        text "";
+    }
+
+    locale jpn {
+        name "キャラバンマンモス";
+        text "";
+    }
+
+    locale kor {
+        name "캐러밴 맘모스";
+        text "";
+    }
+
+    locale cht {
+        name "商隊猛瑪象";
+        text "";
+    }
+}

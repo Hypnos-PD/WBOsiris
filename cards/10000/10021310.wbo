@@ -1,0 +1,43 @@
+wbo 0.1.0;
+
+card 10021310 {
+    type spell;
+    cost 2;
+
+    effect {
+        require target from own.hand;
+        return target to deck;
+        draw 2 from deck where type follower and class swordcraft;
+    }
+
+    meta {
+        pack 10000;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "女仆的礼仪";
+        text "选择自己的1张手牌，使其返回牌组。抽取2张皇家护卫·随从。";
+    }
+
+    locale eng {
+        name "Way of the Maid";
+        text "Select a card in your hand and return it to deck. Draw 2 Swordcraft followers.";
+    }
+
+    locale jpn {
+        name "メイドの作法";
+        text "自分の手札1枚を選ぶ。それをデッキに戻す。自分のデッキからロイヤル・フォロワー2枚を引く。";
+    }
+
+    locale kor {
+        name "메이드의 예절";
+        text "내 패에서 1장을 선택한다. 그 카드를 덱으로 되돌린다. 내 덱에서 로얄 추종자 2장을 뽑는다.";
+    }
+
+    locale cht {
+        name "女僕的準則";
+        text "指定1張自己手牌中的卡片。使其返回牌堆中。由自己的牌堆中抽取2張皇家護衛‧從者卡。";
+    }
+}

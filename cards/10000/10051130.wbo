@@ -1,0 +1,46 @@
+wbo 0.1.0;
+
+card 10051130 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        fanfare {
+            necromancy 4 {
+                add storm to self;
+            }
+        }
+    }
+
+    meta {
+        pack 10000;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "恶毒的小木乃伊";
+        text "【入场曲】【唤灵_4】本随从获得【疾驰】。";
+    }
+
+    locale eng {
+        name "Devious Lesser Mummy";
+        text "Fanfare: Necromancy (4) - Give this follower Storm.";
+    }
+
+    locale jpn {
+        name "悪辣のレッサーマミー";
+        text "【ファンファーレ】【ネクロマンス_4】これは【疾走】を持つ。";
+    }
+
+    locale kor {
+        name "악랄한 레서 미라";
+        text "[출격] [사령술 4] 이 추종자는 [질주]를 갖는다.";
+    }
+
+    locale cht {
+        name "凶惡的小木乃伊";
+        text "【入場曲】【死靈術_4】使這張卡片獲得【疾馳】。";
+    }
+}

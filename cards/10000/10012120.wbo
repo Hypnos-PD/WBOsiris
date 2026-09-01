@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10012120 {
+    type follower;
+    cost 7;
+    stats 4/6;
+
+    effect {
+        storm;
+        superevolve {
+            choose target from oppo.field.followers;
+            return target to hand;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "音速射手·塞尔文";
+        text """
+        【疾驰】
+        【超进化时】选择对手的战场上的1个随从，使其返回手牌。
+        """;
+    }
+
+    locale eng {
+        name "Selwyn, Sonic Archer";
+        text """
+        Storm
+        Super-Evolve: Select an enemy follower on the field and return it to hand.
+        """;
+    }
+
+    locale jpn {
+        name "ソニックアーチャー・セルウィン";
+        text """
+        【疾走】
+        【超進化時】相手の場のフォロワー1枚を選ぶ。それを手札に戻す。
+        """;
+    }
+
+    locale kor {
+        name "음속의 궁수 셀윈";
+        text """
+        [질주]
+        [초진화시] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 패로 되돌린다.
+        """;
+    }
+
+    locale cht {
+        name "音速弓手‧塞爾文";
+        text """
+        【疾馳】
+        【超進化時】指定1張敵方戰場上的從者卡。使其返回手牌中。
+        """;
+    }
+}

@@ -1,0 +1,43 @@
+wbo 0.1.0;
+
+card 90011110 {
+    type follower;
+    cost 1;
+    stats 1/1;
+    trait pixie;
+
+    effect {
+        rush;
+    }
+
+    meta {
+        pack 90000;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "妖精";
+        text "【突进】";
+    }
+
+    locale eng {
+        name "Fairy";
+        text "Rush";
+    }
+
+    locale jpn {
+        name "フェアリー";
+        text "【突進】";
+    }
+
+    locale kor {
+        name "요정";
+        text "[돌진]";
+    }
+
+    locale cht {
+        name "妖精";
+        text "【突進】";
+    }
+}

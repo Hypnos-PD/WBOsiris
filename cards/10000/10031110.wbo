@@ -1,0 +1,74 @@
+wbo 0.1.0;
+
+card 10031110 {
+    type follower;
+    cost 3;
+    stats 2/2;
+
+    effect {
+        fanfare {
+            mode {
+                option 1 {
+                    spellboost own.hand 2;
+                }
+                option 2 {
+                    earthrite 1 {
+                        buff self +2/+2;
+                        add ward to self;
+                    }
+                }
+            }
+        }
+    }
+
+    meta {
+        pack 10000;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "闪光魔法剑士";
+        text """
+        【入场曲】【模式】选择1个能力发动。
+        （1）使自己的所有手牌发动2次魔力增幅。
+        （2）【土之秘术_1】本随从+2/+2且获得【守护】。
+        """;
+    }
+
+    locale eng {
+        name "Dazzling Runeknight";
+        text """
+        Fanfare: Select a Mode to activate.
+        1. Spellboost your hand 2 times.
+        2. Earth Rite (1) - Give this follower +2/+2 and Ward.
+        """;
+    }
+
+    locale jpn {
+        name "閃光の魔法剣士";
+        text """
+        【ファンファーレ】【モード】1つを選んでその能力が働く。
+        （1）自分の手札すべては2回スペルブーストする。
+        （2）【土の秘術_1】これは+2/+2して【守護】を持つ。
+        """;
+    }
+
+    locale kor {
+        name "섬광의 마법검사";
+        text """
+        [출격] [모드] 1개를 선택하여 그 능력을 발동.
+        (1) 내 패 모두를 2회 주문증폭.
+        (2) [대지의 비술 1] 이 추종자는 +2/+2 및 [수호]를 갖는다.
+        """;
+    }
+
+    locale cht {
+        name "閃光之魔法劍士";
+        text """
+        【入場曲】指定1個【模式】並發動該能力。
+        （1）使自己手牌中全部的卡片發動2次魔力增幅。
+        （2）【土之秘術_1】使這張卡片+2/+2並獲得【守護】。
+        """;
+    }
+}

@@ -1,0 +1,44 @@
+wbo 0.1.0;
+
+card 10032310 {
+    type spell;
+    cost 4;
+
+    effect {
+        damage field.followers 2;
+        earthrite 1 {
+            draw 1;
+        }
+    }
+
+    meta {
+        pack 10000;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "魔爆";
+        text "对战场上的所有随从造成2点伤害。【土之秘术_1】抽取1张卡牌。";
+    }
+
+    locale eng {
+        name "Arcane Eruption";
+        text "Deal 2 damage to all followers. Earth Rite (1) - Draw a card.";
+    }
+
+    locale jpn {
+        name "イラプション";
+        text "場のフォロワーすべてに2ダメージ。【土の秘術_1】自分のデッキから1枚を引く。";
+    }
+
+    locale kor {
+        name "이럽션";
+        text "전장의 추종자 모두에게 2 피해. [대지의 비술 1] 내 덱에서 1장을 뽑는다.";
+    }
+
+    locale cht {
+        name "爆裂魔法";
+        text "給予戰場上全部的從者卡2點傷害。【土之秘術_1】由自己的牌堆中抽取1張卡片。";
+    }
+}

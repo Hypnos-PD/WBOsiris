@@ -1,0 +1,41 @@
+wbo 0.1.0;
+
+card 10031310 {
+    type spell;
+    cost 1;
+
+    effect {
+        draw 1;
+    }
+
+    meta {
+        pack 10000;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "智慧光辉";
+        text "抽取1张卡牌。";
+    }
+
+    locale eng {
+        name "Foresight";
+        text "Draw a card.";
+    }
+
+    locale jpn {
+        name "知恵の輝き";
+        text "自分のデッキから1枚を引く。";
+    }
+
+    locale kor {
+        name "지혜의 광채";
+        text "내 덱에서 1장을 뽑는다.";
+    }
+
+    locale cht {
+        name "智慧耀光";
+        text "由自己的牌堆中抽取1張卡片。";
+    }
+}
