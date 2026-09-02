@@ -695,7 +695,7 @@ func validateScenario(b []*syntax.Statement, ds *[]syntax.Diagnostic) {
 	aliases := map[string]bool{}
 	scanAliases(b[1].Blocks()[0], aliases, ds)
 	a := b[2].Blocks()[0]
-	primary := set("play", "engage", "evolve", "superevolve", "attack", "end_turn", "advance")
+	primary := set("play", "engage", "evolve", "superevolve", "fuse", "attack", "end_turn", "advance")
 	if len(a) == 0 || !primary[a[0].Word(0)] {
 		diag(ds, "WBT-E005-ACTION-ORDER", "错误", "action 必须以一个主动作开始", b[2].Span)
 	}

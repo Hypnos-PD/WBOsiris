@@ -732,3 +732,30 @@ scenario "潜行随从不会成为敌方效果目标" {
         hidden has stealth;
     }
 }
+
+scenario "融合材料费用分支触发变身" {
+    seed 1023;
+    state {
+        turn own 5;
+        phase main;
+
+        player own {
+            hand {
+                follower source = 90072110;
+                follower material = 90073120;
+            }
+        }
+    }
+
+    action {
+        fuse source;
+        select material;
+    }
+
+    expect {
+        legal;
+        source.zone == hand;
+        source has rush;
+        own.hand count card 90073130 == 1;
+    }
+}

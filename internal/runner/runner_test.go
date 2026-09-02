@@ -27,8 +27,8 @@ func TestBaseRulesScenarios(t *testing.T) {
 		t.Fatal(err)
 	}
 	results := Run(cards, tests)
-	if len(results) != 22 {
-		t.Fatalf("got %d scenarios, want 22", len(results))
+	if len(results) != 23 {
+		t.Fatalf("got %d scenarios, want 23", len(results))
 	}
 	for _, result := range results {
 		if !result.Passed() {
