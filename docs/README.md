@@ -16,5 +16,9 @@
 
 - [命令行工具](tooling/cli.md)：`check`、`format`、`compile` 和 `test`。
 
+## 规则
+
+- [回合与战斗规则草案](rules/turn-combat.md)：回合边界、恢复约束和战斗实现前提。
+
 阅读顺序建议：卡牌 DSL、测试 DSL、类型化 IR、WBOS 容器、规则字节码。形式文法
 主要供编译器实现和语言兼容性审查使用。
