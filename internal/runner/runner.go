@@ -24,6 +24,7 @@ type instance struct {
 	engaged, summoningSick                                                 bool
 	evolved, superEvolved                                                  bool
 	abilities                                                              map[string]bool
+	materials                                                              []*instance
 }
 type player struct {
 	pp, maxpp, leaderLife, leaderMax, ep, sep, combo, shadows int
@@ -301,6 +302,19 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 	if x, ok := a.(ir.AttackAction); ok {
 		return g.preflightAttack(x)
 	}
+	if x, ok := a.(ir.FusionAction); ok {
+		if x.Actor != g.turn.Active {
+			return "wrong_timing"
+		}
+		source := g.instances[x.Source]
+		if source == nil || source.zone != "hand" || !contains(g.player(x.Actor).hand, source) {
+			return "invalid_fusion_source"
+		}
+		if len(g.fusionCandidates(source)) == 0 {
+			return "fusion_material_required"
+		}
+		return ""
+	}
 	x, ok := a.(ir.SourceAction)
 	if !ok {
 		return "unsupported_action"
@@ -413,6 +427,9 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 func (g *game) commitAction(a ir.Action) ([]execFrame, string) {
 	if x, ok := a.(ir.AttackAction); ok {
 		return nil, g.commitAttack(x)
+	}
+	if _, ok := a.(ir.FusionAction); ok {
+		return nil, ""
 	}
 	x, ok := a.(ir.SourceAction)
 	if !ok {

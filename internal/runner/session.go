@@ -94,6 +94,8 @@ type pendingChoice struct {
 	options        map[int][]ir.Effect
 	optionBlockIDs map[int]string
 	self           *instance
+	fusion         *ir.FusionAbility
+	fusionSource   *instance
 }
 
 type triggerInvocation struct {
@@ -192,10 +194,33 @@ func (s *Session) Begin(actionID string, action ir.Action) StepResult {
 	s.actionID = actionID
 	s.requestOrdinal = 0
 	s.g.revision++
+	if fusion, ok := action.(ir.FusionAction); ok {
+		return s.beginFusion(fusion)
+	}
 	for n := len(frames) - 1; n >= 0; n-- {
 		s.pushFrame(frames[n])
 	}
 	return s.run()
+}
+
+func (s *Session) beginFusion(action ir.FusionAction) StepResult {
+	source := s.g.instances[action.Source]
+	for n := range source.card.FusionAbilities {
+		ability := &source.card.FusionAbilities[n]
+		candidates := s.g.fusionCandidates(source, ability)
+		if len(candidates) == 0 {
+			continue
+		}
+		items := make([]ChoiceCandidate, 0, len(candidates))
+		for _, candidate := range candidates {
+			items = append(items, ChoiceCandidate{Kind: "entity", InstanceID: candidate.id})
+		}
+		request := s.newRequest(ability.ID, "fusion_material", ability.MaterialFilter.Minimum, len(items), items, action.Actor)
+		s.pending = &pendingChoice{request: request, fusion: ability, fusionSource: source, self: source}
+		return StepResult{Status: StatusSuspended, Choice: &request}
+	}
+	s.actionID = ""
+	return StepResult{Status: StatusIllegal, IllegalCode: "fusion_material_required"}
 }
 
 // Advance 仅供规则测试驱动已声明的回合事件，不属于正式玩家动作。
@@ -252,6 +277,23 @@ func (s *Session) Resume(response ChoiceResponse) StepResult {
 			selected = append(selected, s.g.instances[id])
 		}
 		p.bindings[p.binding] = selected
+	} else if p.request.Kind == "fusion_material" {
+		if len(response.SelectedInstanceIDs) < p.request.MinSelections || len(response.SelectedInstanceIDs) > p.request.MaxSelections || response.SelectedOptionID != 0 {
+			return StepResult{Status: StatusRejected, Choice: &p.request, ErrorCode: "invalid_selection_count"}
+		}
+		seen := map[string]bool{}
+		materials := make([]*instance, 0, len(response.SelectedInstanceIDs))
+		for _, id := range response.SelectedInstanceIDs {
+			if seen[id] || !candidateInstance(p.request.Candidates, id) {
+				return StepResult{Status: StatusRejected, Choice: &p.request, ErrorCode: "invalid_candidate"}
+			}
+			seen[id] = true
+			materials = append(materials, s.g.instances[id])
+		}
+		if !s.g.commitFusion(p.fusionSource, p.fusion, materials) {
+			return StepResult{Status: StatusRejected, Choice: &p.request, ErrorCode: "invalid_candidate"}
+		}
+		s.pushFrame(execFrame{body: p.fusion.Body, blockID: fusionBlockID(p.fusionSource.card.ID, p.fusion.ID), self: p.fusionSource, bindings: frame{}})
 	} else if p.request.Kind == "mode" {
 		body, ok := p.options[response.SelectedOptionID]
 		if !ok || len(response.SelectedInstanceIDs) != 0 {

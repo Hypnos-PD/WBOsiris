@@ -509,6 +509,14 @@ type SourceAction struct {
 
 func (a SourceAction) actionKind() string { return a.Kind }
 
+type FusionAction struct {
+	Kind   string `json:"kind"`
+	Actor  string `json:"actor"`
+	Source string `json:"source"`
+}
+
+func (a FusionAction) actionKind() string { return a.Kind }
+
 type SelectAction struct {
 	Kind   string `json:"kind"`
 	Target string `json:"target"`

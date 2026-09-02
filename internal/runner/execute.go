@@ -15,6 +15,18 @@ func (g *game) condition(c ir.Condition, self *instance) bool {
 		p, _ := g.playerForSide(self, x.Left.Side)
 		n := 0
 		switch x.Left.Field {
+		case "cost", "distinct":
+			if self == nil {
+				return false
+			}
+			seen := map[int]bool{}
+			for _, material := range self.materials {
+				n += material.card.Cost
+				seen[material.card.ID] = true
+			}
+			if x.Left.Field == "distinct" {
+				n = len(seen)
+			}
 		case "combo":
 			n = p.combo
 		case "pp":
@@ -46,6 +58,51 @@ func (g *game) condition(c ir.Condition, self *instance) bool {
 		}
 	}
 	return false
+}
+
+func (g *game) fusionCandidates(source *instance, ability ...*ir.FusionAbility) []*instance {
+	if source == nil {
+		return nil
+	}
+	var filter *ir.MaterialFilter
+	if len(ability) > 0 {
+		filter = &ability[0].MaterialFilter
+	} else if len(source.card.FusionAbilities) > 0 {
+		filter = &source.card.FusionAbilities[0].MaterialFilter
+	}
+	if filter == nil {
+		return nil
+	}
+	items := g.fromRef(filter.Source, source, frame{})
+	if filter.Predicate != nil {
+		items = g.filter(items, "", filter.Predicate)
+	}
+	out := make([]*instance, 0, len(items))
+	for _, item := range items {
+		if item != source && item.zone == "hand" && !contains(out, item) {
+			out = append(out, item)
+		}
+	}
+	return out
+}
+
+func (g *game) commitFusion(source *instance, ability *ir.FusionAbility, materials []*instance) bool {
+	if source == nil || source.zone != "hand" || len(materials) == 0 {
+		return false
+	}
+	candidates := g.fusionCandidates(source, ability)
+	for _, material := range materials {
+		if !contains(candidates, material) {
+			return false
+		}
+	}
+	owner := g.owner(source)
+	for _, material := range materials {
+		g.remove(&owner.hand, material)
+		material.zone = "attached"
+		source.materials = append(source.materials, material)
+	}
+	return true
 }
 func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 	own, oppo, _ := g.relativePlayers(self)
@@ -537,6 +594,11 @@ func resetCombatState(i *instance) {
 	i.summoningSick = false
 }
 func (g *game) owner(i *instance) *player {
+	for _, source := range g.instances {
+		if contains(source.materials, i) {
+			return g.owner(source)
+		}
+	}
 	for _, z := range [][]*instance{g.oppo.field, g.oppo.hand, g.oppo.deck, g.oppo.graveyard, g.oppo.banished, g.oppo.destroyed} {
 		if contains(z, i) {
 			return &g.oppo

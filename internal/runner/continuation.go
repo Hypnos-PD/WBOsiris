@@ -108,6 +108,7 @@ type ContinuationEntity struct {
 	Evolved         bool     `json:"evolved"`
 	SuperEvolved    bool     `json:"superEvolved"`
 	Abilities       []string `json:"abilities"`
+	Materials       []string `json:"materials,omitempty"`
 }
 
 type ContinuationEvent struct {
@@ -373,7 +374,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 			ID: i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Attack: i.attack, Life: i.life,
 			Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i),
 			Engaged: i.engaged, SummoningSick: i.summoningSick, Evolved: i.evolved,
-			SuperEvolved: i.superEvolved, DamageReduction: i.damageReduction, Abilities: abilities,
+			SuperEvolved: i.superEvolved, DamageReduction: i.damageReduction, Abilities: abilities, Materials: instanceIDs(i.materials),
 		})
 	}
 	for _, event := range g.events {
@@ -430,6 +431,16 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 			i.abilities[ability] = true
 		}
 		g.instances[i.id] = i
+	}
+	for _, entity := range saved.Instances {
+		source := g.instances[entity.ID]
+		for _, materialID := range entity.Materials {
+			material := g.instances[materialID]
+			if material == nil || material == source || material.zone != "hand" || contains(source.materials, material) {
+				return nil, fmt.Errorf("invalid continuation fusion material")
+			}
+			source.materials = append(source.materials, material)
+		}
 	}
 	var err error
 	if g.own, err = restorePlayer(saved.Own, g.instances); err != nil {

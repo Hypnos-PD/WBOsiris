@@ -110,6 +110,10 @@ func (a SourceAction) MarshalJSON() ([]byte, error) {
 	return json.Marshal(object)
 }
 
+func (a FusionAction) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]any{"kind": a.Kind, "actor": a.Actor, "source": a.Source})
+}
+
 func effectObject(base NodeBase, kind string) map[string]any {
 	return map[string]any{"id": base.ID, "kind": kind, "origin": base.Origin}
 }

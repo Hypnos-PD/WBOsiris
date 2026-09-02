@@ -101,7 +101,10 @@ func (s *Session) SubmitAs(actionID, actor string, command SimulatorCommand) Ste
 		return StepResult{Status: StatusRejected, ErrorCode: "invalid_actor"}
 	}
 	switch command.Kind {
-	case "play", "engage", "evolve", "superevolve", "end_turn":
+	case "play", "engage", "evolve", "superevolve", "fusion", "end_turn":
+		if command.Kind == "fusion" {
+			return s.Begin(actionID, ir.FusionAction{Kind: "fusion", Actor: actor, Source: command.Source})
+		}
 		return s.Begin(actionID, ir.SourceAction{Kind: command.Kind, Actor: actor, Source: command.Source})
 	case "attack":
 		kind, defender := "attack_leader", command.Defender
@@ -146,6 +149,11 @@ func (s *Session) LegalActionsFor(actor string) []LegalAction {
 	}
 	for _, source := range player.field {
 		add("evolve", source)
+	}
+	for _, source := range player.hand {
+		if len(source.card.FusionAbilities) > 0 && len(s.g.fusionCandidates(source)) > 0 {
+			actions = append(actions, LegalAction{Kind: "fusion", Actor: actor, Source: source.id})
+		}
 	}
 	for _, source := range player.field {
 		add("superevolve", source)

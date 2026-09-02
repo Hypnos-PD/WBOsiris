@@ -174,6 +174,19 @@ func decodeAction(data []byte) (Action, error) {
 			return nil, fmt.Errorf("malformed action source")
 		}
 		return SourceAction{v.Kind, v.Actor, v.Source}, nil
+	case "fusion":
+		var v struct {
+			Kind   string `json:"kind"`
+			Actor  string `json:"actor"`
+			Source string `json:"source"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if !validSide(v.Actor) || !nodeIDPattern.MatchString(v.Source) {
+			return nil, fmt.Errorf("malformed fusion action")
+		}
+		return FusionAction{v.Kind, v.Actor, v.Source}, nil
 	case "select":
 		var v struct {
 			Kind   string `json:"kind"`
@@ -700,6 +713,10 @@ func validateScenarioReferences(s Scenario) error {
 		case SourceAction:
 			if x.Source != "" && !instances[x.Source] {
 				return fmt.Errorf("action references unknown instance %s", x.Source)
+			}
+		case FusionAction:
+			if !instances[x.Source] {
+				return fmt.Errorf("fusion action references unknown instance %s", x.Source)
 			}
 		case SelectAction:
 			if !instances[x.Target] {

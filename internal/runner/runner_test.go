@@ -675,6 +675,27 @@ func TestOrdinaryEvolveConsumesEPAndRunsActionPlan(t *testing.T) {
 	}
 }
 
+func TestFusionRequestsAndAttachesMaterialsBeforeResolving(t *testing.T) {
+	sourceID, materialID := strings.Repeat("5", 32), strings.Repeat("6", 32)
+	abilityID := strings.Repeat("7", 32)
+	card := &ir.Card{ID: 66666682, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 3}, FusionAbilities: []ir.FusionAbility{{ID: abilityID, MaterialFilter: ir.MaterialFilter{Kind: "material_filter", Source: ir.ZoneRef{Kind: "zone", Side: "own", Zone: "hand", Member: "card"}, ExcludeSource: true, Minimum: 1}, Body: []ir.Effect{ir.TargetEffect{Kind: "buff_stats", Target: ir.SelfRef{Kind: "self", ValueType: "follower"}, AttackDelta: 2}}}}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "hand", ir.TestInstance{InstanceID: sourceID, CardID: card.ID, DeclaredType: "follower"})
+	state.Players["own"] = withInstance(state.Players["own"], "hand", ir.TestInstance{InstanceID: materialID, CardID: card.ID, DeclaredType: "follower"})
+	session, err := NewSession(&ir.CardPack{Cards: []ir.Card{*card}}, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := session.Begin(strings.Repeat("8", 32), ir.FusionAction{Kind: "fusion", Actor: "own", Source: sourceID})
+	if result.Status != StatusSuspended || result.Choice == nil || result.Choice.Kind != "fusion_material" {
+		t.Fatalf("fusion did not request materials: %#v", result)
+	}
+	result = session.Resume(ChoiceResponse{RequestID: result.Choice.RequestID, ActionID: result.Choice.ActionID, StateRevision: result.Choice.StateRevision, SelectedInstanceIDs: []string{materialID}})
+	if result.Status != StatusCompleted || len(session.g.instances[sourceID].materials) != 1 || session.g.instances[sourceID].attack != 3 || contains(session.g.own.hand, session.g.instances[materialID]) {
+		t.Fatalf("fusion did not attach and resolve atomically: result=%#v source=%#v hand=%#v", result, session.g.instances[sourceID], session.g.own.hand)
+	}
+}
+
 func TestClashAbilitiesResolveAttackerThenDefenderBeforeCombat(t *testing.T) {
 	attackerID, defenderID := strings.Repeat("1", 32), strings.Repeat("2", 32)
 	attackerAbility, defenderAbility := strings.Repeat("3", 32), strings.Repeat("4", 32)
