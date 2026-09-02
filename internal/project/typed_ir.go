@@ -617,6 +617,8 @@ func compileActions(s *syntax.Statement, a map[string]string) ([]ir.Action, erro
 		switch x.Word(0) {
 		case "play", "engage", "evolve", "superevolve":
 			action = ir.SourceAction{Kind: x.Word(0), Actor: "own", Source: a[t[1].Value]}
+		case "fuse":
+			action = ir.FusionAction{Kind: "fusion", Actor: "own", Source: a[t[1].Value]}
 		case "select":
 			action = ir.SelectAction{Kind: "select", Target: a[t[1].Value]}
 		case "mode":
