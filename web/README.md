@@ -7,7 +7,12 @@ npm install
 npm run dev
 ```
 
-当前页面提供本地可操作牌桌演示。`App.tsx` 的演示状态将替换为 Go 模拟器的服务端状态，
-前端只消费 `state`、`legalActions`、`pendingChoice` 和 `events`，不实现规则判断。
+同时启动项目根目录的规则服务：
+
+```bash
+go run ./cmd/wbo serve --source-root . --listen :8080
+```
+
+页面默认连接规则服务，消费 `state`、`legalActions`、`pendingChoice` 和 `events`，不实现规则判断。
 
 视觉素材参考并部分复制自同一工作区的 `WBArts/data`，包括牌框、职业图标、卡背和示例卡图。

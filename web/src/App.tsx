@@ -1,40 +1,30 @@
-import { useState } from "react";
-import { Check, ChevronDown, Eye, Flag, Hand, Info, RotateCcw, Shield, Sparkles, Swords, Target, X, Zap } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Check, ChevronDown, Eye, Info, RotateCcw, Shield, Sparkles, Target, X } from "lucide-react";
 
-type Card = { id: string; name: string; cost: number; attack?: number; life?: number; text: string; art: string; keywords?: string[]; type: "随从" | "法术" | "护符" };
-const cards: Card[] = [
-  { id: "leah", name: "叮当天使·莉亚", cost: 2, attack: 0, life: 2, type: "随从", text: "守护\n谢幕曲：抽取1张卡牌。\n进化时：抽取1张卡牌。", art: "/assets/card-10001120.webp", keywords: ["守护"] },
-  { id: "henrietta", name: "煌响使者·亨莉雅妲", cost: 3, attack: 3, life: 3, type: "随从", text: "进化时：回复自己的主战者2点生命值。", art: "/assets/card-10002110.webp" },
-  { id: "swordsman", name: "不屈的剑斗士", cost: 1, attack: 2, life: 2, type: "随从", text: "", art: "/assets/card-10001110.webp" },
-  { id: "forest", name: "森林的意志", cost: 2, type: "法术", text: "对一个敌方随从造成3点伤害。", art: "/assets/card-10001120.webp" },
-];
-const field = [cards[0], cards[1]];
+type Card = { id: string; instanceId?: string; name: string; cost: number; attack?: number; life?: number; text: string; art: string; keywords?: string[]; type: "随从" | "法术" | "护符" };
+type Entity = { instanceId: string; cardId: number; attack?: number; life?: number; cardType: string; keywords?: string[] };
+type Remote = { sessionId: string; state: { own: { leaderLife: number; pp: number; ep: number; sep: number; hand: Entity[]; field: Entity[] }; oppo: { leaderLife: number; field: Entity[] }; turn: { number: number } }; events?: { kind: string }[]; result?: { status: string; errorCode?: string } };
+const catalog: Record<string, Omit<Card, "id" | "instanceId">> = {
+  "10001110": { name: "不屈的剑斗士", cost: 1, attack: 2, life: 2, type: "随从", text: "", art: "/assets/card-10001110.webp" },
+  "10001120": { name: "叮当天使·莉亚", cost: 2, attack: 0, life: 2, type: "随从", text: "守护\n谢幕曲：抽取1张卡牌。\n进化时：抽取1张卡牌。", art: "/assets/card-10001120.webp", keywords: ["守护"] },
+  "10002110": { name: "煌响使者·亨莉雅妲", cost: 3, attack: 3, life: 3, type: "随从", text: "进化时：回复自己的主战者2点生命值。", art: "/assets/card-10002110.webp" },
+  "10011130": { name: "温厚的树精", cost: 4, attack: 4, life: 4, type: "随从", text: "入场曲：连击3，本随从进化。", art: "/assets/card-10011130.webp" },
+};
+const cardFor = (entity: Entity): Card => ({ id: String(entity.cardId), instanceId: entity.instanceId, ...(catalog[String(entity.cardId)] ?? { name: "未知卡牌", cost: 0, type: "随从", text: "", art: "/assets/card-10001120.webp" }), attack: entity.attack, life: entity.life, keywords: entity.keywords });
 
 export function App() {
-  const [hand, setHand] = useState(cards.slice(2));
-  const [selected, setSelected] = useState<Card | null>(null);
-  const [targeting, setTargeting] = useState(false);
-  const [turn, setTurn] = useState(5);
-  const [pp, setPp] = useState(5);
-  const [message, setMessage] = useState("请选择要进行的操作");
-  const [events, setEvents] = useState(["你的回合开始", "抽取了1张卡牌"]);
-  const play = () => {
-    if (!selected) return;
-    if (selected.cost > pp) { setMessage("PP 不足，无法使用这张卡牌"); return; }
-    setPp((n) => n - selected.cost); setHand((items) => items.filter((item) => item.id !== selected.id)); setEvents((items) => [`使用了 ${selected.name}`, ...items].slice(0, 3)); setMessage(`${selected.name} 已打出`); setSelected(null);
-  };
-  const endTurn = () => { setTurn((n) => n + 1); setPp(5); setEvents((items) => ["回合结束", ...items].slice(0, 3)); setMessage("对手的回合"); };
-  return <div className="game-shell">
-    <header className="game-header"><div className="game-brand"><span className="crest">W</span><div><b>WBOsiris</b><small>超凡世界 · 标准规则</small></div></div><div className="turn-badge"><span className="turn-dot" />你的回合 <strong>{turn}</strong></div><div className="header-actions"><button title="对局信息"><Info size={18} /></button><button title="重新开始" onClick={() => location.reload()}><RotateCcw size={18} /></button></div></header>
-    <section className="arena">
-      <div className="opponent-zone"><Leader name="对手" className="enemy" life={20} /><div className="deck-stack opponent-deck"><span>?</span><small>牌组 28</small></div><div className="opponent-hand"><i /><i /><i /><i /></div></div>
-      <div className="field-zone"><div className="field-row opponent-field"><div className="slot" /><div className="slot" /><div className="slot" /></div><div className="arena-divider"><span>第 {turn} 回合</span></div><div className="field-row own-field">{field.map((card) => <BoardCard key={card.id} card={card} onClick={() => { setTargeting(true); setMessage(`请选择 ${card.name} 的目标`); }} />)}<div className="slot" /></div></div>
-      <div className="own-zone"><div className="deck-stack"><span>W</span><small>牌组 24</small></div><Leader name="你的主战者" className="hero" life={20} /><div className="grave"><span>墓场</span><b>3</b></div></div>
-    </section>
-    <section className="control-bar"><div className="status-message"><Target size={16} /><span>{message}</span></div><div className="event-strip">{events.map((event, index) => <span key={`${event}-${index}`}>{event}</span>)}</div><div className="turn-controls"><button className="icon-control" title="查看战场" onClick={() => setMessage("当前战场状态")}> <Eye size={18} /></button><button className="end-turn" onClick={endTurn}><ChevronDown size={17} />结束回合</button></div></section>
-    <section className="hand-dock"><div className="hand-title"><span>手牌 <b>{hand.length}</b></span><small>PP <strong>{pp}</strong> / 5</small></div><div className="hand-row">{hand.map((card) => <HandCard key={card.id} card={card} selected={selected?.id === card.id} onClick={() => { setSelected(selected?.id === card.id ? null : card); setMessage(selected?.id === card.id ? "请选择要进行的操作" : `已选择 ${card.name}`); }} />)}</div><div className="resource-row"><div className="pp-bar"><i style={{ width: `${pp * 20}%` }} /></div><div className="evo"><span>进化点</span><b>2</b><span>超进化点</span><b>1</b></div></div></section>
+  const [remote, setRemote] = useState<Remote | null>(null); const [hand, setHand] = useState<Card[]>([]); const [selected, setSelected] = useState<Card | null>(null); const [turn, setTurn] = useState(5); const [pp, setPp] = useState(5); const [message, setMessage] = useState("请选择要进行的操作"); const [events, setEvents] = useState(["你的回合开始", "抽取了1张卡牌"]);
+  useEffect(() => { fetch("http://127.0.0.1:8080/api/sessions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ scenario: "打出后自身计入连击并静默进化" }) }).then((res) => res.json()).then((data: Remote) => { setRemote(data); sync(data); }).catch(() => setMessage("未连接规则服务，当前为演示模式")); }, []);
+  const sync = (data: Remote) => { setHand(data.state.own.hand.map(cardFor)); setPp(data.state.own.pp); setTurn(data.state.turn.number); if (data.events?.length) setEvents(data.events.slice(-3).reverse().map((event) => event.kind)); };
+  const send = (input: Record<string, unknown>) => { if (!remote) return; fetch(`http://127.0.0.1:8080/api/sessions/${remote.sessionId}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) }).then((res) => res.json()).then((data: Remote) => { setRemote(data); sync(data); if (data.result?.errorCode) setMessage(`操作未完成：${data.result.errorCode}`); }); };
+  const play = () => { if (!selected) return; if (selected.cost > pp) { setMessage("PP 不足，无法使用这张卡牌"); return; } if (selected.instanceId) send({ kind: "play", source: selected.instanceId }); else { setPp((n) => n - selected.cost); setHand((items) => items.filter((item) => item.id !== selected.id)); } setEvents((items) => [`使用了 ${selected.name}`, ...items].slice(0, 3)); setMessage(`${selected.name} 已打出`); setSelected(null); };
+  const endTurn = () => { if (remote) send({ kind: "end_turn" }); setEvents((items) => ["回合结束", ...items].slice(0, 3)); setMessage("对手的回合"); };
+  const ownField = remote?.state.own.field.map(cardFor) ?? []; const oppoField = remote?.state.oppo.field.map(cardFor) ?? [];
+  return <div className="game-shell"><header className="game-header"><div className="game-brand"><span className="crest">W</span><div><b>WBOsiris</b><small>超凡世界 · 标准规则</small></div></div><div className="turn-badge"><span className="turn-dot" />你的回合 <strong>{turn}</strong></div><div className="header-actions"><button title="对局信息"><Info size={18} /></button><button title="重新开始" onClick={() => location.reload()}><RotateCcw size={18} /></button></div></header>
+    <section className="arena"><div className="opponent-zone"><Leader name="对手" className="enemy" life={remote?.state.oppo.leaderLife ?? 20} /><div className="deck-stack opponent-deck"><span>?</span><small>牌组 28</small></div><div className="opponent-hand"><i /><i /><i /><i /></div></div><div className="field-zone"><div className="field-row opponent-field">{oppoField.map((card) => <BoardCard key={card.instanceId} card={card} onClick={() => setMessage("该随从属于对手")} />)}<div className="slot" /><div className="slot" /></div><div className="arena-divider"><span>第 {turn} 回合</span></div><div className="field-row own-field">{ownField.map((card) => <BoardCard key={card.instanceId} card={card} onClick={() => setMessage(`已选择 ${card.name}`)} />)}<div className="slot" /><div className="slot" /></div></div><div className="own-zone"><div className="deck-stack"><span>W</span><small>牌组 24</small></div><Leader name="你的主战者" className="hero" life={remote?.state.own.leaderLife ?? 20} /><div className="grave"><span>墓场</span><b>3</b></div></div></section>
+    <section className="control-bar"><div className="status-message"><Target size={16} /><span>{message}</span></div><div className="event-strip">{events.map((event, index) => <span key={`${event}-${index}`}>{event}</span>)}</div><div className="turn-controls"><button className="icon-control" title="查看战场"><Eye size={18} /></button><button className="end-turn" onClick={endTurn}><ChevronDown size={17} />结束回合</button></div></section>
+    <section className="hand-dock"><div className="hand-title"><span>手牌 <b>{hand.length}</b></span><small>PP <strong>{remote?.state.own.pp ?? pp}</strong> / 5 {remote ? "· 已连接规则引擎" : "· 演示模式"}</small></div><div className="hand-row">{hand.map((card) => <HandCard key={card.instanceId ?? card.id} card={card} selected={selected?.instanceId === card.instanceId} onClick={() => { setSelected(selected?.instanceId === card.instanceId ? null : card); setMessage(`已选择 ${card.name}`); }} />)}</div><div className="resource-row"><div className="pp-bar"><i style={{ width: `${(remote?.state.own.pp ?? pp) * 20}%` }} /></div><div className="evo"><span>进化点</span><b>{remote?.state.own.ep ?? 2}</b><span>超进化点</span><b>{remote?.state.own.sep ?? 1}</b></div></div></section>
     {selected && <aside className="card-inspector"><button className="dismiss" onClick={() => setSelected(null)}><X size={17} /></button><img src={selected.art} alt={selected.name} /><div className="card-copy"><small>{selected.type} · 费用 {selected.cost}</small><h2>{selected.name}</h2><p>{selected.text}</p>{selected.attack !== undefined && <div className="inspect-stats"><b>{selected.attack}<small>攻击</small></b><b>{selected.life}<small>生命</small></b></div>}<button className="play-card" onClick={play}><Sparkles size={16} />使用卡牌</button></div></aside>}
-    {targeting && <div className="target-banner"><span><Target size={18} />请选择目标</span><button onClick={() => { setTargeting(false); setMessage("已取消目标选择"); }}><X size={16} />取消</button></div>}
   </div>;
 }
 function Leader({ name, className, life }: { name: string; className: string; life: number }) { return <div className={`leader ${className}`}><div className="leader-portrait"><div>{className === "hero" ? "你" : "敌"}</div></div><div className="leader-name"><b>{name}</b><span><Shield size={14} /> {life}</span></div></div>; }

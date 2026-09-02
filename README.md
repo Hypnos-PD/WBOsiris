@@ -12,6 +12,7 @@ go run ./cmd/wbo compile --source-root . --output cards.wbos cards
 go run ./cmd/wbo simulate --source-root . --scenario "最大能量已满时保持上限并抽牌" cards tests
 npm --prefix web install
 npm --prefix web run dev
+go run ./cmd/wbo serve --source-root . --listen :8080
 ```
 
 ## 目录
@@ -25,7 +26,7 @@ docs/       语言、编译格式和工具文档
 web/        React/TypeScript 可操作牌桌客户端
 ```
 
-当前 `web/` 是本地牌桌 GUI 演示，使用与模拟器一致的状态概念；Go 模拟器服务接入仍在进行中。
+当前 `web/` 是本地牌桌 GUI，默认连接 `wbo serve` 提供的规则会话服务。
 GUI 参考了 `../WBArts` 的牌框、职业图标、卡背和卡牌素材，素材复制到 `web/public/assets/`。
 
 文档入口见 [docs/README.md](docs/README.md)。

@@ -37,6 +37,8 @@ func main() {
 		code = runTest(os.Args[2:])
 	case "simulate":
 		code = runSimulate(os.Args[2:])
+	case "serve":
+		code = runServe(os.Args[2:])
 	default:
 		usage()
 		code = 2
@@ -44,7 +46,7 @@ func main() {
 	os.Exit(code)
 }
 func usage() {
-	fmt.Fprintln(os.Stderr, "用法: wbo <check|format|compile|test|simulate> [选项] PATH...")
+	fmt.Fprintln(os.Stderr, "用法: wbo <check|format|compile|test|simulate|serve> [选项] PATH...")
 }
 
 func runCheck(args []string) int {

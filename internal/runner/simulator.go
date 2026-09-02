@@ -44,6 +44,13 @@ type StateView struct {
 	Winner        string         `json:"winner,omitempty"`
 }
 
+func (s *Session) Events() []ir.RuntimeEvent {
+	if s == nil || s.g == nil {
+		return nil
+	}
+	return append([]ir.RuntimeEvent(nil), s.g.events...)
+}
+
 type TurnView struct {
 	Active string `json:"active"`
 	Number int    `json:"number"`
