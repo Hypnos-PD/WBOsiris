@@ -14,44 +14,99 @@ func Format(f *File) []byte {
 		}
 		formatStatement(&b, s, 0)
 	}
+	for _, comment := range f.TrailingComments {
+		if b.Len() > 0 {
+			b.WriteByte('\n')
+		}
+		b.WriteString(comment)
+	}
 	return []byte(b.String())
 }
 
 func formatStatement(b *strings.Builder, s *Statement, indent int) {
-	b.WriteString(strings.Repeat(" ", indent))
+	prefix := strings.Repeat(" ", indent)
 	line := ""
-	for i, e := range s.Elements {
+	lineNeedsPrefix := true
+	afterBlock := false
+	flushLine := func(newline bool) {
+		if line == "" {
+			return
+		}
+		if lineNeedsPrefix {
+			b.WriteString(prefix)
+		}
+		b.WriteString(line)
+		line = ""
+		lineNeedsPrefix = true
+		if newline {
+			b.WriteByte('\n')
+		}
+	}
+	writeComments := func(comments []string) {
+		if len(comments) == 0 {
+			return
+		}
+		flushLine(true)
+		if afterBlock {
+			b.WriteByte('\n')
+			afterBlock = false
+		}
+		for _, comment := range comments {
+			b.WriteString(prefix)
+			b.WriteString(comment)
+			b.WriteByte('\n')
+		}
+	}
+	for _, e := range s.Elements {
 		if e.Token != nil {
+			writeComments(e.Token.LeadingComments)
 			text := formattedToken(*e.Token)
+			if afterBlock {
+				b.WriteByte(' ')
+				afterBlock = false
+				lineNeedsPrefix = false
+			}
 			line = addToken(line, text, e.Token.Value, indent)
 			continue
 		}
-		b.WriteString(line)
-		b.WriteString(" {")
-		if len(e.Block) > 0 {
-			b.WriteByte('\n')
-			for j, child := range e.Block {
-				formatStatement(b, child, indent+4)
-				if j+1 < len(e.Block) {
-					b.WriteByte('\n')
-				}
-			}
-			b.WriteByte('\n')
-			b.WriteString(strings.Repeat(" ", indent))
+		writeComments(e.LeadingComments)
+		if line != "" {
+			flushLine(false)
+			b.WriteString(" {")
 		} else {
+			b.WriteString(prefix)
+			b.WriteByte('{')
+		}
+		b.WriteByte('\n')
+		wroteContent := false
+		for _, child := range e.Block {
+			if wroteContent {
+				b.WriteByte('\n')
+			}
+			formatStatement(b, child, indent+4)
+			wroteContent = true
+		}
+		for _, comment := range e.TrailingComments {
+			if wroteContent {
+				b.WriteByte('\n')
+			}
+			b.WriteString(strings.Repeat(" ", indent+4))
+			b.WriteString(comment)
+			wroteContent = true
+		}
+		if wroteContent {
 			b.WriteByte('\n')
-			b.WriteString(strings.Repeat(" ", indent))
 		}
+		b.WriteString(strings.Repeat(" ", indent))
 		b.WriteByte('}')
-		line = ""
-		if i+1 < len(s.Elements) {
-			b.WriteByte(' ')
-		}
+		afterBlock = true
 	}
-	if line != "" {
-		b.WriteString(line)
-	}
+	writeComments(s.TerminatorComments)
+	flushLine(false)
 	if s.Terminated {
+		if !afterBlock && line == "" && len(s.TerminatorComments) > 0 {
+			b.WriteString(prefix)
+		}
 		b.WriteByte(';')
 	}
 }

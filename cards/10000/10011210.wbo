@@ -9,6 +9,7 @@ card 10011210 {
         fanfare {
             add 1 card 90011110 to hand;
         }
+        << 妖精入场后再检查敌方目标，没有目标就自然跳过伤害。
         when own follower summoned where trait pixie {
             random target from oppo.field.followers;
             damage target 1;

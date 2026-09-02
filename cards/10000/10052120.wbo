@@ -9,6 +9,7 @@ card 10052120 {
         evolve {
             summon 2 card 90051130;
         }
+        << 超进化沿用进化时的 summoned 绑定，再赋予虹吸。
         superevolve extends evolve {
             add drain to summoned;
         }

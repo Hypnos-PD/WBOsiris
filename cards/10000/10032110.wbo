@@ -11,6 +11,7 @@ card 10032110 {
                 summon 1 card 90031120;
             }
         }
+        << 超进化允许玩家自行决定是否强化一个己方巨像。
         superevolve {
             choose target from own.field.followers where trait golem;
             evolve target silent;

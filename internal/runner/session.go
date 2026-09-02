@@ -73,10 +73,10 @@ type Continuation struct {
 }
 
 type StepResult struct {
-	Status      Status
-	Choice      *ChoiceRequest
-	IllegalCode string
-	ErrorCode   string
+	Status      Status         `json:"status"`
+	Choice      *ChoiceRequest `json:"choice,omitempty"`
+	IllegalCode string         `json:"illegalCode,omitempty"`
+	ErrorCode   string         `json:"errorCode,omitempty"`
 }
 
 type execFrame struct {
@@ -318,7 +318,7 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 	case ir.IfEffect:
 		body := e.Else
 		branch := "else"
-		if s.g.condition(e.Condition) {
+		if s.g.condition(e.Condition, self) {
 			body = e.Then
 			branch = "then"
 		}
@@ -327,17 +327,18 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 		return s.modeRequest(e, bindings, self)
 	case ir.PayResourceEffect:
 		paid := false
-		if e.Resource == "shadows" && s.g.own.shadows >= e.Amount {
-			s.g.own.shadows -= e.Amount
+		own, _, _ := s.g.relativePlayers(self)
+		if e.Resource == "shadows" && own.shadows >= e.Amount {
+			own.shadows -= e.Amount
 			paid = true
 		} else if e.Resource == "earthsigil" {
-			paid = s.g.consumeEarthSigil(e.Amount)
+			paid = s.g.consumeEarthSigil(self, e.Amount)
 		}
 		if paid {
 			s.pushFrame(execFrame{body: e.OnPaid, blockID: nestedBlockID(e.ID, "onPaid"), self: self, bindings: bindings})
 		}
 	case ir.DrawEffect:
-		s.g.draw(e, bindings)
+		s.g.draw(e, self, bindings)
 	case ir.CardEffect:
 		s.g.execCardEffect(e, self, bindings)
 	case ir.TargetEffect:
@@ -360,7 +361,7 @@ func (s *Session) targetRequest(e ir.SelectionEffect, candidates []*instance, bi
 	if e.Kind == "require" {
 		min = 1
 	}
-	request := s.newRequest(e.ID, "target", min, 1, items)
+	request := s.newRequest(e.ID, "target", min, 1, items, s.g.sideOf(self))
 	return &pendingChoice{request: request, binding: e.Binding, bindings: bindings, self: self}
 }
 
@@ -376,7 +377,7 @@ func (s *Session) modeRequest(e ir.ModeEffect, bindings frame, self *instance) *
 		options[option.ID] = option.Body
 		optionBlockIDs[option.ID] = nestedBlockID(e.ID, fmt.Sprintf("option:%d", option.ID))
 	}
-	request := s.newRequest(e.ID, "mode", 1, 1, items)
+	request := s.newRequest(e.ID, "mode", 1, 1, items, s.g.sideOf(self))
 	return &pendingChoice{request: request, bindings: bindings, options: options, optionBlockIDs: optionBlockIDs, self: self}
 }
 
@@ -403,13 +404,13 @@ func (s *Session) ensureBudget() {
 	}
 }
 
-func (s *Session) newRequest(nodeID, kind string, min, max int, candidates []ChoiceCandidate) ChoiceRequest {
+func (s *Session) newRequest(nodeID, kind string, min, max int, candidates []ChoiceCandidate, publicTo string) ChoiceRequest {
 	s.requestOrdinal++
 	return ChoiceRequest{
 		RequestID: deriveRuntimeID(s.actionID, nodeID, fmt.Sprint(s.requestOrdinal)),
 		ActionID:  s.actionID, NodeID: nodeID, Kind: kind,
 		MinSelections: min, MaxSelections: max, Candidates: candidates,
-		StateRevision: s.g.revision, PublicTo: "own",
+		StateRevision: s.g.revision, PublicTo: publicTo,
 	}
 }
 
@@ -448,13 +449,16 @@ type instanceSnapshot struct {
 }
 
 type gameSnapshot struct {
-	Own, Oppo playerSnapshot
-	Instances []instanceSnapshot
-	Events    []ir.RuntimeEvent
-	RNG       ruleset.RNGState
-	Serial    int
-	Revision  uint64
-	Triggers  int
+	Own, Oppo                       playerSnapshot
+	Instances                       []instanceSnapshot
+	Events                          []ir.RuntimeEvent
+	RNG                             ruleset.RNGState
+	Serial                          int
+	EventSequence, DeathBatchSerial uint64
+	Revision                        uint64
+	Triggers                        int
+	Turn                            ir.Turn
+	Phase                           string
 }
 
 type playerSnapshot struct {
@@ -463,7 +467,7 @@ type playerSnapshot struct {
 }
 
 func (g *game) snapshot() gameSnapshot {
-	snapshot := gameSnapshot{Own: snapshotPlayer(g.own), Oppo: snapshotPlayer(g.oppo), Events: append([]ir.RuntimeEvent(nil), g.events...), RNG: g.rng.Snapshot(), Serial: g.serial, Revision: g.revision, Triggers: len(g.triggers)}
+	snapshot := gameSnapshot{Own: snapshotPlayer(g.own), Oppo: snapshotPlayer(g.oppo), Events: append([]ir.RuntimeEvent(nil), g.events...), RNG: g.rng.Snapshot(), Serial: g.serial, EventSequence: g.eventSequence, DeathBatchSerial: g.deathBatchSerial, Revision: g.revision, Triggers: len(g.triggers), Turn: g.turn, Phase: g.phase}
 	for _, side := range []*player{&g.own, &g.oppo} {
 		for _, zone := range [][]*instance{side.deck, side.hand, side.field, side.graveyard, side.banished} {
 			for _, i := range zone {
@@ -486,7 +490,8 @@ func (g *game) clone() *game {
 	clone := &game{
 		cards: g.cards, instances: map[string]*instance{}, legal: g.legal, illegal: g.illegal,
 		unchanged: g.unchanged, rng: g.rng.Clone(), events: append([]ir.RuntimeEvent(nil), g.events...),
-		serial: g.serial, revision: g.revision,
+		serial: g.serial, eventSequence: g.eventSequence, deathBatchSerial: g.deathBatchSerial, revision: g.revision,
+		turn: g.turn, phase: g.phase,
 	}
 	for id, original := range g.instances {
 		copy := *original
@@ -498,6 +503,7 @@ func (g *game) clone() *game {
 	}
 	clone.own = clonePlayer(g.own, clone.instances)
 	clone.oppo = clonePlayer(g.oppo, clone.instances)
+	clone.rebuildTriggerIndex()
 	for _, trigger := range g.triggers {
 		bindings := frame{}
 		for name, values := range trigger.bindings {

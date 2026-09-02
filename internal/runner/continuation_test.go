@@ -128,6 +128,99 @@ func TestContinuationRoundTripPreservesRNGAndTriggerQueue(t *testing.T) {
 	}
 }
 
+func TestContinuationRestoreRebuildsTriggerIndex(t *testing.T) {
+	sourceID, listenerID := strings.Repeat("a", 32), strings.Repeat("b", 32)
+	modeID, abilityID := strings.Repeat("c", 32), strings.Repeat("d", 32)
+	leader := ir.LeaderRef{Kind: "leader", Side: "own", ValueType: "leader"}
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 89012345, CardType: "spell", PlayEffects: []ir.Effect{
+			ir.ModeEffect{NodeBase: ir.NodeBase{ID: modeID}, Kind: "mode", Options: []ir.ModeOption{{ID: 1, Body: []ir.Effect{
+				ir.CardEffect{NodeBase: ir.NodeBase{ID: strings.Repeat("e", 32)}, Kind: "summon", Owner: "own", CardID: 90123456, Count: 1, Output: "summoned"},
+			}}}},
+		}},
+		{ID: 90123456, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 1}},
+		{ID: 91234567, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 1}, Abilities: []ir.Ability{
+			{ID: abilityID, Trigger: ir.EventTrigger{Kind: "event", Event: "follower_summoned", Side: "own"}, Body: []ir.Effect{ir.TargetEffect{Kind: "heal", Target: leader, Amount: 1}}},
+		}},
+	}}
+	state := testState()
+	own := state.Players["own"]
+	own.Leader = ir.Leader{Life: 10, MaxLife: 20}
+	own = withInstance(own, "hand", ir.TestInstance{InstanceID: sourceID, Alias: "source", CardID: 89012345, DeclaredType: "spell"})
+	own = withInstance(own, "field", ir.TestInstance{InstanceID: listenerID, Alias: "listener", CardID: 91234567, DeclaredType: "follower"})
+	state.Players["own"] = own
+
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	step := session.Begin(strings.Repeat("f", 32), ir.SourceAction{Kind: "play", Actor: "own", Source: sourceID})
+	if step.Status != StatusSuspended {
+		t.Fatalf("action did not suspend: %#v", step)
+	}
+	data, err := session.EncodeContinuation()
+	if err != nil {
+		t.Fatal(err)
+	}
+	continuation, err := DecodeContinuation(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	restored, err := RestoreSession(pack, continuation)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := restored.Resume(ChoiceResponse{RequestID: step.Choice.RequestID, ActionID: step.Choice.ActionID, StateRevision: step.Choice.StateRevision, SelectedOptionID: 1})
+	if result.Status != StatusCompleted || restored.g.own.leaderLife != 11 {
+		t.Fatalf("restored trigger index missed summon: result=%#v life=%d", result, restored.g.own.leaderLife)
+	}
+}
+
+func TestContinuationRoundTripPreservesDeathBatch(t *testing.T) {
+	spellID, victimID := strings.Repeat("1", 32), strings.Repeat("2", 32)
+	lastwordsID, modeID := strings.Repeat("3", 32), strings.Repeat("4", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 93456789, CardType: "spell", PlayEffects: []ir.Effect{
+			ir.TargetEffect{NodeBase: ir.NodeBase{ID: strings.Repeat("5", 32)}, Kind: "destroy", Target: ir.ZoneRef{Kind: "zone", Side: "oppo", Zone: "field", Member: "follower"}},
+		}},
+		{ID: 94567890, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 1}, Abilities: []ir.Ability{{
+			ID: lastwordsID, Trigger: ir.SimpleTrigger{Kind: "lastwords"}, Body: []ir.Effect{
+				ir.ModeEffect{NodeBase: ir.NodeBase{ID: modeID}, Kind: "mode", Options: []ir.ModeOption{{ID: 1}}},
+			},
+		}}},
+	}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "hand", ir.TestInstance{InstanceID: spellID, Alias: "spell", CardID: 93456789, DeclaredType: "spell"})
+	state.Players["oppo"] = withInstance(state.Players["oppo"], "field", ir.TestInstance{InstanceID: victimID, Alias: "victim", CardID: 94567890, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	step := session.Begin(strings.Repeat("6", 32), ir.SourceAction{Kind: "play", Actor: "own", Source: spellID})
+	if step.Status != StatusSuspended || session.g.instances[victimID].zone != "graveyard" || len(session.g.oppo.destroyed) != 1 {
+		t.Fatalf("lastwords did not suspend after death batch: %#v", step)
+	}
+	data, err := session.EncodeContinuation()
+	if err != nil {
+		t.Fatal(err)
+	}
+	continuation, err := DecodeContinuation(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if continuation.Game.EventSequence != 1 || continuation.Game.DeathBatchSerial != 1 || len(continuation.Game.Events) != 1 || continuation.Game.Events[0].BatchID != 1 {
+		t.Fatalf("continuation lost death batch state: %#v", continuation.Game)
+	}
+	restored, err := RestoreSession(pack, continuation)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := restored.Resume(ChoiceResponse{RequestID: step.Choice.RequestID, ActionID: step.Choice.ActionID, StateRevision: step.Choice.StateRevision, SelectedOptionID: 1})
+	if result.Status != StatusCompleted || restored.g.eventSequence != 1 || restored.g.deathBatchSerial != 1 || len(restored.g.oppo.destroyed) != 1 {
+		t.Fatalf("restored death batch diverged: result=%#v events=%d batches=%d", result, restored.g.eventSequence, restored.g.deathBatchSerial)
+	}
+}
+
 func TestContinuationStrictDecodeAndRestoreRejections(t *testing.T) {
 	pack, state, sourceID, _ := continuationTargetFixture()
 	session, err := NewSession(pack, state, 1)
@@ -195,6 +288,88 @@ func TestContinuationStrictDecodeAndRestoreRejections(t *testing.T) {
 			t.Fatal("invalid budget state was accepted")
 		}
 	})
+	t.Run("event sequence", func(t *testing.T) {
+		copy := *decoded
+		copy.Game.EventSequence++
+		if _, err := RestoreSession(pack, &copy); err == nil {
+			t.Fatal("invalid event sequence was accepted")
+		}
+	})
+	t.Run("opponent turn", func(t *testing.T) {
+		copy := *decoded
+		copy.Game.Turn.Active = "oppo"
+		if _, err := RestoreSession(pack, &copy); err == nil {
+			t.Fatal("opponent-turn continuation was accepted")
+		}
+	})
+	t.Run("choice controller", func(t *testing.T) {
+		copy := *decoded
+		copy.Pending.Request.PublicTo = "oppo"
+		if _, err := RestoreSession(pack, &copy); err == nil {
+			t.Fatal("choice with the wrong controller was accepted")
+		}
+	})
+}
+
+func TestRestoreGameRejectsGeneratedSerialAndHistoryOwner(t *testing.T) {
+	card := &ir.Card{ID: 12345678, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 1}}
+	cards := map[int]*ir.Card{card.ID: card}
+	base := ContinuationGame{Turn: ir.Turn{Active: "own", Number: 1}, Phase: "main", Legal: true}
+
+	t.Run("generated serial", func(t *testing.T) {
+		saved := base
+		saved.Serial = 1
+		saved.Instances = []ContinuationEntity{{ID: "added-2", Zone: "hand", CardID: card.ID}}
+		saved.Own.Hand = []string{"added-2"}
+		if _, err := restoreGame(cards, saved); err == nil {
+			t.Fatal("stale generated instance serial was accepted")
+		}
+	})
+
+	t.Run("history owner", func(t *testing.T) {
+		saved := base
+		id := strings.Repeat("f", 32)
+		saved.Instances = []ContinuationEntity{{ID: id, Zone: "graveyard", CardID: card.ID}}
+		saved.Oppo.Graveyard = []string{id}
+		saved.Own.Destroyed = []string{id}
+		if _, err := restoreGame(cards, saved); err == nil {
+			t.Fatal("cross-owner destroyed history was accepted")
+		}
+	})
+}
+
+func TestContinuationDeathBatchesMustBeContiguous(t *testing.T) {
+	id := strings.Repeat("a", 32)
+	instances := map[string]*instance{id: {id: id}}
+	destroyed := map[string]bool{id: true}
+	subject := func() *ir.EventTarget { return &ir.EventTarget{Kind: "instance", InstanceID: id} }
+	events := []ir.RuntimeEvent{
+		{Kind: "destroyed", Subject: subject(), Sequence: 1, BatchID: 1},
+		{Kind: "healed", Sequence: 2},
+		{Kind: "destroyed", Subject: subject(), Sequence: 3, BatchID: 1},
+	}
+	if err := validateContinuationEvents(events, 3, 1, instances, destroyed); err == nil {
+		t.Fatal("split death batch was accepted")
+	}
+	liveID := strings.Repeat("b", 32)
+	instances[liveID] = &instance{id: liveID}
+	badSubject := []ir.RuntimeEvent{{Kind: "destroyed", Subject: &ir.EventTarget{Kind: "instance", InstanceID: liveID}, Sequence: 1, BatchID: 1}}
+	if err := validateContinuationEvents(badSubject, 1, 1, instances, destroyed); err == nil {
+		t.Fatal("live entity was accepted as a destroyed subject")
+	}
+}
+
+func TestContinuationAllowsAdjacentDeathBatches(t *testing.T) {
+	firstID, secondID := strings.Repeat("c", 32), strings.Repeat("d", 32)
+	instances := map[string]*instance{firstID: {id: firstID}, secondID: {id: secondID}}
+	destroyed := map[string]bool{firstID: true, secondID: true}
+	events := []ir.RuntimeEvent{
+		{Kind: "destroyed", Subject: &ir.EventTarget{Kind: "instance", InstanceID: firstID}, Sequence: 1, BatchID: 1},
+		{Kind: "destroyed", Subject: &ir.EventTarget{Kind: "instance", InstanceID: secondID}, Sequence: 2, BatchID: 2},
+	}
+	if err := validateContinuationEvents(events, 2, 2, instances, destroyed); err != nil {
+		t.Fatalf("adjacent death batches were rejected: %v", err)
+	}
 }
 
 func continuationTargetFixture() (*ir.CardPack, ir.State, string, string) {

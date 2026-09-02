@@ -653,6 +653,7 @@ type RuntimeEvent struct {
 	Kind, Side, InstanceID string
 	CardID, Count, Actual  int
 	Target, Subject        *EventTarget
+	Sequence, BatchID      uint64
 }
 
 // rawKind is shared by all context-specific tagged-union decoders.

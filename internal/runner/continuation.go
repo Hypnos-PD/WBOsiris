@@ -9,14 +9,14 @@ import (
 	"io"
 	"reflect"
 	"sort"
+	"strconv"
+	"strings"
 
 	"wbo/internal/ir"
 	"wbo/internal/ruleset"
 )
 
-const (
-	continuationVersion = "0.2.0"
-)
+const continuationVersion = "0.3.0"
 
 type ContinuationBindings struct {
 	ID     string              `json:"id"`
@@ -43,16 +43,20 @@ type ContinuationTrigger struct {
 }
 
 type ContinuationGame struct {
-	Own       ContinuationPlayer   `json:"own"`
-	Oppo      ContinuationPlayer   `json:"oppo"`
-	Instances []ContinuationEntity `json:"instances"`
-	Events    []ContinuationEvent  `json:"events"`
-	RNG       ContinuationRNG      `json:"rng"`
-	Serial    int                  `json:"serial"`
-	Revision  uint64               `json:"revision"`
-	Legal     bool                 `json:"legal"`
-	Illegal   string               `json:"illegal,omitempty"`
-	Unchanged bool                 `json:"unchanged"`
+	Own              ContinuationPlayer   `json:"own"`
+	Oppo             ContinuationPlayer   `json:"oppo"`
+	Instances        []ContinuationEntity `json:"instances"`
+	Events           []ContinuationEvent  `json:"events"`
+	RNG              ContinuationRNG      `json:"rng"`
+	Serial           int                  `json:"serial"`
+	EventSequence    uint64               `json:"eventSequence"`
+	DeathBatchSerial uint64               `json:"deathBatchSerial"`
+	Revision         uint64               `json:"revision"`
+	Legal            bool                 `json:"legal"`
+	Illegal          string               `json:"illegal,omitempty"`
+	Unchanged        bool                 `json:"unchanged"`
+	Turn             ir.Turn              `json:"turn"`
+	Phase            string               `json:"phase"`
 }
 
 type ContinuationPlayer struct {
@@ -96,6 +100,8 @@ type ContinuationEvent struct {
 	Actual     int             `json:"actual,omitempty"`
 	Target     *ir.EventTarget `json:"target,omitempty"`
 	Subject    *ir.EventTarget `json:"subject,omitempty"`
+	Sequence   uint64          `json:"sequence"`
+	BatchID    uint64          `json:"batchId,omitempty"`
 }
 
 type ContinuationRNG struct {
@@ -323,7 +329,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 	snapshot := ContinuationGame{
 		Own: snapshotContinuationPlayer(g.own), Oppo: snapshotContinuationPlayer(g.oppo),
 		RNG:    ContinuationRNG{State: g.rng.Snapshot().State, Consumed: g.rng.Snapshot().Consumed},
-		Serial: g.serial, Revision: g.revision, Legal: g.legal, Illegal: g.illegal, Unchanged: g.unchanged,
+		Serial: g.serial, EventSequence: g.eventSequence, DeathBatchSerial: g.deathBatchSerial, Revision: g.revision, Legal: g.legal, Illegal: g.illegal, Unchanged: g.unchanged, Turn: g.turn, Phase: g.phase,
 	}
 	ids := make([]string, 0, len(g.instances))
 	for id := range g.instances {
@@ -342,7 +348,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 		snapshot.Instances = append(snapshot.Instances, ContinuationEntity{ID: i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Attack: i.attack, Life: i.life, Earthsigil: i.earthsigil, Countdown: i.countdown, Engaged: i.engaged, Evolved: i.evolved, SuperEvolved: i.superEvolved, Abilities: abilities})
 	}
 	for _, event := range g.events {
-		snapshot.Events = append(snapshot.Events, ContinuationEvent{Kind: event.Kind, Side: event.Side, InstanceID: event.InstanceID, CardID: event.CardID, Count: event.Count, Actual: event.Actual, Target: cloneEventTarget(event.Target), Subject: cloneEventTarget(event.Subject)})
+		snapshot.Events = append(snapshot.Events, ContinuationEvent{Kind: event.Kind, Side: event.Side, InstanceID: event.InstanceID, CardID: event.CardID, Count: event.Count, Actual: event.Actual, Target: cloneEventTarget(event.Target), Subject: cloneEventTarget(event.Subject), Sequence: event.Sequence, BatchID: event.BatchID})
 	}
 	return snapshot
 }
@@ -352,9 +358,12 @@ func snapshotContinuationPlayer(p player) ContinuationPlayer {
 }
 
 func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) {
-	g := &game{cards: cards, instances: map[string]*instance{}, legal: saved.Legal, illegal: saved.Illegal, unchanged: saved.Unchanged, rng: ruleset.NewRNG(0), serial: saved.Serial, revision: saved.Revision}
-	if saved.Serial < 0 {
+	g := &game{cards: cards, instances: map[string]*instance{}, legal: saved.Legal, illegal: saved.Illegal, unchanged: saved.Unchanged, rng: ruleset.NewRNG(0), serial: saved.Serial, eventSequence: saved.EventSequence, deathBatchSerial: saved.DeathBatchSerial, revision: saved.Revision, turn: saved.Turn, phase: saved.Phase}
+	if saved.Serial < 0 || saved.Serial < generatedInstanceSerial(saved.Instances) {
 		return nil, fmt.Errorf("invalid continuation instance serial")
+	}
+	if saved.Turn.Active != "own" || saved.Turn.Number < 0 || saved.Phase != "main" {
+		return nil, fmt.Errorf("invalid continuation turn state")
 	}
 	for _, entity := range saved.Instances {
 		card := cards[entity.CardID]
@@ -378,17 +387,32 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 		return nil, err
 	}
 	seen := map[string]bool{}
-	for _, zone := range [][]*instance{g.own.deck, g.own.hand, g.own.field, g.own.graveyard, g.own.banished, g.oppo.deck, g.oppo.hand, g.oppo.field, g.oppo.graveyard, g.oppo.banished} {
-		for _, i := range zone {
-			if seen[i.id] {
-				return nil, fmt.Errorf("continuation entity appears in multiple zones")
+	zoneOwner := map[string]string{}
+	for _, side := range []struct {
+		name  string
+		zones [][]*instance
+	}{{"own", [][]*instance{g.own.deck, g.own.hand, g.own.field, g.own.graveyard, g.own.banished}}, {"oppo", [][]*instance{g.oppo.deck, g.oppo.hand, g.oppo.field, g.oppo.graveyard, g.oppo.banished}}} {
+		for _, zone := range side.zones {
+			for _, i := range zone {
+				if seen[i.id] {
+					return nil, fmt.Errorf("continuation entity appears in multiple zones")
+				}
+				seen[i.id] = true
+				zoneOwner[i.id] = side.name
 			}
-			seen[i.id] = true
 		}
 	}
 	historyOnly := map[string]bool{}
-	for _, history := range [][]*instance{g.own.destroyed, g.oppo.destroyed} {
-		for _, i := range history {
+	for _, side := range []struct {
+		name    string
+		history []*instance
+	}{{"own", g.own.destroyed}, {"oppo", g.oppo.destroyed}} {
+		historySeen := map[string]bool{}
+		for _, i := range side.history {
+			if historySeen[i.id] || i.zone != "destroyed" && zoneOwner[i.id] != side.name {
+				return nil, fmt.Errorf("invalid continuation destroyed history owner")
+			}
+			historySeen[i.id] = true
 			if i.zone == "destroyed" {
 				if historyOnly[i.id] {
 					return nil, fmt.Errorf("continuation history entity has multiple owners")
@@ -403,10 +427,63 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 		}
 	}
 	for _, event := range saved.Events {
-		g.events = append(g.events, ir.RuntimeEvent{Kind: event.Kind, Side: event.Side, InstanceID: event.InstanceID, CardID: event.CardID, Count: event.Count, Actual: event.Actual, Target: cloneEventTarget(event.Target), Subject: cloneEventTarget(event.Subject)})
+		g.events = append(g.events, ir.RuntimeEvent{Kind: event.Kind, Side: event.Side, InstanceID: event.InstanceID, CardID: event.CardID, Count: event.Count, Actual: event.Actual, Target: cloneEventTarget(event.Target), Subject: cloneEventTarget(event.Subject), Sequence: event.Sequence, BatchID: event.BatchID})
+	}
+	destroyedHistory := map[string]bool{}
+	for _, i := range append(append([]*instance{}, g.own.destroyed...), g.oppo.destroyed...) {
+		destroyedHistory[i.id] = true
+	}
+	if err := validateContinuationEvents(g.events, saved.EventSequence, saved.DeathBatchSerial, g.instances, destroyedHistory); err != nil {
+		return nil, err
 	}
 	g.rng.Restore(ruleset.RNGState{State: saved.RNG.State, Consumed: saved.RNG.Consumed})
+	g.rebuildTriggerIndex()
 	return g, nil
+}
+
+func validateContinuationEvents(events []ir.RuntimeEvent, sequence, deathBatchSerial uint64, instances map[string]*instance, destroyedHistory map[string]bool) error {
+	// 恢复时逐项核对，不能让篡改后的批次号进入后续结算。
+	var lastBatch uint64
+	previousBatch := uint64(0)
+	for n, event := range events {
+		if event.Sequence != uint64(n+1) || event.BatchID > deathBatchSerial || event.Kind == "destroyed" && event.BatchID == 0 || event.Kind != "destroyed" && event.BatchID != 0 {
+			return fmt.Errorf("invalid continuation event sequence")
+		}
+		if event.Kind == "destroyed" {
+			if event.Subject == nil || event.Subject.Kind != "instance" || instances[event.Subject.InstanceID] == nil || !destroyedHistory[event.Subject.InstanceID] {
+				return fmt.Errorf("invalid continuation death subject")
+			}
+			if event.BatchID == lastBatch {
+				if previousBatch != event.BatchID {
+					return fmt.Errorf("invalid continuation death batch")
+				}
+			} else if event.BatchID != lastBatch+1 {
+				return fmt.Errorf("invalid continuation death batch")
+			}
+			lastBatch = event.BatchID
+		}
+		previousBatch = event.BatchID
+	}
+	if uint64(len(events)) != sequence || lastBatch != deathBatchSerial {
+		return fmt.Errorf("invalid continuation event sequence")
+	}
+	return nil
+}
+
+func generatedInstanceSerial(instances []ContinuationEntity) int {
+	maximum := 0
+	for _, entity := range instances {
+		for _, prefix := range []string{"added-", "summoned-"} {
+			if !strings.HasPrefix(entity.ID, prefix) {
+				continue
+			}
+			n, err := strconv.Atoi(strings.TrimPrefix(entity.ID, prefix))
+			if err == nil && n > maximum {
+				maximum = n
+			}
+		}
+	}
+	return maximum
 }
 
 func restorePlayer(saved ContinuationPlayer, instances map[string]*instance) (player, error) {
@@ -482,7 +559,7 @@ func restoreBindings(saved []ContinuationBindings, instances map[string]*instanc
 }
 
 func validateChoiceRequest(request ChoiceRequest, instances map[string]*instance) error {
-	if !validRuntimeID(request.RequestID) || !validRuntimeID(request.ActionID) || request.NodeID == "" || request.PublicTo != "own" || request.MinSelections < 0 || request.MaxSelections < request.MinSelections || request.MaxSelections > len(request.Candidates) {
+	if !validRuntimeID(request.RequestID) || !validRuntimeID(request.ActionID) || request.NodeID == "" || request.PublicTo != "own" && request.PublicTo != "oppo" || request.MinSelections < 0 || request.MaxSelections < request.MinSelections || request.MaxSelections > len(request.Candidates) {
 		return fmt.Errorf("invalid continuation choice request")
 	}
 	seenEntities, seenOptions := map[string]bool{}, map[int]bool{}
@@ -518,6 +595,9 @@ func validatePendingNode(s *Session, pending *pendingChoice) error {
 	top := s.stack[len(s.stack)-1]
 	if top.pc == 0 || top.pc > len(top.body) || top.self != pending.self || reflect.ValueOf(top.bindings).Pointer() != reflect.ValueOf(pending.bindings).Pointer() {
 		return fmt.Errorf("continuation request is detached from the execution frame")
+	}
+	if pending.request.PublicTo != s.g.sideOf(pending.self) {
+		return fmt.Errorf("continuation request has the wrong controller")
 	}
 	effect := top.body[top.pc-1]
 	if ir.EffectBase(effect).ID != pending.request.NodeID {

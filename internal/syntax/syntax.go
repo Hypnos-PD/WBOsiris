@@ -37,23 +37,27 @@ const (
 )
 
 type Token struct {
-	Kind  Kind
-	Raw   string
-	Value string
-	Span  Span
+	Kind            Kind
+	Raw             string
+	Value           string
+	Span            Span
+	LeadingComments []string
 }
 
 type Element struct {
-	Token   *Token
-	Block   []*Statement
-	IsBlock bool
-	Span    Span
+	Token            *Token
+	Block            []*Statement
+	IsBlock          bool
+	Span             Span
+	LeadingComments  []string
+	TrailingComments []string
 }
 
 type Statement struct {
-	Elements   []Element
-	Terminated bool
-	Span       Span
+	Elements           []Element
+	Terminated         bool
+	TerminatorComments []string
+	Span               Span
 }
 
 func (s *Statement) Tokens() []Token {
@@ -85,7 +89,8 @@ func (s *Statement) Blocks() [][]*Statement {
 }
 
 type File struct {
-	Path       string
-	Source     []byte
-	Statements []*Statement
+	Path             string
+	Source           []byte
+	Statements       []*Statement
+	TrailingComments []string
 }

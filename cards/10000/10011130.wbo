@@ -11,6 +11,7 @@ card 10011130 {
                 evolve self silent;
             }
         }
+        << 攻击能力在攻击声明后进入触发队列。
         attack {
             heal own.leader 2;
         }

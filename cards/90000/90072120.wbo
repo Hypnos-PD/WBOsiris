@@ -8,6 +8,7 @@ card 90072120 {
 
     effect {
         ward;
+        << 融合总费用决定最终形态，材料在变身后继续保留。
         fusion material from own.hand where trait artifact {
             if fused.cost == 1 {
                 transform self into card 90073110 preserving materials;

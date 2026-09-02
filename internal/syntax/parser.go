@@ -12,6 +12,7 @@ func Parse(path string, src []byte) (*File, []Diagnostic) {
 	p := &parser{path: path, tokens: tokens, diagnostics: ds}
 	f := &File{Path: path, Source: src}
 	f.Statements = p.statements(false)
+	f.TrailingComments = append([]string(nil), p.peek().LeadingComments...)
 	return f, p.diagnostics
 }
 
@@ -46,15 +47,17 @@ func (p *parser) statement() *Statement {
 		switch t.Value {
 		case ";":
 			s.Terminated = true
+			s.TerminatorComments = append([]string(nil), t.LeadingComments...)
 			s.Span = Span{File: p.path, Start: start, End: t.Span.End}
 			return s
 		case "{":
 			body := p.statements(true)
-			end := p.peek().Span.End
+			closing := p.peek()
+			end := closing.Span.End
 			if p.peek().Value == "}" {
 				p.i++
 			}
-			s.Elements = append(s.Elements, Element{Block: body, IsBlock: true, Span: Span{File: p.path, Start: t.Span.Start, End: end}})
+			s.Elements = append(s.Elements, Element{Block: body, IsBlock: true, Span: Span{File: p.path, Start: t.Span.Start, End: end}, LeadingComments: append([]string(nil), t.LeadingComments...), TrailingComments: append([]string(nil), closing.LeadingComments...)})
 			if p.peek().Value != "else" {
 				s.Span = Span{File: p.path, Start: start, End: end}
 				return s

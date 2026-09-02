@@ -1,13 +1,19 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
+	"wbo/internal/ir"
 	"wbo/internal/project"
 	"wbo/internal/ruleset"
 	"wbo/internal/runner"
@@ -29,13 +35,17 @@ func main() {
 		code = runCompile(os.Args[2:])
 	case "test":
 		code = runTest(os.Args[2:])
+	case "simulate":
+		code = runSimulate(os.Args[2:])
 	default:
 		usage()
 		code = 2
 	}
 	os.Exit(code)
 }
-func usage() { fmt.Fprintln(os.Stderr, "用法: wbo <check|format|compile|test> [选项] PATH...") }
+func usage() {
+	fmt.Fprintln(os.Stderr, "用法: wbo <check|format|compile|test|simulate> [选项] PATH...")
+}
 
 func runCheck(args []string) int {
 	args = interspersed(args, map[string]bool{"--strict-references": false, "--source-root": true})
@@ -207,6 +217,151 @@ func runTest(args []string) int {
 		return 1
 	}
 	return 0
+}
+
+type simulationInput struct {
+	ActionID            string   `json:"actionId,omitempty"`
+	Kind                string   `json:"kind"`
+	Source              string   `json:"source,omitempty"`
+	RequestID           string   `json:"requestId,omitempty"`
+	StateRevision       uint64   `json:"stateRevision,omitempty"`
+	SelectedInstanceIDs []string `json:"selectedInstanceIds,omitempty"`
+	SelectedOptionID    int      `json:"selectedOptionId,omitempty"`
+}
+
+type simulationOutput struct {
+	Result       *runner.StepResult            `json:"result,omitempty"`
+	State        runner.StateView              `json:"state"`
+	LegalActions []runner.LegalAction          `json:"legalActions"`
+	Capabilities *runner.SimulatorCapabilities `json:"capabilities,omitempty"`
+}
+
+func runSimulate(args []string) int {
+	args = interspersed(args, map[string]bool{"--source-root": true, "--scenario": true})
+	fs := flag.NewFlagSet("simulate", flag.ContinueOnError)
+	root := fs.String("source-root", "", "稳定源路径根目录（默认当前工作目录）")
+	scenarioName := fs.String("scenario", "", "作为初始状态的场景名称或 ID")
+	fs.SetOutput(os.Stderr)
+	if fs.Parse(args) != nil {
+		return 2
+	}
+	if fs.NArg() == 0 || *scenarioName == "" {
+		fmt.Fprintln(os.Stderr, "simulate 需要路径和 --scenario")
+		return 2
+	}
+	loaded := load(fs.Args(), true, *root)
+	printDiagnostics(loaded.Diagnostics)
+	if loaded.HasErrors() {
+		return 1
+	}
+	cards, tests, err := project.BuildRuntimePacks(loaded)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "编译模拟输入失败:", err)
+		return 1
+	}
+	var scenario *ir.Scenario
+	for n := range tests.Scenarios {
+		candidate := &tests.Scenarios[n]
+		if candidate.Name == *scenarioName || candidate.ID == *scenarioName {
+			scenario = candidate
+			break
+		}
+	}
+	if scenario == nil {
+		fmt.Fprintln(os.Stderr, "找不到场景:", *scenarioName)
+		return 1
+	}
+	seed, err := strconv.ParseUint(strings.TrimPrefix(scenario.Seed, "0x"), 16, 64)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "场景种子无效:", err)
+		return 1
+	}
+	session, err := runner.NewSession(cards, scenario.InitialState, seed)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "创建模拟会话失败:", err)
+		return 1
+	}
+	capabilities := runner.SupportedSimulatorCapabilities()
+	if err := writeSimulationOutput(session, nil, &capabilities); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+
+	// stdin 每行是一条命令，stdout 每行返回新的完整界面状态。
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Buffer(make([]byte, 4096), 1<<20)
+	var ordinal uint64
+	for scanner.Scan() {
+		var input simulationInput
+		decoder := json.NewDecoder(bytes.NewReader(scanner.Bytes()))
+		decoder.DisallowUnknownFields()
+		if err := decoder.Decode(&input); err != nil || decoder.Decode(&struct{}{}) != io.EOF {
+			fmt.Fprintln(os.Stderr, "无效模拟命令")
+			return 1
+		}
+		result := applySimulationInput(session, input, &ordinal)
+		if err := writeSimulationOutput(session, &result, nil); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return 1
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintln(os.Stderr, "读取模拟命令失败:", err)
+		return 1
+	}
+	return 0
+}
+
+func applySimulationInput(session *runner.Session, input simulationInput, ordinal *uint64) runner.StepResult {
+	pending := session.PendingChoice()
+	if pending == nil {
+		*ordinal++
+		actionID := input.ActionID
+		if actionID == "" {
+			actionID = fmt.Sprintf("%032x", *ordinal)
+		}
+		return session.Submit(actionID, runner.SimulatorCommand{Kind: input.Kind, Source: input.Source})
+	}
+	if pending.PublicTo != "own" {
+		return runner.StepResult{Status: runner.StatusRejected, ErrorCode: "choice_not_available"}
+	}
+	expectedKind := "select"
+	if pending.Kind == "mode" {
+		expectedKind = "select_mode"
+	}
+	if input.Kind != expectedKind {
+		return runner.StepResult{Status: runner.StatusRejected, Choice: pending, ErrorCode: "response_kind_mismatch"}
+	}
+	response := runner.ChoiceResponse{
+		RequestID: input.RequestID, ActionID: input.ActionID, StateRevision: input.StateRevision,
+		SelectedInstanceIDs: input.SelectedInstanceIDs, SelectedOptionID: input.SelectedOptionID,
+	}
+	if response.RequestID == "" {
+		response.RequestID = pending.RequestID
+	}
+	if response.ActionID == "" {
+		response.ActionID = pending.ActionID
+	}
+	if response.StateRevision == 0 {
+		response.StateRevision = pending.StateRevision
+	}
+	return session.Resume(response)
+}
+
+func writeSimulationOutput(session *runner.Session, result *runner.StepResult, capabilities *runner.SimulatorCapabilities) error {
+	state, err := session.View("own")
+	if err != nil {
+		return err
+	}
+	if result != nil && result.Choice != nil {
+		copy := *result
+		copy.Choice = state.PendingChoice
+		result = &copy
+	}
+	output := simulationOutput{Result: result, State: state, LegalActions: session.LegalActions(), Capabilities: capabilities}
+	encoder := json.NewEncoder(os.Stdout)
+	encoder.SetEscapeHTML(false)
+	return encoder.Encode(output)
 }
 
 func load(paths []string, strict bool, root string) *project.Loaded {

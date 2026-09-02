@@ -71,11 +71,12 @@ text_literal      = string | triple_string ;
 
 ### 1.3 注释与分隔
 
-行注释从 `//` 到行末。块注释从 `/*` 到配对的 `*/`，允许嵌套。注释定界符在
-任一字符串内部没有特殊含义。未闭合的字符串或注释必须报错。
+WBO 行注释从 `<<` 到行末。为兼容早期源码，词法器仍接受 `//`。块注释从 `/*`
+到配对的 `*/`，允许嵌套。注释定界符在任一字符串内部没有特殊含义。未闭合的
+字符串或注释必须报错。
 
 ```ebnf
-line_comment      = "//" , { ? 除 U+000A、U+000D 外的 Unicode 标量值 ? } ;
+line_comment      = ("<<" | "//") , { ? 除 U+000A、U+000D 外的 Unicode 标量值 ? } ;
 block_comment     = "/*" , {block_comment | block_comment_char} , "*/" ;
 block_comment_char = ? 不会在当前位置开始 "/*" 或 "*/" 的 Unicode 标量值 ? ;
 separator         = white_space | line_comment | block_comment ;

@@ -6,19 +6,29 @@ import (
 	"wbo/internal/ir"
 )
 
-func (g *game) condition(c ir.Condition) bool {
+func (g *game) condition(c ir.Condition, self *instance) bool {
 	switch x := c.(type) {
 	case ir.OverflowCondition:
-		return g.own.maxpp >= 7
+		p, _ := g.playerForSide(self, x.Side)
+		return p.maxpp >= 7
 	case ir.CompareCondition:
+		p, _ := g.playerForSide(self, x.Left.Side)
 		n := 0
 		switch x.Left.Field {
 		case "combo":
-			n = g.own.combo
+			n = p.combo
+		case "pp":
+			n = p.pp
 		case "maxpp":
-			n = g.own.maxpp
+			n = p.maxpp
 		case "life":
-			n = g.own.leaderLife
+			n = p.leaderLife
+		case "ep":
+			n = p.ep
+		case "sep":
+			n = p.sep
+		case "shadows":
+			n = p.shadows
 		}
 		switch x.Op {
 		case "eq":
@@ -38,6 +48,7 @@ func (g *game) condition(c ir.Condition) bool {
 	return false
 }
 func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
+	own, oppo, _ := g.relativePlayers(self)
 	switch r := ref.(type) {
 	case ir.SelfRef:
 		return []*instance{self}
@@ -46,9 +57,9 @@ func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 	case ir.ZoneRef:
 		var out []*instance
 		if r.Side == "oppo" {
-			out = g.zone(&g.oppo, r.Zone)
+			out = g.zone(oppo, r.Zone)
 		} else if r.Side == "own" {
-			out = g.zone(&g.own, r.Zone)
+			out = g.zone(own, r.Zone)
 		} else {
 			out = append(append([]*instance{}, g.own.field...), g.oppo.field...)
 		}
@@ -147,13 +158,14 @@ func (g *game) matches(i *instance, p ir.Predicate) bool {
 	}
 	return false
 }
-func (g *game) draw(e ir.DrawEffect, f frame) {
+func (g *game) draw(e ir.DrawEffect, self *instance, f frame) {
+	own, ownSide := g.playerForSide(self, e.Owner)
 	count := e.Count
 	if e.All {
-		count = len(g.own.deck)
+		count = len(own.deck)
 	}
 	var drawn, kept []*instance
-	for _, i := range g.own.deck {
+	for _, i := range own.deck {
 		if !g.chargeQueryVisits(1) {
 			return
 		}
@@ -164,18 +176,19 @@ func (g *game) draw(e ir.DrawEffect, f frame) {
 		}
 	}
 	if e.Predicate == nil {
-		if !g.emit(ir.RuntimeEvent{Kind: "card_drawn", Side: "own", Count: len(drawn)}) {
+		if !g.emit(ir.RuntimeEvent{Kind: "card_drawn", Side: ownSide, Count: len(drawn)}) {
 			return
 		}
 	}
 	for _, i := range drawn {
 		i.zone = "hand"
-		g.own.hand = append(g.own.hand, i)
+		own.hand = append(own.hand, i)
 	}
-	g.own.deck = kept
+	own.deck = kept
 	f[e.Output] = drawn
 }
 func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
+	own, _ := g.playerForSide(self, e.Owner)
 	switch e.Kind {
 	case "add_card":
 		for n := 0; n < e.Count; n++ {
@@ -188,13 +201,13 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 			}
 			g.serial++
 			i := g.newInstance(c, fmt.Sprintf("added-%d", g.serial), fmt.Sprintf("@added%d", g.serial), "hand")
-			g.own.hand = append(g.own.hand, i)
+			own.hand = append(own.hand, i)
 		}
 	case "summon":
-		f[e.Output] = g.summon(e.Count, e.CardID)
+		f[e.Output] = g.summonFor(self, e.Owner, e.Count, e.CardID)
 	case "reanimate":
 		var best *ir.Card
-		for _, dead := range g.own.destroyed {
+		for _, dead := range own.destroyed {
 			if !g.chargeQueryVisits(1) {
 				break
 			}
@@ -203,7 +216,7 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 			}
 		}
 		if best != nil && (g.budget == nil || !g.budget.exceeded) {
-			f[e.Output] = g.summon(1, best.ID)
+			f[e.Output] = g.summonFor(self, e.Owner, 1, best.ID)
 		}
 	case "transform":
 		targets := g.fromRef(e.Target, self, f)
@@ -212,21 +225,26 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 		}
 		for _, i := range targets {
 			if c := g.cards[e.CardID]; c != nil {
+				if i.zone == "field" {
+					g.triggerIndex.remove(i)
+				}
 				i.card = c
+				if i.zone == "field" {
+					g.triggerIndex.add(i)
+				}
 			}
 		}
 	}
 }
 func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
+	own, oppo, ownSide := g.relativePlayers(self)
 	targets := g.fromRef(e.Target, self, f)
 	if g.budget != nil && g.budget.exceeded {
 		return
 	}
 	switch e.Kind {
 	case "destroy":
-		for _, i := range targets {
-			g.destroy(i)
-		}
+		g.resolveDeathBatch(targets)
 	case "banish":
 		for _, i := range targets {
 			g.move(i, "banished")
@@ -236,15 +254,19 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 			g.returnCard(i, e.Destination)
 		}
 	case "heal":
-		if r, ok := e.Target.(ir.LeaderRef); ok && r.Side == "own" {
-			life := g.own.leaderLife + e.Amount
-			if g.own.leaderMax > 0 && life > g.own.leaderMax {
-				life = g.own.leaderMax
+		if r, ok := e.Target.(ir.LeaderRef); ok {
+			target, side := own, ownSide
+			if r.Side == "oppo" {
+				target, side = oppo, oppositeSide(ownSide)
 			}
-			actual := life - g.own.leaderLife
-			t := ir.EventTarget{Kind: "leader", Side: "own"}
+			life := target.leaderLife + e.Amount
+			if target.leaderMax > 0 && life > target.leaderMax {
+				life = target.leaderMax
+			}
+			actual := life - target.leaderLife
+			t := ir.EventTarget{Kind: "leader", Side: side}
 			if g.emit(ir.RuntimeEvent{Kind: "healed", Actual: actual, Target: &t}) {
-				g.own.leaderLife = life
+				target.leaderLife = life
 			}
 		}
 	case "buff_stats":
@@ -252,6 +274,7 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 			i.attack += e.AttackDelta
 			i.life += e.LifeDelta
 		}
+		g.resolveDeathBatch(nil)
 	case "add_keyword":
 		for _, i := range targets {
 			i.abilities[e.Keyword] = true
@@ -268,17 +291,19 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 		for _, i := range targets {
 			i.life -= e.Amount
 		}
+		g.resolveDeathBatch(nil)
 	}
 }
 func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
+	own, _ := g.playerForSide(self, e.Owner)
 	switch e.Kind {
 	case "adjust_resource":
 		if e.Resource == "combo" {
-			g.own.combo += e.Delta
+			own.combo += e.Delta
 		} else if e.Resource == "maxpp" {
-			g.own.maxpp += e.Delta
-			if g.own.maxpp > 10 {
-				g.own.maxpp = 10
+			own.maxpp += e.Delta
+			if own.maxpp > 10 {
+				own.maxpp = 10
 			}
 		}
 	case "adjust_entity_field":
@@ -286,16 +311,18 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 		if g.budget != nil && g.budget.exceeded {
 			return
 		}
+		var expired []*instance
 		for _, i := range targets {
 			if e.Field == "countdown" {
 				i.countdown += e.Delta
 				if i.countdown <= 0 {
-					g.destroy(i)
+					expired = append(expired, i)
 				}
 			}
 		}
+		g.resolveDeathBatch(expired)
 	case "adjust_earthsigil":
-		for _, i := range g.own.field {
+		for _, i := range own.field {
 			if !g.chargeQueryVisits(1) {
 				return
 			}
@@ -307,29 +334,29 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 	}
 }
 func (g *game) triggerSummoned(s *instance) {
-	event := ir.RuntimeEvent{Kind: "follower_summoned", Side: "own", InstanceID: s.id, CardID: s.card.ID, Count: 1}
+	event := ir.RuntimeEvent{Kind: "follower_summoned", Side: g.sideOf(s), InstanceID: s.id, CardID: s.card.ID, Count: 1}
 	if !g.emit(event) {
 		return
 	}
-	field := append([]*instance{}, g.own.field...)
-	for _, source := range field {
-		if !g.chargeQueryVisits(1) {
-			break
-		}
-		for _, a := range source.card.Abilities {
-			t, ok := a.Trigger.(ir.EventTrigger)
-			if !ok || t.Event != "follower_summoned" || !g.matches(s, t.Predicate) {
-				continue
-			}
-			if !g.queueTrigger(triggerInvocation{body: a.Body, blockID: abilityBlockID(source.card.ID, a.ID), self: source, bindings: frame{"summoned": {s}}}) {
-				return
-			}
-		}
-	}
+	g.queueEventTriggers(event, s, "summoned")
 }
+
+func (g *game) triggerEngaged(engaged *instance) {
+	event := ir.RuntimeEvent{Kind: "amulet_engaged", Side: g.sideOf(engaged), InstanceID: engaged.id, CardID: engaged.card.ID, Count: 1}
+	if !g.emit(event) {
+		return
+	}
+	g.queueEventTriggers(event, engaged, "engaged")
+}
+
 func (g *game) summon(count, id int) []*instance {
+	return g.summonFor(nil, "own", count, id)
+}
+
+func (g *game) summonFor(self *instance, side string, count, id int) []*instance {
+	own, _ := g.playerForSide(self, side)
 	var batch []*instance
-	for n := 0; n < count && len(g.own.field) < fieldLimit; n++ {
+	for n := 0; n < count && len(own.field) < fieldLimit; n++ {
 		c := g.cards[id]
 		if c == nil {
 			break
@@ -339,7 +366,7 @@ func (g *game) summon(count, id int) []*instance {
 		}
 		g.serial++
 		i := g.newInstance(c, fmt.Sprintf("summoned-%d", g.serial), fmt.Sprintf("@summoned%d", g.serial), "field")
-		g.own.field = append(g.own.field, i)
+		g.addToZone(own, i, "field")
 		batch = append(batch, i)
 		g.triggerSummoned(i)
 		if g.budget != nil && g.budget.exceeded {
@@ -362,9 +389,10 @@ func (g *game) mergeEarthSigil(i *instance) {
 		}
 	}
 }
-func (g *game) consumeEarthSigil(n int) bool {
+func (g *game) consumeEarthSigil(self *instance, n int) bool {
+	own, _, _ := g.relativePlayers(self)
 	total := 0
-	for _, i := range g.own.field {
+	for _, i := range own.field {
 		if !g.chargeQueryVisits(1) {
 			return false
 		}
@@ -375,7 +403,7 @@ func (g *game) consumeEarthSigil(n int) bool {
 	}
 	visits := 0
 	remaining := n
-	for _, i := range g.own.field {
+	for _, i := range own.field {
 		visits++
 		remaining -= min(remaining, i.earthsigil)
 		if remaining == 0 {
@@ -385,7 +413,7 @@ func (g *game) consumeEarthSigil(n int) bool {
 	if !g.chargeQueryVisits(visits) {
 		return false
 	}
-	for _, i := range append([]*instance{}, g.own.field...) {
+	for _, i := range append([]*instance{}, own.field...) {
 		used := n
 		if used > i.earthsigil {
 			used = i.earthsigil
@@ -401,21 +429,53 @@ func (g *game) consumeEarthSigil(n int) bool {
 	}
 	return true
 }
-func (g *game) destroy(i *instance) {
-	if i.zone != "field" {
-		return
+
+type deathRecord struct {
+	instance  *instance
+	owner     *player
+	abilities []int
+}
+
+func (g *game) resolveDeathBatch(explicit []*instance) {
+	// 先收齐本批死亡对象，避免谢幕曲看到只离场了一半的状态。
+	marked := map[*instance]bool{}
+	for _, i := range explicit {
+		marked[i] = true
 	}
-	subject := ir.EventTarget{Kind: "instance", InstanceID: i.id}
-	if !g.emit(ir.RuntimeEvent{Kind: "destroyed", Subject: &subject}) {
-		return
-	}
-	g.move(i, "graveyard")
-	g.own.destroyed = append(g.own.destroyed, i)
-	for _, a := range i.card.Abilities {
-		if ir.TriggerKind(a.Trigger) == "lastwords" {
-			if !g.queueTrigger(triggerInvocation{body: a.Body, blockID: abilityBlockID(i.card.ID, a.ID), self: i, bindings: frame{}}) {
-				return
+	var deaths []deathRecord
+	for _, p := range []*player{&g.own, &g.oppo} {
+		for _, i := range p.field {
+			if marked[i] || i.card.CardType == "follower" && i.life <= 0 {
+				abilities := append([]int(nil), g.triggerIndex.abilities("lastwords", i)...)
+				deaths = append(deaths, deathRecord{instance: i, owner: p, abilities: abilities})
 			}
+		}
+	}
+	if len(deaths) == 0 {
+		return
+	}
+	triggerCount := 0
+	for _, death := range deaths {
+		triggerCount += len(death.abilities)
+	}
+	if g.budget != nil && (!g.budget.chargeEvents(uint64(len(deaths))) || !g.budget.chargeTriggers(uint64(triggerCount))) {
+		return
+	}
+	g.deathBatchSerial++
+	batchID := g.deathBatchSerial
+	for _, death := range deaths {
+		g.move(death.instance, "graveyard")
+		death.owner.destroyed = append(death.owner.destroyed, death.instance)
+	}
+	for _, death := range deaths {
+		g.eventSequence++
+		subject := ir.EventTarget{Kind: "instance", InstanceID: death.instance.id}
+		g.events = append(g.events, ir.RuntimeEvent{Kind: "destroyed", Subject: &subject, Sequence: g.eventSequence, BatchID: batchID})
+	}
+	for _, death := range deaths {
+		for _, abilityIndex := range death.abilities {
+			ability := death.instance.card.Abilities[abilityIndex]
+			g.triggers = append(g.triggers, triggerInvocation{body: ability.Body, blockID: abilityBlockID(death.instance.card.ID, ability.ID), self: death.instance, bindings: frame{}})
 		}
 	}
 }
@@ -425,6 +485,9 @@ func (g *game) returnCard(i *instance, z string) {
 		return
 	}
 	p := g.owner(i)
+	if i.zone == "field" {
+		g.triggerIndex.remove(i)
+	}
 	g.removeFromPlayer(p, i)
 	pos := g.rng.Index(len(p.deck) + 1)
 	p.deck = append(p.deck, nil)
@@ -434,16 +497,48 @@ func (g *game) returnCard(i *instance, z string) {
 }
 func (g *game) move(i *instance, z string) {
 	p := g.owner(i)
+	if i.zone == "field" {
+		g.triggerIndex.remove(i)
+	}
 	g.removeFromPlayer(p, i)
 	g.addToZone(p, i, z)
 }
 func (g *game) owner(i *instance) *player {
-	for _, z := range [][]*instance{g.oppo.field, g.oppo.hand, g.oppo.deck, g.oppo.graveyard, g.oppo.banished} {
+	for _, z := range [][]*instance{g.oppo.field, g.oppo.hand, g.oppo.deck, g.oppo.graveyard, g.oppo.banished, g.oppo.destroyed} {
 		if contains(z, i) {
 			return &g.oppo
 		}
 	}
 	return &g.own
+}
+
+func (g *game) sideOf(i *instance) string {
+	if i != nil && g.owner(i) == &g.oppo {
+		return "oppo"
+	}
+	return "own"
+}
+
+func (g *game) relativePlayers(self *instance) (own, oppo *player, ownSide string) {
+	if g.sideOf(self) == "oppo" {
+		return &g.oppo, &g.own, "oppo"
+	}
+	return &g.own, &g.oppo, "own"
+}
+
+func (g *game) playerForSide(self *instance, side string) (*player, string) {
+	own, oppo, ownSide := g.relativePlayers(self)
+	if side == "oppo" {
+		return oppo, oppositeSide(ownSide)
+	}
+	return own, ownSide
+}
+
+func oppositeSide(side string) string {
+	if side == "oppo" {
+		return "own"
+	}
+	return "oppo"
 }
 func (g *game) removeFromPlayer(p *player, i *instance) {
 	g.remove(&p.deck, i)

@@ -29,18 +29,22 @@ type player struct {
 }
 type frame map[string][]*instance
 type game struct {
-	cards     map[int]*ir.Card
-	own, oppo player
-	instances map[string]*instance
-	legal     bool
-	illegal   string
-	unchanged bool
-	rng       *ruleset.RNG
-	events    []ir.RuntimeEvent
-	serial    int
-	revision  uint64
-	triggers  []triggerInvocation
-	budget    *budgetTracker
+	cards                           map[int]*ir.Card
+	own, oppo                       player
+	instances                       map[string]*instance
+	legal                           bool
+	illegal                         string
+	unchanged                       bool
+	rng                             *ruleset.RNG
+	events                          []ir.RuntimeEvent
+	serial                          int
+	eventSequence, deathBatchSerial uint64
+	revision                        uint64
+	triggers                        []triggerInvocation
+	triggerIndex                    triggerIndex
+	budget                          *budgetTracker
+	turn                            ir.Turn
+	phase                           string
 }
 
 func Run(cards *ir.CardPack, tests *ir.TestPack) []Result {
@@ -146,6 +150,10 @@ func parseSeed(s string) (uint64, error) {
 	return n, err
 }
 func (g *game) loadState(s ir.State) error {
+	if s.Turn.Active != "own" && s.Turn.Active != "oppo" || s.Turn.Number < 0 || s.Phase != "main" {
+		return fmt.Errorf("invalid initial turn state")
+	}
+	g.turn, g.phase = s.Turn, s.Phase
 	for _, side := range []string{"own", "oppo"} {
 		src := s.Players[side]
 		p := &g.own
@@ -219,6 +227,8 @@ func (g *game) emit(event ir.RuntimeEvent) bool {
 	if g.budget != nil && !g.budget.chargeEvents(1) {
 		return false
 	}
+	g.eventSequence++
+	event.Sequence = g.eventSequence
 	g.events = append(g.events, event)
 	return true
 }
@@ -246,6 +256,7 @@ func (g *game) addToZone(p *player, i *instance, z string) {
 		p.hand = append(p.hand, i)
 	case "field":
 		p.field = append(p.field, i)
+		g.triggerIndex.add(i)
 	case "graveyard":
 		p.graveyard = append(p.graveyard, i)
 	case "banished":
@@ -262,13 +273,16 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 	if x.Actor != "own" {
 		return "wrong_actor"
 	}
+	if g.turn.Active != "own" || g.phase != "main" {
+		return "wrong_timing"
+	}
 	i := g.instances[x.Source]
 	if i == nil {
 		return "unknown_alias"
 	}
 	switch x.Kind {
 	case "play":
-		if i.zone != "hand" || g.own.pp < i.card.Cost {
+		if i.zone != "hand" || !contains(g.own.hand, i) || g.own.pp < i.card.Cost {
 			return "cost"
 		}
 		for _, restriction := range i.card.Restrictions {
@@ -295,7 +309,7 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 		}
 	case "engage":
 		a := findAbility(i.card, "engage")
-		if i.zone != "field" || i.engaged || a == nil || g.own.pp < a.Trigger.(ir.CostTrigger).Cost {
+		if i.zone != "field" || !contains(g.own.field, i) || i.engaged || a == nil || g.own.pp < a.Trigger.(ir.CostTrigger).Cost {
 			return "cost"
 		}
 		sandbox := g.clone()
@@ -305,7 +319,7 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 		sandboxSource.engaged = true
 		return sandbox.preflightRequirements(a.Body, sandboxSource, frame{}, true)
 	case "superevolve":
-		if i.zone != "field" || g.own.sep < 1 {
+		if i.zone != "field" || !contains(g.own.field, i) || i.card.CardType != "follower" || i.superEvolved || g.own.sep < 1 {
 			return "cost"
 		}
 		sandbox := g.clone()
@@ -384,6 +398,7 @@ func (g *game) commitEngage(i *instance) []execFrame {
 	a := findAbility(i.card, "engage")
 	g.own.pp -= a.Trigger.(ir.CostTrigger).Cost
 	i.engaged = true
+	g.triggerEngaged(i)
 	return []execFrame{{body: a.Body, blockID: abilityBlockID(i.card.ID, a.ID), self: i, bindings: frame{}}}
 }
 func (g *game) commitSuperEvolve(i *instance) []execFrame {
@@ -448,7 +463,7 @@ func (g *game) preflightRequirementsAtDepth(body []ir.Effect, self *instance, bi
 			}
 		case ir.IfEffect:
 			branch := e.Else
-			if g.condition(e.Condition) {
+			if g.condition(e.Condition, self) {
 				branch = e.Then
 			}
 			if code := g.preflightRequirementsAtDepth(branch, self, bindings, querySafe, depth+1); code != "" {

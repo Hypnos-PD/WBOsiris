@@ -8,6 +8,7 @@ card 10002210 {
         fanfare {
             draw 1 from deck where type follower;
         }
+        << 启动时先破坏公会，再让玩家选择仍在场上的随从。
         engage 1 {
             destroy self;
             choose target from own.field.followers;

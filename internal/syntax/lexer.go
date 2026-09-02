@@ -8,11 +8,12 @@ import (
 )
 
 type lexer struct {
-	path        string
-	src         []byte
-	off         int
-	line, col   int
-	diagnostics []Diagnostic
+	path            string
+	src             []byte
+	off             int
+	line, col       int
+	diagnostics     []Diagnostic
+	pendingComments []string
 }
 
 func Lex(path string, src []byte) ([]Token, []Diagnostic) {
@@ -29,7 +30,7 @@ func Lex(path string, src []byte) ([]Token, []Diagnostic) {
 		l.skipSeparators()
 		if l.off >= len(l.src) {
 			p := l.pos()
-			tokens = append(tokens, Token{Kind: EOF, Span: Span{File: path, Start: p, End: p}})
+			tokens = append(tokens, Token{Kind: EOF, Span: Span{File: path, Start: p, End: p}, LeadingComments: l.takeComments()})
 			break
 		}
 		start := l.pos()
@@ -216,7 +217,8 @@ func (l *lexer) skipSeparators() {
 			l.advanceRune()
 			continue
 		}
-		if strings.HasPrefix(string(l.src[l.off:]), "//") {
+		if strings.HasPrefix(string(l.src[l.off:]), "<<") || strings.HasPrefix(string(l.src[l.off:]), "//") {
+			begin := l.off
 			for l.off < len(l.src) {
 				r, _ = utf8.DecodeRune(l.src[l.off:])
 				if r == '\r' || r == '\n' {
@@ -224,6 +226,7 @@ func (l *lexer) skipSeparators() {
 				}
 				l.advanceRune()
 			}
+			l.pendingComments = append(l.pendingComments, strings.TrimSpace(string(l.src[begin:l.off])))
 			continue
 		}
 		if strings.HasPrefix(string(l.src[l.off:]), "/*") {
@@ -271,7 +274,13 @@ func (l *lexer) advanceRune() {
 	}
 }
 func (l *lexer) token(k Kind, raw, value string, start Position) Token {
-	return Token{Kind: k, Raw: raw, Value: value, Span: Span{File: l.path, Start: start, End: l.pos()}}
+	return Token{Kind: k, Raw: raw, Value: value, Span: Span{File: l.path, Start: start, End: l.pos()}, LeadingComments: l.takeComments()}
+}
+
+func (l *lexer) takeComments() []string {
+	comments := l.pendingComments
+	l.pendingComments = nil
+	return comments
 }
 func (l *lexer) error(start Position, f string, a ...any) {
 	l.diagnostics = append(l.diagnostics, Diagnostic{Code: "WBO-E001-SYNTAX", Severity: "错误", Message: fmt.Sprintf(f, a...), Span: Span{File: l.path, Start: start, End: l.pos()}})
