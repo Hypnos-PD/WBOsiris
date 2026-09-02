@@ -549,6 +549,48 @@ func TestDrainUsesActualLeaderDamageAndCapsAtTargetLife(t *testing.T) {
 	}
 }
 
+func TestBarrierAndSuperEvolutionProtectDamageAndEffectDestruction(t *testing.T) {
+	barrierID, superID := strings.Repeat("8", 32), strings.Repeat("9", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 66666677, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 3}, Intrinsic: []string{"barrier"}},
+		{ID: 66666678, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 3}},
+	}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: barrierID, CardID: 66666677, DeclaredType: "follower"})
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: superID, CardID: 66666678, DeclaredType: "follower", Overrides: ir.InstanceOverrides{SuperEvolved: boolPtr(true)}})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	session.g.damageInstance(session.g.instances[barrierID], 2)
+	if session.g.instances[barrierID].life != 3 || session.g.instances[barrierID].abilities["barrier"] {
+		t.Fatalf("barrier did not absorb exactly once: %#v", session.g.instances[barrierID])
+	}
+	session.g.damageInstance(session.g.instances[barrierID], 2)
+	if session.g.instances[barrierID].life != 1 {
+		t.Fatalf("second barrier damage diverged: %#v", session.g.instances[barrierID])
+	}
+	session.g.damageInstance(session.g.instances[superID], 2)
+	if session.g.instances[superID].life != 3 {
+		t.Fatalf("super-evolved follower took damage on own turn: %#v", session.g.instances[superID])
+	}
+	session.g.destroyByEffect([]*instance{session.g.instances[superID]})
+	if session.g.instances[superID].zone != "field" {
+		t.Fatalf("super-evolved follower was destroyed by effect on own turn: %#v", session.g.instances[superID])
+	}
+}
+
+func TestEffectDamageCanTargetLeader(t *testing.T) {
+	session, err := NewSession(&ir.CardPack{}, testState(), 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	session.g.execTargetEffect(ir.TargetEffect{Kind: "damage", Target: ir.LeaderRef{Kind: "leader", Side: "oppo"}, Amount: 3}, nil, frame{})
+	if session.g.oppo.leaderLife != 17 || len(session.g.events) != 1 || session.g.events[0].Kind != "damaged" || session.g.events[0].Actual != 3 {
+		t.Fatalf("leader damage was not applied: life=%d events=%#v", session.g.oppo.leaderLife, session.g.events)
+	}
+}
+
 func TestClashAbilitiesResolveAttackerThenDefenderBeforeCombat(t *testing.T) {
 	attackerID, defenderID := strings.Repeat("1", 32), strings.Repeat("2", 32)
 	attackerAbility, defenderAbility := strings.Repeat("3", 32), strings.Repeat("4", 32)

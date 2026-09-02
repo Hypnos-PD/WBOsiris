@@ -125,6 +125,7 @@ rush;
 bane;
 drain;
 intimidate;
+barrier;
 
 fanfare { ... }
 lastwords { ... }

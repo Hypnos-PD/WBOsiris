@@ -162,7 +162,7 @@ func TestDeathBatchMovesAllEntitiesBeforeQueueingLastwords(t *testing.T) {
 	if len(session.g.own.field) != 0 || len(session.g.oppo.field) != 0 || len(session.g.own.destroyed) != 2 || len(session.g.oppo.destroyed) != 1 {
 		t.Fatalf("death batch was not moved atomically: own=%d oppo=%d histories=%d/%d", len(session.g.own.field), len(session.g.oppo.field), len(session.g.own.destroyed), len(session.g.oppo.destroyed))
 	}
-	if len(session.g.events) != 3 || session.g.events[0].BatchID == 0 || session.g.events[0].BatchID != session.g.events[1].BatchID || session.g.events[1].BatchID != session.g.events[2].BatchID {
+	if len(session.g.events) != 6 || session.g.events[3].BatchID == 0 || session.g.events[3].BatchID != session.g.events[4].BatchID || session.g.events[4].BatchID != session.g.events[5].BatchID {
 		t.Fatalf("death facts do not share a batch: %#v", session.g.events)
 	}
 	for n, event := range session.g.events {

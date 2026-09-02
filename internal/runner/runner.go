@@ -558,23 +558,16 @@ func (g *game) advanceAttack() {
 		return
 	}
 	state.attackerAttack, state.defenderAttack = attacker.attack, defender.attack
-	attackerLife, defenderLife := attacker.life, defender.life
-	attackerDamage := min(max(state.defenderAttack, 0), attackerLife)
-	defenderDamage := min(max(state.attackerAttack, 0), defenderLife)
-	attacker.life -= attackerDamage
-	defender.life -= defenderDamage
-	attackerTarget := &ir.EventTarget{Kind: "instance", InstanceID: attacker.id}
-	defenderTarget := &ir.EventTarget{Kind: "instance", InstanceID: defender.id}
-	g.emitDamage(defenderDamage, defenderTarget)
-	g.emitDamage(attackerDamage, attackerTarget)
+	defenderDamage := g.damageInstance(defender, state.attackerAttack)
+	g.damageInstance(attacker, state.defenderAttack)
 	if attacker.abilities["drain"] && defenderDamage > 0 {
 		g.healLeader(g.owner(attacker), g.sideOf(attacker), defenderDamage)
 	}
 	if attacker.abilities["bane"] {
-		defender.life = min(defender.life, 0)
+		g.destroyByEffect([]*instance{defender})
 	}
 	if defender.abilities["bane"] {
-		attacker.life = min(attacker.life, 0)
+		g.destroyByEffect([]*instance{attacker})
 	}
 	g.resolveDeathBatch(nil)
 	g.attack = nil
@@ -621,6 +614,39 @@ func (g *game) healLeader(target *player, side string, amount int) {
 	if actual > 0 && g.emit(ir.RuntimeEvent{Kind: "healed", Actual: actual, Target: &t}) {
 		target.leaderLife = life
 	}
+}
+
+func (g *game) damageInstance(target *instance, amount int) int {
+	if target == nil || target.zone != "field" || amount <= 0 {
+		return 0
+	}
+	actual := amount
+	if target.abilities["barrier"] {
+		delete(target.abilities, "barrier")
+		actual = 0
+	} else if target.superEvolved && g.sideOf(target) == g.turn.Active {
+		actual = 0
+	} else {
+		actual = min(actual, max(target.life, 0))
+		target.life -= actual
+	}
+	t := &ir.EventTarget{Kind: "instance", InstanceID: target.id}
+	g.emitDamage(actual, t)
+	return actual
+}
+
+func (g *game) destroyByEffect(targets []*instance) {
+	allowed := make([]*instance, 0, len(targets))
+	for _, target := range targets {
+		if target == nil || target.zone != "field" {
+			continue
+		}
+		if target.superEvolved && g.sideOf(target) == g.turn.Active {
+			continue
+		}
+		allowed = append(allowed, target)
+	}
+	g.resolveDeathBatch(allowed)
 }
 
 func (g *game) finishGame(winner string) {

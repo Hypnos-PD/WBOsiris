@@ -347,7 +347,7 @@ func strictOverride(s *syntax.Statement, ds *[]syntax.Diagnostic) {
 		}
 	case "evolved", "super_evolved":
 		ok = ok && len(t) == 1
-	case "ward", "storm", "rush", "bane", "drain", "intimidate":
+	case "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier":
 		ok = ok && len(t) == 1
 	case "earthsigil", "countdown":
 		ok = ok && len(t) == 2

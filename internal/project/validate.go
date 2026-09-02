@@ -10,7 +10,7 @@ import (
 
 var (
 	cardTypes = set("follower", "spell", "amulet")
-	abilities = set("ward", "storm", "rush", "bane", "drain", "intimidate")
+	abilities = set("ward", "storm", "rush", "bane", "drain", "intimidate", "barrier")
 	classes   = set("neutral", "forestcraft", "swordcraft", "runecraft", "dragoncraft", "abysscraft", "havencraft", "portalcraft")
 	rarities  = set("bronze", "silver", "gold", "legendary")
 	traits    = set("pixie", "officer", "golem", "departed", "puppetry", "artifact")

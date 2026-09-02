@@ -140,7 +140,7 @@ intrinsic_statement = ability , ";"
                     | "earthsigil" , ";" ;
 
 ability            = "ward" | "storm" | "rush" | "bane" | "drain"
-                   | "intimidate" ;
+                   | "intimidate" | "barrier" ;
 card_restriction   = "unplayable" ;
 
 ability_block      = simple_ability_name , effect_block

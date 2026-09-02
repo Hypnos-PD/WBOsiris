@@ -244,7 +244,7 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 	}
 	switch e.Kind {
 	case "destroy":
-		g.resolveDeathBatch(targets)
+		g.destroyByEffect(targets)
 	case "banish":
 		for _, i := range targets {
 			g.move(i, "banished")
@@ -288,8 +288,16 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 			i.evolved = true
 		}
 	case "damage":
+		if r, ok := e.Target.(ir.LeaderRef); ok {
+			target, side := own, ownSide
+			if r.Side == "oppo" {
+				target, side = oppo, oppositeSide(ownSide)
+			}
+			g.damageLeader(target, side, e.Amount)
+			return
+		}
 		for _, i := range targets {
-			i.life -= e.Amount
+			g.damageInstance(i, e.Amount)
 		}
 		g.resolveDeathBatch(nil)
 	}
