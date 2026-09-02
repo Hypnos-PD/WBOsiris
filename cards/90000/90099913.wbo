@@ -1,0 +1,24 @@
+wbo 0.1.0;
+
+card 90099913 {
+    type follower;
+    cost 0;
+    stats 2/3;
+
+    effect {
+        stealth;
+        damage_reduction 1;
+    }
+
+    meta {
+        pack 90000;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs { name "测试潜行减伤"; text "潜行，受到的伤害-1。"; }
+    locale eng { name "Test Stealth Reduction"; text "Stealth. Take 1 less damage."; }
+    locale jpn { name "テスト潜伏軽減"; text "潜伏。受けるダメージを1軽減。"; }
+    locale kor { name "테스트 잠복 감소"; text "잠복. 받는 피해 -1."; }
+    locale cht { name "測試潛行減傷"; text "潛行，受到的傷害-1。"; }
+}

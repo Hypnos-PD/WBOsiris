@@ -132,10 +132,19 @@ play source;
 engage source;
 evolve source;
 superevolve source;
+evolve source;
 attack attacker into defender;
 attack attacker into oppo.leader;
 end_turn;
 ```
+
+效果可以使用 `all.leaders` 将双方主战者纳入同一伤害批次：
+
+```wbo
+damage all.leaders 5;
+```
+
+批次会先分别应用双方的实际伤害，再统一检查终局。双方同时归零时，回合外玩家获胜。
 
 仅当引擎产生选择请求时，才能使用 `select` 或 `mode`。目标集合为空且规则使用
 `choose` 时，不产生玩家选择请求；效果以空目标继续结算。`require` 没有候选

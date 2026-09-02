@@ -82,6 +82,7 @@ type ContinuationPlayer struct {
 	Combo            int      `json:"combo"`
 	Shadows          int      `json:"shadows"`
 	AttackedThisTurn bool     `json:"attackedThisTurn"`
+	EvolvedThisTurn  bool     `json:"evolvedThisTurn"`
 	Deck             []string `json:"deck"`
 	Hand             []string `json:"hand"`
 	Field            []string `json:"field"`
@@ -91,20 +92,22 @@ type ContinuationPlayer struct {
 }
 
 type ContinuationEntity struct {
-	ID            string   `json:"id"`
-	Alias         string   `json:"alias"`
-	Zone          string   `json:"zone"`
-	CardID        int      `json:"cardId"`
-	Attack        int      `json:"attack"`
-	Life          int      `json:"life"`
-	Earthsigil    int      `json:"earthsigil"`
-	Countdown     int      `json:"countdown"`
-	AttacksUsed   int      `json:"attacksUsed"`
-	Engaged       bool     `json:"engaged"`
-	SummoningSick bool     `json:"summoningSick"`
-	Evolved       bool     `json:"evolved"`
-	SuperEvolved  bool     `json:"superEvolved"`
-	Abilities     []string `json:"abilities"`
+	ID              string   `json:"id"`
+	Alias           string   `json:"alias"`
+	Zone            string   `json:"zone"`
+	CardID          int      `json:"cardId"`
+	Attack          int      `json:"attack"`
+	Life            int      `json:"life"`
+	Earthsigil      int      `json:"earthsigil"`
+	DamageReduction int      `json:"damageReduction"`
+	Countdown       int      `json:"countdown"`
+	AttacksUsed     int      `json:"attacksUsed"`
+	AttackLimit     int      `json:"attackLimit"`
+	Engaged         bool     `json:"engaged"`
+	SummoningSick   bool     `json:"summoningSick"`
+	Evolved         bool     `json:"evolved"`
+	SuperEvolved    bool     `json:"superEvolved"`
+	Abilities       []string `json:"abilities"`
 }
 
 type ContinuationEvent struct {
@@ -368,9 +371,9 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 		sort.Strings(abilities)
 		snapshot.Instances = append(snapshot.Instances, ContinuationEntity{
 			ID: i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Attack: i.attack, Life: i.life,
-			Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed,
+			Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i),
 			Engaged: i.engaged, SummoningSick: i.summoningSick, Evolved: i.evolved,
-			SuperEvolved: i.superEvolved, Abilities: abilities,
+			SuperEvolved: i.superEvolved, DamageReduction: i.damageReduction, Abilities: abilities,
 		})
 	}
 	for _, event := range g.events {
@@ -383,7 +386,7 @@ func snapshotContinuationPlayer(p player) ContinuationPlayer {
 	return ContinuationPlayer{
 		PP: p.pp, MaxPP: p.maxpp, LeaderLife: p.leaderLife, LeaderMax: p.leaderMax,
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, AttackedThisTurn: p.attackedThisTurn,
-		Deck: instanceIDs(p.deck), Hand: instanceIDs(p.hand), Field: instanceIDs(p.field),
+		Deck: instanceIDs(p.deck), Hand: instanceIDs(p.hand), Field: instanceIDs(p.field), EvolvedThisTurn: p.evolvedThisTurn,
 		Graveyard: instanceIDs(p.graveyard), Banished: instanceIDs(p.banished), Destroyed: instanceIDs(p.destroyed),
 	}
 }
@@ -405,7 +408,11 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 		if entity.ID == "" || card == nil || g.instances[entity.ID] != nil || !validZone(entity.Zone) {
 			return nil, fmt.Errorf("invalid continuation entity %q", entity.ID)
 		}
-		if entity.AttacksUsed < 0 || entity.AttacksUsed > 1 ||
+		limit := entity.AttackLimit
+		if limit == 0 {
+			limit = 1
+		}
+		if limit < 1 || entity.AttacksUsed < 0 || entity.AttacksUsed > limit ||
 			entity.AttacksUsed > 0 && (entity.Zone != "field" || card.CardType != "follower") ||
 			entity.SummoningSick && (entity.Zone != "field" || card.CardType != "follower" || entity.AttacksUsed != 0) {
 			return nil, fmt.Errorf("invalid continuation combat state")
@@ -413,8 +420,8 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 		i := &instance{
 			id: entity.ID, alias: entity.Alias, zone: entity.Zone, card: card,
 			attack: entity.Attack, life: entity.Life, earthsigil: entity.Earthsigil, countdown: entity.Countdown,
-			attacksUsed: entity.AttacksUsed, engaged: entity.Engaged, summoningSick: entity.SummoningSick,
-			evolved: entity.Evolved, superEvolved: entity.SuperEvolved, abilities: map[string]bool{},
+			attacksUsed: entity.AttacksUsed, attackLimitValue: limit, engaged: entity.Engaged, summoningSick: entity.SummoningSick,
+			evolved: entity.Evolved, superEvolved: entity.SuperEvolved, damageReduction: entity.DamageReduction, abilities: map[string]bool{},
 		}
 		for _, ability := range entity.Abilities {
 			if ability == "" || i.abilities[ability] {
@@ -548,7 +555,7 @@ func generatedInstanceSerial(instances []ContinuationEntity) int {
 }
 
 func restorePlayer(saved ContinuationPlayer, instances map[string]*instance) (player, error) {
-	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, attackedThisTurn: saved.AttackedThisTurn}
+	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, attackedThisTurn: saved.AttackedThisTurn, evolvedThisTurn: saved.EvolvedThisTurn}
 	var err error
 	if p.deck, err = restoreInstanceList(saved.Deck, instances, "deck"); err != nil {
 		return player{}, err

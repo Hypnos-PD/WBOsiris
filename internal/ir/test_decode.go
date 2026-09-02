@@ -128,13 +128,14 @@ func decodePlayer(data []byte, instances map[string]bool) (PlayerState, error) {
 }
 func decodeInstance(data []byte) (TestInstance, error) {
 	type overrides struct {
-		Stats        *Stats   `json:"stats,omitempty"`
-		Evolved      *bool    `json:"evolved,omitempty"`
-		SuperEvolved *bool    `json:"super_evolved,omitempty"`
-		Engaged      *bool    `json:"engaged,omitempty"`
-		Keywords     []string `json:"keywords,omitempty"`
-		Countdown    *int     `json:"countdown,omitempty"`
-		Earthsigil   *int     `json:"earthsigil,omitempty"`
+		Stats           *Stats   `json:"stats,omitempty"`
+		Evolved         *bool    `json:"evolved,omitempty"`
+		SuperEvolved    *bool    `json:"super_evolved,omitempty"`
+		Engaged         *bool    `json:"engaged,omitempty"`
+		Keywords        []string `json:"keywords,omitempty"`
+		Countdown       *int     `json:"countdown,omitempty"`
+		Earthsigil      *int     `json:"earthsigil,omitempty"`
+		DamageReduction *int     `json:"damage_reduction,omitempty"`
 	}
 	type raw struct {
 		InstanceID   string    `json:"instanceId"`
@@ -150,7 +151,7 @@ func decodeInstance(data []byte) (TestInstance, error) {
 	if !nodeIDPattern.MatchString(v.InstanceID) || v.Alias == "" || !validCardID(v.CardID) || !oneOf(v.DeclaredType, "follower", "spell", "amulet") {
 		return TestInstance{}, fmt.Errorf("malformed test instance")
 	}
-	o := InstanceOverrides{v.Overrides.Stats, v.Overrides.Evolved, v.Overrides.SuperEvolved, v.Overrides.Engaged, v.Overrides.Keywords, v.Overrides.Countdown, v.Overrides.Earthsigil}
+	o := InstanceOverrides{v.Overrides.Stats, v.Overrides.Evolved, v.Overrides.SuperEvolved, v.Overrides.Engaged, v.Overrides.Keywords, v.Overrides.Countdown, v.Overrides.Earthsigil, v.Overrides.DamageReduction}
 	return TestInstance{v.InstanceID, v.Alias, v.CardID, v.DeclaredType, o}, nil
 }
 

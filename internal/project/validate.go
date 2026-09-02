@@ -10,7 +10,7 @@ import (
 
 var (
 	cardTypes = set("follower", "spell", "amulet")
-	abilities = set("ward", "storm", "rush", "bane", "drain", "intimidate", "barrier")
+	abilities = set("ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth")
 	classes   = set("neutral", "forestcraft", "swordcraft", "runecraft", "dragoncraft", "abysscraft", "havencraft", "portalcraft")
 	rarities  = set("bronze", "silver", "gold", "legendary")
 	traits    = set("pixie", "officer", "golem", "departed", "puppetry", "artifact")
@@ -234,6 +234,22 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			if len(t) != 2 || !s.Terminated {
 				shapeError(ds, s, "countdown 整数;")
 			} else if _, ok := integer(t[1]); !ok {
+				rangeError(ds, t[1])
+			}
+			continue
+		}
+		if h == "damage_reduction" {
+			if len(t) != 2 || !s.Terminated {
+				shapeError(ds, s, "damage_reduction 非负整数;")
+			} else if _, ok := integer(t[1]); !ok {
+				rangeError(ds, t[1])
+			}
+			continue
+		}
+		if h == "attack_limit" {
+			if len(t) != 2 || !s.Terminated {
+				shapeError(ds, s, "attack_limit 正整数;")
+			} else if n, ok := integer(t[1]); !ok || n < 1 {
 				rangeError(ds, t[1])
 			}
 			continue
@@ -520,6 +536,9 @@ func parseValueRef(t []syntax.Token, i int) (int, bool) {
 	if i >= len(t) {
 		return i, false
 	}
+	if t[i].Value == "all" && i+2 < len(t) && t[i+1].Value == "." && t[i+2].Value == "leaders" {
+		return i + 3, true
+	}
 	if set("self", "target", "summoned", "drawn")[t[i].Value] || t[i].Kind == syntax.Identifier && !set("own", "oppo", "field")[t[i].Value] {
 		return i + 1, true
 	}
@@ -578,7 +597,7 @@ func checkBindingAt(t []syntax.Token, start, end int, b map[string]bool, ds *[]s
 		return
 	}
 	name := t[start].Value
-	if t[start].Kind == syntax.Identifier && !set("self", "own", "oppo", "field")[name] && !b[name] {
+	if t[start].Kind == syntax.Identifier && !set("self", "own", "oppo", "field", "all")[name] && !b[name] {
 		diag(ds, "WBO-E009-BINDING-SCOPE", "错误", "绑定在使用前未定义: "+name, t[start].Span)
 	}
 }

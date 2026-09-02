@@ -80,8 +80,8 @@ func TestSimulatorCapabilitiesMatchImplementedCommands(t *testing.T) {
 	if !capabilities.Play || !capabilities.Engage || !capabilities.SuperEvolve || !capabilities.TargetChoice || !capabilities.ModeChoice {
 		t.Fatalf("implemented capability missing: %#v", capabilities)
 	}
-	if capabilities.Evolve {
-		t.Fatalf("undefined rules were advertised: %#v", capabilities)
+	if !capabilities.Evolve {
+		t.Fatalf("implemented evolution rule missing: %#v", capabilities)
 	}
 }
 

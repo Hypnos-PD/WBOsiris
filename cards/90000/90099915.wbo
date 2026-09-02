@@ -1,0 +1,23 @@
+wbo 0.1.0;
+
+card 90099915 {
+    type follower;
+    cost 0;
+    stats 2/3;
+
+    effect {
+        attack_limit 2;
+    }
+
+    meta {
+        pack 90000;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs { name "测试多次攻击"; text "本随从每回合可以攻击两次。"; }
+    locale eng { name "Test Multiple Attacks"; text "This follower can attack twice each turn."; }
+    locale jpn { name "テスト複数攻撃"; text "このフォロワーは各ターン2回攻撃できる。"; }
+    locale kor { name "테스트 다중 공격"; text "이 추종자는 턴마다 두 번 공격할 수 있다."; }
+    locale cht { name "測試多次攻擊"; text "此從者每回合可以攻擊兩次。"; }
+}

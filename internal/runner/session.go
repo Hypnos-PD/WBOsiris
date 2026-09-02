@@ -519,7 +519,7 @@ type attackSnapshot struct {
 type playerSnapshot struct {
 	PP, MaxPP, LeaderLife, LeaderMax, EP, SEP, Combo, Shadows int
 	Deck, Hand, Field, Graveyard, Banished, Destroyed         []string
-	AttackedThisTurn                                          bool
+	AttackedThisTurn, EvolvedThisTurn                         bool
 }
 
 func (g *game) snapshot() gameSnapshot {
@@ -551,7 +551,7 @@ func snapshotPlayer(p player) playerSnapshot {
 		PP: p.pp, MaxPP: p.maxpp, LeaderLife: p.leaderLife, LeaderMax: p.leaderMax,
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows,
 		Deck: ids(p.deck), Hand: ids(p.hand), Field: ids(p.field), Graveyard: ids(p.graveyard),
-		Banished: ids(p.banished), Destroyed: ids(p.destroyed), AttackedThisTurn: p.attackedThisTurn,
+		Banished: ids(p.banished), Destroyed: ids(p.destroyed), AttackedThisTurn: p.attackedThisTurn, EvolvedThisTurn: p.evolvedThisTurn,
 	}
 }
 
@@ -600,7 +600,7 @@ func clonePlayer(original player, instances map[string]*instance) player {
 		deck: cloneInstances(original.deck, instances), hand: cloneInstances(original.hand, instances),
 		field: cloneInstances(original.field, instances), graveyard: cloneInstances(original.graveyard, instances),
 		banished: cloneInstances(original.banished, instances), destroyed: cloneInstances(original.destroyed, instances),
-		attackedThisTurn: original.attackedThisTurn,
+		attackedThisTurn: original.attackedThisTurn, evolvedThisTurn: original.evolvedThisTurn,
 	}
 }
 

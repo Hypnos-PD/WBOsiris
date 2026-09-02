@@ -365,7 +365,7 @@ func decodeCard(data []byte, abilityIDs, nodeIDs map[string]bool) (Card, error) 
 			Initial int    `json:"initial"`
 		}
 		var s v
-		if err := strict(x, &s); err != nil || !oneOf(s.Kind, "countdown", "earthsigil") || s.Initial < 0 || s.Kind == "earthsigil" && s.Initial != 1 {
+		if err := strict(x, &s); err != nil || !oneOf(s.Kind, "countdown", "earthsigil", "damage_reduction", "attack_limit") || s.Initial < 0 || s.Kind == "earthsigil" && s.Initial != 1 || s.Kind == "attack_limit" && s.Initial < 1 {
 			return Card{}, fmt.Errorf("intrinsic state: %w", err)
 		}
 		c.IntrinsicState = append(c.IntrinsicState, IntrinsicState{s.Kind, s.Initial})
@@ -928,6 +928,18 @@ func decodeRef(data []byte) (Ref, error) {
 			return nil, fmt.Errorf("invalid leader reference")
 		}
 		return LeaderRef{v.Kind, v.Side, v.ValueType}, nil
+	case "leaders":
+		var v struct {
+			Kind      string `json:"kind"`
+			ValueType string `json:"valueType"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if v.ValueType != "leaders" {
+			return nil, fmt.Errorf("invalid leader set reference")
+		}
+		return LeaderSetRef{v.Kind, v.ValueType}, nil
 	case "zone":
 		var v struct {
 			Kind   string `json:"kind"`
@@ -1170,7 +1182,7 @@ func validateCardRefs(c Card, cards map[int]bool) error {
 }
 func validCardID(id int) bool { return id >= 10000000 && id <= 99999999 }
 func validKeyword(v string) bool {
-	return oneOf(v, "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier")
+	return oneOf(v, "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth")
 }
 func validOp(v string) bool { return oneOf(v, "eq", "ne", "lt", "le", "gt", "ge") }
 func oneOf(s string, v ...string) bool {

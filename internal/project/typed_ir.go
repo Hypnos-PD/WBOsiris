@@ -95,6 +95,10 @@ func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error)
 			restrictions = append(restrictions, ir.Restriction{Kind: "unplayable"})
 		case h == "countdown":
 			states = append(states, ir.IntrinsicState{Kind: "countdown", Initial: intAt(s, 1)})
+		case h == "damage_reduction":
+			states = append(states, ir.IntrinsicState{Kind: "damage_reduction", Initial: intAt(s, 1)})
+		case h == "attack_limit":
+			states = append(states, ir.IntrinsicState{Kind: "attack_limit", Initial: intAt(s, 1)})
 		case h == "earthsigil":
 			states = append(states, ir.IntrinsicState{Kind: "earthsigil", Initial: 1})
 		case h == "fusion":
@@ -349,6 +353,9 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 func valueRefIR(t []syntax.Token, i int) ir.Ref {
 	if i >= len(t) {
 		return nil
+	}
+	if i+2 < len(t) && t[i].Value == "all" && t[i+1].Value == "." && t[i+2].Value == "leaders" {
+		return ir.LeaderSetRef{Kind: "leaders", ValueType: "leaders"}
 	}
 	if t[i].Value == "self" {
 		return ir.SelfRef{Kind: "self", ValueType: "entity"}

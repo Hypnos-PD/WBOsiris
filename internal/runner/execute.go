@@ -63,7 +63,7 @@ func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 		} else {
 			out = append(append([]*instance{}, g.own.field...), g.oppo.field...)
 		}
-		return g.filter(out, r.Member, nil)
+		return g.filterVisible(out, r.Member, self)
 	case ir.FilterRef:
 		return g.filter(g.fromRef(r.Source, self, f), "", r.Predicate)
 	case ir.ExcludeRef:
@@ -81,6 +81,18 @@ func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 		return result
 	}
 	return nil
+}
+func (g *game) filterVisible(items []*instance, member string, self *instance) []*instance {
+	filtered := g.filter(items, member, nil)
+	controller := g.sideOf(self)
+	out := filtered[:0]
+	for _, i := range filtered {
+		if i.abilities["stealth"] && g.sideOf(i) != controller {
+			continue
+		}
+		out = append(out, i)
+	}
+	return out
 }
 func (g *game) zone(p *player, z string) []*instance {
 	switch z {
@@ -288,6 +300,10 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 			i.evolved = true
 		}
 	case "damage":
+		if _, ok := e.Target.(ir.LeaderSetRef); ok {
+			g.damageLeaders(e.Amount)
+			return
+		}
 		if r, ok := e.Target.(ir.LeaderRef); ok {
 			target, side := own, ownSide
 			if r.Side == "oppo" {

@@ -1,0 +1,22 @@
+wbo 0.1.0;
+
+card 90099912 {
+    type spell;
+    cost 0;
+
+    effect {
+        damage all.leaders 5;
+    }
+
+    meta {
+        pack 90000;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs { name "测试全体主战者伤害"; text "对双方主战者造成5点伤害。"; }
+    locale eng { name "Test Both Leader Damage"; text "Deal 5 damage to both leaders."; }
+    locale jpn { name "テスト両リーダー損傷"; text "両方のリーダーに5ダメージ。"; }
+    locale kor { name "테스트 양쪽 리더 피해"; text "양쪽 리더에게 피해 5."; }
+    locale cht { name "測試雙主戰者傷害"; text "對雙方主戰者造成5點傷害。"; }
+}

@@ -27,8 +27,8 @@ func TestBaseRulesScenarios(t *testing.T) {
 		t.Fatal(err)
 	}
 	results := Run(cards, tests)
-	if len(results) != 20 {
-		t.Fatalf("got %d scenarios, want 20", len(results))
+	if len(results) != 22 {
+		t.Fatalf("got %d scenarios, want 22", len(results))
 	}
 	for _, result := range results {
 		if !result.Passed() {
@@ -588,6 +588,90 @@ func TestEffectDamageCanTargetLeader(t *testing.T) {
 	session.g.execTargetEffect(ir.TargetEffect{Kind: "damage", Target: ir.LeaderRef{Kind: "leader", Side: "oppo"}, Amount: 3}, nil, frame{})
 	if session.g.oppo.leaderLife != 17 || len(session.g.events) != 1 || session.g.events[0].Kind != "damaged" || session.g.events[0].Actual != 3 {
 		t.Fatalf("leader damage was not applied: life=%d events=%#v", session.g.oppo.leaderLife, session.g.events)
+	}
+}
+
+func TestEffectDamageCanTargetBothLeadersAsBatch(t *testing.T) {
+	session, err := NewSession(&ir.CardPack{}, testState(), 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	session.g.own.leaderLife, session.g.oppo.leaderLife = 3, 3
+	session.g.execTargetEffect(ir.TargetEffect{Kind: "damage", Target: ir.LeaderSetRef{Kind: "leaders", ValueType: "leaders"}, Amount: 5}, nil, frame{})
+	if !session.g.gameOver || session.g.winner != "oppo" || session.g.own.leaderLife != 0 || session.g.oppo.leaderLife != 0 {
+		t.Fatalf("simultaneous leader damage did not use active-player rule: game=%#v", session.g)
+	}
+	if len(session.g.events) != 3 || session.g.events[0].Kind != "damaged" || session.g.events[1].Kind != "damaged" || session.g.events[2].Kind != "game_ended" {
+		t.Fatalf("leader damage was not emitted as a batch: %#v", session.g.events)
+	}
+}
+
+func TestDamageReductionAndStealthUseCommonTargetRules(t *testing.T) {
+	sourceID, targetID := strings.Repeat("a", 32), strings.Repeat("b", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 66666678, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 3}},
+		{ID: 66666679, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 4}, Intrinsic: []string{"stealth"}},
+	}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: sourceID, CardID: 66666678, DeclaredType: "follower"})
+	state.Players["oppo"] = withInstance(state.Players["oppo"], "field", ir.TestInstance{InstanceID: targetID, CardID: 66666679, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	source := session.g.instances[sourceID]
+	if got := session.g.fromRef(ir.ZoneRef{Kind: "zone", Side: "oppo", Zone: "field", Member: "follower"}, source, frame{}); len(got) != 0 {
+		t.Fatalf("stealth target was visible to opposing effect: %#v", got)
+	}
+	target := session.g.instances[targetID]
+	delete(target.abilities, "stealth")
+	target.damageReduction = 2
+	if got := session.g.damageInstance(target, 3); got != 1 || target.life != 3 {
+		t.Fatalf("damage reduction was not applied: actual=%d target=%#v", got, target)
+	}
+}
+
+func TestAttackLimitAllowsMultipleAttacks(t *testing.T) {
+	attackerID := strings.Repeat("c", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{{ID: 66666680, CardType: "follower", Stats: &ir.Stats{Attack: 2, Life: 3}, IntrinsicState: []ir.IntrinsicState{{Kind: "attack_limit", Initial: 2}}}}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: attackerID, CardID: 66666680, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for n := 0; n < 2; n++ {
+		result := session.Begin(strings.Repeat(string(rune('d'+n)), 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: attackerID, Defender: "oppo"})
+		if result.Status != StatusCompleted {
+			t.Fatalf("attack %d was rejected: %#v", n+1, result)
+		}
+	}
+	third := session.Begin(strings.Repeat("f", 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: attackerID, Defender: "oppo"})
+	if third.Status != StatusIllegal || third.IllegalCode != "already_attacked" || session.g.oppo.leaderLife != 16 {
+		t.Fatalf("attack limit was not enforced after second attack: %#v life=%d", third, session.g.oppo.leaderLife)
+	}
+}
+
+func TestOrdinaryEvolveConsumesEPAndRunsActionPlan(t *testing.T) {
+	instanceID := strings.Repeat("1", 32)
+	abilityID := strings.Repeat("2", 32)
+	card := &ir.Card{ID: 66666681, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 3}, Abilities: []ir.Ability{{ID: abilityID, Trigger: ir.SimpleTrigger{Kind: "evolve"}, Body: []ir.Effect{ir.TargetEffect{Kind: "buff_stats", Target: ir.SelfRef{Kind: "self", ValueType: "follower"}, AttackDelta: 2}}}}, ActionPlans: []ir.ActionPlan{{Action: "evolve", Steps: []ir.PlanStep{{AbilityID: abilityID, Frame: "new"}}}}}
+	state := testState()
+	own := state.Players["own"]
+	own.EP = 1
+	state.Players["own"] = withInstance(own, "field", ir.TestInstance{InstanceID: instanceID, CardID: card.ID, DeclaredType: "follower"})
+	session, err := NewSession(&ir.CardPack{Cards: []ir.Card{*card}}, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	session.g.instances[instanceID].summoningSick = true
+	result := session.Begin(strings.Repeat("3", 32), ir.SourceAction{Kind: "evolve", Actor: "own", Source: instanceID})
+	if result.Status != StatusCompleted || session.g.own.ep != 0 || !session.g.instances[instanceID].evolved || session.g.instances[instanceID].summoningSick || session.g.instances[instanceID].attack != 3 {
+		t.Fatalf("ordinary evolution did not complete: result=%#v player=%#v instance=%#v", result, session.g.own, session.g.instances[instanceID])
+	}
+	repeat := session.Begin(strings.Repeat("4", 32), ir.SourceAction{Kind: "evolve", Actor: "own", Source: instanceID})
+	if repeat.Status != StatusIllegal || repeat.IllegalCode != "cost" {
+		t.Fatalf("ordinary evolution was not limited to once per turn: %#v", repeat)
 	}
 }
 

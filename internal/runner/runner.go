@@ -17,18 +17,18 @@ type Result struct {
 func (r Result) Passed() bool { return len(r.Failures) == 0 }
 
 type instance struct {
-	id, alias, zone                     string
-	card                                *ir.Card
-	attack, life, earthsigil, countdown int
-	attacksUsed                         int
-	engaged, summoningSick              bool
-	evolved, superEvolved               bool
-	abilities                           map[string]bool
+	id, alias, zone                                                        string
+	card                                                                   *ir.Card
+	attack, life, earthsigil, countdown, damageReduction, attackLimitValue int
+	attacksUsed                                                            int
+	engaged, summoningSick                                                 bool
+	evolved, superEvolved                                                  bool
+	abilities                                                              map[string]bool
 }
 type player struct {
 	pp, maxpp, leaderLife, leaderMax, ep, sep, combo, shadows int
 	deck, hand, field, graveyard, banished, destroyed         []*instance
-	attackedThisTurn                                          bool
+	attackedThisTurn, evolvedThisTurn                         bool
 }
 type attackState struct {
 	stage                          string
@@ -201,6 +201,9 @@ func (g *game) loadState(s ir.State) error {
 				if o.Countdown != nil {
 					i.countdown = *o.Countdown
 				}
+				if o.DamageReduction != nil {
+					i.damageReduction = *o.DamageReduction
+				}
 				if o.Engaged != nil {
 					i.engaged = *o.Engaged
 				}
@@ -232,6 +235,10 @@ func (g *game) newInstance(c *ir.Card, id, alias, zone string) *instance {
 			i.earthsigil = s.Initial
 		} else if s.Kind == "countdown" {
 			i.countdown = s.Initial
+		} else if s.Kind == "damage_reduction" {
+			i.damageReduction = s.Initial
+		} else if s.Kind == "attack_limit" {
+			i.attackLimitValue = s.Initial
 		}
 	}
 	g.instances[id] = i
@@ -354,6 +361,24 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 		sandbox.player(x.Actor).pp -= a.Trigger.(ir.CostTrigger).Cost
 		sandboxSource.engaged = true
 		return sandbox.preflightRequirements(a.Body, sandboxSource, frame{}, true)
+	case "evolve":
+		actor := g.player(x.Actor)
+		if i.zone != "field" || !contains(actor.field, i) || i.card.CardType != "follower" || i.evolved || actor.ep < 1 || actor.evolvedThisTurn {
+			return "cost"
+		}
+		if plan := findActionPlan(i.card, "evolve"); plan == nil {
+			return "unsupported_evolve"
+		} else {
+			sandbox := g.clone()
+			sandbox.budget = budget
+			sandboxSource := sandbox.instances[i.id]
+			sandbox.player(x.Actor).ep--
+			sandboxSource.evolved = true
+			sandboxSource.summoningSick = false
+			if code := sandbox.preflightPlan(sandboxSource, plan); code != "" {
+				return code
+			}
+		}
 	case "superevolve":
 		actor := g.player(x.Actor)
 		if i.zone != "field" || !contains(actor.field, i) || i.card.CardType != "follower" || i.superEvolved || actor.sep < 1 {
@@ -415,6 +440,8 @@ func (g *game) commitAction(a ir.Action) ([]execFrame, string) {
 		return g.commitEngage(i), ""
 	case "superevolve":
 		return g.commitSuperEvolve(i), ""
+	case "evolve":
+		return g.commitEvolve(i), ""
 	default:
 		return nil, "unsupported_action"
 	}
@@ -484,6 +511,7 @@ func (g *game) commitAttack(a ir.AttackAction) string {
 		defender = g.instances[a.Defender]
 	}
 	attacker.attacksUsed++
+	delete(attacker.abilities, "stealth")
 	g.player(a.Actor).attackedThisTurn = true
 	g.attack = &attackState{stage: "attack", actor: a.Actor, attacker: attacker.id}
 	attackerTarget := ir.EventTarget{Kind: "instance", InstanceID: attacker.id}
@@ -584,7 +612,12 @@ func (g *game) queueSimpleTriggers(source *instance, kind string) {
 	}
 }
 
-func attackLimit(*instance) int { return 1 }
+func attackLimit(i *instance) int {
+	if i != nil && i.attackLimitValue > 0 {
+		return i.attackLimitValue
+	}
+	return 1
+}
 
 func (g *game) damageLeader(target *player, side string, amount int) int {
 	if amount < 0 {
@@ -599,6 +632,32 @@ func (g *game) damageLeader(target *player, side string, amount int) int {
 		}
 	}
 	return actual
+}
+
+func (g *game) damageLeaders(amount int) {
+	if amount < 0 {
+		amount = 0
+	}
+	for _, target := range []struct {
+		player *player
+		side   string
+	}{
+		{&g.own, "own"},
+		{&g.oppo, "oppo"},
+	} {
+		actual := min(amount, max(target.player.leaderLife, 0))
+		eventTarget := &ir.EventTarget{Kind: "leader", Side: target.side}
+		if g.emit(ir.RuntimeEvent{Kind: "damaged", Actual: actual, Target: eventTarget}) {
+			target.player.leaderLife -= actual
+		}
+	}
+	if g.own.leaderLife <= 0 && g.oppo.leaderLife <= 0 {
+		g.finishGame(oppositeSide(g.turn.Active))
+	} else if g.oppo.leaderLife <= 0 {
+		g.finishGame("own")
+	} else if g.own.leaderLife <= 0 {
+		g.finishGame("oppo")
+	}
 }
 
 func (g *game) healLeader(target *player, side string, amount int) {
@@ -627,6 +686,7 @@ func (g *game) damageInstance(target *instance, amount int) int {
 	} else if target.superEvolved && g.sideOf(target) == g.turn.Active {
 		actual = 0
 	} else {
+		actual = max(actual-target.damageReduction, 0)
 		actual = min(actual, max(target.life, 0))
 		target.life -= actual
 	}
@@ -723,6 +783,63 @@ func (g *game) commitSuperEvolve(i *instance) []execFrame {
 	return nil
 }
 
+func (g *game) commitEvolve(i *instance) []execFrame {
+	owner := g.owner(i)
+	owner.ep--
+	owner.evolvedThisTurn = true
+	i.evolved = true
+	i.summoningSick = false
+	return g.commitActionPlan(i, "evolve")
+}
+
+func (g *game) commitActionPlan(i *instance, action string) []execFrame {
+	plan := findActionPlan(i.card, action)
+	if plan == nil {
+		return nil
+	}
+	abilities := map[string]ir.Ability{}
+	for _, a := range i.card.Abilities {
+		abilities[a.ID] = a
+	}
+	var f frame
+	var frames []execFrame
+	for _, step := range plan.Steps {
+		if step.Frame == "new" || f == nil {
+			f = frame{}
+		}
+		a := abilities[step.AbilityID]
+		frames = append(frames, execFrame{body: a.Body, blockID: abilityBlockID(i.card.ID, a.ID), self: i, bindings: f})
+	}
+	return frames
+}
+
+func findActionPlan(card *ir.Card, action string) *ir.ActionPlan {
+	if card == nil {
+		return nil
+	}
+	for n := range card.ActionPlans {
+		if card.ActionPlans[n].Action == action {
+			return &card.ActionPlans[n]
+		}
+	}
+	return nil
+}
+
+func (g *game) preflightPlan(i *instance, plan *ir.ActionPlan) string {
+	abilities := map[string]ir.Ability{}
+	for _, a := range i.card.Abilities {
+		abilities[a.ID] = a
+	}
+	for _, step := range plan.Steps {
+		if ability := abilities[step.AbilityID]; ability.ID != "" {
+			if code := g.preflightRequirements(ability.Body, i, frame{}, true); code != "" {
+				return code
+			}
+		}
+	}
+	return ""
+}
+
 func (g *game) advanceTurn() {
 	if g.turnTransition == "ending" {
 		if g.turn.Active == "oppo" {
@@ -738,6 +855,7 @@ func (g *game) advanceTurn() {
 	active.pp = active.maxpp
 	active.combo = 0
 	active.attackedThisTurn = false
+	active.evolvedThisTurn = false
 	var expired []*instance
 	for _, i := range active.field {
 		i.engaged = false

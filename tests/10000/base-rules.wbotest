@@ -669,3 +669,66 @@ scenario "交战时按攻击方再防守方顺序结算" {
         }
     }
 }
+
+scenario "批量主战者伤害同时归零由回合外玩家获胜" {
+    seed 1021;
+    state {
+        turn own 5;
+        phase main;
+
+        player own {
+            leader 3/20;
+            pp 1/1;
+            hand {
+                spell both_leaders = 90099912;
+            }
+        }
+        player oppo {
+            leader 3/20;
+        }
+    }
+
+    action {
+        play both_leaders;
+    }
+
+    expect {
+        legal;
+        own.leader.life == 0;
+        oppo.leader.life == 0;
+        events contains ordered {
+            damage own.leader 3;
+            damage oppo.leader 3;
+            game_end oppo;
+        }
+    }
+}
+
+scenario "潜行随从不会成为敌方效果目标" {
+    seed 1022;
+    state {
+        turn own 5;
+        phase main;
+
+        player own {
+            pp 1/1;
+            hand {
+                spell target_test = 90099914;
+            }
+        }
+        player oppo {
+            field {
+                follower hidden = 90099913;
+            }
+        }
+    }
+
+    action {
+        play target_test;
+    }
+
+    expect {
+        legal;
+        hidden has stealth;
+    }
+}

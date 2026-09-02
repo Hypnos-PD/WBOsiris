@@ -79,6 +79,7 @@ type EntityView struct {
 	Earthsigil    int      `json:"earthsigil,omitempty"`
 	Engaged       bool     `json:"engaged,omitempty"`
 	AttacksUsed   int      `json:"attacksUsed"`
+	AttackLimit   int      `json:"attackLimit"`
 	SummoningSick bool     `json:"summoningSick"`
 	Evolved       bool     `json:"evolved,omitempty"`
 	SuperEvolved  bool     `json:"superEvolved,omitempty"`
@@ -87,7 +88,7 @@ type EntityView struct {
 
 // SupportedSimulatorCapabilities 返回运行时当前真正支持的交互范围。
 func SupportedSimulatorCapabilities() SimulatorCapabilities {
-	return SimulatorCapabilities{Play: true, Engage: true, SuperEvolve: true, TargetChoice: true, ModeChoice: true, Attack: true, EndTurn: true}
+	return SimulatorCapabilities{Play: true, Engage: true, SuperEvolve: true, Evolve: true, TargetChoice: true, ModeChoice: true, Attack: true, EndTurn: true}
 }
 
 // Submit 接受模拟器命令，未定义的规则动作会明确拒绝。
@@ -100,7 +101,7 @@ func (s *Session) SubmitAs(actionID, actor string, command SimulatorCommand) Ste
 		return StepResult{Status: StatusRejected, ErrorCode: "invalid_actor"}
 	}
 	switch command.Kind {
-	case "play", "engage", "superevolve", "end_turn":
+	case "play", "engage", "evolve", "superevolve", "end_turn":
 		return s.Begin(actionID, ir.SourceAction{Kind: command.Kind, Actor: actor, Source: command.Source})
 	case "attack":
 		kind, defender := "attack_leader", command.Defender
@@ -142,6 +143,9 @@ func (s *Session) LegalActionsFor(actor string) []LegalAction {
 	}
 	for _, source := range player.field {
 		add("engage", source)
+	}
+	for _, source := range player.field {
+		add("evolve", source)
 	}
 	for _, source := range player.field {
 		add("superevolve", source)
@@ -234,7 +238,7 @@ func entityViews(instances []*instance) []EntityView {
 		views = append(views, EntityView{
 			InstanceID: i.id, Alias: i.alias, CardID: i.card.ID, CardType: i.card.CardType,
 			Attack: i.attack, Life: i.life, Countdown: i.countdown, Earthsigil: i.earthsigil,
-			Engaged: i.engaged, AttacksUsed: i.attacksUsed, SummoningSick: i.summoningSick,
+			Engaged: i.engaged, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i), SummoningSick: i.summoningSick,
 			Evolved: i.evolved, SuperEvolved: i.superEvolved, Keywords: keywords,
 		})
 	}

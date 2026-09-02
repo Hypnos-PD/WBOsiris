@@ -241,6 +241,13 @@ type LeaderRef struct {
 
 func (r LeaderRef) refKind() string { return r.Kind }
 
+type LeaderSetRef struct {
+	Kind      string `json:"kind"`
+	ValueType string `json:"valueType"`
+}
+
+func (r LeaderSetRef) refKind() string { return r.Kind }
+
 type ZoneRef struct {
 	Kind   string `json:"kind"`
 	Side   string `json:"side,omitempty"`
@@ -483,13 +490,14 @@ type TestInstance struct {
 	Overrides    InstanceOverrides `json:"overrides"`
 }
 type InstanceOverrides struct {
-	Stats        *Stats   `json:"stats,omitempty"`
-	Evolved      *bool    `json:"evolved,omitempty"`
-	SuperEvolved *bool    `json:"super_evolved,omitempty"`
-	Engaged      *bool    `json:"engaged,omitempty"`
-	Keywords     []string `json:"keywords,omitempty"`
-	Countdown    *int     `json:"countdown,omitempty"`
-	Earthsigil   *int     `json:"earthsigil,omitempty"`
+	Stats           *Stats   `json:"stats,omitempty"`
+	Evolved         *bool    `json:"evolved,omitempty"`
+	SuperEvolved    *bool    `json:"super_evolved,omitempty"`
+	Engaged         *bool    `json:"engaged,omitempty"`
+	Keywords        []string `json:"keywords,omitempty"`
+	Countdown       *int     `json:"countdown,omitempty"`
+	Earthsigil      *int     `json:"earthsigil,omitempty"`
+	DamageReduction *int     `json:"damage_reduction,omitempty"`
 }
 
 type Action interface{ actionKind() string }

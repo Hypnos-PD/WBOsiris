@@ -82,7 +82,7 @@ func TestDecodeAllCards(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(pack.Cards) != 77 {
+	if len(pack.Cards) != 81 {
 		t.Fatalf("cards=%d", len(pack.Cards))
 	}
 }
