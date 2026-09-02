@@ -210,11 +210,62 @@ func testState() ir.State {
 	zones := func() map[string][]ir.TestInstance {
 		return map[string][]ir.TestInstance{"deck": {}, "hand": {}, "field": {}, "graveyard": {}, "banished": {}, "destroyed": {}}
 	}
-	return ir.State{Turn: ir.Turn{Active: "own"}, Phase: "main", Players: map[string]ir.PlayerState{
+	return ir.State{Turn: ir.Turn{Active: "own", Number: 1}, Phase: "main", Players: map[string]ir.PlayerState{
 		"own":  {Leader: ir.Leader{Life: 20, MaxLife: 20}, Zones: zones()},
 		"oppo": {Leader: ir.Leader{Life: 20, MaxLife: 20}, Zones: zones()},
 	}, Aliases: map[string]string{}}
 }
+
+func TestEndTurnPreparesNextPlayerDeterministically(t *testing.T) {
+	spellID, followerID, amuletID := strings.Repeat("1", 32), strings.Repeat("2", 32), strings.Repeat("3", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 12345678, CardType: "spell"},
+		{ID: 23456789, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 1}},
+		{ID: 34567890, CardType: "amulet", Abilities: []ir.Ability{{ID: strings.Repeat("4", 32), Trigger: ir.CostTrigger{Kind: "engage", Cost: 0}}}},
+	}}
+	state := testState()
+	own, oppo := state.Players["own"], state.Players["oppo"]
+	own.PP, own.MaxPP, own.Combo = 1, 2, 5
+	oppo.PP, oppo.MaxPP = 0, 3
+	own = withInstance(own, "hand", ir.TestInstance{InstanceID: spellID, Alias: "spell", CardID: 12345678, DeclaredType: "spell"})
+	oppo = withInstance(oppo, "deck", ir.TestInstance{InstanceID: followerID, Alias: "next", CardID: 23456789, DeclaredType: "follower"})
+	oppo = withInstance(oppo, "field", ir.TestInstance{InstanceID: amuletID, Alias: "countdown", CardID: 34567890, DeclaredType: "amulet", Overrides: ir.InstanceOverrides{Countdown: intPtr(1), Engaged: boolPtr(true)}})
+	state.Players["own"], state.Players["oppo"] = own, oppo
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := session.Begin(strings.Repeat("5", 32), ir.SourceAction{Kind: "end_turn", Actor: "own"})
+	if result.Status != StatusCompleted {
+		t.Fatalf("end turn did not complete: %#v", result)
+	}
+	if session.g.turn.Active != "oppo" || session.g.turn.Number != 1 || session.g.oppo.maxpp != 4 || session.g.oppo.pp != 4 || session.g.oppo.combo != 0 || len(session.g.oppo.hand) != 1 || len(session.g.oppo.field) != 0 {
+		t.Fatalf("next turn preparation diverged: turn=%#v pp=%d/%d hand=%d field=%d", session.g.turn, session.g.oppo.pp, session.g.oppo.maxpp, len(session.g.oppo.hand), len(session.g.oppo.field))
+	}
+	if len(session.g.events) != 4 || session.g.events[0].Kind != "turn_ended" || session.g.events[1].Kind != "destroyed" || session.g.events[2].Kind != "card_drawn" || session.g.events[2].Side != "oppo" || session.g.events[3].Kind != "turn_started" {
+		t.Fatalf("turn event order diverged: %#v", session.g.events)
+	}
+}
+
+func TestAdvanceDrivesDeclaredTurnEvent(t *testing.T) {
+	abilityID := strings.Repeat("6", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{{ID: 45678901, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 1}, Abilities: []ir.Ability{{
+		ID: abilityID, Trigger: ir.EventTrigger{Kind: "event", Event: "turn_started", Side: "own"}, Body: []ir.Effect{ir.AdjustEffect{Kind: "adjust_resource", Resource: "combo", Delta: 1}},
+	}}}}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: strings.Repeat("7", 32), Alias: "listener", CardID: 45678901, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := session.Advance(ir.AdvanceAction{Kind: "advance", Timing: "turn_start", Side: "own"})
+	if result.Status != StatusCompleted || session.g.own.combo != 1 || len(session.g.events) != 1 || session.g.events[0].Kind != "turn_started" {
+		t.Fatalf("advance did not drive turn event: result=%#v combo=%d events=%#v", result, session.g.own.combo, session.g.events)
+	}
+}
+
+func intPtr(value int) *int    { return &value }
+func boolPtr(value bool) *bool { return &value }
 
 func withInstance(player ir.PlayerState, zone string, instance ir.TestInstance) ir.PlayerState {
 	player.Zones[zone] = append(player.Zones[zone], instance)

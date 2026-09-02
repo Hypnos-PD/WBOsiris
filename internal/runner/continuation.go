@@ -57,6 +57,7 @@ type ContinuationGame struct {
 	Unchanged        bool                 `json:"unchanged"`
 	Turn             ir.Turn              `json:"turn"`
 	Phase            string               `json:"phase"`
+	TurnTransition   string               `json:"turnTransition"`
 }
 
 type ContinuationPlayer struct {
@@ -329,7 +330,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 	snapshot := ContinuationGame{
 		Own: snapshotContinuationPlayer(g.own), Oppo: snapshotContinuationPlayer(g.oppo),
 		RNG:    ContinuationRNG{State: g.rng.Snapshot().State, Consumed: g.rng.Snapshot().Consumed},
-		Serial: g.serial, EventSequence: g.eventSequence, DeathBatchSerial: g.deathBatchSerial, Revision: g.revision, Legal: g.legal, Illegal: g.illegal, Unchanged: g.unchanged, Turn: g.turn, Phase: g.phase,
+		Serial: g.serial, EventSequence: g.eventSequence, DeathBatchSerial: g.deathBatchSerial, Revision: g.revision, Legal: g.legal, Illegal: g.illegal, Unchanged: g.unchanged, Turn: g.turn, Phase: g.phase, TurnTransition: g.turnTransition,
 	}
 	ids := make([]string, 0, len(g.instances))
 	for id := range g.instances {
@@ -358,11 +359,12 @@ func snapshotContinuationPlayer(p player) ContinuationPlayer {
 }
 
 func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) {
-	g := &game{cards: cards, instances: map[string]*instance{}, legal: saved.Legal, illegal: saved.Illegal, unchanged: saved.Unchanged, rng: ruleset.NewRNG(0), serial: saved.Serial, eventSequence: saved.EventSequence, deathBatchSerial: saved.DeathBatchSerial, revision: saved.Revision, turn: saved.Turn, phase: saved.Phase}
+	g := &game{cards: cards, instances: map[string]*instance{}, legal: saved.Legal, illegal: saved.Illegal, unchanged: saved.Unchanged, rng: ruleset.NewRNG(0), serial: saved.Serial, eventSequence: saved.EventSequence, deathBatchSerial: saved.DeathBatchSerial, revision: saved.Revision, turn: saved.Turn, phase: saved.Phase, turnTransition: saved.TurnTransition}
 	if saved.Serial < 0 || saved.Serial < generatedInstanceSerial(saved.Instances) {
 		return nil, fmt.Errorf("invalid continuation instance serial")
 	}
-	if saved.Turn.Active != "own" || saved.Turn.Number < 0 || saved.Phase != "main" {
+	validTransition := saved.TurnTransition == "" && saved.Turn.Active == "own" || saved.TurnTransition == "ending" && saved.Turn.Active == "own" || saved.TurnTransition == "starting" && saved.Turn.Active == "oppo"
+	if !validTransition || saved.Turn.Number < 0 || saved.Phase != "main" {
 		return nil, fmt.Errorf("invalid continuation turn state")
 	}
 	for _, entity := range saved.Instances {

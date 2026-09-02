@@ -58,7 +58,7 @@ func TestSimulatorLegalActionsUsePreflightAndOwnership(t *testing.T) {
 		t.Fatal(err)
 	}
 	actions := session.LegalActions()
-	if len(actions) != 1 || actions[0].Kind != "play" || actions[0].Source != playableID {
+	if len(actions) != 2 || actions[0].Kind != "play" || actions[0].Source != playableID || actions[1].Kind != "end_turn" {
 		t.Fatalf("unexpected legal actions: %#v", actions)
 	}
 	result := session.Submit(strings.Repeat("8", 32), SimulatorCommand{Kind: "play", Source: opponentID})
@@ -69,6 +69,10 @@ func TestSimulatorLegalActionsUsePreflightAndOwnership(t *testing.T) {
 	if unsupported.Status != StatusRejected || unsupported.ErrorCode != "unsupported_feature" {
 		t.Fatalf("unsupported command was not explicit: %#v", unsupported)
 	}
+	ended := session.Submit(strings.Repeat("a", 32), SimulatorCommand{Kind: "end_turn"})
+	if ended.Status != StatusCompleted || session.g.turn.Active != "oppo" {
+		t.Fatalf("end turn was not exposed by simulator: result=%#v turn=%#v", ended, session.g.turn)
+	}
 }
 
 func TestSimulatorCapabilitiesMatchImplementedCommands(t *testing.T) {
@@ -76,7 +80,7 @@ func TestSimulatorCapabilitiesMatchImplementedCommands(t *testing.T) {
 	if !capabilities.Play || !capabilities.Engage || !capabilities.SuperEvolve || !capabilities.TargetChoice || !capabilities.ModeChoice {
 		t.Fatalf("implemented capability missing: %#v", capabilities)
 	}
-	if capabilities.Evolve || capabilities.Attack || capabilities.EndTurn {
+	if capabilities.Evolve || capabilities.Attack {
 		t.Fatalf("undefined rules were advertised: %#v", capabilities)
 	}
 }

@@ -195,6 +195,32 @@ func (s *Session) Begin(actionID string, action ir.Action) StepResult {
 	return s.run()
 }
 
+// Advance 仅供规则测试驱动已声明的回合事件，不属于正式玩家动作。
+func (s *Session) Advance(action ir.AdvanceAction) StepResult {
+	s.ensureBudget()
+	if s.fault != "" {
+		return StepResult{Status: StatusFault, ErrorCode: s.fault}
+	}
+	if s.actionID != "" || s.pending != nil || len(s.stack) != 0 {
+		return StepResult{Status: StatusRejected, ErrorCode: "command_in_progress"}
+	}
+	if action.Timing != "turn_start" && action.Timing != "turn_end" || action.Side != "own" && action.Side != "oppo" {
+		return StepResult{Status: StatusRejected, ErrorCode: "invalid_advance"}
+	}
+	s.actionID = deriveRuntimeID("advance", action.Timing, action.Side, fmt.Sprint(s.g.revision))
+	s.g.legal, s.g.illegal, s.g.unchanged = true, "", false
+	s.g.revision++
+	kind := "turn_started"
+	if action.Timing == "turn_end" {
+		kind = "turn_ended"
+	}
+	event := ir.RuntimeEvent{Kind: kind, Side: action.Side}
+	if s.g.emit(event) {
+		s.g.queueEventTriggers(event, nil, "")
+	}
+	return s.run()
+}
+
 func (s *Session) Resume(response ChoiceResponse) StepResult {
 	if s.fault != "" {
 		return StepResult{Status: StatusFault, ErrorCode: s.fault}
@@ -274,6 +300,13 @@ func (s *Session) run() StepResult {
 			}
 		}
 		if len(s.stack) == 0 {
+			if s.g.turnTransition == "ending" {
+				s.g.advanceTurn()
+				continue
+			}
+			if s.g.turnTransition == "starting" {
+				s.g.turnTransition = ""
+			}
 			s.actionID = ""
 			return StepResult{Status: StatusCompleted}
 		}
@@ -459,6 +492,7 @@ type gameSnapshot struct {
 	Triggers                        int
 	Turn                            ir.Turn
 	Phase                           string
+	TurnTransition                  string
 }
 
 type playerSnapshot struct {
@@ -491,7 +525,7 @@ func (g *game) clone() *game {
 		cards: g.cards, instances: map[string]*instance{}, legal: g.legal, illegal: g.illegal,
 		unchanged: g.unchanged, rng: g.rng.Clone(), events: append([]ir.RuntimeEvent(nil), g.events...),
 		serial: g.serial, eventSequence: g.eventSequence, deathBatchSerial: g.deathBatchSerial, revision: g.revision,
-		turn: g.turn, phase: g.phase,
+		turn: g.turn, phase: g.phase, turnTransition: g.turnTransition,
 	}
 	for id, original := range g.instances {
 		copy := *original

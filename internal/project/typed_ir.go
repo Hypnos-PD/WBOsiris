@@ -526,7 +526,7 @@ func defaultPlayer() ir.PlayerState {
 }
 func compileInitialState(s *syntax.Statement, scenarioID string) (ir.State, map[string]string) {
 	players := map[string]ir.PlayerState{"own": defaultPlayer(), "oppo": defaultPlayer()}
-	state := ir.State{Turn: ir.Turn{Active: "own", Number: 0}, Phase: "main", Players: players}
+	state := ir.State{Turn: ir.Turn{Active: "own", Number: 1}, Phase: "main", Players: players}
 	aliases := map[string]string{}
 	for _, x := range s.Blocks()[0] {
 		t := x.Tokens()

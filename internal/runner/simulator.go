@@ -79,13 +79,13 @@ type EntityView struct {
 
 // SupportedSimulatorCapabilities 返回运行时当前真正支持的交互范围。
 func SupportedSimulatorCapabilities() SimulatorCapabilities {
-	return SimulatorCapabilities{Play: true, Engage: true, SuperEvolve: true, TargetChoice: true, ModeChoice: true}
+	return SimulatorCapabilities{Play: true, Engage: true, SuperEvolve: true, TargetChoice: true, ModeChoice: true, EndTurn: true}
 }
 
 // Submit 接受模拟器命令，未定义的规则动作会明确拒绝。
 func (s *Session) Submit(actionID string, command SimulatorCommand) StepResult {
 	switch command.Kind {
-	case "play", "engage", "superevolve":
+	case "play", "engage", "superevolve", "end_turn":
 		return s.Begin(actionID, ir.SourceAction{Kind: command.Kind, Actor: "own", Source: command.Source})
 	default:
 		return StepResult{Status: StatusRejected, ErrorCode: "unsupported_feature"}
@@ -114,6 +114,9 @@ func (s *Session) LegalActions() []LegalAction {
 	}
 	for _, source := range s.g.own.field {
 		add("superevolve", source)
+	}
+	if s.g.preflight(ir.SourceAction{Kind: "end_turn", Actor: "own"}, &budgetTracker{}) == "" {
+		actions = append(actions, LegalAction{Kind: "end_turn", Actor: "own"})
 	}
 	return actions
 }

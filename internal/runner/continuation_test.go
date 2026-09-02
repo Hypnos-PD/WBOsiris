@@ -221,6 +221,43 @@ func TestContinuationRoundTripPreservesDeathBatch(t *testing.T) {
 	}
 }
 
+func TestContinuationRoundTripPreservesTurnTransition(t *testing.T) {
+	abilityID, modeID, listenerID := strings.Repeat("7", 32), strings.Repeat("8", 32), strings.Repeat("9", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{{
+		ID: 95678901, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 1}, Abilities: []ir.Ability{{
+			ID: abilityID, Trigger: ir.EventTrigger{Kind: "event", Event: "turn_ended", Side: "own"}, Body: []ir.Effect{
+				ir.ModeEffect{NodeBase: ir.NodeBase{ID: modeID}, Kind: "mode", Options: []ir.ModeOption{{ID: 1}, {ID: 2}}},
+			}},
+		}},
+	}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: listenerID, Alias: "listener", CardID: 95678901, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	step := session.Begin(strings.Repeat("a", 32), ir.SourceAction{Kind: "end_turn", Actor: "own"})
+	if step.Status != StatusSuspended || session.g.turnTransition != "ending" {
+		t.Fatalf("turn transition did not suspend: %#v", step)
+	}
+	data, err := session.EncodeContinuation()
+	if err != nil {
+		t.Fatal(err)
+	}
+	continuation, err := DecodeContinuation(data)
+	if err != nil || continuation.Game.TurnTransition != "ending" {
+		t.Fatalf("turn transition was not encoded: err=%v game=%#v", err, continuation.Game)
+	}
+	restored, err := RestoreSession(pack, continuation)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := restored.Resume(ChoiceResponse{RequestID: step.Choice.RequestID, ActionID: step.Choice.ActionID, StateRevision: step.Choice.StateRevision, SelectedOptionID: 1})
+	if result.Status != StatusCompleted || restored.g.turn.Active != "oppo" || restored.g.turnTransition != "" {
+		t.Fatalf("restored turn transition diverged: result=%#v turn=%#v transition=%q", result, restored.g.turn, restored.g.turnTransition)
+	}
+}
+
 func TestContinuationStrictDecodeAndRestoreRejections(t *testing.T) {
 	pack, state, sourceID, _ := continuationTargetFixture()
 	session, err := NewSession(pack, state, 1)

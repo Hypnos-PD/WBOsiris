@@ -45,6 +45,7 @@ type game struct {
 	budget                          *budgetTracker
 	turn                            ir.Turn
 	phase                           string
+	turnTransition                  string
 }
 
 func Run(cards *ir.CardPack, tests *ir.TestPack) []Result {
@@ -103,7 +104,7 @@ func runScenario(path string, s *ir.Scenario, cards map[int]*ir.Card) Result {
 		r.Failures = append(r.Failures, "missing action")
 		return r
 	}
-	step := session.Begin(deriveRuntimeID(s.ID, "command", "0"), s.Actions[0])
+	step := beginScenarioAction(session, s.ID, s.Actions[0])
 	next := 1
 	for step.Status == StatusSuspended {
 		if next >= len(s.Actions) {
@@ -143,6 +144,13 @@ func runScenario(path string, s *ir.Scenario, cards map[int]*ir.Card) Result {
 		}
 	}
 	return r
+}
+
+func beginScenarioAction(session *Session, scenarioID string, action ir.Action) StepResult {
+	if advance, ok := action.(ir.AdvanceAction); ok {
+		return session.Advance(advance)
+	}
+	return session.Begin(deriveRuntimeID(scenarioID, "command", "0"), action)
 }
 func parseSeed(s string) (uint64, error) {
 	var n uint64
@@ -276,6 +284,12 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 	if g.turn.Active != "own" || g.phase != "main" {
 		return "wrong_timing"
 	}
+	if x.Kind == "end_turn" {
+		if g.turnTransition != "" {
+			return "command_in_progress"
+		}
+		return ""
+	}
 	i := g.instances[x.Source]
 	if i == nil {
 		return "unknown_alias"
@@ -353,6 +367,17 @@ func (g *game) commitAction(a ir.Action) ([]execFrame, string) {
 	if !ok {
 		return nil, "unsupported_action"
 	}
+	if x.Kind == "end_turn" {
+		if g.turnTransition != "" {
+			return nil, "command_in_progress"
+		}
+		g.turnTransition = "ending"
+		event := ir.RuntimeEvent{Kind: "turn_ended", Side: g.turn.Active}
+		if g.emit(event) {
+			g.queueEventTriggers(event, nil, "")
+		}
+		return nil, ""
+	}
 	i := g.instances[x.Source]
 	if i == nil {
 		return nil, "unknown_alias"
@@ -424,6 +449,38 @@ func (g *game) commitSuperEvolve(i *instance) []execFrame {
 		return frames
 	}
 	return nil
+}
+
+func (g *game) advanceTurn() {
+	if g.turnTransition == "ending" {
+		if g.turn.Active == "oppo" {
+			g.turn.Number++
+		}
+		g.turn.Active = oppositeSide(g.turn.Active)
+		g.turnTransition = "starting"
+	}
+	active := g.player(g.turn.Active)
+	if active.maxpp < 10 {
+		active.maxpp++
+	}
+	active.pp = active.maxpp
+	active.combo = 0
+	var expired []*instance
+	for _, i := range active.field {
+		i.engaged = false
+		if i.card.CardType == "amulet" && i.countdown > 0 {
+			i.countdown--
+			if i.countdown == 0 {
+				expired = append(expired, i)
+			}
+		}
+	}
+	g.resolveDeathBatch(expired)
+	g.draw(ir.DrawEffect{Kind: "draw", Owner: g.turn.Active, Count: 1}, nil, frame{})
+	event := ir.RuntimeEvent{Kind: "turn_started", Side: g.turn.Active}
+	if g.emit(event) {
+		g.queueEventTriggers(event, nil, "")
+	}
 }
 
 func findAbility(card *ir.Card, kind string) *ir.Ability {
