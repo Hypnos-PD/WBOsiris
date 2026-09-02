@@ -477,7 +477,7 @@ type instanceSnapshot struct {
 	ID, Zone                            string
 	CardID                              int
 	Attack, Life, Earthsigil, Countdown int
-	Engaged, Evolved, SuperEvolved      bool
+	Engaged, Attacked, Evolved, SuperEvolved bool
 	Abilities                           map[string]bool
 }
 
@@ -509,7 +509,7 @@ func (g *game) snapshot() gameSnapshot {
 				for name, value := range i.abilities {
 					abilities[name] = value
 				}
-				snapshot.Instances = append(snapshot.Instances, instanceSnapshot{i.id, i.zone, i.card.ID, i.attack, i.life, i.earthsigil, i.countdown, i.engaged, i.evolved, i.superEvolved, abilities})
+			snapshot.Instances = append(snapshot.Instances, instanceSnapshot{i.id, i.zone, i.card.ID, i.attack, i.life, i.earthsigil, i.countdown, i.engaged, i.attacked, i.evolved, i.superEvolved, abilities})
 			}
 		}
 	}
