@@ -204,6 +204,9 @@ func (s *Session) Advance(action ir.AdvanceAction) StepResult {
 	if s.fault != "" {
 		return StepResult{Status: StatusFault, ErrorCode: s.fault}
 	}
+	if s.g.gameOver {
+		return StepResult{Status: StatusRejected, ErrorCode: "game_over"}
+	}
 	if s.actionID != "" || s.pending != nil || len(s.stack) != 0 {
 		return StepResult{Status: StatusRejected, ErrorCode: "command_in_progress"}
 	}

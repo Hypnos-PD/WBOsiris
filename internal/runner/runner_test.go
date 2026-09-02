@@ -345,6 +345,27 @@ func TestLethalAttackEndsGameAndRejectsLaterActions(t *testing.T) {
 	}
 }
 
+func TestOpponentCanSubmitAfterTurnChange(t *testing.T) {
+	instanceID := strings.Repeat("2", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{{ID: 55555555, CardType: "follower", Cost: 1, Stats: &ir.Stats{Attack: 1, Life: 1}}}}
+	state := testState()
+	oppo := state.Players["oppo"]
+	oppo.PP, oppo.MaxPP = 0, 0
+	oppo = withInstance(oppo, "hand", ir.TestInstance{InstanceID: instanceID, Alias: "oppo-card", CardID: 55555555, DeclaredType: "follower"})
+	state.Players["oppo"] = oppo
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result := session.Begin(strings.Repeat("3", 32), ir.SourceAction{Kind: "end_turn", Actor: "own"}); result.Status != StatusCompleted || session.g.turn.Active != "oppo" {
+		t.Fatalf("turn did not change: %#v", result)
+	}
+	result := session.Begin(strings.Repeat("4", 32), ir.SourceAction{Kind: "play", Actor: "oppo", Source: instanceID})
+	if result.Status != StatusCompleted || !contains(session.g.oppo.field, session.g.instances[instanceID]) || len(session.g.oppo.hand) != 0 {
+		t.Fatalf("opponent action did not use opponent state: result=%#v field=%#v hand=%#v", result, session.g.oppo.field, session.g.oppo.hand)
+	}
+}
+
 func intPtr(value int) *int    { return &value }
 func boolPtr(value bool) *bool { return &value }
 

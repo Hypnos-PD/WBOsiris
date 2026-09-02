@@ -222,7 +222,9 @@ func runTest(args []string) int {
 type simulationInput struct {
 	ActionID            string   `json:"actionId,omitempty"`
 	Kind                string   `json:"kind"`
+	Actor               string   `json:"actor,omitempty"`
 	Source              string   `json:"source,omitempty"`
+	Defender            string   `json:"defender,omitempty"`
 	RequestID           string   `json:"requestId,omitempty"`
 	StateRevision       uint64   `json:"stateRevision,omitempty"`
 	SelectedInstanceIDs []string `json:"selectedInstanceIds,omitempty"`
@@ -320,7 +322,11 @@ func applySimulationInput(session *runner.Session, input simulationInput, ordina
 		if actionID == "" {
 			actionID = fmt.Sprintf("%032x", *ordinal)
 		}
-		return session.Submit(actionID, runner.SimulatorCommand{Kind: input.Kind, Source: input.Source})
+		actor := input.Actor
+		if actor == "" {
+			actor = "own"
+		}
+		return session.SubmitAs(actionID, actor, runner.SimulatorCommand{Kind: input.Kind, Source: input.Source, Defender: input.Defender})
 	}
 	if pending.PublicTo != "own" {
 		return runner.StepResult{Status: runner.StatusRejected, ErrorCode: "choice_not_available"}

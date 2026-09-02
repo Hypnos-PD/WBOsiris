@@ -20,6 +20,7 @@ type SimulatorCapabilities struct {
 
 type SimulatorCommand struct {
 	Kind     string `json:"kind"`
+	Actor    string `json:"actor,omitempty"`
 	Source   string `json:"source,omitempty"`
 	Defender string `json:"defender,omitempty"`
 }
@@ -89,15 +90,22 @@ func SupportedSimulatorCapabilities() SimulatorCapabilities {
 
 // Submit 接受模拟器命令，未定义的规则动作会明确拒绝。
 func (s *Session) Submit(actionID string, command SimulatorCommand) StepResult {
+	return s.SubmitAs(actionID, "own", command)
+}
+
+func (s *Session) SubmitAs(actionID, actor string, command SimulatorCommand) StepResult {
+	if actor != "own" && actor != "oppo" {
+		return StepResult{Status: StatusRejected, ErrorCode: "invalid_actor"}
+	}
 	switch command.Kind {
 	case "play", "engage", "superevolve", "end_turn":
-		return s.Begin(actionID, ir.SourceAction{Kind: command.Kind, Actor: "own", Source: command.Source})
+		return s.Begin(actionID, ir.SourceAction{Kind: command.Kind, Actor: actor, Source: command.Source})
 	case "attack":
 		kind, defender := "attack_leader", command.Defender
 		if defender != "" {
 			kind = "attack_entity"
 		}
-		return s.Begin(actionID, ir.AttackAction{Kind: kind, Actor: "own", Attacker: command.Source, Defender: func() string {
+		return s.Begin(actionID, ir.AttackAction{Kind: kind, Actor: actor, Attacker: command.Source, Defender: func() string {
 			if defender == "" {
 				return "oppo"
 			}
@@ -110,44 +118,49 @@ func (s *Session) Submit(actionID string, command SimulatorCommand) StepResult {
 
 // LegalActions 只列出已经通过完整合法性预检的主动作。
 func (s *Session) LegalActions() []LegalAction {
-	if s == nil || s.g == nil || s.actionID != "" || s.pending != nil || len(s.stack) != 0 || s.fault != "" || s.g.turn.Active != "own" || s.g.phase != "main" {
+	return s.LegalActionsFor("own")
+}
+
+func (s *Session) LegalActionsFor(actor string) []LegalAction {
+	if s == nil || s.g == nil || s.actionID != "" || s.pending != nil || len(s.stack) != 0 || s.fault != "" || s.g.turn.Active != actor || s.g.phase != "main" || (actor != "own" && actor != "oppo") {
 		return []LegalAction{}
 	}
+	player, opponent := s.g.player(actor), s.g.player(oppositeSide(actor))
 	actions := make([]LegalAction, 0)
 	add := func(kind string, source *instance) {
 		var budget budgetTracker
 		budget.reset(s.budgetPolicy)
-		action := ir.SourceAction{Kind: kind, Actor: "own", Source: source.id}
+		action := ir.SourceAction{Kind: kind, Actor: actor, Source: source.id}
 		if code := s.g.preflight(action, &budget); code == "" && !budget.exceeded {
-			actions = append(actions, LegalAction{Kind: kind, Actor: "own", Source: source.id})
+			actions = append(actions, LegalAction{Kind: kind, Actor: actor, Source: source.id})
 		}
 	}
-	for _, source := range s.g.own.hand {
+	for _, source := range player.hand {
 		add("play", source)
 	}
-	for _, source := range s.g.own.field {
+	for _, source := range player.field {
 		add("engage", source)
 	}
-	for _, source := range s.g.own.field {
+	for _, source := range player.field {
 		add("superevolve", source)
 	}
-	for _, source := range s.g.own.field {
-		attack := ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: source.id, Defender: "oppo"}
+	for _, source := range player.field {
+		attack := ir.AttackAction{Kind: "attack_leader", Actor: actor, Attacker: source.id, Defender: oppositeSide(actor)}
 		var budget budgetTracker
 		budget.reset(s.budgetPolicy)
 		if code := s.g.preflight(attack, &budget); code == "" && !budget.exceeded {
-			actions = append(actions, LegalAction{Kind: "attack_leader", Actor: "own", Source: source.id, Defender: "oppo"})
+			actions = append(actions, LegalAction{Kind: "attack_leader", Actor: actor, Source: source.id, Defender: oppositeSide(actor)})
 		}
-		for _, target := range s.g.oppo.field {
+		for _, target := range opponent.field {
 			attack.Kind, attack.Defender = "attack_entity", target.id
 			budget.reset(s.budgetPolicy)
 			if code := s.g.preflight(attack, &budget); code == "" && !budget.exceeded {
-				actions = append(actions, LegalAction{Kind: "attack_entity", Actor: "own", Source: source.id, Defender: target.id})
+				actions = append(actions, LegalAction{Kind: "attack_entity", Actor: actor, Source: source.id, Defender: target.id})
 			}
 		}
 	}
-	if s.g.preflight(ir.SourceAction{Kind: "end_turn", Actor: "own"}, &budgetTracker{}) == "" {
-		actions = append(actions, LegalAction{Kind: "end_turn", Actor: "own"})
+	if s.g.preflight(ir.SourceAction{Kind: "end_turn", Actor: actor}, &budgetTracker{}) == "" {
+		actions = append(actions, LegalAction{Kind: "end_turn", Actor: actor})
 	}
 	return actions
 }

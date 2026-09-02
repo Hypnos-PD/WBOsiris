@@ -379,10 +379,11 @@ func (g *game) mergeEarthSigil(i *instance) {
 	if i.earthsigil == 0 || i.zone != "field" {
 		return
 	}
-	if !g.chargeQueryVisits(len(g.own.field)) {
+	owner := g.owner(i)
+	if !g.chargeQueryVisits(len(owner.field)) {
 		return
 	}
-	for _, old := range append([]*instance{}, g.own.field...) {
+	for _, old := range append([]*instance{}, owner.field...) {
 		if old != i && old.earthsigil > 0 {
 			i.earthsigil += old.earthsigil
 			g.move(old, "banished")

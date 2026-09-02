@@ -279,7 +279,7 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 	if g.gameOver {
 		return "game_over"
 	}
-	if g.turn.Active != "own" || g.phase != "main" {
+	if g.phase != "main" {
 		return "wrong_timing"
 	}
 	if x, ok := a.(ir.AttackAction); ok {
@@ -289,8 +289,11 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 	if !ok {
 		return "unsupported_action"
 	}
-	if x.Actor != "own" {
+	if x.Actor != "own" && x.Actor != "oppo" {
 		return "wrong_actor"
+	}
+	if x.Actor != g.turn.Active {
+		return "wrong_timing"
 	}
 	if x.Kind == "end_turn" {
 		if g.turnTransition != "" {
@@ -304,7 +307,8 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 	}
 	switch x.Kind {
 	case "play":
-		if i.zone != "hand" || !contains(g.own.hand, i) || g.own.pp < i.card.Cost {
+		actor := g.player(x.Actor)
+		if i.zone != "hand" || !contains(actor.hand, i) || actor.pp < i.card.Cost {
 			return "cost"
 		}
 		for _, restriction := range i.card.Restrictions {
@@ -312,7 +316,7 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 				return "unplayable"
 			}
 		}
-		if i.card.CardType != "spell" && len(g.own.field) >= fieldLimit {
+		if i.card.CardType != "spell" && len(actor.field) >= fieldLimit {
 			return "field_full"
 		}
 		sandbox := g.clone()
@@ -331,23 +335,25 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 		}
 	case "engage":
 		a := findAbility(i.card, "engage")
-		if i.zone != "field" || !contains(g.own.field, i) || i.engaged || a == nil || g.own.pp < a.Trigger.(ir.CostTrigger).Cost {
+		actor := g.player(x.Actor)
+		if i.zone != "field" || !contains(actor.field, i) || i.engaged || a == nil || actor.pp < a.Trigger.(ir.CostTrigger).Cost {
 			return "cost"
 		}
 		sandbox := g.clone()
 		sandbox.budget = budget
 		sandboxSource := sandbox.instances[i.id]
-		sandbox.own.pp -= a.Trigger.(ir.CostTrigger).Cost
+		sandbox.player(x.Actor).pp -= a.Trigger.(ir.CostTrigger).Cost
 		sandboxSource.engaged = true
 		return sandbox.preflightRequirements(a.Body, sandboxSource, frame{}, true)
 	case "superevolve":
-		if i.zone != "field" || !contains(g.own.field, i) || i.card.CardType != "follower" || i.superEvolved || g.own.sep < 1 {
+		actor := g.player(x.Actor)
+		if i.zone != "field" || !contains(actor.field, i) || i.card.CardType != "follower" || i.superEvolved || actor.sep < 1 {
 			return "cost"
 		}
 		sandbox := g.clone()
 		sandbox.budget = budget
 		sandboxSource := sandbox.instances[i.id]
-		sandbox.own.sep--
+		sandbox.player(x.Actor).sep--
 		sandboxSource.evolved, sandboxSource.superEvolved = true, true
 		abilities := map[string]ir.Ability{}
 		for _, ability := range sandboxSource.card.Abilities {
@@ -406,11 +412,15 @@ func (g *game) commitAction(a ir.Action) ([]execFrame, string) {
 }
 
 func (g *game) preflightAttack(a ir.AttackAction) string {
-	if a.Actor != "own" {
+	if a.Actor != "own" && a.Actor != "oppo" {
 		return "wrong_actor"
 	}
+	if a.Actor != g.turn.Active {
+		return "wrong_timing"
+	}
+	actor, opponent := g.player(a.Actor), g.player(oppositeSide(a.Actor))
 	attacker := g.instances[a.Attacker]
-	if attacker == nil || attacker.zone != "field" || !contains(g.own.field, attacker) || attacker.card.CardType != "follower" {
+	if attacker == nil || attacker.zone != "field" || !contains(actor.field, attacker) || attacker.card.CardType != "follower" {
 		return "invalid_attacker"
 	}
 	if attacker.attacked {
@@ -422,7 +432,7 @@ func (g *game) preflightAttack(a ir.AttackAction) string {
 		}
 	}
 	if a.Kind == "attack_leader" {
-		if a.Defender != "oppo" {
+		if a.Defender != oppositeSide(a.Actor) {
 			return "invalid_defender"
 		}
 		return ""
@@ -431,7 +441,7 @@ func (g *game) preflightAttack(a ir.AttackAction) string {
 		return "unsupported_action"
 	}
 	defender := g.instances[a.Defender]
-	if defender == nil || defender.zone != "field" || !contains(g.oppo.field, defender) || defender.card.CardType != "follower" {
+	if defender == nil || defender.zone != "field" || !contains(opponent.field, defender) || defender.card.CardType != "follower" {
 		return "invalid_defender"
 	}
 	for _, keyword := range []string{"ward", "intimidate"} {
@@ -450,7 +460,8 @@ func (g *game) commitAttack(a ir.AttackAction) string {
 	}
 	attacker.attacked = true
 	attackerTarget := ir.EventTarget{Kind: "instance", InstanceID: attacker.id}
-	defenderTarget := ir.EventTarget{Kind: "leader", Side: "oppo"}
+	opponentSide := oppositeSide(a.Actor)
+	defenderTarget := ir.EventTarget{Kind: "leader", Side: opponentSide}
 	if defender != nil {
 		defenderTarget = ir.EventTarget{Kind: "instance", InstanceID: defender.id}
 	}
@@ -460,7 +471,7 @@ func (g *game) commitAttack(a ir.AttackAction) string {
 	}
 	g.queueEventTriggers(event, attacker, "attack")
 	if defender == nil {
-		g.damageLeader(&g.oppo, "oppo", attacker.attack)
+		g.damageLeader(g.player(opponentSide), opponentSide, attacker.attack)
 		return ""
 	}
 	defender.life -= attacker.attack
@@ -512,13 +523,14 @@ func (g *game) commitPlay(i *instance) []execFrame {
 }
 
 func (g *game) applyPlaySetup(i *instance, emit bool) {
-	g.own.pp -= i.card.Cost
-	g.remove(&g.own.hand, i)
+	actor := g.owner(i)
+	actor.pp -= i.card.Cost
+	g.remove(&actor.hand, i)
 	if i.card.CardType == "spell" {
-		g.addToZone(&g.own, i, "graveyard")
+		g.addToZone(actor, i, "graveyard")
 	} else {
-		g.addToZone(&g.own, i, "field")
-		g.own.combo++
+		g.addToZone(actor, i, "field")
+		actor.combo++
 		g.mergeEarthSigil(i)
 		if emit && i.card.CardType == "follower" {
 			g.triggerSummoned(i)
@@ -527,13 +539,13 @@ func (g *game) applyPlaySetup(i *instance, emit bool) {
 }
 func (g *game) commitEngage(i *instance) []execFrame {
 	a := findAbility(i.card, "engage")
-	g.own.pp -= a.Trigger.(ir.CostTrigger).Cost
+	g.owner(i).pp -= a.Trigger.(ir.CostTrigger).Cost
 	i.engaged = true
 	g.triggerEngaged(i)
 	return []execFrame{{body: a.Body, blockID: abilityBlockID(i.card.ID, a.ID), self: i, bindings: frame{}}}
 }
 func (g *game) commitSuperEvolve(i *instance) []execFrame {
-	g.own.sep--
+	g.owner(i).sep--
 	i.evolved, i.superEvolved = true, true
 	abilities := map[string]ir.Ability{}
 	for _, a := range i.card.Abilities {
