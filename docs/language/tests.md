@@ -224,6 +224,7 @@ expect {
 events contains ordered {
     destroy source;
     summon card 90061130 count 1;
+    game_end own;
 }
 ```
 

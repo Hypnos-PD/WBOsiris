@@ -601,7 +601,7 @@ func decodeMatcher(data []byte) (EventMatcher, error) {
 		}
 		d, err := decodeEventTarget(v.Defender)
 		return EventMatcher{Kind: v.Kind, Attacker: &a, Defender: &d}, err
-	case "turn_started", "turn_ended":
+	case "turn_started", "turn_ended", "game_ended":
 		var v struct {
 			Kind string `json:"kind"`
 			Side string `json:"side"`

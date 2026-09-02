@@ -683,7 +683,7 @@ func compileAssertions(s *syntax.Statement, a map[string]string, sid string) ([]
 func eventMatcherIR(s *syntax.Statement, a map[string]string) ir.EventMatcher {
 	t := s.Tokens()
 	h := t[0].Value
-	m := ir.EventMatcher{Kind: map[string]string{"damage": "damaged", "heal": "healed", "draw": "card_drawn", "destroy": "destroyed", "banish": "banished", "summon": "follower_summoned", "move": "zone_moved", "evolve": "evolved", "superevolve": "super_evolved", "engage": "amulet_engaged", "attack": "attacked", "turn_start": "turn_started", "turn_end": "turn_ended", "gain": "resource_changed", "spend": "resource_changed", "return": "zone_moved"}[h]}
+	m := ir.EventMatcher{Kind: map[string]string{"damage": "damaged", "heal": "healed", "draw": "card_drawn", "destroy": "destroyed", "banish": "banished", "summon": "follower_summoned", "move": "zone_moved", "evolve": "evolved", "superevolve": "super_evolved", "engage": "amulet_engaged", "attack": "attacked", "turn_start": "turn_started", "turn_end": "turn_ended", "game_end": "game_ended", "gain": "resource_changed", "spend": "resource_changed", "return": "zone_moved"}[h]}
 	switch h {
 	case "damage", "heal":
 		end, _ := factObject(t, 1, map[string]string{}, new([]syntax.Diagnostic))
@@ -709,6 +709,8 @@ func eventMatcherIR(s *syntax.Statement, a map[string]string) ir.EventMatcher {
 	case "evolve", "superevolve", "engage":
 		m.InstanceID = a[t[1].Value]
 	case "turn_start", "turn_end":
+		m.Side = t[1].Value
+	case "game_end":
 		m.Side = t[1].Value
 	case "gain", "spend":
 		m.Side = t[1].Value

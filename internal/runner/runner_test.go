@@ -311,6 +311,40 @@ func TestAttackCanDamageLeaderOncePerTurn(t *testing.T) {
 	}
 }
 
+func TestLethalAttackEndsGameAndRejectsLaterActions(t *testing.T) {
+	attackerID := strings.Repeat("d", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{{ID: 44444444, CardType: "follower", Stats: &ir.Stats{Attack: 5, Life: 3}}}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: attackerID, Alias: "attacker", CardID: 44444444, DeclaredType: "follower"})
+	oppo := state.Players["oppo"]
+	oppo.Leader.Life = 5
+	state.Players["oppo"] = oppo
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := session.Begin(strings.Repeat("e", 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: attackerID, Defender: "oppo"})
+	if result.Status != StatusCompleted || !session.g.gameOver || session.g.winner != "own" || session.g.oppo.leaderLife != 0 {
+		t.Fatalf("lethal attack did not end game: result=%#v gameOver=%t winner=%s life=%d", result, session.g.gameOver, session.g.winner, session.g.oppo.leaderLife)
+	}
+	if len(session.g.events) != 3 || session.g.events[2].Kind != "game_ended" || session.g.events[2].Side != "own" {
+		t.Fatalf("unexpected lethal events: %#v", session.g.events)
+	}
+	before := session.g.snapshot()
+	rejected := session.Begin(strings.Repeat("f", 32), ir.SourceAction{Kind: "end_turn", Actor: "own"})
+	if rejected.Status != StatusRejected || rejected.ErrorCode != "game_over" || !reflect.DeepEqual(before, session.g.snapshot()) {
+		t.Fatalf("post-game action changed state: result=%#v", rejected)
+	}
+	view, err := session.View("oppo")
+	if err != nil || !view.GameOver || view.Winner != "oppo" || len(session.LegalActions()) != 0 {
+		t.Fatalf("terminal view diverged: view=%#v actions=%#v err=%v", view, session.LegalActions(), err)
+	}
+	restored, err := restoreGame(session.g.cards, snapshotContinuationGame(session.g))
+	if err != nil || !restored.gameOver || restored.winner != "own" || restored.oppo.leaderLife != 0 {
+		t.Fatalf("terminal state did not restore: game=%#v err=%v", restored, err)
+	}
+}
+
 func intPtr(value int) *int    { return &value }
 func boolPtr(value bool) *bool { return &value }
 

@@ -19,6 +19,7 @@ func TestDecodeEveryEventMatcherKind(t *testing.T) {
 		`{"kind":"attacked","attacker":{"kind":"instance","instanceId":"` + id + `"},"defender":{"kind":"leader","side":"oppo"}}`,
 		`{"kind":"turn_started","side":"own"}`,
 		`{"kind":"turn_ended","side":"oppo"}`,
+		`{"kind":"game_ended","side":"own"}`,
 		`{"kind":"resource_changed","side":"own","resource":"pp","direction":"spend","amount":1}`,
 	}
 	for _, src := range cases {

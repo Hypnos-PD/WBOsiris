@@ -537,7 +537,7 @@ func strictEventFact(s *syntax.Statement, a map[string]string, ds *[]syntax.Diag
 		return len(t) == 2 && aliasKnown(t[1], a, ds)
 	case "attack":
 		return len(t) >= 4 && aliasKnown(t[1], a, ds) && t[2].Value == "into" && attackTargetExact(t[3:], a, ds)
-	case "turn_start", "turn_end":
+	case "turn_start", "turn_end", "game_end":
 		return len(t) == 2 && set("own", "oppo")[t[1].Value]
 	case "move":
 		return len(t) == 4 && aliasKnown(t[1], a, ds) && t[2].Value == "to" && set("deck", "hand", "field", "graveyard", "banished")[t[3].Value]

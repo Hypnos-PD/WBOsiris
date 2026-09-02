@@ -39,6 +39,8 @@ type StateView struct {
 	Own           PlayerView     `json:"own"`
 	Oppo          PlayerView     `json:"oppo"`
 	PendingChoice *ChoiceRequest `json:"pendingChoice,omitempty"`
+	GameOver      bool           `json:"gameOver"`
+	Winner        string         `json:"winner,omitempty"`
 }
 
 type TurnView struct {
@@ -160,6 +162,7 @@ func (s *Session) View(viewer string) (StateView, error) {
 	}
 	own, oppo := &s.g.own, &s.g.oppo
 	active := s.g.turn.Active
+	winner := s.g.winner
 	if viewer == "oppo" {
 		own, oppo = oppo, own
 		if active == "own" {
@@ -167,10 +170,16 @@ func (s *Session) View(viewer string) (StateView, error) {
 		} else {
 			active = "own"
 		}
+		if winner == "own" {
+			winner = "oppo"
+		} else if winner == "oppo" {
+			winner = "own"
+		}
 	}
 	return StateView{
 		Turn: TurnView{Active: active, Number: s.g.turn.Number}, Phase: s.g.phase,
 		Revision: s.g.revision, Viewer: viewer,
+		GameOver: s.g.gameOver, Winner: winner,
 		Own: playerView(own, true), Oppo: playerView(oppo, false), PendingChoice: s.pendingChoiceFor(viewer),
 	}, nil
 }

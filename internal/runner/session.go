@@ -161,6 +161,9 @@ func (s *Session) Begin(actionID string, action ir.Action) StepResult {
 	if s.fault != "" {
 		return StepResult{Status: StatusFault, ErrorCode: s.fault}
 	}
+	if s.g.gameOver {
+		return StepResult{Status: StatusRejected, ErrorCode: "game_over"}
+	}
 	if s.actionID != "" || s.pending != nil || len(s.stack) != 0 {
 		return StepResult{Status: StatusRejected, ErrorCode: "command_in_progress"}
 	}
@@ -474,11 +477,11 @@ func deriveRuntimeID(parts ...string) string {
 }
 
 type instanceSnapshot struct {
-	ID, Zone                            string
-	CardID                              int
-	Attack, Life, Earthsigil, Countdown int
+	ID, Zone                                 string
+	CardID                                   int
+	Attack, Life, Earthsigil, Countdown      int
 	Engaged, Attacked, Evolved, SuperEvolved bool
-	Abilities                           map[string]bool
+	Abilities                                map[string]bool
 }
 
 type gameSnapshot struct {
@@ -493,6 +496,8 @@ type gameSnapshot struct {
 	Turn                            ir.Turn
 	Phase                           string
 	TurnTransition                  string
+	GameOver                        bool
+	Winner                          string
 }
 
 type playerSnapshot struct {
@@ -501,7 +506,7 @@ type playerSnapshot struct {
 }
 
 func (g *game) snapshot() gameSnapshot {
-	snapshot := gameSnapshot{Own: snapshotPlayer(g.own), Oppo: snapshotPlayer(g.oppo), Events: append([]ir.RuntimeEvent(nil), g.events...), RNG: g.rng.Snapshot(), Serial: g.serial, EventSequence: g.eventSequence, DeathBatchSerial: g.deathBatchSerial, Revision: g.revision, Triggers: len(g.triggers), Turn: g.turn, Phase: g.phase}
+	snapshot := gameSnapshot{Own: snapshotPlayer(g.own), Oppo: snapshotPlayer(g.oppo), Events: append([]ir.RuntimeEvent(nil), g.events...), RNG: g.rng.Snapshot(), Serial: g.serial, EventSequence: g.eventSequence, DeathBatchSerial: g.deathBatchSerial, Revision: g.revision, Triggers: len(g.triggers), Turn: g.turn, Phase: g.phase, GameOver: g.gameOver, Winner: g.winner}
 	for _, side := range []*player{&g.own, &g.oppo} {
 		for _, zone := range [][]*instance{side.deck, side.hand, side.field, side.graveyard, side.banished} {
 			for _, i := range zone {
@@ -509,7 +514,7 @@ func (g *game) snapshot() gameSnapshot {
 				for name, value := range i.abilities {
 					abilities[name] = value
 				}
-			snapshot.Instances = append(snapshot.Instances, instanceSnapshot{i.id, i.zone, i.card.ID, i.attack, i.life, i.earthsigil, i.countdown, i.engaged, i.attacked, i.evolved, i.superEvolved, abilities})
+				snapshot.Instances = append(snapshot.Instances, instanceSnapshot{i.id, i.zone, i.card.ID, i.attack, i.life, i.earthsigil, i.countdown, i.engaged, i.attacked, i.evolved, i.superEvolved, abilities})
 			}
 		}
 	}
@@ -525,7 +530,7 @@ func (g *game) clone() *game {
 		cards: g.cards, instances: map[string]*instance{}, legal: g.legal, illegal: g.illegal,
 		unchanged: g.unchanged, rng: g.rng.Clone(), events: append([]ir.RuntimeEvent(nil), g.events...),
 		serial: g.serial, eventSequence: g.eventSequence, deathBatchSerial: g.deathBatchSerial, revision: g.revision,
-		turn: g.turn, phase: g.phase, turnTransition: g.turnTransition,
+		turn: g.turn, phase: g.phase, turnTransition: g.turnTransition, gameOver: g.gameOver, winner: g.winner,
 	}
 	for id, original := range g.instances {
 		copy := *original

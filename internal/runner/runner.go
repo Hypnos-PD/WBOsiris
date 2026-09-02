@@ -46,6 +46,8 @@ type game struct {
 	turn                            ir.Turn
 	phase                           string
 	turnTransition                  string
+	gameOver                        bool
+	winner                          string
 }
 
 func Run(cards *ir.CardPack, tests *ir.TestPack) []Result {
@@ -274,6 +276,9 @@ func (g *game) addToZone(p *player, i *instance, z string) {
 	}
 }
 func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
+	if g.gameOver {
+		return "game_over"
+	}
 	if g.turn.Active != "own" || g.phase != "main" {
 		return "wrong_timing"
 	}
@@ -474,7 +479,18 @@ func (g *game) damageLeader(target *player, side string, amount int) {
 	t := ir.EventTarget{Kind: "leader", Side: side}
 	if g.emit(ir.RuntimeEvent{Kind: "damaged", Actual: actual, Target: &t}) {
 		target.leaderLife -= actual
+		if target.leaderLife == 0 {
+			g.finishGame(oppositeSide(side))
+		}
 	}
+}
+
+func (g *game) finishGame(winner string) {
+	if g.gameOver {
+		return
+	}
+	g.gameOver, g.winner = true, winner
+	g.emit(ir.RuntimeEvent{Kind: "game_ended", Side: winner})
 }
 
 func (g *game) emitDamage(amount int, target *ir.EventTarget) {

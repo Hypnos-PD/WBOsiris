@@ -73,7 +73,7 @@ func (m EventMatcher) MarshalJSON() ([]byte, error) {
 		object["instanceId"] = m.InstanceID
 	case "attacked":
 		object["attacker"], object["defender"] = m.Attacker, m.Defender
-	case "turn_started", "turn_ended":
+	case "turn_started", "turn_ended", "game_ended":
 		object["side"] = m.Side
 	case "resource_changed":
 		object["side"], object["resource"], object["direction"], object["amount"] = m.Side, m.Resource, m.Direction, m.Amount
