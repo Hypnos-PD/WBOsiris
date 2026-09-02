@@ -517,3 +517,155 @@ scenario "妖精入场但无敌方随从时跳过随机伤害" {
         rng.consumed == 0;
     }
 }
+
+scenario "疾驰与突进的入场回合攻击资格" {
+    seed 1016;
+
+    state {
+        turn own 5;
+        phase main;
+
+        player own {
+            field {
+                follower storm_unit = 10012120;
+                follower rush_unit = 10071110;
+            }
+        }
+        player oppo {
+        }
+    }
+
+    action {
+        attack storm_unit into oppo.leader;
+    }
+
+    expect {
+        legal;
+        oppo.leader.life == 16;
+    }
+}
+
+scenario "突进不能攻击主战者" {
+    seed 1017;
+
+    state {
+        turn own 5;
+        phase main;
+
+        player own {
+            field {
+                follower rush_unit = 10071110;
+            }
+        }
+        player oppo {
+        }
+    }
+
+    action {
+        attack rush_unit into oppo.leader;
+    }
+
+    expect {
+        illegal rush_cannot_attack_leader;
+        unchanged;
+    }
+}
+
+scenario "守护与威慑限制攻击目标" {
+    seed 1018;
+
+    state {
+        turn own 5;
+        phase main;
+
+        player own {
+            field {
+                follower attacker = 10012120;
+            }
+        }
+        player oppo {
+            field {
+                follower ward_unit = 10071130;
+                follower intimidate_unit = 90041120;
+            }
+        }
+    }
+
+    action {
+        attack attacker into intimidate_unit;
+    }
+
+    expect {
+        illegal intimidate_target;
+        unchanged;
+    }
+}
+
+scenario "毁灭与虹吸使用实际战斗伤害" {
+    seed 1019;
+
+    state {
+        turn own 5;
+        phase main;
+
+        player own {
+            leader 10/20;
+            field {
+                follower attacker = 10051110;
+            }
+        }
+        player oppo {
+            field {
+                follower defender = 10001110;
+            }
+        }
+    }
+
+    action {
+        attack attacker into defender;
+    }
+
+    expect {
+        legal;
+        defender.zone == graveyard;
+        own.leader.life == 10;
+        events contains ordered {
+            damage defender 2;
+            damage attacker 2;
+        }
+    }
+}
+
+scenario "交战时按攻击方再防守方顺序结算" {
+    seed 1020;
+
+    state {
+        turn own 5;
+        phase main;
+
+        player own {
+            field {
+                follower attacker = 90099910;
+            }
+        }
+        player oppo {
+            field {
+                follower defender = 90099911;
+            }
+        }
+    }
+
+    action {
+        attack attacker into defender;
+    }
+
+    expect {
+        legal;
+        attacker.stats == 2/1;
+        defender.zone == graveyard;
+        events contains ordered {
+            damage defender 2;
+            damage attacker 1;
+        }
+    }
+}

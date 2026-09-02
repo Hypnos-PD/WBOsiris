@@ -1,0 +1,26 @@
+wbo 0.1.0;
+
+card 90099910 {
+    type follower;
+    cost 1;
+    stats 1/3;
+
+    effect {
+        storm;
+        clash {
+            buff self +1/+0;
+        }
+    }
+
+    meta {
+        pack 90000;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs { name "测试疾驰交战者"; text "【疾驰】【交战时】本随从+1/+0。"; }
+    locale eng { name "Test Storm Clasher"; text "Storm. Clash: Give this follower +1/+0."; }
+    locale jpn { name "テスト疾走交戦者"; text "【疾走】【交戦時】これを+1/+0する。"; }
+    locale kor { name "테스트 질주 교전자"; text "[질주] [교전시] 이 추종자를 +1/+0."; }
+    locale cht { name "測試疾馳交戰者"; text "【疾馳】【交戰時】使這張卡片+1/+0。"; }
+}

@@ -69,7 +69,7 @@ func TestSimulationInputCanSubmitOpponentAction(t *testing.T) {
 	}
 	result := applySimulationInput(session, simulationInput{Kind: "play", Actor: "oppo", Source: instanceID}, &ordinal)
 	view, err := session.View("own")
-	if result.Status != runner.StatusCompleted || err != nil || len(view.Oppo.Field) != 1 {
+	if result.Status != runner.StatusCompleted || err != nil || len(view.Oppo.Field) != 1 || !view.Oppo.Field[0].SummoningSick || view.Oppo.Field[0].AttacksUsed != 0 {
 		t.Fatalf("opponent command was not applied through CLI input: result=%#v", result)
 	}
 }

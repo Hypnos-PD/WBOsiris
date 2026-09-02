@@ -103,7 +103,7 @@ func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error)
 				return ir.Card{}, err
 			}
 			fusion = append(fusion, n)
-		case len(s.Blocks()) > 0 && set("fanfare", "lastwords", "attack", "evolve", "superevolve", "engage", "enhance", "spellboost", "when", "replace")[h]:
+		case len(s.Blocks()) > 0 && set("fanfare", "lastwords", "attack", "clash", "evolve", "superevolve", "engage", "enhance", "spellboost", "when", "replace")[h]:
 			n, err := compileAbility(s, sid, scope, ids)
 			if err != nil {
 				return ir.Card{}, err
@@ -686,7 +686,7 @@ func eventMatcherIR(s *syntax.Statement, a map[string]string) ir.EventMatcher {
 	m := ir.EventMatcher{Kind: map[string]string{"damage": "damaged", "heal": "healed", "draw": "card_drawn", "destroy": "destroyed", "banish": "banished", "summon": "follower_summoned", "move": "zone_moved", "evolve": "evolved", "superevolve": "super_evolved", "engage": "amulet_engaged", "attack": "attacked", "turn_start": "turn_started", "turn_end": "turn_ended", "game_end": "game_ended", "gain": "resource_changed", "spend": "resource_changed", "return": "zone_moved"}[h]}
 	switch h {
 	case "damage", "heal":
-		end, _ := factObject(t, 1, map[string]string{}, new([]syntax.Diagnostic))
+		end, _ := factObject(t, 1, a, new([]syntax.Diagnostic))
 		v := eventTarget(t[1:end], a)
 		m.Target = &v
 		m.Actual = intToken(t[end])

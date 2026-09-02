@@ -650,7 +650,7 @@ Spellboost = NodeBase & {
 | `unplayable` | `Card.restrictions` 中的 `Unplayable` |
 | `fusion material from S where P { ... }` | `FusionAbility(MaterialFilter)` |
 | `countdown N`、`earthsigil` | `IntrinsicState` |
-| `fanfare`、`lastwords`、`attack`、`evolve`、`superevolve` | 对应 `Trigger` |
+| `fanfare`、`lastwords`、`attack`、`clash`、`evolve`、`superevolve` | 对应 `Trigger` |
 | `engage N`、`enhance N`、`spellboost {}` | 对应专用 `Trigger` |
 | `when ...` | `EventTrigger(EventPattern)` |
 | `replace ...` | `ReplacementTrigger(MovePattern)` |
@@ -741,7 +741,7 @@ ChoiceResponse = {
 
 ## 确定性随机数
 
-默认规则集 `wbo-standard-0.2.0` 固定使用 SplitMix64 v1。卡牌 IR 只声明何时
+默认规则集 `wbo-standard-0.3.0` 固定使用 SplitMix64 v1。卡牌 IR 只声明何时
 需要随机决策；对局、测试包、服务器和 WASM 必须持久化并校验规则集内容哈希。
 
 ```text

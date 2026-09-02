@@ -57,7 +57,7 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 		if (h == "countdown" || h == "earthsigil" || h == "engage") && ctx.cardType != "amulet" {
 			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", h+" 只允许用于护符", s.Span)
 		}
-		if (h == "attack" || h == "evolve" && len(b) == 1 || h == "superevolve") && ctx.cardType != "follower" {
+		if (h == "attack" || h == "clash" || h == "evolve" && len(b) == 1 || h == "superevolve") && ctx.cardType != "follower" {
 			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", h+" 只允许用于随从", s.Span)
 		}
 		if ctx.top && ctx.cardType != "spell" && isPlainOperation(s) {

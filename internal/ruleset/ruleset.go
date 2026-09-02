@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 )
 
-const DefaultID = "wbo-standard-0.2.0"
+const DefaultID = "wbo-standard-0.3.0"
 
 type MatchRuleset struct {
 	ID              string          `json:"id"`

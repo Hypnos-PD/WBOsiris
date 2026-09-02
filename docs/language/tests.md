@@ -230,7 +230,7 @@ events contains ordered {
 
 ## 随机数断言
 
-每个场景必须显式声明 `seed`。默认规则集 `wbo-standard-0.2.0` 使用 SplitMix64
+每个场景必须显式声明 `seed`。默认规则集 `wbo-standard-0.3.0` 使用 SplitMix64
 v1，可以根据种子断言具体随机结果，同时应断言是否消费随机数：
 
 ```wbotest

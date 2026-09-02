@@ -1,0 +1,25 @@
+wbo 0.1.0;
+
+card 90099911 {
+    type follower;
+    cost 1;
+    stats 1/2;
+
+    effect {
+        clash {
+            damage oppo.field.followers 1;
+        }
+    }
+
+    meta {
+        pack 90000;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs { name "测试交战反应者"; text "【交战时】对对手的战场上的所有随从造成1点伤害。"; }
+    locale eng { name "Test Clash Responder"; text "Clash: Deal 1 damage to all enemy followers."; }
+    locale jpn { name "テスト交戦反応者"; text "【交戦時】相手の場のフォロワーすべてに1ダメージ。"; }
+    locale kor { name "테스트 교전 반응자"; text "[교전시] 상대방 전장의 모든 추종자에게 1 피해."; }
+    locale cht { name "測試交戰反應者"; text "【交戰時】給予敵方戰場上的所有從者卡1點傷害。"; }
+}

@@ -168,7 +168,9 @@ FUNCTIONS BYTECODE TRIGGERS DEBUG   TESTS
 候选快照、动作 ID 和状态修订不匹配时不会修改状态。暂停状态可通过
 `EncodeContinuation` 输出版本化 JSON，由 `DecodeContinuation` 严格解码并通过
 `RestoreSession` 在相同卡牌包和规则集上恢复；执行栈使用卡牌、能力和节点稳定 ID，
-不保存 Go 内存引用。默认规则集 `wbo-standard-0.2.0` 还固定执行预算，TestPack 的
+不保存 Go 内存引用。当前 Continuation 版本为 `0.6.0`，完整保存攻击次数、入场等待、攻击阶段和
+玩家回合攻击历史；缺少这些状态的旧版本不做猜测性迁移。默认规则集
+`wbo-standard-0.3.0` 还固定执行预算，TestPack 的
 规则集依赖必须包含全部预算字段；预算计数随 Continuation 保存，耗尽后产生终止性的
 `execution_budget_exceeded`。字节码加入后，类型化 IR 仍作为编译器中层表示，不要求
 在发布包中长期保留。

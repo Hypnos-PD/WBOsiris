@@ -526,7 +526,7 @@ func decodeTrigger(data []byte) (Trigger, error) {
 		return nil, err
 	}
 	switch k.Kind {
-	case "fanfare", "lastwords", "attack", "evolve", "superevolve", "spellboost":
+	case "fanfare", "lastwords", "attack", "clash", "evolve", "superevolve", "spellboost":
 		type raw struct {
 			Kind string `json:"kind"`
 		}

@@ -85,6 +85,52 @@ func TestSimulatorCapabilitiesMatchImplementedCommands(t *testing.T) {
 	}
 }
 
+func TestSimulatorProjectsCombatReadinessAndLegalAttacks(t *testing.T) {
+	followerID := strings.Repeat("1", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{{ID: 78901234, CardType: "follower", Cost: 1, Stats: &ir.Stats{Attack: 2, Life: 2}}}}
+	state := testState()
+	own := state.Players["own"]
+	own.PP, own.MaxPP = 1, 1
+	own = withInstance(own, "hand", ir.TestInstance{InstanceID: followerID, Alias: "follower", CardID: 78901234, DeclaredType: "follower"})
+	state.Players["own"] = own
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result := session.Submit(strings.Repeat("2", 32), SimulatorCommand{Kind: "play", Source: followerID}); result.Status != StatusCompleted {
+		t.Fatalf("play failed: %#v", result)
+	}
+	view, _ := session.View("own")
+	if len(view.Own.Field) != 1 || !view.Own.Field[0].SummoningSick || view.Own.Field[0].AttacksUsed != 0 || hasLegalAttack(session.LegalActions(), followerID) {
+		t.Fatalf("sick follower was projected as ready: view=%#v actions=%#v", view.Own.Field, session.LegalActions())
+	}
+	if result := session.Submit(strings.Repeat("3", 32), SimulatorCommand{Kind: "end_turn"}); result.Status != StatusCompleted {
+		t.Fatalf("own turn did not end: %#v", result)
+	}
+	if result := session.SubmitAs(strings.Repeat("4", 32), "oppo", SimulatorCommand{Kind: "end_turn"}); result.Status != StatusCompleted {
+		t.Fatalf("opponent turn did not end: %#v", result)
+	}
+	if !hasLegalAttack(session.LegalActions(), followerID) {
+		t.Fatalf("ready follower was omitted from legal actions: %#v", session.LegalActions())
+	}
+	if result := session.Submit(strings.Repeat("5", 32), SimulatorCommand{Kind: "attack", Source: followerID}); result.Status != StatusCompleted {
+		t.Fatalf("attack failed: %#v", result)
+	}
+	view, _ = session.View("own")
+	if view.Own.Field[0].AttacksUsed != 1 || view.Own.Field[0].SummoningSick || !view.Own.AttackedThisTurn || hasLegalAttack(session.LegalActions(), followerID) {
+		t.Fatalf("used attack state diverged: view=%#v actions=%#v", view.Own, session.LegalActions())
+	}
+}
+
+func hasLegalAttack(actions []LegalAction, source string) bool {
+	for _, action := range actions {
+		if action.Source == source && (action.Kind == "attack_leader" || action.Kind == "attack_entity") {
+			return true
+		}
+	}
+	return false
+}
+
 func TestSimulatorViewOnlyShowsChoiceToItsController(t *testing.T) {
 	selectionID, abilityID := strings.Repeat("a", 32), strings.Repeat("b", 32)
 	pack := &ir.CardPack{Cards: []ir.Card{

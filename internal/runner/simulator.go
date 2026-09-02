@@ -50,37 +50,39 @@ type TurnView struct {
 }
 
 type PlayerView struct {
-	LeaderLife int          `json:"leaderLife"`
-	LeaderMax  int          `json:"leaderMax"`
-	PP         int          `json:"pp"`
-	MaxPP      int          `json:"maxpp"`
-	EP         int          `json:"ep"`
-	SEP        int          `json:"sep"`
-	Combo      int          `json:"combo"`
-	Shadows    int          `json:"shadows"`
-	DeckCount  int          `json:"deckCount"`
-	HandCount  int          `json:"handCount"`
-	Hand       []EntityView `json:"hand,omitempty"`
-	Field      []EntityView `json:"field"`
-	Graveyard  []EntityView `json:"graveyard"`
-	Banished   []EntityView `json:"banished"`
-	Destroyed  []EntityView `json:"destroyed"`
+	LeaderLife       int          `json:"leaderLife"`
+	LeaderMax        int          `json:"leaderMax"`
+	PP               int          `json:"pp"`
+	MaxPP            int          `json:"maxpp"`
+	EP               int          `json:"ep"`
+	SEP              int          `json:"sep"`
+	Combo            int          `json:"combo"`
+	Shadows          int          `json:"shadows"`
+	AttackedThisTurn bool         `json:"attackedThisTurn"`
+	DeckCount        int          `json:"deckCount"`
+	HandCount        int          `json:"handCount"`
+	Hand             []EntityView `json:"hand,omitempty"`
+	Field            []EntityView `json:"field"`
+	Graveyard        []EntityView `json:"graveyard"`
+	Banished         []EntityView `json:"banished"`
+	Destroyed        []EntityView `json:"destroyed"`
 }
 
 type EntityView struct {
-	InstanceID   string   `json:"instanceId"`
-	Alias        string   `json:"alias,omitempty"`
-	CardID       int      `json:"cardId"`
-	CardType     string   `json:"cardType"`
-	Attack       int      `json:"attack,omitempty"`
-	Life         int      `json:"life,omitempty"`
-	Countdown    int      `json:"countdown,omitempty"`
-	Earthsigil   int      `json:"earthsigil,omitempty"`
-	Engaged      bool     `json:"engaged,omitempty"`
-	Attacked     bool     `json:"attacked,omitempty"`
-	Evolved      bool     `json:"evolved,omitempty"`
-	SuperEvolved bool     `json:"superEvolved,omitempty"`
-	Keywords     []string `json:"keywords,omitempty"`
+	InstanceID    string   `json:"instanceId"`
+	Alias         string   `json:"alias,omitempty"`
+	CardID        int      `json:"cardId"`
+	CardType      string   `json:"cardType"`
+	Attack        int      `json:"attack,omitempty"`
+	Life          int      `json:"life,omitempty"`
+	Countdown     int      `json:"countdown,omitempty"`
+	Earthsigil    int      `json:"earthsigil,omitempty"`
+	Engaged       bool     `json:"engaged,omitempty"`
+	AttacksUsed   int      `json:"attacksUsed"`
+	SummoningSick bool     `json:"summoningSick"`
+	Evolved       bool     `json:"evolved,omitempty"`
+	SuperEvolved  bool     `json:"superEvolved,omitempty"`
+	Keywords      []string `json:"keywords,omitempty"`
 }
 
 // SupportedSimulatorCapabilities 返回运行时当前真正支持的交互范围。
@@ -209,7 +211,7 @@ func (s *Session) pendingChoiceFor(viewer string) *ChoiceRequest {
 func playerView(p *player, revealHand bool) PlayerView {
 	view := PlayerView{
 		LeaderLife: p.leaderLife, LeaderMax: p.leaderMax, PP: p.pp, MaxPP: p.maxpp,
-		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows,
+		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, AttackedThisTurn: p.attackedThisTurn,
 		DeckCount: len(p.deck), HandCount: len(p.hand), Field: entityViews(p.field),
 		Graveyard: entityViews(p.graveyard), Banished: entityViews(p.banished), Destroyed: entityViews(p.destroyed),
 	}
@@ -232,7 +234,8 @@ func entityViews(instances []*instance) []EntityView {
 		views = append(views, EntityView{
 			InstanceID: i.id, Alias: i.alias, CardID: i.card.ID, CardType: i.card.CardType,
 			Attack: i.attack, Life: i.life, Countdown: i.countdown, Earthsigil: i.earthsigil,
-			Engaged: i.engaged, Attacked: i.attacked, Evolved: i.evolved, SuperEvolved: i.superEvolved, Keywords: keywords,
+			Engaged: i.engaged, AttacksUsed: i.attacksUsed, SummoningSick: i.summoningSick,
+			Evolved: i.evolved, SuperEvolved: i.superEvolved, Keywords: keywords,
 		})
 	}
 	return views

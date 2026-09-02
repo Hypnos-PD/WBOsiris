@@ -367,6 +367,7 @@ func (g *game) summonFor(self *instance, side string, count, id int) []*instance
 		g.serial++
 		i := g.newInstance(c, fmt.Sprintf("summoned-%d", g.serial), fmt.Sprintf("@summoned%d", g.serial), "field")
 		g.addToZone(own, i, "field")
+		i.summoningSick = i.card.CardType == "follower" && !i.abilities["storm"] && !i.abilities["rush"]
 		batch = append(batch, i)
 		g.triggerSummoned(i)
 		if g.budget != nil && g.budget.exceeded {
@@ -488,6 +489,7 @@ func (g *game) returnCard(i *instance, z string) {
 	p := g.owner(i)
 	if i.zone == "field" {
 		g.triggerIndex.remove(i)
+		resetCombatState(i)
 	}
 	g.removeFromPlayer(p, i)
 	pos := g.rng.Index(len(p.deck) + 1)
@@ -500,9 +502,15 @@ func (g *game) move(i *instance, z string) {
 	p := g.owner(i)
 	if i.zone == "field" {
 		g.triggerIndex.remove(i)
+		resetCombatState(i)
 	}
 	g.removeFromPlayer(p, i)
 	g.addToZone(p, i, z)
+}
+
+func resetCombatState(i *instance) {
+	i.attacksUsed = 0
+	i.summoningSick = false
 }
 func (g *game) owner(i *instance) *player {
 	for _, z := range [][]*instance{g.oppo.field, g.oppo.hand, g.oppo.deck, g.oppo.graveyard, g.oppo.banished, g.oppo.destroyed} {

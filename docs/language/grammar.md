@@ -147,12 +147,12 @@ ability_block      = simple_ability_name , effect_block
                    | "superevolve" , [super_relation , "evolve"] , effect_block
                    | "engage" , integer , effect_block
                    | "enhance" , integer , effect_block ;
-simple_ability_name = "fanfare" | "lastwords" | "attack" | "evolve"
-                    | "spellboost" ;
+simple_ability_name = "fanfare" | "lastwords" | "attack" | "clash" | "evolve"
+                     | "spellboost" ;
 super_relation     = "replaces" | "extends" ;
 ```
 
-`fanfare`、`lastwords`、`attack`、`evolve`、`superevolve`、`spellboost` 是
+`fanfare`、`lastwords`、`attack`、`clash`、`evolve`、`superevolve`、`spellboost` 是
 触发能力；`engage` 是带能量点费用的启动能力；`enhance` 是强制替代打出费用的
 能力。存在多个可支付强化档位时，必须采用费用最高的一档，不能使用原费用或更低
 档位。
@@ -544,7 +544,7 @@ fact_object       = alias | participant , "." , "leader" | "card" , card_id ;
     `count`、`all` 和顺序断言必须引用允许查询的区域。
 20. 所有随机决定使用场景种子初始化的对局随机数生成器。空候选、非法指令、
     无需打破并列的确定性选择不得消费随机决策。随机插入牌组、非空随机目标和
-    需要打破并列的选择各消费一次规则层随机决策。`wbo-standard-0.2.0` 使用
+    需要打破并列的选择各消费一次规则层随机决策。`wbo-standard-0.3.0` 使用
     SplitMix64 v1；同一规则集、种子和有序候选集合必须得到相同结果。
 21. 本地化 `name`、`text` 只用于展示，规则引擎不得解析其内容。规范检查器可以
     比较展示文本与规则，但比较结果不能改变规则执行。

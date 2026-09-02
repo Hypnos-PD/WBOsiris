@@ -16,7 +16,7 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.3.0"
+const continuationVersion = "0.6.0"
 
 type ContinuationBindings struct {
 	ID     string              `json:"id"`
@@ -60,39 +60,51 @@ type ContinuationGame struct {
 	TurnTransition   string               `json:"turnTransition"`
 	GameOver         bool                 `json:"gameOver"`
 	Winner           string               `json:"winner,omitempty"`
+	Attack           *ContinuationAttack  `json:"attack,omitempty"`
+}
+
+type ContinuationAttack struct {
+	Stage          string `json:"stage"`
+	Actor          string `json:"actor"`
+	Attacker       string `json:"attacker"`
+	Defender       string `json:"defender,omitempty"`
+	AttackerAttack int    `json:"attackerAttack,omitempty"`
+	DefenderAttack int    `json:"defenderAttack,omitempty"`
 }
 
 type ContinuationPlayer struct {
-	PP         int      `json:"pp"`
-	MaxPP      int      `json:"maxpp"`
-	LeaderLife int      `json:"leaderLife"`
-	LeaderMax  int      `json:"leaderMax"`
-	EP         int      `json:"ep"`
-	SEP        int      `json:"sep"`
-	Combo      int      `json:"combo"`
-	Shadows    int      `json:"shadows"`
-	Deck       []string `json:"deck"`
-	Hand       []string `json:"hand"`
-	Field      []string `json:"field"`
-	Graveyard  []string `json:"graveyard"`
-	Banished   []string `json:"banished"`
-	Destroyed  []string `json:"destroyed"`
+	PP               int      `json:"pp"`
+	MaxPP            int      `json:"maxpp"`
+	LeaderLife       int      `json:"leaderLife"`
+	LeaderMax        int      `json:"leaderMax"`
+	EP               int      `json:"ep"`
+	SEP              int      `json:"sep"`
+	Combo            int      `json:"combo"`
+	Shadows          int      `json:"shadows"`
+	AttackedThisTurn bool     `json:"attackedThisTurn"`
+	Deck             []string `json:"deck"`
+	Hand             []string `json:"hand"`
+	Field            []string `json:"field"`
+	Graveyard        []string `json:"graveyard"`
+	Banished         []string `json:"banished"`
+	Destroyed        []string `json:"destroyed"`
 }
 
 type ContinuationEntity struct {
-	ID           string   `json:"id"`
-	Alias        string   `json:"alias"`
-	Zone         string   `json:"zone"`
-	CardID       int      `json:"cardId"`
-	Attack       int      `json:"attack"`
-	Life         int      `json:"life"`
-	Earthsigil   int      `json:"earthsigil"`
-	Countdown    int      `json:"countdown"`
-	Engaged      bool     `json:"engaged"`
-	Attacked     bool     `json:"attacked"`
-	Evolved      bool     `json:"evolved"`
-	SuperEvolved bool     `json:"superEvolved"`
-	Abilities    []string `json:"abilities"`
+	ID            string   `json:"id"`
+	Alias         string   `json:"alias"`
+	Zone          string   `json:"zone"`
+	CardID        int      `json:"cardId"`
+	Attack        int      `json:"attack"`
+	Life          int      `json:"life"`
+	Earthsigil    int      `json:"earthsigil"`
+	Countdown     int      `json:"countdown"`
+	AttacksUsed   int      `json:"attacksUsed"`
+	Engaged       bool     `json:"engaged"`
+	SummoningSick bool     `json:"summoningSick"`
+	Evolved       bool     `json:"evolved"`
+	SuperEvolved  bool     `json:"superEvolved"`
+	Abilities     []string `json:"abilities"`
 }
 
 type ContinuationEvent struct {
@@ -337,6 +349,9 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 		RNG:    ContinuationRNG{State: g.rng.Snapshot().State, Consumed: g.rng.Snapshot().Consumed},
 		Serial: g.serial, EventSequence: g.eventSequence, DeathBatchSerial: g.deathBatchSerial, Revision: g.revision, Legal: g.legal, Illegal: g.illegal, Unchanged: g.unchanged, Turn: g.turn, Phase: g.phase, TurnTransition: g.turnTransition, GameOver: g.gameOver, Winner: g.winner,
 	}
+	if g.attack != nil {
+		snapshot.Attack = &ContinuationAttack{Stage: g.attack.stage, Actor: g.attack.actor, Attacker: g.attack.attacker, Defender: g.attack.defender, AttackerAttack: g.attack.attackerAttack, DefenderAttack: g.attack.defenderAttack}
+	}
 	ids := make([]string, 0, len(g.instances))
 	for id := range g.instances {
 		ids = append(ids, id)
@@ -351,7 +366,12 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 			}
 		}
 		sort.Strings(abilities)
-		snapshot.Instances = append(snapshot.Instances, ContinuationEntity{ID: i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Attack: i.attack, Life: i.life, Earthsigil: i.earthsigil, Countdown: i.countdown, Engaged: i.engaged, Attacked: i.attacked, Evolved: i.evolved, SuperEvolved: i.superEvolved, Abilities: abilities})
+		snapshot.Instances = append(snapshot.Instances, ContinuationEntity{
+			ID: i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Attack: i.attack, Life: i.life,
+			Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed,
+			Engaged: i.engaged, SummoningSick: i.summoningSick, Evolved: i.evolved,
+			SuperEvolved: i.superEvolved, Abilities: abilities,
+		})
 	}
 	for _, event := range g.events {
 		snapshot.Events = append(snapshot.Events, ContinuationEvent{Kind: event.Kind, Side: event.Side, InstanceID: event.InstanceID, CardID: event.CardID, Count: event.Count, Actual: event.Actual, Target: cloneEventTarget(event.Target), Subject: cloneEventTarget(event.Subject), Attacker: cloneEventTarget(event.Attacker), Defender: cloneEventTarget(event.Defender), Sequence: event.Sequence, BatchID: event.BatchID})
@@ -360,7 +380,12 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 }
 
 func snapshotContinuationPlayer(p player) ContinuationPlayer {
-	return ContinuationPlayer{PP: p.pp, MaxPP: p.maxpp, LeaderLife: p.leaderLife, LeaderMax: p.leaderMax, EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, Deck: instanceIDs(p.deck), Hand: instanceIDs(p.hand), Field: instanceIDs(p.field), Graveyard: instanceIDs(p.graveyard), Banished: instanceIDs(p.banished), Destroyed: instanceIDs(p.destroyed)}
+	return ContinuationPlayer{
+		PP: p.pp, MaxPP: p.maxpp, LeaderLife: p.leaderLife, LeaderMax: p.leaderMax,
+		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, AttackedThisTurn: p.attackedThisTurn,
+		Deck: instanceIDs(p.deck), Hand: instanceIDs(p.hand), Field: instanceIDs(p.field),
+		Graveyard: instanceIDs(p.graveyard), Banished: instanceIDs(p.banished), Destroyed: instanceIDs(p.destroyed),
+	}
 }
 
 func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) {
@@ -380,7 +405,17 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 		if entity.ID == "" || card == nil || g.instances[entity.ID] != nil || !validZone(entity.Zone) {
 			return nil, fmt.Errorf("invalid continuation entity %q", entity.ID)
 		}
-		i := &instance{id: entity.ID, alias: entity.Alias, zone: entity.Zone, card: card, attack: entity.Attack, life: entity.Life, earthsigil: entity.Earthsigil, countdown: entity.Countdown, engaged: entity.Engaged, attacked: entity.Attacked, evolved: entity.Evolved, superEvolved: entity.SuperEvolved, abilities: map[string]bool{}}
+		if entity.AttacksUsed < 0 || entity.AttacksUsed > 1 ||
+			entity.AttacksUsed > 0 && (entity.Zone != "field" || card.CardType != "follower") ||
+			entity.SummoningSick && (entity.Zone != "field" || card.CardType != "follower" || entity.AttacksUsed != 0) {
+			return nil, fmt.Errorf("invalid continuation combat state")
+		}
+		i := &instance{
+			id: entity.ID, alias: entity.Alias, zone: entity.Zone, card: card,
+			attack: entity.Attack, life: entity.Life, earthsigil: entity.Earthsigil, countdown: entity.Countdown,
+			attacksUsed: entity.AttacksUsed, engaged: entity.Engaged, summoningSick: entity.SummoningSick,
+			evolved: entity.Evolved, superEvolved: entity.SuperEvolved, abilities: map[string]bool{},
+		}
 		for _, ability := range entity.Abilities {
 			if ability == "" || i.abilities[ability] {
 				return nil, fmt.Errorf("invalid continuation ability")
@@ -447,6 +482,22 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 		return nil, err
 	}
 	g.rng.Restore(ruleset.RNGState{State: saved.RNG.State, Consumed: saved.RNG.Consumed})
+	if saved.Attack != nil {
+		if saved.Attack.Stage != "attack" && saved.Attack.Stage != "combat" || saved.Attack.Actor != "own" && saved.Attack.Actor != "oppo" || saved.Attack.Attacker == "" || saved.Attack.AttackerAttack < 0 || saved.Attack.DefenderAttack < 0 {
+			return nil, fmt.Errorf("invalid continuation attack state")
+		}
+		attacker := g.instances[saved.Attack.Attacker]
+		if attacker == nil || attacker.zone != "field" || attacker.card.CardType != "follower" || !contains(g.player(saved.Attack.Actor).field, attacker) || saved.Attack.Actor != g.turn.Active {
+			return nil, fmt.Errorf("invalid continuation attack state")
+		}
+		if saved.Attack.Defender != "" {
+			defender := g.instances[saved.Attack.Defender]
+			if defender == nil || defender.zone != "field" || defender.card.CardType != "follower" || !contains(g.player(oppositeSide(saved.Attack.Actor)).field, defender) {
+				return nil, fmt.Errorf("invalid continuation attack state")
+			}
+		}
+		g.attack = &attackState{stage: saved.Attack.Stage, actor: saved.Attack.Actor, attacker: saved.Attack.Attacker, defender: saved.Attack.Defender, attackerAttack: saved.Attack.AttackerAttack, defenderAttack: saved.Attack.DefenderAttack}
+	}
 	g.rebuildTriggerIndex()
 	return g, nil
 }
@@ -497,7 +548,7 @@ func generatedInstanceSerial(instances []ContinuationEntity) int {
 }
 
 func restorePlayer(saved ContinuationPlayer, instances map[string]*instance) (player, error) {
-	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows}
+	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, attackedThisTurn: saved.AttackedThisTurn}
 	var err error
 	if p.deck, err = restoreInstanceList(saved.Deck, instances, "deck"); err != nil {
 		return player{}, err

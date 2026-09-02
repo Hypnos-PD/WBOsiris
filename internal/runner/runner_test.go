@@ -27,8 +27,8 @@ func TestBaseRulesScenarios(t *testing.T) {
 		t.Fatal(err)
 	}
 	results := Run(cards, tests)
-	if len(results) != 15 {
-		t.Fatalf("got %d scenarios, want 15", len(results))
+	if len(results) != 20 {
+		t.Fatalf("got %d scenarios, want 20", len(results))
 	}
 	for _, result := range results {
 		if !result.Passed() {
@@ -235,11 +235,12 @@ func TestEndTurnPreparesNextPlayerDeterministically(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	session.g.oppo.attackedThisTurn = true
 	result := session.Begin(strings.Repeat("5", 32), ir.SourceAction{Kind: "end_turn", Actor: "own"})
 	if result.Status != StatusCompleted {
 		t.Fatalf("end turn did not complete: %#v", result)
 	}
-	if session.g.turn.Active != "oppo" || session.g.turn.Number != 1 || session.g.oppo.maxpp != 4 || session.g.oppo.pp != 4 || session.g.oppo.combo != 0 || len(session.g.oppo.hand) != 1 || len(session.g.oppo.field) != 0 {
+	if session.g.turn.Active != "oppo" || session.g.turn.Number != 1 || session.g.oppo.maxpp != 4 || session.g.oppo.pp != 4 || session.g.oppo.combo != 0 || session.g.oppo.attackedThisTurn || len(session.g.oppo.hand) != 1 || len(session.g.oppo.field) != 0 {
 		t.Fatalf("next turn preparation diverged: turn=%#v pp=%d/%d hand=%d field=%d", session.g.turn, session.g.oppo.pp, session.g.oppo.maxpp, len(session.g.oppo.hand), len(session.g.oppo.field))
 	}
 	if len(session.g.events) != 4 || session.g.events[0].Kind != "turn_ended" || session.g.events[1].Kind != "destroyed" || session.g.events[2].Kind != "card_drawn" || session.g.events[2].Side != "oppo" || session.g.events[3].Kind != "turn_started" {
@@ -287,6 +288,9 @@ func TestAttackResolvesSimultaneousFollowerDamage(t *testing.T) {
 	if len(session.g.events) != 5 || session.g.events[0].Kind != "attacked" || session.g.events[1].Kind != "damaged" || session.g.events[2].Kind != "damaged" || session.g.events[3].Kind != "destroyed" || session.g.events[4].Kind != "destroyed" {
 		t.Fatalf("unexpected attack events: %#v", session.g.events)
 	}
+	if !session.g.own.attackedThisTurn || session.g.instances[attackerID].attacksUsed != 0 {
+		t.Fatalf("attack history or field-exit reset diverged: player=%t used=%d", session.g.own.attackedThisTurn, session.g.instances[attackerID].attacksUsed)
+	}
 }
 
 func TestAttackCanDamageLeaderOncePerTurn(t *testing.T) {
@@ -302,12 +306,274 @@ func TestAttackCanDamageLeaderOncePerTurn(t *testing.T) {
 		t.Fatal(err)
 	}
 	first := session.Begin(strings.Repeat("b", 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: attackerID, Defender: "oppo"})
-	if first.Status != StatusCompleted || session.g.oppo.leaderLife != 1 || !session.g.instances[attackerID].attacked {
+	if first.Status != StatusCompleted || session.g.oppo.leaderLife != 1 || session.g.instances[attackerID].attacksUsed != 1 || !session.g.own.attackedThisTurn {
 		t.Fatalf("leader attack diverged: %#v", first)
 	}
 	second := session.Begin(strings.Repeat("c", 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: attackerID, Defender: "oppo"})
 	if second.Status != StatusIllegal || second.IllegalCode != "already_attacked" || session.g.oppo.leaderLife != 1 {
 		t.Fatalf("repeat attack was accepted: %#v", second)
+	}
+}
+
+func TestAttackAbilityResolvesBeforeCombatDamage(t *testing.T) {
+	attackerID := strings.Repeat("a", 32)
+	abilityID := strings.Repeat("b", 32)
+	leader := ir.LeaderRef{Kind: "leader", Side: "own", ValueType: "leader"}
+	pack := &ir.CardPack{Cards: []ir.Card{{ID: 33333334, CardType: "follower", Stats: &ir.Stats{Attack: 4, Life: 4}, Abilities: []ir.Ability{{
+		ID: abilityID, Trigger: ir.SimpleTrigger{Kind: "attack"}, Body: []ir.Effect{ir.TargetEffect{Kind: "heal", Target: leader, Amount: 2}},
+	}}}}}
+	state := testState()
+	own := state.Players["own"]
+	own.Leader.Life = 10
+	state.Players["own"] = withInstance(own, "field", ir.TestInstance{InstanceID: attackerID, Alias: "attacker", CardID: 33333334, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := session.Begin(strings.Repeat("c", 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: attackerID, Defender: "oppo"})
+	if result.Status != StatusCompleted || session.g.own.leaderLife != 12 || session.g.oppo.leaderLife != 16 {
+		t.Fatalf("attack ability did not resolve before combat: result=%#v own=%d oppo=%d events=%#v", result, session.g.own.leaderLife, session.g.oppo.leaderLife, session.g.events)
+	}
+	if len(session.g.events) != 3 || session.g.events[0].Kind != "attacked" || session.g.events[1].Kind != "healed" || session.g.events[2].Kind != "damaged" {
+		t.Fatalf("unexpected attack phase events: %#v", session.g.events)
+	}
+}
+
+func TestAttackAbilityCanSuspendBeforeCombat(t *testing.T) {
+	attackerID, defenderID := strings.Repeat("d", 32), strings.Repeat("e", 32)
+	abilityID, selectionID := strings.Repeat("f", 32), strings.Repeat("1", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 33333335, CardType: "follower", Stats: &ir.Stats{Attack: 4, Life: 4}, Abilities: []ir.Ability{{
+			ID: abilityID, Trigger: ir.SimpleTrigger{Kind: "attack"}, Body: []ir.Effect{
+				ir.SelectionEffect{NodeBase: ir.NodeBase{ID: selectionID}, Kind: "require", Policy: "required", Binding: "target", Source: ir.ZoneRef{Kind: "zone", Side: "oppo", Zone: "field", Member: "follower"}},
+				ir.TargetEffect{Kind: "destroy", Target: ir.BindingRef{Kind: "binding", Name: "target"}},
+			},
+		}}},
+		{ID: 33333336, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 3}},
+	}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: attackerID, Alias: "attacker", CardID: 33333335, DeclaredType: "follower"})
+	state.Players["oppo"] = withInstance(state.Players["oppo"], "field", ir.TestInstance{InstanceID: defenderID, Alias: "defender", CardID: 33333336, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	step := session.Begin(strings.Repeat("2", 32), ir.AttackAction{Kind: "attack_entity", Actor: "own", Attacker: attackerID, Defender: defenderID})
+	if step.Status != StatusSuspended || session.g.instances[defenderID].life != 3 || session.g.attack == nil {
+		t.Fatalf("attack did not suspend before combat: step=%#v defender=%#v attack=%#v", step, session.g.instances[defenderID], session.g.attack)
+	}
+	data, err := session.EncodeContinuation()
+	if err != nil {
+		t.Fatal(err)
+	}
+	restored, err := RestoreSession(pack, mustDecodeContinuation(t, data))
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := restored.Resume(ChoiceResponse{RequestID: step.Choice.RequestID, ActionID: step.Choice.ActionID, StateRevision: step.Choice.StateRevision, SelectedInstanceIDs: []string{defenderID}})
+	if result.Status != StatusCompleted || restored.g.instances[defenderID].zone != "graveyard" || restored.g.instances[attackerID].life != 4 || restored.g.oppo.leaderLife != 20 || restored.g.attack != nil {
+		t.Fatalf("attack continuation did not skip destroyed target combat: result=%#v attacker=%#v defender=%#v oppoLife=%d", result, restored.g.instances[attackerID], restored.g.instances[defenderID], restored.g.oppo.leaderLife)
+	}
+}
+
+func mustDecodeContinuation(t *testing.T, data []byte) *Continuation {
+	t.Helper()
+	continuation, err := DecodeContinuation(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return continuation
+}
+
+func TestFollowersCannotAttackUntilTheirNextTurn(t *testing.T) {
+	playedID := strings.Repeat("1", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{{ID: 66666666, CardType: "follower", Cost: 1, Stats: &ir.Stats{Attack: 2, Life: 2}}}}
+	state := testState()
+	own := state.Players["own"]
+	own.PP, own.MaxPP = 1, 1
+	own = withInstance(own, "hand", ir.TestInstance{InstanceID: playedID, Alias: "played", CardID: 66666666, DeclaredType: "follower"})
+	state.Players["own"] = own
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result := session.Begin(strings.Repeat("2", 32), ir.SourceAction{Kind: "play", Actor: "own", Source: playedID}); result.Status != StatusCompleted {
+		t.Fatalf("play failed: %#v", result)
+	}
+	if !session.g.instances[playedID].summoningSick {
+		t.Fatal("played follower was ready immediately")
+	}
+	before := session.g.snapshot()
+	attack := session.Begin(strings.Repeat("3", 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: playedID, Defender: "oppo"})
+	if attack.Status != StatusIllegal || attack.IllegalCode != "summoning_sick" || !reflect.DeepEqual(before, session.g.snapshot()) {
+		t.Fatalf("summoning-sick attack changed state: %#v", attack)
+	}
+	if result := session.Begin(strings.Repeat("4", 32), ir.SourceAction{Kind: "end_turn", Actor: "own"}); result.Status != StatusCompleted {
+		t.Fatalf("own turn did not end: %#v", result)
+	}
+	if result := session.Begin(strings.Repeat("5", 32), ir.SourceAction{Kind: "end_turn", Actor: "oppo"}); result.Status != StatusCompleted {
+		t.Fatalf("opponent turn did not end: %#v", result)
+	}
+	if session.g.instances[playedID].summoningSick {
+		t.Fatal("follower remained sick on its controller's next turn")
+	}
+	attack = session.Begin(strings.Repeat("6", 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: playedID, Defender: "oppo"})
+	if attack.Status != StatusCompleted || session.g.oppo.leaderLife != 18 {
+		t.Fatalf("ready follower could not attack: %#v", attack)
+	}
+}
+
+func TestEffectSummonedFollowerIsSummoningSick(t *testing.T) {
+	spellID := strings.Repeat("7", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 77777777, CardType: "spell", PlayEffects: []ir.Effect{ir.CardEffect{Kind: "summon", Owner: "own", CardID: 88888888, Count: 1, Output: "summoned"}}},
+		{ID: 88888888, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 1}},
+	}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "hand", ir.TestInstance{InstanceID: spellID, Alias: "spell", CardID: 77777777, DeclaredType: "spell"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result := session.Begin(strings.Repeat("8", 32), ir.SourceAction{Kind: "play", Actor: "own", Source: spellID}); result.Status != StatusCompleted {
+		t.Fatalf("summon spell failed: %#v", result)
+	}
+	summoned := session.g.instances["summoned-1"]
+	if summoned == nil || !summoned.summoningSick {
+		t.Fatalf("summoned follower combat state diverged: %#v", summoned)
+	}
+	result := session.Begin(strings.Repeat("9", 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: summoned.id, Defender: "oppo"})
+	if result.Status != StatusIllegal || result.IllegalCode != "summoning_sick" {
+		t.Fatalf("summoned follower attacked immediately: %#v", result)
+	}
+}
+
+func TestStormAndRushOverrideSummoningSicknessWithTargetLimits(t *testing.T) {
+	stormID, rushID := strings.Repeat("3", 32), strings.Repeat("4", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 66666667, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 1}, Intrinsic: []string{"storm"}},
+		{ID: 66666668, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 1}, Intrinsic: []string{"rush"}},
+	}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: stormID, CardID: 66666667, DeclaredType: "follower"})
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: rushID, CardID: 66666668, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result := session.Begin(strings.Repeat("5", 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: rushID, Defender: "oppo"}); result.Status != StatusIllegal || result.IllegalCode != "rush_cannot_attack_leader" {
+		t.Fatalf("rush attacked leader: %#v", result)
+	}
+	if result := session.Begin(strings.Repeat("6", 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: stormID, Defender: "oppo"}); result.Status != StatusCompleted {
+		t.Fatalf("storm could not attack leader: %#v", result)
+	}
+}
+
+func TestWardAndIntimidateRestrictFollowerAttackTargets(t *testing.T) {
+	attackerID, wardID, guardedID := strings.Repeat("7", 32), strings.Repeat("8", 32), strings.Repeat("9", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 66666669, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 3}},
+		{ID: 66666670, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 3}, Intrinsic: []string{"ward"}},
+		{ID: 66666671, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 3}, Intrinsic: []string{"intimidate"}},
+	}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: attackerID, CardID: 66666669, DeclaredType: "follower"})
+	state.Players["oppo"] = withInstance(state.Players["oppo"], "field", ir.TestInstance{InstanceID: wardID, CardID: 66666670, DeclaredType: "follower"})
+	state.Players["oppo"] = withInstance(state.Players["oppo"], "field", ir.TestInstance{InstanceID: guardedID, CardID: 66666671, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, action := range []ir.AttackAction{{Kind: "attack_leader", Actor: "own", Attacker: attackerID, Defender: "oppo"}} {
+		result := session.Begin(strings.Repeat("a", 32), action)
+		if result.Status != StatusIllegal || result.IllegalCode != "ward_required" {
+			t.Fatalf("ward restriction failed: action=%#v result=%#v", action, result)
+		}
+	}
+	result := session.Begin(strings.Repeat("a", 32), ir.AttackAction{Kind: "attack_entity", Actor: "own", Attacker: attackerID, Defender: guardedID})
+	if result.Status != StatusIllegal || result.IllegalCode != "intimidate_target" {
+		t.Fatalf("intimidate target was not rejected: %#v", result)
+	}
+	result = session.Begin(strings.Repeat("b", 32), ir.AttackAction{Kind: "attack_entity", Actor: "own", Attacker: attackerID, Defender: wardID})
+	if result.Status != StatusCompleted {
+		t.Fatalf("ward target was not attackable: %#v", result)
+	}
+	state = testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: attackerID, CardID: 66666669, DeclaredType: "follower"})
+	state.Players["oppo"] = withInstance(state.Players["oppo"], "field", ir.TestInstance{InstanceID: guardedID, CardID: 66666671, DeclaredType: "follower"})
+	session, _ = NewSession(pack, state, 1)
+	result = session.Begin(strings.Repeat("c", 32), ir.AttackAction{Kind: "attack_entity", Actor: "own", Attacker: attackerID, Defender: guardedID})
+	if result.Status != StatusIllegal || result.IllegalCode != "intimidate_target" {
+		t.Fatalf("intimidate target was attackable: %#v", result)
+	}
+}
+
+func TestBaneDestroysAtZeroDamageAndDrainUsesActualDamage(t *testing.T) {
+	attackerID, defenderID := strings.Repeat("d", 32), strings.Repeat("e", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 66666672, CardType: "follower", Stats: &ir.Stats{Attack: 0, Life: 3}, Intrinsic: []string{"bane", "drain"}},
+		{ID: 66666673, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 2}},
+	}}
+	state := testState()
+	own := state.Players["own"]
+	own.Leader.Life = 10
+	state.Players["own"] = withInstance(own, "field", ir.TestInstance{InstanceID: attackerID, CardID: 66666672, DeclaredType: "follower"})
+	state.Players["oppo"] = withInstance(state.Players["oppo"], "field", ir.TestInstance{InstanceID: defenderID, CardID: 66666673, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := session.Begin(strings.Repeat("f", 32), ir.AttackAction{Kind: "attack_entity", Actor: "own", Attacker: attackerID, Defender: defenderID})
+	if result.Status != StatusCompleted || session.g.instances[defenderID].zone != "graveyard" || session.g.oppo.leaderLife != 20 || session.g.own.leaderLife != 10 {
+		t.Fatalf("bane or zero drain diverged: result=%#v attacker=%#v defender=%#v leaders=%d/%d", result, session.g.instances[attackerID], session.g.instances[defenderID], session.g.own.leaderLife, session.g.oppo.leaderLife)
+	}
+}
+
+func TestDrainUsesActualLeaderDamageAndCapsAtTargetLife(t *testing.T) {
+	attackerID := strings.Repeat("6", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{{ID: 66666676, CardType: "follower", Stats: &ir.Stats{Attack: 5, Life: 2}, Intrinsic: []string{"drain"}}}}
+	state := testState()
+	own := state.Players["own"]
+	own.Leader.Life = 10
+	state.Players["own"] = withInstance(own, "field", ir.TestInstance{InstanceID: attackerID, CardID: 66666676, DeclaredType: "follower"})
+	oppo := state.Players["oppo"]
+	oppo.Leader.Life = 2
+	state.Players["oppo"] = oppo
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := session.Begin(strings.Repeat("7", 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: attackerID, Defender: "oppo"})
+	if result.Status != StatusCompleted || session.g.own.leaderLife != 12 || !session.g.gameOver {
+		t.Fatalf("drain did not use actual leader damage: result=%#v own=%d gameOver=%t events=%#v", result, session.g.own.leaderLife, session.g.gameOver, session.g.events)
+	}
+}
+
+func TestClashAbilitiesResolveAttackerThenDefenderBeforeCombat(t *testing.T) {
+	attackerID, defenderID := strings.Repeat("1", 32), strings.Repeat("2", 32)
+	attackerAbility, defenderAbility := strings.Repeat("3", 32), strings.Repeat("4", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 66666674, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 3}, Abilities: []ir.Ability{{
+			ID: attackerAbility, Trigger: ir.SimpleTrigger{Kind: "clash"}, Body: []ir.Effect{ir.TargetEffect{
+				Kind: "buff_stats", Target: ir.SelfRef{Kind: "self", ValueType: "follower"}, AttackDelta: 1,
+			}},
+		}}},
+		{ID: 66666675, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 2}, Abilities: []ir.Ability{{
+			ID: defenderAbility, Trigger: ir.SimpleTrigger{Kind: "clash"}, Body: []ir.Effect{ir.TargetEffect{
+				Kind: "damage", Target: ir.ZoneRef{Kind: "zone", Side: "oppo", Zone: "field", Member: "follower"}, Amount: 1,
+			}},
+		}}},
+	}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: attackerID, CardID: 66666674, DeclaredType: "follower"})
+	state.Players["oppo"] = withInstance(state.Players["oppo"], "field", ir.TestInstance{InstanceID: defenderID, CardID: 66666675, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := session.Begin(strings.Repeat("5", 32), ir.AttackAction{Kind: "attack_entity", Actor: "own", Attacker: attackerID, Defender: defenderID})
+	if result.Status != StatusCompleted || session.g.instances[defenderID].zone != "graveyard" || session.g.instances[attackerID].life != 1 {
+		t.Fatalf("clash sequence diverged: result=%#v attacker=%#v defender=%#v", result, session.g.instances[attackerID], session.g.instances[defenderID])
 	}
 }
 
@@ -361,7 +627,7 @@ func TestOpponentCanSubmitAfterTurnChange(t *testing.T) {
 		t.Fatalf("turn did not change: %#v", result)
 	}
 	result := session.Begin(strings.Repeat("4", 32), ir.SourceAction{Kind: "play", Actor: "oppo", Source: instanceID})
-	if result.Status != StatusCompleted || !contains(session.g.oppo.field, session.g.instances[instanceID]) || len(session.g.oppo.hand) != 0 {
+	if result.Status != StatusCompleted || !contains(session.g.oppo.field, session.g.instances[instanceID]) || !session.g.instances[instanceID].summoningSick || len(session.g.oppo.hand) != 0 {
 		t.Fatalf("opponent action did not use opponent state: result=%#v field=%#v hand=%#v", result, session.g.oppo.field, session.g.oppo.hand)
 	}
 }

@@ -11,7 +11,7 @@ import (
 )
 
 func TestContinuationRoundTripPreservesSharedBindings(t *testing.T) {
-	sourceID, targetID := strings.Repeat("1", 32), strings.Repeat("2", 32)
+	sourceID, targetID, attackerID := strings.Repeat("1", 32), strings.Repeat("2", 32), strings.Repeat("6", 32)
 	ifID, choiceID := strings.Repeat("3", 32), strings.Repeat("4", 32)
 	pack := &ir.CardPack{Cards: []ir.Card{
 		{ID: 12345678, CardType: "spell", PlayEffects: []ir.Effect{
@@ -24,6 +24,7 @@ func TestContinuationRoundTripPreservesSharedBindings(t *testing.T) {
 	}}
 	state := testState()
 	state.Players["own"] = withInstance(state.Players["own"], "hand", ir.TestInstance{InstanceID: sourceID, Alias: "source", CardID: 12345678, DeclaredType: "spell"})
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: attackerID, Alias: "attacker", CardID: 23456789, DeclaredType: "follower"})
 	state.Players["oppo"] = withInstance(state.Players["oppo"], "field", ir.TestInstance{InstanceID: targetID, Alias: "target", CardID: 23456789, DeclaredType: "follower"})
 
 	session, err := NewSession(pack, state, 7)
@@ -34,6 +35,9 @@ func TestContinuationRoundTripPreservesSharedBindings(t *testing.T) {
 	if step.Status != StatusSuspended {
 		t.Fatalf("action did not suspend: %#v", step)
 	}
+	session.g.instances[attackerID].attacksUsed = 1
+	session.g.instances[targetID].summoningSick = true
+	session.g.own.attackedThisTurn = true
 	encoded, err := session.EncodeContinuation()
 	if err != nil {
 		t.Fatal(err)
@@ -53,6 +57,9 @@ func TestContinuationRoundTripPreservesSharedBindings(t *testing.T) {
 	restored, err := RestoreSession(pack, decoded)
 	if err != nil {
 		t.Fatal(err)
+	}
+	if restored.g.instances[attackerID].attacksUsed != 1 || !restored.g.instances[targetID].summoningSick || !restored.g.own.attackedThisTurn {
+		t.Fatalf("continuation lost combat state: attacker=%#v target=%#v player=%#v", restored.g.instances[attackerID], restored.g.instances[targetID], restored.g.own)
 	}
 	result := restored.Resume(ChoiceResponse{RequestID: step.Choice.RequestID, ActionID: step.Choice.ActionID, StateRevision: step.Choice.StateRevision, SelectedInstanceIDs: []string{targetID}})
 	if result.Status != StatusCompleted || restored.g.instances[targetID].zone != "graveyard" {
@@ -102,6 +109,13 @@ func TestContinuationRoundTripPreservesRNGAndTriggerQueue(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Run("version", func(t *testing.T) {
+		copy := *decoded
+		copy.Version = "0.5.0"
+		if _, err := RestoreSession(pack, &copy); err == nil {
+			t.Fatal("old continuation version was accepted")
+		}
+	})
 	restored, err := RestoreSession(pack, decoded)
 	if err != nil {
 		t.Fatal(err)
@@ -371,6 +385,36 @@ func TestRestoreGameRejectsGeneratedSerialAndHistoryOwner(t *testing.T) {
 		saved.Own.Destroyed = []string{id}
 		if _, err := restoreGame(cards, saved); err == nil {
 			t.Fatal("cross-owner destroyed history was accepted")
+		}
+	})
+
+	t.Run("negative attacks", func(t *testing.T) {
+		saved := base
+		id := strings.Repeat("e", 32)
+		saved.Instances = []ContinuationEntity{{ID: id, Zone: "field", CardID: card.ID, AttacksUsed: -1}}
+		saved.Own.Field = []string{id}
+		if _, err := restoreGame(cards, saved); err == nil {
+			t.Fatal("negative attack count was accepted")
+		}
+	})
+
+	t.Run("excessive attacks", func(t *testing.T) {
+		saved := base
+		id := strings.Repeat("c", 32)
+		saved.Instances = []ContinuationEntity{{ID: id, Zone: "field", CardID: card.ID, AttacksUsed: 2}}
+		saved.Own.Field = []string{id}
+		if _, err := restoreGame(cards, saved); err == nil {
+			t.Fatal("unsupported attack count was accepted")
+		}
+	})
+
+	t.Run("sick non-field entity", func(t *testing.T) {
+		saved := base
+		id := strings.Repeat("d", 32)
+		saved.Instances = []ContinuationEntity{{ID: id, Zone: "hand", CardID: card.ID, SummoningSick: true}}
+		saved.Own.Hand = []string{id}
+		if _, err := restoreGame(cards, saved); err == nil {
+			t.Fatal("non-field summoning sickness was accepted")
 		}
 	})
 }

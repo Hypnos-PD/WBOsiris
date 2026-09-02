@@ -129,6 +129,7 @@ intimidate;
 fanfare { ... }
 lastwords { ... }
 attack { ... }
+clash { ... }
 evolve { ... }
 superevolve { ... }
 superevolve replaces evolve { ... }

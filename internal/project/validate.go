@@ -239,7 +239,7 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			continue
 		}
 		switch h {
-		case "fanfare", "lastwords", "attack", "evolve", "spellboost":
+		case "fanfare", "lastwords", "attack", "clash", "evolve", "spellboost":
 			if len(t) == 1 && len(b) == 1 && !s.Terminated {
 				validateEffectBlock(b[0], ds, bindings, "")
 				continue

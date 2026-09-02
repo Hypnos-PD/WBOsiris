@@ -17,15 +17,23 @@ type Result struct {
 func (r Result) Passed() bool { return len(r.Failures) == 0 }
 
 type instance struct {
-	id, alias, zone                          string
-	card                                     *ir.Card
-	attack, life, earthsigil, countdown      int
-	engaged, attacked, evolved, superEvolved bool
-	abilities                                map[string]bool
+	id, alias, zone                     string
+	card                                *ir.Card
+	attack, life, earthsigil, countdown int
+	attacksUsed                         int
+	engaged, summoningSick              bool
+	evolved, superEvolved               bool
+	abilities                           map[string]bool
 }
 type player struct {
 	pp, maxpp, leaderLife, leaderMax, ep, sep, combo, shadows int
 	deck, hand, field, graveyard, banished, destroyed         []*instance
+	attackedThisTurn                                          bool
+}
+type attackState struct {
+	stage                          string
+	actor, attacker, defender      string
+	attackerAttack, defenderAttack int
 }
 type frame map[string][]*instance
 type game struct {
@@ -48,6 +56,7 @@ type game struct {
 	turnTransition                  string
 	gameOver                        bool
 	winner                          string
+	attack                          *attackState
 }
 
 func Run(cards *ir.CardPack, tests *ir.TestPack) []Result {
@@ -423,15 +432,21 @@ func (g *game) preflightAttack(a ir.AttackAction) string {
 	if attacker == nil || attacker.zone != "field" || !contains(actor.field, attacker) || attacker.card.CardType != "follower" {
 		return "invalid_attacker"
 	}
-	if attacker.attacked {
-		return "already_attacked"
-	}
-	for _, keyword := range []string{"rush", "storm", "bane", "drain", "intimidate", "ward"} {
-		if attacker.abilities[keyword] {
-			return "unsupported_keyword"
+	if attacker.summoningSick {
+		if !attacker.abilities["storm"] && !attacker.abilities["rush"] {
+			return "summoning_sick"
 		}
 	}
+	if attacker.attacksUsed >= attackLimit(attacker) {
+		return "already_attacked"
+	}
 	if a.Kind == "attack_leader" {
+		if attacker.abilities["rush"] && !attacker.abilities["storm"] {
+			return "rush_cannot_attack_leader"
+		}
+		if hasAttackableWard(opponent) {
+			return "ward_required"
+		}
 		if a.Defender != oppositeSide(a.Actor) {
 			return "invalid_defender"
 		}
@@ -444,12 +459,22 @@ func (g *game) preflightAttack(a ir.AttackAction) string {
 	if defender == nil || defender.zone != "field" || !contains(opponent.field, defender) || defender.card.CardType != "follower" {
 		return "invalid_defender"
 	}
-	for _, keyword := range []string{"ward", "intimidate"} {
-		if defender.abilities[keyword] {
-			return "unsupported_keyword"
-		}
+	if defender.abilities["intimidate"] {
+		return "intimidate_target"
+	}
+	if hasAttackableWard(opponent) && !defender.abilities["ward"] {
+		return "ward_required"
 	}
 	return ""
+}
+
+func hasAttackableWard(p *player) bool {
+	for _, i := range p.field {
+		if i.card.CardType == "follower" && i.abilities["ward"] && !i.abilities["intimidate"] {
+			return true
+		}
+	}
+	return false
 }
 
 func (g *game) commitAttack(a ir.AttackAction) string {
@@ -458,11 +483,14 @@ func (g *game) commitAttack(a ir.AttackAction) string {
 	if a.Kind == "attack_entity" {
 		defender = g.instances[a.Defender]
 	}
-	attacker.attacked = true
+	attacker.attacksUsed++
+	g.player(a.Actor).attackedThisTurn = true
+	g.attack = &attackState{stage: "attack", actor: a.Actor, attacker: attacker.id}
 	attackerTarget := ir.EventTarget{Kind: "instance", InstanceID: attacker.id}
 	opponentSide := oppositeSide(a.Actor)
 	defenderTarget := ir.EventTarget{Kind: "leader", Side: opponentSide}
 	if defender != nil {
+		g.attack.defender = defender.id
 		defenderTarget = ir.EventTarget{Kind: "instance", InstanceID: defender.id}
 	}
 	event := ir.RuntimeEvent{Kind: "attacked", Attacker: &attackerTarget, Defender: &defenderTarget}
@@ -470,19 +498,102 @@ func (g *game) commitAttack(a ir.AttackAction) string {
 		return ""
 	}
 	g.queueEventTriggers(event, attacker, "attack")
-	if defender == nil {
-		g.damageLeader(g.player(opponentSide), opponentSide, attacker.attack)
-		return ""
-	}
-	defender.life -= attacker.attack
-	attacker.life -= defender.attack
-	g.emitDamage(attacker.attack, &defenderTarget)
-	g.emitDamage(defender.attack, &attackerTarget)
-	g.resolveDeathBatch(nil)
+	g.queueSimpleTriggers(attacker, "attack")
 	return ""
 }
 
-func (g *game) damageLeader(target *player, side string, amount int) {
+func (g *game) advanceAttack() {
+	state := g.attack
+	if state == nil {
+		return
+	}
+	if state.stage != "attack" && state.stage != "clash_attacker" && state.stage != "clash_defender" && state.stage != "combat" {
+		g.attack = nil
+		return
+	}
+	attacker := g.instances[state.attacker]
+	if attacker == nil || attacker.zone != "field" {
+		g.attack = nil
+		return
+	}
+	opponentSide := oppositeSide(state.actor)
+	if state.stage == "attack" {
+		if state.defender == "" {
+			state.stage = "combat"
+		} else {
+			defender := g.instances[state.defender]
+			if defender == nil || defender.zone != "field" || !contains(g.player(opponentSide).field, defender) {
+				g.attack = nil
+				return
+			}
+			state.stage = "clash_attacker"
+			g.queueSimpleTriggers(attacker, "clash")
+			return
+		}
+	}
+	if state.stage == "clash_attacker" {
+		defender := g.instances[state.defender]
+		if defender == nil || defender.zone != "field" || !contains(g.player(opponentSide).field, defender) {
+			g.attack = nil
+			return
+		}
+		state.stage = "clash_defender"
+		g.queueSimpleTriggers(defender, "clash")
+		return
+	}
+	if state.stage == "clash_defender" {
+		state.stage = "combat"
+	}
+	if state.defender == "" {
+		actual := g.damageLeader(g.player(opponentSide), opponentSide, attacker.attack)
+		if attacker.abilities["drain"] && actual > 0 {
+			g.healLeader(g.owner(attacker), state.actor, actual)
+		}
+		g.attack = nil
+		return
+	}
+	defender := g.instances[state.defender]
+	if defender == nil || defender.zone != "field" || !contains(g.player(opponentSide).field, defender) {
+		g.attack = nil
+		return
+	}
+	state.attackerAttack, state.defenderAttack = attacker.attack, defender.attack
+	attackerLife, defenderLife := attacker.life, defender.life
+	attackerDamage := min(max(state.defenderAttack, 0), attackerLife)
+	defenderDamage := min(max(state.attackerAttack, 0), defenderLife)
+	attacker.life -= attackerDamage
+	defender.life -= defenderDamage
+	attackerTarget := &ir.EventTarget{Kind: "instance", InstanceID: attacker.id}
+	defenderTarget := &ir.EventTarget{Kind: "instance", InstanceID: defender.id}
+	g.emitDamage(defenderDamage, defenderTarget)
+	g.emitDamage(attackerDamage, attackerTarget)
+	if attacker.abilities["drain"] && defenderDamage > 0 {
+		g.healLeader(g.owner(attacker), g.sideOf(attacker), defenderDamage)
+	}
+	if attacker.abilities["bane"] {
+		defender.life = min(defender.life, 0)
+	}
+	if defender.abilities["bane"] {
+		attacker.life = min(attacker.life, 0)
+	}
+	g.resolveDeathBatch(nil)
+	g.attack = nil
+}
+
+func (g *game) queueSimpleTriggers(source *instance, kind string) {
+	if source == nil {
+		return
+	}
+	for _, ability := range source.card.Abilities {
+		if ir.TriggerKind(ability.Trigger) == kind {
+			g.queueTrigger(triggerInvocation{body: ability.Body, blockID: abilityBlockID(source.card.ID, ability.ID), self: source, bindings: frame{}})
+		}
+	}
+}
+
+func attackLimit(*instance) int { return 1 }
+
+func (g *game) damageLeader(target *player, side string, amount int) int {
 	if amount < 0 {
 		amount = 0
 	}
@@ -493,6 +604,22 @@ func (g *game) damageLeader(target *player, side string, amount int) {
 		if target.leaderLife == 0 {
 			g.finishGame(oppositeSide(side))
 		}
+	}
+	return actual
+}
+
+func (g *game) healLeader(target *player, side string, amount int) {
+	if amount <= 0 {
+		return
+	}
+	life := target.leaderLife + amount
+	if target.leaderMax > 0 {
+		life = min(life, target.leaderMax)
+	}
+	actual := life - target.leaderLife
+	t := ir.EventTarget{Kind: "leader", Side: side}
+	if actual > 0 && g.emit(ir.RuntimeEvent{Kind: "healed", Actual: actual, Target: &t}) {
+		target.leaderLife = life
 	}
 }
 
@@ -530,6 +657,7 @@ func (g *game) applyPlaySetup(i *instance, emit bool) {
 		g.addToZone(actor, i, "graveyard")
 	} else {
 		g.addToZone(actor, i, "field")
+		i.summoningSick = i.card.CardType == "follower" && !i.abilities["storm"] && !i.abilities["rush"]
 		actor.combo++
 		g.mergeEarthSigil(i)
 		if emit && i.card.CardType == "follower" {
@@ -583,10 +711,12 @@ func (g *game) advanceTurn() {
 	}
 	active.pp = active.maxpp
 	active.combo = 0
+	active.attackedThisTurn = false
 	var expired []*instance
 	for _, i := range active.field {
 		i.engaged = false
-		i.attacked = false
+		i.attacksUsed = 0
+		i.summoningSick = false
 		if i.card.CardType == "amulet" && i.countdown > 0 {
 			i.countdown--
 			if i.countdown == 0 {
