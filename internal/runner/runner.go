@@ -36,6 +36,12 @@ type attackState struct {
 	actor, attacker, defender      string
 	attackerAttack, defenderAttack int
 }
+type damageContext struct {
+	source     *instance
+	target     *instance
+	amount     int
+	damageType string
+}
 type frame map[string][]*instance
 type game struct {
 	cards                           map[int]*ir.Card
@@ -603,8 +609,8 @@ func (g *game) advanceAttack() {
 		return
 	}
 	state.attackerAttack, state.defenderAttack = attacker.attack, defender.attack
-	defenderDamage := g.damageInstance(defender, state.attackerAttack)
-	g.damageInstance(attacker, state.defenderAttack)
+	defenderDamage := g.damageInstanceFrom(attacker, defender, state.attackerAttack, "combat")
+	g.damageInstanceFrom(defender, attacker, state.defenderAttack, "combat")
 	if attacker.abilities["drain"] && defenderDamage > 0 {
 		g.healLeader(g.owner(attacker), g.sideOf(attacker), defenderDamage)
 	}
@@ -693,23 +699,31 @@ func (g *game) healLeader(target *player, side string, amount int) {
 }
 
 func (g *game) damageInstance(target *instance, amount int) int {
+	return g.damageInstanceFrom(nil, target, amount, "effect")
+}
+
+func (g *game) damageInstanceFrom(source, target *instance, amount int, damageType string) int {
 	if target == nil || target.zone != "field" || amount <= 0 {
 		return 0
 	}
-	actual := amount
-	if target.abilities["barrier"] {
-		delete(target.abilities, "barrier")
-		actual = 0
-	} else if target.superEvolved && g.sideOf(target) == g.turn.Active {
-		actual = 0
-	} else {
-		actual = max(actual-target.damageReduction, 0)
-		actual = min(actual, max(target.life, 0))
-		target.life -= actual
-	}
+	actual := g.modifyDamage(damageContext{source: source, target: target, amount: amount, damageType: damageType})
+	target.life -= actual
 	t := &ir.EventTarget{Kind: "instance", InstanceID: target.id}
 	g.emitDamage(actual, t)
 	return actual
+}
+
+func (g *game) modifyDamage(context damageContext) int {
+	amount := max(context.amount, 0)
+	if context.target.abilities["barrier"] {
+		delete(context.target.abilities, "barrier")
+		return 0
+	}
+	if context.target.superEvolved && g.sideOf(context.target) == g.turn.Active {
+		return 0
+	}
+	amount = max(amount-context.target.damageReduction, 0)
+	return min(amount, max(context.target.life, 0))
 }
 
 func (g *game) destroyByEffect(targets []*instance) {

@@ -69,21 +69,22 @@ type PlayerView struct {
 }
 
 type EntityView struct {
-	InstanceID    string   `json:"instanceId"`
-	Alias         string   `json:"alias,omitempty"`
-	CardID        int      `json:"cardId"`
-	CardType      string   `json:"cardType"`
-	Attack        int      `json:"attack,omitempty"`
-	Life          int      `json:"life,omitempty"`
-	Countdown     int      `json:"countdown,omitempty"`
-	Earthsigil    int      `json:"earthsigil,omitempty"`
-	Engaged       bool     `json:"engaged,omitempty"`
-	AttacksUsed   int      `json:"attacksUsed"`
-	AttackLimit   int      `json:"attackLimit"`
-	SummoningSick bool     `json:"summoningSick"`
-	Evolved       bool     `json:"evolved,omitempty"`
-	SuperEvolved  bool     `json:"superEvolved,omitempty"`
-	Keywords      []string `json:"keywords,omitempty"`
+	InstanceID      string   `json:"instanceId"`
+	Alias           string   `json:"alias,omitempty"`
+	CardID          int      `json:"cardId"`
+	CardType        string   `json:"cardType"`
+	Attack          int      `json:"attack,omitempty"`
+	Life            int      `json:"life,omitempty"`
+	Countdown       int      `json:"countdown,omitempty"`
+	Earthsigil      int      `json:"earthsigil,omitempty"`
+	DamageReduction int      `json:"damageReduction,omitempty"`
+	Engaged         bool     `json:"engaged,omitempty"`
+	AttacksUsed     int      `json:"attacksUsed"`
+	AttackLimit     int      `json:"attackLimit"`
+	SummoningSick   bool     `json:"summoningSick"`
+	Evolved         bool     `json:"evolved,omitempty"`
+	SuperEvolved    bool     `json:"superEvolved,omitempty"`
+	Keywords        []string `json:"keywords,omitempty"`
 }
 
 // SupportedSimulatorCapabilities 返回运行时当前真正支持的交互范围。
@@ -245,7 +246,7 @@ func entityViews(instances []*instance) []EntityView {
 		sort.Strings(keywords)
 		views = append(views, EntityView{
 			InstanceID: i.id, Alias: i.alias, CardID: i.card.ID, CardType: i.card.CardType,
-			Attack: i.attack, Life: i.life, Countdown: i.countdown, Earthsigil: i.earthsigil,
+			Attack: i.attack, Life: i.life, Countdown: i.countdown, Earthsigil: i.earthsigil, DamageReduction: i.damageReduction,
 			Engaged: i.engaged, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i), SummoningSick: i.summoningSick,
 			Evolved: i.evolved, SuperEvolved: i.superEvolved, Keywords: keywords,
 		})
