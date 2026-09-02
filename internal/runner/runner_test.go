@@ -693,7 +693,20 @@ func TestFusionRequestsAndAttachesMaterialsBeforeResolving(t *testing.T) {
 	if result.Status != StatusSuspended || result.Choice == nil || result.Choice.Kind != "fusion_material" {
 		t.Fatalf("fusion did not request materials: %#v", result)
 	}
-	result = session.Resume(ChoiceResponse{RequestID: result.Choice.RequestID, ActionID: result.Choice.ActionID, StateRevision: result.Choice.StateRevision, SelectedInstanceIDs: []string{materialID, secondMaterialID}})
+	data, err := session.EncodeContinuation()
+	if err != nil {
+		t.Fatal(err)
+	}
+	decoded, err := DecodeContinuation(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	session, err = RestoreSession(&ir.CardPack{Cards: []ir.Card{*card, other}}, decoded)
+	if err != nil {
+		t.Fatalf("fusion continuation did not restore: %v", err)
+	}
+	choice := session.PendingChoice()
+	result = session.Resume(ChoiceResponse{RequestID: choice.RequestID, ActionID: choice.ActionID, StateRevision: choice.StateRevision, SelectedInstanceIDs: []string{materialID, secondMaterialID}})
 	if result.Status != StatusCompleted || len(session.g.instances[sourceID].materials) != 2 || session.g.instances[sourceID].attack != 3 || contains(session.g.own.hand, session.g.instances[materialID]) || contains(session.g.own.hand, session.g.instances[secondMaterialID]) {
 		t.Fatalf("fusion did not attach and resolve atomically: result=%#v source=%#v hand=%#v", result, session.g.instances[sourceID], session.g.own.hand)
 	}

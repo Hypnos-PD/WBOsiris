@@ -24,11 +24,13 @@ type ContinuationBindings struct {
 }
 
 type ContinuationPending struct {
-	Request        ChoiceRequest        `json:"request"`
-	Binding        string               `json:"binding,omitempty"`
-	BindingFrameID string               `json:"bindingFrameId"`
-	SelfInstanceID string               `json:"selfInstanceId,omitempty"`
-	OptionBlockIDs []ContinuationOption `json:"optionBlockIds"`
+	Request         ChoiceRequest        `json:"request"`
+	Binding         string               `json:"binding,omitempty"`
+	BindingFrameID  string               `json:"bindingFrameId"`
+	SelfInstanceID  string               `json:"selfInstanceId,omitempty"`
+	OptionBlockIDs  []ContinuationOption `json:"optionBlockIds"`
+	FusionSourceID  string               `json:"fusionSourceId,omitempty"`
+	FusionAbilityID string               `json:"fusionAbilityId,omitempty"`
 }
 
 type ContinuationOption struct {
@@ -256,6 +258,22 @@ func RestoreSession(cards *ir.CardPack, c *Continuation) (*Session, error) {
 		return nil, err
 	}
 	pending := &pendingChoice{request: c.Pending.Request, binding: c.Pending.Binding, bindings: pendingBindings, self: pendingSelf, options: map[int][]ir.Effect{}, optionBlockIDs: map[int]string{}}
+	if pending.request.Kind == "fusion_material" {
+		source := g.instances[c.Pending.FusionSourceID]
+		if source == nil || source != pendingSelf {
+			return nil, fmt.Errorf("invalid fusion continuation source")
+		}
+		for n := range source.card.FusionAbilities {
+			if source.card.FusionAbilities[n].ID == c.Pending.FusionAbilityID {
+				pending.fusionSource = source
+				pending.fusion = &source.card.FusionAbilities[n]
+				break
+			}
+		}
+		if pending.fusion == nil {
+			return nil, fmt.Errorf("invalid fusion continuation ability")
+		}
+	}
 	if err := validateChoiceRequest(pending.request, g.instances); err != nil {
 		return nil, err
 	}
@@ -275,6 +293,10 @@ func RestoreSession(cards *ir.CardPack, c *Continuation) (*Session, error) {
 	} else if pending.request.Kind == "mode" {
 		if pending.binding != "" || len(pending.options) != len(pending.request.Candidates) {
 			return nil, fmt.Errorf("invalid mode continuation")
+		}
+	} else if pending.request.Kind == "fusion_material" {
+		if pending.fusion == nil || pending.fusionSource == nil || pending.binding != "" || len(pending.options) != 0 {
+			return nil, fmt.Errorf("invalid fusion continuation")
 		}
 	} else {
 		return nil, fmt.Errorf("unsupported pending request kind %q", pending.request.Kind)
@@ -333,6 +355,10 @@ func (s *Session) makeContinuation() *Continuation {
 		c.Stack = append(c.Stack, ContinuationFrame{BlockID: f.blockID, PC: f.pc, SelfInstanceID: instanceID(f.self), BindingFrameID: addBindings(f.bindings)})
 	}
 	c.Pending = ContinuationPending{Request: s.pending.request, Binding: s.pending.binding, BindingFrameID: addBindings(s.pending.bindings), SelfInstanceID: instanceID(s.pending.self)}
+	if s.pending.request.Kind == "fusion_material" {
+		c.Pending.FusionSourceID = instanceID(s.pending.fusionSource)
+		c.Pending.FusionAbilityID = s.pending.fusion.ID
+	}
 	optionIDs := make([]int, 0, len(s.pending.optionBlockIDs))
 	for optionID := range s.pending.optionBlockIDs {
 		optionIDs = append(optionIDs, optionID)
@@ -645,7 +671,7 @@ func validateChoiceRequest(request ChoiceRequest, instances map[string]*instance
 	for _, candidate := range request.Candidates {
 		switch candidate.Kind {
 		case "entity":
-			if request.Kind != "target" {
+			if request.Kind != "target" && request.Kind != "fusion_material" {
 				return fmt.Errorf("entity candidate on non-target request")
 			}
 			if candidate.InstanceID == "" || instances[candidate.InstanceID] == nil || candidate.OptionID != 0 || seenEntities[candidate.InstanceID] {
@@ -668,6 +694,21 @@ func validateChoiceRequest(request ChoiceRequest, instances map[string]*instance
 }
 
 func validatePendingNode(s *Session, pending *pendingChoice) error {
+	if pending.request.Kind == "fusion_material" {
+		if pending.fusion == nil || pending.fusionSource == nil || pending.request.NodeID != pending.fusion.ID || pending.request.PublicTo != s.g.sideOf(pending.fusionSource) {
+			return fmt.Errorf("continuation fusion request is detached")
+		}
+		candidates := s.g.fusionCandidates(pending.fusionSource, pending.fusion)
+		if len(candidates) != len(pending.request.Candidates) {
+			return fmt.Errorf("continuation fusion candidates changed")
+		}
+		for n, candidate := range candidates {
+			if pending.request.Candidates[n].Kind != "entity" || pending.request.Candidates[n].InstanceID != candidate.id {
+				return fmt.Errorf("continuation fusion candidates changed")
+			}
+		}
+		return nil
+	}
 	if len(s.stack) == 0 {
 		return fmt.Errorf("continuation request has no execution frame")
 	}
