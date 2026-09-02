@@ -17,11 +17,11 @@ type Result struct {
 func (r Result) Passed() bool { return len(r.Failures) == 0 }
 
 type instance struct {
-	id, alias, zone                     string
-	card                                *ir.Card
-	attack, life, earthsigil, countdown int
-	engaged, evolved, superEvolved      bool
-	abilities                           map[string]bool
+	id, alias, zone                          string
+	card                                     *ir.Card
+	attack, life, earthsigil, countdown      int
+	engaged, attacked, evolved, superEvolved bool
+	abilities                                map[string]bool
 }
 type player struct {
 	pp, maxpp, leaderLife, leaderMax, ep, sep, combo, shadows int
@@ -274,15 +274,18 @@ func (g *game) addToZone(p *player, i *instance, z string) {
 	}
 }
 func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
+	if g.turn.Active != "own" || g.phase != "main" {
+		return "wrong_timing"
+	}
+	if x, ok := a.(ir.AttackAction); ok {
+		return g.preflightAttack(x)
+	}
 	x, ok := a.(ir.SourceAction)
 	if !ok {
 		return "unsupported_action"
 	}
 	if x.Actor != "own" {
 		return "wrong_actor"
-	}
-	if g.turn.Active != "own" || g.phase != "main" {
-		return "wrong_timing"
 	}
 	if x.Kind == "end_turn" {
 		if g.turnTransition != "" {
@@ -363,6 +366,9 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 }
 
 func (g *game) commitAction(a ir.Action) ([]execFrame, string) {
+	if x, ok := a.(ir.AttackAction); ok {
+		return nil, g.commitAttack(x)
+	}
 	x, ok := a.(ir.SourceAction)
 	if !ok {
 		return nil, "unsupported_action"
@@ -392,6 +398,90 @@ func (g *game) commitAction(a ir.Action) ([]execFrame, string) {
 	default:
 		return nil, "unsupported_action"
 	}
+}
+
+func (g *game) preflightAttack(a ir.AttackAction) string {
+	if a.Actor != "own" {
+		return "wrong_actor"
+	}
+	attacker := g.instances[a.Attacker]
+	if attacker == nil || attacker.zone != "field" || !contains(g.own.field, attacker) || attacker.card.CardType != "follower" {
+		return "invalid_attacker"
+	}
+	if attacker.attacked {
+		return "already_attacked"
+	}
+	for _, keyword := range []string{"rush", "storm", "bane", "drain", "intimidate", "ward"} {
+		if attacker.abilities[keyword] {
+			return "unsupported_keyword"
+		}
+	}
+	if a.Kind == "attack_leader" {
+		if a.Defender != "oppo" {
+			return "invalid_defender"
+		}
+		return ""
+	}
+	if a.Kind != "attack_entity" {
+		return "unsupported_action"
+	}
+	defender := g.instances[a.Defender]
+	if defender == nil || defender.zone != "field" || !contains(g.oppo.field, defender) || defender.card.CardType != "follower" {
+		return "invalid_defender"
+	}
+	for _, keyword := range []string{"ward", "intimidate"} {
+		if defender.abilities[keyword] {
+			return "unsupported_keyword"
+		}
+	}
+	return ""
+}
+
+func (g *game) commitAttack(a ir.AttackAction) string {
+	attacker := g.instances[a.Attacker]
+	var defender *instance
+	if a.Kind == "attack_entity" {
+		defender = g.instances[a.Defender]
+	}
+	attacker.attacked = true
+	attackerTarget := ir.EventTarget{Kind: "instance", InstanceID: attacker.id}
+	defenderTarget := ir.EventTarget{Kind: "leader", Side: "oppo"}
+	if defender != nil {
+		defenderTarget = ir.EventTarget{Kind: "instance", InstanceID: defender.id}
+	}
+	event := ir.RuntimeEvent{Kind: "attacked", Attacker: &attackerTarget, Defender: &defenderTarget}
+	if !g.emit(event) {
+		return ""
+	}
+	g.queueEventTriggers(event, attacker, "attack")
+	if defender == nil {
+		g.damageLeader(&g.oppo, "oppo", attacker.attack)
+		return ""
+	}
+	defender.life -= attacker.attack
+	attacker.life -= defender.attack
+	g.emitDamage(attacker.attack, &defenderTarget)
+	g.emitDamage(defender.attack, &attackerTarget)
+	g.resolveDeathBatch(nil)
+	return ""
+}
+
+func (g *game) damageLeader(target *player, side string, amount int) {
+	if amount < 0 {
+		amount = 0
+	}
+	actual := min(amount, target.leaderLife)
+	t := ir.EventTarget{Kind: "leader", Side: side}
+	if g.emit(ir.RuntimeEvent{Kind: "damaged", Actual: actual, Target: &t}) {
+		target.leaderLife -= actual
+	}
+}
+
+func (g *game) emitDamage(amount int, target *ir.EventTarget) {
+	if amount < 0 {
+		amount = 0
+	}
+	g.emit(ir.RuntimeEvent{Kind: "damaged", Actual: amount, Target: target})
 }
 
 func (g *game) commitPlay(i *instance) []execFrame {
@@ -468,6 +558,7 @@ func (g *game) advanceTurn() {
 	var expired []*instance
 	for _, i := range active.field {
 		i.engaged = false
+		i.attacked = false
 		if i.card.CardType == "amulet" && i.countdown > 0 {
 			i.countdown--
 			if i.countdown == 0 {

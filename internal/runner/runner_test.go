@@ -264,6 +264,53 @@ func TestAdvanceDrivesDeclaredTurnEvent(t *testing.T) {
 	}
 }
 
+func TestAttackResolvesSimultaneousFollowerDamage(t *testing.T) {
+	attackerID, defenderID := strings.Repeat("8", 32), strings.Repeat("9", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 11111111, CardType: "follower", Stats: &ir.Stats{Attack: 3, Life: 2}},
+		{ID: 22222222, CardType: "follower", Stats: &ir.Stats{Attack: 2, Life: 3}},
+	}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: attackerID, Alias: "attacker", CardID: 11111111, DeclaredType: "follower"})
+	state.Players["oppo"] = withInstance(state.Players["oppo"], "field", ir.TestInstance{InstanceID: defenderID, Alias: "defender", CardID: 22222222, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := session.Begin(strings.Repeat("a", 32), ir.AttackAction{Kind: "attack_entity", Actor: "own", Attacker: attackerID, Defender: defenderID})
+	if result.Status != StatusCompleted {
+		t.Fatalf("attack did not complete: %#v", result)
+	}
+	if session.g.instances[attackerID].zone != "graveyard" || session.g.instances[defenderID].zone != "graveyard" {
+		t.Fatalf("simultaneous damage did not resolve deaths: attacker=%s defender=%s", session.g.instances[attackerID].zone, session.g.instances[defenderID].zone)
+	}
+	if len(session.g.events) != 5 || session.g.events[0].Kind != "attacked" || session.g.events[1].Kind != "damaged" || session.g.events[2].Kind != "damaged" || session.g.events[3].Kind != "destroyed" || session.g.events[4].Kind != "destroyed" {
+		t.Fatalf("unexpected attack events: %#v", session.g.events)
+	}
+}
+
+func TestAttackCanDamageLeaderOncePerTurn(t *testing.T) {
+	attackerID := strings.Repeat("a", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{{ID: 33333333, CardType: "follower", Stats: &ir.Stats{Attack: 4, Life: 4}}}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: attackerID, Alias: "attacker", CardID: 33333333, DeclaredType: "follower"})
+	oppo := state.Players["oppo"]
+	oppo.Leader.Life = 5
+	state.Players["oppo"] = oppo
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	first := session.Begin(strings.Repeat("b", 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: attackerID, Defender: "oppo"})
+	if first.Status != StatusCompleted || session.g.oppo.leaderLife != 1 || !session.g.instances[attackerID].attacked {
+		t.Fatalf("leader attack diverged: %#v", first)
+	}
+	second := session.Begin(strings.Repeat("c", 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: attackerID, Defender: "oppo"})
+	if second.Status != StatusIllegal || second.IllegalCode != "already_attacked" || session.g.oppo.leaderLife != 1 {
+		t.Fatalf("repeat attack was accepted: %#v", second)
+	}
+}
+
 func intPtr(value int) *int    { return &value }
 func boolPtr(value bool) *bool { return &value }
 

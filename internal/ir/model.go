@@ -653,6 +653,7 @@ type RuntimeEvent struct {
 	Kind, Side, InstanceID string
 	CardID, Count, Actual  int
 	Target, Subject        *EventTarget
+	Attacker, Defender     *EventTarget
 	Sequence, BatchID      uint64
 }
 

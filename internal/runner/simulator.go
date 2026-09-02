@@ -19,14 +19,16 @@ type SimulatorCapabilities struct {
 }
 
 type SimulatorCommand struct {
-	Kind   string `json:"kind"`
-	Source string `json:"source,omitempty"`
+	Kind     string `json:"kind"`
+	Source   string `json:"source,omitempty"`
+	Defender string `json:"defender,omitempty"`
 }
 
 type LegalAction struct {
-	Kind   string `json:"kind"`
-	Actor  string `json:"actor"`
-	Source string `json:"source,omitempty"`
+	Kind     string `json:"kind"`
+	Actor    string `json:"actor"`
+	Source   string `json:"source,omitempty"`
+	Defender string `json:"defender,omitempty"`
 }
 
 type StateView struct {
@@ -72,6 +74,7 @@ type EntityView struct {
 	Countdown    int      `json:"countdown,omitempty"`
 	Earthsigil   int      `json:"earthsigil,omitempty"`
 	Engaged      bool     `json:"engaged,omitempty"`
+	Attacked     bool     `json:"attacked,omitempty"`
 	Evolved      bool     `json:"evolved,omitempty"`
 	SuperEvolved bool     `json:"superEvolved,omitempty"`
 	Keywords     []string `json:"keywords,omitempty"`
@@ -79,7 +82,7 @@ type EntityView struct {
 
 // SupportedSimulatorCapabilities 返回运行时当前真正支持的交互范围。
 func SupportedSimulatorCapabilities() SimulatorCapabilities {
-	return SimulatorCapabilities{Play: true, Engage: true, SuperEvolve: true, TargetChoice: true, ModeChoice: true, EndTurn: true}
+	return SimulatorCapabilities{Play: true, Engage: true, SuperEvolve: true, TargetChoice: true, ModeChoice: true, Attack: true, EndTurn: true}
 }
 
 // Submit 接受模拟器命令，未定义的规则动作会明确拒绝。
@@ -87,6 +90,17 @@ func (s *Session) Submit(actionID string, command SimulatorCommand) StepResult {
 	switch command.Kind {
 	case "play", "engage", "superevolve", "end_turn":
 		return s.Begin(actionID, ir.SourceAction{Kind: command.Kind, Actor: "own", Source: command.Source})
+	case "attack":
+		kind, defender := "attack_leader", command.Defender
+		if defender != "" {
+			kind = "attack_entity"
+		}
+		return s.Begin(actionID, ir.AttackAction{Kind: kind, Actor: "own", Attacker: command.Source, Defender: func() string {
+			if defender == "" {
+				return "oppo"
+			}
+			return defender
+		}()})
 	default:
 		return StepResult{Status: StatusRejected, ErrorCode: "unsupported_feature"}
 	}
@@ -114,6 +128,21 @@ func (s *Session) LegalActions() []LegalAction {
 	}
 	for _, source := range s.g.own.field {
 		add("superevolve", source)
+	}
+	for _, source := range s.g.own.field {
+		attack := ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: source.id, Defender: "oppo"}
+		var budget budgetTracker
+		budget.reset(s.budgetPolicy)
+		if code := s.g.preflight(attack, &budget); code == "" && !budget.exceeded {
+			actions = append(actions, LegalAction{Kind: "attack_leader", Actor: "own", Source: source.id, Defender: "oppo"})
+		}
+		for _, target := range s.g.oppo.field {
+			attack.Kind, attack.Defender = "attack_entity", target.id
+			budget.reset(s.budgetPolicy)
+			if code := s.g.preflight(attack, &budget); code == "" && !budget.exceeded {
+				actions = append(actions, LegalAction{Kind: "attack_entity", Actor: "own", Source: source.id, Defender: target.id})
+			}
+		}
 	}
 	if s.g.preflight(ir.SourceAction{Kind: "end_turn", Actor: "own"}, &budgetTracker{}) == "" {
 		actions = append(actions, LegalAction{Kind: "end_turn", Actor: "own"})
@@ -181,7 +210,7 @@ func entityViews(instances []*instance) []EntityView {
 		views = append(views, EntityView{
 			InstanceID: i.id, Alias: i.alias, CardID: i.card.ID, CardType: i.card.CardType,
 			Attack: i.attack, Life: i.life, Countdown: i.countdown, Earthsigil: i.earthsigil,
-			Engaged: i.engaged, Evolved: i.evolved, SuperEvolved: i.superEvolved, Keywords: keywords,
+			Engaged: i.engaged, Attacked: i.attacked, Evolved: i.evolved, SuperEvolved: i.superEvolved, Keywords: keywords,
 		})
 	}
 	return views

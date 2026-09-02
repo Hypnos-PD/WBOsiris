@@ -65,9 +65,9 @@ func TestSimulatorLegalActionsUsePreflightAndOwnership(t *testing.T) {
 	if result.Status != StatusIllegal || !contains(session.g.oppo.hand, session.g.instances[opponentID]) {
 		t.Fatalf("opponent card was accepted as own source: %#v", result)
 	}
-	unsupported := session.Submit(strings.Repeat("9", 32), SimulatorCommand{Kind: "attack", Source: playableID})
-	if unsupported.Status != StatusRejected || unsupported.ErrorCode != "unsupported_feature" {
-		t.Fatalf("unsupported command was not explicit: %#v", unsupported)
+	invalidAttack := session.Submit(strings.Repeat("9", 32), SimulatorCommand{Kind: "attack", Source: playableID})
+	if invalidAttack.Status != StatusIllegal || invalidAttack.IllegalCode != "invalid_attacker" {
+		t.Fatalf("invalid attack was not preflighted: %#v", invalidAttack)
 	}
 	ended := session.Submit(strings.Repeat("a", 32), SimulatorCommand{Kind: "end_turn"})
 	if ended.Status != StatusCompleted || session.g.turn.Active != "oppo" {
@@ -80,7 +80,7 @@ func TestSimulatorCapabilitiesMatchImplementedCommands(t *testing.T) {
 	if !capabilities.Play || !capabilities.Engage || !capabilities.SuperEvolve || !capabilities.TargetChoice || !capabilities.ModeChoice {
 		t.Fatalf("implemented capability missing: %#v", capabilities)
 	}
-	if capabilities.Evolve || capabilities.Attack {
+	if capabilities.Evolve {
 		t.Fatalf("undefined rules were advertised: %#v", capabilities)
 	}
 }

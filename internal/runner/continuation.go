@@ -87,6 +87,7 @@ type ContinuationEntity struct {
 	Earthsigil   int      `json:"earthsigil"`
 	Countdown    int      `json:"countdown"`
 	Engaged      bool     `json:"engaged"`
+	Attacked     bool     `json:"attacked"`
 	Evolved      bool     `json:"evolved"`
 	SuperEvolved bool     `json:"superEvolved"`
 	Abilities    []string `json:"abilities"`
@@ -101,6 +102,8 @@ type ContinuationEvent struct {
 	Actual     int             `json:"actual,omitempty"`
 	Target     *ir.EventTarget `json:"target,omitempty"`
 	Subject    *ir.EventTarget `json:"subject,omitempty"`
+	Attacker   *ir.EventTarget `json:"attacker,omitempty"`
+	Defender   *ir.EventTarget `json:"defender,omitempty"`
 	Sequence   uint64          `json:"sequence"`
 	BatchID    uint64          `json:"batchId,omitempty"`
 }
@@ -346,10 +349,10 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 			}
 		}
 		sort.Strings(abilities)
-		snapshot.Instances = append(snapshot.Instances, ContinuationEntity{ID: i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Attack: i.attack, Life: i.life, Earthsigil: i.earthsigil, Countdown: i.countdown, Engaged: i.engaged, Evolved: i.evolved, SuperEvolved: i.superEvolved, Abilities: abilities})
+		snapshot.Instances = append(snapshot.Instances, ContinuationEntity{ID: i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Attack: i.attack, Life: i.life, Earthsigil: i.earthsigil, Countdown: i.countdown, Engaged: i.engaged, Attacked: i.attacked, Evolved: i.evolved, SuperEvolved: i.superEvolved, Abilities: abilities})
 	}
 	for _, event := range g.events {
-		snapshot.Events = append(snapshot.Events, ContinuationEvent{Kind: event.Kind, Side: event.Side, InstanceID: event.InstanceID, CardID: event.CardID, Count: event.Count, Actual: event.Actual, Target: cloneEventTarget(event.Target), Subject: cloneEventTarget(event.Subject), Sequence: event.Sequence, BatchID: event.BatchID})
+		snapshot.Events = append(snapshot.Events, ContinuationEvent{Kind: event.Kind, Side: event.Side, InstanceID: event.InstanceID, CardID: event.CardID, Count: event.Count, Actual: event.Actual, Target: cloneEventTarget(event.Target), Subject: cloneEventTarget(event.Subject), Attacker: cloneEventTarget(event.Attacker), Defender: cloneEventTarget(event.Defender), Sequence: event.Sequence, BatchID: event.BatchID})
 	}
 	return snapshot
 }
@@ -372,7 +375,7 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 		if entity.ID == "" || card == nil || g.instances[entity.ID] != nil || !validZone(entity.Zone) {
 			return nil, fmt.Errorf("invalid continuation entity %q", entity.ID)
 		}
-		i := &instance{id: entity.ID, alias: entity.Alias, zone: entity.Zone, card: card, attack: entity.Attack, life: entity.Life, earthsigil: entity.Earthsigil, countdown: entity.Countdown, engaged: entity.Engaged, evolved: entity.Evolved, superEvolved: entity.SuperEvolved, abilities: map[string]bool{}}
+		i := &instance{id: entity.ID, alias: entity.Alias, zone: entity.Zone, card: card, attack: entity.Attack, life: entity.Life, earthsigil: entity.Earthsigil, countdown: entity.Countdown, engaged: entity.Engaged, attacked: entity.Attacked, evolved: entity.Evolved, superEvolved: entity.SuperEvolved, abilities: map[string]bool{}}
 		for _, ability := range entity.Abilities {
 			if ability == "" || i.abilities[ability] {
 				return nil, fmt.Errorf("invalid continuation ability")
@@ -429,7 +432,7 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 		}
 	}
 	for _, event := range saved.Events {
-		g.events = append(g.events, ir.RuntimeEvent{Kind: event.Kind, Side: event.Side, InstanceID: event.InstanceID, CardID: event.CardID, Count: event.Count, Actual: event.Actual, Target: cloneEventTarget(event.Target), Subject: cloneEventTarget(event.Subject), Sequence: event.Sequence, BatchID: event.BatchID})
+		g.events = append(g.events, ir.RuntimeEvent{Kind: event.Kind, Side: event.Side, InstanceID: event.InstanceID, CardID: event.CardID, Count: event.Count, Actual: event.Actual, Target: cloneEventTarget(event.Target), Subject: cloneEventTarget(event.Subject), Attacker: cloneEventTarget(event.Attacker), Defender: cloneEventTarget(event.Defender), Sequence: event.Sequence, BatchID: event.BatchID})
 	}
 	destroyedHistory := map[string]bool{}
 	for _, i := range append(append([]*instance{}, g.own.destroyed...), g.oppo.destroyed...) {

@@ -179,6 +179,12 @@ func (g *game) assertEvents(a ir.EventsAssertion) string {
 		if m.Subject != nil && !targetEqual(m.Subject, e.Subject) {
 			return false
 		}
+		if m.Attacker != nil && !targetEqual(m.Attacker, e.Attacker) {
+			return false
+		}
+		if m.Defender != nil && !targetEqual(m.Defender, e.Defender) {
+			return false
+		}
 		return true
 	}
 	if a.Mode == "excludes" {
