@@ -46,3 +46,30 @@ func TestSimulationInputCannotAnswerOpponentChoice(t *testing.T) {
 		t.Fatalf("opponent choice was answered by own client: %#v", second)
 	}
 }
+
+func TestSimulationInputCanSubmitOpponentAction(t *testing.T) {
+	instanceID := strings.Repeat("5", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{{ID: 12345678, CardType: "follower", Cost: 1, Stats: &ir.Stats{Attack: 1, Life: 1}}}}
+	zones := func() map[string][]ir.TestInstance {
+		return map[string][]ir.TestInstance{"deck": {}, "hand": {}, "field": {}, "graveyard": {}, "banished": {}, "destroyed": {}}
+	}
+	oppoZones := zones()
+	oppoZones["hand"] = []ir.TestInstance{{InstanceID: instanceID, Alias: "oppo-card", CardID: 12345678, DeclaredType: "follower"}}
+	state := ir.State{Turn: ir.Turn{Active: "own", Number: 1}, Phase: "main", Players: map[string]ir.PlayerState{
+		"own":  {Leader: ir.Leader{Life: 20, MaxLife: 20}, Zones: zones()},
+		"oppo": {Leader: ir.Leader{Life: 20, MaxLife: 20}, PP: 1, MaxPP: 1, Zones: oppoZones},
+	}}
+	session, err := runner.NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var ordinal uint64
+	if result := applySimulationInput(session, simulationInput{Kind: "end_turn"}, &ordinal); result.Status != runner.StatusCompleted {
+		t.Fatalf("end turn failed: %#v", result)
+	}
+	result := applySimulationInput(session, simulationInput{Kind: "play", Actor: "oppo", Source: instanceID}, &ordinal)
+	view, err := session.View("own")
+	if result.Status != runner.StatusCompleted || err != nil || len(view.Oppo.Field) != 1 {
+		t.Fatalf("opponent command was not applied through CLI input: result=%#v", result)
+	}
+}

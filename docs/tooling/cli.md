@@ -133,13 +133,14 @@ wbo simulate --source-root . --scenario "场景名称或 ID" cards tests
 {"kind":"play","source":"5d951ae351ad8760d582585950e16c89"}
 {"kind":"select","selectedInstanceIds":["目标实例 ID"]}
 {"kind":"select_mode","selectedOptionId":1}
+{"kind":"attack","actor":"oppo","source":"攻击者实例 ID"}
 ```
 
 省略主动作 `actionId` 时，命令行会按输入顺序生成确定性 ID。选择响应可以省略请求 ID、
 动作 ID 和状态修订，命令行会使用当前待处理请求；网络服务仍应显式传递并核对这些字段。
-当前模拟接口正式支持打出、启动、超进化、结束回合、目标选择和模式选择。攻击、普通进化
-和融合会返回 `unsupported_feature`，不会用未成文规则猜测结果。结束回合完成后会切换到
-对方回合可通过动作输入中的 `actor: "oppo"` 提交指令；省略 `actor` 时默认为 `own`。
+当前模拟接口正式支持打出、启动、超进化、基础攻击、结束回合、目标选择和模式选择。普通
+进化和融合会返回 `unsupported_feature`，不会用未成文规则猜测结果。结束回合完成后会切换
+到对方回合，可通过动作输入中的 `actor: "oppo"` 提交指令；省略 `actor` 时默认为 `own`。
 
 ## 开发验证
 
@@ -153,5 +154,5 @@ go vet ./...
 
 ## 当前限制
 
-- 尚未执行攻击和融合玩家指令。
+- 尚未实现攻击高级关键词和融合玩家指令。
 - 浏览器 WASM 批量接口尚未实现。
