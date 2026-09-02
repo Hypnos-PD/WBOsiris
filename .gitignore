@@ -5,3 +5,4 @@ temp/
 /web/dist/
 /web/.vite/
 *.log
+*.tsbuildinfo
