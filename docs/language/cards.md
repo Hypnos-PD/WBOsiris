@@ -15,6 +15,8 @@ effect {
 `damage_reduction N` 使该随从每次受到的伤害减少 `N`，实际伤害最低为零。
 `stealth` 使敌方效果和攻击目标查询忽略该随从；该随从声明攻击时解除潜行。
 `attack_limit N` 使该随从每回合最多可以进行 `N` 次攻击，`N` 必须为正整数。
+`cannot_attack` 使随从无法攻击；`cannot_attack_follower` 和 `cannot_attack_leader`
+分别只禁止攻击随从或主战者。攻击限制会从合法动作集合中移除对应动作，直接提交时也会被拒绝。
 
 ## 文件结构
 

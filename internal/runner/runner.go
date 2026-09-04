@@ -514,6 +514,9 @@ func (g *game) preflightAttack(a ir.AttackAction) string {
 	if attacker == nil || attacker.zone != "field" || !contains(actor.field, attacker) || attacker.card.CardType != "follower" {
 		return "invalid_attacker"
 	}
+	if attacker.abilities["cannot_attack"] {
+		return "attack_restricted"
+	}
 	if attacker.summoningSick {
 		if !attacker.abilities["storm"] && !attacker.abilities["rush"] && !attacker.evolved {
 			return "summoning_sick"
@@ -523,6 +526,9 @@ func (g *game) preflightAttack(a ir.AttackAction) string {
 		return "already_attacked"
 	}
 	if a.Kind == "attack_leader" {
+		if attacker.abilities["cannot_attack_leader"] {
+			return "attack_leader_restricted"
+		}
 		if (attacker.abilities["rush"] || attacker.summoningSick && attacker.evolved) && !attacker.abilities["storm"] {
 			return "rush_cannot_attack_leader"
 		}
@@ -536,6 +542,9 @@ func (g *game) preflightAttack(a ir.AttackAction) string {
 	}
 	if a.Kind != "attack_entity" {
 		return "unsupported_action"
+	}
+	if attacker.abilities["cannot_attack_follower"] {
+		return "attack_follower_restricted"
 	}
 	defender := g.instances[a.Defender]
 	if defender == nil || defender.zone != "field" || !contains(opponent.field, defender) || defender.card.CardType != "follower" {

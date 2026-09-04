@@ -1182,7 +1182,7 @@ func validateCardRefs(c Card, cards map[int]bool) error {
 }
 func validCardID(id int) bool { return id >= 10000000 && id <= 99999999 }
 func validKeyword(v string) bool {
-	return oneOf(v, "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth")
+	return oneOf(v, "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")
 }
 func validOp(v string) bool { return oneOf(v, "eq", "ne", "lt", "le", "gt", "ge") }
 func oneOf(s string, v ...string) bool {

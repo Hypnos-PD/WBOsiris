@@ -149,7 +149,8 @@ Locale = { name: string, text: string }
 
 `follower` 必须有 `stats`，其他类型不得有 `stats`。`trait` 可重复声明，编译后按
 源顺序去重。直接位于 `effect` 中的 `ward`、`storm`、`rush`、`bane`、`drain`、
-`intimidate`
+`intimidate`、`barrier`、`stealth`、`cannot_attack`、`cannot_attack_follower`、
+`cannot_attack_leader`
 编译为 `intrinsic`；它们不是进入战场时执行的 `AddKeyword`。
 `locale` 只用于展示，必须按 `chs`、`eng`、`jpn`、`kor`、`cht` 规范顺序编码，
 规则引擎不得读取 `Locale.text` 决定行为。

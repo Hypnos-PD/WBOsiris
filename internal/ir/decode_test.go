@@ -87,6 +87,20 @@ func TestDecodeAllCards(t *testing.T) {
 	}
 }
 
+func TestDecodeAttackRestrictionKeywords(t *testing.T) {
+	object := cardPackObject(t)
+	cards := object["cards"].([]any)
+	card := cards[0].(map[string]any)
+	card["intrinsic"] = []any{"cannot_attack", "cannot_attack_follower", "cannot_attack_leader"}
+	pack, err := ir.DecodeCardPack(encodeCardPack(t, object))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := pack.Cards[0].Intrinsic; len(got) != 3 || got[0] != "cannot_attack" || got[1] != "cannot_attack_follower" || got[2] != "cannot_attack_leader" {
+		t.Fatalf("attack restrictions were not decoded: %#v", got)
+	}
+}
+
 func TestStrictCardPackRejections(t *testing.T) {
 	t.Run("duplicate top-level key", func(t *testing.T) {
 		if _, err := ir.DecodeCardPack([]byte(`{"format":"wbos","format":"wbos"}`)); err == nil {

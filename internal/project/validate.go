@@ -10,7 +10,7 @@ import (
 
 var (
 	cardTypes = set("follower", "spell", "amulet")
-	abilities = set("ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth")
+	abilities = set("ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")
 	classes   = set("neutral", "forestcraft", "swordcraft", "runecraft", "dragoncraft", "abysscraft", "havencraft", "portalcraft")
 	rarities  = set("bronze", "silver", "gold", "legendary")
 	traits    = set("pixie", "officer", "golem", "departed", "puppetry", "artifact")
@@ -829,7 +829,7 @@ func checkDeclaredTypes(s *syntax.Statement, ids map[string]*Card, ds *[]syntax.
 			if len(s.Blocks()) == 1 {
 				for _, o := range s.Blocks()[0] {
 					h := o.Word(0)
-					if set("stats", "evolved", "super_evolved", "ward", "storm", "rush", "bane", "drain", "intimidate")[h] && c.Type != "follower" {
+					if set("stats", "evolved", "super_evolved", "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")[h] && c.Type != "follower" {
 						diag(ds, "WBT-E004-INVALID-OVERRIDE", "错误", h+" override 只适用于随从", o.Span)
 					}
 					if set("earthsigil", "countdown", "engaged")[h] && c.Type != "amulet" {

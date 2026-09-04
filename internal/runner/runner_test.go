@@ -2,6 +2,7 @@ package runner
 
 import (
 	"encoding/json"
+	"fmt"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -467,6 +468,57 @@ func TestStormAndRushOverrideSummoningSicknessWithTargetLimits(t *testing.T) {
 	if result := session.Begin(strings.Repeat("6", 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: stormID, Defender: "oppo"}); result.Status != StatusCompleted {
 		t.Fatalf("storm could not attack leader: %#v", result)
 	}
+}
+
+func TestAttackerKeywordsRestrictLegalTargets(t *testing.T) {
+	blockedID, followerBlockedID, leaderBlockedID, defenderID := strings.Repeat("1", 32), strings.Repeat("2", 32), strings.Repeat("3", 32), strings.Repeat("4", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 66666681, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 2}, Intrinsic: []string{"cannot_attack"}},
+		{ID: 66666682, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 2}, Intrinsic: []string{"cannot_attack_follower"}},
+		{ID: 66666683, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 2}, Intrinsic: []string{"cannot_attack_leader"}},
+		{ID: 66666684, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 2}},
+	}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: blockedID, CardID: 66666681, DeclaredType: "follower"})
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: followerBlockedID, CardID: 66666682, DeclaredType: "follower"})
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: leaderBlockedID, CardID: 66666683, DeclaredType: "follower"})
+	state.Players["oppo"] = withInstance(state.Players["oppo"], "field", ir.TestInstance{InstanceID: defenderID, CardID: 66666684, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		name, attacker, kind, defender, code string
+	}{
+		{"all targets", blockedID, "attack_leader", "oppo", "attack_restricted"},
+		{"follower", followerBlockedID, "attack_entity", defenderID, "attack_follower_restricted"},
+		{"leader", leaderBlockedID, "attack_leader", "oppo", "attack_leader_restricted"},
+	}
+	for index, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			result := session.Begin(fmt.Sprintf("%032x", index+10), ir.AttackAction{Kind: test.kind, Actor: "own", Attacker: test.attacker, Defender: test.defender})
+			if result.Status != StatusIllegal || result.IllegalCode != test.code {
+				t.Fatalf("restricted attack was accepted: %#v", result)
+			}
+		})
+	}
+	actions := session.LegalActions()
+	if hasLegalAttack(actions, blockedID) || hasLegalAction(actions, "attack_entity", followerBlockedID, defenderID) || hasLegalAction(actions, "attack_leader", leaderBlockedID, "oppo") {
+		t.Fatalf("restricted targets leaked into legal actions: %#v", actions)
+	}
+	if !hasLegalAction(actions, "attack_leader", followerBlockedID, "oppo") || !hasLegalAction(actions, "attack_entity", leaderBlockedID, defenderID) {
+		t.Fatalf("allowed targets were removed from legal actions: %#v", actions)
+	}
+}
+
+func hasLegalAction(actions []LegalAction, kind, source, defender string) bool {
+	for _, action := range actions {
+		if action.Kind == kind && action.Source == source && action.Defender == defender {
+			return true
+		}
+	}
+	return false
 }
 
 func TestWardAndIntimidateRestrictFollowerAttackTargets(t *testing.T) {

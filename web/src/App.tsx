@@ -1299,7 +1299,8 @@ function BoardCard({
   if (keywords.includes("stealth")) statuses.push("stealth");
   if (keywords.includes("intimidate")) statuses.push("intimidate");
   if (keywords.includes("ability_protected")) statuses.push("abilityProtected");
-  if (keywords.includes("hold")) statuses.push("hold");
+  if (keywords.includes("hold") || keywords.includes("cannot_attack"))
+    statuses.push("hold");
   if (keywords.includes("selfdestruction")) statuses.push("selfDestruction");
   if (card.damageReduction) statuses.push("damageReduction");
   const skills = [
