@@ -545,6 +545,7 @@ type gameSnapshot struct {
 	Revision                        uint64
 	Triggers                        int
 	Turn                            ir.Turn
+	FirstPlayer                     string
 	Phase                           string
 	TurnTransition                  string
 	GameOver                        bool
@@ -562,10 +563,11 @@ type playerSnapshot struct {
 	PP, MaxPP, LeaderLife, LeaderMax, EP, SEP, Combo, Shadows int
 	Deck, Hand, Field, Graveyard, Banished, Destroyed         []string
 	AttackedThisTurn, EvolvedThisTurn                         bool
+	ExtraPPEarly, ExtraPPLate, ExtraPPActive                  bool
 }
 
 func (g *game) snapshot() gameSnapshot {
-	snapshot := gameSnapshot{Own: snapshotPlayer(g.own), Oppo: snapshotPlayer(g.oppo), Events: append([]ir.RuntimeEvent(nil), g.events...), RNG: g.rng.Snapshot(), Serial: g.serial, EventSequence: g.eventSequence, DeathBatchSerial: g.deathBatchSerial, Revision: g.revision, Triggers: len(g.triggers), Turn: g.turn, Phase: g.phase, GameOver: g.gameOver, Winner: g.winner}
+	snapshot := gameSnapshot{Own: snapshotPlayer(g.own), Oppo: snapshotPlayer(g.oppo), Events: append([]ir.RuntimeEvent(nil), g.events...), RNG: g.rng.Snapshot(), Serial: g.serial, EventSequence: g.eventSequence, DeathBatchSerial: g.deathBatchSerial, Revision: g.revision, Triggers: len(g.triggers), Turn: g.turn, FirstPlayer: g.firstPlayer, Phase: g.phase, GameOver: g.gameOver, Winner: g.winner}
 	if g.attack != nil {
 		snapshot.Attack = &attackSnapshot{Stage: g.attack.stage, Actor: g.attack.actor, Attacker: g.attack.attacker, Defender: g.attack.defender, AttackerAttack: g.attack.attackerAttack, DefenderAttack: g.attack.defenderAttack}
 	}
@@ -594,6 +596,7 @@ func snapshotPlayer(p player) playerSnapshot {
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows,
 		Deck: ids(p.deck), Hand: ids(p.hand), Field: ids(p.field), Graveyard: ids(p.graveyard),
 		Banished: ids(p.banished), Destroyed: ids(p.destroyed), AttackedThisTurn: p.attackedThisTurn, EvolvedThisTurn: p.evolvedThisTurn,
+		ExtraPPEarly: p.extraPPEarly, ExtraPPLate: p.extraPPLate, ExtraPPActive: p.extraPPActive,
 	}
 }
 
@@ -602,7 +605,7 @@ func (g *game) clone() *game {
 		cards: g.cards, instances: map[string]*instance{}, legal: g.legal, illegal: g.illegal,
 		unchanged: g.unchanged, rng: g.rng.Clone(), events: append([]ir.RuntimeEvent(nil), g.events...),
 		serial: g.serial, eventSequence: g.eventSequence, deathBatchSerial: g.deathBatchSerial, revision: g.revision,
-		turn: g.turn, phase: g.phase, turnTransition: g.turnTransition, gameOver: g.gameOver, winner: g.winner,
+		turn: g.turn, firstPlayer: g.firstPlayer, phase: g.phase, turnTransition: g.turnTransition, gameOver: g.gameOver, winner: g.winner,
 	}
 	if g.attack != nil {
 		attack := *g.attack
@@ -643,6 +646,7 @@ func clonePlayer(original player, instances map[string]*instance) player {
 		field: cloneInstances(original.field, instances), graveyard: cloneInstances(original.graveyard, instances),
 		banished: cloneInstances(original.banished, instances), destroyed: cloneInstances(original.destroyed, instances),
 		attackedThisTurn: original.attackedThisTurn, evolvedThisTurn: original.evolvedThisTurn,
+		extraPPEarly: original.extraPPEarly, extraPPLate: original.extraPPLate, extraPPActive: original.extraPPActive,
 	}
 }
 

@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -82,6 +83,106 @@ func TestSimulatorCapabilitiesMatchImplementedCommands(t *testing.T) {
 	}
 	if !capabilities.Evolve {
 		t.Fatalf("implemented evolution rule missing: %#v", capabilities)
+	}
+}
+
+func TestExtraPPEarlyAndLateWindows(t *testing.T) {
+	cardID, cardInstance := 34567891, strings.Repeat("f", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{{ID: cardID, CardType: "spell", Cost: 1}}}
+	makeState := func(turn int) ir.State {
+		state := testState()
+		state.FirstPlayer = "own"
+		state.Turn = ir.Turn{Active: "oppo", Number: turn}
+		oppo := state.Players["oppo"]
+		oppo.ExtraPPEarly, oppo.ExtraPPLate = true, true
+		oppo = withInstance(oppo, "hand", ir.TestInstance{InstanceID: cardInstance, Alias: "extra-pp-card", CardID: cardID, DeclaredType: "spell"})
+		state.Players["oppo"] = oppo
+		return state
+	}
+
+	session, err := NewSession(pack, makeState(3), 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result := session.SubmitAs(strings.Repeat("1", 32), "oppo", SimulatorCommand{Kind: "use_extra_pp"}); result.Status != StatusCompleted || session.g.oppo.pp != 1 || !session.g.oppo.extraPPActive {
+		t.Fatalf("early extra PP did not activate: result=%#v player=%#v", result, session.g.oppo)
+	}
+	if result := session.SubmitAs(strings.Repeat("2", 32), "oppo", SimulatorCommand{Kind: "end_turn"}); result.Status != StatusCompleted || session.g.oppo.pp != 0 || !session.g.oppo.extraPPEarly {
+		t.Fatalf("unused extra PP was not restored: result=%#v player=%#v", result, session.g.oppo)
+	}
+
+	session, _ = NewSession(pack, makeState(3), 1)
+	session.SubmitAs(strings.Repeat("3", 32), "oppo", SimulatorCommand{Kind: "use_extra_pp"})
+	if result := session.SubmitAs(strings.Repeat("4", 32), "oppo", SimulatorCommand{Kind: "play", Source: cardInstance}); result.Status != StatusCompleted || session.g.oppo.extraPPEarly || session.g.oppo.extraPPActive {
+		t.Fatalf("spent early extra PP was not consumed: result=%#v player=%#v", result, session.g.oppo)
+	}
+
+	late := makeState(6)
+	oppo := late.Players["oppo"]
+	oppo.ExtraPPEarly = false
+	late.Players["oppo"] = oppo
+	session, _ = NewSession(pack, late, 1)
+	if result := session.SubmitAs(strings.Repeat("5", 32), "oppo", SimulatorCommand{Kind: "use_extra_pp"}); result.Status != StatusCompleted || !session.g.oppo.extraPPActive {
+		t.Fatalf("late extra PP was unavailable: result=%#v", result)
+	}
+}
+
+func TestEvolutionTurnWindowsAndSharedLimit(t *testing.T) {
+	cardID := 34567892
+	pack := &ir.CardPack{Cards: []ir.Card{{ID: cardID, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 1}, ActionPlans: []ir.ActionPlan{{Action: "evolve"}, {Action: "superevolve"}}}}}
+	makeState := func(active string, turn int) ir.State {
+		state := testState()
+		state.FirstPlayer = "own"
+		state.Turn = ir.Turn{Active: active, Number: turn}
+		player := state.Players[active]
+		player.EP, player.SEP = 2, 2
+		player = withInstance(player, "field", ir.TestInstance{InstanceID: strings.Repeat("6", 32), Alias: "first", CardID: cardID, DeclaredType: "follower"})
+		player = withInstance(player, "field", ir.TestInstance{InstanceID: strings.Repeat("7", 32), Alias: "second", CardID: cardID, DeclaredType: "follower"})
+		state.Players[active] = player
+		return state
+	}
+
+	session, _ := NewSession(pack, makeState("own", 4), 1)
+	if result := session.Submit(strings.Repeat("8", 32), SimulatorCommand{Kind: "evolve", Source: strings.Repeat("6", 32)}); result.Status != StatusIllegal {
+		t.Fatalf("first player evolved before turn 5: %#v", result)
+	}
+	session, _ = NewSession(pack, makeState("oppo", 4), 1)
+	if result := session.SubmitAs(strings.Repeat("9", 32), "oppo", SimulatorCommand{Kind: "evolve", Source: strings.Repeat("6", 32)}); result.Status != StatusCompleted {
+		t.Fatalf("second player could not evolve on turn 4: %#v", result)
+	}
+	if result := session.SubmitAs(strings.Repeat("a", 32), "oppo", SimulatorCommand{Kind: "superevolve", Source: strings.Repeat("7", 32)}); result.Status != StatusIllegal {
+		t.Fatalf("player evolved twice in one turn: %#v", result)
+	}
+	session, _ = NewSession(pack, makeState("oppo", 6), 1)
+	if result := session.SubmitAs(strings.Repeat("b", 32), "oppo", SimulatorCommand{Kind: "superevolve", Source: strings.Repeat("6", 32)}); result.Status != StatusCompleted {
+		t.Fatalf("second player could not super-evolve on turn 6: %#v", result)
+	}
+}
+
+func TestHandLimitAndDeckOut(t *testing.T) {
+	cardID := 34567893
+	pack := &ir.CardPack{Cards: []ir.Card{{ID: cardID, CardType: "spell"}}}
+	state := testState()
+	own := state.Players["own"]
+	for n := 0; n < 8; n++ {
+		own = withInstance(own, "hand", ir.TestInstance{InstanceID: fmt.Sprintf("%032x", n+1), Alias: fmt.Sprintf("hand-%d", n), CardID: cardID, DeclaredType: "spell"})
+	}
+	for n := 0; n < 2; n++ {
+		own = withInstance(own, "deck", ir.TestInstance{InstanceID: fmt.Sprintf("%032x", n+20), Alias: fmt.Sprintf("deck-%d", n), CardID: cardID, DeclaredType: "spell"})
+	}
+	state.Players["own"] = own
+	session, _ := NewSession(pack, state, 1)
+	session.g.draw(ir.DrawEffect{Kind: "draw", Owner: "own", Count: 2}, nil, frame{})
+	if len(session.g.own.hand) != handLimit || len(session.g.own.graveyard) != 1 {
+		t.Fatalf("overdraw did not enter graveyard: hand=%d graveyard=%d", len(session.g.own.hand), len(session.g.own.graveyard))
+	}
+
+	empty := testState()
+	empty.FirstPlayer = "own"
+	session, _ = NewSession(pack, empty, 1)
+	session.g.draw(ir.DrawEffect{Kind: "draw", Owner: "own", Count: 1}, nil, frame{})
+	if !session.g.gameOver || session.g.winner != "oppo" {
+		t.Fatalf("empty deck draw did not end game: gameOver=%t winner=%q", session.g.gameOver, session.g.winner)
 	}
 }
 

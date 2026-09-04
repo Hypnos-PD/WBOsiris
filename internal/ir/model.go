@@ -459,10 +459,11 @@ type Scenario struct {
 	Origin       Origin      `json:"origin"`
 }
 type State struct {
-	Turn    Turn                   `json:"turn"`
-	Phase   string                 `json:"phase"`
-	Players map[string]PlayerState `json:"players"`
-	Aliases map[string]string      `json:"aliases"`
+	Turn        Turn                   `json:"turn"`
+	Phase       string                 `json:"phase"`
+	FirstPlayer string                 `json:"firstPlayer,omitempty"`
+	Players     map[string]PlayerState `json:"players"`
+	Aliases     map[string]string      `json:"aliases"`
 }
 type Turn struct {
 	Active string `json:"active"`
@@ -473,14 +474,16 @@ type Leader struct {
 	MaxLife int `json:"maxLife"`
 }
 type PlayerState struct {
-	Leader  Leader                    `json:"leader"`
-	PP      int                       `json:"pp"`
-	MaxPP   int                       `json:"maxpp"`
-	EP      int                       `json:"ep"`
-	SEP     int                       `json:"sep"`
-	Combo   int                       `json:"combo"`
-	Shadows int                       `json:"shadows"`
-	Zones   map[string][]TestInstance `json:"zones"`
+	Leader       Leader                    `json:"leader"`
+	PP           int                       `json:"pp"`
+	MaxPP        int                       `json:"maxpp"`
+	EP           int                       `json:"ep"`
+	SEP          int                       `json:"sep"`
+	Combo        int                       `json:"combo"`
+	Shadows      int                       `json:"shadows"`
+	ExtraPPEarly bool                      `json:"extraPPEarly,omitempty"`
+	ExtraPPLate  bool                      `json:"extraPPLate,omitempty"`
+	Zones        map[string][]TestInstance `json:"zones"`
 }
 type TestInstance struct {
 	InstanceID   string            `json:"instanceId"`

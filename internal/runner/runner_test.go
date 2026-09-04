@@ -666,8 +666,11 @@ func TestOrdinaryEvolveConsumesEPAndRunsActionPlan(t *testing.T) {
 	}
 	session.g.instances[instanceID].summoningSick = true
 	result := session.Begin(strings.Repeat("3", 32), ir.SourceAction{Kind: "evolve", Actor: "own", Source: instanceID})
-	if result.Status != StatusCompleted || session.g.own.ep != 0 || !session.g.instances[instanceID].evolved || session.g.instances[instanceID].summoningSick || session.g.instances[instanceID].attack != 3 {
+	if result.Status != StatusCompleted || session.g.own.ep != 0 || !session.g.instances[instanceID].evolved || !session.g.instances[instanceID].summoningSick || session.g.instances[instanceID].attack != 3 {
 		t.Fatalf("ordinary evolution did not complete: result=%#v player=%#v instance=%#v", result, session.g.own, session.g.instances[instanceID])
+	}
+	if attack := session.Begin(strings.Repeat("5", 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: instanceID, Defender: "oppo"}); attack.Status != StatusIllegal || attack.IllegalCode != "rush_cannot_attack_leader" {
+		t.Fatalf("newly evolved follower attacked leader: %#v", attack)
 	}
 	repeat := session.Begin(strings.Repeat("4", 32), ir.SourceAction{Kind: "evolve", Actor: "own", Source: instanceID})
 	if repeat.Status != StatusIllegal || repeat.IllegalCode != "cost" {

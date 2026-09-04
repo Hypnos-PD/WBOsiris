@@ -58,6 +58,7 @@ type ContinuationGame struct {
 	Illegal          string               `json:"illegal,omitempty"`
 	Unchanged        bool                 `json:"unchanged"`
 	Turn             ir.Turn              `json:"turn"`
+	FirstPlayer      string               `json:"firstPlayer,omitempty"`
 	Phase            string               `json:"phase"`
 	TurnTransition   string               `json:"turnTransition"`
 	GameOver         bool                 `json:"gameOver"`
@@ -85,6 +86,9 @@ type ContinuationPlayer struct {
 	Shadows          int      `json:"shadows"`
 	AttackedThisTurn bool     `json:"attackedThisTurn"`
 	EvolvedThisTurn  bool     `json:"evolvedThisTurn"`
+	ExtraPPEarly     bool     `json:"extraPPEarly"`
+	ExtraPPLate      bool     `json:"extraPPLate"`
+	ExtraPPActive    bool     `json:"extraPPActive"`
 	Deck             []string `json:"deck"`
 	Hand             []string `json:"hand"`
 	Field            []string `json:"field"`
@@ -377,7 +381,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 	snapshot := ContinuationGame{
 		Own: snapshotContinuationPlayer(g.own), Oppo: snapshotContinuationPlayer(g.oppo),
 		RNG:    ContinuationRNG{State: g.rng.Snapshot().State, Consumed: g.rng.Snapshot().Consumed},
-		Serial: g.serial, EventSequence: g.eventSequence, DeathBatchSerial: g.deathBatchSerial, Revision: g.revision, Legal: g.legal, Illegal: g.illegal, Unchanged: g.unchanged, Turn: g.turn, Phase: g.phase, TurnTransition: g.turnTransition, GameOver: g.gameOver, Winner: g.winner,
+		Serial: g.serial, EventSequence: g.eventSequence, DeathBatchSerial: g.deathBatchSerial, Revision: g.revision, Legal: g.legal, Illegal: g.illegal, Unchanged: g.unchanged, Turn: g.turn, FirstPlayer: g.firstPlayer, Phase: g.phase, TurnTransition: g.turnTransition, GameOver: g.gameOver, Winner: g.winner,
 	}
 	if g.attack != nil {
 		snapshot.Attack = &ContinuationAttack{Stage: g.attack.stage, Actor: g.attack.actor, Attacker: g.attack.attacker, Defender: g.attack.defender, AttackerAttack: g.attack.attackerAttack, DefenderAttack: g.attack.defenderAttack}
@@ -415,11 +419,12 @@ func snapshotContinuationPlayer(p player) ContinuationPlayer {
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, AttackedThisTurn: p.attackedThisTurn,
 		Deck: instanceIDs(p.deck), Hand: instanceIDs(p.hand), Field: instanceIDs(p.field), EvolvedThisTurn: p.evolvedThisTurn,
 		Graveyard: instanceIDs(p.graveyard), Banished: instanceIDs(p.banished), Destroyed: instanceIDs(p.destroyed),
+		ExtraPPEarly: p.extraPPEarly, ExtraPPLate: p.extraPPLate, ExtraPPActive: p.extraPPActive,
 	}
 }
 
 func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) {
-	g := &game{cards: cards, instances: map[string]*instance{}, legal: saved.Legal, illegal: saved.Illegal, unchanged: saved.Unchanged, rng: ruleset.NewRNG(0), serial: saved.Serial, eventSequence: saved.EventSequence, deathBatchSerial: saved.DeathBatchSerial, revision: saved.Revision, turn: saved.Turn, phase: saved.Phase, turnTransition: saved.TurnTransition, gameOver: saved.GameOver, winner: saved.Winner}
+	g := &game{cards: cards, instances: map[string]*instance{}, legal: saved.Legal, illegal: saved.Illegal, unchanged: saved.Unchanged, rng: ruleset.NewRNG(0), serial: saved.Serial, eventSequence: saved.EventSequence, deathBatchSerial: saved.DeathBatchSerial, revision: saved.Revision, turn: saved.Turn, firstPlayer: saved.FirstPlayer, phase: saved.Phase, turnTransition: saved.TurnTransition, gameOver: saved.GameOver, winner: saved.Winner}
 	if saved.Serial < 0 || saved.Serial < generatedInstanceSerial(saved.Instances) {
 		return nil, fmt.Errorf("invalid continuation instance serial")
 	}
@@ -592,7 +597,7 @@ func generatedInstanceSerial(instances []ContinuationEntity) int {
 }
 
 func restorePlayer(saved ContinuationPlayer, instances map[string]*instance) (player, error) {
-	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, attackedThisTurn: saved.AttackedThisTurn, evolvedThisTurn: saved.EvolvedThisTurn}
+	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, attackedThisTurn: saved.AttackedThisTurn, evolvedThisTurn: saved.EvolvedThisTurn, extraPPEarly: saved.ExtraPPEarly, extraPPLate: saved.ExtraPPLate, extraPPActive: saved.ExtraPPActive}
 	var err error
 	if p.deck, err = restoreInstanceList(saved.Deck, instances, "deck"); err != nil {
 		return player{}, err

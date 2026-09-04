@@ -7,7 +7,10 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const fieldLimit = 5
+const (
+	fieldLimit = 5
+	handLimit  = 9
+)
 
 type Result struct {
 	File, Scenario string
@@ -30,6 +33,8 @@ type player struct {
 	pp, maxpp, leaderLife, leaderMax, ep, sep, combo, shadows int
 	deck, hand, field, graveyard, banished, destroyed         []*instance
 	attackedThisTurn, evolvedThisTurn                         bool
+	extraPPEarly, extraPPLate                                 bool
+	extraPPActive                                             bool
 }
 type attackState struct {
 	stage                          string
@@ -59,6 +64,7 @@ type game struct {
 	triggerIndex                    triggerIndex
 	budget                          *budgetTracker
 	turn                            ir.Turn
+	firstPlayer                     string
 	phase                           string
 	turnTransition                  string
 	gameOver                        bool
@@ -179,7 +185,7 @@ func (g *game) loadState(s ir.State) error {
 	if s.Turn.Active != "own" && s.Turn.Active != "oppo" || s.Turn.Number < 0 || s.Phase != "main" {
 		return fmt.Errorf("invalid initial turn state")
 	}
-	g.turn, g.phase = s.Turn, s.Phase
+	g.turn, g.phase, g.firstPlayer = s.Turn, s.Phase, s.FirstPlayer
 	for _, side := range []string{"own", "oppo"} {
 		src := s.Players[side]
 		p := &g.own
@@ -188,6 +194,7 @@ func (g *game) loadState(s ir.State) error {
 		}
 		p.leaderLife, p.leaderMax = src.Leader.Life, src.Leader.MaxLife
 		p.pp, p.maxpp, p.ep, p.sep, p.combo, p.shadows = src.PP, src.MaxPP, src.EP, src.SEP, src.Combo, src.Shadows
+		p.extraPPEarly, p.extraPPLate = src.ExtraPPEarly, src.ExtraPPLate
 		for _, zone := range []string{"deck", "hand", "field", "graveyard", "banished", "destroyed"} {
 			for _, decl := range src.Zones[zone] {
 				c := g.cards[decl.CardID]
@@ -337,6 +344,13 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 		}
 		return ""
 	}
+	if x.Kind == "use_extra_pp" {
+		actor := g.player(x.Actor)
+		if g.firstPlayer == "" || x.Actor == g.firstPlayer || actor.extraPPActive || g.turn.Number <= 5 && !actor.extraPPEarly || g.turn.Number >= 6 && !actor.extraPPLate {
+			return "extra_pp_unavailable"
+		}
+		return ""
+	}
 	i := g.instances[x.Source]
 	if i == nil {
 		return "unknown_alias"
@@ -383,7 +397,11 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 		return sandbox.preflightRequirements(a.Body, sandboxSource, frame{}, true)
 	case "evolve":
 		actor := g.player(x.Actor)
-		if i.zone != "field" || !contains(actor.field, i) || i.card.CardType != "follower" || i.evolved || actor.ep < 1 || actor.evolvedThisTurn {
+		unlockTurn := 5
+		if g.firstPlayer != "" && x.Actor != g.firstPlayer {
+			unlockTurn = 4
+		}
+		if i.zone != "field" || !contains(actor.field, i) || i.card.CardType != "follower" || i.evolved || actor.ep < 1 || actor.evolvedThisTurn || g.firstPlayer != "" && g.turn.Number < unlockTurn {
 			return "cost"
 		}
 		if plan := findActionPlan(i.card, "evolve"); plan == nil {
@@ -394,14 +412,17 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 			sandboxSource := sandbox.instances[i.id]
 			sandbox.player(x.Actor).ep--
 			sandboxSource.evolved = true
-			sandboxSource.summoningSick = false
 			if code := sandbox.preflightPlan(sandboxSource, plan); code != "" {
 				return code
 			}
 		}
 	case "superevolve":
 		actor := g.player(x.Actor)
-		if i.zone != "field" || !contains(actor.field, i) || i.card.CardType != "follower" || i.superEvolved || actor.sep < 1 {
+		unlockTurn := 7
+		if g.firstPlayer != "" && x.Actor != g.firstPlayer {
+			unlockTurn = 6
+		}
+		if i.zone != "field" || !contains(actor.field, i) || i.card.CardType != "follower" || i.evolved || i.superEvolved || actor.sep < 1 || actor.evolvedThisTurn || g.firstPlayer != "" && g.turn.Number < unlockTurn {
 			return "cost"
 		}
 		sandbox := g.clone()
@@ -445,11 +466,22 @@ func (g *game) commitAction(a ir.Action) ([]execFrame, string) {
 		if g.turnTransition != "" {
 			return nil, "command_in_progress"
 		}
+		actor := g.player(x.Actor)
+		if actor.extraPPActive {
+			actor.pp--
+			actor.extraPPActive = false
+		}
 		g.turnTransition = "ending"
 		event := ir.RuntimeEvent{Kind: "turn_ended", Side: g.turn.Active}
 		if g.emit(event) {
 			g.queueEventTriggers(event, nil, "")
 		}
+		return nil, ""
+	}
+	if x.Kind == "use_extra_pp" {
+		actor := g.player(x.Actor)
+		actor.pp++
+		actor.extraPPActive = true
 		return nil, ""
 	}
 	i := g.instances[x.Source]
@@ -483,7 +515,7 @@ func (g *game) preflightAttack(a ir.AttackAction) string {
 		return "invalid_attacker"
 	}
 	if attacker.summoningSick {
-		if !attacker.abilities["storm"] && !attacker.abilities["rush"] {
+		if !attacker.abilities["storm"] && !attacker.abilities["rush"] && !attacker.evolved {
 			return "summoning_sick"
 		}
 	}
@@ -491,7 +523,7 @@ func (g *game) preflightAttack(a ir.AttackAction) string {
 		return "already_attacked"
 	}
 	if a.Kind == "attack_leader" {
-		if attacker.abilities["rush"] && !attacker.abilities["storm"] {
+		if (attacker.abilities["rush"] || attacker.summoningSick && attacker.evolved) && !attacker.abilities["storm"] {
 			return "rush_cannot_attack_leader"
 		}
 		if hasAttackableWard(opponent) {
@@ -768,7 +800,7 @@ func (g *game) commitPlay(i *instance) []execFrame {
 
 func (g *game) applyPlaySetup(i *instance, emit bool) {
 	actor := g.owner(i)
-	actor.pp -= i.card.Cost
+	g.spendPP(actor, i.card.Cost)
 	g.remove(&actor.hand, i)
 	if i.card.CardType == "spell" {
 		g.addToZone(actor, i, "graveyard")
@@ -784,13 +816,28 @@ func (g *game) applyPlaySetup(i *instance, emit bool) {
 }
 func (g *game) commitEngage(i *instance) []execFrame {
 	a := findAbility(i.card, "engage")
-	g.owner(i).pp -= a.Trigger.(ir.CostTrigger).Cost
+	g.spendPP(g.owner(i), a.Trigger.(ir.CostTrigger).Cost)
 	i.engaged = true
 	g.triggerEngaged(i)
 	return []execFrame{{body: a.Body, blockID: abilityBlockID(i.card.ID, a.ID), self: i, bindings: frame{}}}
 }
+
+func (g *game) spendPP(actor *player, amount int) {
+	actor.pp -= amount
+	if amount <= 0 || !actor.extraPPActive {
+		return
+	}
+	if g.turn.Number <= 5 {
+		actor.extraPPEarly = false
+	} else {
+		actor.extraPPLate = false
+	}
+	actor.extraPPActive = false
+}
 func (g *game) commitSuperEvolve(i *instance) []execFrame {
-	g.owner(i).sep--
+	owner := g.owner(i)
+	owner.sep--
+	owner.evolvedThisTurn = true
 	i.evolved, i.superEvolved = true, true
 	abilities := map[string]ir.Ability{}
 	for _, a := range i.card.Abilities {
@@ -819,7 +866,6 @@ func (g *game) commitEvolve(i *instance) []execFrame {
 	owner.ep--
 	owner.evolvedThisTurn = true
 	i.evolved = true
-	i.summoningSick = false
 	return g.commitActionPlan(i, "evolve")
 }
 
@@ -901,6 +947,9 @@ func (g *game) advanceTurn() {
 	}
 	g.resolveDeathBatch(expired)
 	g.draw(ir.DrawEffect{Kind: "draw", Owner: g.turn.Active, Count: 1}, nil, frame{})
+	if g.gameOver {
+		return
+	}
 	event := ir.RuntimeEvent{Kind: "turn_started", Side: g.turn.Active}
 	if g.emit(event) {
 		g.queueEventTriggers(event, nil, "")

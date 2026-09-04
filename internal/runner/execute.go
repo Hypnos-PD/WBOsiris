@@ -250,11 +250,24 @@ func (g *game) draw(e ir.DrawEffect, self *instance, f frame) {
 		}
 	}
 	for _, i := range drawn {
-		i.zone = "hand"
-		own.hand = append(own.hand, i)
+		g.putInHandOrOverdraw(own, i)
 	}
 	own.deck = kept
 	f[e.Output] = drawn
+	if g.firstPlayer != "" && e.Predicate == nil && !e.All && len(drawn) < count {
+		g.finishGame(oppositeSide(ownSide))
+	}
+}
+
+func (g *game) putInHandOrOverdraw(owner *player, card *instance) {
+	if len(owner.hand) < handLimit {
+		card.zone = "hand"
+		owner.hand = append(owner.hand, card)
+		return
+	}
+	card.zone = "graveyard"
+	owner.graveyard = append(owner.graveyard, card)
+	g.emit(ir.RuntimeEvent{Kind: "zone_moved", InstanceID: card.id})
 }
 func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 	own, _ := g.playerForSide(self, e.Owner)
@@ -270,7 +283,7 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 			}
 			g.serial++
 			i := g.newInstance(c, fmt.Sprintf("added-%d", g.serial), fmt.Sprintf("@added%d", g.serial), "hand")
-			own.hand = append(own.hand, i)
+			g.putInHandOrOverdraw(own, i)
 		}
 	case "summon":
 		f[e.Output] = g.summonFor(self, e.Owner, e.Count, e.CardID)

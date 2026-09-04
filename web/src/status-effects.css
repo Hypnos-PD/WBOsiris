@@ -1,0 +1,91 @@
+.status-effects,
+.status-quarter,
+.status-damage-reduction,
+.status-stealth,
+.status-whole,
+.status-intimidate {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.status-effects {
+  z-index: 3;
+  overflow: visible;
+}
+.status-quarter > i {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  background: center/100% 100% no-repeat;
+  mix-blend-mode: screen;
+}
+.status-quarter-0 {
+  left: 0;
+  bottom: 0;
+}
+.status-quarter-1 {
+  right: 0;
+  bottom: 0;
+  transform: scaleX(-1);
+}
+.status-quarter-2 {
+  left: 0;
+  top: 0;
+  transform: scaleY(-1);
+}
+.status-quarter-3 {
+  right: 0;
+  top: 0;
+  transform: scale(-1);
+}
+.status-barrier > i {
+  filter: sepia(1) saturate(8) hue-rotate(165deg);
+  opacity: 0.76;
+}
+.status-ability-protected > i {
+  filter: sepia(1) saturate(9) hue-rotate(338deg);
+  opacity: 0.78;
+}
+.status-aura > i {
+  filter: sepia(0.9) saturate(2.8) hue-rotate(35deg);
+  opacity: 0.74;
+}
+.status-damage-reduction {
+  inset: 5%;
+  border: 2px solid #eee4cf;
+  border-radius: 50%;
+  background: url("/assets/status-prefabs/stt_loop_damagecut_1/ef_hex005.png")
+    center/67% 53%;
+  box-shadow:
+    inset 0 0 15px #eadfc5cc,
+    0 0 9px #eadfc5bb;
+  clip-path: circle(49%);
+  opacity: 0.7;
+  mix-blend-mode: screen;
+}
+.status-stealth {
+  inset: -12%;
+  background: url("/assets/status-prefabs/stt_loop_sneak_1/ef_Bumps004.png")
+    center/135% 115% no-repeat;
+  filter: invert(1) grayscale(1) brightness(0.42) contrast(1.5);
+  mix-blend-mode: multiply;
+  opacity: 0.94;
+}
+.status-whole {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  opacity: 1;
+  mix-blend-mode: normal;
+}
+.status-self-destruction {
+  inset: -6%;
+  width: 112%;
+  height: 112%;
+  mix-blend-mode: screen;
+}
+.status-intimidate {
+  width: 100%;
+  height: 100%;
+  mix-blend-mode: screen;
+}
