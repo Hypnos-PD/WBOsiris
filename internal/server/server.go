@@ -24,13 +24,14 @@ type Server struct {
 }
 
 type match struct {
-	session  *runner.Session
-	players  map[string]string
-	joinCode string
-	joined   bool
-	started  bool
-	mulligan map[string]bool
-	mu       sync.Mutex
+	session           *runner.Session
+	players           map[string]string
+	joinCode          string
+	joined            bool
+	started           bool
+	mulligan          map[string]bool
+	mulliganSelection map[string][]string
+	mu                sync.Mutex
 }
 
 type command struct {
@@ -100,7 +101,7 @@ func (s *Server) matchesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	id, token, joinCode := randomID(6), randomID(24), randomID(8)
-	room := &match{session: session, players: map[string]string{token: "own"}, joinCode: joinCode, mulligan: map[string]bool{}}
+	room := &match{session: session, players: map[string]string{token: "own"}, joinCode: joinCode, mulligan: map[string]bool{}, mulliganSelection: map[string][]string{}}
 	s.mu.Lock()
 	for s.matches[id] != nil {
 		id = randomID(6)
@@ -155,13 +156,22 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "invalid request", http.StatusBadRequest)
 			return
 		}
-		if err := room.session.Mulligan(side, input.SelectedInstanceIDs); err != nil {
+		if err := room.session.ValidateMulligan(side, input.SelectedInstanceIDs); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		room.mulliganSelection[side] = append([]string(nil), input.SelectedInstanceIDs...)
 		room.mulligan[side] = true
 		room.started = room.mulligan["own"] && room.mulligan["oppo"]
 		if room.started {
+			if err := room.session.Mulligan("own", room.mulliganSelection["own"]); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			if err := room.session.Mulligan("oppo", room.mulliganSelection["oppo"]); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
 			room.session.StartMatch()
 		}
 		writeMatch(w, parts[0], "", "", side, room, nil)

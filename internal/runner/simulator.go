@@ -53,6 +53,29 @@ func (s *Session) Mulligan(side string, selected []string) error {
 	return nil
 }
 
+// ValidateMulligan checks a private redraw without changing the session.
+func (s *Session) ValidateMulligan(side string, selected []string) error {
+	if s == nil || s.g == nil || side != "own" && side != "oppo" {
+		return fmt.Errorf("invalid mulligan player")
+	}
+	player := s.g.player(side)
+	wanted := map[string]bool{}
+	for _, id := range selected {
+		if wanted[id] {
+			return fmt.Errorf("duplicate mulligan card")
+		}
+		card := s.g.instances[id]
+		if card == nil || !contains(player.hand, card) {
+			return fmt.Errorf("invalid mulligan card")
+		}
+		wanted[id] = true
+	}
+	if len(player.deck) < len(selected) {
+		return fmt.Errorf("not enough cards for mulligan")
+	}
+	return nil
+}
+
 // StartMatch resolves the first player's initial turn draw after both mulligans.
 func (s *Session) StartMatch() {
 	if s == nil || s.g == nil || s.g.gameOver {
