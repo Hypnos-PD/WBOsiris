@@ -331,6 +331,13 @@ func (s *Session) Continuation() *Continuation {
 func (s *Session) run() StepResult {
 	s.ensureBudget()
 	for {
+		if s.g.gameOver {
+			s.stack = nil
+			s.g.triggers = nil
+			s.g.attack = nil
+			s.actionID = ""
+			return StepResult{Status: StatusCompleted}
+		}
 		if s.budget.exceeded {
 			return s.budgetFault()
 		}
@@ -352,7 +359,7 @@ func (s *Session) run() StepResult {
 				s.g.advanceAttack()
 				continue
 			}
-			if s.g.turnTransition == "ending" {
+			if s.g.turnTransition == "ending" || s.g.turnTransition == "starting_triggers" {
 				s.g.advanceTurn()
 				continue
 			}

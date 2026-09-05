@@ -428,7 +428,10 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 	if saved.Serial < 0 || saved.Serial < generatedInstanceSerial(saved.Instances) {
 		return nil, fmt.Errorf("invalid continuation instance serial")
 	}
-	validTransition := saved.TurnTransition == "" && saved.Turn.Active == "own" || saved.TurnTransition == "ending" && saved.Turn.Active == "own" || saved.TurnTransition == "starting" && saved.Turn.Active == "oppo"
+	validTransition := saved.Turn.Active == "own" || saved.Turn.Active == "oppo"
+	if saved.TurnTransition != "" && saved.TurnTransition != "ending" && saved.TurnTransition != "starting" && saved.TurnTransition != "starting_triggers" {
+		validTransition = false
+	}
 	if !validTransition || saved.Turn.Number < 0 || saved.Phase != "main" {
 		return nil, fmt.Errorf("invalid continuation turn state")
 	}
@@ -532,7 +535,7 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 	}
 	g.rng.Restore(ruleset.RNGState{State: saved.RNG.State, Consumed: saved.RNG.Consumed})
 	if saved.Attack != nil {
-		if saved.Attack.Stage != "attack" && saved.Attack.Stage != "combat" || saved.Attack.Actor != "own" && saved.Attack.Actor != "oppo" || saved.Attack.Attacker == "" || saved.Attack.AttackerAttack < 0 || saved.Attack.DefenderAttack < 0 {
+		if saved.Attack.Stage != "attack" && saved.Attack.Stage != "clash_attacker" && saved.Attack.Stage != "clash_defender" && saved.Attack.Stage != "combat" || saved.Attack.Actor != "own" && saved.Attack.Actor != "oppo" || saved.Attack.Attacker == "" || saved.Attack.AttackerAttack < 0 || saved.Attack.DefenderAttack < 0 {
 			return nil, fmt.Errorf("invalid continuation attack state")
 		}
 		attacker := g.instances[saved.Attack.Attacker]

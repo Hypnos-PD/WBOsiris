@@ -404,9 +404,7 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 		if i.zone != "field" || !contains(actor.field, i) || i.card.CardType != "follower" || i.evolved || actor.ep < 1 || actor.evolvedThisTurn || g.firstPlayer != "" && g.turn.Number < unlockTurn {
 			return "cost"
 		}
-		if plan := findActionPlan(i.card, "evolve"); plan == nil {
-			return "unsupported_evolve"
-		} else {
+		if plan := findActionPlan(i.card, "evolve"); plan != nil {
 			sandbox := g.clone()
 			sandbox.budget = budget
 			sandboxSource := sandbox.instances[i.id]
@@ -529,7 +527,7 @@ func (g *game) preflightAttack(a ir.AttackAction) string {
 		if attacker.abilities["cannot_attack_leader"] {
 			return "attack_leader_restricted"
 		}
-		if (attacker.abilities["rush"] || attacker.summoningSick && attacker.evolved) && !attacker.abilities["storm"] {
+		if attacker.summoningSick && (attacker.abilities["rush"] || attacker.evolved) && !attacker.abilities["storm"] {
 			return "rush_cannot_attack_leader"
 		}
 		if hasAttackableWard(opponent) {
@@ -549,6 +547,9 @@ func (g *game) preflightAttack(a ir.AttackAction) string {
 	defender := g.instances[a.Defender]
 	if defender == nil || defender.zone != "field" || !contains(opponent.field, defender) || defender.card.CardType != "follower" {
 		return "invalid_defender"
+	}
+	if defender.abilities["stealth"] {
+		return "stealth_target"
 	}
 	if defender.abilities["intimidate"] {
 		return "intimidate_target"
@@ -615,6 +616,9 @@ func (g *game) advanceAttack() {
 		} else {
 			defender := g.instances[state.defender]
 			if defender == nil || defender.zone != "field" || !contains(g.player(opponentSide).field, defender) {
+				if attacker.superEvolved && defender != nil && defender.zone != "field" {
+					g.damageLeader(g.player(opponentSide), opponentSide, 1)
+				}
 				g.attack = nil
 				return
 			}
@@ -626,6 +630,9 @@ func (g *game) advanceAttack() {
 	if state.stage == "clash_attacker" {
 		defender := g.instances[state.defender]
 		if defender == nil || defender.zone != "field" || !contains(g.player(opponentSide).field, defender) {
+			if attacker.superEvolved && defender != nil && defender.zone != "field" {
+				g.damageLeader(g.player(opponentSide), opponentSide, 1)
+			}
 			g.attack = nil
 			return
 		}
@@ -662,6 +669,9 @@ func (g *game) advanceAttack() {
 		g.destroyByEffect([]*instance{attacker})
 	}
 	g.resolveDeathBatch(nil)
+	if attacker.superEvolved && defender.zone != "field" {
+		g.damageLeader(g.player(opponentSide), opponentSide, 1)
+	}
 	g.attack = nil
 }
 
@@ -751,6 +761,9 @@ func (g *game) damageInstanceFrom(source, target *instance, amount int, damageTy
 	target.life -= actual
 	t := &ir.EventTarget{Kind: "instance", InstanceID: target.id}
 	g.emitDamage(actual, t)
+	if actual > 0 && damageType == "effect" && source != nil && g.sideOf(source) != g.sideOf(target) {
+		delete(target.abilities, "stealth")
+	}
 	return actual
 }
 
@@ -815,7 +828,7 @@ func (g *game) applyPlaySetup(i *instance, emit bool) {
 		g.addToZone(actor, i, "graveyard")
 	} else {
 		g.addToZone(actor, i, "field")
-		i.summoningSick = i.card.CardType == "follower" && !i.abilities["storm"] && !i.abilities["rush"]
+		i.summoningSick = i.card.CardType == "follower"
 		actor.combo++
 		g.mergeEarthSigil(i)
 		if emit && i.card.CardType == "follower" {
@@ -832,8 +845,12 @@ func (g *game) commitEngage(i *instance) []execFrame {
 }
 
 func (g *game) spendPP(actor *player, amount int) {
+	before := actor.pp
 	actor.pp -= amount
 	if amount <= 0 || !actor.extraPPActive {
+		return
+	}
+	if amount <= before-1 {
 		return
 	}
 	if g.turn.Number <= 5 {
@@ -848,6 +865,8 @@ func (g *game) commitSuperEvolve(i *instance) []execFrame {
 	owner.sep--
 	owner.evolvedThisTurn = true
 	i.evolved, i.superEvolved = true, true
+	i.attack += 3
+	i.life += 3
 	abilities := map[string]ir.Ability{}
 	for _, a := range i.card.Abilities {
 		abilities[a.ID] = a
@@ -875,6 +894,8 @@ func (g *game) commitEvolve(i *instance) []execFrame {
 	owner.ep--
 	owner.evolvedThisTurn = true
 	i.evolved = true
+	i.attack += 2
+	i.life += 2
 	return g.commitActionPlan(i, "evolve")
 }
 
@@ -934,27 +955,36 @@ func (g *game) advanceTurn() {
 		g.turn.Active = oppositeSide(g.turn.Active)
 		g.turnTransition = "starting"
 	}
-	active := g.player(g.turn.Active)
-	if active.maxpp < 10 {
-		active.maxpp++
-	}
-	active.pp = active.maxpp
-	active.combo = 0
-	active.attackedThisTurn = false
-	active.evolvedThisTurn = false
-	var expired []*instance
-	for _, i := range active.field {
-		i.engaged = false
-		i.attacksUsed = 0
-		i.summoningSick = false
-		if i.card.CardType == "amulet" && i.countdown > 0 {
-			i.countdown--
-			if i.countdown == 0 {
-				expired = append(expired, i)
+	startingTriggers := g.turnTransition == "starting_triggers"
+	if startingTriggers {
+		g.turnTransition = ""
+	} else {
+		active := g.player(g.turn.Active)
+		if active.maxpp < 10 {
+			active.maxpp++
+		}
+		active.pp = active.maxpp
+		active.combo = 0
+		active.attackedThisTurn = false
+		active.evolvedThisTurn = false
+		var expired []*instance
+		for _, i := range active.field {
+			i.engaged = false
+			i.attacksUsed = 0
+			i.summoningSick = false
+			if i.card.CardType == "amulet" && i.countdown > 0 {
+				i.countdown--
+				if i.countdown == 0 {
+					expired = append(expired, i)
+				}
 			}
 		}
+		g.resolveDeathBatch(expired)
+		if len(g.triggers) > 0 {
+			g.turnTransition = "starting_triggers"
+			return
+		}
 	}
-	g.resolveDeathBatch(expired)
 	g.draw(ir.DrawEffect{Kind: "draw", Owner: g.turn.Active, Count: 1}, nil, frame{})
 	if g.gameOver {
 		return

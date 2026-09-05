@@ -68,10 +68,7 @@ func (g *game) rebuildTriggerIndex() {
 }
 
 func (g *game) queueEventTriggers(event ir.RuntimeEvent, subject *instance, binding string) bool {
-	for _, side := range []struct {
-		name  string
-		field []*instance
-	}{{"own", g.own.field}, {"oppo", g.oppo.field}} {
+	for _, side := range g.orderedSides() {
 		for _, source := range side.field {
 			for _, abilityIndex := range g.triggerIndex.abilities(event.Kind, source) {
 				if !g.chargeQueryVisits(1) {
@@ -93,6 +90,22 @@ func (g *game) queueEventTriggers(event ir.RuntimeEvent, subject *instance, bind
 		}
 	}
 	return true
+}
+
+func (g *game) orderedSides() []struct {
+	name  string
+	field []*instance
+} {
+	if g.turn.Active == "oppo" {
+		return []struct {
+			name  string
+			field []*instance
+		}{{"oppo", g.oppo.field}, {"own", g.own.field}}
+	}
+	return []struct {
+		name  string
+		field []*instance
+	}{{"own", g.own.field}, {"oppo", g.oppo.field}}
 }
 
 func eventSideMatches(want, sourceSide, eventSide string) bool {

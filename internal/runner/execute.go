@@ -461,7 +461,7 @@ func (g *game) summonFor(self *instance, side string, count, id int) []*instance
 		g.serial++
 		i := g.newInstance(c, fmt.Sprintf("summoned-%d", g.serial), fmt.Sprintf("@summoned%d", g.serial), "field")
 		g.addToZone(own, i, "field")
-		i.summoningSick = i.card.CardType == "follower" && !i.abilities["storm"] && !i.abilities["rush"]
+		i.summoningSick = i.card.CardType == "follower"
 		batch = append(batch, i)
 		g.triggerSummoned(i)
 		if g.budget != nil && g.budget.exceeded {
@@ -539,7 +539,8 @@ func (g *game) resolveDeathBatch(explicit []*instance) {
 		marked[i] = true
 	}
 	var deaths []deathRecord
-	for _, p := range []*player{&g.own, &g.oppo} {
+	for _, side := range g.orderedSides() {
+		p := g.player(side.name)
 		for _, i := range p.field {
 			if marked[i] || i.card.CardType == "follower" && i.life <= 0 {
 				abilities := append([]int(nil), g.triggerIndex.abilities("lastwords", i)...)

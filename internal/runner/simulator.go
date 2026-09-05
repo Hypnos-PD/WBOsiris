@@ -53,6 +53,17 @@ func (s *Session) Mulligan(side string, selected []string) error {
 	return nil
 }
 
+// StartMatch resolves the first player's initial turn draw after both mulligans.
+func (s *Session) StartMatch() {
+	if s == nil || s.g == nil || s.g.gameOver {
+		return
+	}
+	s.g.draw(ir.DrawEffect{Kind: "draw", Owner: s.g.turn.Active, Count: 1}, nil, frame{})
+	event := ir.RuntimeEvent{Kind: "turn_started", Side: s.g.turn.Active}
+	s.g.emit(event)
+	s.g.revision++
+}
+
 type SimulatorCapabilities struct {
 	Play         bool `json:"play"`
 	Engage       bool `json:"engage"`
@@ -171,7 +182,7 @@ func (s *Session) SubmitAs(actionID, actor string, command SimulatorCommand) Ste
 		}
 		return s.Begin(actionID, ir.AttackAction{Kind: kind, Actor: actor, Attacker: command.Source, Defender: func() string {
 			if defender == "" {
-				return "oppo"
+				return oppositeSide(actor)
 			}
 			return defender
 		}()})

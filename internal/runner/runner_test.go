@@ -249,6 +249,31 @@ func TestEndTurnPreparesNextPlayerDeterministically(t *testing.T) {
 	}
 }
 
+func TestTurnStartLastWordsResolveBeforeNormalDraw(t *testing.T) {
+	amuletID, firstDrawID, secondDrawID := strings.Repeat("6", 32), strings.Repeat("7", 32), strings.Repeat("8", 32)
+	lastWordsID := strings.Repeat("9", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 34567891, CardType: "amulet", Abilities: []ir.Ability{{ID: lastWordsID, Trigger: ir.SimpleTrigger{Kind: "lastwords"}, Body: []ir.Effect{ir.DrawEffect{Kind: "draw", Owner: "own", Count: 1}}}}},
+		{ID: 34567892, CardType: "spell"},
+	}}
+	state := testState()
+	oppo := state.Players["oppo"]
+	oppo = withInstance(oppo, "field", ir.TestInstance{InstanceID: amuletID, CardID: 34567891, DeclaredType: "amulet", Overrides: ir.InstanceOverrides{Countdown: intPtr(1)}})
+	oppo = withInstance(oppo, "deck", ir.TestInstance{InstanceID: firstDrawID, CardID: 34567892, DeclaredType: "spell"})
+	oppo = withInstance(oppo, "deck", ir.TestInstance{InstanceID: secondDrawID, CardID: 34567892, DeclaredType: "spell"})
+	state.Players["oppo"] = oppo
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result := session.Begin(strings.Repeat("a", 32), ir.SourceAction{Kind: "end_turn", Actor: "own"}); result.Status != StatusCompleted {
+		t.Fatalf("end turn failed: %#v", result)
+	}
+	if len(session.g.oppo.hand) != 2 || len(session.g.events) != 5 || session.g.events[1].Kind != "destroyed" || session.g.events[2].Kind != "card_drawn" || session.g.events[3].Kind != "card_drawn" || session.g.events[4].Kind != "turn_started" {
+		t.Fatalf("turn-start resolution order diverged: hand=%d events=%#v", len(session.g.oppo.hand), session.g.events)
+	}
+}
+
 func TestAdvanceDrivesDeclaredTurnEvent(t *testing.T) {
 	abilityID := strings.Repeat("6", 32)
 	pack := &ir.CardPack{Cards: []ir.Card{{ID: 45678901, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 1}, Abilities: []ir.Ability{{
@@ -462,6 +487,8 @@ func TestStormAndRushOverrideSummoningSicknessWithTargetLimits(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	session.g.instances[rushID].summoningSick = true
+	session.g.instances[stormID].summoningSick = true
 	if result := session.Begin(strings.Repeat("5", 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: rushID, Defender: "oppo"}); result.Status != StatusIllegal || result.IllegalCode != "rush_cannot_attack_leader" {
 		t.Fatalf("rush attacked leader: %#v", result)
 	}
@@ -632,6 +659,25 @@ func TestBarrierAndSuperEvolutionProtectDamageAndEffectDestruction(t *testing.T)
 	}
 }
 
+func TestSuperEvolvedAttackDestroyingFollowerDamagesLeader(t *testing.T) {
+	attackerID, defenderID := strings.Repeat("7", 32), strings.Repeat("8", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 66666688, CardType: "follower", Stats: &ir.Stats{Attack: 3, Life: 3}},
+		{ID: 66666689, CardType: "follower", Stats: &ir.Stats{Attack: 0, Life: 2}},
+	}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: attackerID, CardID: 66666688, DeclaredType: "follower", Overrides: ir.InstanceOverrides{SuperEvolved: boolPtr(true)}})
+	state.Players["oppo"] = withInstance(state.Players["oppo"], "field", ir.TestInstance{InstanceID: defenderID, CardID: 66666689, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := session.Begin(strings.Repeat("9", 32), ir.AttackAction{Kind: "attack_entity", Actor: "own", Attacker: attackerID, Defender: defenderID})
+	if result.Status != StatusCompleted || session.g.instances[defenderID].zone != "graveyard" || session.g.oppo.leaderLife != 19 {
+		t.Fatalf("super-evolution attack bonus diverged: result=%#v defender=%#v life=%d", result, session.g.instances[defenderID], session.g.oppo.leaderLife)
+	}
+}
+
 func TestEffectDamageCanTargetLeader(t *testing.T) {
 	session, err := NewSession(&ir.CardPack{}, testState(), 1)
 	if err != nil {
@@ -683,6 +729,47 @@ func TestDamageReductionAndStealthUseCommonTargetRules(t *testing.T) {
 	}
 }
 
+func TestStealthCannotBeAttackedAndBreaksOnEnemyEffectDamage(t *testing.T) {
+	attackerID, targetID := strings.Repeat("1", 32), strings.Repeat("2", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 66666685, CardType: "follower", Stats: &ir.Stats{Attack: 2, Life: 2}},
+		{ID: 66666686, CardType: "follower", Stats: &ir.Stats{Attack: 2, Life: 3}, Intrinsic: []string{"stealth"}},
+	}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: attackerID, CardID: 66666685, DeclaredType: "follower"})
+	state.Players["oppo"] = withInstance(state.Players["oppo"], "field", ir.TestInstance{InstanceID: targetID, CardID: 66666686, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result := session.Begin(strings.Repeat("3", 32), ir.AttackAction{Kind: "attack_entity", Actor: "own", Attacker: attackerID, Defender: targetID}); result.Status != StatusIllegal || result.IllegalCode != "stealth_target" {
+		t.Fatalf("stealth follower was attackable: %#v", result)
+	}
+	session.g.damageInstanceFrom(session.g.instances[attackerID], session.g.instances[targetID], 1, "effect")
+	if session.g.instances[targetID].abilities["stealth"] {
+		t.Fatal("stealth was not removed by enemy effect damage")
+	}
+}
+
+func TestOrdinaryEvolutionWorksWithoutAnEvolutionAbility(t *testing.T) {
+	instanceID := strings.Repeat("5", 32)
+	card := ir.Card{ID: 66666687, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 1}}
+	state := testState()
+	own := state.Players["own"]
+	own.EP = 1
+	state.Players["own"] = withInstance(own, "field", ir.TestInstance{InstanceID: instanceID, CardID: card.ID, DeclaredType: "follower"})
+	session, err := NewSession(&ir.CardPack{Cards: []ir.Card{card}}, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result := session.Begin(strings.Repeat("6", 32), ir.SourceAction{Kind: "evolve", Actor: "own", Source: instanceID}); result.Status != StatusCompleted {
+		t.Fatalf("plain follower could not evolve: %#v", result)
+	}
+	if got := session.g.instances[instanceID]; !got.evolved || got.attack != 3 || got.life != 3 {
+		t.Fatalf("plain evolution did not apply +2/+2: %#v", got)
+	}
+}
+
 func TestAttackLimitAllowsMultipleAttacks(t *testing.T) {
 	attackerID := strings.Repeat("c", 32)
 	pack := &ir.CardPack{Cards: []ir.Card{{ID: 66666680, CardType: "follower", Stats: &ir.Stats{Attack: 2, Life: 3}, IntrinsicState: []ir.IntrinsicState{{Kind: "attack_limit", Initial: 2}}}}}
@@ -718,7 +805,7 @@ func TestOrdinaryEvolveConsumesEPAndRunsActionPlan(t *testing.T) {
 	}
 	session.g.instances[instanceID].summoningSick = true
 	result := session.Begin(strings.Repeat("3", 32), ir.SourceAction{Kind: "evolve", Actor: "own", Source: instanceID})
-	if result.Status != StatusCompleted || session.g.own.ep != 0 || !session.g.instances[instanceID].evolved || !session.g.instances[instanceID].summoningSick || session.g.instances[instanceID].attack != 3 {
+	if result.Status != StatusCompleted || session.g.own.ep != 0 || !session.g.instances[instanceID].evolved || !session.g.instances[instanceID].summoningSick || session.g.instances[instanceID].attack != 5 {
 		t.Fatalf("ordinary evolution did not complete: result=%#v player=%#v instance=%#v", result, session.g.own, session.g.instances[instanceID])
 	}
 	if attack := session.Begin(strings.Repeat("5", 32), ir.AttackAction{Kind: "attack_leader", Actor: "own", Attacker: instanceID, Defender: "oppo"}); attack.Status != StatusIllegal || attack.IllegalCode != "rush_cannot_attack_leader" {

@@ -161,6 +161,9 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		room.mulligan[side] = true
 		room.started = room.mulligan["own"] && room.mulligan["oppo"]
+		if room.started {
+			room.session.StartMatch()
+		}
 		writeMatch(w, parts[0], "", "", side, room, nil)
 		return
 	}

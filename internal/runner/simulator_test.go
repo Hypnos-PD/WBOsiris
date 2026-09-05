@@ -186,6 +186,22 @@ func TestHandLimitAndDeckOut(t *testing.T) {
 	}
 }
 
+func TestStartMatchDrawsForFirstPlayer(t *testing.T) {
+	cardID := 34567894
+	pack := &ir.CardPack{Cards: []ir.Card{{ID: cardID, CardType: "spell"}}}
+	state := testState()
+	state.FirstPlayer = "own"
+	state.Players["own"] = withInstance(state.Players["own"], "deck", ir.TestInstance{InstanceID: strings.Repeat("1", 32), CardID: cardID, DeclaredType: "spell"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	session.StartMatch()
+	if len(session.g.own.hand) != 1 || len(session.g.own.deck) != 0 || len(session.g.oppo.hand) != 0 {
+		t.Fatalf("initial turn draw diverged: own=%#v oppo=%#v", session.g.own, session.g.oppo)
+	}
+}
+
 func TestSimulatorProjectsCombatReadinessAndLegalAttacks(t *testing.T) {
 	followerID := strings.Repeat("1", 32)
 	pack := &ir.CardPack{Cards: []ir.Card{{ID: 78901234, CardType: "follower", Cost: 1, Stats: &ir.Stats{Attack: 2, Life: 2}}}}

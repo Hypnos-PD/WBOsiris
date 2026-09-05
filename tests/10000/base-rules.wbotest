@@ -545,7 +545,7 @@ scenario "疾驰与突进的入场回合攻击资格" {
     }
 }
 
-scenario "突进不能攻击主战者" {
+scenario "突进随从可以攻击主战者" {
     seed 1017;
 
     state {
@@ -566,8 +566,8 @@ scenario "突进不能攻击主战者" {
     }
 
     expect {
-        illegal rush_cannot_attack_leader;
-        unchanged;
+        legal;
+        oppo.leader.life == 17;
     }
 }
 

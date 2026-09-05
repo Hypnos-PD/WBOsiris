@@ -349,8 +349,8 @@ func TestContinuationStrictDecodeAndRestoreRejections(t *testing.T) {
 	t.Run("opponent turn", func(t *testing.T) {
 		copy := *decoded
 		copy.Game.Turn.Active = "oppo"
-		if _, err := RestoreSession(pack, &copy); err == nil {
-			t.Fatal("opponent-turn continuation was accepted")
+		if _, err := RestoreSession(pack, &copy); err != nil {
+			t.Fatalf("opponent-turn continuation was rejected: %v", err)
 		}
 	})
 	t.Run("choice controller", func(t *testing.T) {
