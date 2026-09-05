@@ -304,7 +304,7 @@ func (s *Session) View(viewer string) (StateView, error) {
 		Turn: TurnView{Active: active, Number: s.g.turn.Number}, Phase: s.g.phase,
 		Revision: s.g.revision, Viewer: viewer,
 		GameOver: s.g.gameOver, Winner: winner,
-		Own: playerView(own, true, s.g.turn.Number), Oppo: playerView(oppo, false, s.g.turn.Number), PendingChoice: s.pendingChoiceFor(viewer),
+		Own: playerView(own, true, s.g.turn.Number, viewer, s.g.firstPlayer), Oppo: playerView(oppo, false, s.g.turn.Number, oppositeSide(viewer), s.g.firstPlayer), PendingChoice: s.pendingChoiceFor(viewer),
 	}, nil
 }
 
@@ -317,19 +317,19 @@ func (s *Session) pendingChoiceFor(viewer string) *ChoiceRequest {
 	return request
 }
 
-func playerView(p *player, revealHand bool, turn int) PlayerView {
+func playerView(p *player, revealHand bool, turn int, side, firstPlayer string) PlayerView {
 	view := PlayerView{
 		LeaderLife: p.leaderLife, LeaderMax: p.leaderMax, PP: p.pp, MaxPP: p.maxpp,
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, AttackedThisTurn: p.attackedThisTurn,
 		DeckCount: len(p.deck), HandCount: len(p.hand), Field: entityViews(p.field),
 		Graveyard: entityViews(p.graveyard), Banished: entityViews(p.banished), Destroyed: entityViews(p.destroyed),
 	}
-	view.ExtraPPAvailable = turn <= 5 && p.extraPPEarly || turn >= 6 && p.extraPPLate
+	view.ExtraPPAvailable = side != firstPlayer && !p.extraPPActive && (p.extraPPEarly || turn >= 6 && p.extraPPLate)
 	view.ExtraPPActive = p.extraPPActive
 	if p.extraPPEarly {
 		view.ExtraPPUses++
 	}
-	if p.extraPPLate {
+	if turn >= 6 && p.extraPPLate {
 		view.ExtraPPUses++
 	}
 	if revealHand {

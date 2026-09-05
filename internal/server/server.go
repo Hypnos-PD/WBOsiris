@@ -327,7 +327,7 @@ func simulationState() ir.State {
 	}
 	return ir.State{Turn: ir.Turn{Active: "own", Number: 1}, Phase: "main", FirstPlayer: "own", Players: map[string]ir.PlayerState{
 		"own":  {Leader: ir.Leader{Life: 20, MaxLife: 20}, PP: 1, MaxPP: 1, EP: 2, SEP: 2, Zones: zones("own", 1, 100)},
-		"oppo": {Leader: ir.Leader{Life: 20, MaxLife: 20}, PP: 0, MaxPP: 0, EP: 2, SEP: 2, ExtraPPEarly: true, ExtraPPLate: true, Zones: zones("oppo", 50, 200)},
+		"oppo": {Leader: ir.Leader{Life: 20, MaxLife: 20}, PP: 0, MaxPP: 0, EP: 2, SEP: 2, ExtraPPEarly: true, Zones: zones("oppo", 50, 200)},
 	}, Aliases: map[string]string{}}
 }
 

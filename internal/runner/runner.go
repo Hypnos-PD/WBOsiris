@@ -346,7 +346,11 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 	}
 	if x.Kind == "use_extra_pp" {
 		actor := g.player(x.Actor)
-		if g.firstPlayer == "" || x.Actor == g.firstPlayer || actor.extraPPActive || g.turn.Number <= 5 && !actor.extraPPEarly || g.turn.Number >= 6 && !actor.extraPPLate {
+		available := actor.extraPPEarly
+		if g.turn.Number >= 6 {
+			available = available || actor.extraPPLate
+		}
+		if g.firstPlayer == "" || x.Actor == g.firstPlayer || actor.extraPPActive || !available {
 			return "extra_pp_unavailable"
 		}
 		return ""
@@ -869,7 +873,7 @@ func (g *game) spendPP(actor *player, amount int) {
 	}
 	if g.turn.Number <= 5 {
 		actor.extraPPEarly = false
-	} else {
+	} else if !actor.extraPPEarly {
 		actor.extraPPLate = false
 	}
 	actor.extraPPActive = false
@@ -995,6 +999,9 @@ func (g *game) advanceTurn() {
 		active.combo = 0
 		active.attackedThisTurn = false
 		active.evolvedThisTurn = false
+		if g.turn.Number >= 6 && !active.extraPPEarly {
+			active.extraPPLate = true
+		}
 		var expired []*instance
 		for _, i := range active.field {
 			i.engaged = false
