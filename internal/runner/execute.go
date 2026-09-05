@@ -245,9 +245,11 @@ func (g *game) draw(e ir.DrawEffect, self *instance, f frame) {
 		}
 	}
 	if e.Predicate == nil {
-		if !g.emit(ir.RuntimeEvent{Kind: "card_drawn", Side: ownSide, Count: len(drawn)}) {
+		event := ir.RuntimeEvent{Kind: "card_drawn", Side: ownSide, Count: len(drawn)}
+		if !g.emit(event) {
 			return
 		}
+		g.queueEventTriggers(event, nil, "")
 	}
 	for _, i := range drawn {
 		g.putInHandOrOverdraw(own, i)
@@ -267,7 +269,10 @@ func (g *game) putInHandOrOverdraw(owner *player, card *instance) {
 	}
 	card.zone = "graveyard"
 	owner.graveyard = append(owner.graveyard, card)
-	g.emit(ir.RuntimeEvent{Kind: "zone_moved", InstanceID: card.id})
+	event := ir.RuntimeEvent{Kind: "zone_moved", Side: g.sideOf(card), InstanceID: card.id}
+	if g.emit(event) {
+		g.queueEventTriggers(event, card, "")
+	}
 }
 func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 	own, _ := g.playerForSide(self, e.Owner)
@@ -567,7 +572,9 @@ func (g *game) resolveDeathBatch(explicit []*instance) {
 	for _, death := range deaths {
 		g.eventSequence++
 		subject := ir.EventTarget{Kind: "instance", InstanceID: death.instance.id}
-		g.events = append(g.events, ir.RuntimeEvent{Kind: "destroyed", Subject: &subject, Sequence: g.eventSequence, BatchID: batchID})
+		event := ir.RuntimeEvent{Kind: "destroyed", Side: g.sideOf(death.instance), Subject: &subject, Sequence: g.eventSequence, BatchID: batchID}
+		g.events = append(g.events, event)
+		g.queueEventTriggers(event, death.instance, "")
 	}
 	for _, death := range deaths {
 		for _, abilityIndex := range death.abilities {

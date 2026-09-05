@@ -207,6 +207,28 @@ func TestTriggerQueueDrainsFIFO(t *testing.T) {
 	}
 }
 
+func TestDamageEventDispatchesToMatchingListener(t *testing.T) {
+	targetID, listenerID, abilityID := strings.Repeat("1", 32), strings.Repeat("2", 32), strings.Repeat("3", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 34567895, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 3}},
+		{ID: 34567896, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 3}, Abilities: []ir.Ability{{ID: abilityID, Trigger: ir.EventTrigger{Kind: "event", Event: "damaged", Side: "own", SubjectType: "follower"}, Body: []ir.Effect{ir.TargetEffect{Kind: "heal", Target: ir.LeaderRef{Kind: "leader", Side: "own"}, Amount: 1}}}}},
+	}}
+	state := testState()
+	own := state.Players["own"]
+	own = withInstance(own, "field", ir.TestInstance{InstanceID: targetID, CardID: 34567895, DeclaredType: "follower"})
+	own = withInstance(own, "field", ir.TestInstance{InstanceID: listenerID, CardID: 34567896, DeclaredType: "follower"})
+	own.Leader.Life = 10
+	state.Players["own"] = own
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	session.g.damageInstance(session.g.instances[targetID], 1)
+	if result := session.run(); result.Status != StatusCompleted || session.g.own.leaderLife != 11 {
+		t.Fatalf("damage listener did not resolve: result=%#v life=%d events=%#v", result, session.g.own.leaderLife, session.g.events)
+	}
+}
+
 func testState() ir.State {
 	zones := func() map[string][]ir.TestInstance {
 		return map[string][]ir.TestInstance{"deck": {}, "hand": {}, "field": {}, "graveyard": {}, "banished": {}, "destroyed": {}}

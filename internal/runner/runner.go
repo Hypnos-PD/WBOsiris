@@ -699,8 +699,10 @@ func (g *game) damageLeader(target *player, side string, amount int) int {
 	}
 	actual := min(amount, target.leaderLife)
 	t := ir.EventTarget{Kind: "leader", Side: side}
-	if g.emit(ir.RuntimeEvent{Kind: "damaged", Actual: actual, Target: &t}) {
+	event := ir.RuntimeEvent{Kind: "damaged", Side: side, Actual: actual, Target: &t}
+	if g.emit(event) {
 		target.leaderLife -= actual
+		g.queueEventTriggers(event, nil, "")
 		if target.leaderLife == 0 {
 			g.finishGame(oppositeSide(side))
 		}
@@ -721,8 +723,10 @@ func (g *game) damageLeaders(amount int) {
 	} {
 		actual := min(amount, max(target.player.leaderLife, 0))
 		eventTarget := &ir.EventTarget{Kind: "leader", Side: target.side}
-		if g.emit(ir.RuntimeEvent{Kind: "damaged", Actual: actual, Target: eventTarget}) {
+		event := ir.RuntimeEvent{Kind: "damaged", Side: target.side, Actual: actual, Target: eventTarget}
+		if g.emit(event) {
 			target.player.leaderLife -= actual
+			g.queueEventTriggers(event, nil, "")
 		}
 	}
 	if g.own.leaderLife <= 0 && g.oppo.leaderLife <= 0 {
@@ -744,8 +748,10 @@ func (g *game) healLeader(target *player, side string, amount int) {
 	}
 	actual := life - target.leaderLife
 	t := ir.EventTarget{Kind: "leader", Side: side}
-	if actual > 0 && g.emit(ir.RuntimeEvent{Kind: "healed", Actual: actual, Target: &t}) {
+	event := ir.RuntimeEvent{Kind: "healed", Side: side, Actual: actual, Target: &t}
+	if actual > 0 && g.emit(event) {
 		target.leaderLife = life
+		g.queueEventTriggers(event, nil, "")
 	}
 }
 
@@ -760,7 +766,7 @@ func (g *game) damageInstanceFrom(source, target *instance, amount int, damageTy
 	actual := g.modifyDamage(damageContext{source: source, target: target, amount: amount, damageType: damageType})
 	target.life -= actual
 	t := &ir.EventTarget{Kind: "instance", InstanceID: target.id}
-	g.emitDamage(actual, t)
+	g.emitDamage(actual, t, target)
 	if actual > 0 && damageType == "effect" && source != nil && g.sideOf(source) != g.sideOf(target) {
 		delete(target.abilities, "stealth")
 	}
@@ -802,11 +808,19 @@ func (g *game) finishGame(winner string) {
 	g.emit(ir.RuntimeEvent{Kind: "game_ended", Side: winner})
 }
 
-func (g *game) emitDamage(amount int, target *ir.EventTarget) {
+func (g *game) emitDamage(amount int, target *ir.EventTarget, subject *instance) {
 	if amount < 0 {
 		amount = 0
 	}
-	g.emit(ir.RuntimeEvent{Kind: "damaged", Actual: amount, Target: target})
+	event := ir.RuntimeEvent{Kind: "damaged", Side: func() string {
+		if subject != nil {
+			return g.sideOf(subject)
+		}
+		return target.Side
+	}(), Actual: amount, Target: target}
+	if g.emit(event) {
+		g.queueEventTriggers(event, subject, "")
+	}
 }
 
 func (g *game) commitPlay(i *instance) []execFrame {
@@ -867,6 +881,15 @@ func (g *game) commitSuperEvolve(i *instance) []execFrame {
 	i.evolved, i.superEvolved = true, true
 	i.attack += 3
 	i.life += 3
+	target := &ir.EventTarget{Kind: "instance", InstanceID: i.id}
+	evolved := ir.RuntimeEvent{Kind: "evolved", Side: g.sideOf(i), InstanceID: i.id, CardID: i.card.ID, Subject: target}
+	if g.emit(evolved) {
+		g.queueEventTriggers(evolved, i, "")
+	}
+	superEvolved := ir.RuntimeEvent{Kind: "super_evolved", Side: g.sideOf(i), InstanceID: i.id, CardID: i.card.ID, Subject: target}
+	if g.emit(superEvolved) {
+		g.queueEventTriggers(superEvolved, i, "")
+	}
 	abilities := map[string]ir.Ability{}
 	for _, a := range i.card.Abilities {
 		abilities[a.ID] = a
@@ -896,6 +919,11 @@ func (g *game) commitEvolve(i *instance) []execFrame {
 	i.evolved = true
 	i.attack += 2
 	i.life += 2
+	target := &ir.EventTarget{Kind: "instance", InstanceID: i.id}
+	event := ir.RuntimeEvent{Kind: "evolved", Side: g.sideOf(i), InstanceID: i.id, CardID: i.card.ID, Subject: target}
+	if g.emit(event) {
+		g.queueEventTriggers(event, i, "")
+	}
 	return g.commitActionPlan(i, "evolve")
 }
 

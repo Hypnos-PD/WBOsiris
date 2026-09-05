@@ -76,7 +76,7 @@ func (g *game) queueEventTriggers(event ir.RuntimeEvent, subject *instance, bind
 				}
 				ability := source.card.Abilities[abilityIndex]
 				trigger := ability.Trigger.(ir.EventTrigger)
-				if !eventSideMatches(trigger.Side, side.name, event.Side) || subject != nil && !g.matches(subject, trigger.Predicate) {
+				if !eventSideMatches(trigger.Side, side.name, event.Side) || subject != nil && !g.matches(subject, trigger.Predicate) || subject != nil && trigger.SubjectType != "" && subject.card.CardType != trigger.SubjectType {
 					continue
 				}
 				bindings := frame{}
