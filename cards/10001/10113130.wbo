@@ -6,7 +6,13 @@ card 10113130 {
     stats 4/4;
 
     effect {
-        unplayable;
+        when own follower leaves field while self in hand {
+            reduce cost self 1 minimum 0;
+        }
+        fanfare {
+            choose target from oppo.field.followers;
+            damage target 4;
+        }
     }
 
     meta {

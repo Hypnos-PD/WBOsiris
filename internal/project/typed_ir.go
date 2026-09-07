@@ -580,10 +580,15 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 		if m.SubjectType == "card" {
 			m.SubjectType = ""
 		}
-		m.Event = map[string]string{"summoned": "follower_summoned", "engaged": "amulet_engaged", "discarded": "card_discarded"}[t[3].Value]
+		m.Event = map[string]string{"summoned": "follower_summoned", "leaves": "follower_left", "fused": "card_fused", "engaged": "amulet_engaged", "discarded": "card_discarded"}[t[3].Value]
 	}
-	if len(t) > 4 {
-		m.Predicate, _ = filterIR(t, 4)
+	baseEnd, _, _ := parseBaseEventPattern(t)
+	end, _, _ := parseEventPattern(t)
+	if end > baseEnd {
+		m.SourceZone = t[baseEnd+3].Value
+	}
+	if len(t) > end {
+		m.Predicate, _ = filterIR(t, end)
 	}
 	return m
 }

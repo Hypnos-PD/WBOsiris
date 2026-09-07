@@ -9,13 +9,20 @@ type triggerIndex struct {
 // 索引只保存候选位置，实际顺序始终以当前场面为准。
 
 func (x *triggerIndex) add(i *instance) {
-	if i == nil || i.zone != "field" {
+	if i == nil || i.zone != "field" && i.zone != "hand" {
 		return
 	}
 	if x.byKind == nil {
 		x.byKind = map[string]map[string][]runtimeAbility{}
 	}
 	for ability := range i.triggeredAbilities() {
+		zone := "field"
+		if event, ok := ability.Trigger.(ir.EventTrigger); ok && event.SourceZone != "" {
+			zone = event.SourceZone
+		}
+		if i.zone != zone {
+			continue
+		}
 		key := indexedTriggerKind(ability.Trigger)
 		if key == "" {
 			continue
@@ -39,7 +46,7 @@ func (x *triggerIndex) remove(i *instance) {
 	}
 }
 
-func (g *game) detachFieldSource(i *instance) {
+func (g *game) detachEventSource(i *instance) {
 	g.triggerIndex.remove(i)
 	blocks := map[string]bool{}
 	for ability := range i.triggeredAbilities() {
@@ -78,7 +85,7 @@ func indexedTriggerKind(trigger ir.Trigger) string {
 func (g *game) rebuildTriggerIndex() {
 	g.triggerIndex = triggerIndex{byKind: map[string]map[string][]runtimeAbility{}}
 	for _, p := range []*player{&g.own, &g.oppo} {
-		for _, i := range p.field {
+		for _, i := range append(append([]*instance{}, p.field...), p.hand...) {
 			g.triggerIndex.add(i)
 		}
 	}
@@ -86,7 +93,7 @@ func (g *game) rebuildTriggerIndex() {
 
 func (g *game) queueEventTriggers(event ir.RuntimeEvent, subject *instance, binding string) bool {
 	for _, side := range g.orderedSides() {
-		for _, source := range side.field {
+		for _, source := range append(append([]*instance{}, side.field...), g.player(side.name).hand...) {
 			for _, ability := range g.triggerIndex.abilities(event.Kind, source) {
 				if !g.chargeQueryVisits(1) {
 					return false

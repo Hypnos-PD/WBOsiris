@@ -269,12 +269,14 @@ option_label      = "label" , locale_id , string , ";" ;
 ### 2.6 事件与替换
 
 ```ebnf
-event_block       = "when" , event_pattern , [where_clause] , effect_block ;
+event_block       = "when" , event_pattern , [source_zone] , [where_clause] , effect_block ;
 event_pattern     = participant , event_subject , event_verb
+                  | participant , "follower" , "leaves" , "field"
                   | participant , "turn" , turn_boundary
                   | "self" , ("evolved" | "super_evolved" | "discarded") ;
 event_subject     = "follower" | "amulet" | "card" ;
-event_verb        = "summoned" | "engaged" | "discarded" ;
+event_verb        = "summoned" | "engaged" | "discarded" | "fused" ;
+source_zone       = "while" , "self" , "in" , ("hand" | "field") ;
 turn_boundary     = "starts" | "ends" ;
 
 replace_block     = "replace" , "self" , "leaving" , "field" , effect_block ;
@@ -289,6 +291,9 @@ leaving field` 在原区域移动前执行并取消原移动，同一替换块�
 它们匹配自身的形态变化，前者也包含超进化；不同于仅在支付点数后执行的进化关键词能力。
 `when self discarded` 允许用于任何卡牌种类且不附带 `where`，只由被舍弃实例自身发动。
 `when own card discarded` 与 `when oppo card discarded` 由战场监听器按弃牌拥有者匹配。
+`card fused` 匹配成功融合的来源卡，每次操作只触发一次。`follower leaves field` 绑定 `left`。
+`source_zone` 只用于玩家侧事件，不用于 `when self ...` 或 `grant` 内的附加能力；
+省略时来源位于战场。区域条件约束来源，`where` 则约束事件对象。
 
 ### 2.7 操作
 

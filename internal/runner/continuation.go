@@ -17,7 +17,7 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.20.0"
+const continuationVersion = "0.21.0"
 
 type ContinuationBindings struct {
 	ID     string              `json:"id"`
@@ -721,6 +721,9 @@ func validateContinuationEvents(events []ir.RuntimeEvent, sequence, deathBatchSe
 		}
 		if event.Kind == "card_discarded" && (event.Side != "own" && event.Side != "oppo" || event.PrivateTo != "" || event.From != "hand" || event.To != "graveyard" || event.Subject == nil || event.Subject.Kind != "instance" || instances[event.Subject.InstanceID] == nil || event.Subject.CardID < 10000000) {
 			return fmt.Errorf("invalid continuation discard event")
+		}
+		if event.Kind == "follower_left" && (event.Side != "own" && event.Side != "oppo" || event.PrivateTo != "" || event.From != "field" || event.To != "hand" && event.To != "deck" && event.To != "graveyard" && event.To != "banished" || event.Subject == nil || event.Subject.Kind != "instance" || instances[event.Subject.InstanceID] == nil || event.Subject.CardID < 10000000) {
+			return fmt.Errorf("invalid continuation departure event")
 		}
 		if event.Sequence != uint64(n+1) || event.BatchID > deathBatchSerial || event.Kind == "destroyed" && event.BatchID == 0 || event.Kind != "destroyed" && event.BatchID != 0 {
 			return fmt.Errorf("invalid continuation event sequence")

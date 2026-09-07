@@ -199,6 +199,7 @@ type EventTrigger struct {
 	Kind        string    `json:"kind"`
 	Event       string    `json:"event"`
 	Side        string    `json:"side"`
+	SourceZone  string    `json:"sourceZone,omitempty"`
 	SubjectType string    `json:"subjectType,omitempty"`
 	SelfOnly    bool      `json:"selfOnly,omitempty"`
 	Predicate   Predicate `json:"predicate,omitempty"`

@@ -348,7 +348,7 @@ func TestAttackResolvesSimultaneousFollowerDamage(t *testing.T) {
 	if session.g.instances[attackerID].zone != "graveyard" || session.g.instances[defenderID].zone != "graveyard" {
 		t.Fatalf("simultaneous damage did not resolve deaths: attacker=%s defender=%s", session.g.instances[attackerID].zone, session.g.instances[defenderID].zone)
 	}
-	if len(session.g.events) != 5 || session.g.events[0].Kind != "attacked" || session.g.events[1].Kind != "damaged" || session.g.events[2].Kind != "damaged" || session.g.events[3].Kind != "destroyed" || session.g.events[4].Kind != "destroyed" {
+	if len(session.g.events) != 7 || session.g.events[0].Kind != "attacked" || session.g.events[1].Kind != "damaged" || session.g.events[2].Kind != "damaged" || session.g.events[3].Kind != "follower_left" || session.g.events[4].Kind != "follower_left" || session.g.events[5].Kind != "destroyed" || session.g.events[6].Kind != "destroyed" {
 		t.Fatalf("unexpected attack events: %#v", session.g.events)
 	}
 	if !session.g.own.attackedThisTurn || session.g.instances[attackerID].attacksUsed != 0 {

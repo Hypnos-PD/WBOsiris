@@ -5,7 +5,13 @@ card 10173210 {
     cost 5;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 90071210 to hand;
+        }
+        when own card fused {
+            random target from oppo.field.followers;
+            damage target 2;
+        }
     }
 
     meta {

@@ -113,8 +113,9 @@ func (g *game) commitFusion(source *instance, ability *ir.FusionAbility, materia
 	}
 	owner := g.owner(source)
 	side := g.sideOf(source)
-	if !g.emit(ir.RuntimeEvent{Kind: "card_fused", Side: side, PrivateTo: side, From: "hand", Count: len(materials),
-		Subject: &ir.EventTarget{Kind: "instance", InstanceID: source.id, CardID: source.card.ID}}) {
+	event := ir.RuntimeEvent{Kind: "card_fused", Side: side, PrivateTo: side, From: "hand", Count: len(materials),
+		Subject: &ir.EventTarget{Kind: "instance", InstanceID: source.id, CardID: source.card.ID}}
+	if !g.emit(event) {
 		return false
 	}
 	source.fusedThisTurn = true
@@ -123,7 +124,7 @@ func (g *game) commitFusion(source *instance, ability *ir.FusionAbility, materia
 		material.zone = "attached"
 		source.materials = append(source.materials, material)
 	}
-	return true
+	return g.queueEventTriggers(event, source, "")
 }
 func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 	own, oppo, _ := g.relativePlayers(self)
@@ -385,6 +386,7 @@ func (g *game) putInHandOrOverdraw(owner *player, card *instance) {
 	if len(owner.hand) < handLimit {
 		card.zone = "hand"
 		owner.hand = append(owner.hand, card)
+		g.triggerIndex.add(card)
 		return
 	}
 	g.putInGraveyard(owner, card)
@@ -466,14 +468,14 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 				if !g.emit(event) {
 					return
 				}
-				if i.zone == "field" {
-					g.detachFieldSource(i)
+				if i.zone == "field" || i.zone == "hand" {
+					g.detachEventSource(i)
 				}
 				resetCardState(i, c)
 				if i.zone == "field" {
 					i.summoningSick = c.CardType == "follower"
-					g.triggerIndex.add(i)
 				}
+				g.triggerIndex.add(i)
 			}
 		}
 	}
@@ -834,7 +836,8 @@ func (g *game) returnCard(i *instance, z string) {
 	}
 	p := g.owner(i)
 	if i.zone == "field" {
-		g.detachFieldSource(i)
+		g.notifyFollowerLeaving(i, "deck")
+		g.detachEventSource(i)
 		resetCardState(i, i.card)
 	}
 	g.removeFromPlayer(p, i)
@@ -850,7 +853,8 @@ func (g *game) move(i *instance, z string) {
 	}
 	p := g.owner(i)
 	if i.zone == "field" {
-		g.detachFieldSource(i)
+		g.notifyFollowerLeaving(i, z)
+		g.detachEventSource(i)
 		if z == "hand" || z == "deck" {
 			resetCardState(i, i.card)
 		} else {
@@ -924,6 +928,9 @@ func (g *game) removeFromPlayer(p *player, i *instance) {
 func (g *game) remove(v *[]*instance, target *instance) {
 	for n, i := range *v {
 		if i == target {
+			if i.zone == "hand" {
+				g.detachEventSource(i)
+			}
 			*v = append((*v)[:n], (*v)[n+1:]...)
 			return
 		}

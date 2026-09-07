@@ -17,7 +17,7 @@ func ValidGrantedTrigger(t Trigger) bool {
 		return t.Kind == "lastwords"
 	}
 	if t, ok := t.(EventTrigger); ok {
-		return (t.Event == "turn_started" || t.Event == "turn_ended") && !t.SelfOnly && t.SubjectType == "" && t.Predicate == nil
+		return (t.Event == "turn_started" || t.Event == "turn_ended") && t.SourceZone == "" && !t.SelfOnly && t.SubjectType == "" && t.Predicate == nil
 	}
 	return false
 }

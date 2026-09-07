@@ -50,6 +50,7 @@ func (s *Session) Mulligan(side string, selected []string) error {
 		other := s.g.rng.Index(n + 1)
 		player.deck[n], player.deck[other] = player.deck[other], player.deck[n]
 	}
+	s.g.rebuildTriggerIndex()
 	s.g.revision++
 	return nil
 }

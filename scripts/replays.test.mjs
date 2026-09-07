@@ -35,6 +35,7 @@ test('labels resolve uppercase payloads, removed cards, leaders and guest perspe
   assert.equal(eventLabel({ Kind: 'turn_started', Side: 'oppo' }, { state: after }, catalog), '我方回合开始');
   after.own.graveyard.push({ instanceId: 'b', cardId: 2 });
   assert.equal(eventLabel({ Kind: 'destroyed', Subject: { kind: 'instance', instanceId: 'b' } }, { state: after }, catalog), 'B 被破坏');
+  assert.equal(eventLabel({ Kind: 'follower_left', Subject: { kind: 'instance', instanceId: 'a', cardId: 1 }, From: 'field', To: 'hand' }, { state: after }, catalog), 'A 离场');
 });
 
 test('fusion and transformation labels use event identities and respect redacted records', () => {

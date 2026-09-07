@@ -845,6 +845,32 @@ when own turn ends {
 }
 ```
 
+场上事件监听也可以显式限制为在手牌中发动：
+
+```wbo
+when own follower leaves field while self in hand {
+    reduce cost self 1 minimum 0;
+}
+
+when own card fused {
+    random target from oppo.field.followers;
+    damage target 2;
+}
+```
+
+`while self in hand` 指监听来源必须位于手牌；省略时为战场，也可写
+`while self in field`。该条件写在事件模式之后、`where` 之前。`where` 仍筛选事件对象。
+监听来源离开指定区域或变身后，取消其尚未开始执行的监听能力；恢复续局会重建这些监听。
+每位玩家先按战场顺序、再按手牌顺序收集，回合玩家优先，同一卡牌内按能力声明顺序收集。
+
+`follower leaves field` 包含破坏、消失和返回手牌或牌组，不包含变身，也不包含护符离场。
+离场前按当时的区域、种族与属性收集监听，`left` 绑定该实例；随后的状态重置不会重新筛选。
+当前能力完成前不执行新监听，批量破坏中每个随从分别触发一次。
+返回手牌会触发减费，参见[官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#4vvbwaghp)。
+
+`card fused` 每次成功融合触发一次，不按素材张数重复。本体融合能力先完整执行，再执行监听；
+非法素材响应和重复融合不触发。融合来源和材料的身份仍按手牌信息隐藏。
+
 ## 确定性
 
 规则不能读取文件、网络状态、系统时间或外部随机源。所有随机操作都必须使用

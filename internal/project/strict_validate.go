@@ -256,6 +256,17 @@ func isPlainOperation(s *syntax.Statement) bool {
 	return len(s.Blocks()) == 0 && set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "spellboost", "transform", "set_attack_limit", "set")[s.Word(0)]
 }
 func parseEventPattern(t []syntax.Token) (int, string, bool) {
+	end, subject, ok := parseBaseEventPattern(t)
+	if ok && end < len(t) && t[end].Value == "while" {
+		if t[1].Value == "self" || len(t) < end+4 || values(t[end:end+3]) != "while self in" || !set("field", "hand")[t[end+3].Value] {
+			return 0, "", false
+		}
+		end += 4
+	}
+	return end, subject, ok
+}
+
+func parseBaseEventPattern(t []syntax.Token) (int, string, bool) {
 	if len(t) == 3 && values(t) == "when self discarded" {
 		return 3, "card", true
 	}
@@ -271,8 +282,11 @@ func parseEventPattern(t []syntax.Token) (int, string, bool) {
 	if set("follower", "amulet")[t[2].Value] && set("summoned", "engaged")[t[3].Value] {
 		return 4, t[2].Value, true
 	}
-	if t[2].Value == "card" && t[3].Value == "discarded" {
+	if t[2].Value == "card" && set("discarded", "fused")[t[3].Value] {
 		return 4, "card", true
+	}
+	if len(t) >= 5 && values(t[2:5]) == "follower leaves field" {
+		return 5, "follower", true
 	}
 	return 0, "", false
 }

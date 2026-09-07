@@ -40,8 +40,12 @@ func TestReturnFromFieldResetsCardState(t *testing.T) {
 					if cardType == "follower" && (i.attack != 2 || i.life != 5) || cardType == "amulet" && (i.attack != 0 || i.life != 0) {
 						t.Fatal("return retained damage or stat buffs")
 					}
-					if s.g.player(side).shadows != 0 || len(s.g.events) != 0 {
-						t.Fatal("return emitted destruction or summon events")
+					wantEvents := 0
+					if cardType == "follower" {
+						wantEvents = 1
+					}
+					if s.g.player(side).shadows != 0 || len(s.g.events) != wantEvents || wantEvents == 1 && (s.g.events[0].Kind != "follower_left" || s.g.events[0].To != destination) {
+						t.Fatal("return emitted incorrect departure events")
 					}
 				})
 			}

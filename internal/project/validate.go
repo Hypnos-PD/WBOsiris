@@ -212,6 +212,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 	if event == "discarded" {
 		bindings["discarded"] = true
 	}
+	if event == "leaves" {
+		bindings["left"] = true
+	}
 	if event == "attack" || event == "clash" {
 		bindings["opponent"] = true
 	}
@@ -350,6 +353,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 					}
 					if x.Value == "discarded" {
 						ev = "discarded"
+					}
+					if x.Value == "leaves" {
+						ev = "leaves"
 					}
 				}
 				validateEffectBlock(b[0], ds, bindings, ev)

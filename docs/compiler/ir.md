@@ -398,6 +398,7 @@ Trigger =
 EventPattern = {
   event: EventKind,
   side: Side?,
+  sourceZone: ("field" | "hand")?,
   subjectType: CardType?,
   zone: Zone?,
   predicate: BoolExpr?
@@ -407,7 +408,7 @@ EventKind = "follower_summoned" | "card_drawn" | "amulet_engaged" |
             "turn_started" | "turn_ended" | "attacked" | "damaged" |
             "healed" | "destroyed" | "banished" | "zone_moved" |
             "evolved" | "super_evolved" | "resource_changed" |
-            "spellboosted" | "card_discarded"
+            "spellboosted" | "card_discarded" | "card_fused" | "follower_left"
 
 MovePattern = {
   subject: ValueRef,
@@ -422,6 +423,13 @@ MovePattern = {
 `side=own`、`subjectType=follower` 与 `HasTrait`。`when own turn ends` 对应
 `turn_ended`。`replace self leaving field` 对应 `subject=self`、`from=field`、`to`
 为空；空 `to` 表示任意离场目的地。
+
+`while self in hand` 编译为 `EventTrigger.sourceZone=hand`；省略时默认为 `field`。
+索引覆盖这两个来源区域，按回合玩家优先、战场在手牌之前、区域内顺序与声明顺序派发。
+来源离开区域或变身时移除旧索引并取消待发动的事件能力。
+`follower_left` 在状态重置前匹配事件对象并保存 `left` 绑定，包含离场前卡牌身份、
+`from=field` 与目的区域；`card_fused` 匹配一次成功融合，使用融合前的来源卡筛选，
+本体融合能力执行完毕后才排空外部监听队列。
 
 替换能力在原移动提交前执行，并取消原移动。替换执行上下文记录已应用的
 `ReplacementTrigger.id` 集合；同一移动因替换块产生后续移动时，不得再次应用同一

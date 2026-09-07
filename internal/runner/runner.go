@@ -326,6 +326,7 @@ func (g *game) addToZone(p *player, i *instance, z string) {
 		p.deck = append(p.deck, i)
 	case "hand":
 		p.hand = append(p.hand, i)
+		g.triggerIndex.add(i)
 	case "field":
 		p.field = append(p.field, i)
 		g.triggerIndex.add(i)

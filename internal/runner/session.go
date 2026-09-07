@@ -306,6 +306,7 @@ func (s *Session) Resume(response ChoiceResponse) StepResult {
 			}
 			return StepResult{Status: StatusRejected, Choice: s.PendingChoice(), ErrorCode: "invalid_candidate"}
 		}
+		s.drainingTrigger, s.triggerBase = true, len(s.stack)
 		s.pushFrame(execFrame{body: p.fusion.Body, blockID: fusionBlockID(p.fusionSource.card.ID, p.fusion.ID), self: p.fusionSource, bindings: frame{}})
 	} else if p.request.Kind == "mode" {
 		body, ok := p.options[response.SelectedOptionID]

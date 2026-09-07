@@ -41,7 +41,7 @@ func TestSetLifeIsNotDamageAndResetsOnReturn(t *testing.T) {
 	e.Amount = 0
 	f["targets"] = []*instance{s.g.instances[b]}
 	s.g.execTargetEffect(e, i, f)
-	if s.g.instances[b].zone != "graveyard" || len(s.g.events) != 1 || s.g.events[0].Kind != "destroyed" || s.g.own.shadows != 1 {
+	if s.g.instances[b].zone != "graveyard" || len(s.g.events) != 3 || s.g.events[0].Kind != "follower_left" || s.g.events[1].Kind != "follower_left" || s.g.events[2].Kind != "destroyed" || s.g.own.shadows != 1 {
 		t.Fatal("zero life did not cause destruction", s.g.events)
 	}
 }
