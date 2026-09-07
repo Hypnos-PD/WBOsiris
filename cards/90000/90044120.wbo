@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 90044120 {
+    type follower;
+    cost 4;
+    stats 5/4;
+
+    effect {
+        rush;
+    }
+
+    meta {
+        pack 90000;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "霸道之银龙";
+        text """
+【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Supreme Silver Dragon";
+        text """
+<b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はどう\">覇道</rub>の<rub=\"ぎんりゅう\">銀龍</rub>";
+        text """
+【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "패도의 은룡";
+        text """
+[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "霸業之銀龍";
+        text """
+【<color=Keyword>突進</color>】
+""";
+    }
+}

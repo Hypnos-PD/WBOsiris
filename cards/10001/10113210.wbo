@@ -5,7 +5,16 @@ card 10113210 {
     cost 3;
 
     effect {
-        unplayable;
+        when own turn ends {
+            if combo >= 3 {
+                draw 1;
+            }
+        }
+        engage 0 {
+            destroy self;
+            choose target from own.field other;
+            return target to hand;
+        }
     }
 
     meta {

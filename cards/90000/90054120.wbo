@@ -1,0 +1,60 @@
+wbo 0.1.0;
+
+card 90054120 {
+    type follower;
+    cost 1;
+    stats 1/2;
+
+    effect {
+        rush;
+        lastwords {
+            heal own.leader 2;
+        }
+    }
+
+    meta {
+        pack 90000;
+        class abysscraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "守卫犬的左腕·可可";
+        text """
+【<color=Keyword>突进</color>】
+【<color=Keyword>谢幕曲</color>】回复自己的主战者2点生命值。
+""";
+    }
+
+    locale eng {
+        name "Coco, Left Paw Hellhound";
+        text """
+<b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Last Words</color></b>: Restore 2 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ばんけん\">番犬</rub>の<rub=\"ひだりうで\">左腕</rub>・ココ";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>ラストワード</color>】自分のリーダーを2回復。
+""";
+    }
+
+    locale kor {
+        name "파수견의 왼팔 코코";
+        text """
+[<color=Keyword>돌진</color>]
+[<color=Keyword>유언</color>] 내 리더를 2 회복.
+""";
+    }
+
+    locale cht {
+        name "守衛犬的左腕‧可可";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>謝幕曲</color>】回復自己的主戰者2點生命值。
+""";
+    }
+}

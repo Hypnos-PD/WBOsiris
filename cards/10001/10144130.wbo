@@ -6,7 +6,14 @@ card 10144130 {
     stats 5/5;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90044110;
+            summon 1 card 90044120;
+        }
+        superevolve {
+            add storm to own.field.followers where card 90044110;
+            add barrier to own.field.followers where card 90044120;
+        }
     }
 
     meta {

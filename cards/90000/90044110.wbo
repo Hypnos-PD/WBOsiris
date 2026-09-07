@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 90044110 {
+    type follower;
+    cost 4;
+    stats 4/5;
+
+    effect {
+        ward;
+    }
+
+    meta {
+        pack 90000;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "霸道之金龙";
+        text """
+【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Supreme Golden Dragon";
+        text """
+<b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はどう\">覇道</rub>の<rub=\"きんりゅう\">金龍</rub>";
+        text """
+【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "패도의 금룡";
+        text """
+[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "霸業之金龍";
+        text """
+【<color=Keyword>守護</color>】
+""";
+    }
+}

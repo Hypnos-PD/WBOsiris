@@ -1,0 +1,171 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Lambent Cairn adds only a Fairy below Combo three" {
+    seed 3701;
+    state { player own { pp 2/2; combo 1; hand { amulet source = 10112210; } } }
+    action { play source; }
+    expect { legal; own.combo == 2; own.hand count card 90011110 == 1; own.hand count card 90011310 == 0; }
+}
+
+scenario "Lambent Cairn counts its own play for Combo three" {
+    seed 3702;
+    state { player own { pp 2/2; combo 2; hand { amulet source = 10112210; } } }
+    action { play source; }
+    expect { legal; own.combo == 3; own.hand count card 90011110 == 1; own.hand count card 90011310 == 1; }
+}
+
+scenario "Lambent Cairn destroys itself before buffing its chosen ally" {
+    seed 3703;
+    state { player own { field { amulet source = 10112210; follower ally = 10001110; } } }
+    action { engage source; select ally; }
+    expect { legal; source.zone == graveyard; ally.stats == 3/3; own.shadows == 1; own.pp == 0/0; }
+}
+
+scenario "Lambent Cairn can engage without an allied follower" {
+    seed 3704;
+    state { player own { field { amulet source = 10112210; amulet other = 10001210; } } }
+    action { engage source; }
+    expect { legal; source.zone == graveyard; other.zone == field; own.shadows == 1; }
+}
+
+scenario "Godwood Staff can engage as the only allied card" {
+    seed 3705;
+    state { player own { field { amulet source = 10113210; } } }
+    action { engage source; }
+    expect { legal; source.zone == graveyard; own.hand count card 10113210 == 0; own.shadows == 1; }
+}
+
+scenario "Godwood Staff returns and resets a damaged evolved follower" {
+    seed 3706;
+    state { player own { field { amulet source = 10113210; follower ally = 10001110 { stats 4/1; evolved; barrier; } } } }
+    action { engage source; select ally; }
+    expect { legal; source.zone == graveyard; ally.zone == hand; ally.stats == 2/2; ally.evolved == false; ally lacks barrier; }
+}
+
+scenario "Godwood Staff can return another amulet" {
+    seed 3707;
+    state { player own { field { amulet source = 10113210; amulet ally = 10161210 { countdown 1; } } } }
+    action { engage source; select ally; }
+    expect { legal; source.zone == graveyard; ally.zone == hand; ally.countdown == 3; own.shadows == 1; }
+}
+
+scenario "Garyu summons both dragons in printed order" {
+    seed 3708;
+    state { player own { pp 8/8; hand { follower source = 10144130; } } }
+    action { play source; }
+    expect {
+        legal; source.stats == 5/5; own.pp == 0/8;
+        own.field count card 90044110 == 1; own.field count card 90044120 == 1;
+        all own.field where card 90044110 have ward;
+        all own.field where card 90044120 have rush;
+        events contains ordered { summon card 90044110 count 1; summon card 90044120 count 1; }
+    }
+}
+
+scenario "Garyu fills the last field slot with the Golden Dragon" {
+    seed 3709;
+    state { player own {
+        pp 8/8; hand { follower source = 10144130; }
+        field { amulet a = 10001210; amulet b = 10001210; amulet c = 10001210; }
+    } }
+    action { play source; }
+    expect { legal; own.field count card 90044110 == 1; own.field count card 90044120 == 0; }
+}
+
+scenario "Garyu super evolution grants each dragon its own keyword" {
+    seed 3710;
+    state {
+        turn own 6;
+        player own { sep 1; field { follower source = 10144130; follower gold = 90044110; follower silver = 90044120; follower ally = 10001110; } }
+        player oppo { field { follower enemy = 90044110; } }
+    }
+    action { superevolve source; }
+    expect { legal; source.stats == 8/8; gold has storm; gold lacks barrier; silver has barrier; silver lacks storm; ally lacks storm; enemy lacks storm; }
+}
+
+scenario "Garyu normal evolution does not grant dragon keywords" {
+    seed 3711;
+    state { turn own 6; player own { ep 1; field { follower source = 10144130; follower gold = 90044110; follower silver = 90044120; } } }
+    action { evolve source; }
+    expect { legal; source.stats == 7/7; gold lacks storm; silver lacks barrier; }
+}
+
+scenario "Cerberus summons both companions without paying insufficient shadows" {
+    seed 3712;
+    state { player own { pp 8/8; shadows 5; hand { follower source = 10154110; } } }
+    action { play source; }
+    expect {
+        legal; source.stats == 6/6; own.shadows == 5;
+        own.field count card 90054110 == 1; own.field count card 90054120 == 1;
+        events contains ordered { summon card 90054110 count 1; summon card 90054120 count 1; }
+    }
+}
+
+scenario "Cerberus Necromancy buffs existing allies and both new companions" {
+    seed 3713;
+    state { player own { pp 8/8; shadows 6; hand { follower source = 10154110; } field { follower ally = 10001110; } } }
+    action { play source; }
+    expect { legal; source.stats == 6/6; ally.stats == 4/2; own.shadows == 0; own.field count card 90054110 == 1; own.field count card 90054120 == 1; }
+}
+
+scenario "Cerberus can buff allies even when neither companion fits" {
+    seed 3714;
+    state { player own {
+        pp 8/8; shadows 6; hand { follower source = 10154110; }
+        field { follower ally = 10001110; amulet a = 10001210; amulet b = 10001210; amulet c = 10001210; }
+    } }
+    action { play source; }
+    expect { legal; source.stats == 6/6; ally.stats == 4/2; own.shadows == 0; own.field count card 90054110 == 0; own.field count card 90054120 == 0; }
+}
+
+scenario "Cerberus super evolution can reanimate the same destroyed identity twice" {
+    seed 3715;
+    state { turn own 6; player own {
+        sep 1; field { follower source = 10154110; }
+        destroyed { follower dead = 90054110; follower cheaper = 90051110; follower expensive = 10001110; }
+    } }
+    action { superevolve source; }
+    expect { legal; own.field count card 90054110 == 2; own.field count card 90051110 == 0; own.field count card 10001110 == 0; all own.field where card 90054110 have rush; rng.consumed == 0; }
+}
+
+scenario "Cerberus normal evolution does not reanimate" {
+    seed 3716;
+    state { turn own 6; player own { ep 1; field { follower source = 10154110; } destroyed { follower dead = 90054110; } } }
+    action { evolve source; }
+    expect { legal; own.field count card 90054110 == 0; source.stats == 8/8; }
+}
+
+scenario "Mimi damages the opposing leader when destroyed in combat" {
+    seed 3717;
+    state { player own { field { follower source = 90054110; } } player oppo { field { follower target = 10001110; } } }
+    action { attack source into target; }
+    expect { legal; source.zone == graveyard; target.zone == graveyard; oppo.leader.life == 18; }
+}
+
+scenario "Coco heals its owner when destroyed in combat" {
+    seed 3718;
+    state { player own { leader 17/20; field { follower source = 90054120; } } player oppo { field { follower target = 10001110; } } }
+    action { attack source into target; }
+    expect { legal; source.zone == graveyard; target.stats == 2/1; own.leader.life == 19; }
+}
+
+scenario "Godwood Staff draws at its owners Combo three turn end" {
+    seed 3719;
+    state {
+        player own { combo 3; field { amulet source = 10113210; } deck top { follower drawn = 10001110; } }
+        player oppo { deck top { follower next = 10001110; } }
+    }
+    action { end_turn; }
+    expect { legal; drawn.zone == hand; next.zone == hand; source.zone == field; }
+}
+
+scenario "Godwood Staff does not draw below Combo three" {
+    seed 3720;
+    state {
+        player own { combo 2; field { amulet source = 10113210; } deck top { follower drawn = 10001110; } }
+        player oppo { deck top { follower next = 10001110; } }
+    }
+    action { end_turn; }
+    expect { legal; drawn.zone == deck; next.zone == hand; }
+}

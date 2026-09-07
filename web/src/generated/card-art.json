@@ -792,6 +792,14 @@
     "base": "/assets/cards/900431100-f7ad01756d5ff333.webp",
     "evolved": "/assets/cards/900431101-61c8d55f133d38fc.webp"
   },
+  "90044110": {
+    "base": "/assets/cards/900441100-b8756f94d65a5487.webp",
+    "evolved": "/assets/cards/900441101-e75facf7cf245bfb.webp"
+  },
+  "90044120": {
+    "base": "/assets/cards/900441200-3a0a280aa9ce25d4.webp",
+    "evolved": "/assets/cards/900441201-2ee33e50394a5a7b.webp"
+  },
   "90051110": {
     "base": "/assets/cards/900511100-81469be7e1e9c0f1.webp",
     "evolved": "/assets/cards/900511101-6bf36a357533a383.webp"
@@ -803,6 +811,14 @@
   "90051130": {
     "base": "/assets/cards/900511300-8a314acd4f1369f0.webp",
     "evolved": "/assets/cards/900511301-412093dee9e8c7e8.webp"
+  },
+  "90054110": {
+    "base": "/assets/cards/900541100-0de1777163790c85.webp",
+    "evolved": "/assets/cards/900541101-9267a760755ba3e9.webp"
+  },
+  "90054120": {
+    "base": "/assets/cards/900541200-5025b37cf4dc1428.webp",
+    "evolved": "/assets/cards/900541201-339ab7aeeaf2ef83.webp"
   },
   "90061110": {
     "base": "/assets/cards/900611100-3991cc57bf13b4b0.webp",

@@ -5,7 +5,17 @@ card 10112210 {
     cost 2;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 90011110 to hand;
+            if combo >= 3 {
+                add 1 card 90011310 to hand;
+            }
+        }
+        engage 0 {
+            destroy self;
+            choose target from own.field.followers;
+            buff target +1/+1;
+        }
     }
 
     meta {

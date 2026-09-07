@@ -6,7 +6,18 @@ card 10154110 {
     stats 6/6;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90054110;
+            summon 1 card 90054120;
+            necromancy 6 {
+                buff own.field.followers other +2/+0;
+            }
+        }
+        superevolve {
+            repeat 2 {
+                reanimate 1;
+            }
+        }
     }
 
     meta {
