@@ -77,14 +77,8 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 		if ctx.top && ctx.cardType != "spell" && (isPlainOperation(s) || h == "repeat" || h == "grant") {
 			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", "随从或护符的最外层操作没有执行时点", s.Span)
 		}
-		if h == "transform" && !ctx.fusion && !ctx.spellboost {
-			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", "transform 只允许出现在 fusion 或 spellboost 块内", s.Span)
-		}
-		if h == "transform" && ctx.fusion && !ctx.spellboost && len(t) == 5 {
+		if h == "transform" && ctx.fusion && !ctx.spellboost && len(t) > 1 && t[1].Value == "self" && !filterContains(t, "preserving") {
 			shapeError(ds, s, "fusion 内的 transform 必须显式 preserving materials")
-		}
-		if h == "transform" && (len(t) < 2 || t[1].Value != "self") {
-			diag(ds, "WBO-E008-TYPE-MISMATCH", "错误", "transform 当前只允许以 self 为目标", s.Span)
 		}
 		switch h {
 		case "grant":

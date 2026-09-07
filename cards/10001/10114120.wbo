@@ -6,7 +6,11 @@ card 10114120 {
     stats 6/6;
 
     effect {
-        unplayable;
+        ward;
+        attack_limit 2;
+        fanfare {
+            transform own.hand into card 90014310 where class forestcraft and cost <= 2;
+        }
     }
 
     meta {

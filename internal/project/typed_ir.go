@@ -443,7 +443,16 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		return ir.AdjustEffect{NodeBase: base, Kind: "spellboost", Target: valueRefIR(t, 1), Times: intToken(t[end])}, nil
 	case "transform":
 		end := valueRefEnd(t, 1)
-		return ir.CardEffect{NodeBase: base, Kind: "transform", Target: valueRefIR(t, 1), CardID: intToken(t[end+2]), PreserveInstanceID: true, PreserveMaterials: true}, nil
+		e := ir.CardEffect{NodeBase: base, Kind: "transform", Target: valueRefIR(t, 1), CardID: intToken(t[end+2]), PreserveInstanceID: true, PreserveMaterials: true}
+		end += 3
+		if end < len(t) && t[end].Value == "preserving" {
+			end += 2
+		}
+		if end < len(t) {
+			predicate, _ := filterIR(t, end)
+			e.Target = ir.FilterRef{Kind: "filter", Source: e.Target, Predicate: predicate}
+		}
+		return e, nil
 	default:
 		return nil, fmt.Errorf("WBO-E017-IR-INCOMPATIBLE: 无法编译效果构造 %q", h)
 	}

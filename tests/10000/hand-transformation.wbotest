@@ -1,0 +1,67 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Rose Queen transforms eligible followers amulets and spells in hand" {
+    seed 3801;
+    state { player own {
+        pp 9/9;
+        hand { follower source = 10114120; follower fairy = 90011110; amulet cairn = 10112210; spell bounty = 90011310; }
+    } }
+    action { play source; }
+    expect { legal; source.stats == 6/6; source has ward; own.hand count card 90014310 == 3; own.pp == 0/9; own.shadows == 0; }
+}
+
+scenario "Rose Queen filters by current cost and Forestcraft class" {
+    seed 3802;
+    state { player own {
+        pp 9/9;
+        hand { follower source = 10114120; follower reduced = 10113130 { cost 2; } follower increased = 90011110 { cost 3; } follower neutral = 10001110; }
+    } }
+    action { play source; }
+    expect { legal; own.hand count card 90014310 == 1; own.hand count card 10113130 == 0; increased.cost == 3; neutral.stats == 2/2; }
+}
+
+scenario "Rose Queen does not transform field deck or opposing hand cards" {
+    seed 3803;
+    state {
+        player own { pp 9/9; hand { follower source = 10114120; } field { follower ally = 90011110; } deck top { follower deck_card = 90011110; } }
+        player oppo { hand { follower enemy = 90011110; } }
+    }
+    action { play source; }
+    expect { legal; ally.zone == field; ally.stats == 1/1; deck_card.zone == deck; enemy.zone == hand; own.hand count card 90014310 == 0; oppo.hand count card 90011110 == 1; }
+}
+
+scenario "Rose Queen can be played with no other hand cards" {
+    seed 3804;
+    state { player own { pp 9/9; hand { follower source = 10114120; } } }
+    action { play source; }
+    expect { legal; source.zone == field; source has ward; own.hand count card 90014310 == 0; rng.consumed == 0; }
+}
+
+scenario "Bramble Burst can damage a leader without a field target" {
+    seed 3805;
+    state { player own { pp 1/1; hand { spell source = 90014310; } } }
+    action { play source; select oppo.leader; }
+    expect { legal; source.zone == graveyard; oppo.leader.life == 17; own.pp == 0/1; }
+}
+
+scenario "Bramble Burst deals three damage to a selected follower" {
+    seed 3806;
+    state { player own { pp 1/1; hand { spell source = 90014310; } } player oppo { field { follower target = 10113130; } } }
+    action { play source; select target; }
+    expect { legal; target.stats == 4/1; oppo.leader.life == 20; source.zone == graveyard; }
+}
+
+scenario "Bramble Burst consumes Barrier without damaging its target" {
+    seed 3807;
+    state { player own { pp 1/1; hand { spell source = 90014310; } } player oppo { field { follower target = 10001110 { barrier; } } } }
+    action { play source; select target; }
+    expect { legal; target.stats == 2/2; target lacks barrier; oppo.leader.life == 20; }
+}
+
+scenario "Rose Queen evolution preserves Ward and its base card identity" {
+    seed 3808;
+    state { turn own 9; player own { ep 1; field { follower source = 10114120; } hand { follower fairy = 90011110; } } }
+    action { evolve source; }
+    expect { legal; source.stats == 8/8; source has ward; own.hand count card 90011110 == 1; }
+}

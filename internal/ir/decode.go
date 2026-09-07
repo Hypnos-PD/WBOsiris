@@ -872,7 +872,7 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 				return nil, fmt.Errorf("invalid reanimate shape")
 			}
 		case "transform":
-			if r == nil || !validCardID(v.CardID) || !v.PreserveInstanceID || !v.PreserveMaterials || v.Owner != "" || v.Destination != "" || v.Output != "" || v.TieBreak != "" || v.Count != 0 || v.MaxCost != 0 {
+			if !ValidTransformTarget(r) || !validCardID(v.CardID) || !v.PreserveInstanceID || !v.PreserveMaterials || v.Owner != "" || v.Destination != "" || v.Output != "" || v.TieBreak != "" || v.Count != 0 || v.MaxCost != 0 {
 				return nil, fmt.Errorf("invalid transform shape")
 			}
 		}

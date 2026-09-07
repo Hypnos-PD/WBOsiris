@@ -608,7 +608,7 @@ Discard = NodeBase & {
 
 Transform = NodeBase & {
   kind: "transform",
-  target: ValueRef,
+  target: ValueRef | SetExpr,
   cardId: CardId,
   preserveInstanceId: true,
   preserveMaterials: true
@@ -860,7 +860,7 @@ ability: Ability, labels?: map<LocaleId, string> }` 附加一个独立触发能�
 | `set life T N` | `SetLife` |
 | `buff T +A/+L [where P] [until [own/oppo] turn ends]` | `BuffStats`，可带 `predicate` 和 `until` |
 | `destroy T`、`banish T`、`discard T` | `Destroy`、`Banish`、`Discard` |
-| `transform self into card C [preserving materials]` | `Transform` |
+| `transform T into card C [preserving materials] [where P]` | `Transform`，筛选编译为 `FilterRef` |
 | `return T to hand/deck` | `Return` |
 | `add K to T`、`remove K from T` | `AddKeyword`、`RemoveKeyword` |
 | `evolve T silent` | `SilentEvolve` |

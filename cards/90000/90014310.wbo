@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 90014310 {
+    type spell;
+    cost 1;
+
+    effect {
+        require target from oppo.field.followers or oppo.leader;
+        damage target 3;
+    }
+
+    meta {
+        pack 90000;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "蔷薇之闪击";
+        text """
+选择对手的战场上的1个随从或对手的主战者，对其造成3点伤害。
+""";
+    }
+
+    locale eng {
+        name "Bramble Burst";
+        text """
+Select an enemy follower on the field or the enemy leader and deal it 3 damage.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ばら\">薔薇</rub>の<rub=\"せんげき\">閃撃</rub>";
+        text """
+相手の場のフォロワー1枚か相手のリーダーを選ぶ。それに3ダメージ。
+""";
+    }
+
+    locale kor {
+        name "장미의 섬격";
+        text """
+상대방 리더나 상대방 전장에서 추종자 1장을 선택한다. 그 대상에게 3 피해.
+""";
+    }
+
+    locale cht {
+        name "薔薇的閃擊";
+        text """
+指定1張敵方戰場上的從者卡或敵方的主戰者。給予其3點傷害。
+""";
+    }
+}

@@ -358,8 +358,8 @@ reduce_operation  = "reduce" , "countdown" , value_ref , integer , ";"
                   | "reduce" , "cost" , value_ref , integer , "minimum" , integer , ";" ;
 spellboost_operation = "spellboost" , value_ref , integer , ";" ;
 set_attack_limit_operation = "set_attack_limit" , "self" , positive_integer , ";" ;
-transform_operation = "transform" , "self" , "into" , "card" , card_id ,
-                      ["preserving" , "materials"] , ";" ;
+transform_operation = "transform" , value_ref , "into" , "card" , card_id ,
+                      ["preserving" , "materials"] , [where_clause] , ";" ;
 
 positive_integer  = integer ; (* semantic constraint: value >= 1 *)
 value_ref         = binding_name
@@ -406,10 +406,12 @@ scalar_ref        = participant , "." , scalar_field ;
 回滚先前操作。
 
 `transform T into card C preserving materials` 将目标实例的卡牌定义替换为 `C`，
-保留同一 `InstanceId` 和全部附着材料，不创建新实例。该操作当前只允许出现在
-`fusion_block` 或 `spellboost` 能力块内并以 `self` 为目标，也可放入其中的条件、
-模式或重复块。融合块必须显式写出 `preserving materials`；魔力增幅块允许省略此
-短语，省略不改变保留实例与材料的语义。其他触发时点暂不支持变身。
+保留同一 `InstanceId`、区域位置和全部附着材料，不创建新实例。目标允许 `self`、
+已定义的卡牌绑定，以及手牌、牌组、战场集合；不接受主战者、墓场、消失区或破坏历史集合。
+操作可出现在入场曲等正常效果块及其条件、模式和重复块中。融合块内的自身变身必须显式写出
+`preserving materials`；其他位置允许省略，省略不改变保留实例与材料的语义。
+可选 `where` 写在目标卡牌 ID 和材料短语之后，在变身前按当前属性一次性筛选。
+失效绑定中的非存续卡牌会被跳过；目标位于战场且结果为法术时同样不执行变身。
 
 ## 3. 测试文件
 

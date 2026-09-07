@@ -659,7 +659,18 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		checkBindingAt(t, 1, end, bindings, ds)
 	case "transform":
 		end, good := parseValueRef(t, 1)
-		ok = good && end+3 <= len(t) && t[end].Value == "into" && t[end+1].Value == "card" && isCardID(t[end+2]) && (end+3 == len(t) || end+5 == len(t) && t[end+3].Value == "preserving" && t[end+4].Value == "materials")
+		checkBindingAt(t, 1, end, bindings, ds)
+		good = good && ir.ValidTransformTarget(valueRefIR(t, 1)) && end+3 <= len(t) && t[end].Value == "into" && t[end+1].Value == "card" && isCardID(t[end+2])
+		if good {
+			end += 3
+			if end+1 < len(t) && t[end].Value == "preserving" && t[end+1].Value == "materials" {
+				end += 2
+			}
+			if end < len(t) {
+				end, good = parseWhere(t, end)
+			}
+		}
+		ok = good && end == len(t)
 	}
 	if !ok {
 		shapeError(ds, s, h+" 的规范参数;")

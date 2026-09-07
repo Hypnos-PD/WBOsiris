@@ -473,7 +473,7 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 			return
 		}
 		for _, i := range targets {
-			if c := g.cards[e.CardID]; c != nil {
+			if c := g.cards[e.CardID]; c != nil && (i.zone == "hand" || i.zone == "deck" || i.zone == "field" && c.CardType != "spell") {
 				event := ir.RuntimeEvent{Kind: "card_transformed", Side: g.sideOf(i), From: i.zone,
 					Subject: &ir.EventTarget{Kind: "instance", InstanceID: i.id, CardID: i.card.ID},
 					Target:  &ir.EventTarget{Kind: "instance", InstanceID: i.id, CardID: c.ID}}

@@ -13,6 +13,7 @@ func TestSpellboostTransformSyntax(t *testing.T) {
 		`spellboost { repeat 1 { transform self into card 12345678; } }`,
 		`spellboost { mode { option 1 { transform self into card 12345678; } option 2 {} } }`,
 		`fusion material from own.hand { transform self into card 12345678 preserving materials; }`,
+		`fanfare { transform self into card 12345678; }`,
 	} {
 		file, ds := syntax.Parse("12345678.wbo", []byte(validCard(body)))
 		if len(ds) != 0 || hasErrors(ValidateFile(file)) {
@@ -21,7 +22,6 @@ func TestSpellboostTransformSyntax(t *testing.T) {
 	}
 	for _, body := range []string{
 		`transform self into card 12345678;`,
-		`fanfare { transform self into card 12345678; }`,
 		`spellboost { transform target into card 12345678; }`,
 		`spellboost { transform self into card 12345678 preserving; }`,
 		`fusion material from own.hand { transform self into card 12345678; }`,
