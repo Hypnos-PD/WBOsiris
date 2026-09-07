@@ -571,8 +571,8 @@ func decodeTrigger(data []byte) (Trigger, error) {
 		if !validSide(v.Side) || !oneOf(v.Event, "follower_summoned", "amulet_engaged", "card_discarded", "turn_started", "turn_ended", "evolved", "super_evolved") || v.SubjectType != "" && !oneOf(v.SubjectType, "follower", "amulet") {
 			return nil, fmt.Errorf("invalid event trigger")
 		}
-		if v.SelfOnly && (v.Side != "own" || v.SubjectType != "follower" || !oneOf(v.Event, "evolved", "super_evolved") || p != nil) {
-			return nil, fmt.Errorf("invalid self evolution trigger")
+		if v.SelfOnly && (v.Side != "own" || !(v.SubjectType == "follower" && oneOf(v.Event, "evolved", "super_evolved") || v.SubjectType == "" && v.Event == "card_discarded") || p != nil) {
+			return nil, fmt.Errorf("invalid self event trigger")
 		}
 		return EventTrigger{Kind: v.Kind, Event: v.Event, Side: v.Side, SubjectType: v.SubjectType, SelfOnly: v.SelfOnly, Predicate: p}, err
 	case "replacement":
@@ -820,7 +820,7 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			}
 		}
 		return CardEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.Destination, v.Output, v.Count, v.CardID, v.MaxCost, v.TieBreak, v.PreserveInstanceID, v.PreserveMaterials, r}, err
-	case "damage", "heal", "buff_stats", "destroy", "banish", "return", "add_keyword", "remove_keyword", "silent_evolve", "set_attack_limit":
+	case "damage", "heal", "buff_stats", "destroy", "banish", "discard", "return", "add_keyword", "remove_keyword", "silent_evolve", "set_attack_limit":
 		type raw struct {
 			ID                                                          string `json:"id"`
 			Kind, DamageType, Keyword, Form, Destination, DeckInsertion string
@@ -845,6 +845,9 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		r, err := decodeRef(v.Target)
 		if err != nil {
 			return nil, err
+		}
+		if v.Kind == "discard" && (r.refKind() == "leader" || r.refKind() == "leaders") {
+			return nil, fmt.Errorf("discard requires card instances")
 		}
 		var p Predicate
 		if len(v.Predicate) > 0 {
@@ -902,7 +905,7 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			if v.DamageType != "" || v.Amount != 0 || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" {
 				return nil, fmt.Errorf("invalid buff shape")
 			}
-		case "destroy", "banish":
+		case "destroy", "banish", "discard":
 			if v.DamageType != "" || v.Amount != 0 || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 {
 				return nil, fmt.Errorf("invalid removal shape")
 			}

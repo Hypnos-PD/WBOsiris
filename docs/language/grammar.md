@@ -256,7 +256,7 @@ option_label      = "label" , locale_id , string , ";" ;
 event_block       = "when" , event_pattern , [where_clause] , effect_block ;
 event_pattern     = participant , event_subject , event_verb
                   | participant , "turn" , turn_boundary
-                  | "self" , ("evolved" | "super_evolved") ;
+                  | "self" , ("evolved" | "super_evolved" | "discarded") ;
 event_subject     = "follower" | "amulet" | "card" ;
 event_verb        = "summoned" | "engaged" | "discarded" ;
 turn_boundary     = "starts" | "ends" ;
@@ -264,13 +264,15 @@ turn_boundary     = "starts" | "ends" ;
 replace_block     = "replace" , "self" , "leaving" , "field" , effect_block ;
 ```
 
-事件模式中的筛选器作用于事件产生的对象。`summoned`、`engaged` 分别绑定该事件
+事件模式中的筛选器作用于事件产生的对象。`summoned`、`engaged`、`discarded` 分别绑定该事件
 的对象；回合边界事件不建立对象绑定。监听器默认包含 Token。`replace self
 leaving field` 在原区域移动前执行并取消原移动，同一替换块不会因自己产生的区域
 移动再次触发。
 
 `when self evolved` 与 `when self super_evolved` 只允许在随从上声明，不附带 `where`。
 它们匹配自身的形态变化，前者也包含超进化；不同于仅在支付点数后执行的进化关键词能力。
+`when self discarded` 允许用于任何卡牌种类且不附带 `where`，只由被舍弃实例自身发动。
+`when own card discarded` 与 `when oppo card discarded` 由战场监听器按弃牌拥有者匹配。
 
 ### 2.7 操作
 
@@ -312,7 +314,7 @@ signed_amount     = ("+" | "-") , effect_amount ;
 repeat_statement  = "repeat" , effect_amount , effect_block ;
 damage_distribution = "distributed" , ["overflow" , participant , "." , "leader"] ;
 
-object_operation  = ("destroy" | "banish") , value_ref , [where_clause] , ";" ;
+object_operation  = ("destroy" | "banish" | "discard") , value_ref , [where_clause] , ";" ;
 ability_operation = "remove" , ability , "from" , value_ref , ";" ;
 return_operation  = "return" , value_ref , "to" , ("hand" | "deck") , ";" ;
 evolve_operation  = ("evolve" | "superevolve") , value_ref , "silent" , ";" ;
@@ -509,7 +511,7 @@ damage_fact       = "damage" , fact_object , integer , ";" ;
 heal_fact         = "heal" , fact_object , integer , ";" ;
 draw_fact         = "draw" , participant , integer , ";" ;
 summon_fact       = "summon" , (alias | "card" , card_id , "count" , integer) , ";" ;
-object_fact       = ("destroy" | "banish") , fact_object , ";" ;
+object_fact       = ("destroy" | "banish" | "discard") , fact_object , ";" ;
 return_fact       = "return" , fact_object , "to" , ("hand" | "deck") , ";" ;
 evolve_fact       = ("evolve" | "superevolve") , alias , ";" ;
 combat_fact       = "attack" , alias , "into" , attack_target , ";" ;

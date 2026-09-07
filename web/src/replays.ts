@@ -46,6 +46,7 @@ export function eventLabel(event: RuntimeEvent, remote: { state: GameState }, ca
   if (kind === "super_evolved") return `${name} 完成超进化`;
   if (kind === "card_drawn") return `${side}抽取 ${event.count ?? event.Count ?? 1} 张卡牌`;
   if (kind === "destroyed") return `${name} 被破坏`;
+  if (kind === "card_discarded") return `${side}舍弃 ${name}`;
   if (kind === "turn_started") return `${side}回合开始`;
   if (kind === "turn_ended") return `${side}回合结束`;
   if (kind === "game_ended") return state.winner === "draw" ? "对局平局" : `${side}胜利`;

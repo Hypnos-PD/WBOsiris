@@ -358,7 +358,7 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		return ir.AdjustEffect{NodeBase: base, Kind: "adjust_resource", Owner: t[1].Value, Resource: t[3].Value, Delta: intToken(t[4])}, nil
 	case "restore":
 		return ir.AdjustEffect{NodeBase: base, Kind: "restore_resource", Owner: t[1].Value, Resource: "pp"}, nil
-	case "destroy", "banish":
+	case "destroy", "banish", "discard":
 		e := ir.TargetEffect{NodeBase: base, Kind: h, Target: valueRefIR(t, 1)}
 		end := valueRefEnd(t, 1)
 		if end < len(t) {
@@ -519,6 +519,9 @@ func conditionIR(t []syntax.Token) ir.Condition {
 }
 func eventPatternIR(t []syntax.Token) ir.Trigger {
 	if t[1].Value == "self" {
+		if t[2].Value == "discarded" {
+			return ir.EventTrigger{Kind: "event", Event: "card_discarded", Side: "own", SelfOnly: true}
+		}
 		return ir.EventTrigger{Kind: "event", Event: t[2].Value, Side: "own", SubjectType: "follower", SelfOnly: true}
 	}
 	m := ir.EventTrigger{Kind: "event", Side: t[1].Value}
@@ -526,6 +529,9 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 		m.Event = map[string]string{"starts": "turn_started", "ends": "turn_ended"}[t[3].Value]
 	} else {
 		m.SubjectType = t[2].Value
+		if m.SubjectType == "card" {
+			m.SubjectType = ""
+		}
 		m.Event = map[string]string{"summoned": "follower_summoned", "engaged": "amulet_engaged", "discarded": "card_discarded"}[t[3].Value]
 	}
 	if len(t) > 4 {
@@ -783,6 +789,9 @@ func eventMatcherIR(s *syntax.Statement, a map[string]string) ir.EventMatcher {
 	t := s.Tokens()
 	h := t[0].Value
 	m := ir.EventMatcher{Kind: map[string]string{"damage": "damaged", "heal": "healed", "draw": "card_drawn", "destroy": "destroyed", "banish": "banished", "summon": "follower_summoned", "move": "zone_moved", "evolve": "evolved", "superevolve": "super_evolved", "engage": "amulet_engaged", "attack": "attacked", "turn_start": "turn_started", "turn_end": "turn_ended", "game_end": "game_ended", "gain": "resource_changed", "spend": "resource_changed", "return": "zone_moved"}[h]}
+	if h == "discard" {
+		m.Kind = "card_discarded"
+	}
 	switch h {
 	case "damage", "heal":
 		end, _ := factObject(t, 1, a, new([]syntax.Diagnostic))
@@ -792,7 +801,7 @@ func eventMatcherIR(s *syntax.Statement, a map[string]string) ir.EventMatcher {
 	case "draw":
 		m.Side = t[1].Value
 		m.Count = intToken(t[2])
-	case "destroy", "banish":
+	case "destroy", "banish", "discard":
 		v := eventTarget(t[1:], a)
 		m.Subject = &v
 	case "summon":

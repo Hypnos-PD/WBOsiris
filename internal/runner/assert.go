@@ -223,7 +223,9 @@ func (g *game) assertEvents(a ir.EventsAssertion) string {
 	}
 	return ""
 }
-func targetEqual(a, b *ir.EventTarget) bool { return a != nil && b != nil && *a == *b }
+func targetEqual(a, b *ir.EventTarget) bool {
+	return a != nil && b != nil && a.Kind == b.Kind && a.InstanceID == b.InstanceID && a.Side == b.Side && (a.CardID == 0 || a.CardID == b.CardID)
+}
 func (g *game) player(side string) *player {
 	if side == "oppo" {
 		return &g.oppo

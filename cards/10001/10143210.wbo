@@ -5,7 +5,11 @@ card 10143210 {
     cost 1;
 
     effect {
-        unplayable;
+        engage 3 {
+            summon 1 card 90043110;
+            choose target from own.hand;
+            discard target;
+        }
     }
 
     meta {

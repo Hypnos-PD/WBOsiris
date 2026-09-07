@@ -1,0 +1,74 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Fan summons before discarding Kit" {
+    seed 2101;
+    state {
+        turn own 4;
+        player own {
+            pp 3/4;
+            field { amulet source = 10143210; }
+            hand { follower target = 10142110; }
+        }
+    }
+    action { engage source; select target; }
+    expect {
+        legal;
+        target.zone == graveyard;
+        own.shadows == 1;
+        own.pp == 0/4;
+        own.field count card 90043110 == 1;
+        own.destroyed count card 10142110 == 0;
+        all own.field where card 90043110 have storm;
+        all own.field where card 90043110 have ward;
+        events contains ordered { summon card 90043110 count 1; discard target; }
+        events excludes { destroy target; }
+    }
+}
+
+scenario "Fan can engage with an empty hand" {
+    seed 2102;
+    state { player own { pp 3/3; field { amulet source = 10143210; } } }
+    action { engage source; }
+    expect { legal; own.pp == 0/3; own.shadows == 0; own.field count card 90043110 == 1; rng.consumed == 0; }
+}
+
+scenario "Discarded lastwords do not draw or enter destroyed history" {
+    seed 2103;
+    state {
+        player own {
+            pp 3/3;
+            field { amulet source = 10143210; }
+            hand { follower target = 10001120; }
+            deck top { follower untouched = 10001110; }
+        }
+    }
+    action { engage source; select target; }
+    expect {
+        legal; target.zone == graveyard; untouched.zone == deck;
+        own.shadows == 1;
+        own.destroyed count card 10001120 == 0;
+        events contains ordered { discard target; }
+        events excludes { destroy target; draw own 1; }
+    }
+}
+
+scenario "Full amulet field still discards Kit without a buff target" {
+    seed 2104;
+    state {
+        player own {
+            pp 3/3;
+            field { amulet source = 10143210; amulet a = 10001210; amulet b = 10001210; amulet c = 10001210; amulet d = 10001210; }
+            hand { follower target = 10142110; }
+        }
+    }
+    action { engage source; select target; }
+    expect { legal; target.zone == graveyard; own.shadows == 1; own.field count card 90043110 == 0; rng.consumed == 0; }
+}
+
+scenario "Unpaid Fan engagement does not summon or discard" {
+    seed 2105;
+    state { player own { pp 2/3; field { amulet source = 10143210; } hand { follower target = 10142110; } } }
+    action { engage source; }
+    expect { illegal cost; unchanged; target.zone == hand; own.shadows == 0; own.field count card 90043110 == 0; }
+}

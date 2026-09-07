@@ -6,7 +6,11 @@ card 10142110 {
     stats 8/7;
 
     effect {
-        unplayable;
+        rush;
+        when self discarded {
+            random target from own.field.followers;
+            buff target +1/+0;
+        }
     }
 
     meta {

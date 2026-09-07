@@ -63,6 +63,15 @@ test('all events survive local storage, including histories longer than 200 even
   assert.equal(frameEvents(restored[0], 0).length, 250);
 });
 
+test('discard labels preserve the publicly discarded identity and viewer side', () => {
+  const current = state();
+  current.own.graveyard.push({ instanceId: 'discarded', cardId: 2 });
+  const event = { kind: 'card_discarded', side: 'own', subject: { kind: 'instance', instanceId: 'discarded', cardId: 1 } };
+  assert.equal(eventLabel(event, { state: current }, catalog), '我方舍弃 A');
+  current.viewer = 'oppo';
+  assert.equal(eventLabel(event, { state: current }, catalog), '对手舍弃 A');
+});
+
 test('legacy and malformed storage cannot manufacture frame events or crash loading', () => {
   const records = readReplays({ getItem: () => JSON.stringify(['old log', null, { id: 'bad', events: [] }, { id: 'legacy', matchId: 'room', events: ['ok', {}], frames: [{ revision: 1, state: null }] }]) });
   assert.equal(records.length, 2);

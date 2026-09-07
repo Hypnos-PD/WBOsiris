@@ -47,7 +47,7 @@ func (m EventMatcher) MarshalJSON() ([]byte, error) {
 	switch m.Kind {
 	case "healed", "damaged":
 		object["target"], object["actual"] = m.Target, m.Actual
-	case "destroyed", "banished":
+	case "destroyed", "banished", "card_discarded":
 		object["subject"] = m.Subject
 	case "card_drawn":
 		object["side"], object["count"] = m.Side, m.Count
@@ -194,7 +194,7 @@ func (e TargetEffect) MarshalJSON() ([]byte, error) {
 		if e.Predicate != nil {
 			object["predicate"] = e.Predicate
 		}
-	case "destroy", "banish":
+	case "destroy", "banish", "discard":
 		if e.Predicate != nil {
 			object["predicate"] = e.Predicate
 		}

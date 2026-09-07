@@ -657,6 +657,9 @@ func validateContinuationEvents(events []ir.RuntimeEvent, sequence, deathBatchSe
 				return fmt.Errorf("invalid continuation hidden card event")
 			}
 		}
+		if event.Kind == "card_discarded" && (event.Side != "own" && event.Side != "oppo" || event.PrivateTo != "" || event.From != "hand" || event.To != "graveyard" || event.Subject == nil || event.Subject.Kind != "instance" || instances[event.Subject.InstanceID] == nil || event.Subject.CardID < 10000000) {
+			return fmt.Errorf("invalid continuation discard event")
+		}
 		if event.Sequence != uint64(n+1) || event.BatchID > deathBatchSerial || event.Kind == "destroyed" && event.BatchID == 0 || event.Kind != "destroyed" && event.BatchID != 0 {
 			return fmt.Errorf("invalid continuation event sequence")
 		}

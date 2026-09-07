@@ -118,7 +118,7 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 			}
 			continue
 		case "when":
-			if len(t) > 1 && t[1].Value == "self" && ctx.cardType != "follower" {
+			if len(t) > 2 && t[1].Value == "self" && t[2].Value != "discarded" && ctx.cardType != "follower" {
 				diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", "自身进化事件只允许用于随从", s.Span)
 			}
 			end, subject, ok := parseEventPattern(t)
@@ -237,9 +237,12 @@ func checkI16Magnitude(t syntax.Token, ds *[]syntax.Diagnostic) {
 }
 
 func isPlainOperation(s *syntax.Statement) bool {
-	return len(s.Blocks()) == 0 && set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "spellboost", "transform", "set_attack_limit")[s.Word(0)]
+	return len(s.Blocks()) == 0 && set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "spellboost", "transform", "set_attack_limit")[s.Word(0)]
 }
 func parseEventPattern(t []syntax.Token) (int, string, bool) {
+	if len(t) == 3 && values(t) == "when self discarded" {
+		return 3, "card", true
+	}
 	if len(t) == 3 && t[0].Value == "when" && t[1].Value == "self" && set("evolved", "super_evolved")[t[2].Value] {
 		return 3, "follower", true
 	}
@@ -253,7 +256,7 @@ func parseEventPattern(t []syntax.Token) (int, string, bool) {
 		return 4, t[2].Value, true
 	}
 	if t[2].Value == "card" && t[3].Value == "discarded" {
-		return 4, "", true
+		return 4, "card", true
 	}
 	return 0, "", false
 }
@@ -619,7 +622,7 @@ func strictEventFact(s *syntax.Statement, a map[string]string, ds *[]syntax.Diag
 			return aliasKnown(t[1], a, ds)
 		}
 		return len(t) == 5 && t[1].Value == "card" && isCardID(t[2]) && t[3].Value == "count" && isUnsigned(t[4])
-	case "destroy", "banish":
+	case "destroy", "banish", "discard":
 		end, ok := factObject(t, 1, a, ds)
 		return ok && end == len(t)
 	case "return":

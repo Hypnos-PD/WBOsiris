@@ -430,6 +430,8 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 		}
 	case "destroy":
 		g.destroyByEffect(targets)
+	case "discard":
+		g.discardCards(targets)
 	case "banish":
 		for _, i := range targets {
 			g.move(i, "banished")

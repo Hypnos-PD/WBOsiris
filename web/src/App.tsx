@@ -5,7 +5,7 @@ import {
   type DragEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { CircleHelp, History, Menu, Shield, Sparkles, X, Home, Swords, Layers, Film, DoorOpen, Plus, Play, Combine, ChevronUp, ChevronDown } from "lucide-react";
+import { CircleHelp, History, Menu, Shield, Sparkles, X, Home, Swords, Layers, Film, DoorOpen, Plus, Play, Combine, Zap, ChevronUp, ChevronDown } from "lucide-react";
 import { StatusEffects, type StatusEffect } from "./StatusEffects";
 import { DeckBuilder } from "./DeckBuilder";
 import { cardArt, cardText, classNames, deckProblems, readDeck, typeNames, type CatalogCard } from "./decks";
@@ -427,7 +427,7 @@ export function App() {
       });
   };
   const doSourceAction = (
-    kind: "evolve" | "superevolve" | "fusion",
+    kind: "evolve" | "superevolve" | "fusion" | "engage",
     card: Card,
   ) => {
     if (!remote || !card.instanceId) return;
@@ -439,9 +439,11 @@ export function App() {
     setMessage(
       kind === "fusion"
         ? "请选择融合材料"
-        : kind === "superevolve"
-          ? "正在超进化"
-          : "正在进化",
+        : kind === "engage"
+          ? "正在启动"
+          : kind === "superevolve"
+            ? "正在超进化"
+            : "正在进化",
     );
   };
   const playCard = (card: Card) => {
@@ -763,7 +765,7 @@ export function App() {
               const rushOnly =
                 Boolean(card.keywords?.includes("rush")) ||
                 Boolean(card.summoningSick && card.evolved && !storm);
-              const selfGlow = hasAttack
+              const selfGlow = card.type === "随从" && hasAttack
                 ? rushOnly
                   ? "follower-ready"
                   : !card.summoningSick || storm
@@ -781,6 +783,7 @@ export function App() {
                   active={
                     canLeader ||
                     canFollower ||
+                    legal("engage", card.instanceId) ||
                     Boolean(
                       pending?.candidates.some(
                         (candidate) => candidate.instanceId === card.instanceId,
@@ -1130,6 +1133,14 @@ export function App() {
                 <button className="use-card" onClick={() => playCard(selected)}>
                   <Sparkles size={15} />
                   使用卡牌
+                </button>
+              )}
+              {selected.instanceId && legal("engage", selected.instanceId) && (
+                <button
+                  className="use-card"
+                  onClick={() => doSourceAction("engage", selected)}
+                >
+                  <Zap size={15} />启动
                 </button>
               )}
               {selected.instanceId && legal("fusion", selected.instanceId) && (

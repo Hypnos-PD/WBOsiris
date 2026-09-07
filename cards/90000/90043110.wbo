@@ -1,0 +1,37 @@
+wbo 0.1.0;
+
+card 90043110 {
+    type follower;
+    cost 3;
+    stats 2/2;
+    trait marine;
+    effect {
+        storm;
+        ward;
+    }
+    meta {
+        pack 90000;
+        class dragoncraft;
+        rarity gold;
+    }
+    locale chs {
+        name "乙姬近卫队";
+        text "【疾驰】\n【守护】";
+    }
+    locale eng {
+        name "Otohime's Bodyguard";
+        text "Storm. Ward.";
+    }
+    locale jpn {
+        name "<rub=\"おとひめ\">乙姫</rub>お<rub=\"まも\">守</rub>り<rub=\"たい\">隊</rub>";
+        text "【疾走】\n【守護】";
+    }
+    locale kor {
+        name "오토히메 호위대";
+        text "[질주]\n[수호]";
+    }
+    locale cht {
+        name "乙姬近衛隊";
+        text "【疾馳】\n【守護】";
+    }
+}

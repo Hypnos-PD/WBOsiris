@@ -536,7 +536,7 @@ func decodeMatcher(data []byte) (EventMatcher, error) {
 		}
 		t, err := decodeEventTarget(v.Target)
 		return EventMatcher{Kind: v.Kind, Target: &t, Actual: *v.Actual}, err
-	case "destroyed", "banished":
+	case "destroyed", "banished", "card_discarded":
 		var v struct {
 			Kind    string          `json:"kind"`
 			Subject json.RawMessage `json:"subject"`

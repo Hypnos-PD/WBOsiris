@@ -261,7 +261,10 @@ BoolExpr =
 `HasForm` 使用当前候选随从的形态；`evolved` 包含超进化，非随从总是不匹配。
 `when self evolved` 编译为 `{kind:"event", event:"evolved", side:"own", subjectType:"follower", selfOnly:true}`；
 `when self super_evolved` 将 `event` 改为 `super_evolved`。`selfOnly` 必须按实例身份匹配，
-只允许上述两种事件、己方随从且不附带谓词。未携带该字段的已有事件结构保持不变。
+上述进化事件只允许己方随从且不附带谓词。`when self discarded` 编译为
+`{kind:"event", event:"card_discarded", side:"own", selfOnly:true}`，不声明 `subjectType`。
+该弃牌触发器由已进入墓场的被舍弃实例派发，不依赖战场监听索引。
+普通弃牌监听器省略 `selfOnly`，使用 `side` 匹配拥有者并用 `discarded` 绑定事件对象。
 
 任何逐候选求值的谓词都会在自身作用域建立只读 `CandidateRef`，包括
 `FilterSet.predicate`、事件对象过滤器、`Draw.predicate`、`ZoneCount.predicate`
@@ -386,7 +389,7 @@ EventKind = "follower_summoned" | "card_drawn" | "amulet_engaged" |
             "turn_started" | "turn_ended" | "attacked" | "damaged" |
             "healed" | "destroyed" | "banished" | "zone_moved" |
             "evolved" | "super_evolved" | "resource_changed" |
-            "spellboosted"
+            "spellboosted" | "card_discarded"
 
 MovePattern = {
   subject: ValueRef,
@@ -525,6 +528,12 @@ Destroy = NodeBase & {
 Banish = NodeBase & {
   kind: "banish",
   target: ValueRef | SetExpr
+}
+
+Discard = NodeBase & {
+  kind: "discard",
+  target: ValueRef | SetExpr,
+  predicate?: Predicate
 }
 
 Transform = NodeBase & {
@@ -733,7 +742,7 @@ Spellboost = NodeBase & {
 | `summon N card C` | `Summon` |
 | `damage T N`、`heal T N` | `Damage`、`Heal` |
 | `buff T +A/+L [where P]` | `BuffStats`，可带 `predicate` |
-| `destroy T`、`banish T` | `Destroy`、`Banish` |
+| `destroy T`、`banish T`、`discard T` | `Destroy`、`Banish`、`Discard` |
 | `transform self into card C [preserving materials]` | `Transform` |
 | `return T to hand/deck` | `Return` |
 | `add K to T`、`remove K from T` | `AddKeyword`、`RemoveKeyword` |

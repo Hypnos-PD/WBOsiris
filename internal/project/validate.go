@@ -209,6 +209,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 	if event == "engaged" {
 		bindings["engaged"] = true
 	}
+	if event == "discarded" {
+		bindings["discarded"] = true
+	}
 	var evolveOutputs map[string]bool
 	for _, candidate := range body {
 		if candidate.Word(0) == "evolve" && len(candidate.Blocks()) == 1 {
@@ -324,6 +327,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 					if x.Value == "engaged" {
 						ev = "engaged"
 					}
+					if x.Value == "discarded" {
+						ev = "discarded"
+					}
 				}
 				validateEffectBlock(b[0], ds, bindings, ev)
 			}
@@ -435,7 +441,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		return false
 	}
 	h := t[0].Value
-	known := set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "spellboost", "transform", "set_attack_limit")
+	known := set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "spellboost", "transform", "set_attack_limit")
 	if !known[h] {
 		return false
 	}
@@ -523,8 +529,11 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		ok = len(t) == 5 && (t[1].Value == "own" || t[1].Value == "oppo") && t[2].Value == "." && set("life", "pp", "maxpp", "ep", "sep", "combo", "shadows")[t[3].Value] && isUnsigned(t[4])
 	case "restore":
 		ok = len(t) == 4 && set("own", "oppo")[t[1].Value] && t[2].Value == "." && t[3].Value == "pp"
-	case "destroy", "banish":
+	case "destroy", "banish", "discard":
 		end, good := parseValueRef(t, 1)
+		if h == "discard" && good && (end == 4 && t[3].Value == "leader" || end == 2 && t[1].Value == "leaders") {
+			good = false
+		}
 		if good && end < len(t) {
 			end, good = parseWhere(t, end)
 		}

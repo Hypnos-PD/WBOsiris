@@ -9,6 +9,10 @@
 并使用 `source.counter.x == 7;` 断言。名称必须在对应卡牌中声明，覆盖不能重名，
 值范围为 `0..2147483647`。省略的计数器使用卡牌初始值；`unchanged` 包括全部计数器。
 
+事件断言可使用 `discard alias;`，匹配该实例的 `card_discarded` 事实。
+事件中的卡牌身份快照不影响只指定实例的断言；显式指定的身份仍须精确匹配。
+舍弃用 `alias.zone == graveyard;`、`own.shadows == N;` 及已破坏历史检查结果。
+
 ## 文件结构
 
 ```wbotest
