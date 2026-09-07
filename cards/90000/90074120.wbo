@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 90074120 {
+    type follower;
+    cost 3;
+    stats 1/6;
+    trait puppetry;
+
+    effect {
+        ward;
+        ability_target_guard;
+    }
+
+    meta {
+        pack 90000;
+        class portalcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "洛伊德";
+        text """
+【<color=Keyword>守护</color>】
+对手能力只能选择本卡牌。
+""";
+    }
+
+    locale eng {
+        name "Lloyd";
+        text """
+<b><color=Keyword>Ward</color></b>
+Your opponent can't select anything other than this card for abilities.
+""";
+    }
+
+    locale jpn {
+        name "ロイド";
+        text """
+【<color=Keyword>守護</color>】
+相手は能力でこれしか選べない。
+""";
+    }
+
+    locale kor {
+        name "로이드";
+        text """
+[<color=Keyword>수호</color>]
+상대방은 능력으로 이 추종자만 선택 가능.
+""";
+    }
+
+    locale cht {
+        name "洛伊德";
+        text """
+【<color=Keyword>守護</color>】
+敵方的能力只能指定這張卡片。
+""";
+    }
+}

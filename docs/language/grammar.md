@@ -146,7 +146,9 @@ intrinsic_statement = ability , ";"
                     | "earthsigil" , ";" ;
 
 ability            = "ward" | "storm" | "rush" | "bane" | "drain"
-                   | "intimidate" | "barrier" ;
+                   | "intimidate" | "barrier" | "stealth" | "aura"
+                   | "ability_target_guard" | "cannot_attack"
+                   | "cannot_attack_follower" | "cannot_attack_leader" ;
 card_restriction   = "unplayable" ;
 
 ability_block      = simple_ability_name , effect_block

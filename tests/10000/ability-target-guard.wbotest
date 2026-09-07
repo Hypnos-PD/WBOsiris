@@ -1,0 +1,70 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Orchis grants Storm and Bane to the summoned Lloyd" {
+    seed 2701;
+    state { player own { pp 8/8; hand { follower source = 10174120; } } }
+    action { play source; }
+    expect {
+        legal; source.stats == 5/5; source lacks storm; source lacks bane;
+        own.field count card 90074120 == 1;
+        all own.field where card 90074120 have ward;
+        all own.field where card 90074120 have ability_target_guard;
+        all own.field where card 90074120 have storm;
+        all own.field where card 90074120 have bane;
+        rng.consumed == 0;
+    }
+}
+
+scenario "Orchis super evolution grants keywords only to newly entering puppets" {
+    seed 2702;
+    state {
+        turn own 7;
+        player own { sep 1; field { follower source = 10174120; follower old = 90071120; follower ally = 10001110; } }
+    }
+    action { superevolve source; }
+    expect {
+        legal; source.stats == 8/8; source lacks storm; source lacks bane;
+        old lacks storm; old lacks bane; ally lacks storm; ally lacks bane;
+        own.field count card 90071120 == 3; own.sep == 0; rng.consumed == 0;
+    }
+}
+
+scenario "Orchis fanfare cannot summon Lloyd on a full field" {
+    seed 2703;
+    state {
+        player own { pp 8/8; hand { follower source = 10174120; } field { follower a = 10001110; follower b = 10001110; follower c = 10001110; follower d = 10001110; } }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90074120 == 0; source.zone == field; own.pp == 0/8; rng.consumed == 0; }
+}
+
+scenario "Lloyd is the target of an enemy selected destruction" {
+    seed 2704;
+    state {
+        player own { pp 4/4; hand { spell source = 10071310; } }
+        player oppo { field { follower lloyd = 90074120; follower orchis = 10174120; } }
+    }
+    action { play source; select lloyd; }
+    expect { legal; lloyd.zone == graveyard; orchis.zone == field; own.pp == 0/4; rng.consumed == 0; }
+}
+
+scenario "Untargetable Lloyd leaves no legal target for a required spell" {
+    seed 2705;
+    state {
+        player own { pp 4/4; hand { spell source = 10071310; } }
+        player oppo { field { follower lloyd = 90074120 { aura; } follower orchis = 10174120; } }
+    }
+    action { play source; }
+    expect { illegal target_required; unchanged; source.zone == hand; own.pp == 4/4; lloyd.zone == field; orchis.zone == field; rng.consumed == 0; }
+}
+
+scenario "Random destruction and area damage ignore Lloyd targeting protection" {
+    seed 2706;
+    state {
+        player own { pp 4/4; hand { spell source = 10103310; } }
+        player oppo { field { follower lloyd = 90074120; follower orchis = 10174120; } }
+    }
+    action { play source; }
+    expect { legal; orchis.zone == graveyard; lloyd.stats == 1/5; rng.consumed == 1; }
+}

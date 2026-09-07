@@ -6,7 +6,16 @@ card 10174120 {
     stats 5/5;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90074120;
+        }
+        when own follower summoned where trait puppetry {
+            add storm to summoned;
+            add bane to summoned;
+        }
+        superevolve {
+            summon 2 card 90071120;
+        }
     }
 
     meta {

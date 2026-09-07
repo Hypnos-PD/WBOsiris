@@ -163,12 +163,24 @@ func (g *game) selectionCandidates(e ir.SelectionEffect, self *instance, f frame
 		return g.extremumCandidates(items, e.Extremum)
 	}
 	controller := g.sideOf(self)
+	guarded := false
+	for _, i := range g.player(oppositeSide(controller)).field {
+		if !g.chargeQueryVisits(1) {
+			return nil
+		}
+		if i.abilities["ability_target_guard"] {
+			guarded = true
+		}
+	}
 	out := make([]*instance, 0, len(items))
 	for _, i := range items {
 		if !g.chargeQueryVisits(1) {
 			break
 		}
 		if i.zone == "field" && (i.abilities["stealth"] || i.abilities["aura"] || i.earthsigil > 0) && g.sideOf(i) != controller {
+			continue
+		}
+		if guarded && i.zone == "field" && g.sideOf(i) != controller && !i.abilities["ability_target_guard"] {
 			continue
 		}
 		out = append(out, i)

@@ -1351,7 +1351,7 @@ func validatePredicateCardRefs(predicate Predicate, cards map[int]bool) error {
 }
 
 func validKeyword(v string) bool {
-	return oneOf(v, "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")
+	return oneOf(v, "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "ability_target_guard", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")
 }
 func validOp(v string) bool { return oneOf(v, "eq", "ne", "lt", "le", "gt", "ge") }
 func oneOf(s string, v ...string) bool {
