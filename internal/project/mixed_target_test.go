@@ -67,7 +67,8 @@ func TestMixedTargetBindingRejectsCardOnlyOperations(t *testing.T) {
 	for _, operation := range []string{
 		"destroy target;", "heal target 5;", "buff target 1/1;", "set life target 2;",
 		"damage target 5 where cost >= 1;", "summon copies of target;",
-		"add ward to target;", "repeat 2 { destroy target; }",
+		"add ward to target;", "remove ward from target;", "reduce cost target 1 minimum 0;",
+		"reduce countdown target 1;", "repeat 2 { destroy target; }",
 	} {
 		f, ds := syntax.Parse("12345678.wbo", []byte(validCard("fanfare { choose target from oppo.field.followers or oppo.leader; "+operation+" }")))
 		if len(ds) == 0 && !hasErrors(ValidateFile(f)) {

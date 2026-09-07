@@ -26,9 +26,9 @@ func validateMixedBindings(body []*syntax.Statement, inherited map[string]bool, 
 		}
 		index := 1
 		switch h {
-		case "set", "remove":
+		case "set", "reduce":
 			index = 2
-		case "add", "summon":
+		case "add", "summon", "remove":
 			index = 3
 		}
 		if (isPlainOperation(s) || h == "grant") && index < len(t) && mixed[t[index].Value] {
