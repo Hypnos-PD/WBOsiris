@@ -220,6 +220,7 @@ filter_expression   = filter_conjunction , {"or" , filter_conjunction} ;
 filter_conjunction  = filter_term , {"and" , filter_term} ;
 filter_term         = "card" , card_id
                     | "spellboost"
+                    | "keyword" , ability
                     | "type" , card_type
                     | "class" , identifier
                     | "trait" , identifier
@@ -290,7 +291,7 @@ event_pattern     = participant , event_subject , event_verb
                   | participant , "turn" , turn_boundary
                   | "self" , ("evolved" | "super_evolved" | "discarded" | "summoned") ;
 event_subject     = "follower" | "amulet" | "card" ;
-event_verb        = "summoned" | "engaged" | "discarded" | "fused" ;
+event_verb        = "summoned" | "engaged" | "discarded" | "fused" | "destroyed" ;
 source_zone       = "while" , "self" , "in" , ("hand" | "field") ;
 turn_limit        = "once" , "per" , [participant] , "turn" ;
 turn_boundary     = "starts" | "ends" ;
@@ -298,7 +299,7 @@ turn_boundary     = "starts" | "ends" ;
 replace_block     = "replace" , "self" , "leaving" , "field" , effect_block ;
 ```
 
-事件模式中的筛选器作用于事件产生的对象。`summoned`、`engaged`、`discarded` 分别绑定该事件
+事件模式中的筛选器作用于事件产生的对象。`summoned`、`engaged`、`discarded`、`destroyed` 分别绑定该事件
 的对象；回合边界事件不建立对象绑定。监听器默认包含 Token。`replace self
 leaving field` 在原区域移动前执行并取消原移动，同一替换块不会因自己产生的区域
 移动再次触发。
@@ -310,6 +311,8 @@ leaving field` 在原区域移动前执行并取消原移动，同一替换块�
 其他实例入场或本实例在战场上变身不会触发。它不属于 `fanfare`。
 `when own card discarded` 与 `when oppo card discarded` 由战场监听器按弃牌拥有者匹配。
 `card fused` 匹配成功融合的来源卡，每次操作只触发一次。`follower leaves field` 绑定 `left`。
+`destroyed` 只用于 `follower` 或 `amulet` 事件，绑定实际被破坏的实例；自身破坏使用
+`lastwords`。`where keyword K` 读取实例当前关键词；历史集合读取破坏时的关键词快照。
 `source_zone` 只用于玩家侧事件，不用于 `when self ...` 或 `grant` 内的附加能力；
 省略时来源位于战场。区域条件约束来源，`where` 则约束事件对象。
 `turn_limit` 同样只用于玩家侧事件，不用于 `when self ...` 或 `grant`。

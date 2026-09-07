@@ -598,7 +598,7 @@ func decodeTrigger(data []byte) (Trigger, error) {
 				return nil, fmt.Errorf("event conditions cannot access fusion materials")
 			}
 		}
-		if !validSide(v.Side) || !oneOf(v.Event, "follower_summoned", "follower_left", "card_fused", "amulet_engaged", "card_discarded", "turn_started", "turn_ended", "evolved", "super_evolved") || v.SubjectType != "" && !oneOf(v.SubjectType, "follower", "amulet") || v.SourceZone != "" && !oneOf(v.SourceZone, "hand", "field") {
+		if !validSide(v.Side) || !oneOf(v.Event, "follower_summoned", "follower_left", "destroyed", "card_fused", "amulet_engaged", "card_discarded", "turn_started", "turn_ended", "evolved", "super_evolved") || v.SubjectType != "" && !oneOf(v.SubjectType, "follower", "amulet") || v.SourceZone != "" && !oneOf(v.SourceZone, "hand", "field") || v.Event == "destroyed" && v.SubjectType == "" {
 			return nil, fmt.Errorf("invalid event trigger")
 		}
 		if v.OncePerTurn != "" && !oneOf(v.OncePerTurn, "any", "own", "oppo") {
@@ -1298,6 +1298,18 @@ func decodePredicate(data []byte) (Predicate, error) {
 			return nil, fmt.Errorf("invalid predicate trait %q", v.Trait)
 		}
 		return FieldPredicate{Kind: v.Kind, Trait: v.Trait}, nil
+	case "has_keyword":
+		var v struct {
+			Kind    string `json:"kind"`
+			Keyword string `json:"keyword"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if !ValidKeyword(v.Keyword) {
+			return nil, fmt.Errorf("invalid predicate keyword %q", v.Keyword)
+		}
+		return FieldPredicate{Kind: v.Kind, Keyword: v.Keyword}, nil
 	case "has_form":
 		var v struct {
 			Kind string `json:"kind"`

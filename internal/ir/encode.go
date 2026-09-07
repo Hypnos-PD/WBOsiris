@@ -95,6 +95,8 @@ func (p FieldPredicate) MarshalJSON() ([]byte, error) {
 		object["class"] = p.Class
 	case "has_trait":
 		object["trait"] = p.Trait
+	case "has_keyword":
+		object["keyword"] = p.Keyword
 	case "has_form":
 		object["form"] = p.Form
 	case "compare":

@@ -300,6 +300,7 @@ type FieldPredicate struct {
 	CardType    string  `json:"cardType,omitempty"`
 	Class       string  `json:"class,omitempty"`
 	Trait       string  `json:"trait,omitempty"`
+	Keyword     string  `json:"keyword,omitempty"`
 	Form        string  `json:"form,omitempty"`
 	Field       string  `json:"field,omitempty"`
 	Op          string  `json:"op,omitempty"`

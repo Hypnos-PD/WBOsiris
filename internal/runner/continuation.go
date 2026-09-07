@@ -17,7 +17,7 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.28.0"
+const continuationVersion = "0.29.0"
 
 type ContinuationBindings struct {
 	ID     string                      `json:"id"`
@@ -482,7 +482,7 @@ func snapshotContinuationPlayer(p player) ContinuationPlayer {
 		PP: p.pp, MaxPP: p.maxpp, LeaderLife: p.leaderLife, LeaderMax: p.leaderMax,
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, AttackedThisTurn: p.attackedThisTurn,
 		Deck: instanceIDs(p.deck), Hand: instanceIDs(p.hand), Field: instanceIDs(p.field), EvolvedThisTurn: p.evolvedThisTurn,
-		Graveyard: instanceIDs(p.graveyard), Banished: instanceIDs(p.banished), Destroyed: append([]DestructionRecord{}, p.destroyed...),
+		Graveyard: instanceIDs(p.graveyard), Banished: instanceIDs(p.banished), Destroyed: cloneDestructionHistory(p.destroyed),
 		Resolving:    instanceIDs(p.resolving),
 		ExtraPPEarly: p.extraPPEarly, ExtraPPLate: p.extraPPLate, ExtraPPActive: p.extraPPActive,
 	}
@@ -892,6 +892,12 @@ func restoreHistory(records []DestructionRecord, instances map[string]*instance,
 			return nil, fmt.Errorf("invalid continuation destroyed history")
 		}
 		previous = record.EventSequence
+		for n, keyword := range record.Keywords {
+			if !ir.ValidKeyword(keyword) || n > 0 && keyword <= record.Keywords[n-1] {
+				return nil, fmt.Errorf("invalid continuation history keywords")
+			}
+		}
+		record.Keywords = append([]string(nil), record.Keywords...)
 		items = append(items, record)
 	}
 	return items, nil

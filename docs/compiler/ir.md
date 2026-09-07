@@ -285,7 +285,7 @@ BoolExpr =
 | HasTrait    { kind: "has_trait", value: ValueRef, trait: TraitId }
 | HasForm     { kind: "has_form", form: "unevolved" | "evolved" | "super_evolved" }
 | HasSpellboost { kind: "has_spellboost" }
-| HasKeyword  { kind: "has_keyword", value: ValueRef, keyword: Keyword }
+| HasKeyword  { kind: "has_keyword", keyword: Keyword }
 | Overflow    { kind: "overflow", side: Side }
 | SelfForm    { kind: "self_form", form: "unevolved" | "evolved" | "super_evolved" }
 | EvolutionUnlocked { kind: "evolution_unlocked", side: Side, form: "evolved" | "super_evolved" }
@@ -303,6 +303,8 @@ BoolExpr =
 条件在执行到 `If` 节点时求值，合法性预检使用相同规则。未知形态、非法玩家及额外字段
 拒绝解码；暂停续局沿用既有的来源实例、形态、先手和回合记录，无需新增存档字段。
 
+`HasKeyword` 检查当前候选实例的关键词，包括临时赋予；未知关键词、缺失值、
+`null` 和额外字段拒绝解码。历史候选使用破坏时的关键词，不从当前实例或原生能力推断。
 `HasForm` 使用当前候选随从的形态；`evolved` 包含超进化，非随从总是不匹配。
 `HasSpellboost` 检查候选当前卡牌定义是否声明 `spellboost` 触发能力，不读取卡牌文本，
 不检查职业或卡牌类型；没有额外字段。变身后按新的卡牌定义判断。
@@ -474,6 +476,11 @@ MovePattern = {
 `follower_left` 在状态重置前匹配事件对象并保存 `left` 绑定，包含离场前卡牌身份、
 `from=field` 与目的区域；`card_fused` 匹配一次成功融合，使用融合前的来源卡筛选，
 本体融合能力执行完毕后才排空外部监听队列。
+
+`when own follower destroyed` 编译为 `event=destroyed`、`side=own`、`subjectType=follower`；
+也接受 `oppo` 与 `amulet`，拒绝未指定类型、法术及自身专用破坏监听。
+死亡批次整体离场后逐个派发，`destroyed` 绑定实际实例。关键词谓词在入队时判断，
+不因后续能力改变目标的关键词而重新匹配；同批已死亡的场上来源不再监听。
 
 `once per own turn`、`once per oppo turn` 与 `once per turn` 分别编译为
 `EventTrigger.oncePerTurn=own|oppo|any`，省略表示不限次数。范围相对于来源持有者；
@@ -693,7 +700,7 @@ Reanimate = NodeBase & {
 费用不超过上限且费用最高者，唯一最高者不消费 RNG；并列时才随机选择。它创建
 全新实例，旧历史项不被移除。
 
-历史记录与存续实例分开保存，包含破坏时的卡牌 ID、费用、攻击、生命、进化形态与亡者类型。
+历史记录与存续实例分开保存，包含破坏时的卡牌 ID、费用、攻击、生命、进化形态、亡者类型与关键词。
 同一实例之后返回、变身或再度被破坏，不会改写旧记录。`destroyed` 区域引用仅用于只读
 历史统计；解码器拒绝将它或其筛选集合用于选择和卡牌修改操作。`Destroy.output` 仍是
 实际被破坏实例的绑定，不等同于历史记录。破坏事件的 `subject.cardId` 固定为破坏时身份。

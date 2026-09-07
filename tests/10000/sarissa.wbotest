@@ -1,0 +1,58 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Sarissa can be played for two PP" {
+    seed 4301;
+    state { player own { pp 2/2; hand { follower source = 10162110; } } }
+    action { play source; }
+    expect { legal; source.zone == field; source.stats == 2/2; own.pp == 0/2; }
+}
+
+scenario "Sarissa evolution grants Barrier" {
+    seed 4302;
+    state { turn own 5; player own { ep 1; field { follower source = 10162110; } } }
+    action { evolve source; }
+    expect { legal; source.stats == 4/4; source has barrier; }
+}
+
+scenario "Sarissa super evolution inherits Barrier" {
+    seed 4303;
+    state { turn own 7; player own { sep 1; field { follower source = 10162110; } } }
+    action { superevolve source; }
+    expect { legal; source.stats == 5/5; source has barrier; }
+}
+
+scenario "Sarissa grows when an allied Ward follower dies in combat" {
+    seed 4304;
+    state { player own { field { follower source = 10162110; follower ally = 10001130; } } player oppo { field { follower enemy = 10163130; } } }
+    action { attack ally into enemy; }
+    expect { legal; ally.zone == graveyard; source.stats == 3/3; all own.destroyed.followers where card 10001130 have ward; }
+}
+
+scenario "Sarissa ignores a destroyed follower without Ward" {
+    seed 4305;
+    state { player own { field { follower source = 10162110; follower ally = 10001110; } } player oppo { field { follower enemy = 10001130; } } }
+    action { attack ally into enemy; }
+    expect { legal; ally.zone == graveyard; source.stats == 2/2; }
+}
+
+scenario "Sarissa ignores a destroyed enemy Ward follower" {
+    seed 4306;
+    state { player own { field { follower source = 10162110; follower ally = 10163130; } } player oppo { field { follower enemy = 10001130; } } }
+    action { attack ally into enemy; }
+    expect { legal; enemy.zone == graveyard; source.stats == 2/2; }
+}
+
+scenario "Sarissa gains once for each allied Ward destroyed in a batch" {
+    seed 4307;
+    state { player own { pp 6/6; hand { spell removal = 10161310; } } player oppo { field { follower source = 10162110 { stats 2/6; } follower first = 90031120; follower second = 90031120; } } }
+    action { play removal; }
+    expect { legal; source.stats == 4/5; first.zone == graveyard; second.zone == graveyard; oppo.destroyed count card 90031120 == 2; }
+}
+
+scenario "Sarissa cannot survive a death batch by growing from its victims" {
+    seed 4308;
+    state { player own { pp 6/6; hand { spell removal = 10161310; } } player oppo { field { follower source = 10162110; follower ally = 90031120; } } }
+    action { play removal; }
+    expect { legal; source.zone == graveyard; ally.zone == graveyard; }
+}

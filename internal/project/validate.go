@@ -218,6 +218,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 	if event == "discarded" {
 		bindings["discarded"] = true
 	}
+	if event == "destroyed" {
+		bindings["destroyed"] = true
+	}
 	if event == "leaves" {
 		bindings["left"] = true
 	}
@@ -350,18 +353,11 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 				shapeError(ds, s, "when 事件 [where ...] { ... }")
 			} else {
 				ev := ""
-				for _, x := range t {
-					if x.Value == "summoned" {
-						ev = "summoned"
-					}
-					if x.Value == "engaged" {
-						ev = "engaged"
-					}
-					if x.Value == "discarded" {
-						ev = "discarded"
-					}
-					if x.Value == "leaves" {
-						ev = "leaves"
+				if _, _, ok := parseBaseEventPattern(t); ok {
+					if t[1].Value == "self" {
+						ev = t[2].Value
+					} else {
+						ev = t[3].Value
 					}
 				}
 				validateEffectBlock(b[0], ds, bindings, ev)
@@ -789,6 +785,10 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 		switch t[i].Value {
 		case "spellboost":
 			i++
+		case "keyword":
+			if i+1 < len(t) && ir.ValidKeyword(t[i+1].Value) {
+				i += 2
+			}
 		case "card":
 			if i+1 < len(t) && isCardID(t[i+1]) {
 				i += 2

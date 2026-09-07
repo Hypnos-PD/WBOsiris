@@ -30,6 +30,62 @@ func transformHistoryVictim(s *Session, victim *instance, card int) {
 	s.g.execCardEffect(ir.CardEffect{Kind: "transform", Target: ir.SelfRef{Kind: "self"}, CardID: card}, victim, nil)
 }
 
+func TestDestructionKeywordHistoryIsFrozenAndIndependentlyCopied(t *testing.T) {
+	s, _, _, victimID := historySession(t, "own", 7)
+	victim := s.g.instances[victimID]
+	victim.removeKeyword("ward")
+	victim.addKeyword("ward", "own")
+	s.g.destroyByEffect([]*instance{victim})
+	s.g.expireTurnEffects("own")
+	if victim.abilities["ward"] {
+		t.Fatal("temporary Ward did not expire")
+	}
+	ref := ir.FilterRef{Kind: "filter", Source: ir.ZoneRef{Kind: "zone", Side: "own", Zone: "destroyed"}, Predicate: ir.FieldPredicate{Kind: "has_keyword", Keyword: "ward"}}
+	if len(s.g.fromRef(ref, nil, nil)) != 1 {
+		t.Fatal("expiry rewrote keyword history")
+	}
+	clone := s.g.clone()
+	clone.own.destroyed[0].Keywords[0] = "storm"
+	if len(s.g.fromRef(ref, nil, nil)) != 1 {
+		t.Fatal("sandbox shares history keyword slice")
+	}
+	saved := snapshotContinuationGame(s.g)
+	restored, err := restoreGame(s.g.cards, saved)
+	if err != nil {
+		t.Fatal(err)
+	}
+	saved.Own.Destroyed[0].Keywords[0] = "storm"
+	if len(s.g.fromRef(ref, nil, nil)) != 1 || len(restored.fromRef(ref, nil, nil)) != 1 {
+		t.Fatal("continuation shares history keyword slice")
+	}
+	for _, viewer := range []string{"own", "oppo"} {
+		view, _ := s.View(viewer)
+		p := view.Own
+		if viewer == "oppo" {
+			p = view.Oppo
+		}
+		found := false
+		for _, keyword := range p.Destroyed[0].Keywords {
+			found = found || keyword == "ward"
+		}
+		if !found {
+			t.Fatal("public destruction history lost temporary Ward")
+		}
+	}
+	for _, invalid := range [][]string{{"unknown"}, {"ward", "ward"}, {"ward", "barrier"}} {
+		bad := snapshotContinuationGame(s.g)
+		bad.Own.Destroyed[0].Keywords = invalid
+		if _, err := restoreGame(s.g.cards, bad); err == nil {
+			t.Fatal("accepted malformed history keywords", invalid)
+		}
+	}
+	wardCard := &ir.Card{ID: 12345678, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 1}, Intrinsic: []string{"ward"}}
+	i := historyInstances([]DestructionRecord{{InstanceID: victimID, CardID: wardCard.ID}}, map[int]*ir.Card{wardCard.ID: wardCard})[0]
+	if i.abilities["ward"] {
+		t.Fatal("removed native Ward reappeared in history")
+	}
+}
+
 func TestDestructionHistorySurvivesLiveTransformationAndRestore(t *testing.T) {
 	for _, side := range []string{"own", "oppo"} {
 		t.Run(side, func(t *testing.T) {

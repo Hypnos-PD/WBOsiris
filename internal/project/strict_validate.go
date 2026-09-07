@@ -291,7 +291,7 @@ func parseBaseEventPattern(t []syntax.Token) (int, string, bool) {
 	if t[2].Value == "turn" && set("starts", "ends")[t[3].Value] {
 		return 4, "", true
 	}
-	if set("follower", "amulet")[t[2].Value] && set("summoned", "engaged")[t[3].Value] {
+	if set("follower", "amulet")[t[2].Value] && set("summoned", "engaged", "destroyed")[t[3].Value] {
 		return 4, t[2].Value, true
 	}
 	if t[2].Value == "card" && set("discarded", "fused")[t[3].Value] {

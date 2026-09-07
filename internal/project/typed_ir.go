@@ -550,6 +550,9 @@ func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 		case "spellboost":
 			terms = append(terms, ir.FieldPredicate{Kind: "has_spellboost"})
 			j++
+		case "keyword":
+			terms = append(terms, ir.FieldPredicate{Kind: "has_keyword", Keyword: t[j+1].Value})
+			j += 2
 		case "card":
 			terms = append(terms, ir.FieldPredicate{Kind: "has_card", CardID: intToken(t[j+1])})
 			j += 2
@@ -638,7 +641,7 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 		if m.SubjectType == "card" {
 			m.SubjectType = ""
 		}
-		m.Event = map[string]string{"summoned": "follower_summoned", "leaves": "follower_left", "fused": "card_fused", "engaged": "amulet_engaged", "discarded": "card_discarded"}[t[3].Value]
+		m.Event = map[string]string{"summoned": "follower_summoned", "leaves": "follower_left", "destroyed": "destroyed", "fused": "card_fused", "engaged": "amulet_engaged", "discarded": "card_discarded"}[t[3].Value]
 	}
 	baseEnd, _, _ := parseBaseEventPattern(t)
 	end, _, _ := parseEventPattern(t)

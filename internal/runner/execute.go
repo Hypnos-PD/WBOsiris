@@ -282,6 +282,8 @@ func (g *game) matches(i *instance, p ir.Predicate, self *instance) bool {
 	switch x := p.(type) {
 	case ir.FieldPredicate:
 		switch x.Kind {
+		case "has_keyword":
+			return i.abilities[x.Keyword]
 		case "has_spellboost":
 			for _, ability := range i.card.Abilities {
 				if ir.TriggerKind(ability.Trigger) == "spellboost" {
@@ -838,7 +840,7 @@ func (g *game) resolveDeathBatch(explicit []*instance) []*instance {
 		subject := ir.EventTarget{Kind: "instance", InstanceID: death.instance.id, CardID: death.instance.card.ID}
 		event := ir.RuntimeEvent{Kind: "destroyed", Side: g.sideOf(death.instance), Subject: &subject, Sequence: g.eventSequence, BatchID: batchID}
 		g.events = append(g.events, event)
-		g.queueEventTriggers(event, death.instance, "")
+		g.queueEventTriggers(event, death.instance, "destroyed")
 	}
 	for _, death := range deaths {
 		for _, ability := range death.abilities {
@@ -852,6 +854,9 @@ func (g *game) resolveDeathBatch(explicit []*instance) []*instance {
 	return destroyed
 }
 func (g *game) returnCard(i *instance, z string) {
+	if i.zone == "graveyard" || i.zone == "banished" {
+		resetCardState(i, i.card)
+	}
 	if z != "deck" {
 		g.move(i, z)
 		return

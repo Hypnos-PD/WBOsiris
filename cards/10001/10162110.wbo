@@ -6,7 +6,12 @@ card 10162110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        when own follower destroyed where keyword ward {
+            buff self +1/+1;
+        }
+        evolve {
+            add barrier to self;
+        }
     }
 
     meta {
