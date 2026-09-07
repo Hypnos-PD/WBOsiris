@@ -211,13 +211,14 @@ filter_term         = "card" , card_id
                     | "class" , identifier
                     | "trait" , identifier
                     | "form" , ("unevolved" | "evolved" | "super_evolved")
-                    | "life" , comparison_operator , integer ;
+                    | ("life" | "cost") , comparison_operator , integer ;
 comparison_operator = "==" | "!=" | "<" | "<=" | ">" | ">=" ;
 ```
 
 `field` 表示双方战场合并后的稳定有序集合；`own.field`、`oppo.field` 可包含随从
 和护符。复数类型后缀缩窄集合类型。`other` 只排除与 `self` 同一实例的对象，
-必须写在 `where` 前。过滤条件从左到右求交；当前 0.1 不含 `or` 或括号过滤器。
+必须写在 `where` 前。`and` 的优先级高于 `or`；不支持括号过滤器。
+`cost` 比较实例的当前费用，包括加费或降费效果，不比较原始费用。
 `destroyed` 是已破坏随从历史，不是区域，但在集合语法中按只读历史集合处理。
 
 选择数量 `count` 必须为 1 至 65535 的整数，省略时为 1，且必须写在过滤条件之后。
@@ -309,7 +310,8 @@ add_operation     = "add" , integer , "card" , card_id , "to" , "hand" , ";"
                   | "add" , ability , "to" , value_ref , ["other"] , [where_clause] , [effect_duration] , ";" ;
 effect_duration   = "until" , [participant] , "turn" , "ends" ;
 
-summon_operation  = "summon" , integer , "card" , card_id , ";" ;
+summon_operation  = "summon" , integer , "card" , card_id , ";"
+                  | "summon" , "copies" , "of" , value_ref , [where_clause] , ";" ;
 numeric_operation = "damage" , value_ref , effect_amount , [damage_distribution] , [where_clause] , ";"
                   | "heal" , value_ref , effect_amount , [where_clause] , ";"
                   | "set" , "life" , value_ref , effect_amount , ";"

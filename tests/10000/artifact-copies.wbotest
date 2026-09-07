@@ -1,0 +1,72 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Alouette adds both cores to hand" {
+    seed 3201;
+    state { player own { pp 5/5; hand { follower source = 10173140; } } }
+    action { play source; }
+    expect { legal; own.hand count card 90071210 == 1; own.hand count card 90071220 == 1; own.pp == 0/5; }
+}
+
+scenario "Alouette evolution copies a held artifact without consuming it" {
+    seed 3202;
+    state { turn own 7; player own { ep 1; field { follower source = 10173140; } hand { follower target = 90072110 { stats 7/3; cost 1; barrier; } } } }
+    action { evolve source; select target; }
+    expect { legal; target.zone == hand; target.stats == 7/3; target.cost == 1; own.field count card 90072110 == 1; all own.field where card 90072110 have barrier; source.stats == 4/6; own.ep == 0; }
+}
+
+scenario "Alouette super evolution inherits the copy effect" {
+    seed 3203;
+    state { turn own 7; player own { sep 1; field { follower source = 10173140; } hand { follower target = 90072120; } } }
+    action { superevolve source; select target; }
+    expect { legal; target.zone == hand; own.field count card 90072120 == 1; all own.field where card 90072120 have ward; source.stats == 5/7; own.sep == 0; }
+}
+
+scenario "Alouette cannot copy an artifact with current cost six" {
+    seed 3204;
+    state { turn own 7; player own { ep 1; field { follower source = 10173140; } hand { follower expensive = 90072110 { cost 6; } amulet core = 90071210; follower plain = 10001110; } } }
+    action { evolve source; }
+    expect { legal; own.field count card 90072110 == 0; expensive.zone == hand; source.stats == 4/6; }
+}
+
+scenario "Ralmia copies three selected artifacts and keeps all originals" {
+    seed 3205;
+    state { player own { pp 8/8; hand { follower source = 10174130; follower a = 90072110; follower b = 90072120; follower c = 90073110; follower d = 90073120; } } }
+    action { play source; select a, b, c; }
+    expect { legal; a.zone == hand; b.zone == hand; c.zone == hand; d.zone == hand; own.field count card 90072110 == 1; own.field count card 90072120 == 1; own.field count card 90073110 == 1; own.field count card 90073120 == 0; rng.consumed == 0; }
+}
+
+scenario "Ralmia copies the available artifact when fewer than three qualify" {
+    seed 3206;
+    state { player own { pp 8/8; hand { follower source = 10174130; follower target = 90072120; } } }
+    action { play source; select target; }
+    expect { legal; target.zone == hand; own.field count card 90072120 == 1; }
+}
+
+scenario "Ralmia can be played with no artifact targets" {
+    seed 3207;
+    state { player own { pp 8/8; hand { follower source = 10174130; } } }
+    action { play source; }
+    expect { legal; source.zone == field; own.pp == 0/8; }
+}
+
+scenario "Ralmia field capacity stops copies without consuming selected hands" {
+    seed 3208;
+    state { player own { pp 8/8; field { follower a = 10001110; follower b = 10001110; follower c = 10001110; follower d = 10001110; } hand { follower source = 10174130; follower target = 90072120; } } }
+    action { play source; select target; }
+    expect { legal; target.zone == hand; own.field count card 90072120 == 0; own.shadows == 0; }
+}
+
+scenario "Ralmia super evolution buffs allied artifacts only" {
+    seed 3209;
+    state { turn own 7; player own { sep 1; field { follower source = 10174130; follower target = 90072120; follower plain = 10001110; } } player oppo { field { follower enemy = 90072120; } } }
+    action { superevolve source; }
+    expect { legal; target.stats == 2/6; plain.stats == 2/2; enemy.stats == 1/5; source.stats == 5/5; }
+}
+
+scenario "Ralmia normal evolution does not grant the super evolution buff" {
+    seed 3210;
+    state { turn own 7; player own { ep 1; field { follower source = 10174130; follower target = 90072120; } } }
+    action { evolve source; }
+    expect { legal; target.stats == 1/5; source.stats == 4/4; }
+}

@@ -519,6 +519,14 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		}
 	case "summon":
 		ok = len(t) == 4 && isUnsigned(t[1]) && t[2].Value == "card" && isCardID(t[3])
+		if len(t) >= 4 && t[1].Value == "copies" && t[2].Value == "of" {
+			end, good := parseValueRef(t, 3)
+			checkBindingAt(t, 3, end, bindings, ds)
+			if good && end < len(t) && t[end].Value == "where" {
+				end, good = parseWhere(t, end)
+			}
+			ok = good && end == len(t)
+		}
 	case "damage", "heal":
 		end, good := parseValueRef(t, 1)
 		if good {
@@ -727,7 +735,7 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 			if i+1 < len(t) && set("unevolved", "evolved", "super_evolved")[t[i+1].Value] {
 				i += 2
 			}
-		case "life":
+		case "life", "cost":
 			if i+2 < len(t) && set("==", "!=", "<", "<=", ">", ">=")[t[i+1].Value] && isUnsigned(t[i+2]) {
 				i += 3
 			}

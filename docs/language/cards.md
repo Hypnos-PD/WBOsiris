@@ -315,6 +315,25 @@ add ward to target;
 remove ward from target;
 ```
 
+`summon copies of 集合` 为手牌或战场中的每个随从、护符召唤一个独立副本，原卡保留。
+可用绑定、区域集合或 `self`，并可附加 `where` 筛选；法术和其他区域的对象不产生副本。
+多个对象按集合的稳定顺序处理，战场满后停止。`summoned` 只包含实际创建的副本，
+没有创建时也会清空，且可作为后续效果或下一次复制的输入。
+
+```wbo
+choose targets from own.hand where type follower and trait artifact and cost <= 5 count 3;
+summon copies of targets;
+buff summoned +1/+1;
+```
+
+复制继承当前费用、攻击力和生命值（包括已受伤害）、进化形态、关键词、计数器、
+附加效果及其原有到期回合、融合材料记录；副本的可变状态与原卡相互独立。
+本回合攻击次数和启动记录清零，随从重新受到入场当回合的攻击限制。
+复制不会发动入场曲或进化能力，但会产生正常的进入战场事件。
+超进化形态继承也符合[官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#2e2l68z79011)。
+选择条件中的 `cost` 是当前费用：费用增加到 6 的创造物不满足 `cost <= 5`，
+参见[当前费用筛选的官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#bxi2b429pl7)。
+
 `damage`、`heal` 的数值可写为 `count(集合 [where 筛选])`，例如：
 
 ```wbo

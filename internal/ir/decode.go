@@ -783,6 +783,26 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			count = *v.Count
 		}
 		return DrawEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.SourceZone, v.Output, count, v.All, p}, err
+	case "summon_copies":
+		var v struct {
+			NodeBase
+			Kind, Owner, Output string
+			Target              json.RawMessage
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
+			return nil, err
+		}
+		target, err := decodeRef(v.Target)
+		if err != nil {
+			return nil, err
+		}
+		if !validSide(v.Owner) || v.Output != "summoned" {
+			return nil, fmt.Errorf("invalid summon_copies shape")
+		}
+		return CardEffect{NodeBase: v.NodeBase, Kind: v.Kind, Owner: v.Owner, Target: target, Output: v.Output}, nil
 	case "add_card", "summon", "reanimate", "transform":
 		type raw struct {
 			ID                                         string `json:"id"`
@@ -1209,7 +1229,7 @@ func decodePredicate(data []byte) (Predicate, error) {
 		if err := strict(data, &v); err != nil {
 			return nil, err
 		}
-		if v.Field != "life" || !validOp(v.Op) {
+		if !oneOf(v.Field, "life", "cost") || !validOp(v.Op) {
 			return nil, fmt.Errorf("invalid comparison predicate")
 		}
 		return FieldPredicate{Kind: v.Kind, Field: v.Field, Op: v.Op, Value: v.Value}, nil

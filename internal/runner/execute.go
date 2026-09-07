@@ -297,19 +297,23 @@ func (g *game) matches(i *instance, p ir.Predicate) bool {
 			}
 			return false
 		case "compare":
+			value := i.life
+			if x.Field == "cost" {
+				value = i.cost
+			}
 			switch x.Op {
 			case "le":
-				return i.life <= x.Value
+				return value <= x.Value
 			case "lt":
-				return i.life < x.Value
+				return value < x.Value
 			case "eq":
-				return i.life == x.Value
+				return value == x.Value
 			case "ne":
-				return i.life != x.Value
+				return value != x.Value
 			case "ge":
-				return i.life >= x.Value
+				return value >= x.Value
 			case "gt":
-				return i.life > x.Value
+				return value > x.Value
 			}
 		}
 	case ir.AndPredicate:
@@ -414,6 +418,8 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 		}
 	case "summon":
 		f[e.Output] = g.summonFor(self, e.Owner, e.Count, e.CardID, false)
+	case "summon_copies":
+		f[e.Output] = g.summonCopies(self, e.Owner, g.fromRef(e.Target, self, f))
 	case "reanimate":
 		f[e.Output] = nil
 		if len(own.field) >= fieldLimit {

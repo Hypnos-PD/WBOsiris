@@ -272,6 +272,7 @@ BoolExpr =
 `HasForm` 使用当前候选随从的形态；`evolved` 包含超进化，非随从总是不匹配。
 `HasSpellboost` 检查候选当前卡牌定义是否声明 `spellboost` 触发能力，不读取卡牌文本，
 不检查职业或卡牌类型；没有额外字段。变身后按新的卡牌定义判断。
+筛选器的 `compare` 节点支持 `field: "life" | "cost"`；`cost` 读取实例当前费用。
 `when self evolved` 编译为 `{kind:"event", event:"evolved", side:"own", subjectType:"follower", selfOnly:true}`；
 `when self super_evolved` 将 `event` 改为 `super_evolved`。`selfOnly` 必须按实例身份匹配，
 上述进化事件只允许己方随从且不附带谓词。`when self discarded` 编译为
@@ -543,6 +544,13 @@ Summon = NodeBase & {
   output: Binding
 }
 
+SummonCopies = NodeBase & {
+  kind: "summon_copies",
+  owner: Side,
+  target: ValueRef | SetExpr,
+  output: "summoned"
+}
+
 Destroy = NodeBase & {
   kind: "destroy",
   target: ValueRef | SetExpr,
@@ -585,6 +593,11 @@ Reanimate = NodeBase & {
   output: Binding
 }
 ```
+
+`SummonCopies` 按输入集合顺序为手牌或战场中的随从、护符各创建一个独立副本，
+保留原卡；忽略法术和其他区域对象，战场满时停止。继承当前卡牌状态、附加效果的
+原有期限和独立的融合材料记录，重置已攻击次数与已启动标记，重新施加入场攻击限制。
+不发动入场曲或进化能力；输出只包含成功召唤的实例。无需新增续局状态字段。
 
 `Reanimate` 按破坏记录加权：原始费用满足上限且最高的每条记录均可被抽中，
 同名卡的多条记录不去重。它创建原始状态的同名随从并在入场前添加亡者类型，
@@ -797,6 +810,7 @@ Spellboost = NodeBase & {
 | `draw N`、`draw all from deck where P` | `Draw` |
 | `add N card C to hand` | `AddCard` |
 | `summon N card C` | `Summon` |
+| `summon copies of S` | `SummonCopies` |
 | `damage T N`、`heal T N` | `Damage`、`Heal` |
 | `set life T N` | `SetLife` |
 | `buff T +A/+L [where P] [until [own/oppo] turn ends]` | `BuffStats`，可带 `predicate` 和 `until` |

@@ -6,7 +6,13 @@ card 10174130 {
     stats 2/2;
 
     effect {
-        unplayable;
+        fanfare {
+            choose targets from own.hand where type follower and trait artifact and cost <= 5 count 3;
+            summon copies of targets;
+        }
+        superevolve {
+            buff own.field.followers +1/+1 where trait artifact;
+        }
     }
 
     meta {

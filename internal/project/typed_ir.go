@@ -324,6 +324,14 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			return keywordEffectIR(base, "add_keyword", t), nil
 		}
 	case "summon":
+		if t[1].Value == "copies" {
+			target := valueRefIR(t, 3)
+			if end := valueRefEnd(t, 3); end < len(t) {
+				predicate, _ := filterIR(t, end)
+				target = ir.FilterRef{Kind: "filter", Source: target, Predicate: predicate}
+			}
+			return ir.CardEffect{NodeBase: base, Kind: "summon_copies", Owner: "own", Target: target, Output: "summoned"}, nil
+		}
 		return ir.CardEffect{NodeBase: base, Kind: "summon", Owner: "own", Count: intAt(s, 1), CardID: intToken(t[3]), Output: "summoned"}, nil
 	case "damage", "heal":
 		end := valueRefEnd(t, 1)
@@ -497,8 +505,8 @@ func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 		case "form":
 			terms = append(terms, ir.FieldPredicate{Kind: "has_form", Form: t[j+1].Value})
 			j += 2
-		case "life":
-			terms = append(terms, ir.FieldPredicate{Kind: "compare", Field: "life", Op: compareOp(t[j+1].Value), Value: intToken(t[j+2])})
+		case "life", "cost":
+			terms = append(terms, ir.FieldPredicate{Kind: "compare", Field: t[j].Value, Op: compareOp(t[j+1].Value), Value: intToken(t[j+2])})
 			j += 3
 		}
 		if j < end && t[j].Value == "and" {

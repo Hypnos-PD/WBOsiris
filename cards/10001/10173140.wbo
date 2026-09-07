@@ -6,7 +6,14 @@ card 10173140 {
     stats 2/4;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 90071210 to hand;
+            add 1 card 90071220 to hand;
+        }
+        evolve {
+            choose target from own.hand where type follower and trait artifact and cost <= 5;
+            summon copies of target;
+        }
     }
 
     meta {
