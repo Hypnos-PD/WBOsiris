@@ -133,6 +133,21 @@ func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 		return []*instance{self}
 	case ir.BindingRef:
 		return g.boundInstances(f[r.Name])
+	case ir.DestructionBatchRef:
+		var targets []*instance
+		seen := map[*instance]bool{}
+		for _, ref := range r.Targets {
+			for _, target := range g.fromRef(ref, self, f) {
+				if !g.chargeQueryVisits(1) {
+					return nil
+				}
+				if target != nil && !seen[target] {
+					seen[target] = true
+					targets = append(targets, target)
+				}
+			}
+		}
+		return targets
 	case ir.ZoneRef:
 		var out []*instance
 		if r.Side == "oppo" {

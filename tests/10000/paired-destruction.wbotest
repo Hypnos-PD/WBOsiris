@@ -1,0 +1,93 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Reapers Deathslash destroys an allied and enemy follower" {
+    seed 3101;
+    state {
+        player own { pp 1/1; hand { spell source = 10151310; } field { follower ally = 10001110; } }
+        player oppo { field { follower enemy = 10001110; } }
+    }
+    action { play source; select ally; select enemy; }
+    expect { legal; own.pp == 0/1; source.zone == graveyard; ally.zone == graveyard; enemy.zone == graveyard; own.shadows == 2; oppo.shadows == 1; rng.consumed == 0; }
+}
+
+scenario "Reapers Deathslash cannot be played without an enemy target" {
+    seed 3102;
+    state { player own { pp 1/1; hand { spell source = 10151310; } field { follower ally = 10001110; } } }
+    action { play source; }
+    expect { illegal target_required; unchanged; own.pp == 1/1; source.zone == hand; ally.zone == field; }
+}
+
+scenario "Reapers Deathslash cannot be played without an allied target" {
+    seed 3103;
+    state {
+        player own { pp 1/1; hand { spell source = 10151310; } }
+        player oppo { field { follower enemy = 10001110; } }
+    }
+    action { play source; }
+    expect { illegal target_required; unchanged; own.pp == 1/1; enemy.zone == field; }
+}
+
+scenario "Reapers Deathslash preserves an allied super evolved follower" {
+    seed 3104;
+    state {
+        player own { pp 1/1; hand { spell source = 10151310; } field { follower ally = 10001110 { super_evolved; } } }
+        player oppo { field { follower enemy = 10001110 { super_evolved; } } }
+    }
+    action { play source; select ally; select enemy; }
+    expect { legal; ally.zone == field; enemy.zone == graveyard; own.pp == 0/1; own.shadows == 1; oppo.shadows == 1; }
+}
+
+scenario "Lloyd controls only the enemy selection of Reapers Deathslash" {
+    seed 3105;
+    state {
+        player own { pp 1/1; hand { spell source = 10151310; } field { follower ally = 10001110 { aura; } } }
+        player oppo { field { follower lloyd = 90074120; follower other = 10001110; } }
+    }
+    action { play source; select ally; select lloyd; }
+    expect { legal; ally.zone == graveyard; lloyd.zone == graveyard; other.zone == field; own.pp == 0/1; }
+}
+
+scenario "Protected enemy targets make the whole paired destruction illegal" {
+    seed 3106;
+    state {
+        player own { pp 1/1; hand { spell source = 10151310; } field { follower ally = 10001110; } }
+        player oppo { field { follower enemy = 10001110 { stealth; } } }
+    }
+    action { play source; }
+    expect { illegal target_required; unchanged; ally.zone == field; enemy.zone == field; own.pp == 1/1; }
+}
+
+scenario "Rage of Serpents damages the opposing leader and then its owner" {
+    seed 3107;
+    state { player own { pp 2/2; hand { spell source = 10153310; } } }
+    action { play source; select oppo.leader; }
+    expect { legal; own.leader.life == 18; oppo.leader.life == 17; own.pp == 0/2; source.zone == graveyard; }
+}
+
+scenario "Rage of Serpents still deals self damage when a barrier prevents damage" {
+    seed 3108;
+    state {
+        player own { pp 2/2; hand { spell source = 10153310; } }
+        player oppo { field { follower enemy = 10001110 { barrier; } } }
+    }
+    action { play source; select enemy; }
+    expect { legal; own.leader.life == 18; oppo.leader.life == 20; enemy.stats == 2/2; enemy lacks barrier; own.pp == 0/2; }
+}
+
+scenario "Rage of Serpents stops after lethal opposing leader damage" {
+    seed 3109;
+    state {
+        player own { pp 2/2; leader 2/20; hand { spell source = 10153310; } }
+        player oppo { leader 3/20; }
+    }
+    action { play source; select oppo.leader; }
+    expect { legal; own.leader.life == 2; oppo.leader.life == 0; events contains ordered { damage oppo.leader 3; game_end own; } }
+}
+
+scenario "Rage of Serpents can lose the game through its self damage" {
+    seed 3110;
+    state { player own { pp 2/2; leader 2/20; hand { spell source = 10153310; } } }
+    action { play source; select oppo.leader; }
+    expect { legal; own.leader.life == 0; oppo.leader.life == 17; events contains ordered { damage oppo.leader 3; damage own.leader 2; game_end oppo; } }
+}

@@ -5,7 +5,9 @@ card 10153310 {
     cost 2;
 
     effect {
-        unplayable;
+        require target from oppo.field.followers or oppo.leader;
+        damage target 3;
+        damage own.leader 2;
     }
 
     meta {

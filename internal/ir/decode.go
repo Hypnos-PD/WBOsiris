@@ -903,7 +903,11 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
 			return nil, err
 		}
-		r, err := decodeRef(v.Target)
+		decodeTarget := decodeRef
+		if v.Kind == "destroy" {
+			decodeTarget = decodeDestructionTarget
+		}
+		r, err := decodeTarget(v.Target)
 		if err != nil {
 			return nil, err
 		}
@@ -913,6 +917,9 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		var p Predicate
 		if len(v.Predicate) > 0 {
 			p, err = decodePredicate(v.Predicate)
+		}
+		if _, batch := r.(DestructionBatchRef); batch && len(v.Predicate) != 0 {
+			return nil, fmt.Errorf("destruction batch does not accept a predicate")
 		}
 		var amountExpr, attackExpr, lifeExpr NumericExpr
 		if len(v.AmountValue) > 0 {

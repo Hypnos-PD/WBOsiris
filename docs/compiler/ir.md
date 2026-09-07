@@ -175,6 +175,16 @@ IntrinsicState =
 
 ## 值、集合与绑定
 
+`DestructionBatchRef { kind: "destruction_batch", targets: [SelfRef | BindingRef] }`
+仅允许直接作为 `destroy.target`；至少两个引用，不允许重复引用、嵌套批次或附加
+谓词。它在执行时合并绑定中的实例、去重后交给一次破坏操作，保持单个死亡批次。
+源语言 `destroy ally, enemy;` 编译成一个带该目标的 `TargetEffect`，输出仍为 `destroyed`。
+
+多个独立必选目标的来源限于区域查询、其静态筛选、排除 `self` 或混合角色集合。
+选择仅改变绑定，不改变这些候选，因此可在同一指令支付前检查所有 `require`。
+若前置操作改变了状态，或后续来源依赖选择结果，则仍返回 `unsupported_preflight`；
+条件分支中的状态变更也会使后续前置查询失效。
+
 当前可执行 IR 的混合选择来源为 `CharacterSetRef { kind: "characters", side: Side }`，
 仅允许直接用作选择节点的 `source`。它表示指定方的场上随从，随后附加该方主战者；
 不能嵌入 `filter`、`exclude` 或附带 `extremum`。`side` 在此处相对能力来源解释。

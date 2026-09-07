@@ -20,6 +20,13 @@ func validateMixedBindings(body []*syntax.Statement, inherited map[string]bool, 
 			continue
 		}
 		h := s.Word(0)
+		if targets, batch := destructionBatchTargets(t); batch {
+			for _, target := range targets {
+				if mixed[target.Value] {
+					diag(ds, "WBO-E008-TYPE-MISMATCH", "错误", "批次破坏不能包含主战者混合绑定", target.Span)
+				}
+			}
+		}
 		if set("choose", "require", "random")[h] && len(t) > 1 {
 			mixed[t[1].Value] = len(t) >= 12 && t[8].Value == "or"
 			continue

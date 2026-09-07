@@ -604,6 +604,15 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 	case "restore":
 		ok = len(t) == 4 && set("own", "oppo")[t[1].Value] && t[2].Value == "." && t[3].Value == "pp"
 	case "destroy", "banish", "discard":
+		if targets, batch := destructionBatchTargets(t); batch {
+			for _, target := range targets {
+				if target.Value != "self" && (!bindings[target.Value] || set("own", "oppo", "field")[target.Value]) {
+					diag(ds, "WBO-E009-BINDING-SCOPE", "错误", "批次破坏目标必须是已定义绑定或 self", target.Span)
+				}
+			}
+			ok = true
+			break
+		}
 		end, good := parseValueRef(t, 1)
 		if h == "discard" && good && (end == 4 && t[3].Value == "leader" || end == 2 && t[1].Value == "leaders") {
 			good = false

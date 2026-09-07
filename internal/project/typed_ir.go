@@ -394,6 +394,14 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		e := ir.TargetEffect{NodeBase: base, Kind: h, Target: valueRefIR(t, 1)}
 		if h == "destroy" {
 			e.Output = "destroyed"
+			if targets, batch := destructionBatchTargets(t); batch {
+				ref := ir.DestructionBatchRef{Kind: "destruction_batch"}
+				for _, target := range targets {
+					ref.Targets = append(ref.Targets, valueRefIR([]syntax.Token{target}, 0))
+				}
+				e.Target = ref
+				return e, nil
+			}
 		}
 		end := valueRefEnd(t, 1)
 		if end < len(t) {

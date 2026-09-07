@@ -1158,61 +1158,64 @@ func findAbility(card *ir.Card, kind string) *ir.Ability {
 }
 
 func (g *game) preflightRequirements(body []ir.Effect, self *instance, bindings frame, querySafe bool) string {
-	return g.preflightRequirementsAtDepth(body, self, bindings, querySafe, 1)
+	_, code := g.preflightRequirementSequence(body, self, bindings, querySafe, 1)
+	return code
 }
 
-func (g *game) preflightRequirementsAtDepth(body []ir.Effect, self *instance, bindings frame, querySafe bool, depth int) string {
+func (g *game) preflightRequirementSequence(body []ir.Effect, self *instance, bindings frame, querySafe bool, depth int) (bool, string) {
 	if g.budget != nil && !g.budget.observeStack(depth) {
-		return executionBudgetExceeded
+		return false, executionBudgetExceeded
 	}
 	for _, effect := range body {
 		switch e := effect.(type) {
 		case ir.SelectionEffect:
 			if e.Kind == "require" {
-				if !querySafe {
-					return "unsupported_preflight"
+				if !querySafe || !independentSelectionSource(e.Source) {
+					return false, "unsupported_preflight"
 				}
 				candidates := g.selectionValues(e, self, bindings)
 				if g.budget != nil && (g.budget.exceeded || !g.budget.chargeCandidates(uint64(len(candidates)))) {
-					return executionBudgetExceeded
+					return false, executionBudgetExceeded
 				}
 				if len(candidates) < e.SelectionCount() {
-					return "target_required"
+					return false, "target_required"
 				}
-				querySafe = false
-			} else if e.Kind != "random_choose" {
-				querySafe = false
 			}
 		case ir.IfEffect:
+			if !querySafe && (containsRequire(e.Then) || containsRequire(e.Else)) {
+				return false, "unsupported_preflight"
+			}
 			branch := e.Else
 			if g.condition(e.Condition, self) {
 				branch = e.Then
 			}
-			if code := g.preflightRequirementsAtDepth(branch, self, bindings, querySafe, depth+1); code != "" {
-				return code
+			var code string
+			querySafe, code = g.preflightRequirementSequence(branch, self, bindings, querySafe, depth+1)
+			if code != "" {
+				return false, code
 			}
 		case ir.ModeEffect:
 			for _, option := range e.Options {
 				if containsRequire(option.Body) {
-					return "unsupported_preflight"
+					return false, "unsupported_preflight"
 				}
 			}
 			querySafe = false
 		case ir.RepeatEffect:
 			if containsRequire(e.Body) {
-				return "unsupported_preflight"
+				return false, "unsupported_preflight"
 			}
 			querySafe = false
 		case ir.PayResourceEffect:
 			if containsRequire(e.OnPaid) {
-				return "unsupported_preflight"
+				return false, "unsupported_preflight"
 			}
 			querySafe = false
 		default:
 			querySafe = false
 		}
 	}
-	return ""
+	return querySafe, ""
 }
 
 func containsRequire(body []ir.Effect) bool {

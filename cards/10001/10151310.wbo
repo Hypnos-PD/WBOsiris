@@ -5,7 +5,9 @@ card 10151310 {
     cost 1;
 
     effect {
-        unplayable;
+        require ally from own.field.followers;
+        require enemy from oppo.field.followers;
+        destroy ally, enemy;
     }
 
     meta {

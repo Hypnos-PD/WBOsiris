@@ -259,6 +259,13 @@ type CharacterSetRef struct {
 
 func (r CharacterSetRef) refKind() string { return r.Kind }
 
+type DestructionBatchRef struct {
+	Kind    string `json:"kind"`
+	Targets []Ref  `json:"targets"`
+}
+
+func (r DestructionBatchRef) refKind() string { return r.Kind }
+
 type ZoneRef struct {
 	Kind   string `json:"kind"`
 	Side   string `json:"side,omitempty"`

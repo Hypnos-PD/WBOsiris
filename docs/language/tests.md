@@ -172,6 +172,9 @@ damage all.leaders 5;
 多选可写为 `select target, oppo.leader;`，实例和主战者合计必须满足请求数量，
 每个目标只能出现一次。测试中的 `own`、`oppo` 指初始状态中的固定席位。
 
+如果卡牌依次声明两个独立的选择，则分别响应两个请求，例如死神挥刀使用
+`play source; select ally; select enemy;`。这与一个请求内的多选不同。
+
 用于验证回合时点的测试可以使用测试驱动动作：
 
 ```wbotest

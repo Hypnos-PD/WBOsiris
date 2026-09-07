@@ -342,7 +342,9 @@ count_source      = target_set | binding_name ; (* binding must already be defin
 repeat_statement  = "repeat" , effect_amount , effect_block ;
 damage_distribution = "distributed" , ["overflow" , participant , "." , "leader"] ;
 
-object_operation  = ("destroy" | "banish" | "discard") , value_ref , [where_clause] , ";" ;
+object_operation  = ("destroy" | "banish" | "discard") , value_ref , [where_clause] , ";"
+                  | "destroy" , batch_target , "," , batch_target , {"," , batch_target} , ";" ;
+batch_target      = binding_name | "self" ;
 ability_operation = "remove" , ability , "from" , value_ref , ["other"] , [where_clause] , ";" ;
 return_operation  = "return" , value_ref , "to" , ("hand" | "deck") , ";" ;
 evolve_operation  = ("evolve" | "superevolve") , value_ref , "silent" , ";" ;
