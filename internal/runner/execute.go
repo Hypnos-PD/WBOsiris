@@ -771,7 +771,7 @@ func (g *game) consumeEarthSigil(self *instance, n int) bool {
 type deathRecord struct {
 	instance  *instance
 	owner     *player
-	abilities []int
+	abilities []runtimeAbility
 }
 
 func (g *game) resolveDeathBatch(explicit []*instance) []*instance {
@@ -785,7 +785,7 @@ func (g *game) resolveDeathBatch(explicit []*instance) []*instance {
 		p := g.player(side.name)
 		for _, i := range p.field {
 			if marked[i] || i.card.CardType == "follower" && i.life <= 0 {
-				abilities := append([]int(nil), g.triggerIndex.abilities("lastwords", i)...)
+				abilities := append([]runtimeAbility(nil), g.triggerIndex.abilities("lastwords", i)...)
 				deaths = append(deaths, deathRecord{instance: i, owner: p, abilities: abilities})
 			}
 		}
@@ -814,9 +814,8 @@ func (g *game) resolveDeathBatch(explicit []*instance) []*instance {
 		g.queueEventTriggers(event, death.instance, "")
 	}
 	for _, death := range deaths {
-		for _, abilityIndex := range death.abilities {
-			ability := death.instance.card.Abilities[abilityIndex]
-			g.triggers = append(g.triggers, triggerInvocation{body: ability.Body, blockID: abilityBlockID(death.instance.card.ID, ability.ID), self: death.instance, bindings: frame{}})
+		for _, ability := range death.abilities {
+			g.triggers = append(g.triggers, triggerInvocation{body: ability.Body, blockID: ability.blockID, self: death.instance, bindings: frame{}})
 		}
 	}
 	destroyed := make([]*instance, 0, len(deaths))

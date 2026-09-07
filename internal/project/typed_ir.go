@@ -333,6 +333,18 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			return ir.CardEffect{NodeBase: base, Kind: "summon_copies", Owner: "own", Target: target, Output: "summoned"}, nil
 		}
 		return ir.CardEffect{NodeBase: base, Kind: "summon", Owner: "own", Count: intAt(s, 1), CardID: intToken(t[3]), Output: "summoned"}, nil
+	case "grant":
+		target := valueRefIR(t, 1)
+		if end := valueRefEnd(t, 1); end < len(t) {
+			predicate, _ := filterIR(t, end)
+			target = ir.FilterRef{Kind: "filter", Source: target, Predicate: predicate}
+		}
+		labels, statement, err := grantParts(s)
+		if err != nil {
+			return nil, err
+		}
+		ability, err := compileAbility(statement, sid, newScope(base.ID, ids), ids)
+		return ir.GrantEffect{NodeBase: base, Kind: "grant_ability", Target: target, Ability: ability, Labels: labels}, err
 	case "damage", "heal":
 		end := valueRefEnd(t, 1)
 		e := ir.TargetEffect{NodeBase: base, Kind: h, Target: valueRefIR(t, 1)}

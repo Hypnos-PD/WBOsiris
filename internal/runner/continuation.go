@@ -17,7 +17,7 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.18.0"
+const continuationVersion = "0.19.0"
 
 type ContinuationBindings struct {
 	ID     string              `json:"id"`
@@ -101,6 +101,7 @@ type ContinuationPlayer struct {
 }
 
 type ContinuationEntity struct {
+	Grants            []string                 `json:"grants,omitempty"`
 	Counters          map[string]int           `json:"counters,omitempty"`
 	FusedThisTurn     bool                     `json:"fusedThisTurn"`
 	ID                string                   `json:"id"`
@@ -452,7 +453,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 			ID:                i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life,
 			Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i),
 			Engaged: i.engaged, SummoningSick: i.summoningSick, Evolved: i.evolved,
-			SuperEvolved: i.superEvolved, Departed: i.departed, FusedThisTurn: i.fusedThisTurn, DamageReduction: i.damageReduction, Abilities: abilities, Materials: instanceIDs(i.materials),
+			SuperEvolved: i.superEvolved, Departed: i.departed, FusedThisTurn: i.fusedThisTurn, DamageReduction: i.damageReduction, Abilities: abilities, Materials: instanceIDs(i.materials), Grants: grantIDs(i),
 		})
 	}
 	for _, event := range g.events {
@@ -473,6 +474,10 @@ func snapshotContinuationPlayer(p player) ContinuationPlayer {
 }
 
 func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) {
+	grants, err := indexGrants(cards)
+	if err != nil {
+		return nil, err
+	}
 	g := &game{cards: cards, instances: map[string]*instance{}, legal: saved.Legal, illegal: saved.Illegal, unchanged: saved.Unchanged, rng: ruleset.NewRNG(0), serial: saved.Serial, eventSequence: saved.EventSequence, deathBatchSerial: saved.DeathBatchSerial, revision: saved.Revision, turn: saved.Turn, firstPlayer: saved.FirstPlayer, phase: saved.Phase, turnTransition: saved.TurnTransition, endingSide: saved.EndingSide, gameOver: saved.GameOver, winner: saved.Winner}
 	if saved.Serial < 0 || saved.Serial < generatedInstanceSerial(saved.Instances) {
 		return nil, fmt.Errorf("invalid continuation instance serial")
@@ -513,6 +518,13 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 			attack: entity.Attack, life: entity.Life, cost: entity.Cost, earthsigil: entity.Earthsigil, countdown: entity.Countdown,
 			attacksUsed: entity.AttacksUsed, attackLimitValue: limit, engaged: entity.Engaged, summoningSick: entity.SummoningSick,
 			evolved: entity.Evolved, superEvolved: entity.SuperEvolved, departed: entity.Departed, fusedThisTurn: entity.FusedThisTurn, damageReduction: entity.DamageReduction, abilities: map[string]bool{},
+		}
+		for _, id := range entity.Grants {
+			grant, ok := grants[id]
+			if !ok || card.CardType != "follower" {
+				return nil, fmt.Errorf("invalid continuation grant")
+			}
+			i.grants = append(i.grants, grant)
 		}
 		for _, ability := range entity.Abilities {
 			if ability == "" || i.abilities[ability] {
@@ -556,7 +568,6 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 			source.materials = append(source.materials, material)
 		}
 	}
-	var err error
 	if g.own, err = restorePlayer(saved.Own, g.instances); err != nil {
 		return nil, err
 	}
@@ -933,6 +944,13 @@ func addBlock(blocks map[string][]ir.Effect, id string, body []ir.Effect) error 
 	for _, effect := range body {
 		nodeID := ir.EffectBase(effect).ID
 		switch e := effect.(type) {
+		case ir.GrantEffect:
+			if nodeID == "" {
+				return fmt.Errorf("grant has an unstable node ID")
+			}
+			if err := addBlock(blocks, nestedBlockID(nodeID, "granted"), e.Ability.Body); err != nil {
+				return err
+			}
 		case ir.RepeatEffect:
 			if nodeID == "" {
 				return fmt.Errorf("repeat block has an unstable node ID")

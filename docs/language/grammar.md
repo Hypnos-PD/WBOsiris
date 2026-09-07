@@ -134,11 +134,18 @@ effect_statement  = intrinsic_statement
                   | repeat_statement
                   | resource_block
                   | mode_block
+                  | grant_block
                   | operation ;
 
 counter_declaration = "counter" , counter_name , integer , ";" ;
 counter_name      = identifier ; (* [a-z][a-z0-9_]{0,31}; unique, outermost effect only *)
 counter_ref       = "self" , "." , "counter" , "." , counter_name ;
+
+grant_block       = "grant" , value_ref , [where_clause] , "{" ,
+                    {"label" , locale_id , text_literal , ";"} ,
+                    granted_ability , "}" ;
+granted_ability   = "lastwords" , effect_block
+                  | "when" , participant , "turn" , ("starts" | "ends") , effect_block ;
 
 intrinsic_statement = ability , ";"
                     | card_restriction , ";"

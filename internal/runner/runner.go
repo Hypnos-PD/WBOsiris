@@ -21,6 +21,7 @@ type Result struct {
 func (r Result) Passed() bool { return len(r.Failures) == 0 }
 
 type instance struct {
+	grants                                                                       []ir.GrantEffect
 	counters                                                                     map[string]int
 	id, alias, zone                                                              string
 	card                                                                         *ir.Card

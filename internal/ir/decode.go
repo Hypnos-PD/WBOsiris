@@ -783,6 +783,31 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			count = *v.Count
 		}
 		return DrawEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.SourceZone, v.Output, count, v.All, p}, err
+	case "grant_ability":
+		var v struct {
+			NodeBase
+			Labels          map[string]string
+			Kind            string
+			Target, Ability json.RawMessage
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
+			return nil, err
+		}
+		target, err := decodeRef(v.Target)
+		if err != nil {
+			return nil, err
+		}
+		ability, err := decodeAbility(v.Ability, nodeIDs)
+		if err != nil {
+			return nil, err
+		}
+		if !ValidGrantedTrigger(ability.Trigger) || ability.Relation != "independent" || !ValidChoiceLabels(v.Labels) || !validGrantedBody(ability.Body) {
+			return nil, fmt.Errorf("invalid granted ability")
+		}
+		return GrantEffect{NodeBase: v.NodeBase, Kind: v.Kind, Target: target, Ability: ability, Labels: v.Labels}, nil
 	case "summon_copies":
 		var v struct {
 			NodeBase
@@ -1321,6 +1346,11 @@ func validateCardRefs(c Card, cards map[int]bool) error {
 	walk = func(es []Effect) error {
 		for _, e := range es {
 			switch x := e.(type) {
+			case GrantEffect:
+				granted := Card{CardType: "follower", Abilities: []Ability{x.Ability}}
+				if err := validateCardRefs(granted, cards); err != nil {
+					return err
+				}
 			case CardEffect:
 				if x.CardID != 0 && (!validCardID(x.CardID) || !cards[x.CardID]) {
 					return fmt.Errorf("bad card ref %d", x.CardID)

@@ -47,6 +47,10 @@ func validateCounterRefs(card Card) error {
 	walk = func(effects []Effect) error {
 		for _, effect := range effects {
 			switch e := effect.(type) {
+			case GrantEffect:
+				if err := validateCounterRefs(Card{Abilities: []Ability{e.Ability}}); err != nil {
+					return err
+				}
 			case AdjustEffect:
 				if e.Kind == "adjust_counter" {
 					if err := check(e.Field); err != nil {

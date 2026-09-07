@@ -73,7 +73,7 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 		if (h == "attack" || h == "clash" || (h == "evolve" || h == "superevolve") && len(b) == 1) && ctx.cardType != "follower" {
 			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", h+" 只允许用于随从", s.Span)
 		}
-		if ctx.top && ctx.cardType != "spell" && (isPlainOperation(s) || h == "repeat") {
+		if ctx.top && ctx.cardType != "spell" && (isPlainOperation(s) || h == "repeat" || h == "grant") {
 			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", "随从或护符的最外层操作没有执行时点", s.Span)
 		}
 		if h == "transform" && !ctx.fusion && !ctx.spellboost {
@@ -86,6 +86,19 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 			diag(ds, "WBO-E008-TYPE-MISMATCH", "错误", "transform 当前只允许以 self 为目标", s.Span)
 		}
 		switch h {
+		case "grant":
+			if _, ability, err := grantParts(s); err == nil {
+				valid := ability.Word(0) == "lastwords"
+				if ability.Word(0) == "when" {
+					end, _, ok := parseEventPattern(ability.Tokens())
+					valid = ok && end == len(ability.Tokens()) && ir.ValidGrantedTrigger(eventPatternIR(ability.Tokens()))
+				}
+				if !valid || len(ability.Blocks()) != 1 || repeatHasRequire(ability.Blocks()[0]) {
+					shapeError(ds, s, "附加能力只允许 lastwords 或回合开始/结束触发，不允许 require")
+				}
+				strictEffectBlock([]*syntax.Statement{ability}, effectContext{cardType: "follower"}, ds)
+			}
+			continue
 		case "counter":
 			if !ctx.top {
 				shapeError(ds, s, "counter 只能声明在 effect 最外层")

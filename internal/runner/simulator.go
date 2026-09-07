@@ -182,26 +182,27 @@ type PlayerView struct {
 }
 
 type EntityView struct {
-	Counters        map[string]int `json:"counters,omitempty"`
-	Fusion          *FusionView    `json:"fusion,omitempty"`
-	InstanceID      string         `json:"instanceId"`
-	Alias           string         `json:"alias,omitempty"`
-	CardID          int            `json:"cardId"`
-	Cost            int            `json:"cost"`
-	CardType        string         `json:"cardType"`
-	Attack          int            `json:"attack"`
-	Life            int            `json:"life,omitempty"`
-	Countdown       int            `json:"countdown,omitempty"`
-	Earthsigil      int            `json:"earthsigil,omitempty"`
-	DamageReduction int            `json:"damageReduction,omitempty"`
-	Engaged         bool           `json:"engaged,omitempty"`
-	AttacksUsed     int            `json:"attacksUsed"`
-	AttackLimit     int            `json:"attackLimit"`
-	SummoningSick   bool           `json:"summoningSick"`
-	Evolved         bool           `json:"evolved,omitempty"`
-	SuperEvolved    bool           `json:"superEvolved,omitempty"`
-	Keywords        []string       `json:"keywords,omitempty"`
-	Traits          []string       `json:"traits,omitempty"`
+	GrantedAbilities []GrantedAbilityView `json:"grantedAbilities,omitempty"`
+	Counters         map[string]int       `json:"counters,omitempty"`
+	Fusion           *FusionView          `json:"fusion,omitempty"`
+	InstanceID       string               `json:"instanceId"`
+	Alias            string               `json:"alias,omitempty"`
+	CardID           int                  `json:"cardId"`
+	Cost             int                  `json:"cost"`
+	CardType         string               `json:"cardType"`
+	Attack           int                  `json:"attack"`
+	Life             int                  `json:"life,omitempty"`
+	Countdown        int                  `json:"countdown,omitempty"`
+	Earthsigil       int                  `json:"earthsigil,omitempty"`
+	DamageReduction  int                  `json:"damageReduction,omitempty"`
+	Engaged          bool                 `json:"engaged,omitempty"`
+	AttacksUsed      int                  `json:"attacksUsed"`
+	AttackLimit      int                  `json:"attackLimit"`
+	SummoningSick    bool                 `json:"summoningSick"`
+	Evolved          bool                 `json:"evolved,omitempty"`
+	SuperEvolved     bool                 `json:"superEvolved,omitempty"`
+	Keywords         []string             `json:"keywords,omitempty"`
+	Traits           []string             `json:"traits,omitempty"`
 }
 
 type FusionView struct {
@@ -388,7 +389,7 @@ func entityViews(instances []*instance, revealMaterials bool) []EntityView {
 				keywords = append(keywords, keyword)
 			}
 		}
-		for _, ability := range i.card.Abilities {
+		for ability := range i.triggeredAbilities() {
 			kind := ir.TriggerKind(ability.Trigger)
 			if kind == "lastwords" {
 				keywords = appendUnique(keywords, "lastwords")
@@ -404,9 +405,10 @@ func entityViews(instances []*instance, revealMaterials bool) []EntityView {
 			traits = appendUnique(traits, "departed")
 		}
 		views = append(views, EntityView{
-			Counters:   maps.Clone(i.counters),
-			Fusion:     fusionView(i, revealMaterials),
-			InstanceID: i.id, Alias: i.alias, CardID: i.card.ID, CardType: i.card.CardType, Cost: i.cost,
+			GrantedAbilities: grantedAbilityViews(i),
+			Counters:         maps.Clone(i.counters),
+			Fusion:           fusionView(i, revealMaterials),
+			InstanceID:       i.id, Alias: i.alias, CardID: i.card.ID, CardType: i.card.CardType, Cost: i.cost,
 			Attack: i.attack, Life: i.life, Countdown: i.countdown, Earthsigil: i.earthsigil, DamageReduction: i.damageReduction,
 			Engaged: i.engaged, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i), SummoningSick: i.summoningSick,
 			Evolved: i.evolved, SuperEvolved: i.superEvolved, Keywords: keywords, Traits: traits,

@@ -334,6 +334,28 @@ buff summoned +1/+1;
 选择条件中的 `cost` 是当前费用：费用增加到 6 的创造物不满足 `cost <= 5`，
 参见[当前费用筛选的官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#bxi2b429pl7)。
 
+`grant 对象 [where ...] { 能力 }` 给手牌或战场中的每个随从附加一个能力。
+当前支持谢幕曲和回合开始、结束触发。每次赋予独立叠加，在原生能力之后按赋予顺序
+发动；后来入场的随从不会自动获得。可用 `label` 提供卡牌详情中的本地化效果文本。
+
+```wbo
+require targets from own.hand where type follower and trait artifact and cost <= 5 count 2;
+summon copies of targets;
+grant summoned {
+    label chs "对手的回合结束时，破坏本卡牌。";
+    when oppo turn ends {
+        destroy self;
+    }
+}
+```
+
+附加能力中的 `self` 是获得能力的随从，`own`、`oppo` 按该随从的控制者解释。
+能力使用独立绑定作用域，不捕获赋予时的 `target`、`summoned` 或其他局部变量，
+不能使用前置合法性检查 `require`，执行时需要选目标则使用 `choose`。
+效果赋予后不依赖施法者继续在场。副本继承已获能力；变身和从战场返回手牌、牌组
+会清除它们。重新召唤同名卡牌只使用原始定义，不继承旧实例的附加能力。
+离场后取消尚未发动的场上回合监听；已经因破坏进入队列的谢幕曲仍会执行。
+
 `damage`、`heal` 的数值可写为 `count(集合 [where 筛选])`，例如：
 
 ```wbo

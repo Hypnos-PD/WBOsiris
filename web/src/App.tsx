@@ -27,6 +27,7 @@ const initialPage = (): "home" | "battle" | "decks" | "replays" | "rooms" => {
 };
 
 type Card = {
+  grantedAbilities?: Entity["grantedAbilities"];
   counters?: Record<string, number>;
   fusion?: Entity["fusion"];
   id: string;
@@ -130,6 +131,7 @@ const displayCardFor = (entity: Entity, catalog = fallbackCatalog): Card => {
     summoningSick: entity.summoningSick,
     fusion: entity.fusion,
     counters: entity.counters,
+    grantedAbilities: entity.grantedAbilities,
   };
 };
 
@@ -1173,6 +1175,11 @@ export function App() {
                 )}
             </div>
             <CounterValues counters={selected.counters}/>
+            {selected.grantedAbilities?.map((ability, index) => (
+              <p className="granted-ability" key={index}>
+                {ability.labels?.chs ?? ability.labels?.eng ?? (ability.kind === "lastwords" ? "谢幕曲" : "回合触发能力")}
+              </p>
+            ))}
             <FusionDetails fusion={selected.fusion} catalog={catalog}/>
           </div>
         </aside>

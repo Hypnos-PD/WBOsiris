@@ -1,4 +1,5 @@
 export type Entity = {
+  grantedAbilities?: { kind: string; labels?: Record<string, string> }[];
   counters?: Record<string, number>;
   fusion?: FusionState;
   instanceId: string;

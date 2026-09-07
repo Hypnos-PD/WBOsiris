@@ -3,7 +3,7 @@ package runner
 import "wbo/internal/ir"
 
 type triggerIndex struct {
-	byKind map[string]map[string][]int
+	byKind map[string]map[string][]runtimeAbility
 }
 
 // 索引只保存候选位置，实际顺序始终以当前场面为准。
@@ -13,17 +13,17 @@ func (x *triggerIndex) add(i *instance) {
 		return
 	}
 	if x.byKind == nil {
-		x.byKind = map[string]map[string][]int{}
+		x.byKind = map[string]map[string][]runtimeAbility{}
 	}
-	for abilityIndex, ability := range i.card.Abilities {
+	for ability := range i.triggeredAbilities() {
 		key := indexedTriggerKind(ability.Trigger)
 		if key == "" {
 			continue
 		}
 		if x.byKind[key] == nil {
-			x.byKind[key] = map[string][]int{}
+			x.byKind[key] = map[string][]runtimeAbility{}
 		}
-		x.byKind[key][i.id] = append(x.byKind[key][i.id], abilityIndex)
+		x.byKind[key][i.id] = append(x.byKind[key][i.id], ability)
 	}
 }
 
@@ -42,9 +42,9 @@ func (x *triggerIndex) remove(i *instance) {
 func (g *game) detachFieldSource(i *instance) {
 	g.triggerIndex.remove(i)
 	blocks := map[string]bool{}
-	for _, ability := range i.card.Abilities {
+	for ability := range i.triggeredAbilities() {
 		if _, ok := ability.Trigger.(ir.EventTrigger); ok {
-			blocks[abilityBlockID(i.card.ID, ability.ID)] = true
+			blocks[ability.blockID] = true
 		}
 	}
 	kept := g.triggers[:0]
@@ -56,7 +56,7 @@ func (g *game) detachFieldSource(i *instance) {
 	g.triggers = kept
 }
 
-func (x *triggerIndex) abilities(kind string, source *instance) []int {
+func (x *triggerIndex) abilities(kind string, source *instance) []runtimeAbility {
 	if x == nil || source == nil {
 		return nil
 	}
@@ -76,7 +76,7 @@ func indexedTriggerKind(trigger ir.Trigger) string {
 }
 
 func (g *game) rebuildTriggerIndex() {
-	g.triggerIndex = triggerIndex{byKind: map[string]map[string][]int{}}
+	g.triggerIndex = triggerIndex{byKind: map[string]map[string][]runtimeAbility{}}
 	for _, p := range []*player{&g.own, &g.oppo} {
 		for _, i := range p.field {
 			g.triggerIndex.add(i)
@@ -87,11 +87,10 @@ func (g *game) rebuildTriggerIndex() {
 func (g *game) queueEventTriggers(event ir.RuntimeEvent, subject *instance, binding string) bool {
 	for _, side := range g.orderedSides() {
 		for _, source := range side.field {
-			for _, abilityIndex := range g.triggerIndex.abilities(event.Kind, source) {
+			for _, ability := range g.triggerIndex.abilities(event.Kind, source) {
 				if !g.chargeQueryVisits(1) {
 					return false
 				}
-				ability := source.card.Abilities[abilityIndex]
 				trigger := ability.Trigger.(ir.EventTrigger)
 				if trigger.SelfOnly && subject != source {
 					continue
@@ -103,7 +102,7 @@ func (g *game) queueEventTriggers(event ir.RuntimeEvent, subject *instance, bind
 				if binding != "" && subject != nil {
 					bindings[binding] = []*instance{subject}
 				}
-				if !g.queueTrigger(triggerInvocation{body: ability.Body, blockID: abilityBlockID(source.card.ID, ability.ID), self: source, bindings: bindings}) {
+				if !g.queueTrigger(triggerInvocation{body: ability.Body, blockID: ability.blockID, self: source, bindings: bindings}) {
 					return false
 				}
 			}

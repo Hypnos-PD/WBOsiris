@@ -498,6 +498,8 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 		s.g.draw(e, self, bindings)
 	case ir.CardEffect:
 		s.g.execCardEffect(e, self, bindings)
+	case ir.GrantEffect:
+		s.g.grantAbility(e, self, bindings)
 	case ir.TargetEffect:
 		s.g.execTargetEffect(e, self, bindings)
 	case ir.AdjustEffect:
@@ -610,6 +612,7 @@ func deriveRuntimeID(parts ...string) string {
 }
 
 type instanceSnapshot struct {
+	Grants                              []string
 	Counters                            map[string]int
 	FusedThisTurn                       bool
 	ID, Zone                            string
@@ -670,6 +673,7 @@ func (g *game) snapshot() gameSnapshot {
 					abilities[name] = value
 				}
 				snapshot.Instances = append(snapshot.Instances, instanceSnapshot{
+					Grants:            grantIDs(i),
 					Counters:          maps.Clone(i.counters),
 					TemporaryKeywords: maps.Clone(i.temporaryKeywords),
 					TemporaryStats:    maps.Clone(i.temporaryStats),
@@ -708,6 +712,7 @@ func (g *game) clone() *game {
 	}
 	for id, original := range g.instances {
 		copy := *original
+		copy.grants = append([]ir.GrantEffect(nil), original.grants...)
 		copy.counters = maps.Clone(original.counters)
 		copy.temporaryKeywords = maps.Clone(original.temporaryKeywords)
 		copy.temporaryStats = maps.Clone(original.temporaryStats)

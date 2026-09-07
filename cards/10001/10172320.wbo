@@ -5,7 +5,18 @@ card 10172320 {
     cost 5;
 
     effect {
-        unplayable;
+        require targets from own.hand where type follower and trait artifact and cost <= 5 count 2;
+        summon copies of targets;
+        grant summoned {
+            label chs "对手的回合结束时，破坏本卡牌。";
+            label eng "At the end of your opponent's turn, destroy this card.";
+            label jpn "相手のターン終了時、これを破壊。";
+            label kor "상대방 턴 종료시, 이 추종자를 파괴.";
+            label cht "敵方的回合結束時，破壞這張卡片。";
+            when oppo turn ends {
+                destroy self;
+            }
+        }
     }
 
     meta {

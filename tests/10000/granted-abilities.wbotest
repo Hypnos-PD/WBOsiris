@@ -1,0 +1,72 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Resurgence needs two artifacts before paying cost" {
+    seed 3301;
+    state { player own { pp 5/5; hand { spell source = 10172320; follower target = 90072120; } } }
+    action { play source; }
+    expect { illegal target_required; unchanged; own.pp == 5/5; source.zone == hand; }
+}
+
+scenario "Resurgence cannot use an artifact raised to cost six" {
+    seed 3302;
+    state { player own { pp 5/5; hand { spell source = 10172320; follower a = 90072120; follower b = 90072110 { cost 6; } } } }
+    action { play source; }
+    expect { illegal target_required; unchanged; }
+}
+
+scenario "Resurgence copies both selected artifacts" {
+    seed 3303;
+    state { player own { pp 5/5; hand { spell source = 10172320; follower a = 90072110; follower b = 90072120; } } }
+    action { play source; select a, b; }
+    expect { legal; a.zone == hand; b.zone == hand; own.field count card 90072110 == 1; own.field count card 90072120 == 1; own.shadows == 1; }
+}
+
+scenario "Resurgence with one field slot retains both originals" {
+    seed 3304;
+    state { player own { pp 5/5; field { follower a = 10001110; follower b = 10001110; follower c = 10001110; follower d = 10001110; } hand { spell source = 10172320; follower first = 90072110; follower second = 90072120; } } }
+    action { play source; select second, first; }
+    expect { legal; first.zone == hand; second.zone == hand; own.field count card 90072110 == 1; own.field count card 90072120 == 0; own.shadows == 1; }
+}
+
+scenario "Resurgence on a full field creates no copies" {
+    seed 3305;
+    state { player own { pp 5/5; field { follower a = 10001110; follower b = 10001110; follower c = 10001110; follower d = 10001110; follower e = 10001110; } hand { spell source = 10172320; follower first = 90072110; follower second = 90072120; } } }
+    action { play source; select first, second; }
+    expect { legal; first.zone == hand; second.zone == hand; own.field count card 90072110 == 0; own.field count card 90072120 == 0; }
+}
+
+scenario "Liam summons three Enhanced Puppets" {
+    seed 3306;
+    state { player own { pp 9/9; hand { follower source = 10173130; } } }
+    action { play source; }
+    expect { legal; own.field count card 90071120 == 3; all own.field where card 90071120 have rush; }
+}
+
+scenario "Liam full field skips all puppet summons" {
+    seed 3307;
+    state { player own { pp 9/9; field { follower a = 10001110; follower b = 10001110; follower c = 10001110; follower d = 10001110; } hand { follower source = 10173130; } } }
+    action { play source; }
+    expect { legal; own.field count card 90071120 == 0; own.pp == 0/9; }
+}
+
+scenario "Liam evolution grants Ward only to allied Puppetry followers" {
+    seed 3308;
+    state { turn own 7; player own { ep 1; field { follower source = 10173130; follower target = 90071120; follower plain = 10001110; } } player oppo { field { follower enemy = 90071120; } } }
+    action { evolve source; }
+    expect { legal; target has ward; plain lacks ward; enemy lacks ward; source.stats == 9/9; }
+}
+
+scenario "Liam super evolution inherits the grants" {
+    seed 3309;
+    state { turn own 7; player own { sep 1; field { follower source = 10173130; follower target = 90071120; } } }
+    action { superevolve source; }
+    expect { legal; target has ward; source.stats == 10/10; }
+}
+
+scenario "Liam can evolve with no Puppetry followers" {
+    seed 3310;
+    state { turn own 7; player own { ep 1; field { follower source = 10173130; } } }
+    action { evolve source; }
+    expect { legal; source.stats == 9/9; own.ep == 0; }
+}

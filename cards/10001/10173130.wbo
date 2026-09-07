@@ -6,7 +6,22 @@ card 10173130 {
     stats 7/7;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 3 card 90071120;
+        }
+        evolve {
+            add ward to own.field.followers where trait puppetry;
+            grant own.field.followers where trait puppetry {
+                label chs "【谢幕曲】对对手的主战者造成2点伤害。";
+                label eng "Last Words: Deal 2 damage to the enemy leader.";
+                label jpn "【ラストワード】相手のリーダーに2ダメージ。";
+                label kor "[유언] 상대방 리더에게 2 피해.";
+                label cht "【謝幕曲】給予敵方的主戰者2點傷害。";
+                lastwords {
+                    damage oppo.leader 2;
+                }
+            }
+        }
     }
 
     meta {

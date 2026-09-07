@@ -16,6 +16,7 @@
 .card-inspector { max-height: min(65vh, 620px); overflow: auto; }
 .card-inspector > img, .card-inspector > .card-art-missing { flex: 0 0 100px; }
 .card-inspector > div { min-width: 0; flex: 1; }
+.card-inspector .granted-ability { border-top: 1px solid #576c61; padding-top: 8px; color: #bfe6ce; line-height: 1.6; overflow-wrap: anywhere; }
 .rp-detail-content > div { min-width: 0; }
 @media (max-width: 600px) {
   .card-inspector > img, .card-inspector > .card-art-missing { flex-basis: 72px; width: 72px; height: 100px; }

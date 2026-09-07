@@ -320,6 +320,19 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 				validateEffectBlock(b[0], ds, bindings, "")
 			}
 			continue
+		case "grant":
+			end, good := parseValueRef(t, 1)
+			checkBindingAt(t, 1, end, bindings, ds)
+			if good && end < len(t) {
+				end, good = parseWhere(t, end)
+			}
+			_, ability, err := grantParts(s)
+			if !good || end != len(t) || err != nil || s.Terminated {
+				shapeError(ds, s, "grant 对象 [where ...] { lastwords 或回合触发能力 }")
+			} else {
+				validateEffectBlock([]*syntax.Statement{ability}, ds, nil, "")
+			}
+			continue
 		case "when":
 			if len(t) < 3 || len(b) != 1 {
 				shapeError(ds, s, "when 事件 [where ...] { ... }")

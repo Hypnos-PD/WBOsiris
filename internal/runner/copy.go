@@ -3,6 +3,7 @@ package runner
 import (
 	"fmt"
 	"maps"
+	"wbo/internal/ir"
 )
 
 func (g *game) summonCopies(self *instance, side string, sources []*instance) []*instance {
@@ -36,11 +37,12 @@ func (g *game) copyInstance(source *instance) *instance {
 	copies := []*instance{}
 	for next := 0; next < len(sources); next++ {
 		original := sources[next]
-		if !g.chargeQueryVisits(1+len(original.materials)+len(original.counters)+len(original.abilities)+len(original.temporaryKeywords)+len(original.temporaryStats)) || !g.reserveCreatedInstance() {
+		if !g.chargeQueryVisits(1+len(original.materials)+len(original.counters)+len(original.abilities)+len(original.grants)+len(original.temporaryKeywords)+len(original.temporaryStats)) || !g.reserveCreatedInstance() {
 			return nil
 		}
 		g.serial++
 		copy := *original
+		copy.grants = append([]ir.GrantEffect(nil), original.grants...)
 		copy.id, copy.alias = fmt.Sprintf("summoned-%d", g.serial), fmt.Sprintf("@summoned%d", g.serial)
 		copy.counters = maps.Clone(original.counters)
 		copy.abilities = maps.Clone(original.abilities)

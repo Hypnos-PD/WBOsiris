@@ -799,6 +799,13 @@ Spellboost = NodeBase & {
 
 ### 当前语法到节点的完整映射
 
+`GrantAbility = NodeBase & { kind: "grant_ability", target: ValueRef | SetExpr,
+ability: Ability, labels?: map<LocaleId, string> }` 附加一个独立触发能力。
+`ability` 必须为 `independent` 的谢幕曲或回合开始/结束事件，能力体不得含 `require`。
+编译器为能力体建立新绑定作用域，随从自身数值按受赋予者求值；不捕获施法者局部状态。
+实例按顺序保存赋予节点的 ID，重复 ID 表示多次赋予，恢复时必须在相同卡包内找到节点。
+执行栈以 `node:<grant-id>:granted` 引用能力体，支持其中的选择、模式及重复块暂停恢复。
+
 | WBO 构造 | IR |
 |---|---|
 | `choose target from S` | `Choose` |
@@ -811,6 +818,7 @@ Spellboost = NodeBase & {
 | `add N card C to hand` | `AddCard` |
 | `summon N card C` | `Summon` |
 | `summon copies of S` | `SummonCopies` |
+| `grant T { 能力 }` | `GrantAbility` |
 | `damage T N`、`heal T N` | `Damage`、`Heal` |
 | `set life T N` | `SetLife` |
 | `buff T +A/+L [where P] [until [own/oppo] turn ends]` | `BuffStats`，可带 `predicate` 和 `until` |

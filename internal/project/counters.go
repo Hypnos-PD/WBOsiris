@@ -33,6 +33,10 @@ func validateCounters(c *Card, ds *[]syntax.Diagnostic) {
 	var walk func([]*syntax.Statement)
 	walk = func(body []*syntax.Statement) {
 		for _, s := range body {
+			if s.Word(0) == "grant" && len(s.Blocks()) == 1 {
+				validateCounters(&Card{Effect: s.Blocks()[0]}, ds)
+				continue
+			}
 			t := s.Tokens()
 			if len(t) == 4 && t[0].Value == "add" && t[2].Value == "counter" {
 				check(t[3].Value, t[3].Span)
