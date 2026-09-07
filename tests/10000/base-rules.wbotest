@@ -444,7 +444,7 @@ scenario "超进化抽取全部同名卡并赋予疾驰" {
     }
 }
 
-scenario "必选手牌返回牌组后自顶向下抽皇家随从" {
+scenario "必选手牌返回牌组后随机抽取皇家随从" {
     seed 1014;
 
     state {
@@ -478,10 +478,11 @@ scenario "必选手牌返回牌组后自顶向下抽皇家随从" {
         own.pp == 0/4;
         source.zone == graveyard;
         required_target.zone == deck;
-        own.hand contains [first_sword, second_sword] ordered;
+        first_sword.zone == hand;
+        second_sword.zone == hand;
         skipped_top.zone == deck;
         skipped_middle.zone == deck;
-        rng.consumed == 1;
+        rng.consumed == 3;
     }
 }
 

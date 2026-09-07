@@ -1,0 +1,74 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Guild randomly draws a follower beyond the first match" {
+    seed 1;
+    state {
+        player own {
+            pp 3/3;
+            hand { amulet source = 10002210; }
+            deck top {
+                spell skipped = 10031310;
+                follower first = 10001110;
+                follower second = 10001110;
+                follower third = 10001120;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal; third.zone == hand; own.deck top == [skipped, first, second];
+        rng.consumed == 1; events contains ordered { draw own 1; }
+    }
+}
+
+scenario "Priestess draws the only eligible amulet and logs the draw" {
+    seed 2302;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10161110; }
+            deck top { follower first = 10001110; amulet target = 10001210; spell last = 10031310; }
+        }
+    }
+    action { play source; }
+    expect { legal; target.zone == hand; own.deck top == [first, last]; rng.consumed == 1; events contains ordered { draw own 1; } }
+}
+
+scenario "A missing filtered draw leaves the deck and RNG untouched" {
+    seed 2303;
+    state {
+        player own {
+            pp 3/3;
+            hand { amulet source = 10002210; }
+            deck top { spell first = 10031310; amulet last = 10001210; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.zone == field; own.deck top == [first, last]; rng.consumed == 0; events contains ordered { draw own 0; } }
+}
+
+scenario "Draw all grants storm only to copies that enter the hand" {
+    seed 2304;
+    state {
+        turn own 6;
+        player own {
+            pp 6/6;
+            sep 1;
+            field { follower source = 10022120; }
+            hand {
+                spell a = 10031310; spell b = 10031310; spell c = 10031310; spell d = 10031310;
+                spell e = 10031310; spell f = 10031310; spell g = 10031310; spell h = 10031310;
+            }
+            deck top { follower first = 10022120; follower second = 10022120; follower third = 10022120; }
+        }
+    }
+    action { superevolve source; }
+    expect {
+        legal; first.zone == hand; first has storm;
+        second.zone == graveyard; third.zone == graveyard;
+        second lacks storm; third lacks storm; own.shadows == 2;
+        rng.consumed == 0; events contains ordered { draw own 3; }
+        events excludes { destroy second; destroy third; }
+    }
+}

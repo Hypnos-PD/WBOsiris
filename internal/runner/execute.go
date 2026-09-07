@@ -277,34 +277,48 @@ func (g *game) matches(i *instance, p ir.Predicate) bool {
 }
 func (g *game) draw(e ir.DrawEffect, self *instance, f frame) {
 	own, ownSide := g.playerForSide(self, e.Owner)
-	count := e.Count
-	if e.All {
-		count = len(own.deck)
+	candidates := g.filter(own.deck, "", e.Predicate)
+	if g.budget != nil && g.budget.exceeded {
+		return
 	}
-	var drawn, kept []*instance
-	for _, i := range own.deck {
-		if !g.chargeQueryVisits(1) {
-			return
+	count := min(max(0, e.Count), len(candidates))
+	if e.All {
+		count = len(candidates)
+	}
+	if e.Predicate != nil && !e.All && g.budget != nil && !g.budget.chargeCandidates(uint64(len(candidates))) {
+		return
+	}
+	event := ir.RuntimeEvent{Kind: "card_drawn", Side: ownSide, Count: count}
+	if !g.emit(event) || !g.queueEventTriggers(event, nil, "") {
+		return
+	}
+	var drawn []*instance
+	if e.Predicate != nil && !e.All {
+		for n := 0; n < count; n++ {
+			index := g.rng.Index(len(candidates))
+			drawn = append(drawn, candidates[index])
+			candidates = append(candidates[:index], candidates[index+1:]...)
 		}
-		if len(drawn) < count && g.matches(i, e.Predicate) {
-			drawn = append(drawn, i)
-		} else {
+	} else {
+		drawn = candidates[:count]
+	}
+	selected := make(map[*instance]bool, len(drawn))
+	f[e.Output] = nil
+	for _, i := range drawn {
+		selected[i] = true
+		g.putInHandOrOverdraw(own, i)
+		if i.zone == "hand" {
+			f[e.Output] = append(f[e.Output], i)
+		}
+	}
+	kept := own.deck[:0]
+	for _, i := range own.deck {
+		if !selected[i] {
 			kept = append(kept, i)
 		}
 	}
-	if e.Predicate == nil {
-		event := ir.RuntimeEvent{Kind: "card_drawn", Side: ownSide, Count: len(drawn)}
-		if !g.emit(event) {
-			return
-		}
-		g.queueEventTriggers(event, nil, "")
-	}
-	for _, i := range drawn {
-		g.putInHandOrOverdraw(own, i)
-	}
 	own.deck = kept
-	f[e.Output] = drawn
-	if g.firstPlayer != "" && e.Predicate == nil && !e.All && len(drawn) < count {
+	if g.firstPlayer != "" && e.Predicate == nil && !e.All && count < e.Count {
 		g.finishGame(oppositeSide(ownSide))
 	}
 }
