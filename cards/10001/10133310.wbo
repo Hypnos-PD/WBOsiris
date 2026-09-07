@@ -6,7 +6,14 @@ card 10133310 {
     trait mysteria;
 
     effect {
-        unplayable;
+        counter x 0;
+        spellboost {
+            add 1 counter x;
+            if self.counter.x >= 5 {
+                transform self into card 90033310;
+            }
+        }
+        draw 2;
     }
 
     meta {

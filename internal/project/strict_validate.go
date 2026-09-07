@@ -9,9 +9,10 @@ import (
 )
 
 type effectContext struct {
-	cardType string
-	top      bool
-	fusion   bool
+	cardType   string
+	top        bool
+	fusion     bool
+	spellboost bool
 }
 
 func strictValidateCard(c *Card, ds *[]syntax.Diagnostic) {
@@ -72,8 +73,11 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 		if ctx.top && ctx.cardType != "spell" && (isPlainOperation(s) || h == "repeat") {
 			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", "随从或护符的最外层操作没有执行时点", s.Span)
 		}
-		if h == "transform" && !ctx.fusion {
-			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", "transform 只允许出现在 fusion 块内", s.Span)
+		if h == "transform" && !ctx.fusion && !ctx.spellboost {
+			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", "transform 只允许出现在 fusion 或 spellboost 块内", s.Span)
+		}
+		if h == "transform" && ctx.fusion && !ctx.spellboost && len(t) == 5 {
+			shapeError(ds, s, "fusion 内的 transform 必须显式 preserving materials")
 		}
 		if h == "transform" && (len(t) < 2 || t[1].Value != "self") {
 			diag(ds, "WBO-E008-TYPE-MISMATCH", "错误", "transform 当前只允许以 self 为目标", s.Span)
@@ -147,7 +151,7 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 				shapeError(ds, s, "if overflow|scalar 比较 整数 { ... } [else { ... }]")
 			}
 			for _, bb := range b {
-				strictEffectBlock(bb, effectContext{cardType: ctx.cardType, fusion: ctx.fusion}, ds)
+				strictEffectBlock(bb, effectContext{cardType: ctx.cardType, fusion: ctx.fusion, spellboost: ctx.spellboost}, ds)
 			}
 			continue
 		case "mode":
@@ -173,14 +177,20 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 				if err != nil {
 					shapeError(ds, o, err.Error())
 				} else {
-					strictEffectBlock(body, effectContext{cardType: ctx.cardType, fusion: ctx.fusion}, ds)
+					strictEffectBlock(body, effectContext{cardType: ctx.cardType, fusion: ctx.fusion, spellboost: ctx.spellboost}, ds)
 				}
 			}
 			continue
 		}
 		for _, x := range t {
 			if x.Kind == syntax.Integer && !isCardID(x) {
-				checkU16(x, true, ds)
+				if h == "add" && len(t) == 4 && t[2].Value == "counter" {
+					if !isUnsigned(x) {
+						rangeError(ds, x)
+					}
+				} else {
+					checkU16(x, true, ds)
+				}
 			}
 		}
 		if h == "buff" {
@@ -200,7 +210,7 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 			}
 		}
 		for _, bb := range b {
-			strictEffectBlock(bb, effectContext{cardType: ctx.cardType, fusion: ctx.fusion}, ds)
+			strictEffectBlock(bb, effectContext{cardType: ctx.cardType, fusion: ctx.fusion, spellboost: ctx.spellboost || h == "spellboost"}, ds)
 		}
 	}
 }

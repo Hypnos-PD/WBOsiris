@@ -2,6 +2,7 @@ package project
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -52,6 +53,15 @@ func TestCounterCompileAndRoundTrip(t *testing.T) {
 	data2, err := ir.EncodeCardPack(*decoded)
 	if err != nil || !bytes.Equal(data, data2) {
 		t.Fatal("counter IR roundtrip differs", err)
+	}
+}
+
+func TestCounterIncreaseAcceptsFullDeclaredRange(t *testing.T) {
+	for _, amount := range []int{0, 65535, 65536, 9999999, ir.MaxCounterValue} {
+		file, ds := syntax.Parse("12345678.wbo", []byte(validCard(fmt.Sprintf("counter x 0; spellboost { add %d counter x; }", amount))))
+		if len(ds) != 0 || hasErrors(ValidateFile(file)) {
+			t.Fatal(amount, ds, ValidateFile(file))
+		}
 	}
 }
 

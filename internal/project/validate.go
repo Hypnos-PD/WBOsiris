@@ -560,7 +560,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		ok = good && end+1 == len(t) && isUnsigned(t[end])
 	case "transform":
 		end, good := parseValueRef(t, 1)
-		ok = good && end+5 == len(t) && t[end].Value == "into" && t[end+1].Value == "card" && isCardID(t[end+2]) && t[end+3].Value == "preserving" && t[end+4].Value == "materials"
+		ok = good && end+3 <= len(t) && t[end].Value == "into" && t[end+1].Value == "card" && isCardID(t[end+2]) && (end+3 == len(t) || end+5 == len(t) && t[end+3].Value == "preserving" && t[end+4].Value == "materials")
 	}
 	if !ok {
 		shapeError(ds, s, h+" 的规范参数;")

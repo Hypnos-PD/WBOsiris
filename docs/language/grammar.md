@@ -322,8 +322,8 @@ reduce_operation  = "reduce" , "countdown" , value_ref , integer , ";"
                   | "reduce" , "cost" , value_ref , integer , "minimum" , integer , ";" ;
 spellboost_operation = "spellboost" , value_ref , integer , ";" ;
 set_attack_limit_operation = "set_attack_limit" , "self" , positive_integer , ";" ;
-transform_operation = "transform" , value_ref , "into" , "card" , card_id ,
-                      "preserving" , "materials" , ";" ;
+transform_operation = "transform" , "self" , "into" , "card" , card_id ,
+                      ["preserving" , "materials"] , ";" ;
 
 positive_integer  = integer ; (* semantic constraint: value >= 1 *)
 value_ref         = binding_name
@@ -366,7 +366,9 @@ scalar_ref        = participant , "." , scalar_field ;
 
 `transform T into card C preserving materials` 将目标实例的卡牌定义替换为 `C`，
 保留同一 `InstanceId` 和全部附着材料，不创建新实例。该操作当前只允许出现在
-`fusion_block` 内并以 `self` 为目标。
+`fusion_block` 或 `spellboost` 能力块内并以 `self` 为目标，也可放入其中的条件、
+模式或重复块。融合块必须显式写出 `preserving materials`；魔力增幅块允许省略此
+短语，省略不改变保留实例与材料的语义。其他触发时点暂不支持变身。
 
 ## 3. 测试文件
 

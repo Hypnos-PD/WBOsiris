@@ -734,7 +734,7 @@ Spellboost = NodeBase & {
 | `damage T N`、`heal T N` | `Damage`、`Heal` |
 | `buff T +A/+L [where P]` | `BuffStats`，可带 `predicate` |
 | `destroy T`、`banish T` | `Destroy`、`Banish` |
-| `transform T into card C preserving materials` | `Transform` |
+| `transform self into card C [preserving materials]` | `Transform` |
 | `return T to hand/deck` | `Return` |
 | `add K to T`、`remove K from T` | `AddKeyword`、`RemoveKeyword` |
 | `evolve T silent` | `SilentEvolve` |

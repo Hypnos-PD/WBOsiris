@@ -1,0 +1,44 @@
+wbo 0.1.0;
+
+card 90033310 {
+    type spell;
+    cost 1;
+    trait mysteria;
+
+    effect {
+        draw 2;
+        random target from oppo.field.followers;
+        damage target 2;
+    }
+
+    meta {
+        pack 90000;
+        class runecraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "有所成长了！";
+        text "抽取2张卡牌。对对手的战场上的随机1个随从造成2点伤害。";
+    }
+
+    locale eng {
+        name "Looking Smart!";
+        text "Draw 2 cards. Deal 2 damage to a random enemy follower.";
+    }
+
+    locale jpn {
+        name "<rub=\"せいちょう\">成長</rub>したですぅ！";
+        text "自分のデッキから2枚を引く。相手の場のフォロワーからランダム1枚に2ダメージ。";
+    }
+
+    locale kor {
+        name "성장했어요오!";
+        text "내 덱에서 2장을 뽑는다. 상대방 전장의 추종자 중 무작위로 1장에게 2 피해.";
+    }
+
+    locale cht {
+        name "有所成長了！";
+        text "由自己的牌堆中抽取2張卡片。隨機給予1張敵方戰場上的從者卡2點傷害。";
+    }
+}

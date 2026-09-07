@@ -1,0 +1,89 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Homework draws two without spellboosting itself" {
+    seed 2001;
+    state {
+        turn own 3;
+        player own {
+            pp 3/3;
+            hand { spell source = 10133310 { counter x 4; } spell held = 10133310; }
+            deck top { spell first = 10133310; spell second = 10131320; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        source.counter.x == 4;
+        held.counter.x == 1;
+        first.counter.x == 0;
+        first.zone == hand;
+        second.zone == hand;
+        own.pp == 0/3;
+    }
+}
+
+scenario "William crosses the Homework threshold only for its own held copies" {
+    seed 2002;
+    state {
+        turn own 6;
+        player own {
+            ep 1;
+            field { follower source = 10132130; }
+            hand {
+                spell almost = 10133310 { counter x 4; cost 0; }
+                spell next = 10133310 { counter x 3; }
+                spell later = 10133310 { counter x 2; }
+            }
+        }
+        player oppo { hand { spell enemy = 10133310 { counter x 4; } } }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        almost.cost == 1;
+        next.cost == 1;
+        later.counter.x == 4;
+        enemy.counter.x == 4;
+        own.hand count card 90033310 == 2;
+        own.hand count card 10133310 == 1;
+        oppo.hand count card 10133310 == 1;
+    }
+}
+
+scenario "Looking Smart draws before random damage and death triggers" {
+    seed 2003;
+    state {
+        turn own 3;
+        player own {
+            pp 1/3;
+            hand { spell source = 90033310; spell held = 10133310; }
+            deck top { spell first = 10133310; spell second = 10131320; }
+        }
+        player oppo { field { follower target = 10151130; } }
+    }
+    action { play source; }
+    expect {
+        legal;
+        first.zone == hand;
+        first.counter.x == 0;
+        held.counter.x == 1;
+        target.zone == graveyard;
+        oppo.field count card 90051110 == 2;
+        events contains ordered { draw own 2; damage target 2; }
+    }
+}
+
+scenario "Looking Smart remains playable without an enemy follower" {
+    seed 2004;
+    state {
+        player own {
+            pp 1/1;
+            hand { spell source = 90033310; }
+            deck top { spell first = 10131320; spell second = 10133310; }
+        }
+    }
+    action { play source; }
+    expect { legal; first.zone == hand; second.zone == hand; rng.consumed == 0; }
+}
