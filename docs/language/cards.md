@@ -457,6 +457,25 @@ trait departed;
 
 多个强化档位累计发动的判例见[官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#e03skkdj6s6)。
 
+## 设置生命值
+
+`set life T N;` 将目标随从的当前生命值设为 N，数值也可使用 `self.life`、
+`count(...)` 等数值表达式。所有目标使用操作开始时读取的同一个值，负的计算结果按零处理。
+
+```wbo
+fanfare {
+    if own.combo >= 3 {
+        choose target from oppo.field.followers;
+        set life target 1;
+    }
+}
+```
+
+这不是伤害或回复：不消费屏障，不应用伤害减免，也不产生伤害或回复事件。
+零生命值的战场随从随后按同一死亡批次破坏，正常触发谢幕曲；手牌中的随从不因此
+产生战场破坏。非随从目标忽略，主战者引用会在编译时被拒绝。空目标不产生数值变化。
+后续增益与进化基于设置后的数值；从战场返回手牌或牌组时按通常规则恢复卡牌基础状态。
+
 ## 破坏结果
 
 每条 `destroy` 操作将实际破坏的目标写入 `destroyed`，包括空结果；后续 `destroy`

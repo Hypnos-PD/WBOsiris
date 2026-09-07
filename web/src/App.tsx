@@ -516,7 +516,10 @@ export function App() {
     }
     if (attacker && legal("attack_entity", attacker, card.instanceId))
       submitAttack(attacker, card.instanceId);
-    else setMessage("当前没有可用的攻击目标");
+    else {
+      setSelected(card);
+      setMessage(`已选择 ${card.name}`);
+    }
   };
   const attackLeader = () => {
     if (attacker && legal("attack_leader", attacker)) submitAttack(attacker);

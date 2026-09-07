@@ -468,6 +468,13 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 		return
 	}
 	switch e.Kind {
+	case "set_life":
+		for _, item := range targets {
+			if item != nil && item.card.CardType == "follower" {
+				item.life = e.Amount
+			}
+		}
+		g.resolveDeathBatch(nil)
 	case "set_attack_limit":
 		for _, i := range targets {
 			i.attackLimitValue = e.Amount

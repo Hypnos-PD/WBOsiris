@@ -6,7 +6,17 @@ card 10113110 {
     stats 1/3;
 
     effect {
-        unplayable;
+        fanfare {
+            if own.combo >= 3 {
+                choose target from oppo.field.followers;
+                set life target 1;
+            }
+        }
+        evolve {
+            draw 1;
+            choose target from oppo.field.followers;
+            damage target 1;
+        }
     }
 
     meta {

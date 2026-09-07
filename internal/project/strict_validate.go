@@ -51,12 +51,15 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 			continue
 		}
 		h := t[0].Value
-		if ctx.cardType != "follower" && set("damage", "heal", "buff", "repeat")[h] {
+		if ctx.cardType != "follower" && set("damage", "heal", "buff", "repeat", "set")[h] {
 			for n := 1; n+2 < len(t); n++ {
 				if t[n].Value == "self" && t[n+1].Value == "." && set("attack", "life")[t[n+2].Value] {
 					diag(ds, "WBO-E008-TYPE-MISMATCH", "错误", "self.attack 与 self.life 只允许用于随从", s.Span)
 				}
 			}
+		}
+		if ctx.cardType != "follower" && h == "set" && len(t) > 2 && t[2].Value == "self" {
+			diag(ds, "WBO-E008-TYPE-MISMATCH", "错误", "set life self 只允许用于随从", s.Span)
 		}
 		if abilities[h] && len(b) == 0 && ctx.cardType != "follower" {
 			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", h+" 固有能力只允许用于随从", s.Span)
@@ -237,7 +240,7 @@ func checkI16Magnitude(t syntax.Token, ds *[]syntax.Diagnostic) {
 }
 
 func isPlainOperation(s *syntax.Statement) bool {
-	return len(s.Blocks()) == 0 && set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "spellboost", "transform", "set_attack_limit")[s.Word(0)]
+	return len(s.Blocks()) == 0 && set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "spellboost", "transform", "set_attack_limit", "set")[s.Word(0)]
 }
 func parseEventPattern(t []syntax.Token) (int, string, bool) {
 	if len(t) == 3 && values(t) == "when self discarded" {

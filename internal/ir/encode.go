@@ -168,7 +168,7 @@ func (e TargetEffect) MarshalJSON() ([]byte, error) {
 			object["overflow"] = e.Overflow
 		}
 	}
-	if e.AmountExpr != nil && e.Kind != "damage" && e.Kind != "heal" ||
+	if e.AmountExpr != nil && e.Kind != "damage" && e.Kind != "heal" && e.Kind != "set_life" ||
 		(e.AttackExpr != nil || e.LifeExpr != nil) && e.Kind != "buff_stats" {
 		return nil, fmt.Errorf("numeric expression is not supported for this effect")
 	}
@@ -211,8 +211,11 @@ func (e TargetEffect) MarshalJSON() ([]byte, error) {
 		}
 	case "add_keyword", "remove_keyword":
 		object["keyword"] = e.Keyword
-	case "set_attack_limit":
+	case "set_attack_limit", "set_life":
 		object["amount"] = e.Amount
+		if e.Kind == "set_life" {
+			object["amount"] = amount
+		}
 	case "silent_evolve":
 		object["form"] = e.Form
 	default:

@@ -824,7 +824,7 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			}
 		}
 		return CardEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.Destination, v.Output, v.Count, v.CardID, v.MaxCost, v.TieBreak, v.PreserveInstanceID, v.PreserveMaterials, r}, err
-	case "damage", "heal", "buff_stats", "destroy", "banish", "discard", "return", "add_keyword", "remove_keyword", "silent_evolve", "set_attack_limit":
+	case "damage", "heal", "buff_stats", "destroy", "banish", "discard", "return", "add_keyword", "remove_keyword", "silent_evolve", "set_attack_limit", "set_life":
 		type raw struct {
 			Output                                                      string `json:"output,omitempty"`
 			ID                                                          string `json:"id"`
@@ -854,8 +854,8 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if err != nil {
 			return nil, err
 		}
-		if v.Kind == "discard" && (r.refKind() == "leader" || r.refKind() == "leaders") {
-			return nil, fmt.Errorf("discard requires card instances")
+		if (v.Kind == "discard" || v.Kind == "set_life") && (r.refKind() == "leader" || r.refKind() == "leaders") {
+			return nil, fmt.Errorf("%s requires card instances", v.Kind)
 		}
 		var p Predicate
 		if len(v.Predicate) > 0 {
@@ -869,8 +869,8 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 				return nil, amountErr
 			}
 		}
-		if amountExpr != nil && v.Kind != "damage" && v.Kind != "heal" {
-			return nil, fmt.Errorf("numeric amount is only supported for damage and heal")
+		if amountExpr != nil && v.Kind != "damage" && v.Kind != "heal" && v.Kind != "set_life" {
+			return nil, fmt.Errorf("numeric amount is only supported for damage, heal and set_life")
 		}
 		if len(v.AttackValue) > 0 {
 			var deltaErr error
@@ -932,6 +932,10 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		case "set_attack_limit":
 			if v.Amount < 1 || v.DamageType != "" || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
 				return nil, fmt.Errorf("invalid attack limit shape")
+			}
+		case "set_life":
+			if len(v.AmountValue) == 0 || v.Amount < 0 || v.DamageType != "" || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
+				return nil, fmt.Errorf("invalid set life shape")
 			}
 		}
 		return TargetEffect{

@@ -455,7 +455,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		return false
 	}
 	h := t[0].Value
-	known := set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "spellboost", "transform", "set_attack_limit")
+	known := set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "spellboost", "transform", "set_attack_limit", "set")
 	if !known[h] {
 		return false
 	}
@@ -469,6 +469,16 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 	}
 	ok := false
 	switch h {
+	case "set":
+		end, good := parseValueRef(t, 2)
+		checkBindingAt(t, 2, end, bindings, ds)
+		if good && (end == 5 && t[4].Value == "leader" || end == 3 && t[2].Value == "leaders" || end == 5 && values(t[2:5]) == "all . leaders") {
+			good = false
+		}
+		if good {
+			end, good = parseEffectAmount(t, end)
+		}
+		ok = t[1].Value == "life" && good && end == len(t)
 	case "set_attack_limit":
 		ok = len(t) == 3 && t[1].Value == "self" && isUnsigned(t[2])
 	case "draw":

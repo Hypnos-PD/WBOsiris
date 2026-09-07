@@ -304,6 +304,7 @@ add_operation     = "add" , integer , "card" , card_id , "to" , "hand" , ";"
 summon_operation  = "summon" , integer , "card" , card_id , ";" ;
 numeric_operation = "damage" , value_ref , effect_amount , [damage_distribution] , [where_clause] , ";"
                   | "heal" , value_ref , effect_amount , [where_clause] , ";"
+                  | "set" , "life" , value_ref , effect_amount , ";"
                   | "buff" , value_ref , ["other"] , signed_amount , "/" , signed_amount , [where_clause] , ";"
                   | "gain" , scalar_ref , integer , ";"
                   | "restore" , participant , "." , "pp" , ";" ;

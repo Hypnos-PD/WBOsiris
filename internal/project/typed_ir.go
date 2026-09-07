@@ -377,6 +377,10 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		return ir.TargetEffect{NodeBase: base, Kind: "remove_keyword", Keyword: t[1].Value, Target: valueRefIR(t, 3)}, nil
 	case "set_attack_limit":
 		return ir.TargetEffect{NodeBase: base, Kind: "set_attack_limit", Target: valueRefIR(t, 1), Amount: intToken(t[2])}, nil
+	case "set":
+		end := valueRefEnd(t, 2)
+		amount, expr := numericIR(t, end)
+		return ir.TargetEffect{NodeBase: base, Kind: "set_life", Target: valueRefIR(t, 2), Amount: amount, AmountExpr: expr}, nil
 	case "return":
 		end := valueRefEnd(t, 1)
 		e := ir.TargetEffect{NodeBase: base, Kind: "return", Target: valueRefIR(t, 1), Destination: t[end+1].Value}

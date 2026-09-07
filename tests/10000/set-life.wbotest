@@ -1,0 +1,50 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Lily counts its own play for Combo and preserves barrier" {
+    seed 2501;
+    state {
+        player own { pp 2/2; combo 2; hand { follower source = 10113110; } }
+        player oppo { field { follower target = 10001110 { stats 5/7; barrier; } } }
+    }
+    action { play source; select target; }
+    expect { legal; own.combo == 3; target.stats == 5/1; target has barrier; events excludes { damage target 1; destroy target; } }
+}
+
+scenario "Lily below Combo three does not set life" {
+    seed 2502;
+    state {
+        player own { pp 2/2; combo 1; hand { follower source = 10113110; } }
+        player oppo { field { follower target = 10001110 { stats 5/7; } } }
+    }
+    action { play source; }
+    expect { legal; own.combo == 2; target.stats == 5/7; }
+}
+
+scenario "Lily evolution draws before the damage choice" {
+    seed 2503;
+    state {
+        turn own 5;
+        player own { ep 1; field { follower source = 10113110; } deck top { follower drawn = 10001110; } }
+        player oppo { field { follower target = 10001110 { stats 2/1; } } }
+    }
+    action { evolve source; select target; }
+    expect { legal; own.ep == 0; drawn.zone == hand; source.stats == 3/5; target.zone == graveyard; events contains ordered { draw own 1; damage target 1; destroy target; } }
+}
+
+scenario "Lily Combo can finish without an enemy target" {
+    seed 2504;
+    state { player own { pp 2/2; combo 2; hand { follower source = 10113110; } } }
+    action { play source; }
+    expect { legal; source.zone == field; own.combo == 3; rng.consumed == 0; }
+}
+
+scenario "Lily super evolution inherits drawing even without a target" {
+    seed 2505;
+    state {
+        turn own 6;
+        player own { sep 1; field { follower source = 10113110; } deck top { follower drawn = 10001110; } }
+    }
+    action { superevolve source; }
+    expect { legal; own.sep == 0; drawn.zone == hand; source.stats == 4/6; source.super_evolved == true; events contains ordered { draw own 1; } }
+}
