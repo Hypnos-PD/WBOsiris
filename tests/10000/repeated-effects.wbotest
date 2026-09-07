@@ -1,0 +1,132 @@
+wbotest 0.1.0;
+use cards "../../cards";
+scenario "Amataz counts only Pixie followers in hand" {
+    seed 1401;
+    state {
+        turn own 3;
+        phase main;
+        player own {
+            pp 3/3;
+            hand {
+                follower source = 10114130;
+                follower first = 90011110;
+                follower second = 90011110;
+                follower other = 90021110;
+            }
+        }
+        player oppo {
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.stats == 4/4;
+        source has ward;
+        own.pp == 0/3;
+        rng.consumed == 0;
+    }
+}
+scenario "Repeated hits finish before lastwords summons" {
+    seed 1402;
+    state {
+        turn own 6;
+        phase main;
+        player own {
+            ep 1;
+            field { follower source = 10114130; }
+            hand {
+                follower first = 90011110;
+                follower second = 90011110;
+                follower third = 90011110;
+                follower fourth = 90011110;
+            }
+        }
+        player oppo {
+            field { follower enemy = 10151130 { barrier; } }
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        enemy.zone == graveyard;
+        oppo.field count card 90051110 == 2;
+        own.ep == 0;
+        rng.consumed == 3;
+        events contains ordered {
+            damage enemy 1;
+            damage enemy 1;
+            destroy enemy;
+            summon card 90051110 count 1;
+            summon card 90051110 count 1;
+        }
+    }
+}
+scenario "Orthrus fanfare gains shadows without creating graveyard cards" {
+    seed 1403;
+    state {
+        turn own 2;
+        phase main;
+        player own {
+            pp 2/2;
+            shadows 2;
+            hand { follower source = 10153120; }
+        }
+        player oppo {
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.shadows == 4;
+        own.graveyard count card 10153120 == 0;
+        source has ward;
+        own.pp == 0/2;
+        rng.consumed == 0;
+    }
+}
+scenario "Necromancy pays once for two repeated hits" {
+    seed 1404;
+    state {
+        turn own 6;
+        phase main;
+        player own {
+            ep 1;
+            shadows 4;
+            field { follower source = 10153120; }
+        }
+        player oppo {
+            field { follower enemy = 10012120; }
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        own.shadows == 0;
+        enemy.stats == 4/2;
+        own.ep == 0;
+        rng.consumed == 2;
+    }
+}
+scenario "Insufficient shadows skip the entire repeated effect" {
+    seed 1405;
+    state {
+        turn own 6;
+        phase main;
+        player own {
+            ep 1;
+            shadows 3;
+            field { follower source = 10153120; }
+        }
+        player oppo {
+            field { follower enemy = 10012120; }
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        own.shadows == 3;
+        enemy.stats == 4/6;
+        own.ep == 0;
+        rng.consumed == 0;
+    }
+}

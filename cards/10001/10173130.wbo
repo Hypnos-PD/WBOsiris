@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10173130 {
+    type follower;
+    cost 9;
+    stats 7/7;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class portalcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "疯狂的创造者·历亚姆";
+        text """
+【<color=Keyword>入场曲</color>】召唤3个『<color=Keyword>改良型·悬丝傀儡</color>』。
+<hr><ev>【<color=Keyword>进化时</color>】使自己的战场上的所有人偶·随从获得【<color=Keyword>守护</color>】和「【<color=Keyword>谢幕曲</color>】对对手的主战者造成2点伤害」。</ev>
+""";
+    }
+
+    locale eng {
+        name "Liam, Crazed Creator";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon 3 copies of <b><i><color=Keyword>Enhanced Puppet</color></i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Give all allied Puppetry followers on the field <b><color=Keyword>Ward</color></b> and \"<b><color=Keyword>Last Words</color></b>: Deal 2 damage to the enemy leader.\"</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きょうき\">狂気</rub>の<rub=\"そうぞうしゃ\">創造者</rub>・リーアム";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>改良型・操り人形</color>』3枚を自分の場に出す。
+<hr><ev>【<color=Keyword>進化時</color>】自分の場の人形・フォロワーすべては【<color=Keyword>守護</color>】と「【<color=Keyword>ラストワード</color>】相手のリーダーに2ダメージ。」を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "광기의 창조자 리암";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>개량형 꼭두각시 인형</color> 3장을 내 전장에 소환.
+<hr><ev>[<color=Keyword>진화시</color>] 내 전장의 인형 추종자 모두는 [<color=Keyword>수호</color>], 「[<color=Keyword>유언</color>] 상대방 리더에게 2 피해」를 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "癲狂創造者‧歷亞姆";
+        text """
+【<color=Keyword>入場曲</color>】召喚3張『<color=Keyword>改良型‧懸絲人偶</color>』到自己的戰場上。
+<hr><ev>【<color=Keyword>進化時</color>】使自己戰場上全部的人偶‧從者卡獲得【<color=Keyword>守護</color>】與「【<color=Keyword>謝幕曲</color>】給予敵方的主戰者2點傷害」。</ev>
+""";
+    }
+
+}

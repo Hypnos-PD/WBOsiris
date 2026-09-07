@@ -1,0 +1,22 @@
+wbo 0.1.0;
+
+card 90011310 {
+    type spell;
+    cost 0;
+
+    effect {
+        heal own.leader 1;
+    }
+
+    meta {
+        pack 90000;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs { name "森林的奥秘"; text "回复自己的主战者1点生命值。"; }
+    locale eng { name "Deepwood Bounty"; text "Restore 1 defense to your leader."; }
+    locale jpn { name "森の神秘"; text "自分のリーダーを1回復。"; }
+    locale kor { name "숲의 신비"; text "내 리더를 1 회복."; }
+    locale cht { name "森林的奧秘"; text "回復自己的主戰者1點生命值。"; }
+}

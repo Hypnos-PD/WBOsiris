@@ -1,0 +1,119 @@
+wbotest 0.1.0;
+use cards "../../cards";
+scenario "Rhinoceroach includes itself in the current combo" {
+    seed 1301;
+    state {
+        turn own 3;
+        phase main;
+        player own {
+            pp 3/3;
+            combo 2;
+            hand {
+                follower source = 10113140;
+            }
+        }
+        player oppo {
+        }
+    }
+    action {
+        play source;
+    }
+    expect {
+        legal;
+        source.stats == 3/2;
+        source has storm;
+        own.combo == 3;
+        own.pp == 0/3;
+        rng.consumed == 0;
+    }
+}
+scenario "Runesword damage reads its modified attack" {
+    seed 1302;
+    state {
+        turn own 5;
+        phase main;
+        player own {
+            pp 5/5;
+            hand {
+                follower source = 10131110 { stats 4/4; }
+            }
+        }
+        player oppo {
+            field {
+                follower target = 90031110 { stats 2/6; }
+            }
+        }
+    }
+    action {
+        play source;
+        select target;
+    }
+    expect {
+        legal;
+        source.stats == 4/4;
+        target.stats == 2/2;
+        own.pp == 0/5;
+        rng.consumed == 0;
+    }
+}
+scenario "Emmylou counts the newly summoned golem" {
+    seed 1303;
+    state {
+        turn own 6;
+        phase main;
+        player own {
+            ep 1;
+            field {
+                follower source = 10132120;
+                follower golem = 90031110;
+            }
+        }
+        player oppo {
+            field {
+                follower target = 90031110 { stats 2/6; }
+            }
+        }
+    }
+    action {
+        evolve source;
+    }
+    expect {
+        legal;
+        target.stats == 2/4;
+        own.field count card 90031110 == 2;
+        own.ep == 0;
+        rng.consumed == 0;
+    }
+}
+scenario "A blocked golem summon contributes no damage" {
+    seed 1304;
+    state {
+        turn own 6;
+        phase main;
+        player own {
+            ep 1;
+            field {
+                follower source = 10132120;
+                follower golem = 90031110;
+                follower first = 10131110;
+                follower second = 10131110;
+                follower third = 10131110;
+            }
+        }
+        player oppo {
+            field {
+                follower target = 90031110 { stats 2/6; }
+            }
+        }
+    }
+    action {
+        evolve source;
+    }
+    expect {
+        legal;
+        target.stats == 2/5;
+        own.field count card 90031110 == 1;
+        own.ep == 0;
+        rng.consumed == 0;
+    }
+}

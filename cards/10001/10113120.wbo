@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10113120 {
+    type follower;
+    cost 5;
+    stats 3/3;
+
+    effect {
+        fanfare {
+            draw 2;
+        }
+        evolve {
+            damage oppo.field.followers count(own.hand) distributed;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class forestcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "薰交的天宫·巴克伍德";
+        text """
+【<color=Keyword>入场曲</color>】抽取2张卡牌。
+<hr><ev>【<color=Keyword>进化时</color>】对对手的战场上的所有随从分配X点伤害。X为自己的手牌张数。</ev>
+""";
+    }
+
+    locale eng {
+        name "Glade, Fragrantwood Ward";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Draw 2 cards.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Deal X damage split between all enemy followers. X is the number of cards in your hand.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"くんこう\">薫交</rub>の<rub=\"てんきゅう\">天宮</rub>・バックウッド";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキから2枚を引く。
+<hr><ev>【<color=Keyword>進化時</color>】相手の場のフォロワーすべてにXダメージを割りふる。Xは自分の手札の枚数である。</ev>
+""";
+    }
+
+    locale kor {
+        name "훈교의 천궁 백우드";
+        text """
+[<color=Keyword>출격</color>] 내 덱에서 2장을 뽑는다.
+<hr><ev>[<color=Keyword>진화시</color>] 상대방 전장의 추종자 모두에게 X 피해를 분배한다. X는 내 패의 수.</ev>
+""";
+    }
+
+    locale cht {
+        name "薰交天宮‧巴克伍德";
+        text """
+【<color=Keyword>入場曲</color>】由自己的牌堆中抽取2張卡片。
+<hr><ev>【<color=Keyword>進化時</color>】對敵方戰場上全部的從者卡分配X點傷害。X為「自己手牌中的卡片張數」。</ev>
+""";
+    }
+
+}

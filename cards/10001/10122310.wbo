@@ -1,0 +1,80 @@
+wbo 0.1.0;
+
+card 10122310 {
+    type spell;
+    cost 3;
+
+    effect {
+        mode {
+            option 1 {
+                label chs "召唤1个『铁甲骑士』和1个『骑士』。";
+                label eng "Summon a Steelclad Knight and Knight.";
+                label jpn "『スティールナイト』1枚と『ナイト』1枚を自分の場に出す。";
+                label kor "철갑 기사 1장, 기사 1장을 내 전장에 소환.";
+                label cht "召喚1張『鐵甲騎士』與1張『騎士』到自己的戰場上。";
+                summon 1 card 90021120;
+                summon 1 card 90021110;
+            }
+            option 2 {
+                label chs "使自己的战场上的所有随从+1/+1。";
+                label eng "Give all allied followers on the field +1/+1.";
+                label jpn "自分の場のフォロワーすべては+1/+1する。";
+                label kor "내 전장의 추종자 모두는 +1/+1.";
+                label cht "使自己戰場上全部的從者卡+1/+1。";
+                buff own.field.followers +1/+1;
+            }
+        }
+    }
+
+    meta {
+        pack 10001;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "王断的威光";
+        text """
+【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）召唤1个『<color=Keyword>铁甲骑士</color>』和1个『<color=Keyword>骑士</color>』。</ridx>
+<ridx=1>（2）使自己的战场上的所有随从+1/+1。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Ironcrown Majesty";
+        text """
+Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Summon a <b><i><color=Keyword>Steelclad Knight</color></i></b> and <b><i><color=Keyword>Knight</color></i></b>.</ridx>
+<ridx=1>2. Give all allied followers on the field +1/+1.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"おうだん\">王断</rub>の<rub=\"いこう\">威光</rub>";
+        text """
+【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）『<color=Keyword>スティールナイト</color>』1枚と『<color=Keyword>ナイト</color>』1枚を自分の場に出す。</ridx>
+<ridx=1>（2）自分の場のフォロワーすべては+1/+1する。</ridx>
+""";
+    }
+
+    locale kor {
+        name "왕단의 위광";
+        text """
+[<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) <color=Keyword>철갑 기사</color> 1장, <color=Keyword>기사</color> 1장을 내 전장에 소환.</ridx>
+<ridx=1>(2) 내 전장의 추종자 모두는 +1/+1.</ridx>
+""";
+    }
+
+    locale cht {
+        name "王斷的威光";
+        text """
+指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）召喚1張『<color=Keyword>鐵甲騎士</color>』與1張『<color=Keyword>騎士</color>』到自己的戰場上。</ridx>
+<ridx=1>（2）使自己戰場上全部的從者卡+1/+1。</ridx>
+""";
+    }
+
+}

@@ -102,7 +102,7 @@ func TestSessionPreflightAndTargetContinuation(t *testing.T) {
 	if step.Status != StatusSuspended || step.Choice.Kind != "target" || len(step.Choice.Candidates) != 1 || step.Choice.Candidates[0].InstanceID != targetID {
 		t.Fatalf("unexpected target request: %#v", step)
 	}
-	if session.g.instances[sourceID].zone != "graveyard" || session.g.instances[targetID].zone != "field" {
+	if session.g.instances[sourceID].zone != "resolving" || session.g.instances[targetID].zone != "field" {
 		t.Fatal("resolution did not pause at the target request")
 	}
 	continuation := session.Continuation()
@@ -204,6 +204,21 @@ func TestTriggerQueueDrainsFIFO(t *testing.T) {
 	}
 	if len(g.events) != 1 || g.events[0].Actual != 1 || g.own.leaderLife != 11 {
 		t.Fatalf("trigger queue did not preserve FIFO: events=%#v life=%d", g.events, g.own.leaderLife)
+	}
+}
+
+func TestAdjustCurrentPPClampsToBounds(t *testing.T) {
+
+	g := &game{instances: map[string]*instance{}, legal: true}
+	g.own.pp, g.own.maxpp = 1, 5
+	session := &Session{g: g, actionID: strings.Repeat("p", 32)}
+	session.g.execAdjust(ir.AdjustEffect{Kind: "adjust_resource", Owner: "own", Resource: "pp", Delta: 9}, nil, frame{})
+	if g.own.pp != 5 {
+		t.Fatalf("pp gain exceeded maxpp: got %d", g.own.pp)
+	}
+	session.g.execAdjust(ir.AdjustEffect{Kind: "adjust_resource", Owner: "own", Resource: "pp", Delta: -9}, nil, frame{})
+	if g.own.pp != 0 {
+		t.Fatalf("pp spend dropped below zero: got %d", g.own.pp)
 	}
 }
 
@@ -740,7 +755,7 @@ func TestDamageReductionAndStealthUseCommonTargetRules(t *testing.T) {
 		t.Fatal(err)
 	}
 	source := session.g.instances[sourceID]
-	if got := session.g.fromRef(ir.ZoneRef{Kind: "zone", Side: "oppo", Zone: "field", Member: "follower"}, source, frame{}); len(got) != 0 {
+	if got := session.g.selectionCandidates(ir.SelectionEffect{Kind: "choose", Source: ir.ZoneRef{Kind: "zone", Side: "oppo", Zone: "field", Member: "follower"}}, source, frame{}); len(got) != 0 {
 		t.Fatalf("stealth target was visible to opposing effect: %#v", got)
 	}
 	target := session.g.instances[targetID]
@@ -754,8 +769,8 @@ func TestDamageReductionAndStealthUseCommonTargetRules(t *testing.T) {
 func TestStealthCannotBeAttackedAndBreaksOnEnemyEffectDamage(t *testing.T) {
 	attackerID, targetID := strings.Repeat("1", 32), strings.Repeat("2", 32)
 	pack := &ir.CardPack{Cards: []ir.Card{
-		{ID: 66666685, CardType: "follower", Stats: &ir.Stats{Attack: 2, Life: 2}},
-		{ID: 66666686, CardType: "follower", Stats: &ir.Stats{Attack: 2, Life: 3}, Intrinsic: []string{"stealth"}},
+		{ID: 66666685, CardType: "follower", Stats: &ir.Stats{Attack: 2, Life: 2}, Intrinsic: []string{"stealth"}},
+		{ID: 66666686, CardType: "follower", Stats: &ir.Stats{Attack: 2, Life: 3}},
 	}}
 	state := testState()
 	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: attackerID, CardID: 66666685, DeclaredType: "follower"})
@@ -764,12 +779,124 @@ func TestStealthCannotBeAttackedAndBreaksOnEnemyEffectDamage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if result := session.Begin(strings.Repeat("3", 32), ir.AttackAction{Kind: "attack_entity", Actor: "own", Attacker: attackerID, Defender: targetID}); result.Status != StatusIllegal || result.IllegalCode != "stealth_target" {
-		t.Fatalf("stealth follower was attackable: %#v", result)
+	if result := session.Begin(strings.Repeat("3", 32), ir.AttackAction{Kind: "attack_entity", Actor: "own", Attacker: attackerID, Defender: targetID}); result.Status == StatusIllegal {
+		t.Fatalf("stealth attacker could not attack: %#v", result)
 	}
+	session.g.instances[attackerID].abilities["stealth"] = true
 	session.g.damageInstanceFrom(session.g.instances[attackerID], session.g.instances[targetID], 1, "effect")
-	if session.g.instances[targetID].abilities["stealth"] {
-		t.Fatal("stealth was not removed by enemy effect damage")
+	if session.g.instances[attackerID].abilities["stealth"] {
+		t.Fatal("stealth was not removed when its ability dealt damage")
+	}
+}
+
+func TestStealthDoesNotHideFromAreaOrRandomEffects(t *testing.T) {
+	sourceID, firstID, secondID := strings.Repeat("c", 32), strings.Repeat("d", 32), strings.Repeat("e", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 66666690, CardType: "spell"},
+		{ID: 66666691, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 3}, Intrinsic: []string{"stealth"}},
+	}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: sourceID, CardID: 66666691, DeclaredType: "follower"})
+	state.Players["oppo"] = withInstance(state.Players["oppo"], "field", ir.TestInstance{InstanceID: firstID, CardID: 66666691, DeclaredType: "follower"})
+	state.Players["oppo"] = withInstance(state.Players["oppo"], "field", ir.TestInstance{InstanceID: secondID, CardID: 66666691, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	source := session.g.instances[sourceID]
+	random := ir.SelectionEffect{Kind: "random_choose", Source: ir.ZoneRef{Kind: "zone", Side: "oppo", Zone: "field", Member: "follower"}}
+	if got := session.g.selectionCandidates(random, source, frame{}); len(got) != 2 {
+		t.Fatalf("random effect hid stealth targets: got %d candidates", len(got))
+	}
+	session.g.execTargetEffect(ir.TargetEffect{Kind: "damage", Target: ir.ZoneRef{Kind: "zone", Side: "oppo", Zone: "field", Member: "follower"}, Amount: 1}, source, frame{})
+	if session.g.instances[firstID].life != 2 || session.g.instances[secondID].life != 2 {
+		t.Fatalf("area damage skipped stealth targets: %d/%d", session.g.instances[firstID].life, session.g.instances[secondID].life)
+	}
+	if source.abilities["stealth"] {
+		t.Fatal("stealth source did not lose stealth after dealing ability damage")
+	}
+}
+
+func TestAuraOnlyBlocksOpposingChosenEffects(t *testing.T) {
+	sourceID, targetID := strings.Repeat("f", 32), strings.Repeat("0", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 66666692, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 2}},
+		{ID: 66666693, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 2}, Intrinsic: []string{"aura"}},
+	}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: sourceID, CardID: 66666692, DeclaredType: "follower"})
+	state.Players["oppo"] = withInstance(state.Players["oppo"], "field", ir.TestInstance{InstanceID: targetID, CardID: 66666693, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	source := session.g.instances[sourceID]
+	chosen := ir.SelectionEffect{Kind: "choose", Source: ir.ZoneRef{Kind: "zone", Side: "oppo", Zone: "field", Member: "follower"}}
+	if got := session.g.selectionCandidates(chosen, source, frame{}); len(got) != 0 {
+		t.Fatalf("aura target was available to chosen effect: %#v", got)
+	}
+	random := chosen
+	random.Kind = "random_choose"
+	if got := session.g.selectionCandidates(random, source, frame{}); len(got) != 1 {
+		t.Fatalf("aura target was unavailable to random effect: %#v", got)
+	}
+	if result := session.Begin(strings.Repeat("1", 32), ir.AttackAction{Kind: "attack_entity", Actor: "own", Attacker: sourceID, Defender: targetID}); result.Status != StatusCompleted {
+		t.Fatalf("aura incorrectly blocked attack: %#v", result)
+	}
+}
+
+func TestSpellboostQueuesHandTriggersAndReducesCostAtZero(t *testing.T) {
+	sourceID, targetID := strings.Repeat("2", 32), strings.Repeat("3", 32)
+	abilityID := strings.Repeat("4", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: 66666694, CardType: "spell"},
+		{ID: 66666695, CardType: "follower", Cost: 2, Stats: &ir.Stats{Attack: 1, Life: 1}, Abilities: []ir.Ability{{
+			ID: abilityID, Trigger: ir.SimpleTrigger{Kind: "spellboost"}, Body: []ir.Effect{
+				ir.AdjustEffect{Kind: "adjust_entity_field", Field: "cost", Target: ir.SelfRef{Kind: "self"}, Delta: -1, Minimum: 0},
+			}},
+		}},
+	}}
+	state := testState()
+	state.Players["own"] = withInstance(state.Players["own"], "hand", ir.TestInstance{InstanceID: sourceID, CardID: 66666694, DeclaredType: "spell"})
+	state.Players["own"] = withInstance(state.Players["own"], "hand", ir.TestInstance{InstanceID: targetID, CardID: 66666695, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	session.g.execAdjust(ir.AdjustEffect{Kind: "spellboost", Target: ir.ZoneRef{Kind: "zone", Side: "own", Zone: "hand"}, Times: 3}, nil, frame{})
+	if step := session.run(); step.Status != StatusCompleted {
+		t.Fatalf("spellboost triggers did not resolve: %#v", step)
+	}
+	if got := session.g.instances[targetID].cost; got != 0 {
+		t.Fatalf("spellboost cost did not clamp at zero: %d", got)
+	}
+	if got := session.g.instances[targetID].card.Cost; got != 2 {
+		t.Fatalf("spellboost mutated shared card definition: %d", got)
+	}
+}
+
+func TestEnhanceUsesHighestAffordableReplacementCostAndAllLowerAbilities(t *testing.T) {
+	sourceID := strings.Repeat("5", 32)
+	card := ir.Card{ID: 66666696, CardType: "follower", Cost: 2, Stats: &ir.Stats{Attack: 1, Life: 1}, Abilities: []ir.Ability{
+		{ID: strings.Repeat("6", 32), Trigger: ir.CostTrigger{Kind: "enhance", Cost: 4}, Body: []ir.Effect{ir.TargetEffect{Kind: "buff_stats", Target: ir.SelfRef{Kind: "self"}, AttackDelta: 3, LifeDelta: 3}}},
+		{ID: strings.Repeat("7", 32), Trigger: ir.CostTrigger{Kind: "enhance", Cost: 3}, Body: []ir.Effect{ir.TargetEffect{Kind: "buff_stats", Target: ir.SelfRef{Kind: "self"}, AttackDelta: 1, LifeDelta: 1}}},
+	}}
+	pack := &ir.CardPack{Cards: []ir.Card{card}}
+	state := testState()
+	own := state.Players["own"]
+	own.PP, own.MaxPP = 4, 4
+	own = withInstance(own, "hand", ir.TestInstance{InstanceID: sourceID, CardID: 66666696, DeclaredType: "follower"})
+	state.Players["own"] = own
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result := session.Begin(strings.Repeat("8", 32), ir.SourceAction{Kind: "play", Actor: "own", Source: sourceID}); result.Status != StatusCompleted {
+		t.Fatalf("enhanced play failed: %#v", result)
+	}
+	unit := session.g.instances[sourceID]
+	if session.g.own.pp != 0 || unit.attack != 5 || unit.life != 5 {
+		t.Fatalf("highest enhance cost and cumulative abilities diverged: pp=%d unit=%#v", session.g.own.pp, unit)
 	}
 }
 

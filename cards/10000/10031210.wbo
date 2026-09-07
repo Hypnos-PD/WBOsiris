@@ -3,6 +3,7 @@ wbo 0.1.0;
 card 10031210 {
     type amulet;
     cost 1;
+    trait earthsigil;
 
     effect {
         earthsigil;

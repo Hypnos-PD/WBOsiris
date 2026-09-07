@@ -188,17 +188,27 @@ func TestHandLimitAndDeckOut(t *testing.T) {
 
 func TestStartMatchDrawsForFirstPlayer(t *testing.T) {
 	cardID := 34567894
-	pack := &ir.CardPack{Cards: []ir.Card{{ID: cardID, CardType: "spell"}}}
+	listenerID := strings.Repeat("2", 32)
+	pack := &ir.CardPack{Cards: []ir.Card{
+		{ID: cardID, CardType: "spell"},
+		{ID: 34567895, CardType: "follower", Stats: &ir.Stats{Attack: 1, Life: 1}, Abilities: []ir.Ability{{ID: listenerID, Trigger: ir.EventTrigger{Kind: "event", Event: "turn_started", Side: "own"}, Body: []ir.Effect{ir.AdjustEffect{Kind: "adjust_resource", Resource: "combo", Delta: 1}}}}},
+	}}
 	state := testState()
 	state.FirstPlayer = "own"
 	state.Players["own"] = withInstance(state.Players["own"], "deck", ir.TestInstance{InstanceID: strings.Repeat("1", 32), CardID: cardID, DeclaredType: "spell"})
+	state.Players["own"] = withInstance(state.Players["own"], "field", ir.TestInstance{InstanceID: strings.Repeat("3", 32), CardID: 34567895, DeclaredType: "follower"})
 	session, err := NewSession(pack, state, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
-	session.StartMatch()
+	if result := session.StartMatch(); result.Status != StatusCompleted {
+		t.Fatalf("initial turn processing did not complete: %#v", result)
+	}
 	if len(session.g.own.hand) != 1 || len(session.g.own.deck) != 0 || len(session.g.oppo.hand) != 0 {
 		t.Fatalf("initial turn draw diverged: own=%#v oppo=%#v", session.g.own, session.g.oppo)
+	}
+	if session.g.own.combo != 1 {
+		t.Fatalf("turn-start trigger did not run before match actions: combo=%d", session.g.own.combo)
 	}
 }
 

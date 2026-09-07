@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10122110 {
+    type follower;
+    cost 1;
+    stats 1/1;
+    trait luminous;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "统率的鲁米那斯骑士";
+        text """
+自己的士兵·随从进入战场时，回合结束前，本随从+1/+0。
+<hr><ev>【<color=Keyword>进化时</color>】召唤1个『<color=Keyword>骑士</color>』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Luminous Commander";
+        text """
+Whenever an allied Officer follower enters the field, give this follower +1/+0 until the end of the turn.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Summon a <b><i><color=Keyword>Knight</color></i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"とうそつ\">統率</rub>のルミナスナイト";
+        text """
+自分の兵士・フォロワーが場に出たとき、ターン終了まで、これは+1/+0する。
+<hr><ev>【<color=Keyword>進化時</color>】『<color=Keyword>ナイト</color>』1枚を自分の場に出す。</ev>
+""";
+    }
+
+    locale kor {
+        name "통솔의 루미나스 나이트";
+        text """
+내 병사 추종자가 전장에 소환되었을 때, 턴 종료까지 이 추종자는 +1/+0.
+<hr><ev>[<color=Keyword>진화시</color>] <color=Keyword>기사</color> 1장을 내 전장에 소환.</ev>
+""";
+    }
+
+    locale cht {
+        name "統率的魯米那斯騎士";
+        text """
+當自己的士兵‧從者卡進入戰場時，到回合結束為止，使這張卡片+1/+0。
+<hr><ev>【<color=Keyword>進化時</color>】召喚1張『<color=Keyword>騎士</color>』到自己的戰場上。</ev>
+""";
+    }
+
+}

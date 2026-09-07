@@ -82,8 +82,17 @@ func TestDecodeAllCards(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(pack.Cards) != 81 {
+	if len(pack.Cards) != 231 {
 		t.Fatalf("cards=%d", len(pack.Cards))
+	}
+}
+
+func TestDecodeRejectsUnknownCardTrait(t *testing.T) {
+	object := cardPackObject(t)
+	card := object["cards"].([]any)[0].(map[string]any)
+	card["traits"] = []any{"bat"}
+	if _, err := ir.DecodeCardPack(encodeCardPack(t, object)); err == nil {
+		t.Fatal("card pack accepted an unknown trait")
 	}
 }
 

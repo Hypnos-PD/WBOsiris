@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10101110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        fanfare {
+            choose target from own.hand;
+            return target to deck;
+            draw 1;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "贪婪的智天使·露比";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的1张手牌，使其返回牌组。抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Ruby, Greedy Cherub";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a card in your hand and return it to deck. Draw a card.
+""";
+    }
+
+    locale jpn {
+        name "グリードケルブ・ルビィ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札1枚を選ぶ。それをデッキに戻す。自分のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "욕심쟁이 지천사 루비";
+        text """
+[<color=Keyword>출격</color>] 내 패에서 1장을 선택한다. 그 카드를 덱으로 되돌린다. 내 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "貪婪的智天使‧露比";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己手牌中的卡片。使其返回牌堆中。由自己的牌堆中抽取1張卡片。
+""";
+    }
+
+}

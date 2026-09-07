@@ -161,6 +161,7 @@ scenario "打出后自身计入连击并静默进化" {
         own.combo == 3;
         own.ep == 1;
         treant.evolved == true;
+        treant.stats == 6/6;
     }
 }
 
@@ -755,7 +756,8 @@ scenario "融合材料费用分支触发变身" {
     expect {
         legal;
         source.zone == hand;
-        source has rush;
+        source lacks rush;
+        source.stats == 5/3;
         own.hand count card 90073130 == 1;
     }
 }

@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10112120 {
+    type follower;
+    cost 1;
+    stats 1/1;
+
+    effect {
+        lastwords {
+            add 1 card 90011110 to hand;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "纯真的水之妖精";
+        text """
+【<color=Keyword>谢幕曲</color>】将1张『<color=Keyword>妖精</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Good Fairy of the Pond";
+        text """
+<b><color=Keyword>Last Words</color></b>: Add a <b><i><color=Keyword>Fairy</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"じゅんすい\">純粋</rub>なるウォーターフェアリー";
+        text """
+【<color=Keyword>ラストワード</color>】『<color=Keyword>フェアリー</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "순수한 물의 요정";
+        text """
+[<color=Keyword>유언</color>] <color=Keyword>요정</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "純真的水之妖精";
+        text """
+【<color=Keyword>謝幕曲</color>】增加1張『<color=Keyword>妖精</color>』到自己的手牌中。
+""";
+    }
+
+}

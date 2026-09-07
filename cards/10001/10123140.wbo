@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10123140 {
+    type follower;
+    cost 8;
+    stats 6/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class swordcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "煌刃勇者·阿玛利亚";
+        text """
+【<color=Keyword>入场曲</color>】召唤4个『<color=Keyword>铁甲骑士</color>』。
+<hr>自己的其他随从进入战场时，使其+1/+0且获得【<color=Keyword>突进</color>】和【<color=Keyword>守护</color>】。
+""";
+    }
+
+    locale eng {
+        name "Amalia, Luxsteel Paladin";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon 4 copies of <b><i><color=Keyword>Steelclad Knight</color></i></b>.
+<hr>Whenever another allied follower enters the field, give it +1/+0, <b><color=Keyword>Rush</color></b>, and <b><color=Keyword>Ward</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"こうじん\">煌刃</rub>の<rub=\"ゆうしゃ\">勇者</rub>・アマリア";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>スティールナイト</color>』4枚を自分の場に出す。
+<hr>自分の他のフォロワーが場に出たとき、それは+1/+0して【<color=Keyword>突進</color>】と【<color=Keyword>守護</color>】を持つ。
+""";
+    }
+
+    locale kor {
+        name "빛의 용사 아마리아";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>철갑 기사</color> 4장을 내 전장에 소환.
+<hr>내 다른 추종자가 전장에 소환되었을 때, 그 추종자는 +1/+0 및 [<color=Keyword>돌진</color>], [<color=Keyword>수호</color>]를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "煌刃勇者‧阿瑪莉雅";
+        text """
+【<color=Keyword>入場曲</color>】召喚4張『<color=Keyword>鐵甲騎士</color>』到自己的戰場上。
+<hr>當自己的其他從者卡進入戰場時，使其+1/+0並獲得【<color=Keyword>突進</color>】與【<color=Keyword>守護</color>】。
+""";
+    }
+
+}

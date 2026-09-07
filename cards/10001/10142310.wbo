@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10142310 {
+    type spell;
+    cost 3;
+
+    effect {
+        draw 2;
+        if own.maxpp >= 7 {
+            heal own.leader 2;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "荣弦的奏乐";
+        text """
+抽取2张卡牌。若为【<color=Keyword>觉醒</color>】，则回复自己的主战者2点生命值。
+""";
+    }
+
+    locale eng {
+        name "Goldennote Melody";
+        text """
+Draw 2 cards. If you're in <b><color=Keyword>Overflow</color></b>, restore 2 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"えいげん\">栄弦</rub>の<rub=\"そうがく\">奏楽</rub>";
+        text """
+自分のデッキから2枚を引く。【<color=Keyword>覚醒</color>】なら、自分のリーダーを2回復。
+""";
+    }
+
+    locale kor {
+        name "영현의 주악";
+        text """
+내 덱에서 2장을 뽑는다. [<color=Keyword>각성</color>]이라면, 내 리더를 2 회복.
+""";
+    }
+
+    locale cht {
+        name "榮弦的奏樂";
+        text """
+由自己的牌堆中抽取2張卡片。如果【<color=Keyword>覺醒</color>】已發動，則會回復自己的主戰者2點生命值。
+""";
+    }
+
+}

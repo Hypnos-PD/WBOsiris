@@ -1,0 +1,66 @@
+wbo 0.1.0;
+
+card 10104110 {
+    type follower;
+    cost 7;
+    stats 4/4;
+
+    effect {
+        fanfare {
+            draw 2;
+            heal own.leader 2;
+            gain own.pp 2;
+        }
+        superevolve {
+            choose target from own.field.followers other where form unevolved;
+            superevolve target silent;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class neutral;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "勇武的堕天使·奥莉薇";
+        text """
+【<color=Keyword>入场曲</color>】抽取2张卡牌。回复自己的主战者2点生命值。回复自己2点能量点。
+<hr><sev>【<color=Keyword>超进化时</color>】选择自己的战场上的1张进化前的其他随从，使其超进化。</sev>
+""";
+    }
+
+    locale eng {
+        name "Olivia, Heroic Dark Angel";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Draw 2 cards. Restore 2 defense to your leader. Recover 2 play points.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Select another unevolved allied follower on the field and super-evolve it.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ゆうそう\">勇壮</rub>の<rub=\"だてんし\">堕天使</rub>・オリヴィエ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキから2枚を引く。自分のリーダーを2回復。自分のPPを2回復。
+<hr><sev>【<color=Keyword>超進化時</color>】自分の場の他の進化前のフォロワー1枚を選ぶ。それは超進化する。</sev>
+""";
+    }
+
+    locale kor {
+        name "기백의 타천사 올리비에";
+        text """
+[<color=Keyword>출격</color>] 내 덱에서 2장을 뽑는다. 내 리더를 2 회복. 내 PP를 2 회복.
+<hr><sev>[<color=Keyword>초진화시</color>] 내 전장에서 진화전인 다른 추종자 1장을 선택한다. 그 추종자는 초진화한다.</sev>
+""";
+    }
+
+    locale cht {
+        name "毅勇的墮天使‧奧莉薇";
+        text """
+【<color=Keyword>入場曲</color>】由自己的牌堆中抽取2張卡片。回復自己的主戰者2點生命值。回復自己的PP 2點。
+<hr><sev>【<color=Keyword>超進化時</color>】指定1張自己戰場上其他進化前的從者卡。使其超進化。</sev>
+""";
+    }
+
+}

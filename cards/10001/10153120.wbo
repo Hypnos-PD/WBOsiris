@@ -1,0 +1,74 @@
+wbo 0.1.0;
+
+card 10153120 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        ward;
+        fanfare {
+            gain own.shadows 2;
+        }
+        evolve {
+            necromancy 4 {
+                repeat 2 {
+                    random target from oppo.field.followers;
+                    damage target 2;
+                }
+            }
+        }
+    }
+
+    meta {
+        pack 10001;
+        class abysscraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "燃烧魔剑·欧特鲁斯";
+        text """
+【<color=Keyword>入场曲</color>】使自己的墓场+2。
+<hr>【<color=Keyword>守护</color>】
+<hr><ev>【<color=Keyword>进化时</color>】【<color=Keyword>唤灵</color>_4】发动2次「对对手的战场上的随机1个随从造成2点伤害」。</ev>
+""";
+    }
+
+    locale eng {
+        name "Orthrus, Hellhound Blader";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Gain 2 shadows.
+<hr><b><color=Keyword>Ward</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: <b><color=Keyword>Necromancy</color> (4)</b> - Do this 2 times: \"Deal 2 damage to a random enemy follower.\"</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"も\">燃</rub>え<rub=\"さか\">盛</rub>る<rub=\"まけん\">魔剣</rub>・オルトロス";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の墓場を+2する。
+<hr>【<color=Keyword>守護</color>】
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ネクロマンス</color>_4】「相手の場のフォロワーからランダム1枚に2ダメージ。」を2回行う。</ev>
+""";
+    }
+
+    locale kor {
+        name "타오르는 마검 오르트로스";
+        text """
+[<color=Keyword>출격</color>] 내 묘지를 +2.
+<hr>[<color=Keyword>수호</color>]
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>사령술</color> 4] 「상대방 전장의 추종자 중 무작위로 1장에게 2 피해」를 2회 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "盛燃的魔劍‧歐特魯斯";
+        text """
+【<color=Keyword>入場曲</color>】使自己的墓場+2。
+<hr>【<color=Keyword>守護</color>】
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>死靈術</color>_4】發動2次「隨機給予1張敵方戰場上的從者卡2點傷害」。</ev>
+""";
+    }
+
+}

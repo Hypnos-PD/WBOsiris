@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10112310 {
+    type spell;
+    cost 3;
+
+    effect {
+        add 1 card 90011310 to hand;
+        draw 1;
+    }
+
+    meta {
+        pack 10001;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "薰交的思慕";
+        text """
+将1张『<color=Keyword>森林的奥秘</color>』加入手牌。抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Fragrantwood Whispers";
+        text """
+Add a <b><i><color=Keyword>Deepwood Bounty</color></i></b> to your hand. Draw a card.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"くんこう\">薫交</rub>の<rub=\"しぼ\">思慕</rub>";
+        text """
+『<color=Keyword>森の神秘</color>』1枚を自分の手札に加える。自分のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "훈교의 사모";
+        text """
+<color=Keyword>숲의 신비</color> 1장을 내 패에 넣는다. 내 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "薰交的敬慕";
+        text """
+增加1張『<color=Keyword>森林的奧祕</color>』到自己的手牌中。由自己的牌堆中抽取1張卡片。
+""";
+    }
+
+}

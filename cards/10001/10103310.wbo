@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10103310 {
+    type spell;
+    cost 4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class neutral;
+        rarity gold;
+    }
+
+    locale chs {
+        name "神之雷霆";
+        text """
+破坏对手的战场上的随机1个攻击力最大的随从。对对手的战场上的所有随从造成1点伤害。
+""";
+    }
+
+    locale eng {
+        name "Divine Thunder";
+        text """
+Destroy a random enemy follower with the highest attack. Deal 1 damage to all enemy followers.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"かみ\">神</rub>の<rub=\"らいてい\">雷霆</rub>";
+        text """
+相手の場の攻撃力最大のフォロワーからランダム1枚を破壊。相手の場のフォロワーすべてに1ダメージ。
+""";
+    }
+
+    locale kor {
+        name "신의 뇌정";
+        text """
+공격력이 가장 높은 상대방 전장의 추종자 중 무작위로 1장을 파괴. 상대방 전장의 추종자 모두에게 1 피해.
+""";
+    }
+
+    locale cht {
+        name "神之雷霆";
+        text """
+隨機破壞1張敵方戰場上攻擊力最高的從者卡。給予敵方戰場上全部的從者卡1點傷害。
+""";
+    }
+
+}

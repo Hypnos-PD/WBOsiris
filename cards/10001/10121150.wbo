@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10121150 {
+    type follower;
+    cost 2;
+    stats 2/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "异端武士";
+        text """
+【<color=Keyword>入场曲</color>】若为超进化已解禁的回合，则本随从获得【<color=Keyword>毁灭</color>】。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Ignominious Samurai";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If you've unlocked super-evolution, give this follower <b><color=Keyword>Bane</color></b>.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"いたん\">異端</rub>の<rub=\"さむらい\">侍</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】超進化可能ターンなら、これは【<color=Keyword>必殺</color>】を持つ。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "이단의 무사";
+        text """
+[<color=Keyword>출격</color>] 초진화 가능 턴이라면, 이 추종자는 [<color=Keyword>필살</color>]을 갖는다.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "異端武士";
+        text """
+【<color=Keyword>入場曲</color>】如果為已超進化解禁的回合，則會使這張卡片獲得【<color=Keyword>必殺</color>】。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

@@ -1,0 +1,17 @@
+wbo 0.1.0;
+
+card 90041110 {
+    type follower;
+    cost 1;
+    stats 1/1;
+
+    effect { }
+
+    meta { pack 90000; class dragoncraft; rarity bronze; }
+
+    locale chs { name "炽炎幼龙"; text ""; }
+    locale eng { name "Fire Drake Whelp"; text ""; }
+    locale jpn { name "ベビーファイアドレイク"; text ""; }
+    locale kor { name "어린 화염룡"; text ""; }
+    locale cht { name "熾炎幼龍"; text ""; }
+}

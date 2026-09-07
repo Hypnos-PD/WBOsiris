@@ -1,0 +1,38 @@
+wbo 0.1.0;
+
+card 90061120 {
+    type follower;
+    cost 4;
+    stats 4/4;
+
+    effect {
+        rush;
+    }
+
+    meta {
+        pack 90000;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "圣炎猛虎";
+        text "【突进】";
+    }
+    locale eng {
+        name "Holyflame Tiger";
+        text "Rush";
+    }
+    locale jpn {
+        name "ホーリーフレイムタイガー";
+        text "【突進】";
+    }
+    locale kor {
+        name "성화의 맹호";
+        text "[돌진]";
+    }
+    locale cht {
+        name "聖炎猛虎";
+        text "【突進】";
+    }
+}

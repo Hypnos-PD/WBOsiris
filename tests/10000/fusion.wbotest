@@ -1,0 +1,78 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Alpha fuses Beta and Gamma in one selection" {
+    seed 1801;
+    state {
+        turn own 7;
+        phase main;
+        player own {
+            hand {
+                follower source = 90073110;
+                follower beta = 90073120;
+                follower gamma = 90073130;
+            }
+        }
+        player oppo { }
+    }
+    action { fuse source; select beta, gamma; }
+    expect {
+        legal;
+        source.zone == hand;
+        source.stats == 10/10;
+        source has storm;
+        source has ward;
+        source has intimidate;
+        own.hand count card 90074110 == 1;
+        own.hand count card 90073120 == 0;
+        own.hand count card 90073130 == 0;
+        own.shadows == 0;
+    }
+}
+
+scenario "Alpha can fuse Gamma without a Beta in hand" {
+    seed 1802;
+    state {
+        turn own 7;
+        phase main;
+        player own {
+            hand {
+                follower source = 90073110;
+                follower gamma = 90073130;
+            }
+        }
+        player oppo { }
+    }
+    action { fuse source; select gamma; }
+    expect {
+        legal;
+        source.stats == 3/5;
+        own.hand count card 90073110 == 1;
+        own.hand count card 90073130 == 0;
+        own.shadows == 0;
+    }
+}
+
+scenario "Two Beta copies do not count as two fused card kinds" {
+    seed 1803;
+    state {
+        turn own 7;
+        phase main;
+        player own {
+            hand {
+                follower source = 90073110;
+                follower first = 90073120;
+                follower second = 90073120;
+            }
+        }
+        player oppo { }
+    }
+    action { fuse source; select first, second; }
+    expect {
+        legal;
+        source.stats == 3/5;
+        own.hand count card 90073110 == 1;
+        own.hand count card 90073120 == 0;
+        own.shadows == 0;
+    }
+}

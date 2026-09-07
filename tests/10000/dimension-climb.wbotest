@@ -1,0 +1,110 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Dimension Climb redraws a boosted card and preserves its queued boost" {
+    seed 1;
+    state {
+        turn own 8;
+        phase main;
+        player own {
+            pp 5/8;
+            hand {
+                spell source = 10134310 { cost 5; }
+                spell held = 10133320 { cost 6; }
+            }
+            deck top {
+                spell first = 10133320;
+                spell second = 10133320;
+                spell third = 10133320;
+                spell fourth = 10133320;
+            }
+        }
+        player oppo { }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        source.cost == 5;
+        held.zone == hand;
+        held.cost == 0;
+        first.cost == 2;
+        second.cost == 2;
+        third.cost == 2;
+        fourth.cost == 2;
+        own.pp == 8/8;
+        own.maxpp == 8;
+        own.shadows == 1;
+        own.hand count card 10133320 == 5;
+        rng.consumed == 1;
+    }
+}
+
+scenario "Dimension Climb preserves the queued boost on a card left in deck" {
+    seed 1;
+    state {
+        turn own 8;
+        phase main;
+        player own {
+            pp 5/8;
+            hand {
+                spell source = 10134310 { cost 5; }
+                spell held = 10133320 { cost 6; }
+            }
+            deck top {
+                spell first = 10133320;
+                spell second = 10133320;
+                spell third = 10133320;
+                spell fourth = 10133320;
+                spell fifth = 10133320;
+            }
+        }
+        player oppo { }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        source.cost == 5;
+        held.zone == deck;
+        held.cost == 5;
+        first.cost == 2;
+        fifth.cost == 2;
+        own.pp == 8/8;
+        own.maxpp == 8;
+        own.hand count card 10133320 == 5;
+        rng.consumed == 1;
+    }
+}
+
+scenario "Zero-cost Dimension Climb restores PP with no other cards in hand" {
+    seed 1903;
+    state {
+        turn own 3;
+        phase main;
+        player own {
+            pp 0/3;
+            hand { spell source = 10134310 { cost 0; } }
+            deck top {
+                spell first = 10133320;
+                spell second = 10133320;
+                spell third = 10133320;
+                spell fourth = 10133320;
+                spell fifth = 10133320;
+            }
+        }
+        player oppo { }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        source.cost == 0;
+        first.cost == 2;
+        fifth.cost == 2;
+        own.pp == 3/3;
+        own.maxpp == 3;
+        own.hand count card 10133320 == 5;
+        rng.consumed == 0;
+    }
+}

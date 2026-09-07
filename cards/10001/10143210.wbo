@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10143210 {
+    type amulet;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class dragoncraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "乙姬的宝扇";
+        text """
+费用3【<color=Keyword>启动</color>】召唤1个『<color=Keyword>乙姬近卫队</color>』。选择自己的1张手牌，舍弃该手牌。
+""";
+    }
+
+    locale eng {
+        name "Fan of Otohime";
+        text """
+<b><color=Keyword>Engage</color> (3)</b>: Summon an <b><i><color=Keyword>Otohime's Bodyguard</color></i></b>. Select a card in your hand and discard it.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"おとひめ\">乙姫</rub>の<rub=\"おうぎ\">扇</rub>";
+        text """
+コスト3【<color=Keyword>アクト</color>】『<color=Keyword>乙姫お守り隊</color>』1枚を自分の場に出す。自分の手札1枚を選ぶ。それを捨てる。
+""";
+    }
+
+    locale kor {
+        name "오토히메의 부채";
+        text """
+비용 3 [<color=Keyword>활성화</color>] <color=Keyword>오토히메 호위대</color> 1장을 내 전장에 소환. 내 패에서 1장을 선택한다. 그 카드를 버린다.
+""";
+    }
+
+    locale cht {
+        name "乙姬的寶扇";
+        text """
+消費3【<color=Keyword>策動</color>】召喚1張『<color=Keyword>乙姬近衛隊</color>』到自己的戰場上。指定1張自己手牌中的卡片。將其捨棄。
+""";
+    }
+
+}

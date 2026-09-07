@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10164110 {
+    type follower;
+    cost 7;
+    stats 5/5;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "裁决的安纳提玛·罗德欧";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的1张手牌，舍弃该手牌。召唤随机3种自己的牌组中费用为3或以下的护符。
+<hr><sev>【<color=Keyword>超进化时</color>】破坏对手的战场上的随机1个攻击力最大的随从。对对手的战场上的所有随从造成1点伤害。</sev>
+""";
+    }
+
+    locale eng {
+        name "Rodeo, Anathema of Judgment";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a card in your hand and discard it. Summon 3 random differently named amulets that cost 3 or less from your deck.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Destroy a random enemy follower with the highest attack. Deal 1 damage to all enemy followers.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"さいけつ\">裁決</rub>のアナテマ・ロデオ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札1枚を選ぶ。それを捨てる。自分のデッキのコスト3以下のアミュレットからランダム3種類を自分の場に出す。
+<hr><sev>【<color=Keyword>超進化時</color>】相手の場の攻撃力最大のフォロワーからランダム1枚を破壊。相手の場のフォロワーすべてに1ダメージ。</sev>
+""";
+    }
+
+    locale kor {
+        name "재결의 아나테마 로데오";
+        text """
+[<color=Keyword>출격</color>] 내 패에서 1장을 선택한다. 그 카드를 버린다. 비용이 3 이하인 내 덱의 마법진 중 무작위로 3종류를 내 전장에 소환.
+<hr><sev>[<color=Keyword>초진화시</color>] 공격력이 가장 높은 상대방 전장의 추종자 중 무작위로 1장을 파괴. 상대방 전장의 추종자 모두에게 1 피해.</sev>
+""";
+    }
+
+    locale cht {
+        name "裁決的弒滅者‧羅德歐";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己手牌中的卡片。將其捨棄。隨機將3種「自己牌堆中消費為3以下的護符卡」召喚到自己的戰場上。
+<hr><sev>【<color=Keyword>超進化時</color>】隨機破壞1張敵方戰場上攻擊力最高的從者卡。給予敵方戰場上全部的從者卡1點傷害。</sev>
+""";
+    }
+
+}

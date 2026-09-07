@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10143130 {
+    type follower;
+    cost 6;
+    stats 3/3;
+
+    effect {
+        fanfare {
+            summon 1 card 90041120;
+        }
+        ward;
+    }
+
+    meta {
+        pack 10001;
+        class dragoncraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "惊涛龙骑士·扎哈尔";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>巨翼飞龙</color>』。
+<hr>【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Zahar, Stormwave Dragoon";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Vastwing Dragon</color></i></b>.
+<hr><b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あらなみ\">荒波</rub>のドラグーン・ザハール";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>大翼のドラゴン</color>』1枚を自分の場に出す。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "격랑의 용기병 자하르";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>대익룡</color> 1장을 내 전장에 소환.
+<hr>[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "駭浪龍騎士‧薩哈爾";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>巨翼飛龍</color>』到自己的戰場上。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+}

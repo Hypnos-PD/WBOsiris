@@ -1,0 +1,56 @@
+wbo 0.1.0;
+
+card 10111130 {
+    type follower;
+    cost 8;
+    stats 4/4;
+
+    effect {
+        fanfare {
+            draw 1;
+            heal own.leader count(own.hand);
+        }
+    }
+
+    meta {
+        pack 10001;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "深奥的妖精守护圣兽";
+        text """
+【<color=Keyword>入场曲</color>】抽取1张卡牌。回复自己的主战者X点生命值。X为自己的手牌张数。
+""";
+    }
+
+    locale eng {
+        name "Deepwood Fairy Beast";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Draw a card. Restore X defense to your leader. X is the number of cards in your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しんおう\">深奥</rub>のフェアリービースト";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキから1枚を引く。自分のリーダーをX回復。Xは自分の手札の枚数である。
+""";
+    }
+
+    locale kor {
+        name "깊은 숲의 페어리 비스트";
+        text """
+[<color=Keyword>출격</color>] 내 덱에서 1장을 뽑는다. 내 리더를 X 회복. X는 내 패의 수.
+""";
+    }
+
+    locale cht {
+        name "深奧的妖精守護聖獸";
+        text """
+【<color=Keyword>入場曲</color>】由自己的牌堆中抽取1張卡片。回復自己的主戰者X點生命值。X為「自己手牌中的卡片張數」。
+""";
+    }
+
+}

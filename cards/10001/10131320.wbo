@@ -1,0 +1,67 @@
+wbo 0.1.0;
+
+card 10131320 {
+    type spell;
+    cost 1;
+
+    effect {
+        counter x 2;
+        spellboost {
+            add 1 counter x;
+        }
+        require target from oppo.field.followers;
+        damage target self.counter.x;
+    }
+
+    meta {
+        pack 10001;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "暴风破";
+        text """
+X起始为2。
+【<color=Keyword>魔力增幅时</color>】使本卡牌的X+1。
+<hr>选择对手的战场上的1个随从，对其造成X点伤害。
+""";
+    }
+
+    locale eng {
+        name "Stormy Blast";
+        text """
+X starts at 2.
+<b><color=Keyword>On Spellboost</color></b>: Increase X by 1.
+<hr>Select an enemy follower on the field and deal it X damage.
+""";
+    }
+
+    locale jpn {
+        name "ストームブラスト";
+        text """
+Xは2から始まる。
+【<color=Keyword>スペルブースト時</color>】これのXを+1する。
+<hr>相手の場のフォロワー1枚を選ぶ。それにXダメージ。
+""";
+    }
+
+    locale kor {
+        name "스톰 블라스트";
+        text """
+X는 2부터 시작.
+[<color=Keyword>주문증폭시</color>] 이 주문의 X를 +1.
+<hr>상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 X 피해.
+""";
+    }
+
+    locale cht {
+        name "暴風噴射";
+        text """
+X由2開始。
+【<color=Keyword>魔力增幅時</color>】使這張卡片的X+1。
+<hr>指定1張敵方戰場上的從者卡。給予其X點傷害。
+""";
+    }
+
+}

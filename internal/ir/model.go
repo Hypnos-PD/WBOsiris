@@ -11,6 +11,7 @@ const (
 	IRVersion             = "0.2.0"
 	SourceLanguageVersion = "0.1.0"
 	Encoding              = "canonical-json"
+	MagicSedimentCardID   = 90031210
 )
 
 type SourceSpan struct {
@@ -126,6 +127,7 @@ type Locale struct {
 }
 
 type Card struct {
+	Counters        map[string]int    `json:"counters,omitempty"`
 	ID              int               `json:"id"`
 	CardType        string            `json:"cardType"`
 	Cost            int               `json:"cost"`
@@ -198,6 +200,7 @@ type EventTrigger struct {
 	Event       string    `json:"event"`
 	Side        string    `json:"side"`
 	SubjectType string    `json:"subjectType,omitempty"`
+	SelfOnly    bool      `json:"selfOnly,omitempty"`
 	Predicate   Predicate `json:"predicate,omitempty"`
 }
 
@@ -279,6 +282,7 @@ type FieldPredicate struct {
 	CardType string `json:"cardType,omitempty"`
 	Class    string `json:"class,omitempty"`
 	Trait    string `json:"trait,omitempty"`
+	Form     string `json:"form,omitempty"`
 	Field    string `json:"field,omitempty"`
 	Op       string `json:"op,omitempty"`
 	CardID   int    `json:"cardId,omitempty"`
@@ -293,6 +297,13 @@ type AndPredicate struct {
 }
 
 func (p AndPredicate) predicateKind() string { return p.Kind }
+
+type OrPredicate struct {
+	Kind  string      `json:"kind"`
+	Terms []Predicate `json:"terms"`
+}
+
+func (p OrPredicate) predicateKind() string { return p.Kind }
 
 type Condition interface{ conditionKind() string }
 type OverflowCondition struct {
@@ -331,10 +342,18 @@ type SelectionEffect struct {
 	Policy  string `json:"policy"`
 	Binding string `json:"binding"`
 	Source  Ref    `json:"source"`
+	Count   int    `json:"count,omitempty"`
 }
 
 func (e SelectionEffect) effectKind() string   { return e.Kind }
 func (e SelectionEffect) effectBase() NodeBase { return e.NodeBase }
+
+func (e SelectionEffect) SelectionCount() int {
+	if e.Count == 0 {
+		return 1
+	}
+	return e.Count
+}
 
 type IfEffect struct {
 	NodeBase
@@ -347,6 +366,17 @@ type IfEffect struct {
 func (e IfEffect) effectKind() string   { return e.Kind }
 func (e IfEffect) effectBase() NodeBase { return e.NodeBase }
 
+type RepeatEffect struct {
+	NodeBase
+	Kind      string      `json:"kind"`
+	Times     int         `json:"-"`
+	TimesExpr NumericExpr `json:"-"`
+	Body      []Effect    `json:"body"`
+}
+
+func (e RepeatEffect) effectKind() string   { return e.Kind }
+func (e RepeatEffect) effectBase() NodeBase { return e.NodeBase }
+
 type ModeEffect struct {
 	NodeBase
 	Kind    string       `json:"kind"`
@@ -357,9 +387,10 @@ func (e ModeEffect) effectKind() string   { return e.Kind }
 func (e ModeEffect) effectBase() NodeBase { return e.NodeBase }
 
 type ModeOption struct {
-	ID     int      `json:"id"`
-	Body   []Effect `json:"body"`
-	Origin Origin   `json:"origin"`
+	ID     int               `json:"id"`
+	Body   []Effect          `json:"body"`
+	Origin Origin            `json:"origin"`
+	Labels map[string]string `json:"labels,omitempty"`
 }
 type PayResourceEffect struct {
 	NodeBase
@@ -404,19 +435,41 @@ type CardEffect struct {
 func (e CardEffect) effectKind() string   { return e.Kind }
 func (e CardEffect) effectBase() NodeBase { return e.NodeBase }
 
+type CountExpr struct {
+	Kind   string `json:"kind"`
+	Source Ref    `json:"source"`
+}
+
+type NumericExpr interface{ numericKind() string }
+
+func (e *CountExpr) numericKind() string { return e.Kind }
+func (e *Scalar) numericKind() string    { return e.Kind }
+
+type NegateExpr struct {
+	Kind  string      `json:"kind"`
+	Value NumericExpr `json:"value"`
+}
+
+func (e *NegateExpr) numericKind() string { return e.Kind }
+
 type TargetEffect struct {
 	NodeBase
-	Kind          string    `json:"kind"`
-	DamageType    string    `json:"damageType,omitempty"`
-	Keyword       string    `json:"keyword,omitempty"`
-	Form          string    `json:"form,omitempty"`
-	Destination   string    `json:"destination,omitempty"`
-	DeckInsertion string    `json:"deckInsertion,omitempty"`
-	Target        Ref       `json:"target"`
-	Amount        int       `json:"amount,omitempty"`
-	AttackDelta   int       `json:"attackDelta,omitempty"`
-	LifeDelta     int       `json:"lifeDelta,omitempty"`
-	Predicate     Predicate `json:"predicate,omitempty"`
+	Kind          string      `json:"kind"`
+	DamageType    string      `json:"damageType,omitempty"`
+	Distribution  string      `json:"distribution,omitempty"`
+	Overflow      Ref         `json:"overflow,omitempty"`
+	Keyword       string      `json:"keyword,omitempty"`
+	Form          string      `json:"form,omitempty"`
+	Destination   string      `json:"destination,omitempty"`
+	DeckInsertion string      `json:"deckInsertion,omitempty"`
+	Target        Ref         `json:"target"`
+	Amount        int         `json:"amount,omitempty"`
+	AmountExpr    NumericExpr `json:"-"`
+	AttackExpr    NumericExpr `json:"-"`
+	LifeExpr      NumericExpr `json:"-"`
+	AttackDelta   int         `json:"attackDelta,omitempty"`
+	LifeDelta     int         `json:"lifeDelta,omitempty"`
+	Predicate     Predicate   `json:"predicate,omitempty"`
 }
 
 func (e TargetEffect) effectKind() string   { return e.Kind }
@@ -493,14 +546,16 @@ type TestInstance struct {
 	Overrides    InstanceOverrides `json:"overrides"`
 }
 type InstanceOverrides struct {
-	Stats           *Stats   `json:"stats,omitempty"`
-	Evolved         *bool    `json:"evolved,omitempty"`
-	SuperEvolved    *bool    `json:"super_evolved,omitempty"`
-	Engaged         *bool    `json:"engaged,omitempty"`
-	Keywords        []string `json:"keywords,omitempty"`
-	Countdown       *int     `json:"countdown,omitempty"`
-	Earthsigil      *int     `json:"earthsigil,omitempty"`
-	DamageReduction *int     `json:"damage_reduction,omitempty"`
+	Counters        map[string]int `json:"counters,omitempty"`
+	Cost            *int           `json:"cost,omitempty"`
+	Stats           *Stats         `json:"stats,omitempty"`
+	Evolved         *bool          `json:"evolved,omitempty"`
+	SuperEvolved    *bool          `json:"super_evolved,omitempty"`
+	Engaged         *bool          `json:"engaged,omitempty"`
+	Keywords        []string       `json:"keywords,omitempty"`
+	Countdown       *int           `json:"countdown,omitempty"`
+	Earthsigil      *int           `json:"earthsigil,omitempty"`
+	DamageReduction *int           `json:"damage_reduction,omitempty"`
 }
 
 type Action interface{ actionKind() string }
@@ -521,11 +576,19 @@ type FusionAction struct {
 func (a FusionAction) actionKind() string { return a.Kind }
 
 type SelectAction struct {
-	Kind   string `json:"kind"`
-	Target string `json:"target"`
+	Kind    string   `json:"kind"`
+	Target  string   `json:"target,omitempty"`
+	Targets []string `json:"targets,omitempty"`
 }
 
 func (a SelectAction) actionKind() string { return a.Kind }
+
+func (a SelectAction) InstanceIDs() []string {
+	if a.Target != "" {
+		return []string{a.Target}
+	}
+	return a.Targets
+}
 
 type ModeAction struct {
 	Kind     string `json:"kind"`
@@ -669,7 +732,9 @@ type EventTarget struct {
 }
 
 type RuntimeEvent struct {
+	PrivateTo              string `json:"privateTo,omitempty"`
 	Kind, Side, InstanceID string
+	From, To, Reason       string
 	CardID, Count, Actual  int
 	Target, Subject        *EventTarget
 	Attacker, Defender     *EventTarget

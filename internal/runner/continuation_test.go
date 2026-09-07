@@ -15,7 +15,7 @@ func TestContinuationRoundTripPreservesSharedBindings(t *testing.T) {
 	ifID, choiceID := strings.Repeat("3", 32), strings.Repeat("4", 32)
 	pack := &ir.CardPack{Cards: []ir.Card{
 		{ID: 12345678, CardType: "spell", PlayEffects: []ir.Effect{
-			ir.IfEffect{NodeBase: ir.NodeBase{ID: ifID}, Kind: "if", Condition: ir.CompareCondition{Kind: "compare", Op: "eq", Left: ir.Scalar{Kind: "scalar", Side: "own", Field: "combo"}, Right: 0}, Then: []ir.Effect{
+			ir.IfEffect{NodeBase: ir.NodeBase{ID: ifID}, Kind: "if", Condition: ir.CompareCondition{Kind: "compare", Op: "eq", Left: ir.Scalar{Kind: "scalar", Side: "own", Field: "combo"}, Right: 1}, Then: []ir.Effect{
 				ir.SelectionEffect{NodeBase: ir.NodeBase{ID: choiceID}, Kind: "require", Policy: "required", Binding: "target", Source: ir.ZoneRef{Kind: "zone", Side: "oppo", Zone: "field", Member: "follower"}},
 			}},
 			ir.TargetEffect{NodeBase: ir.NodeBase{ID: strings.Repeat("5", 32)}, Kind: "destroy", Target: ir.BindingRef{Kind: "binding", Name: "target"}},
@@ -346,11 +346,11 @@ func TestContinuationStrictDecodeAndRestoreRejections(t *testing.T) {
 			t.Fatal("invalid event sequence was accepted")
 		}
 	})
-	t.Run("opponent turn", func(t *testing.T) {
+	t.Run("changed spell controller", func(t *testing.T) {
 		copy := *decoded
 		copy.Game.Turn.Active = "oppo"
-		if _, err := RestoreSession(pack, &copy); err != nil {
-			t.Fatalf("opponent-turn continuation was rejected: %v", err)
+		if _, err := RestoreSession(pack, &copy); err == nil {
+			t.Fatal("resolving spell assigned to a different turn controller was accepted")
 		}
 	})
 	t.Run("choice controller", func(t *testing.T) {

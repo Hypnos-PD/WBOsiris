@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10153140 {
+    type follower;
+    cost 3;
+    stats 3/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class abysscraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "地下赏金猎人·巴尔特";
+        text """
+【<color=Keyword>入场曲</color>】使自己获得『纹章：地下赏金猎人·巴尔特』。
+""";
+    }
+
+    locale eng {
+        name "Balto, Dusk Bounty Hunter";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Gain <b><i>Crest: Balto, Dusk Bounty Hunter</i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"やみ\">闇</rub>の<rub=\"しょうきんかせ\">賞金稼</rub>ぎ・バルト";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分は『クレスト：闇の賞金稼ぎ・バルト』を持つ。
+""";
+    }
+
+    locale kor {
+        name "어둠의 현상금 사냥꾼 바르트";
+        text """
+[<color=Keyword>출격</color>] 나는 「크레스트: 어둠의 현상금 사냥꾼 바르트」를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "法外的賞金獵人‧巴爾特";
+        text """
+【<color=Keyword>入場曲</color>】使自己獲得『紋章：法外的賞金獵人‧巴爾特』。
+""";
+    }
+
+}

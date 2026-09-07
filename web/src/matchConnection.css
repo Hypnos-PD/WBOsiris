@@ -1,0 +1,16 @@
+.match-connection {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 45;
+  max-width: calc(100% - 24px);
+  padding: 7px 12px;
+  border: 1px solid #91aa9d;
+  border-radius: 4px;
+  background: #10221d;
+  color: #e5f1e9;
+  font-size: 12px;
+  pointer-events: none;
+}
+.match-connection.reconnecting { background: #47282c; border-color: #bd8581; }

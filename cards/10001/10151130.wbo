@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10151130 {
+    type follower;
+    cost 3;
+    stats 1/2;
+
+    effect {
+        lastwords {
+            summon 2 card 90051110;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "白骨少女";
+        text """
+【<color=Keyword>谢幕曲</color>】召唤2个『<color=Keyword>骸骨士兵</color>』。
+""";
+    }
+
+    locale eng {
+        name "Little Miss Bonemancer";
+        text """
+<b><color=Keyword>Last Words</color></b>: Summon 2 copies of <b><i><color=Keyword>Skeleton</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "ボーンガール";
+        text """
+【<color=Keyword>ラストワード</color>】『<color=Keyword>スケルトン</color>』2枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "해골 소녀";
+        text """
+[<color=Keyword>유언</color>] <color=Keyword>스켈레톤</color> 2장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "役骨少女";
+        text """
+【<color=Keyword>謝幕曲</color>】召喚2張『<color=Keyword>骷髏士兵</color>』到自己的戰場上。
+""";
+    }
+
+}

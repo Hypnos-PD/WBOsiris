@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10153110 {
+    type follower;
+    cost 4;
+    stats 1/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class abysscraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "蓝蔷薇千金·赛蕾丝";
+        text """
+【<color=Keyword>毁灭</color>】
+自己的回合结束时，回复自己的主战者2点生命值。若本随从为超进化后，则改为回复4点。本随从获得【<color=Keyword>屏障</color>】。
+""";
+    }
+
+    locale eng {
+        name "Ceres, Blue Rose Maiden";
+        text """
+<b><color=Keyword>Bane</color></b>
+At the end of your turn, restore 2 defense to your leader. If this follower is super-evolved, restore 4 instead and give this follower <b><color=Keyword>Barrier</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あおばら\">青薔薇</rub>の<rub=\"れいじょう\">令嬢</rub>・セレス";
+        text """
+【<color=Keyword>必殺</color>】
+自分のターン終了時、自分のリーダーを2回復。これが超進化後なら、2回復ではなく4回復。これは【<color=Keyword>バリア</color>】を持つ。
+""";
+    }
+
+    locale kor {
+        name "파란 장미의 숙녀 세레스";
+        text """
+[<color=Keyword>필살</color>]
+내 턴 종료시, 내 리더를 2 회복. 이 추종자가 초진화후라면, 2 회복 대신 4 회복. 이 추종자는 [<color=Keyword>배리어</color>]를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "藍薔薇千金‧賽蕾絲";
+        text """
+【<color=Keyword>必殺</color>】
+自己的回合結束時，回復自己的主戰者2點生命值。如果這張卡片已超進化，則會由原本的回復2點轉變為回復4點。使這張卡片獲得【<color=Keyword>障壁</color>】。
+""";
+    }
+
+}

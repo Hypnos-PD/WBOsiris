@@ -1,0 +1,66 @@
+wbo 0.1.0;
+
+card 10132110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+    trait mysteria;
+
+    effect {
+        fanfare {
+            spellboost own.hand 1;
+        }
+        evolve {
+            choose target from oppo.field.followers;
+            damage target 3;
+            spellboost own.hand 1;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "惹人怜爱的教师·米兰";
+        text """
+【<color=Keyword>入场曲</color>】使自己的所有手牌发动1次魔力增幅。
+<hr><ev>【<color=Keyword>进化时</color>】选择对手的战场上的1个随从，对其造成3点伤害。使自己的所有手牌发动1次魔力增幅。</ev>
+""";
+    }
+
+    locale eng {
+        name "Ms. Miranda, Adored Academic";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Spellboost your hand.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select an enemy follower on the field and deal it 3 damage. Spellboost your hand.</ev>
+""";
+    }
+
+    locale jpn {
+        name "アドラブルティーチャー・ミラ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札すべては1回スペルブーストする。
+<hr><ev>【<color=Keyword>進化時</color>】相手の場のフォロワー1枚を選ぶ。それに3ダメージ。自分の手札すべては1回スペルブーストする。</ev>
+""";
+    }
+
+    locale kor {
+        name "매력만점 선생님 미라";
+        text """
+[<color=Keyword>출격</color>] 내 패 모두를 1회 주문증폭.
+<hr><ev>[<color=Keyword>진화시</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 3 피해. 내 패 모두를 1회 주문증폭.</ev>
+""";
+    }
+
+    locale cht {
+        name "嬌美教師‧米蘭";
+        text """
+【<color=Keyword>入場曲</color>】使自己手牌中全部的卡片發動1次魔力增幅。
+<hr><ev>【<color=Keyword>進化時</color>】指定1張敵方戰場上的從者卡。給予其3點傷害。使自己手牌中全部的卡片發動1次魔力增幅。</ev>
+""";
+    }
+
+}

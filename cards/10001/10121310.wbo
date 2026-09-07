@@ -1,0 +1,54 @@
+wbo 0.1.0;
+
+card 10121310 {
+    type spell;
+    cost 4;
+
+    effect {
+        require target from oppo.field.followers;
+        destroy target;
+        summon 1 card 90021120;
+    }
+
+    meta {
+        pack 10001;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "剑士的斩击";
+        text """
+选择对手的战场上的1个随从，破坏该随从。召唤1个『<color=Keyword>铁甲骑士</color>』。
+""";
+    }
+
+    locale eng {
+        name "Knightly Rending";
+        text """
+Select an enemy follower on the field and destroy it. Summon a <b><i><color=Keyword>Steelclad Knight</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"けんし\">剣士</rub>の<rub=\"ざんげき\">斬撃</rub>";
+        text """
+相手の場のフォロワー1枚を選ぶ。それを破壊。『<color=Keyword>スティールナイト</color>』1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "검사의 참격";
+        text """
+상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴. <color=Keyword>철갑 기사</color> 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "劍士的斬擊";
+        text """
+指定1張敵方戰場上的從者卡。將其破壞。召喚1張『<color=Keyword>鐵甲騎士</color>』到自己的戰場上。
+""";
+    }
+
+}

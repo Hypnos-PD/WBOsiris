@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10171320 {
+    type spell;
+    cost 1;
+
+    effect {
+        add 1 card 90071210 to hand;
+        add 1 card 90071220 to hand;
+    }
+
+    meta {
+        pack 10001;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "创造物充能";
+        text """
+将1张『<color=Keyword>未来核心</color>』和1张『<color=Keyword>过往核心</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Artifact Recharge";
+        text """
+Add a <b><i><color=Keyword>Gear of Ambition</color></i></b> and <b><i><color=Keyword>Gear of Remembrance</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "アーティファクトチャージ";
+        text """
+『<color=Keyword>フューチャー・コア</color>』1枚と『<color=Keyword>パスト・コア</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "아티팩트 충전";
+        text """
+<color=Keyword>퓨처 코어</color> 1장, <color=Keyword>패스트 코어</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "創造物的蓄能";
+        text """
+增加1張『<color=Keyword>未來之核</color>』與1張『<color=Keyword>過往之核</color>』到自己的手牌中。
+""";
+    }
+
+}

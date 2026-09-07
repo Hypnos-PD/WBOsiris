@@ -124,15 +124,21 @@ text_decl         = "text" , text_literal , ";" ;
 
 ```ebnf
 effect_statement  = intrinsic_statement
+                  | counter_declaration
                   | ability_block
                   | fusion_block
                   | event_block
                   | replace_block
                   | selection_statement
                   | if_statement
+                  | repeat_statement
                   | resource_block
                   | mode_block
                   | operation ;
+
+counter_declaration = "counter" , counter_name , integer , ";" ;
+counter_name      = identifier ; (* [a-z][a-z0-9_]{0,31}; unique, outermost effect only *)
+counter_ref       = "self" , "." , "counter" , "." , counter_name ;
 
 intrinsic_statement = ability , ";"
                     | card_restriction , ";"
@@ -155,7 +161,7 @@ super_relation     = "replaces" | "extends" ;
 `fanfare`、`lastwords`、`attack`、`clash`、`evolve`、`superevolve`、`spellboost` 是
 触发能力；`engage` 是带能量点费用的启动能力；`enhance` 是强制替代打出费用的
 能力。存在多个可支付强化档位时，必须采用费用最高的一档，不能使用原费用或更低
-档位。
+档位。支付最高可支付档位的费用后，发动该档位和以下的全部强化能力。
 固有能力仅使用 `ability` 中的稳定英文标识。新增固有能力必须由新语言版本显式
 登记，不能把任意 `identifier` 静默当作能力。
 
@@ -182,7 +188,7 @@ fusion_block       = "fusion" , "material" , "from" , target_set ,
 
 ```ebnf
 selection_statement = selection_kind , binding_name , "from" , target_set ,
-                      ["other"] , [where_clause] , ";" ;
+                      ["other"] , [where_clause] , ["count" , integer] , ";" ;
 selection_kind      = "choose" | "require" | "random" ;
 binding_name        = identifier ;
 
@@ -194,11 +200,13 @@ zone                = "deck" | "hand" | "field" | "graveyard" | "banished"
 card_type_plural    = "followers" | "spells" | "amulets" ;
 
 where_clause        = "where" , filter_expression ;
-filter_expression   = filter_term , {"and" , filter_term} ;
+filter_expression   = filter_conjunction , {"or" , filter_conjunction} ;
+filter_conjunction  = filter_term , {"and" , filter_term} ;
 filter_term         = "card" , card_id
                     | "type" , card_type
                     | "class" , identifier
                     | "trait" , identifier
+                    | "form" , ("unevolved" | "evolved" | "super_evolved")
                     | "life" , comparison_operator , integer ;
 comparison_operator = "==" | "!=" | "<" | "<=" | ">" | ">=" ;
 ```
@@ -208,10 +216,12 @@ comparison_operator = "==" | "!=" | "<" | "<=" | ">" | ">=" ;
 必须写在 `where` 前。过滤条件从左到右求交；当前 0.1 不含 `or` 或括号过滤器。
 `destroyed` 是已破坏随从历史，不是区域，但在集合语法中按只读历史集合处理。
 
-`choose` 和 `random` 在空集合上将绑定设为 `none` 并继续；`random` 仅在非空
-集合上消费一次对局随机数。`require` 在玩家指令合法性检查阶段要求非空候选并
-产生必选目标请求，否则整条指令非法。`choose` 与 `require` 的非空候选由玩家
-选择；选择结果必须属于计算出的候选集合。
+选择数量 `count` 必须为 1 至 65535 的整数，省略时为 1，且必须写在过滤条件之后。
+`choose` 和 `random` 在空集合上将绑定设为 `none` 并继续；非空时选择
+`min(count, 候选数)` 个不同实例。`random` 每抽取一个实例消费一次对局随机数。
+`require` 在玩家指令合法性检查阶段要求至少 `count` 个候选，否则整条指令非法。
+`choose` 与 `require` 必须选满请求数量，结果属于候选集合且不能重复；绑定保持候选
+顺序，不使用客户端提交顺序。集合效果对这些目标使用同一次结算及死亡批次。
 
 ### 2.5 条件、模式与资源控制
 
@@ -220,6 +230,7 @@ if_statement      = "if" , condition , effect_block , ["else" , effect_block] ;
 condition         = "overflow"
                   | scalar_value , comparison_operator , integer ;
 scalar_value      = "combo" | participant , "." , scalar_field
+                  | counter_ref
                   | "fused" , "." , fusion_scalar_field ;
 scalar_field      = "life" | "pp" | "maxpp" | "ep" | "sep" | "combo"
                   | "shadows" ;
@@ -229,7 +240,8 @@ resource_block    = resource_name , integer , effect_block ;
 resource_name     = "earthrite" | "necromancy" ;
 
 mode_block        = "mode" , "{" , option_decl , option_decl , {option_decl} , "}" ;
-option_decl       = "option" , integer , effect_block ;
+option_decl       = "option" , integer , "{" , {option_label} , {effect_statement} , "}" ;
+option_label      = "label" , locale_id , string , ";" ;
 ```
 
 `earthrite` 与 `necromancy` 仅在资源足够时支付并进入块，资源不足时跳过整个块；
@@ -243,9 +255,10 @@ option_decl       = "option" , integer , effect_block ;
 ```ebnf
 event_block       = "when" , event_pattern , [where_clause] , effect_block ;
 event_pattern     = participant , event_subject , event_verb
-                  | participant , "turn" , turn_boundary ;
-event_subject     = "follower" | "amulet" ;
-event_verb        = "summoned" | "engaged" ;
+                  | participant , "turn" , turn_boundary
+                  | "self" , ("evolved" | "super_evolved") ;
+event_subject     = "follower" | "amulet" | "card" ;
+event_verb        = "summoned" | "engaged" | "discarded" ;
 turn_boundary     = "starts" | "ends" ;
 
 replace_block     = "replace" , "self" , "leaving" , "field" , effect_block ;
@@ -255,6 +268,9 @@ replace_block     = "replace" , "self" , "leaving" , "field" , effect_block ;
 的对象；回合边界事件不建立对象绑定。监听器默认包含 Token。`replace self
 leaving field` 在原区域移动前执行并取消原移动，同一替换块不会因自己产生的区域
 移动再次触发。
+
+`when self evolved` 与 `when self super_evolved` 只允许在随从上声明，不附带 `where`。
+它们匹配自身的形态变化，前者也包含超进化；不同于仅在支付点数后执行的进化关键词能力。
 
 ### 2.7 操作
 
@@ -270,6 +286,7 @@ operation         = draw_operation
                   | reanimate_operation
                   | reduce_operation
                   | spellboost_operation
+                  | set_attack_limit_operation
                   | transform_operation ;
 
 draw_operation    = "draw" , draw_amount , ["from" , "deck" , where_clause] , ";" ;
@@ -278,25 +295,37 @@ draw_amount       = integer | "all" ;
 add_operation     = "add" , integer , "card" , card_id , "to" , "hand" , ";"
                   | "add" , "combo" , integer , ";"
                   | "add" , integer , "earthsigil" , ";"
+                  | "add" , integer , "counter" , counter_name , ";"
                   | "add" , ability , "to" , value_ref , ";" ;
 
 summon_operation  = "summon" , integer , "card" , card_id , ";" ;
-numeric_operation = ("damage" | "heal") , value_ref , integer , [where_clause] , ";"
-                  | "buff" , value_ref , signed_integer , "/" , signed_integer , ";"
-                  | "gain" , scalar_ref , integer , ";" ;
+numeric_operation = "damage" , value_ref , effect_amount , [damage_distribution] , [where_clause] , ";"
+                  | "heal" , value_ref , effect_amount , [where_clause] , ";"
+                  | "buff" , value_ref , ["other"] , signed_amount , "/" , signed_amount , [where_clause] , ";"
+                  | "gain" , scalar_ref , integer , ";"
+                  | "restore" , participant , "." , "pp" , ";" ;
+
+effect_amount     = integer | counter_ref | "count" , "(" , target_set , [where_clause] , ")"
+                  | participant , "." , ("combo" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows")
+                  | "self" , "." , ("cost" | "attack" | "life") ;
+signed_amount     = ("+" | "-") , effect_amount ;
+repeat_statement  = "repeat" , effect_amount , effect_block ;
+damage_distribution = "distributed" , ["overflow" , participant , "." , "leader"] ;
 
 object_operation  = ("destroy" | "banish") , value_ref , [where_clause] , ";" ;
 ability_operation = "remove" , ability , "from" , value_ref , ";" ;
 return_operation  = "return" , value_ref , "to" , ("hand" | "deck") , ";" ;
-evolve_operation  = "evolve" , value_ref , "silent" , ";" ;
+evolve_operation  = ("evolve" | "superevolve") , value_ref , "silent" , ";" ;
 reanimate_operation = "reanimate" , integer , ";" ;
 
 reduce_operation  = "reduce" , "countdown" , value_ref , integer , ";"
                   | "reduce" , "cost" , value_ref , integer , "minimum" , integer , ";" ;
 spellboost_operation = "spellboost" , value_ref , integer , ";" ;
+set_attack_limit_operation = "set_attack_limit" , "self" , positive_integer , ";" ;
 transform_operation = "transform" , value_ref , "into" , "card" , card_id ,
                       "preserving" , "materials" , ";" ;
 
+positive_integer  = integer ; (* semantic constraint: value >= 1 *)
 value_ref         = binding_name
                   | "self" | "target" | "summoned" | "drawn"
                   | participant , "." , "leader"
@@ -314,13 +343,24 @@ scalar_ref        = participant , "." , scalar_field ;
 而不改变其他牌的相对顺序。每次成功返回牌组消费一次规则层随机决策；返回手牌不
 消费随机数。
 
+`distributed` 只允许修饰 `damage`，目标必须为单侧的 `field.followers`。
+可选的 `overflow` 主战者必须与该目标集合属于同一侧。先按出场顺序和当前生命值
+分配额度，再应用屏障等伤害规则；余量交给显式指定的主战者，否则并入最后一个
+随从的伤害。一次分配完成后统一处理死亡，分配不消耗随机决策。
+
 `damage`、`heal`、`buff`、`destroy`、`banish`、能力增删等操作可作用于单值或
 集合；集合按稳定顺序逐实例执行。对 `none` 的操作无效果。`destroy` 产生破坏、
 死亡与谢幕曲相关事件，`banish` 不产生这些事件。`evolve ... silent` 是效果引起
-的静默进化，不支付进化点且不触发目标卡面的 `evolve` 能力。
+的能力进化，增加 +2/+2；`superevolve ... silent` 增加 +3/+3 并赋予超进化形态。
+两者均只改变场上未进化的随从，不支付点数或占用手动次数，不执行目标卡面的进化关键词能力，
+但会发出一般进化事件供 `when self evolved` 等监听器在当前能力完成后处理。
 
-`reanimate N` 从当前控制者的已破坏随从历史中选择费用不超过 N 且费用最高者，
-创建新实例、不触发入场曲；最高费用并列时才消费随机数。`reduce cost` 不能低于
+`reanimate N` 从当前控制者的已破坏随从历史中选择原始费用不超过 N 且费用最高者，
+创建原始状态的新实例、不触发入场曲，并在入场事件前赋予 `departed`（亡者）类型。
+每条破坏记录各占一个等概率候选，同名卡牌不会去重；最高费用并列时消费一次随机
+决策。无候选或战场已满时不创建实例、不消费随机数，`summoned` 绑定清空。
+唯一候选无需随机数；召还不会消耗破坏记录，也不会从墓场移动旧实例。
+`reduce cost` 不能低于
 `minimum`。标准规则中最大能量点与战场容量分别为 10 和 5；截断或部分成功不
 回滚先前操作。
 
@@ -367,6 +407,8 @@ instance_decl     = card_type , alias , "=" , card_id ,
 alias             = identifier ;
 instance_override_block = "{" , {instance_override} , "}" ;
 instance_override = "stats" , stat_pair , ";"
+                  | "counter" , counter_name , integer , ";"
+                  | "cost" , integer , ";"
                   | "evolved" , ";"
                   | "super_evolved" , ";"
                   | ability , ";"
@@ -396,7 +438,7 @@ primary_action    = "play" , alias , ";"
                   | "advance" , advance_point , participant , ";" ;
 attack_target     = alias | participant , "." , "leader" ;
 advance_point     = "turn_start" | "turn_end" ;
-action_response   = "select" , alias , ";" | "mode" , integer , ";" ;
+action_response   = "select" , alias , {"," , alias} , ";" | "mode" , integer , ";" ;
 ```
 
 一个 `action` 恰有一个玩家指令或测试驱动 `advance`，其后按引擎请求顺序给出
@@ -425,6 +467,7 @@ comparison_assertion = assertion_ref , "==" , assertion_value , ";" ;
 assertion_ref     = scalar_ref
                   | participant , "." , "leader" , "." , ("life" | "maxlife")
                   | alias , "." , instance_field
+                  | alias , "." , "counter" , "." , counter_name
                   | "rng" , "." , "consumed" ;
 instance_field    = "zone" | "stats" | "evolved" | "super_evolved"
                   | "earthsigil" | "countdown" | "engaged" ;
@@ -562,8 +605,9 @@ fact_object       = alias | participant , "." , "leader" | "card" , card_id ;
    `attack` 加后缀。
 2. `"""` 在可开始字符串的位置优先于 `"`。注释识别发生在字符串识别之外；
    字符串中的 `//`、`/*`、`*/` 都是内容。
-3. `where` 绑定到它左侧最近的 `target_set` 或集合操作数；连续 `and` 左结合，
-   语义为交集。`other` 在过滤前应用。没有隐式跨语句过滤器。
+3. `where` 绑定到它左侧最近的 `target_set` 或集合操作数；`and` 表示交集，
+   `or` 表示并集，`and` 优先于 `or`。当前过滤器不支持括号分组。
+   `other` 在过滤前应用。没有隐式跨语句过滤器。
 4. `else` 绑定到同一 `if_statement` 中紧邻且尚无 `else` 的 `if`。由于各分支
    必须带花括号，不允许悬空语句形式。
 5. `add` 后接整数时解析为卡牌或资源操作，后接 `ability` 时解析为能力操作；

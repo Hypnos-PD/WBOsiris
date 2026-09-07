@@ -1,0 +1,56 @@
+wbo 0.1.0;
+
+card 10103110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        evolve {
+            choose target from oppo.field.followers;
+            destroy target;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class neutral;
+        rarity gold;
+    }
+
+    locale chs {
+        name "爽朗的天宫·菲尔德亚";
+        text """
+<ev>【<color=Keyword>进化时</color>】选择对手的战场上的1个随从，破坏该随从。</ev>
+""";
+    }
+
+    locale eng {
+        name "Phildau, Lionheart Ward";
+        text """
+<ev><b><color=Keyword>Evolve</color></b>: Select an enemy follower on the field and destroy it.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"らくろう\">楽朗</rub>の<rub=\"てんきゅう\">天宮</rub>・フィルドア";
+        text """
+<ev>【<color=Keyword>進化時</color>】相手の場のフォロワー1枚を選ぶ。それを破壊。</ev>
+""";
+    }
+
+    locale kor {
+        name "낙랑의 천궁 필도어";
+        text """
+<ev>[<color=Keyword>진화시</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴.</ev>
+""";
+    }
+
+    locale cht {
+        name "樂朗天宮‧斐爾特亞";
+        text """
+<ev>【<color=Keyword>進化時</color>】指定1張敵方戰場上的從者卡。將其破壞。</ev>
+""";
+    }
+
+}

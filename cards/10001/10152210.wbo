@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10152210 {
+    type amulet;
+    cost 3;
+
+    effect {
+        fanfare {
+            gain own.shadows 2;
+        }
+        engage 0 {
+            destroy self;
+            summon 2 card 90051130;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class abysscraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "瞑地的陵园";
+        text """
+【<color=Keyword>入场曲</color>】使自己的墓场+2。
+<hr>【<color=Keyword>启动</color>】破坏本卡牌。召唤2个『<color=Keyword>怨灵</color>』。
+""";
+    }
+
+    locale eng {
+        name "Shadowcrypt Memorial";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Gain 2 shadows.
+<hr><b><color=Keyword>Engage</color></b>: Destroy this card. Summon 2 copies of <b><i><color=Keyword>Ghost</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"めいち\">瞑地</rub>の<rub=\"れいえん\">霊園</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の墓場を+2する。
+<hr>【<color=Keyword>アクト</color>】これを破壊。『<color=Keyword>ゴースト</color>』2枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "명지의 영원";
+        text """
+[<color=Keyword>출격</color>] 내 묘지를 +2.
+<hr>[<color=Keyword>활성화</color>] 이 마법진을 파괴. <color=Keyword>유령</color> 2장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "瞑地的靈園";
+        text """
+【<color=Keyword>入場曲</color>】使自己的墓場+2。
+<hr>【<color=Keyword>策動</color>】破壞這張卡片。召喚2張『<color=Keyword>怨靈</color>』到自己的戰場上。
+""";
+    }
+
+}

@@ -1,0 +1,65 @@
+wbo 0.1.0;
+
+card 10111120 {
+    type follower;
+    cost 3;
+    stats 1/1;
+
+    effect {
+        fanfare {
+            summon 1 card 90011110;
+            add 1 card 90011110 to hand;
+        }
+        evolve {
+            summon 1 card 90011110;
+            add 1 card 90011110 to hand;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "恋触妖精";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>妖精</color>』。将1张『<color=Keyword>妖精</color>』加入手牌。
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Capricious Sprite";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Fairy</color></i></b>. Add a <b><i><color=Keyword>Fairy</color></i></b> to your hand.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "コンタクトフェアリー";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>フェアリー</color>』1枚を自分の場に出す。『<color=Keyword>フェアリー</color>』1枚を自分の手札に加える。
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "짓궂은 요정";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>요정</color> 1장을 내 전장에 소환. <color=Keyword>요정</color> 1장을 내 패에 넣는다.
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "戀觸妖精";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>妖精</color>』到自己的戰場上。增加1張『<color=Keyword>妖精</color>』到自己的手牌中。
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10111110 {
+    type follower;
+    cost 2;
+    stats 2/1;
+
+    effect {
+        fanfare {
+            if combo >= 3 {
+                buff own.field.followers other +1/+1;
+            }
+        }
+    }
+
+    meta {
+        pack 10001;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "舞动的妖精";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>连击</color>_3】使自己的战场上的其他所有随从+1/+1。
+""";
+    }
+
+    locale eng {
+        name "Fay Twinkletoes";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Combo</color> (3)</b> - Give all other allied followers on the field +1/+1.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ま\">舞</rub>い<rub=\"おど\">踊</rub>る<rub=\"ようせい\">妖精</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>コンボ</color>_3】自分の場の他のフォロワーすべては+1/+1する。
+""";
+    }
+
+    locale kor {
+        name "춤추는 요정";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>콤보</color> 3] 내 전장의 다른 추종자 모두는 +1/+1.
+""";
+    }
+
+    locale cht {
+        name "舞動的妖精";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>連擊</color>_3】使自己戰場上全部的其他從者卡+1/+1。
+""";
+    }
+
+}

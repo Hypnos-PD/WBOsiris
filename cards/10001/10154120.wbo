@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10154120 {
+    type follower;
+    cost 7;
+    stats 3/7;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class abysscraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "剧毒公主·美杜莎";
+        text """
+【<color=Keyword>突进</color>】
+1回合可以攻击3次。
+【<color=Keyword>攻击时</color>】若攻击随从，则破坏交战对手。
+""";
+    }
+
+    locale eng {
+        name "Medusa, Venomfang Royalty";
+        text """
+<b><color=Keyword>Rush</color></b>
+Can attack 3 times per turn.
+<b><color=Keyword>Follower</color></b> <b><color=Keyword>Strike</color></b>: Destroy the opposing follower.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"もうどくひめ\">猛毒姫</rub>・メドゥーサ";
+        text """
+【<color=Keyword>突進</color>】
+1ターンに3回攻撃できる。
+【<color=Keyword>攻撃時</color>】フォロワーへの攻撃なら、交戦相手を破壊。
+""";
+    }
+
+    locale kor {
+        name "맹독 공주 메두사";
+        text """
+[<color=Keyword>돌진</color>]
+1턴에 3회 공격 가능.
+[<color=Keyword>공격시</color>] 추종자를 공격한다면, 교전 상대를 파괴.
+""";
+    }
+
+    locale cht {
+        name "烈毒公主‧梅杜莎";
+        text """
+【<color=Keyword>突進</color>】
+1回合中可進行3次攻擊。
+【<color=Keyword>攻擊時</color>】如果對從者卡進行攻擊，則會破壞交戰對象。
+""";
+    }
+
+}

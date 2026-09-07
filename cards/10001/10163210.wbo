@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10163210 {
+    type amulet;
+    cost 2;
+
+    effect {
+        countdown 2;
+        lastwords {
+            summon 1 card 90061120;
+        }
+        engage 1 {
+            reduce countdown self 1;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "野兽公主的誓约";
+        text """
+【<color=Keyword>吟唱</color>_2】
+【<color=Keyword>谢幕曲</color>】召唤1个『<color=Keyword>圣炎猛虎</color>』。
+<hr>费用1【<color=Keyword>启动</color>】本护符的倒计数-1。
+""";
+    }
+
+    locale eng {
+        name "Pact of the Beast Princess";
+        text """
+<b><color=Keyword>Countdown</color> (2)</b>
+<b><color=Keyword>Last Words</color></b>: Summon a <b><i><color=Keyword>Holyflame Tiger</color></i></b>.
+<hr><b><color=Keyword>Engage</color> (1)</b>: Advance this amulet's count by 1.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"じゅうき\">獣姫</rub>の<rub=\"せいやく\">誓約</rub>";
+        text """
+【<color=Keyword>カウントダウン</color>_2】
+【<color=Keyword>ラストワード</color>】『<color=Keyword>ホーリーフレイムタイガー</color>』1枚を自分の場に出す。
+<hr>コスト1【<color=Keyword>アクト</color>】これのカウントを-1する。
+""";
+    }
+
+    locale kor {
+        name "야수 공주의 서약";
+        text """
+[<color=Keyword>카운트다운</color> 2]
+[<color=Keyword>유언</color>] <color=Keyword>성화의 맹호</color> 1장을 내 전장에 소환.
+<hr>비용 1 [<color=Keyword>활성화</color>] 이 마법진의 카운트를 -1.
+""";
+    }
+
+    locale cht {
+        name "野獸公主的誓約";
+        text """
+【<color=Keyword>倒數</color>_2】
+【<color=Keyword>謝幕曲</color>】召喚1張『<color=Keyword>聖炎猛虎</color>』到自己的戰場上。
+<hr>消費1【<color=Keyword>策動</color>】使這張卡片的倒數回合數-1。
+""";
+    }
+
+}

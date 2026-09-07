@@ -64,6 +64,16 @@ func (g *game) assertCompare(a ir.CompareAssertion) string {
 		case "shadows":
 			got = p.shadows
 		}
+	case "instance_counter":
+		i := g.instances[a.Left.InstanceID]
+		if i == nil {
+			return "unknown instance"
+		}
+		value, exists := i.counters[a.Left.Field]
+		if !exists {
+			return "unknown instance counter"
+		}
+		got = value
 	case "instance_field":
 		i := g.instances[a.Left.InstanceID]
 		if i == nil {
@@ -72,6 +82,8 @@ func (g *game) assertCompare(a ir.CompareAssertion) string {
 		switch a.Left.Field {
 		case "zone":
 			got = i.zone
+		case "cost":
+			got = i.cost
 		case "stats":
 			got = [2]int{i.attack, i.life}
 		case "evolved":

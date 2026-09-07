@@ -1,0 +1,69 @@
+wbo 0.1.0;
+
+card 10164130 {
+    type follower;
+    cost 5;
+    stats 3/3;
+
+    effect {
+        ward;
+        fanfare {
+            heal self 3;
+        }
+        evolve {
+            damage oppo.field.followers 3;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "水之守护神·萨蕾法";
+        text """
+【<color=Keyword>入场曲</color>】回复自己的主战者3点生命值。
+<hr>【<color=Keyword>守护</color>】
+<hr><ev>【<color=Keyword>进化时</color>】对对手的战场上的所有随从造成3点伤害。</ev>
+""";
+    }
+
+    locale eng {
+        name "Salefa, Guardian of Water";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Restore 3 defense to your leader.
+<hr><b><color=Keyword>Ward</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Deal 3 damage to all enemy followers.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"みず\">水</rub>の<rub=\"しゅごしん\">守護神</rub>・サレファ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のリーダーを3回復。
+<hr>【<color=Keyword>守護</color>】
+<hr><ev>【<color=Keyword>進化時</color>】相手の場のフォロワーすべてに3ダメージ。</ev>
+""";
+    }
+
+    locale kor {
+        name "물의 수호신 사레파";
+        text """
+[<color=Keyword>출격</color>] 내 리더를 3 회복.
+<hr>[<color=Keyword>수호</color>]
+<hr><ev>[<color=Keyword>진화시</color>] 상대방 전장의 추종자 모두에게 3 피해.</ev>
+""";
+    }
+
+    locale cht {
+        name "水之守護神‧莎蕾樺";
+        text """
+【<color=Keyword>入場曲</color>】回復自己的主戰者3點生命值。
+<hr>【<color=Keyword>守護</color>】
+<hr><ev>【<color=Keyword>進化時</color>】給予敵方戰場上全部的從者卡3點傷害。</ev>
+""";
+    }
+
+}

@@ -2,6 +2,7 @@ package runner
 
 import (
 	"fmt"
+	"maps"
 	"sort"
 
 	"wbo/internal/ir"
@@ -77,14 +78,23 @@ func (s *Session) ValidateMulligan(side string, selected []string) error {
 }
 
 // StartMatch resolves the first player's initial turn draw after both mulligans.
-func (s *Session) StartMatch() {
+func (s *Session) StartMatch() StepResult {
 	if s == nil || s.g == nil || s.g.gameOver {
-		return
+		return StepResult{Status: StatusRejected, ErrorCode: "game_over"}
 	}
+	if s.actionID != "" || s.pending != nil || len(s.stack) != 0 {
+		return StepResult{Status: StatusRejected, ErrorCode: "command_in_progress"}
+	}
+	s.actionID = deriveRuntimeID("match_start", s.g.turn.Active, fmt.Sprint(s.g.revision))
+	s.requestOrdinal = 0
+	s.g.legal, s.g.illegal, s.g.unchanged = true, "", false
 	s.g.draw(ir.DrawEffect{Kind: "draw", Owner: s.g.turn.Active, Count: 1}, nil, frame{})
 	event := ir.RuntimeEvent{Kind: "turn_started", Side: s.g.turn.Active}
-	s.g.emit(event)
+	if s.g.emit(event) {
+		s.g.queueEventTriggers(event, nil, "")
+	}
 	s.g.revision++
+	return s.run()
 }
 
 type SimulatorCapabilities struct {
@@ -132,6 +142,17 @@ func (s *Session) Events() []ir.RuntimeEvent {
 	return append([]ir.RuntimeEvent(nil), s.g.events...)
 }
 
+// Redact in place so cumulative replay frame event counts remain valid.
+func (s *Session) EventsFor(viewer string) []ir.RuntimeEvent {
+	events := s.Events()
+	for n, event := range events {
+		if event.PrivateTo != "" && event.PrivateTo != viewer {
+			events[n] = ir.RuntimeEvent{Kind: event.Kind, Side: event.Side, Count: event.Count, Sequence: event.Sequence}
+		}
+	}
+	return events
+}
+
 type TurnView struct {
 	Active string `json:"active"`
 	Number int    `json:"number"`
@@ -155,27 +176,45 @@ type PlayerView struct {
 	Hand             []EntityView `json:"hand,omitempty"`
 	Field            []EntityView `json:"field"`
 	Graveyard        []EntityView `json:"graveyard"`
+	Resolving        []EntityView `json:"resolving,omitempty"`
 	Banished         []EntityView `json:"banished"`
 	Destroyed        []EntityView `json:"destroyed"`
 }
 
 type EntityView struct {
-	InstanceID      string   `json:"instanceId"`
-	Alias           string   `json:"alias,omitempty"`
-	CardID          int      `json:"cardId"`
-	CardType        string   `json:"cardType"`
-	Attack          int      `json:"attack"`
-	Life            int      `json:"life,omitempty"`
-	Countdown       int      `json:"countdown,omitempty"`
-	Earthsigil      int      `json:"earthsigil,omitempty"`
-	DamageReduction int      `json:"damageReduction,omitempty"`
-	Engaged         bool     `json:"engaged,omitempty"`
-	AttacksUsed     int      `json:"attacksUsed"`
-	AttackLimit     int      `json:"attackLimit"`
-	SummoningSick   bool     `json:"summoningSick"`
-	Evolved         bool     `json:"evolved,omitempty"`
-	SuperEvolved    bool     `json:"superEvolved,omitempty"`
-	Keywords        []string `json:"keywords,omitempty"`
+	Counters        map[string]int `json:"counters,omitempty"`
+	Fusion          *FusionView    `json:"fusion,omitempty"`
+	InstanceID      string         `json:"instanceId"`
+	Alias           string         `json:"alias,omitempty"`
+	CardID          int            `json:"cardId"`
+	Cost            int            `json:"cost"`
+	CardType        string         `json:"cardType"`
+	Attack          int            `json:"attack"`
+	Life            int            `json:"life,omitempty"`
+	Countdown       int            `json:"countdown,omitempty"`
+	Earthsigil      int            `json:"earthsigil,omitempty"`
+	DamageReduction int            `json:"damageReduction,omitempty"`
+	Engaged         bool           `json:"engaged,omitempty"`
+	AttacksUsed     int            `json:"attacksUsed"`
+	AttackLimit     int            `json:"attackLimit"`
+	SummoningSick   bool           `json:"summoningSick"`
+	Evolved         bool           `json:"evolved,omitempty"`
+	SuperEvolved    bool           `json:"superEvolved,omitempty"`
+	Keywords        []string       `json:"keywords,omitempty"`
+	Traits          []string       `json:"traits,omitempty"`
+}
+
+type FusionView struct {
+	Enabled       bool                 `json:"enabled"`
+	UsedThisTurn  bool                 `json:"usedThisTurn"`
+	TotalCost     int                  `json:"totalCost"`
+	DistinctKinds int                  `json:"distinctKinds"`
+	Materials     []FusionMaterialView `json:"materials"`
+}
+
+type FusionMaterialView struct {
+	CardID int `json:"cardId"`
+	Cost   int `json:"cost"`
 }
 
 // SupportedSimulatorCapabilities 返回运行时当前真正支持的交互范围。
@@ -243,7 +282,9 @@ func (s *Session) LegalActionsFor(actor string) []LegalAction {
 		add("evolve", source)
 	}
 	for _, source := range player.hand {
-		if len(source.card.FusionAbilities) > 0 && len(s.g.fusionCandidates(source)) > 0 {
+		var budget budgetTracker
+		budget.reset(s.budgetPolicy)
+		if code := s.g.preflight(ir.FusionAction{Kind: "fusion", Actor: actor, Source: source.id}, &budget); code == "" && !budget.exceeded {
 			actions = append(actions, LegalAction{Kind: "fusion", Actor: actor, Source: source.id})
 		}
 	}
@@ -321,24 +362,24 @@ func playerView(p *player, revealHand bool, turn int, side, firstPlayer string) 
 	view := PlayerView{
 		LeaderLife: p.leaderLife, LeaderMax: p.leaderMax, PP: p.pp, MaxPP: p.maxpp,
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, AttackedThisTurn: p.attackedThisTurn,
-		DeckCount: len(p.deck), HandCount: len(p.hand), Field: entityViews(p.field),
-		Graveyard: entityViews(p.graveyard), Banished: entityViews(p.banished), Destroyed: entityViews(p.destroyed),
+		DeckCount: len(p.deck), HandCount: len(p.hand), Field: entityViews(p.field, revealHand),
+		Graveyard: entityViews(p.graveyard, revealHand), Banished: entityViews(p.banished, revealHand), Destroyed: entityViews(p.destroyed, revealHand),
+		Resolving: entityViews(p.resolving, revealHand),
 	}
-	view.ExtraPPAvailable = side != firstPlayer && !p.extraPPActive && (p.extraPPEarly || turn >= 6 && p.extraPPLate)
-	view.ExtraPPActive = p.extraPPActive
-	if p.extraPPEarly {
-		view.ExtraPPUses++
-	}
-	if turn >= 6 && p.extraPPLate {
-		view.ExtraPPUses++
+	if firstPlayer != "" && side != firstPlayer {
+		view.ExtraPPAvailable = !p.extraPPActive && (p.extraPPEarly || turn >= 6 && p.extraPPLate)
+		view.ExtraPPActive = p.extraPPActive
+		if p.extraPPEarly || turn >= 6 && p.extraPPLate {
+			view.ExtraPPUses = 1
+		}
 	}
 	if revealHand {
-		view.Hand = entityViews(p.hand)
+		view.Hand = entityViews(p.hand, true)
 	}
 	return view
 }
 
-func entityViews(instances []*instance) []EntityView {
+func entityViews(instances []*instance, revealMaterials bool) []EntityView {
 	views := make([]EntityView, 0, len(instances))
 	for _, i := range instances {
 		keywords := make([]string, 0, len(i.abilities))
@@ -358,14 +399,35 @@ func entityViews(instances []*instance) []EntityView {
 			}
 		}
 		sort.Strings(keywords)
+		traits := append([]string(nil), i.card.Traits...)
+		if i.departed {
+			traits = appendUnique(traits, "departed")
+		}
 		views = append(views, EntityView{
-			InstanceID: i.id, Alias: i.alias, CardID: i.card.ID, CardType: i.card.CardType,
+			Counters:   maps.Clone(i.counters),
+			Fusion:     fusionView(i, revealMaterials),
+			InstanceID: i.id, Alias: i.alias, CardID: i.card.ID, CardType: i.card.CardType, Cost: i.cost,
 			Attack: i.attack, Life: i.life, Countdown: i.countdown, Earthsigil: i.earthsigil, DamageReduction: i.damageReduction,
 			Engaged: i.engaged, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i), SummoningSick: i.summoningSick,
-			Evolved: i.evolved, SuperEvolved: i.superEvolved, Keywords: keywords,
+			Evolved: i.evolved, SuperEvolved: i.superEvolved, Keywords: keywords, Traits: traits,
 		})
 	}
 	return views
+}
+
+func fusionView(i *instance, reveal bool) *FusionView {
+	if !reveal || len(i.card.FusionAbilities) == 0 && len(i.materials) == 0 {
+		return nil
+	}
+	view := &FusionView{Enabled: len(i.card.FusionAbilities) > 0, UsedThisTurn: i.fusedThisTurn, Materials: []FusionMaterialView{}}
+	kinds := map[int]bool{}
+	for _, material := range i.materials {
+		view.Materials = append(view.Materials, FusionMaterialView{CardID: material.card.ID, Cost: material.card.Cost})
+		view.TotalCost += material.card.Cost
+		kinds[material.card.ID] = true
+	}
+	view.DistinctKinds = len(kinds)
+	return view
 }
 
 func appendUnique(items []string, value string) []string {

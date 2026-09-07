@@ -1,0 +1,73 @@
+wbo 0.1.0;
+
+card 10153130 {
+    type follower;
+    cost 4;
+    stats 3/3;
+
+    effect {
+        fanfare {
+            necromancy 8 {
+                evolve self silent;
+            }
+        }
+        when own follower summoned where trait departed {
+            add bane to summoned;
+        }
+        when self evolved {
+            summon 1 card 90051130;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class abysscraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "瞑地的天宫·穆甘";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>唤灵</color>_8】本随从进化。
+<hr>自己的亡者·随从进入战场时，使其获得【<color=Keyword>毁灭</color>】。
+<hr><ev>本随从进化时，召唤1个『<color=Keyword>怨灵</color>』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Mukan, Shadowcrypt Ward";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Necromancy</color> (8)</b> - Evolve this follower.
+<hr>Whenever an allied Departed follower enters the field, give it <b><color=Keyword>Bane</color></b>.
+<hr><ev>When this follower evolves, summon a <b><i><color=Keyword>Ghost</color></i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"めいち\">瞑地</rub>の<rub=\"てんきゅう\">天宮</rub>・ムカン";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>ネクロマンス</color>_8】これは進化する。
+<hr>自分の死者・フォロワーが場に出たとき、それは【<color=Keyword>必殺</color>】を持つ。
+<hr><ev>これが進化したとき、『<color=Keyword>ゴースト</color>』1枚を自分の場に出す。</ev>
+""";
+    }
+
+    locale kor {
+        name "명지의 천궁 무칸";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>사령술</color> 8] 이 추종자는 진화한다.
+<hr>내 망자 추종자가 전장에 소환되었을 때, 그 추종자는 [<color=Keyword>필살</color>]을 갖는다.
+<hr><ev>이 추종자가 진화했을 때, <color=Keyword>유령</color> 1장을 내 전장에 소환.</ev>
+""";
+    }
+
+    locale cht {
+        name "瞑地天宮‧穆坎";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>死靈術</color>_8】使這張卡片進化。
+<hr>當自己的死者‧從者卡進入戰場時，使其獲得【<color=Keyword>必殺</color>】。
+<hr><ev>當這張卡片進化時，召喚1張『<color=Keyword>怨靈</color>』到自己的戰場上。</ev>
+""";
+    }
+
+}

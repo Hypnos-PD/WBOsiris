@@ -1,0 +1,64 @@
+wbo 0.1.0;
+
+card 10132120 {
+    type follower;
+    cost 5;
+    stats 2/2;
+
+    effect {
+        spellboost {
+            reduce cost self 1 minimum 0;
+        }
+        evolve {
+            summon 1 card 90031110;
+            damage oppo.field.followers count(own.field.followers where trait golem);
+        }
+    }
+
+    meta {
+        pack 10001;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "奇迹女巫·爱蜜儿";
+        text """
+【<color=Keyword>魔力增幅时</color>】使本卡牌的费用-1。
+<hr><ev>【<color=Keyword>进化时</color>】召唤1个『<color=Keyword>泥尘巨像</color>』。对对手的战场上的所有随从造成X点伤害。X为自己的战场上的巨像·随从的张数。</ev>
+""";
+    }
+
+    locale eng {
+        name "Emmylou, Witch of Wonder";
+        text """
+<b><color=Keyword>On Spellboost</color></b>: Reduce the cost of this card by 1.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Summon a <b><i><color=Keyword>Clay Golem</color></i></b>. Deal X damage to all enemy followers. X is the number of allied Golem followers on the field.</ev>
+""";
+    }
+
+    locale jpn {
+        name "ワンダーウィッチ・エミル";
+        text """
+【<color=Keyword>スペルブースト時</color>】これのコストを-1する。
+<hr><ev>【<color=Keyword>進化時</color>】『<color=Keyword>クレイゴーレム</color>』1枚を自分の場に出す。相手の場のフォロワーすべてにXダメージ。Xは自分の場のゴーレム・フォロワーの枚数である。</ev>
+""";
+    }
+
+    locale kor {
+        name "원더 위치 에밀";
+        text """
+[<color=Keyword>주문증폭시</color>] 이 추종자의 비용을 -1.
+<hr><ev>[<color=Keyword>진화시</color>] <color=Keyword>진흙 골렘</color> 1장을 내 전장에 소환. 상대방 전장의 추종자 모두에게 X 피해. X는 내 전장의 골렘 추종자 수.</ev>
+""";
+    }
+
+    locale cht {
+        name "驚奇女巫‧愛蜜兒";
+        text """
+【<color=Keyword>魔力增幅時</color>】使這張卡片的消費-1。
+<hr><ev>【<color=Keyword>進化時</color>】召喚1張『<color=Keyword>泥塵巨像</color>』到自己的戰場上。給予敵方戰場上全部的從者卡X點傷害。X為「自己戰場上的巨像‧從者卡張數」。</ev>
+""";
+    }
+
+}

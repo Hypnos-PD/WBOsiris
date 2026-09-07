@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10121120 {
+    type follower;
+    cost 6;
+    stats 4/6;
+
+    effect {
+        fanfare {
+            buff own.field.followers other +1/+1;
+        }
+        evolve {
+            buff own.field.followers other +1/+1;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "和平商人·艾尔涅丝塔";
+        text """
+【<color=Keyword>入场曲</color>】使自己的战场上的其他所有随从+1/+1。
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Ernesta, Peace Hawker";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Give all other allied followers on the field +1/+1.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "ピースディーラー・エルネスタ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の場の他のフォロワーすべては+1/+1する。
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "평화의 상인 에르네스타";
+        text """
+[<color=Keyword>출격</color>] 내 전장의 다른 추종자 모두는 +1/+1.
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "和平商販‧艾爾涅絲塔";
+        text """
+【<color=Keyword>入場曲</color>】使自己戰場上全部的其他從者卡+1/+1。
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

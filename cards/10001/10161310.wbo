@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10161310 {
+    type spell;
+    cost 6;
+
+    effect {
+        damage oppo.field.followers 3;
+        summon 1 card 90061110;
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "翎雨";
+        text """
+对对手的战场上的所有随从造成3点伤害。召唤1个『<color=Keyword>神圣猎鹰</color>』。
+""";
+    }
+
+    locale eng {
+        name "Featherfall";
+        text """
+Deal 3 damage to all enemy followers. Summon a <b><i><color=Keyword>Holy Falcon</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "フェザーレイン";
+        text """
+相手の場のフォロワーすべてに3ダメージ。『<color=Keyword>ホーリーファルコン</color>』1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "페더 레인";
+        text """
+상대방 전장의 추종자 모두에게 3 피해. <color=Keyword>신성한 매</color> 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "銳羽四射";
+        text """
+給予敵方戰場上全部的從者卡3點傷害。召喚1張『<color=Keyword>神聖獵鷹</color>』到自己的戰場上。
+""";
+    }
+
+}

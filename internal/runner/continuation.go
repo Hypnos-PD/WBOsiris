@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"maps"
 	"reflect"
 	"sort"
 	"strconv"
@@ -16,7 +17,7 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.6.0"
+const continuationVersion = "0.15.0"
 
 type ContinuationBindings struct {
 	ID     string              `json:"id"`
@@ -93,34 +94,43 @@ type ContinuationPlayer struct {
 	Hand             []string `json:"hand"`
 	Field            []string `json:"field"`
 	Graveyard        []string `json:"graveyard"`
+	Resolving        []string `json:"resolving"`
 	Banished         []string `json:"banished"`
 	Destroyed        []string `json:"destroyed"`
 }
 
 type ContinuationEntity struct {
-	ID              string   `json:"id"`
-	Alias           string   `json:"alias"`
-	Zone            string   `json:"zone"`
-	CardID          int      `json:"cardId"`
-	Attack          int      `json:"attack"`
-	Life            int      `json:"life"`
-	Earthsigil      int      `json:"earthsigil"`
-	DamageReduction int      `json:"damageReduction"`
-	Countdown       int      `json:"countdown"`
-	AttacksUsed     int      `json:"attacksUsed"`
-	AttackLimit     int      `json:"attackLimit"`
-	Engaged         bool     `json:"engaged"`
-	SummoningSick   bool     `json:"summoningSick"`
-	Evolved         bool     `json:"evolved"`
-	SuperEvolved    bool     `json:"superEvolved"`
-	Abilities       []string `json:"abilities"`
-	Materials       []string `json:"materials,omitempty"`
+	Counters        map[string]int `json:"counters,omitempty"`
+	FusedThisTurn   bool           `json:"fusedThisTurn"`
+	ID              string         `json:"id"`
+	Alias           string         `json:"alias"`
+	Zone            string         `json:"zone"`
+	CardID          int            `json:"cardId"`
+	Cost            int            `json:"cost"`
+	Attack          int            `json:"attack"`
+	Life            int            `json:"life"`
+	Earthsigil      int            `json:"earthsigil"`
+	DamageReduction int            `json:"damageReduction"`
+	Countdown       int            `json:"countdown"`
+	AttacksUsed     int            `json:"attacksUsed"`
+	AttackLimit     int            `json:"attackLimit"`
+	Engaged         bool           `json:"engaged"`
+	SummoningSick   bool           `json:"summoningSick"`
+	Evolved         bool           `json:"evolved"`
+	SuperEvolved    bool           `json:"superEvolved"`
+	Departed        bool           `json:"departed,omitempty"`
+	Abilities       []string       `json:"abilities"`
+	Materials       []string       `json:"materials,omitempty"`
 }
 
 type ContinuationEvent struct {
+	PrivateTo  string          `json:"privateTo,omitempty"`
 	Kind       string          `json:"kind"`
 	Side       string          `json:"side,omitempty"`
 	InstanceID string          `json:"instanceId,omitempty"`
+	From       string          `json:"from,omitempty"`
+	To         string          `json:"to,omitempty"`
+	Reason     string          `json:"reason,omitempty"`
 	CardID     int             `json:"cardId,omitempty"`
 	Count      int             `json:"count,omitempty"`
 	Actual     int             `json:"actual,omitempty"`
@@ -231,7 +241,7 @@ func RestoreSession(cards *ir.CardPack, c *Continuation) (*Session, error) {
 		return nil, fmt.Errorf("continuation execution budget is invalid")
 	}
 	s.budget.state = c.Budget
-	for _, saved := range c.Stack {
+	for index, saved := range c.Stack {
 		body, ok := blocks[saved.BlockID]
 		if !ok || saved.PC < 0 || saved.PC > len(body) {
 			return nil, fmt.Errorf("invalid continuation stack block %q", saved.BlockID)
@@ -244,10 +254,38 @@ func RestoreSession(cards *ir.CardPack, c *Continuation) (*Session, error) {
 		if err != nil {
 			return nil, err
 		}
-		s.stack = append(s.stack, execFrame{body: body, blockID: saved.BlockID, pc: saved.PC, self: self, bindings: bindingFrame})
+		var repeatBindings frame
+		if strings.HasSuffix(saved.BlockID, ":repeat") {
+			var exists bool
+			repeatBindings, exists = bindings[saved.RepeatBindingsID]
+			if saved.RepeatRemaining <= 0 || !exists || saved.RepeatBindingsID == saved.BindingFrameID {
+				return nil, fmt.Errorf("invalid continuation repeat checkpoint")
+			}
+			if index == 0 {
+				return nil, fmt.Errorf("repeat checkpoint has no caller")
+			}
+			caller := s.stack[index-1]
+			if caller.pc < 1 || caller.pc > len(caller.body) {
+				return nil, fmt.Errorf("invalid repeat caller position")
+			}
+			repeat, ok := caller.body[caller.pc-1].(ir.RepeatEffect)
+			if !ok || nestedBlockID(repeat.ID, "repeat") != saved.BlockID || caller.self != self ||
+				c.Stack[index-1].BindingFrameID != saved.RepeatBindingsID || repeat.TimesExpr == nil && saved.RepeatRemaining > repeat.Times {
+				return nil, fmt.Errorf("repeat checkpoint differs from caller")
+			}
+		} else if saved.RepeatRemaining != 0 || saved.RepeatBindingsID != "" {
+			return nil, fmt.Errorf("repeat checkpoint on a non-repeat block")
+		}
+		s.stack = append(s.stack, execFrame{body: body, blockID: saved.BlockID, pc: saved.PC, self: self, bindings: bindingFrame,
+			repeatRemaining: saved.RepeatRemaining, repeatBindings: repeatBindings})
 	}
 	if c.TriggerBase < 0 || c.TriggerBase > len(s.stack) || c.DrainingTrigger && c.TriggerBase == len(s.stack) {
 		return nil, fmt.Errorf("invalid continuation trigger checkpoint")
+	}
+	if len(g.own.resolving)+len(g.oppo.resolving) != 0 {
+		if !c.DrainingTrigger || c.TriggerBase != 0 || len(s.stack) == 0 || s.stack[0].self != g.player(g.turn.Active).resolving[0] {
+			return nil, fmt.Errorf("invalid continuation spell checkpoint")
+		}
 	}
 	if uint64(len(s.stack)) > s.budget.state.MaxStackDepth {
 		return nil, fmt.Errorf("continuation stack exceeds recorded budget state")
@@ -261,7 +299,7 @@ func RestoreSession(cards *ir.CardPack, c *Continuation) (*Session, error) {
 	if err != nil {
 		return nil, err
 	}
-	pending := &pendingChoice{request: c.Pending.Request, binding: c.Pending.Binding, bindings: pendingBindings, self: pendingSelf, options: map[int][]ir.Effect{}, optionBlockIDs: map[int]string{}}
+	pending := &pendingChoice{request: cloneChoiceRequest(c.Pending.Request), binding: c.Pending.Binding, bindings: pendingBindings, self: pendingSelf, options: map[int][]ir.Effect{}, optionBlockIDs: map[int]string{}}
 	if pending.request.Kind == "fusion_material" {
 		source := g.instances[c.Pending.FusionSourceID]
 		if source == nil || source != pendingSelf {
@@ -356,9 +394,13 @@ func (s *Session) makeContinuation() *Continuation {
 		return id
 	}
 	for _, f := range s.stack {
-		c.Stack = append(c.Stack, ContinuationFrame{BlockID: f.blockID, PC: f.pc, SelfInstanceID: instanceID(f.self), BindingFrameID: addBindings(f.bindings)})
+		saved := ContinuationFrame{BlockID: f.blockID, PC: f.pc, SelfInstanceID: instanceID(f.self), BindingFrameID: addBindings(f.bindings), RepeatRemaining: f.repeatRemaining}
+		if f.repeatRemaining > 0 {
+			saved.RepeatBindingsID = addBindings(f.repeatBindings)
+		}
+		c.Stack = append(c.Stack, saved)
 	}
-	c.Pending = ContinuationPending{Request: s.pending.request, Binding: s.pending.binding, BindingFrameID: addBindings(s.pending.bindings), SelfInstanceID: instanceID(s.pending.self)}
+	c.Pending = ContinuationPending{Request: *s.PendingChoice(), Binding: s.pending.binding, BindingFrameID: addBindings(s.pending.bindings), SelfInstanceID: instanceID(s.pending.self)}
 	if s.pending.request.Kind == "fusion_material" {
 		c.Pending.FusionSourceID = instanceID(s.pending.fusionSource)
 		c.Pending.FusionAbilityID = s.pending.fusion.ID
@@ -401,14 +443,15 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 		}
 		sort.Strings(abilities)
 		snapshot.Instances = append(snapshot.Instances, ContinuationEntity{
-			ID: i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Attack: i.attack, Life: i.life,
+			Counters: maps.Clone(i.counters),
+			ID:       i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life,
 			Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i),
 			Engaged: i.engaged, SummoningSick: i.summoningSick, Evolved: i.evolved,
-			SuperEvolved: i.superEvolved, DamageReduction: i.damageReduction, Abilities: abilities, Materials: instanceIDs(i.materials),
+			SuperEvolved: i.superEvolved, Departed: i.departed, FusedThisTurn: i.fusedThisTurn, DamageReduction: i.damageReduction, Abilities: abilities, Materials: instanceIDs(i.materials),
 		})
 	}
 	for _, event := range g.events {
-		snapshot.Events = append(snapshot.Events, ContinuationEvent{Kind: event.Kind, Side: event.Side, InstanceID: event.InstanceID, CardID: event.CardID, Count: event.Count, Actual: event.Actual, Target: cloneEventTarget(event.Target), Subject: cloneEventTarget(event.Subject), Attacker: cloneEventTarget(event.Attacker), Defender: cloneEventTarget(event.Defender), Sequence: event.Sequence, BatchID: event.BatchID})
+		snapshot.Events = append(snapshot.Events, ContinuationEvent{PrivateTo: event.PrivateTo, Kind: event.Kind, Side: event.Side, InstanceID: event.InstanceID, From: event.From, To: event.To, Reason: event.Reason, CardID: event.CardID, Count: event.Count, Actual: event.Actual, Target: cloneEventTarget(event.Target), Subject: cloneEventTarget(event.Subject), Attacker: cloneEventTarget(event.Attacker), Defender: cloneEventTarget(event.Defender), Sequence: event.Sequence, BatchID: event.BatchID})
 	}
 	return snapshot
 }
@@ -419,6 +462,7 @@ func snapshotContinuationPlayer(p player) ContinuationPlayer {
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, AttackedThisTurn: p.attackedThisTurn,
 		Deck: instanceIDs(p.deck), Hand: instanceIDs(p.hand), Field: instanceIDs(p.field), EvolvedThisTurn: p.evolvedThisTurn,
 		Graveyard: instanceIDs(p.graveyard), Banished: instanceIDs(p.banished), Destroyed: instanceIDs(p.destroyed),
+		Resolving:    instanceIDs(p.resolving),
 		ExtraPPEarly: p.extraPPEarly, ExtraPPLate: p.extraPPLate, ExtraPPActive: p.extraPPActive,
 	}
 }
@@ -448,15 +492,17 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 			limit = 1
 		}
 		if limit < 1 || entity.AttacksUsed < 0 || entity.AttacksUsed > limit ||
+			entity.Cost < 0 || entity.Cost > 65535 || entity.Departed && card.CardType != "follower" ||
 			entity.AttacksUsed > 0 && (entity.Zone != "field" || card.CardType != "follower") ||
 			entity.SummoningSick && (entity.Zone != "field" || card.CardType != "follower" || entity.AttacksUsed != 0) {
 			return nil, fmt.Errorf("invalid continuation combat state")
 		}
 		i := &instance{
-			id: entity.ID, alias: entity.Alias, zone: entity.Zone, card: card,
-			attack: entity.Attack, life: entity.Life, earthsigil: entity.Earthsigil, countdown: entity.Countdown,
+			counters: maps.Clone(entity.Counters),
+			id:       entity.ID, alias: entity.Alias, zone: entity.Zone, card: card,
+			attack: entity.Attack, life: entity.Life, cost: entity.Cost, earthsigil: entity.Earthsigil, countdown: entity.Countdown,
 			attacksUsed: entity.AttacksUsed, attackLimitValue: limit, engaged: entity.Engaged, summoningSick: entity.SummoningSick,
-			evolved: entity.Evolved, superEvolved: entity.SuperEvolved, damageReduction: entity.DamageReduction, abilities: map[string]bool{},
+			evolved: entity.Evolved, superEvolved: entity.SuperEvolved, departed: entity.Departed, fusedThisTurn: entity.FusedThisTurn, damageReduction: entity.DamageReduction, abilities: map[string]bool{},
 		}
 		for _, ability := range entity.Abilities {
 			if ability == "" || i.abilities[ability] {
@@ -464,13 +510,21 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 			}
 			i.abilities[ability] = true
 		}
+		if !ir.ValidCounters(i.counters) || len(i.counters) != len(card.Counters) {
+			return nil, fmt.Errorf("invalid continuation counters")
+		}
+		for name := range card.Counters {
+			if _, ok := i.counters[name]; !ok {
+				return nil, fmt.Errorf("missing continuation counter %q", name)
+			}
+		}
 		g.instances[i.id] = i
 	}
 	for _, entity := range saved.Instances {
 		source := g.instances[entity.ID]
 		for _, materialID := range entity.Materials {
 			material := g.instances[materialID]
-			if material == nil || material == source || material.zone != "hand" || contains(source.materials, material) {
+			if material == nil || material == source || material.zone != "attached" || contains(source.materials, material) {
 				return nil, fmt.Errorf("invalid continuation fusion material")
 			}
 			source.materials = append(source.materials, material)
@@ -483,12 +537,20 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 	if g.oppo, err = restorePlayer(saved.Oppo, g.instances); err != nil {
 		return nil, err
 	}
+	if len(g.own.resolving)+len(g.oppo.resolving) > 1 || len(g.player(oppositeSide(g.turn.Active)).resolving) != 0 {
+		return nil, fmt.Errorf("invalid continuation spell owner")
+	}
+	for _, spell := range g.player(g.turn.Active).resolving {
+		if spell.card.CardType != "spell" || saved.Attack != nil || saved.TurnTransition != "" || saved.GameOver {
+			return nil, fmt.Errorf("invalid continuation resolving spell")
+		}
+	}
 	seen := map[string]bool{}
 	zoneOwner := map[string]string{}
 	for _, side := range []struct {
 		name  string
 		zones [][]*instance
-	}{{"own", [][]*instance{g.own.deck, g.own.hand, g.own.field, g.own.graveyard, g.own.banished}}, {"oppo", [][]*instance{g.oppo.deck, g.oppo.hand, g.oppo.field, g.oppo.graveyard, g.oppo.banished}}} {
+	}{{"own", [][]*instance{g.own.deck, g.own.hand, g.own.field, g.own.graveyard, g.own.banished, g.own.resolving}}, {"oppo", [][]*instance{g.oppo.deck, g.oppo.hand, g.oppo.field, g.oppo.graveyard, g.oppo.banished, g.oppo.resolving}}} {
 		for _, zone := range side.zones {
 			for _, i := range zone {
 				if seen[i.id] {
@@ -499,32 +561,51 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 			}
 		}
 	}
-	historyOnly := map[string]bool{}
+	// Walk attachments from zoned roots; shared materials and cycles are invalid.
+	var visitMaterials func(*instance, string) error
+	visitMaterials = func(source *instance, side string) error {
+		for _, material := range source.materials {
+			if seen[material.id] {
+				return fmt.Errorf("continuation material has multiple owners or a cycle")
+			}
+			seen[material.id], zoneOwner[material.id] = true, side
+			if err := visitMaterials(material, side); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	for _, entity := range saved.Instances {
+		if entity.Zone != "attached" {
+			if err := visitMaterials(g.instances[entity.ID], zoneOwner[entity.ID]); err != nil {
+				return nil, err
+			}
+		}
+	}
+	historyOnly := map[string]string{}
 	for _, side := range []struct {
 		name    string
 		history []*instance
 	}{{"own", g.own.destroyed}, {"oppo", g.oppo.destroyed}} {
-		historySeen := map[string]bool{}
 		for _, i := range side.history {
-			if historySeen[i.id] || i.zone != "destroyed" && zoneOwner[i.id] != side.name {
+			if i.zone != "destroyed" && zoneOwner[i.id] != side.name {
 				return nil, fmt.Errorf("invalid continuation destroyed history owner")
 			}
-			historySeen[i.id] = true
 			if i.zone == "destroyed" {
-				if historyOnly[i.id] {
+				if owner := historyOnly[i.id]; owner != "" && owner != side.name {
 					return nil, fmt.Errorf("continuation history entity has multiple owners")
 				}
-				historyOnly[i.id] = true
+				historyOnly[i.id] = side.name
 			}
 		}
 	}
 	for id, i := range g.instances {
-		if !seen[id] && (i.zone != "destroyed" || !historyOnly[id]) {
+		if !seen[id] && (i.zone != "destroyed" || historyOnly[id] == "") {
 			return nil, fmt.Errorf("continuation contains an unzoned entity")
 		}
 	}
 	for _, event := range saved.Events {
-		g.events = append(g.events, ir.RuntimeEvent{Kind: event.Kind, Side: event.Side, InstanceID: event.InstanceID, CardID: event.CardID, Count: event.Count, Actual: event.Actual, Target: cloneEventTarget(event.Target), Subject: cloneEventTarget(event.Subject), Attacker: cloneEventTarget(event.Attacker), Defender: cloneEventTarget(event.Defender), Sequence: event.Sequence, BatchID: event.BatchID})
+		g.events = append(g.events, ir.RuntimeEvent{PrivateTo: event.PrivateTo, Kind: event.Kind, Side: event.Side, InstanceID: event.InstanceID, From: event.From, To: event.To, Reason: event.Reason, CardID: event.CardID, Count: event.Count, Actual: event.Actual, Target: cloneEventTarget(event.Target), Subject: cloneEventTarget(event.Subject), Attacker: cloneEventTarget(event.Attacker), Defender: cloneEventTarget(event.Defender), Sequence: event.Sequence, BatchID: event.BatchID})
 	}
 	destroyedHistory := map[string]bool{}
 	for _, i := range append(append([]*instance{}, g.own.destroyed...), g.oppo.destroyed...) {
@@ -559,6 +640,23 @@ func validateContinuationEvents(events []ir.RuntimeEvent, sequence, deathBatchSe
 	var lastBatch uint64
 	previousBatch := uint64(0)
 	for n, event := range events {
+		if event.PrivateTo != "" && (event.PrivateTo != "own" && event.PrivateTo != "oppo" || event.PrivateTo != event.Side) {
+			return fmt.Errorf("invalid continuation event visibility")
+		}
+		if event.Kind == "card_fused" || event.Kind == "card_transformed" {
+			if event.Side != "own" && event.Side != "oppo" || event.Subject == nil || event.Subject.Kind != "instance" || instances[event.Subject.InstanceID] == nil || event.Subject.CardID < 10000000 {
+				return fmt.Errorf("invalid continuation card event subject")
+			}
+			if event.Kind == "card_fused" && (event.PrivateTo != event.Side || event.Count < 1) {
+				return fmt.Errorf("invalid continuation fusion event")
+			}
+			if event.Kind == "card_transformed" && (event.Target == nil || event.Target.Kind != "instance" || event.Target.InstanceID != event.Subject.InstanceID || event.Target.CardID < 10000000) {
+				return fmt.Errorf("invalid continuation transform event")
+			}
+			if !validZone(event.From) || (event.From == "hand" || event.From == "deck" || event.From == "attached") && event.PrivateTo != event.Side {
+				return fmt.Errorf("invalid continuation hidden card event")
+			}
+		}
 		if event.Sequence != uint64(n+1) || event.BatchID > deathBatchSerial || event.Kind == "destroyed" && event.BatchID == 0 || event.Kind != "destroyed" && event.BatchID != 0 {
 			return fmt.Errorf("invalid continuation event sequence")
 		}
@@ -612,6 +710,9 @@ func restorePlayer(saved ContinuationPlayer, instances map[string]*instance) (pl
 		return player{}, err
 	}
 	if p.graveyard, err = restoreInstanceList(saved.Graveyard, instances, "graveyard"); err != nil {
+		return player{}, err
+	}
+	if p.resolving, err = restoreInstanceList(saved.Resolving, instances, "resolving"); err != nil {
 		return player{}, err
 	}
 	if p.banished, err = restoreInstanceList(saved.Banished, instances, "banished"); err != nil {
@@ -682,7 +783,7 @@ func validateChoiceRequest(request ChoiceRequest, instances map[string]*instance
 			if request.Kind != "target" && request.Kind != "fusion_material" {
 				return fmt.Errorf("entity candidate on non-target request")
 			}
-			if candidate.InstanceID == "" || instances[candidate.InstanceID] == nil || candidate.OptionID != 0 || seenEntities[candidate.InstanceID] {
+			if candidate.InstanceID == "" || instances[candidate.InstanceID] == nil || candidate.OptionID != 0 || seenEntities[candidate.InstanceID] || len(candidate.Labels) != 0 {
 				return fmt.Errorf("invalid continuation entity candidate")
 			}
 			seenEntities[candidate.InstanceID] = true
@@ -690,7 +791,7 @@ func validateChoiceRequest(request ChoiceRequest, instances map[string]*instance
 			if request.Kind != "mode" {
 				return fmt.Errorf("option candidate on non-mode request")
 			}
-			if candidate.InstanceID != "" || candidate.OptionID == 0 || seenOptions[candidate.OptionID] {
+			if candidate.InstanceID != "" || candidate.OptionID == 0 || seenOptions[candidate.OptionID] || !ir.ValidChoiceLabels(candidate.Labels) {
 				return fmt.Errorf("invalid continuation option candidate")
 			}
 			seenOptions[candidate.OptionID] = true
@@ -703,7 +804,7 @@ func validateChoiceRequest(request ChoiceRequest, instances map[string]*instance
 
 func validatePendingNode(s *Session, pending *pendingChoice) error {
 	if pending.request.Kind == "fusion_material" {
-		if pending.fusion == nil || pending.fusionSource == nil || pending.request.NodeID != pending.fusion.ID || pending.request.PublicTo != s.g.sideOf(pending.fusionSource) {
+		if pending.fusion == nil || pending.fusionSource == nil || pending.fusionSource.fusedThisTurn || pending.request.NodeID != pending.fusion.ID || pending.request.PublicTo != s.g.sideOf(pending.fusionSource) {
 			return fmt.Errorf("continuation fusion request is detached")
 		}
 		candidates := s.g.fusionCandidates(pending.fusionSource, pending.fusion)
@@ -733,14 +834,11 @@ func validatePendingNode(s *Session, pending *pendingChoice) error {
 	}
 	switch node := effect.(type) {
 	case ir.SelectionEffect:
-		minimum := 0
-		if node.Kind == "require" {
-			minimum = 1
-		}
-		if pending.request.Kind != "target" || node.Kind != "choose" && node.Kind != "require" || pending.binding != node.Binding || pending.request.MinSelections != minimum || pending.request.MaxSelections != 1 {
+		count := min(node.SelectionCount(), len(pending.request.Candidates))
+		if count < 1 || node.Kind == "require" && count != node.SelectionCount() || pending.request.Kind != "target" || node.Kind != "choose" && node.Kind != "require" || pending.binding != node.Binding || pending.request.MinSelections != count || pending.request.MaxSelections != count {
 			return fmt.Errorf("continuation target request does not match its IR node")
 		}
-		candidates := s.g.fromRef(node.Source, pending.self, pending.bindings)
+		candidates := s.g.selectionCandidates(node, pending.self, pending.bindings)
 		if len(candidates) != len(pending.request.Candidates) {
 			return fmt.Errorf("continuation target candidates changed")
 		}
@@ -756,7 +854,7 @@ func validatePendingNode(s *Session, pending *pendingChoice) error {
 		for n, option := range node.Options {
 			candidate := pending.request.Candidates[n]
 			blockID := nestedBlockID(node.ID, fmt.Sprintf("option:%d", option.ID))
-			if candidate.Kind != "option" || candidate.OptionID != option.ID || pending.optionBlockIDs[option.ID] != blockID {
+			if candidate.Kind != "option" || candidate.OptionID != option.ID || pending.optionBlockIDs[option.ID] != blockID || !maps.Equal(candidate.Labels, option.Labels) {
 				return fmt.Errorf("continuation mode options changed")
 			}
 		}
@@ -806,6 +904,13 @@ func addBlock(blocks map[string][]ir.Effect, id string, body []ir.Effect) error 
 	for _, effect := range body {
 		nodeID := ir.EffectBase(effect).ID
 		switch e := effect.(type) {
+		case ir.RepeatEffect:
+			if nodeID == "" {
+				return fmt.Errorf("repeat block has an unstable node ID")
+			}
+			if err := addBlock(blocks, nestedBlockID(nodeID, "repeat"), e.Body); err != nil {
+				return err
+			}
 		case ir.IfEffect:
 			if nodeID == "" {
 				return fmt.Errorf("control block has an unstable node ID")
@@ -953,7 +1058,7 @@ func cloneEventTarget(target *ir.EventTarget) *ir.EventTarget {
 }
 func validZone(zone string) bool {
 	switch zone {
-	case "deck", "hand", "field", "graveyard", "banished", "destroyed":
+	case "deck", "hand", "field", "graveyard", "banished", "destroyed", "resolving", "attached":
 		return true
 	}
 	return false

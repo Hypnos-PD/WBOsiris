@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10144120 {
+    type follower;
+    cost 6;
+    stats 5/2;
+
+    effect {
+        storm;
+        intimidate;
+    }
+
+    meta {
+        pack 10001;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "霸道的龙翼·法露特";
+        text """
+【<color=Keyword>疾驰</color>】
+【<color=Keyword>威慑</color>】
+""";
+    }
+
+    locale eng {
+        name "Forte, Blackwing Dragoon";
+        text """
+<b><color=Keyword>Storm</color></b>
+<b><color=Keyword>Intimidate</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はどう\">覇道</rub>の<rub=\"りゅうよく\">竜翼</rub>・フォルテ";
+        text """
+【<color=Keyword>疾走</color>】
+【<color=Keyword>威圧</color>】
+""";
+    }
+
+    locale kor {
+        name "패룡의 날개 포르테";
+        text """
+[<color=Keyword>질주</color>]
+[<color=Keyword>위압</color>]
+""";
+    }
+
+    locale cht {
+        name "霸道龍翼‧法露特";
+        text """
+【<color=Keyword>疾馳</color>】
+【<color=Keyword>威懾</color>】
+""";
+    }
+
+}

@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10172120 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        fanfare {
+            add 1 card 90071110 to hand;
+        }
+        evolve {
+            add 1 card 90071110 to hand;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "依恋的人偶师";
+        text """
+【<color=Keyword>入场曲</color>】将1张『<color=Keyword>悬丝傀儡</color>』加入手牌。
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Lovestruck Puppeteer";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add a <b><i><color=Keyword>Puppet</color></i></b> to your hand.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あいしゅう\">愛執</rub>のドールユーザー";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>操り人形</color>』1枚を自分の手札に加える。
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "애집의 인형사";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>꼭두각시 인형</color> 1장을 내 패에 넣는다.
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "執愛的操偶師";
+        text """
+【<color=Keyword>入場曲</color>】增加1張『<color=Keyword>懸絲人偶</color>』到自己的手牌中。
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

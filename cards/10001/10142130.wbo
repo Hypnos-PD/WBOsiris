@@ -1,0 +1,56 @@
+wbo 0.1.0;
+
+card 10142130 {
+    type follower;
+    cost 3;
+    stats 3/3;
+
+    effect {
+        superevolve {
+            choose target from own.field.followers other;
+            add storm to target;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "读风者·杰鲁";
+        text """
+<sev>【<color=Keyword>超进化时</color>】选择自己的战场上的1个其他随从，使其获得【<color=Keyword>疾驰</color>】。</sev>
+""";
+    }
+
+    locale eng {
+        name "Zell, Windreader";
+        text """
+<sev><b><color=Keyword>Super-Evolve</color></b>: Select another allied follower on the field and give it <b><color=Keyword>Storm</color></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"かぜ\">風</rub>を<rub=\"よ\">読</rub>む<rub=\"もの\">者</rub>・ゼル";
+        text """
+<sev>【<color=Keyword>超進化時</color>】自分の場の他のフォロワー1枚を選ぶ。それは【<color=Keyword>疾走</color>】を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "바람을 읽는 자 젤";
+        text """
+<sev>[<color=Keyword>초진화시</color>] 내 전장에서 다른 추종자 1장을 선택한다. 그 추종자는 [<color=Keyword>질주</color>]를 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "詠風者‧傑魯";
+        text """
+<sev>【<color=Keyword>超進化時</color>】指定1張自己戰場上的其他從者卡。使其獲得【<color=Keyword>疾馳</color>】。</sev>
+""";
+    }
+
+}

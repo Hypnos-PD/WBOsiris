@@ -1,0 +1,78 @@
+wbo 0.1.0;
+
+card 10132130 {
+    type follower;
+    cost 6;
+    stats 5/5;
+    trait mysteria;
+
+    effect {
+        counter x 0;
+        spellboost {
+            add 1 counter x;
+        }
+        fanfare {
+            damage oppo.field.followers self.counter.x;
+        }
+        evolve {
+            spellboost own.hand 2;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "玛纳利亚的学生·威廉";
+        text """
+X起始为0。
+【<color=Keyword>魔力增幅时</color>】使本卡牌的X+1。
+<hr>【<color=Keyword>入场曲</color>】对对手的战场上的所有随从造成X点伤害。
+<hr><ev>【<color=Keyword>进化时</color>】使自己的所有手牌发动2次魔力增幅。</ev>
+""";
+    }
+
+    locale eng {
+        name "William, Mysterian Student";
+        text """
+X starts at 0.
+<b><color=Keyword>On Spellboost</color></b>: Increase X by 1.
+<hr><b><color=Keyword>Fanfare</color></b>: Deal X damage to all enemy followers.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Spellboost your hand 2 times.</ev>
+""";
+    }
+
+    locale jpn {
+        name "マナリアの<rub=\"がくと\">学徒</rub>・ウィリアム";
+        text """
+Xは0から始まる。
+【<color=Keyword>スペルブースト時</color>】これのXを+1する。
+<hr>【<color=Keyword>ファンファーレ</color>】相手の場のフォロワーすべてにXダメージ。
+<hr><ev>【<color=Keyword>進化時</color>】自分の手札すべては2回スペルブーストする。</ev>
+""";
+    }
+
+    locale kor {
+        name "마나리아 학도 윌리엄";
+        text """
+X는 0부터 시작.
+[<color=Keyword>주문증폭시</color>] 이 추종자의 X를 +1.
+<hr>[<color=Keyword>출격</color>] 상대방 전장의 추종자 모두에게 X 피해.
+<hr><ev>[<color=Keyword>진화시</color>] 내 패 모두를 2회 주문증폭.</ev>
+""";
+    }
+
+    locale cht {
+        name "馬納歷亞學子‧威廉";
+        text """
+X由0開始。
+【<color=Keyword>魔力增幅時</color>】使這張卡片的X+1。
+<hr>【<color=Keyword>入場曲</color>】給予敵方戰場上全部的從者卡X點傷害。
+<hr><ev>【<color=Keyword>進化時</color>】使自己手牌中全部的卡片發動2次魔力增幅。</ev>
+""";
+    }
+
+}

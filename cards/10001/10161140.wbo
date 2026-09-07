@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10161140 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "潜伏的曼纽";
+        text """
+【<color=Keyword>灵气</color>】
+自己【<color=Keyword>启动</color>】护符时，回合结束前，本随从+1/+0。
+""";
+    }
+
+    locale eng {
+        name "Mainyu, Darkdweller";
+        text """
+<b><color=Keyword>Aura</color></b>
+Whenever you <b><color=Keyword>Engage</color></b> an amulet, give this follower +1/+0 until the end of the turn.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ひそ\">潜</rub>みしマイニュ";
+        text """
+【<color=Keyword>オーラ</color>】
+自分がアミュレットを【<color=Keyword>アクト</color>】したとき、ターン終了まで、これは+1/+0する。
+""";
+    }
+
+    locale kor {
+        name "잠재된 마이뉴";
+        text """
+[<color=Keyword>오라</color>]
+내가 마법진을 [<color=Keyword>활성화</color>]했을 때, 턴 종료까지 이 추종자는 +1/+0.
+""";
+    }
+
+    locale cht {
+        name "潛伏的曼紐";
+        text """
+【<color=Keyword>光紋</color>】
+當自己進行護符卡的【<color=Keyword>策動</color>】時，到回合結束為止，使這張卡片+1/+0。
+""";
+    }
+
+}

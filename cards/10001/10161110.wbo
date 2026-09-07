@@ -1,0 +1,64 @@
+wbo 0.1.0;
+
+card 10161110 {
+    type follower;
+    cost 3;
+    stats 2/2;
+
+    effect {
+        fanfare {
+            draw 1 from deck where type amulet;
+        }
+        evolve {
+            choose target from own.hand where type amulet;
+            reduce cost target 1 minimum 0;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "圣心光棱牧师";
+        text """
+【<color=Keyword>入场曲</color>】抽取1张护符。
+<hr><ev>【<color=Keyword>进化时</color>】选择自己的手牌中的1张护符，使其费用-1。</ev>
+""";
+    }
+
+    locale eng {
+        name "Angelic Prism Priestess";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Draw an amulet.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select an amulet in your hand and reduce its cost by 1.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"せいしん\">聖心</rub>のプリズムプリースト";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキからアミュレット1枚を引く。
+<hr><ev>【<color=Keyword>進化時</color>】自分の手札のアミュレット1枚を選ぶ。それのコストを-1する。</ev>
+""";
+    }
+
+    locale kor {
+        name "성심의 무지갯빛 마법사제";
+        text """
+[<color=Keyword>출격</color>] 내 덱에서 마법진 1장을 뽑는다.
+<hr><ev>[<color=Keyword>진화시</color>] 내 패에서 마법진 1장을 선택한다. 그 마법진의 비용을 -1.</ev>
+""";
+    }
+
+    locale cht {
+        name "聖心之光稜牧師";
+        text """
+【<color=Keyword>入場曲</color>】由自己的牌堆中抽取1張護符卡。
+<hr><ev>【<color=Keyword>進化時</color>】指定1張自己手牌中的護符卡。使其消費-1。</ev>
+""";
+    }
+
+}

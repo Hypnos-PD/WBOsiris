@@ -7,12 +7,7 @@ card 90073110 {
     trait artifact;
 
     effect {
-        fusion material from own.hand where card 90073120 {
-            if fused.distinct == 2 {
-                transform self into card 90074110 preserving materials;
-            }
-        }
-        fusion material from own.hand where card 90073130 {
+        fusion material from own.hand where card 90073120 or card 90073130 {
             if fused.distinct == 2 {
                 transform self into card 90074110 preserving materials;
             }

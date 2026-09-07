@@ -5,15 +5,15 @@ import (
 	"strconv"
 	"strings"
 
+	"wbo/internal/ir"
 	"wbo/internal/syntax"
 )
 
 var (
 	cardTypes = set("follower", "spell", "amulet")
-	abilities = set("ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")
+	abilities = set("ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")
 	classes   = set("neutral", "forestcraft", "swordcraft", "runecraft", "dragoncraft", "abysscraft", "havencraft", "portalcraft")
 	rarities  = set("bronze", "silver", "gold", "legendary")
-	traits    = set("pixie", "officer", "golem", "departed", "puppetry", "artifact")
 	locales   = []string{"chs", "eng", "jpn", "kor", "cht"}
 )
 
@@ -93,7 +93,7 @@ func validateCard(f *syntax.File, ds *[]syntax.Diagnostic) *Card {
 			if stage < 2 || stage > 3 || len(t) != 2 || !s.Terminated {
 				shapeError(ds, s, "trait 标识符;")
 			} else {
-				if !traits[t[1].Value] {
+				if !ir.ValidTrait(t[1].Value) {
 					unknown(ds, t[1], "种族")
 				}
 				c.Traits = append(c.Traits, t[1].Value)
@@ -255,6 +255,16 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			continue
 		}
 		switch h {
+		case "counter":
+			continue
+		case "repeat":
+			end, ok := parseEffectAmount(t, 1)
+			if !ok || end != len(t) || len(b) != 1 || s.Terminated {
+				shapeError(ds, s, "repeat 数值 { ... }")
+			} else {
+				validateEffectBlock(b[0], ds, bindings, "")
+			}
+			continue
 		case "fanfare", "lastwords", "attack", "clash", "evolve", "spellboost":
 			if len(t) == 1 && len(b) == 1 && !s.Terminated {
 				validateEffectBlock(b[0], ds, bindings, "")
@@ -265,6 +275,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 				continue
 			}
 		case "superevolve":
+			if len(b) == 0 {
+				break
+			}
 			if !(len(t) == 1 || len(t) == 3 && (t[1].Value == "replaces" || t[1].Value == "extends") && t[2].Value == "evolve") || len(b) != 1 {
 				shapeError(ds, s, "superevolve [replaces|extends evolve] { ... }")
 			} else {
@@ -300,7 +313,7 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			}
 			continue
 		case "when":
-			if len(t) < 4 || len(b) != 1 {
+			if len(t) < 3 || len(b) != 1 {
 				shapeError(ds, s, "when 事件 [where ...] { ... }")
 			} else {
 				ev := ""
@@ -327,11 +340,20 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			if setOK && end < len(t) && t[end].Value == "other" {
 				end++
 			}
-			if setOK && end < len(t) {
+			if setOK && end < len(t) && t[end].Value == "where" {
 				end, setOK = parseWhere(t, end)
 			}
+			if setOK && end < len(t) && t[end].Value == "count" {
+				if end+1 < len(t) {
+					count, ok := integer(t[end+1])
+					setOK = ok && count > 0
+					end += 2
+				} else {
+					setOK = false
+				}
+			}
 			if len(t) < 4 || t[1].Kind != syntax.Identifier || t[2].Value != "from" || !s.Terminated || len(b) > 0 || !setOK || end != len(t) {
-				shapeError(ds, s, h+" 绑定 from 集合 [other] [where ...];")
+				shapeError(ds, s, h+" 绑定 from 集合 [other] [where ...] [count 正整数];")
 			} else {
 				bindings[t[1].Value] = true
 			}
@@ -368,7 +390,12 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 						diag(ds, "WBO-E010-DUPLICATE-OPTION", "错误", "mode 选项编号重复", o.Span)
 					}
 					seen[ot[1].Value] = true
-					validateEffectBlock(o.Blocks()[0], ds, bindings, "")
+					_, body, err := modeOptionParts(o.Blocks()[0])
+					if err != nil {
+						shapeError(ds, o, err.Error())
+					} else {
+						validateEffectBlock(body, ds, bindings, "")
+					}
 				}
 			}
 			continue
@@ -408,7 +435,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		return false
 	}
 	h := t[0].Value
-	known := set("draw", "add", "summon", "damage", "heal", "buff", "gain", "destroy", "banish", "remove", "return", "evolve", "reanimate", "reduce", "spellboost", "transform")
+	known := set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "spellboost", "transform", "set_attack_limit")
 	if !known[h] {
 		return false
 	}
@@ -422,6 +449,8 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 	}
 	ok := false
 	switch h {
+	case "set_attack_limit":
+		ok = len(t) == 3 && t[1].Value == "self" && isUnsigned(t[2])
 	case "draw":
 		ok = len(t) == 2 && (isUnsigned(t[1]) || t[1].Value == "all")
 		if len(t) > 2 && (isUnsigned(t[1]) || t[1].Value == "all") && len(t) >= 6 && t[2].Value == "from" && t[3].Value == "deck" {
@@ -432,6 +461,9 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 			ok = false
 		}
 	case "add":
+		if len(t) == 4 && isUnsigned(t[1]) && t[2].Value == "counter" && t[3].Kind == syntax.Identifier && ir.ValidCounterName(t[3].Value) {
+			ok = true
+		}
 		if len(t) == 6 && isUnsigned(t[1]) && t[2].Value == "card" && isCardID(t[3]) && t[4].Value == "to" && t[5].Value == "hand" {
 			ok = true
 		}
@@ -450,20 +482,47 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		ok = len(t) == 4 && isUnsigned(t[1]) && t[2].Value == "card" && isCardID(t[3])
 	case "damage", "heal":
 		end, good := parseValueRef(t, 1)
-		if good && end < len(t) && isUnsigned(t[end]) {
-			end++
-			if end < len(t) {
+		if good {
+			checkBindingAt(t, 1, end, bindings, ds)
+			targetEnd := end
+			end, good = parseEffectAmount(t, end)
+			if good && end < len(t) && t[end].Value == "distributed" {
+				good = h == "damage" && targetEnd == 6 && set("own", "oppo")[t[1].Value] && t[3].Value == "field" && t[5].Value == "followers"
+				end++
+				if good && end < len(t) && t[end].Value == "overflow" {
+					good = end+3 < len(t) && t[end+1].Value == t[1].Value && t[end+2].Value == "." && t[end+3].Value == "leader"
+					end += 4
+				}
+			}
+			if good && end < len(t) {
 				end, good = parseWhere(t, end)
 			}
 			ok = good && end == len(t)
-			checkBindingAt(t, 1, end, bindings, ds)
 		}
 	case "buff":
 		end, good := parseValueRef(t, 1)
-		ok = good && end+4 < len(t) && isSign(t[end]) && isUnsigned(t[end+1]) && t[end+2].Value == "/" && isSign(t[end+3]) && isUnsigned(t[end+4]) && end+5 == len(t)
+		if good && end < len(t) && t[end].Value == "other" {
+			end++
+		}
+		if good {
+			end, good = parseSignedAmount(t, end)
+			if good && end < len(t) && t[end].Value == "/" {
+				end, good = parseSignedAmount(t, end+1)
+			} else {
+				good = false
+			}
+			if end < len(t) {
+				if good {
+					end, good = parseWhere(t, end)
+				}
+			}
+			ok = good && end == len(t)
+		}
 		checkBindingAt(t, 1, end, bindings, ds)
 	case "gain":
 		ok = len(t) == 5 && (t[1].Value == "own" || t[1].Value == "oppo") && t[2].Value == "." && set("life", "pp", "maxpp", "ep", "sep", "combo", "shadows")[t[3].Value] && isUnsigned(t[4])
+	case "restore":
+		ok = len(t) == 4 && set("own", "oppo")[t[1].Value] && t[2].Value == "." && t[3].Value == "pp"
 	case "destroy", "banish":
 		end, good := parseValueRef(t, 1)
 		if good && end < len(t) {
@@ -481,7 +540,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		end, good := parseValueRef(t, 1)
 		ok = good && end+2 == len(t) && t[end].Value == "to" && (t[end+1].Value == "hand" || t[end+1].Value == "deck")
 		checkBindingAt(t, 1, end, bindings, ds)
-	case "evolve":
+	case "evolve", "superevolve":
 		end, good := parseValueRef(t, 1)
 		ok = good && end+1 == len(t) && t[end].Value == "silent"
 		checkBindingAt(t, 1, end, bindings, ds)
@@ -507,6 +566,39 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		shapeError(ds, s, h+" 的规范参数;")
 	}
 	return true
+}
+
+func parseEffectAmount(t []syntax.Token, i int) (int, bool) {
+	if counterRef(t, i) {
+		return i + 5, true
+	}
+	if i < len(t) && isUnsigned(t[i]) {
+		return i + 1, true
+	}
+	if i+2 < len(t) && t[i+1].Value == "." {
+		if t[i].Value == "self" && set("attack", "life", "cost")[t[i+2].Value] ||
+			set("own", "oppo")[t[i].Value] && set("combo", "pp", "maxpp", "life", "ep", "sep", "shadows")[t[i+2].Value] {
+			return i + 3, true
+		}
+	}
+	if i+1 >= len(t) || t[i].Value != "count" || t[i+1].Value != "(" {
+		return i, false
+	}
+	end, ok := parseTargetSet(t, i+2)
+	if ok && end < len(t) && t[end].Value == "where" {
+		end, ok = parseWhere(t, end)
+	}
+	if !ok || end >= len(t) || t[end].Value != ")" {
+		return end, false
+	}
+	return end + 1, true
+}
+
+func parseSignedAmount(t []syntax.Token, i int) (int, bool) {
+	if i >= len(t) || !isSign(t[i]) {
+		return i, false
+	}
+	return parseEffectAmount(t, i+1)
 }
 
 func parseTargetSet(t []syntax.Token, i int) (int, bool) {
@@ -569,7 +661,11 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 				i += 2
 			}
 		case "trait":
-			if i+1 < len(t) && t[i+1].Kind == syntax.Identifier {
+			if i+1 < len(t) && ir.ValidTrait(t[i+1].Value) {
+				i += 2
+			}
+		case "form":
+			if i+1 < len(t) && set("unevolved", "evolved", "super_evolved")[t[i+1].Value] {
 				i += 2
 			}
 		case "life":
@@ -581,8 +677,9 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 			return i, false
 		}
 		term = true
-		if i < len(t) && t[i].Value == "and" {
+		if i < len(t) && (t[i].Value == "and" || t[i].Value == "or") {
 			i++
+			term = false
 			continue
 		}
 		break
@@ -775,6 +872,7 @@ func validateCollection(l *Loaded, strict bool) {
 		}
 	}
 	check := func(s *syntax.Statement) {
+		checkEarthSigilRef(s, ids, l)
 		t := s.Tokens()
 		for i := 0; i+1 < len(t); i++ {
 			if t[i].Value == "card" && t[i+1].Kind == syntax.Integer && len(t[i+1].Value) == 8 {
@@ -803,6 +901,7 @@ func validateCollection(l *Loaded, strict bool) {
 		for _, s := range tf.Scenarios {
 			checkStatementRefs(s, ids, l)
 			checkDeclaredTypes(s, ids, &l.Diagnostics)
+			validateScenarioCounters(s, ids, &l.Diagnostics)
 		}
 	}
 	sev := "警告"
@@ -829,7 +928,7 @@ func checkDeclaredTypes(s *syntax.Statement, ids map[string]*Card, ds *[]syntax.
 			if len(s.Blocks()) == 1 {
 				for _, o := range s.Blocks()[0] {
 					h := o.Word(0)
-					if set("stats", "evolved", "super_evolved", "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")[h] && c.Type != "follower" {
+					if set("stats", "evolved", "super_evolved", "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")[h] && c.Type != "follower" {
 						diag(ds, "WBT-E004-INVALID-OVERRIDE", "错误", h+" override 只适用于随从", o.Span)
 					}
 					if set("earthsigil", "countdown", "engaged")[h] && c.Type != "amulet" {
@@ -846,6 +945,7 @@ func checkDeclaredTypes(s *syntax.Statement, ids map[string]*Card, ds *[]syntax.
 	}
 }
 func checkStatementRefs(s *syntax.Statement, ids map[string]*Card, l *Loaded) {
+	checkEarthSigilRef(s, ids, l)
 	t := s.Tokens()
 	for i := 0; i+1 < len(t); i++ {
 		if (t[i].Value == "card" || t[i].Value == "=") && t[i+1].Kind == syntax.Integer && len(t[i+1].Value) == 8 && ids[t[i+1].Value] == nil {
@@ -856,6 +956,13 @@ func checkStatementRefs(s *syntax.Statement, ids map[string]*Card, l *Loaded) {
 		for _, x := range b {
 			checkStatementRefs(x, ids, l)
 		}
+	}
+}
+func checkEarthSigilRef(s *syntax.Statement, ids map[string]*Card, l *Loaded) {
+	t := s.Tokens()
+	id := strconv.Itoa(ir.MagicSedimentCardID)
+	if len(t) == 3 && t[0].Value == "add" && t[2].Value == "earthsigil" && intToken(t[1]) > 0 && ids[id] == nil {
+		l.Unresolved[id] = s.Span
 	}
 }
 func sortStrings(v []string) {

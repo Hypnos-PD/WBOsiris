@@ -1,0 +1,56 @@
+wbo 0.1.0;
+
+card 10172130 {
+    type follower;
+    cost 6;
+    stats 5/6;
+
+    effect {
+        fanfare {
+            add 3 card 90071110 to hand;
+            buff own.hand.followers +1/+0 where trait puppetry;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "杀意之丝·诺亚";
+        text """
+【<color=Keyword>入场曲</color>】将3张『<color=Keyword>悬丝傀儡</color>』加入手牌。使自己的手牌中的所有人偶·随从+1/+0。
+""";
+    }
+
+    locale eng {
+        name "Noah, Thread of Death";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add 3 copies of <b><i><color=Keyword>Puppet</color></i></b> to your hand. Give all Puppetry followers in your hand +1/+0.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"さつい\">殺意</rub>の<rub=\"いと\">糸</rub>・ノア";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>操り人形</color>』3枚を自分の手札に加える。自分の手札の人形・フォロワーすべては+1/+0する。
+""";
+    }
+
+    locale kor {
+        name "살의의 실 노아";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>꼭두각시 인형</color> 3장을 내 패에 넣는다. 내 패의 인형 추종자 모두는 +1/+0.
+""";
+    }
+
+    locale cht {
+        name "殺意的絲線‧諾亞";
+        text """
+【<color=Keyword>入場曲</color>】增加3張『<color=Keyword>懸絲人偶</color>』到自己的手牌中。使自己手牌中全部的人偶‧從者卡+1/+0。
+""";
+    }
+
+}

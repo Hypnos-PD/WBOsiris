@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10161210 {
+    type amulet;
+    cost 1;
+
+    effect {
+        countdown 3;
+        lastwords {
+            draw 2;
+        }
+        engage 1 {
+            reduce countdown self 1;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "祥和的教会";
+        text """
+【<color=Keyword>吟唱</color>_3】
+【<color=Keyword>谢幕曲</color>】抽取2张卡牌。
+<hr>费用1【<color=Keyword>启动</color>】本护符的倒计数-1。
+""";
+    }
+
+    locale eng {
+        name "Serene Sanctuary";
+        text """
+<b><color=Keyword>Countdown</color> (3)</b>
+<b><color=Keyword>Last Words</color></b>: Draw 2 cards.
+<hr><b><color=Keyword>Engage</color> (1)</b>: Advance this amulet's count by 1.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"おだ\">穏</rub>やかなる<rub=\"きょうかい\">教会</rub>";
+        text """
+【<color=Keyword>カウントダウン</color>_3】
+【<color=Keyword>ラストワード</color>】自分のデッキから2枚を引く。
+<hr>コスト1【<color=Keyword>アクト</color>】これのカウントを-1する。
+""";
+    }
+
+    locale kor {
+        name "평온한 교회";
+        text """
+[<color=Keyword>카운트다운</color> 3]
+[<color=Keyword>유언</color>] 내 덱에서 2장을 뽑는다.
+<hr>비용 1 [<color=Keyword>활성화</color>] 이 마법진의 카운트를 -1.
+""";
+    }
+
+    locale cht {
+        name "平靜的教會";
+        text """
+【<color=Keyword>倒數</color>_3】
+【<color=Keyword>謝幕曲</color>】由自己的牌堆中抽取2張卡片。
+<hr>消費1【<color=Keyword>策動</color>】使這張卡片的倒數回合數-1。
+""";
+    }
+
+}

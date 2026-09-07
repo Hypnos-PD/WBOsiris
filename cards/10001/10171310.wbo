@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10171310 {
+    type spell;
+    cost 3;
+
+    effect {
+        summon 2 card 90071120;
+    }
+
+    meta {
+        pack 10001;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "人偶替身";
+        text """
+召唤2个『<color=Keyword>改良型·悬丝傀儡</color>』。
+""";
+    }
+
+    locale eng {
+        name "Puppet Shield";
+        text """
+Summon 2 copies of <b><i><color=Keyword>Enhanced Puppet</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"にんぎょう\">人形</rub>の<rub=\"みが\">身代</rub>わり";
+        text """
+『<color=Keyword>改良型・操り人形</color>』2枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "인형 방패막이";
+        text """
+<color=Keyword>개량형 꼭두각시 인형</color> 2장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "人偶替身術";
+        text """
+召喚2張『<color=Keyword>改良型‧懸絲人偶</color>』到自己的戰場上。
+""";
+    }
+
+}

@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10102310 {
+    type spell;
+    cost 3;
+
+    effect {
+        draw 2;
+    }
+
+    meta {
+        pack 10001;
+        class neutral;
+        rarity silver;
+    }
+
+    locale chs {
+        name "炽天使的福音";
+        text """
+抽取2张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Seraphic Tidings";
+        text """
+Draw 2 cards.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"してんし\">熾天使</rub>の<rub=\"ふくいん\">福音</rub>";
+        text """
+自分のデッキから2枚を引く。
+""";
+    }
+
+    locale kor {
+        name "치천사의 복음";
+        text """
+내 덱에서 2장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "熾天使的福音";
+        text """
+由自己的牌堆中抽取2張卡片。
+""";
+    }
+
+}

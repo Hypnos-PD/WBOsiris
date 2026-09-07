@@ -1,0 +1,72 @@
+wbo 0.1.0;
+
+card 10114130 {
+    type follower;
+    cost 3;
+    stats 2/2;
+
+    effect {
+        ward;
+        fanfare {
+            buff self +count(own.hand.followers where trait pixie)/+count(own.hand.followers where trait pixie);
+        }
+        evolve {
+            repeat count(own.hand.followers where trait pixie) {
+                random target from oppo.field.followers;
+                damage target 1;
+            }
+        }
+    }
+
+    meta {
+        pack 10001;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "起源剑师·阿玛兹";
+        text """
+【<color=Keyword>入场曲</color>】本随从+X/+X。X为自己的手牌中的妖精·随从的张数。
+<hr>【<color=Keyword>守护</color>】
+<hr><ev>【<color=Keyword>进化时</color>】发动X次「对对手的战场上的随机1个随从造成1点伤害」。X为自己的手牌中的妖精·随从的张数。</ev>
+""";
+    }
+
+    locale eng {
+        name "Amataz, Origin Blader";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Give this follower +X/+X. X is the number of Pixie followers in your hand.
+<hr><b><color=Keyword>Ward</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Do this X times: \"Deal 1 damage to a random enemy follower.\" X is the number of Pixie followers in your hand.</ev>
+""";
+    }
+
+    locale jpn {
+        name "ビギンズブレイダー・アマツ";
+        text """
+【<color=Keyword>ファンファーレ</color>】これは+X/+Xする。Xは自分の手札の妖精・フォロワーの枚数である。
+<hr>【<color=Keyword>守護</color>】
+<hr><ev>【<color=Keyword>進化時</color>】「相手の場のフォロワーからランダム1枚に1ダメージ。」をX回行う。Xは自分の手札の妖精・フォロワーの枚数である。</ev>
+""";
+    }
+
+    locale kor {
+        name "비긴즈 블레이더 아마츠";
+        text """
+[<color=Keyword>출격</color>] 이 추종자는 +X/+X. X는 내 패의 요정 추종자 수.
+<hr>[<color=Keyword>수호</color>]
+<hr><ev>[<color=Keyword>진화시</color>] 「상대방 전장의 추종자 중 무작위로 1장에게 1 피해」를 X회 발동. X는 내 패의 요정 추종자 수.</ev>
+""";
+    }
+
+    locale cht {
+        name "新生劍師‧阿瑪茲";
+        text """
+【<color=Keyword>入場曲</color>】使這張卡片+X/+X。X為「自己手牌中的妖精‧從者卡張數」。
+<hr>【<color=Keyword>守護</color>】
+<hr><ev>【<color=Keyword>進化時</color>】發動X次「隨機給予1張敵方戰場上的從者卡1點傷害」。X為「自己手牌中的妖精‧從者卡張數」。</ev>
+""";
+    }
+
+}

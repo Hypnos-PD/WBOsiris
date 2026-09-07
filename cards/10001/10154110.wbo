@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10154110 {
+    type follower;
+    cost 8;
+    stats 6/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class abysscraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "奔放的狱焰·凯尔贝洛斯";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>守卫犬的右腕·米米</color>』和1个『<color=Keyword>守卫犬的左腕·可可</color>』。【<color=Keyword>唤灵</color>_6】使自己的战场上的其他所有随从+2/+0。
+<hr><sev>【<color=Keyword>超进化时</color>】发动2次【<color=Keyword>亡者召还</color>_1】。</sev>
+""";
+    }
+
+    locale eng {
+        name "Cerberus, Hellfire Unleashed";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Mimi, Right Paw Hellhound</color></i></b> and <b><i><color=Keyword>Coco, Left Paw Hellhound</color></i></b>. <b><color=Keyword>Necromancy</color> (6)</b> - Give all other allied followers on the field +2/+0.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Do this 2 times: \"<b><color=Keyword>Reanimate</color> (1)</b>.\"</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ほんぽう\">奔放</rub>なる<rub=\"ごくえん\">獄炎</rub>・ケルベロス";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>番犬の右腕・ミミ</color>』1枚と『<color=Keyword>番犬の左腕・ココ</color>』1枚を自分の場に出す。【<color=Keyword>ネクロマンス</color>_6】自分の場の他のフォロワーすべては+2/+0する。
+<hr><sev>【<color=Keyword>超進化時</color>】【<color=Keyword>リアニメイト</color>_1】を2回行う。</sev>
+""";
+    }
+
+    locale kor {
+        name "자유분방한 옥염 케르베로스";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>파수견의 오른팔 미미</color> 1장, <color=Keyword>파수견의 왼팔 코코</color> 1장을 내 전장에 소환. [<color=Keyword>사령술</color> 6] 내 전장의 다른 추종자 모두는 +2/+0.
+<hr><sev>[<color=Keyword>초진화시</color>] [<color=Keyword>소생</color> 1]을 2회 발동.</sev>
+""";
+    }
+
+    locale cht {
+        name "奔放的獄炎‧凱爾貝洛斯";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>守衛犬的右腕‧米米</color>』與1張『<color=Keyword>守衛犬的左腕‧可可</color>』到自己的戰場上。【<color=Keyword>死靈術</color>_6】使自己戰場上全部的其他從者卡+2/+0。
+<hr><sev>【<color=Keyword>超進化時</color>】發動2次【<color=Keyword>亡者召還</color>_1】。</sev>
+""";
+    }
+
+}

@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10141110 {
+    type follower;
+    cost 8;
+    stats 6/6;
+
+    effect {
+        ward;
+        lastwords {
+            summon 1 card 90041120;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "云海龙骑兵";
+        text """
+【<color=Keyword>守护</color>】
+【<color=Keyword>谢幕曲</color>】召唤1个『<color=Keyword>巨翼飞龙</color>』。
+""";
+    }
+
+    locale eng {
+        name "Silvercloud Dragonrider";
+        text """
+<b><color=Keyword>Ward</color></b>
+<b><color=Keyword>Last Words</color></b>: Summon a <b><i><color=Keyword>Vastwing Dragon</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"うんかい\">雲海</rub>の<rub=\"きりゅうへい\">騎竜兵</rub>";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>ラストワード</color>】『<color=Keyword>大翼のドラゴン</color>』1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "운해의 비룡기수";
+        text """
+[<color=Keyword>수호</color>]
+[<color=Keyword>유언</color>] <color=Keyword>대익룡</color> 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "雲海龍騎兵";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>謝幕曲</color>】召喚1張『<color=Keyword>巨翼飛龍</color>』到自己的戰場上。
+""";
+    }
+
+}

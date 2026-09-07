@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10111140 {
+    type follower;
+    cost 3;
+    stats 2/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "勤劳的蚂蚱";
+        text """
+【<color=Keyword>入场曲</color>】抽取1张费用为X的随从。X为自己的【<color=Keyword>连击</color>】。
+""";
+    }
+
+    locale eng {
+        name "Workin' Grasshopper";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Draw an X-cost follower. X is your <b><color=Keyword>Combo</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はたら\">働</rub>きバッタ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキからコストXのフォロワー1枚を引く。Xは自分の【<color=Keyword>コンボ</color>】である。
+""";
+    }
+
+    locale kor {
+        name "부지런한 베짱이";
+        text """
+[<color=Keyword>출격</color>] 내 덱에서 비용이 X인 추종자 1장을 뽑는다. X는 내 [<color=Keyword>콤보</color>].
+""";
+    }
+
+    locale cht {
+        name "勤勞的蚱蜢";
+        text """
+【<color=Keyword>入場曲</color>】由自己的牌堆中抽取1張消費為X的從者卡。X為「自己的【<color=Keyword>連擊</color>】數」。
+""";
+    }
+
+}

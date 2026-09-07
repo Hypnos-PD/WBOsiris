@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10111150 {
+    type follower;
+    cost 4;
+    stats 3/3;
+
+    effect {
+        fanfare {
+            if combo >= 3 {
+                random targets from oppo.field.followers count 3;
+                damage targets 3;
+            } else {
+                random target from oppo.field.followers;
+                damage target 3;
+            }
+        }
+    }
+
+    meta {
+        pack 10001;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "言传的杂草人长老";
+        text """
+【<color=Keyword>入场曲</color>】对对手的战场上的随机1个随从造成3点伤害。【<color=Keyword>连击</color>_3】改为3个。
+""";
+    }
+
+    locale eng {
+        name "Elder Sagebrush";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Deal 3 damage to a random enemy follower. <b><color=Keyword>Combo</color> (3)</b> - Deal damage to 3 random enemy followers instead.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"こと\">言</rub>の<rub=\"は\">葉</rub>のエルダーウィードマン";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワーからランダム1枚に3ダメージ。【<color=Keyword>コンボ</color>_3】1枚ではなく3枚。
+""";
+    }
+
+    locale kor {
+        name "훈화의 원로 잡초맨";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장의 추종자 중 무작위로 1장에게 3 피해. [<color=Keyword>콤보</color> 3] 1장 대신 3장.
+""";
+    }
+
+    locale cht {
+        name "言傳的草人長老";
+        text """
+【<color=Keyword>入場曲</color>】隨機給予1張敵方戰場上的從者卡3點傷害。【<color=Keyword>連擊</color>_3】由原本的1張轉變為3張。
+""";
+    }
+
+}

@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10132320 {
+    type spell;
+    cost 8;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "雪人觉醒";
+        text """
+【<color=Keyword>魔力增幅时</color>】使本卡牌的费用-1。
+<hr>选择对手的战场上的1个随从，使其生命值变为1。对手的回合结束前，使其获得「无法攻击随从或主战者」。
+""";
+    }
+
+    locale eng {
+        name "Snowman Army";
+        text """
+<b><color=Keyword>On Spellboost</color></b>: Reduce the cost of this card by 1.
+<hr>Select an enemy follower on the field, set its defense to 1, and, until the end of your opponent's turn, give it \"Can't attack followers or leaders.\"
+""";
+    }
+
+    locale jpn {
+        name "スノーアウェイク";
+        text """
+【<color=Keyword>スペルブースト時</color>】これのコストを-1する。
+<hr>相手の場のフォロワー1枚を選ぶ。それは体力1になる。相手のターン終了まで、それは「フォロワーやリーダーを攻撃できない。」を持つ。
+""";
+    }
+
+    locale kor {
+        name "눈사람 깨우기";
+        text """
+[<color=Keyword>주문증폭시</color>] 이 주문의 비용을 -1.
+<hr>상대방 전장에서 추종자 1장을 선택한다. 그 추종자는 체력이 1이 된다. 상대방 턴 종료까지 그 추종자는 「추종자나 리더 공격 불가」를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "冰雪覺醒";
+        text """
+【<color=Keyword>魔力增幅時</color>】使這張卡片的消費-1。
+<hr>指定1張敵方戰場上的從者卡。使其生命值轉變為1。到敵方的回合結束為止，使其獲得「無法攻擊從者或主戰者」。
+""";
+    }
+
+}

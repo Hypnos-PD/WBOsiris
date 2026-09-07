@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10172320 {
+    type spell;
+    cost 5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "改境的重启";
+        text """
+选择自己的手牌中的2张费用为5或以下的创造物·随从，召唤对应数量的复制随从，使其获得「对手的回合结束时，破坏本卡牌」。
+""";
+    }
+
+    locale eng {
+        name "Doomwright Resurgence";
+        text """
+Select 2 Artifact followers in your hand that cost 5 or less, summon an exact copy of each, and give the exact copies \"At the end of your opponent's turn, destroy this card.\"
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"かいきょう\">改境</rub>の<rub=\"さいどう\">再動</rub>";
+        text """
+自分の手札のコスト5以下のアーティファクト・フォロワー2枚を選ぶ。それのコピー1枚を自分の場に出す。それは「相手のターン終了時、これを破壊。」を持つ。
+""";
+    }
+
+    locale kor {
+        name "개경의 재동";
+        text """
+내 패에서 비용이 5 이하인 아티팩트 추종자 2장을 선택한다. 그 추종자의 복사본 1장을 내 전장에 소환. 그 추종자는 「상대방 턴 종료시, 이 추종자를 파괴」를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "改境的重啟";
+        text """
+指定2張自己手牌中消費為5以下的創造物‧從者卡。將其複製1張並召喚到自己的戰場上。使其獲得「敵方的回合結束時，破壞這張卡片」。
+""";
+    }
+
+}

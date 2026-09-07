@@ -1,0 +1,64 @@
+wbo 0.1.0;
+
+card 10121130 {
+    type follower;
+    cost 3;
+    stats 1/2;
+    trait luminous;
+
+    effect {
+        fanfare {
+            summon 1 card 90021120;
+        }
+        when own follower summoned where trait officer {
+            heal own.leader 1;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "救援的鲁米那斯治疗师·莉拉拉";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>铁甲骑士</color>』。
+<hr>自己的士兵·随从进入战场时，回复自己的主战者1点生命值。
+""";
+    }
+
+    locale eng {
+        name "Lyrala, Luminous Potionwright";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Steelclad Knight</color></i></b>.
+<hr>Whenever an allied Officer follower enters the field, restore 1 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きゅうえん\">救援</rub>のルミナスヒーラー・リララ";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>スティールナイト</color>』1枚を自分の場に出す。
+<hr>自分の兵士・フォロワーが場に出たとき、自分のリーダーを1回復。
+""";
+    }
+
+    locale kor {
+        name "구원의 루미나스 힐러 리라라";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>철갑 기사</color> 1장을 내 전장에 소환.
+<hr>내 병사 추종자가 전장에 소환되었을 때, 내 리더를 1 회복.
+""";
+    }
+
+    locale cht {
+        name "救援的魯米那斯治療師‧琍菈菈";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>鐵甲騎士</color>』到自己的戰場上。
+<hr>當自己的士兵‧從者卡進入戰場時，回復自己的主戰者1點生命值。
+""";
+    }
+
+}

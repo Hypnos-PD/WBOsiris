@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10122140 {
+    type follower;
+    cost 2;
+    stats 2/1;
+
+    effect {
+        stealth;
+        evolve {
+            summon 1 card 10122140;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "忍者鼯鼠";
+        text """
+【<color=Keyword>潜行</color>】
+<hr><ev>【<color=Keyword>进化时</color>】召唤1个『<color=Keyword>忍者鼯鼠</color>』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Shinobi Squirrel";
+        text """
+<b><color=Keyword>Ambush</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Summon a <b><i><color=Keyword>Shinobi Squirrel</color></i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しの\">忍</rub>びのムササビ";
+        text """
+【<color=Keyword>潜伏</color>】
+<hr><ev>【<color=Keyword>進化時</color>】『<color=Keyword>忍びのムササビ</color>』1枚を自分の場に出す。</ev>
+""";
+    }
+
+    locale kor {
+        name "닌자 날다람쥐";
+        text """
+[<color=Keyword>잠복</color>]
+<hr><ev>[<color=Keyword>진화시</color>] <color=Keyword>닌자 날다람쥐</color> 1장을 내 전장에 소환.</ev>
+""";
+    }
+
+    locale cht {
+        name "忍者鼯鼠";
+        text """
+【<color=Keyword>潛行</color>】
+<hr><ev>【<color=Keyword>進化時</color>】召喚1張『<color=Keyword>忍者鼯鼠</color>』到自己的戰場上。</ev>
+""";
+    }
+
+}

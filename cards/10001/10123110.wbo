@@ -1,0 +1,71 @@
+wbo 0.1.0;
+
+card 10123110 {
+    type follower;
+    cost 7;
+    stats 7/6;
+    trait levin;
+
+    effect {
+        rush;
+        fanfare {
+            set_attack_limit self 2;
+        }
+        attack {
+            add barrier to self;
+            summon 1 card 90021110;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class swordcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "雷维翁之斧·杰诺";
+        text """
+【<color=Keyword>突进</color>】
+1回合可以攻击2次。
+【<color=Keyword>攻击时</color>】本随从获得【<color=Keyword>屏障</color>】。召唤1个『<color=Keyword>骑士</color>』。
+""";
+    }
+
+    locale eng {
+        name "Jeno, Levin Axeraider";
+        text """
+<b><color=Keyword>Rush</color></b>
+Can attack 2 times per turn.
+<b><color=Keyword>Strike</color></b>: Give this follower <b><color=Keyword>Barrier</color></b>. Summon a <b><i><color=Keyword>Knight</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "レヴィオンアックス・ジェノ";
+        text """
+【<color=Keyword>突進</color>】
+1ターンに2回攻撃できる。
+【<color=Keyword>攻撃時</color>】これは【<color=Keyword>バリア</color>】を持つ。『<color=Keyword>ナイト</color>』1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "레비온의 도끼 제노";
+        text """
+[<color=Keyword>돌진</color>]
+1턴에 2회 공격 가능.
+[<color=Keyword>공격시</color>] 이 추종자는 [<color=Keyword>배리어</color>]를 갖는다. <color=Keyword>기사</color> 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "雷維翁戰斧‧傑諾";
+        text """
+【<color=Keyword>突進</color>】
+1回合中可進行2次攻擊。
+【<color=Keyword>攻擊時</color>】使這張卡片獲得【<color=Keyword>障壁</color>】。召喚1張『<color=Keyword>騎士</color>』到自己的戰場上。
+""";
+    }
+
+}

@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10142110 {
+    type follower;
+    cost 6;
+    stats 8/7;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "煌牙的义勇·基德";
+        text """
+本卡牌被舍弃时，使自己的战场上的随机1个随从+1/+0。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Kit, Luxfang Champion";
+        text """
+When this card is discarded, give a random allied follower on the field +1/+0.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"こうが\">煌牙</rub>の<rub=\"ぎゆう\">義勇</rub>・キット";
+        text """
+これが捨てられたとき、自分の場のフォロワーからランダム1枚は+1/+0する。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "빛의 용인 키트";
+        text """
+이 추종자가 버려졌을 때, 내 전장의 추종자 중 무작위로 1장은 +1/+0.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "煌牙義勇‧基德";
+        text """
+當這張卡片被捨棄時，隨機使1張自己戰場上的從者卡+1/+0。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

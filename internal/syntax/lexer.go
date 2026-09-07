@@ -62,7 +62,7 @@ func Lex(path string, src []byte) ([]Token, []Diagnostic) {
 			tokens = append(tokens, l.scanString(start))
 		default:
 			matched := ""
-			for _, op := range []string{"<=", ">=", "==", "!=", "{", "}", ";", ".", "/", "+", "-", "<", ">", "=", "[", "]", ","} {
+			for _, op := range []string{"<=", ">=", "==", "!=", "{", "}", ";", ".", "/", "+", "-", "<", ">", "=", "[", "]", ",", "(", ")"} {
 				if strings.HasPrefix(string(l.src[l.off:]), op) {
 					matched = op
 					break

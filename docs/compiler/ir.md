@@ -110,6 +110,7 @@ ID 或场景 ID、节点语义角色、父节点 ID、节点规范化语法指�
 
 ```text
 Card = {
+  counters?: { CounterName: nonnegative_i32 },
   id: CardId,
   cardType: CardType,
   cost: u16,
@@ -224,6 +225,12 @@ MemberKind = "card" | "follower" | "spell" | "amulet"
 
 ### BoolExpr 与数值表达式
 
+下列 `IntExpr` 是通用表达式模型；当前执行格式中的常量数值仍直接编码为 JSON
+整数，不使用 `literal` 包装。`Damage.amount`、`Heal.amount`、`BuffStats.attackDelta`
+和 `BuffStats.lifeDelta` 支持下方 `NumericExpr`。集合计数来源必须是区域集合或一层区域筛选，
+区域省略 `side` 时只允许 `field`。增益还支持单层 `negate`，不能嵌套取负或包装整数。
+其他操作的数值字段仍只接受整数；尚未实现通用 `IntValue` 或一般算术求值。
+
 ```text
 IntExpr =
   IntLiteral { kind: "literal", value: i32 }
@@ -240,13 +247,21 @@ BoolExpr =
 | HasClass    { kind: "has_class", value: ValueRef, class: ClassId }
 | HasCard     { kind: "has_card", value: ValueRef, cardId: CardId }
 | HasTrait    { kind: "has_trait", value: ValueRef, trait: TraitId }
+| HasForm     { kind: "has_form", form: "unevolved" | "evolved" | "super_evolved" }
 | HasKeyword  { kind: "has_keyword", value: ValueRef, keyword: Keyword }
 | Overflow    { kind: "overflow", side: Side }
 ```
 
 当前 `where type follower and class swordcraft` 编译为两个谓词的 `And`；
+`where card 90073120 or card 90073130` 编译为 `Or`。混合过滤器先将连续 `and`
+编译为组，再以 `Or` 连接各组；每个逻辑节点至少包含两个子项。
 `where life <= 3` 编译为 `Compare`；`if combo >= 3` 默认读取 `own.combo`；
 `if overflow` 编译为 `Overflow(own)`。IR 不保留这些省略写法。
+
+`HasForm` 使用当前候选随从的形态；`evolved` 包含超进化，非随从总是不匹配。
+`when self evolved` 编译为 `{kind:"event", event:"evolved", side:"own", subjectType:"follower", selfOnly:true}`；
+`when self super_evolved` 将 `event` 改为 `super_evolved`。`selfOnly` 必须按实例身份匹配，
+只允许上述两种事件、己方随从且不附带谓词。未携带该字段的已有事件结构保持不变。
 
 任何逐候选求值的谓词都会在自身作用域建立只读 `CandidateRef`，包括
 `FilterSet.predicate`、事件对象过滤器、`Draw.predicate`、`ZoneCount.predicate`
@@ -338,12 +353,21 @@ Trigger =
 `minimum=1` 表示一次融合必须选择至少一个材料；`maximum` 为空表示上限为当次请求
 中的合法候选数。材料选择属于融合玩家命令，不是能力 `body` 内的 `Choose` 或
 `Require` 节点；全部材料附着后，`body` 只执行一次。
+每个实例每回合只能成功融合一次；次数在材料响应验证成功后消耗，非法响应不消耗。
+变身会重置次数，手牌返回牌组不重置。合法动作枚举与执行使用同一入口选择规则：
+按声明顺序取首个候选数满足 `minimum` 的能力，不把多个声明的材料自动合并。
 
 `enhance N` 是打出卡牌时的强制替代费用能力。存在多个可支付档位时，合法性检查
 选择费用最高的一档；存在可支付档位时，不能按原费用或更低档位打出。IR 中同一卡
-牌的 `EnhanceTrigger` 按费用升序保存，运行时不得把它暴露成玩家模式选择。
+牌的所有费用不超过所选档位的 `EnhanceTrigger` 都生效，并参与必选目标预检；
+运行时不得把档位暴露成玩家模式选择。能力保留声明顺序，费用只决定是否生效。
+零费档位与未发动强化必须分别表示，不能使用当前卡牌费用推断生效档位。
 `engage N` 是带费用的启动能力，同一护符实体每个控制者回合最多成功启动一次。
-`spellboost { ... }` 监听该手牌实例的魔力增幅事实。`fanfare` 只由正常打出并进入
+`spellboost { ... }` 监听该手牌实例的魔力增幅。使用法术自动对控制者剩余手牌触发一次，
+编译器不向每张法术的 `PlayTrigger` 插入重复增幅节点。运行时在法术离开手牌后确定
+这一次增幅的实例集合并将能力入队，完成法术效果后再执行队列。队列绑定实例身份，
+不会因该实例随后从手牌返回牌组而取消。暂停和恢复必须保存这项调度状态，不能再次
+执行自动增幅。`fanfare` 只由正常打出并进入
 战场触发；`reanimate` 创建的新实例不触发它。法术 `effect` 中不属于能力声明的
 最外层节点编译到 `PlayTrigger`，在支付费用并完成必选目标预检后顺序执行。
 `actionPlans` 只描述手动进化动作需要执行的能力；`frame=continue` 表示沿用上一步的
@@ -399,23 +423,26 @@ NodeBase = { id: NodeId, origin: Origin }
 ```text
 Choose = NodeBase & {
   kind: "choose",
-  selection: "optional",
+  policy: "optional",
   source: SetExpr,
-  output: Binding
+  binding: Binding,
+  count: UInt16? // 1..65535; omitted means 1
 }
 
 Require = NodeBase & {
   kind: "require",
-  selection: "required",
+  policy: "required",
   source: SetExpr,
-  output: Binding
+  binding: Binding,
+  count: UInt16?
 }
 
 RandomChoose = NodeBase & {
   kind: "random_choose",
+  policy: "random",
   source: SetExpr,
-  output: Binding,
-  rngDomain: "game"
+  binding: Binding,
+  count: UInt16?
 }
 
 If = NodeBase & {
@@ -427,7 +454,14 @@ If = NodeBase & {
 
 Mode = NodeBase & {
   kind: "mode",
-  options: [{ id: OptionId, body: [EffectNode], origin: Origin }]
+  options: [{ id: OptionId, body: [EffectNode], origin: Origin,
+              labels?: { [LocaleId]: non-empty string } }]
+}
+
+Repeat = NodeBase & {
+  kind: "repeat",
+  times: EffectAmount,
+  body: [EffectNode]
 }
 
 PayResource = NodeBase & {
@@ -438,12 +472,20 @@ PayResource = NodeBase & {
 }
 ```
 
-`choose` 候选为空时输出 `none` 且不产生 `ChoiceRequest`；非空时请求玩家选择。
-`require` 在动作预检阶段求候选集合，空集合使整个动作非法且状态、事件序号和 RNG
-均不改变；非空时产生必选请求。`random_choose` 仅在候选非空时消费一次随机抽样。
+`choose` 候选为空时输出 `none` 且不产生 `ChoiceRequest`；非空时请求玩家选择
+`min(count, 候选数)` 个不同实例，请求的最小与最大数量相同。
+`require` 在动作预检阶段求候选集合，候选不足 `count` 使整个动作非法且状态、事件序号
+和 RNG 均不改变；足够时产生数量为 `count` 的必选请求。
+`random_choose` 从当前候选不放回抽样，每个选中实例消费一次随机决策，最多选取
+`count` 个。选择绑定保留候选顺序，不因随机抽取顺序或客户端提交顺序而变化。
 `earthrite N` 和 `necromancy N` 分别编译为 `PayResource`；资源不足时不支付并跳过
 `onPaid`，支付成功后不因后续失败退还。`Mode.options.id` 必须在能力内唯一且稳定，
 模式是否可执行不取决于其块内资源支付能否成功。
+
+`Repeat.times` 在进入块时读取一次，计算结果小于或等于零时跳过。块体不展开复制，
+每次迭代使用独立绑定帧；子块继承当前迭代绑定，迭代结束后丢弃局部绑定。
+块内生成的触发能力在整个重复块结束后处理，但每个效果立即更新实体和死亡状态。
+嵌套次数、每次迭代的指令开销与查询均受执行预算约束，暂停后保存剩余次数。
 
 ### 卡牌与区域操作
 
@@ -510,12 +552,20 @@ Reanimate = NodeBase & {
 }
 ```
 
+`Reanimate` 按破坏记录加权：原始费用满足上限且最高的每条记录均可被抽中，
+同名卡的多条记录不去重。它创建原始状态的同名随从并在入场前添加亡者类型，
+不继承旧实例的增益、费用变化、进化状态或额外关键词，也不触发入场曲。
+亡者类型保存在运行时实例和恢复快照中，对外通过实体视图的 `traits` 返回；
+卡牌定义的原始种族列表保持不变。
+
 普通 `draw N` 使用牌组顶部且无筛选；`draw N from deck where P` 从顶向下取前 N
 个匹配项，不改变跳过项的相对顺序；`draw all` 取所有匹配项。手牌或战场空间不足
 时只把成功实例写入输出。`AddCard` 创建新实例；`Return` 移动既有实例。
 `return ... to deck` 使用 `deckInsertion=uniform_random_position`：在牌组长度为
 `n` 时从 `0..n` 共 `n+1` 个插入位置中等概率选择一个，不改变其他卡的相对顺序，
 并消费一次规则层随机决策。返回手牌时 `deckInsertion` 为空且不消费随机数。
+从战场返回手牌或牌组时，恢复当前卡牌定义的原始费用、身材、固有能力与初始状态，
+清除伤害、进化和附加效果；从手牌返回牌组保留附加效果及已排队的魔力增幅。
 
 `Destroy` 产生破坏事实、移入墓场并进入已破坏随从历史，随后排队谢幕曲；同批死亡
 先形成一个批次。`Banish` 不产生破坏或谢幕曲。`Reanimate` 从已破坏随从历史选择
@@ -524,6 +574,8 @@ Reanimate = NodeBase & {
 
 `Transform` 将目标实例采用的卡牌定义改为 `cardId`，不分配新 `InstanceId`，并
 保留目标上完整的材料序列。它不是区域移动，不触发离场、入场、破坏、消失或谢幕曲。
+变身恢复新卡牌定义的原始费用、身材、固有能力及初始状态，不继承伤害、附加效果、
+进化、攻击次数或启动状态。战场上的变身结果若为随从，重新进入入场等待状态。
 当前源语法只允许融合能力块中的 `self` 作为目标。
 
 ```text
@@ -538,29 +590,43 @@ AttachedMaterial = {
 版本规定的规范实例状态编码。材料实例从手牌附着后
 不进入任何 `Zone`，但保留自身 `InstanceId` 和可序列化状态，以便回放和后续规则
 检查；附着本身不产生 `zone_moved`、`destroyed` 或 `banished` 事实，也不增加墓场
-计数。变身只更新来源实例的卡牌定义引用，不能清空、复制或重新创建材料。
+计数。变身重置来源实例的卡牌状态，但不能清空、复制或重新创建材料。
 
 ### 数值、能力与状态操作
 
 ```text
+NumericExpr = Count { kind: "count", source: ZoneSet | FilterSet }
+            | PlayerScalar { kind: "scalar", side: "own" | "oppo",
+                             field: "combo" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" }
+            | SelfScalar { kind: "self_scalar", field: "attack" | "life" | "cost" }
+            | SelfCounter { kind: "self_counter", field: CounterName }
+EffectAmount = nonnegative_integer | NumericExpr
+AdjustCounter = NodeBase & { kind: "adjust_counter", field: CounterName, delta: nonnegative_i32 }
+StatDelta = i16 | NumericExpr | Negate { kind: "negate", value: NumericExpr }
+
 Damage = NodeBase & {
   kind: "damage",
   target: ValueRef | SetExpr,
-  amount: IntExpr,
-  damageType: "effect"
+  amount: EffectAmount,
+  damageType: "effect",
+  distribution?: "field_entry_order",
+  overflow?: LeaderRef,
+  predicate?: Predicate
 }
 
 Heal = NodeBase & {
   kind: "heal",
   target: ValueRef | SetExpr,
-  amount: IntExpr
+  amount: EffectAmount,
+  predicate?: Predicate
 }
 
 BuffStats = NodeBase & {
   kind: "buff_stats",
   target: ValueRef | SetExpr,
-  attackDelta: i16,
-  lifeDelta: i16
+  attackDelta: StatDelta,
+  lifeDelta: StatDelta,
+  predicate?: Predicate
 }
 
 AddKeyword = NodeBase & {
@@ -575,18 +641,30 @@ RemoveKeyword = NodeBase & {
   keyword: Keyword
 }
 
+SetAttackLimit = NodeBase & {
+  kind: "set_attack_limit",
+  target: ValueRef,
+  amount: u16
+}
+
 SilentEvolve = NodeBase & {
   kind: "silent_evolve",
   target: ValueRef | SetExpr,
-  form: "evolved"
+  form: "evolved" | "super_evolved"
 }
 
 AdjustResource = NodeBase & {
   kind: "adjust_resource",
   owner: Side,
-  resource: "combo" | "maxpp",
+  resource: "combo" | "maxpp" | "shadows",
   delta: i32,
   clamp: { minimum: i32?, maximum: i32? }
+}
+
+RestoreResource = NodeBase & {
+  kind: "restore_resource",
+  owner: Side,
+  resource: "pp"
 }
 
 AdjustEarthSigil = NodeBase & {
@@ -611,16 +689,34 @@ Spellboost = NodeBase & {
 }
 ```
 
+`Damage.distribution` 省略时，对每个目标造成完整的 `amount` 伤害。
+数值表达式在该效果实际执行时读取，目标修改前同时确定伤害量或两项增益量。
+`self_scalar` 使用能力来源实例的当前数值，攻击力和生命值仅适用于随从；`scalar` 的玩家
+相对能力控制者解析。增益保留负数，伤害和回复的动态数值以零为下限。计数查询超出预算时
+不执行该数值操作。数值引用本身不消耗随机决策。
+值为 `field_entry_order` 时，`target` 必须为单侧 `field` 中的 `follower` 区域集合，
+`amount` 表示本次分配总额。可选 `overflow` 必须引用同侧主战者，且仅能与
+`distribution` 一起出现。筛选后按原出场顺序分配，屏障和减伤不退还额度。
+未指定主战者时余量并入最后一个随从的单次伤害；指定主战者时余量交给主战者。
+所有分配额度先确定，再造成伤害并统一处理死亡；存档恢复后继续使用区域槽位顺序。
+
 `buff self +1/+1` 的两个增量允许为负。`gain own.maxpp 1` 编译为
 `AdjustResource(maxpp, +1, maximum=10)`；`add combo 1` 编译为 `AdjustResource`。
+`restore own.pp` 编译为 `RestoreResource(owner=own, resource=pp)`，执行时增加
+`max(0, maxpp - pp)`，保留能量上限和超出上限的额外能量。事件 `pp_restored`
+的 `Actual` 记录实际回复量，包括零；该节点不携带增量、目标或次数字段。
 `add 1 earthsigil` 编译为 `AdjustEarthSigil`，操作当前控制者战场上的土之印实体。
+若没有土之印，则召唤 90031210 并设置层数；满场时不创建实例。正数增量隐式依赖
+该衍生物，源文件引用检查与 IR 解码都拒绝缺失依赖的可执行卡包。零增量无此依赖。
 `reduce countdown self 2` 编译为
 `AdjustEntityField(delta=-2, minimum=0)`；`reduce cost self 1 minimum 0` 显式保留
 下限。到达上限或下限后按最终截断值继续结算。
 
-`evolve target silent` 只改变目标形态和数值，不支付 EP/SEP，也不触发目标卡面的
-`evolve` 能力。手动普通进化与超进化属于玩家动作，不表示为此节点；超进化默认
-执行规范化后的普通进化能力，再执行超进化附加能力。
+`evolve target silent` 与 `superevolve target silent` 只作用于场上的未进化随从，分别增加
++2/+2、+3/+3 并改变形态，不支付 EP/SEP、不占用手动次数，也不执行目标卡面的进化关键词能力。
+普通形态变化发出 `evolved`，超进化依次发出 `evolved`、`super_evolved`；重复进化不再增加身材或发出事件。
+手动普通进化与超进化属于玩家动作，不表示为此节点；超进化默认执行规范化后的普通进化能力，
+再执行超进化附加能力。没有独立超进化块时，编译器仍为普通进化块生成超进化 ActionPlan。
 
 ### 当前语法到节点的完整映射
 
@@ -636,14 +732,16 @@ Spellboost = NodeBase & {
 | `add N card C to hand` | `AddCard` |
 | `summon N card C` | `Summon` |
 | `damage T N`、`heal T N` | `Damage`、`Heal` |
-| `buff T +A/+L` | `BuffStats` |
+| `buff T +A/+L [where P]` | `BuffStats`，可带 `predicate` |
 | `destroy T`、`banish T` | `Destroy`、`Banish` |
 | `transform T into card C preserving materials` | `Transform` |
 | `return T to hand/deck` | `Return` |
 | `add K to T`、`remove K from T` | `AddKeyword`、`RemoveKeyword` |
 | `evolve T silent` | `SilentEvolve` |
+| `superevolve T silent` | `SilentEvolve(form=super_evolved)` |
 | `reanimate N` | `Reanimate` |
 | `gain own.maxpp N`、`add combo N` | `AdjustResource` |
+| `restore own.pp` | `RestoreResource` |
 | `add N earthsigil` | `AdjustEarthSigil` |
 | `reduce countdown T N`、`reduce cost T N minimum M` | `AdjustEntityField` |
 | `spellboost S N` | `Spellboost` |
@@ -716,7 +814,8 @@ ChoiceRequest = {
 
 ChoiceCandidate =
   EntityCandidate { kind: "entity", instanceId: InstanceId }
-| OptionCandidate { kind: "option", optionId: OptionId }
+| OptionCandidate { kind: "option", optionId: OptionId,
+                    labels?: { [LocaleId]: non-empty string } }
 
 ChoiceResponse = {
   requestId: RequestId,
@@ -728,6 +827,11 @@ ChoiceResponse = {
 `FusionCommand.source` 必须是行动方手牌中具有 `FusionAbility` 的实例；
 `Unplayable` 不会使该命令非法。命令完成前，材料请求及其响应与同一个
 `CommandId` 关联，不能拆成多条命令，也不能用多个单选响应累积材料。
+
+模式候选的 `labels` 来自当前执行的 `ModeOption`，与卡牌当前区域或变身后的身份无关。
+其语言键只允许 `chs/eng/jpn/kor/cht`，缺省兼容无标签卡牌；不增加可执行节点。
+候选和标签只发给选择所属玩家，导出的请求与存档使用独立副本。Continuation 恢复时
+逐项校验编号、执行块及全部标签，拒绝替换、删除或添加标签的存档。
 
 候选顺序由 `SetExpr` 的规范顺序决定。服务端不得接受候选列表之外的值，也不得接受
 旧 `stateRevision` 的响应。`requestId` 由动作 ID、节点 ID、该动作内请求序号确定性
@@ -789,6 +893,12 @@ SplitMix64 以场景 `u64` 种子作为初始状态，每次规则决策推进�
 ## 事件事实
 
 事件事实是规则层不可变记录，用于触发匹配、重放校验和测试断言，不是 UI 文本。
+
+当前运行器的 `card_fused` 记录来源实例、融合前卡牌 ID 及本次材料数；
+`card_transformed` 记录同一实例变身前后的卡牌 ID。它们是操作记录，不触发入场曲。
+卡牌 ID 在事件发生时固定，后续变身不改写旧记录。手牌、牌组与附着材料区域中的
+这些事件使用 `privateTo` 指定持有者。客户端事件视图保留事件种类、所属方、数量与
+序号，但向另一方隐藏实例编号和卡牌身份；过滤不会删除事件或改变录像帧边界。
 
 ```text
 EventFact = {
@@ -938,10 +1048,19 @@ TestInstance = {
 }
 
 InstanceOverrides = {
+  counters?: { CounterName: nonnegative_i32 },
+  cost: u16?,
   stats: Stats?, evolved: bool?, superEvolved: bool?,
   keywords: [Keyword]?, countdown: u16?, engaged: bool?, earthsigil: u16?
 }
 ```
+
+`CounterName` 匹配 `[a-z][a-z0-9_]{0,31}`；初始值、覆盖值与增加量的范围是
+`0..2147483647`。`self_counter` 同时可作为比较条件的 `left`。
+解码器递归校验数值、条件和嵌套效果内的计数器引用，名称必须存在于当前卡牌的 `counters`。
+测试断言 `alias.counter.x` 使用 `{ kind: "instance_counter", instanceId: ID, field: "x" }`。
+存档实例保存完整计数器表，恢复时要求名称集合与当前卡身份完全一致；所有导出值独立复制。
+手牌计数器遵循玩家视角隐藏，公开战场实例和对应录像帧保留当前值。
 
 `.wbotest` 源文件暂不声明规则集；编译 TestPack 时必须由命令行、项目清单或调用方
 显式提供，编译器随后把精确依赖写入 `ruleset`。缺少规则集时可以执行纯语法检查，
@@ -963,11 +1082,13 @@ TestAction =
                  defender: Side }
 | EndTurn      { kind: "end_turn", actor: Side }
 | Select       { kind: "select", target: InstanceId }
+| SelectMany   { kind: "select", targets: [InstanceId] }
 | SelectMode   { kind: "select_mode", optionId: OptionId }
 | Advance      { kind: "advance", timing: "turn_start" | "turn_end", side: Side }
 ```
 
-`Select` 与 `SelectMode` 必须紧跟实际产生的请求。`Advance` 标记为测试驱动动作，不得
+`Select`、`SelectMany` 与 `SelectMode` 必须紧跟实际产生的请求。`target` 与 `targets`
+互斥，多选列表非空且实例 ID 不能重复；全部引用都必须存在。`Advance` 标记为测试驱动动作，不得
 写入正式对局回放。
 
 ```text

@@ -1,0 +1,161 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Owl Summoner gains an earth sigil on an empty field" {
+    seed 1801;
+    state {
+        turn own 5;
+        phase main;
+        player own {
+            pp 3/5;
+            hand { follower source = 10131130; }
+        }
+        player oppo { }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90031210 == 1;
+        source.stats == 3/3;
+        own.pp == 0/5;
+        own.shadows == 0;
+    }
+}
+
+scenario "Sagelight spends earth sigils without removing other allies" {
+    seed 1802;
+    state {
+        turn own 5;
+        phase main;
+        player own {
+            pp 3/5;
+            hand { spell source = 10132310; }
+            field {
+                follower ally = 90021110;
+                amulet relic = 10001210;
+                amulet sigil = 90031210 { earthsigil 3; }
+            }
+        }
+        player oppo {
+            field { follower enemy = 90021110; }
+        }
+    }
+    action { play source; mode 3; }
+    expect {
+        legal;
+        ally.zone == field;
+        relic.zone == field;
+        sigil.zone == graveyard;
+        enemy.zone == graveyard;
+        own.shadows == 2;
+        own.pp == 0/5;
+    }
+}
+
+scenario "Fledgling Dragonslayer destroys through a barrier" {
+    seed 1803;
+    state {
+        turn own 5;
+        phase main;
+        player own {
+            pp 4/5;
+            hand { follower source = 10141130; }
+        }
+        player oppo {
+            field { follower enemy = 10151130 { barrier; } }
+        }
+    }
+    action { play source; select enemy; }
+    expect {
+        legal;
+        enemy.zone == graveyard;
+        oppo.field count card 90051110 == 2;
+        source.stats == 2/2;
+        own.pp == 0/5;
+    }
+}
+
+scenario "Twilight Dragon lowers life without consuming a barrier" {
+    seed 1804;
+    state {
+        turn own 9;
+        phase main;
+        player own {
+            pp 9/9;
+            hand { follower source = 10143140; }
+        }
+        player oppo {
+            field {
+                follower survivor = 90021110 { stats 5/10; barrier; }
+                follower first = 10151130;
+                follower second = 10151130;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        survivor.stats == 5/1;
+        survivor has barrier;
+        first.zone == graveyard;
+        second.zone == graveyard;
+        oppo.field count card 90051110 == 4;
+        source.stats == 9/9;
+    }
+}
+
+scenario "Pact frees its field slot before its lastwords summon" {
+    seed 1805;
+    state {
+        turn own 5;
+        phase main;
+        player own {
+            pp 1/5;
+            field {
+                amulet source = 10163210 { countdown 1; }
+                follower first = 90061110;
+                follower second = 90061110;
+                follower third = 90061110;
+                follower fourth = 90061110;
+            }
+        }
+        player oppo { }
+    }
+    action { engage source; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        own.field count card 90061120 == 1;
+        all own.field where card 90061120 have rush;
+        own.shadows == 1;
+        own.pp == 0/5;
+    }
+}
+
+scenario "Shadowcrypt uses its own vacated slot on a full field" {
+    seed 1806;
+    state {
+        turn own 5;
+        phase main;
+        player own {
+            pp 0/5;
+            field {
+                amulet source = 10152210;
+                follower first = 90021110;
+                follower second = 90021110;
+                follower third = 90021110;
+                follower fourth = 90021110;
+            }
+        }
+        player oppo { }
+    }
+    action { engage source; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        own.field count card 90051130 == 1;
+        all own.field where card 90051130 have storm;
+        own.shadows == 1;
+        own.pp == 0/5;
+    }
+}

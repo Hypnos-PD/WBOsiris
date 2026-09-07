@@ -152,7 +152,11 @@ wbo simulate --source-root . --scenario "场景名称或 ID" cards tests
 ```bash
 go test -count=1 ./...
 go vet ./...
+./scripts/card_coverage.sh
 ```
+
+`card_coverage.sh` 输出规则包中的卡牌总数、可执行卡牌数、比例和仍标记为
+`unplayable` 的骨架数；可用 `--min-playable N` 或 `--min-percent N` 设置门槛。
 
 集成测试会检查当前全部卡牌和测试场景、严格引用、畸形输入拒绝、格式化幂等、
 类型化 IR、确定性编译和固定源根下的来源 ID 稳定性。

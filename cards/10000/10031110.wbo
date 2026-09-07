@@ -9,9 +9,19 @@ card 10031110 {
         fanfare {
             mode {
                 option 1 {
+                    label chs "使自己的所有手牌发动2次魔力增幅。";
+                    label eng "Spellboost your hand 2 times.";
+                    label jpn "自分の手札すべては2回スペルブーストする。";
+                    label kor "내 패 모두를 2회 주문증폭.";
+                    label cht "使自己手牌中全部的卡片發動2次魔力增幅。";
                     spellboost own.hand 2;
                 }
                 option 2 {
+                    label chs "【土之秘术_1】本随从+2/+2且获得【守护】。";
+                    label eng "Earth Rite (1) - Give this follower +2/+2 and Ward.";
+                    label jpn "【土の秘術_1】これは+2/+2して【守護】を持つ。";
+                    label kor "[대지의 비술 1] 이 추종자는 +2/+2 및 [수호]를 갖는다.";
+                    label cht "【土之秘術_1】使這張卡片+2/+2並獲得【守護】。";
                     earthrite 1 {
                         buff self +2/+2;
                         add ward to self;

@@ -1,0 +1,67 @@
+wbo 0.1.0;
+
+card 10133130 {
+    type follower;
+    cost 4;
+    stats 2/2;
+
+    effect {
+        fanfare {
+            earthrite 2 {
+                evolve self silent;
+            }
+        }
+        when self evolved {
+            random target from oppo.field.followers;
+            damage target 4;
+            gain own.pp 2;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class runecraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "理光的天宫·艾德薇诗";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>土之秘术</color>_2】本随从进化。
+<hr><ev>本随从进化时，对对手的战场上的随机1个随从造成4点伤害。回复自己2点能量点。</ev>
+""";
+    }
+
+    locale eng {
+        name "Edelweiss, Sagelight Ward";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Earth Rite</color> (2)</b> - Evolve this follower.
+<hr><ev>When this follower evolves, deal 4 damage to a random enemy follower and recover 2 play points.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"りこう\">理光</rub>の<rub=\"てんきゅう\">天宮</rub>・エーデルワイス";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>土の秘術</color>_2】これは進化する。
+<hr><ev>これが進化したとき、相手の場のフォロワーからランダム1枚に4ダメージ。自分のPPを2回復。</ev>
+""";
+    }
+
+    locale kor {
+        name "이광의 천궁 에델바이스";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>대지의 비술</color> 2] 이 추종자는 진화한다.
+<hr><ev>이 추종자가 진화했을 때, 상대방 전장의 추종자 중 무작위로 1장에게 4 피해. 내 PP를 2 회복.</ev>
+""";
+    }
+
+    locale cht {
+        name "理光天宮‧愛蒂倫瓦思";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>土之秘術</color>_2】使這張卡片進化。
+<hr><ev>當這張卡片進化時，隨機給予1張敵方戰場上的從者卡4點傷害。回復自己的PP 2點。</ev>
+""";
+    }
+
+}

@@ -1,0 +1,41 @@
+wbo 0.1.0;
+
+card 90031210 {
+    type amulet;
+    cost 1;
+    trait earthsigil;
+
+    effect {
+        earthsigil;
+        engage 1 {
+            add 1 earthsigil;
+        }
+    }
+
+    meta {
+        pack 90000;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "大地之魔片";
+        text "【土之印】\n费用1【启动】使自己的战场上的土之印+1。";
+    }
+    locale eng {
+        name "Magic Sediment";
+        text "Earth Sigil\nEngage (1): Gain an earth sigil.";
+    }
+    locale jpn {
+        name "大地の魔片";
+        text "【土の印】\nコスト1【アクト】自分の場の土の印を+1する。";
+    }
+    locale kor {
+        name "대지의 마석";
+        text "[대지의 인장]\n비용 1 [활성화] 내 전장의 대지의 인장을 +1.";
+    }
+    locale cht {
+        name "大地之魔片";
+        text "【土之印】\n消費1【策動】使自己戰場上的土之印+1。";
+    }
+}

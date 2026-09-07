@@ -1,0 +1,26 @@
+wbo 0.1.0;
+
+card 90031140 {
+    type follower;
+    cost 3;
+    stats 3/3;
+    trait shikigami;
+    effect {
+        rush;
+        lastwords {
+            spellboost own.hand 1;
+        }
+    }
+
+    meta {
+        pack 90000;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs { name "式神·暴鬼"; text "【突进】\n【谢幕曲】使自己的所有手牌发动1次魔力增幅。"; }
+    locale eng { name "Demonic Shikigami"; text "Rush. Last Words: Spellboost your hand."; }
+    locale jpn { name "式神・暴鬼"; text "【突進】\n【謝幕曲】自分の手札すべては1回スペルブーストする。"; }
+    locale kor { name "식신 폭귀"; text "[돌진]\n[유언] 내 패 모두를 1회 주문증폭."; }
+    locale cht { name "式神‧暴鬼"; text "【突進】\n【謝幕曲】使自己手牌中全部的卡片發動1次魔力增幅。"; }
+}

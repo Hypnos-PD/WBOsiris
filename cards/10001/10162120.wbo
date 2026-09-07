@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10162120 {
+    type follower;
+    cost 4;
+    stats 3/5;
+
+    effect {
+        clash {
+            damage oppo.leader 1;
+        }
+        superevolve {
+            set_attack_limit self 2;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "煌翼羽人·莉诺";
+        text """
+【<color=Keyword>交战时</color>】对对手的主战者造成1点伤害。
+<hr><sev>【<color=Keyword>超进化时</color>】本随从获得「1回合可以攻击2次」。</sev>
+""";
+    }
+
+    locale eng {
+        name "Reno, Luxwing Featherfolk";
+        text """
+<b><color=Keyword>Clash</color></b>: Deal 1 damage to the enemy leader.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Give this follower \"Can attack 2 times per turn.\"</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"こうよく\">煌翼</rub>のフェザーフォルク・リノ";
+        text """
+【<color=Keyword>交戦時</color>】相手のリーダーに1ダメージ。
+<hr><sev>【<color=Keyword>超進化時</color>】これは「1ターンに2回攻撃できる。」を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "빛의 페더폴크 리노";
+        text """
+[<color=Keyword>교전시</color>] 상대방 리더에게 1 피해.
+<hr><sev>[<color=Keyword>초진화시</color>] 이 추종자는 「1턴에 2회 공격 가능」을 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "煌羽翼族‧莉諾";
+        text """
+【<color=Keyword>交戰時</color>】給予敵方的主戰者1點傷害。
+<hr><sev>【<color=Keyword>超進化時</color>】使這張卡片獲得「1回合中可進行2次攻擊」。</sev>
+""";
+    }
+
+}

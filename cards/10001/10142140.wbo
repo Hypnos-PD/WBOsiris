@@ -1,0 +1,60 @@
+wbo 0.1.0;
+
+card 10142140 {
+    type follower;
+    cost 4;
+    stats 3/3;
+
+    effect {
+        fanfare {
+            choose target from own.field.followers other;
+            if own.maxpp >= 7 {
+                buff target +3/+3;
+            } else {
+                buff target +2/+2;
+            }
+        }
+    }
+
+    meta {
+        pack 10001;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "艳丽龙人·玛利翁";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的战场上的1个其他随从，使其+2/+2。若为【<color=Keyword>觉醒</color>】，则改为+3/+3。
+""";
+    }
+
+    locale eng {
+        name "Marion, Ravishing Dragonewt";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select another allied follower on the field and give it +2/+2. If you're in <b><color=Keyword>Overflow</color></b>, give +3/+3 instead.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"えんれい\">艶麗</rub>なる<rub=\"りゅうじん\">竜人</rub>・マリオン";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の場の他のフォロワー1枚を選ぶ。それは+2/+2する。【<color=Keyword>覚醒</color>】なら、+2/+2ではなく+3/+3。
+""";
+    }
+
+    locale kor {
+        name "수려한 용인 마리온";
+        text """
+[<color=Keyword>출격</color>] 내 전장에서 다른 추종자 1장을 선택한다. 그 추종자는 +2/+2. [<color=Keyword>각성</color>]이라면, +2/+2 대신 +3/+3.
+""";
+    }
+
+    locale cht {
+        name "美豔龍人‧瑪利翁";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己戰場上的其他從者卡。使其+2/+2。如果【<color=Keyword>覺醒</color>】已發動，則會由原本的+2/+2轉變為+3/+3。
+""";
+    }
+
+}

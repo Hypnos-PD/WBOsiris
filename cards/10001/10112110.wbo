@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10112110 {
+    type follower;
+    cost 7;
+    stats 6/8;
+
+    effect {
+        fanfare {
+            choose target from oppo.field.followers;
+            destroy target;
+            heal own.leader 2;
+        }
+        ward;
+    }
+
+    meta {
+        pack 10001;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "霜寒冰晶·艾琳";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的1个随从，破坏该随从。回复自己的主战者2点生命值。
+<hr>【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Aerin, Crystalian Frostward";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select an enemy follower on the field and destroy it. Restore 2 defense to your leader.
+<hr><b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "フロストクリスタリア・エリン";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー1枚を選ぶ。それを破壊。自分のリーダーを2回復。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "서리의 얼음수정족 에린";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴. 내 리더를 2 회복.
+<hr>[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "寒霜冰晶‧艾琳";
+        text """
+【<color=Keyword>入場曲</color>】指定1張敵方戰場上的從者卡。將其破壞。回復自己的主戰者2點生命值。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+}

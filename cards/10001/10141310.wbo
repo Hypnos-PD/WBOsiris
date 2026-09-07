@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10141310 {
+    type spell;
+    cost 6;
+
+    effect {
+        damage field.followers 5;
+    }
+
+    meta {
+        pack 10001;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "灾祸吐息";
+        text """
+对战场上的所有随从造成5点伤害。
+""";
+    }
+
+    locale eng {
+        name "Calamity Breath";
+        text """
+Deal 5 damage to all followers.
+""";
+    }
+
+    locale jpn {
+        name "ディザスターブレス";
+        text """
+場のフォロワーすべてに5ダメージ。
+""";
+    }
+
+    locale kor {
+        name "디재스터 브레스";
+        text """
+전장의 추종자 모두에게 5 피해.
+""";
+    }
+
+    locale cht {
+        name "災禍的吐息";
+        text """
+給予戰場上全部的從者卡5點傷害。
+""";
+    }
+
+}

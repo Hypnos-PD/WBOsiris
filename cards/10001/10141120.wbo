@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10141120 {
+    type follower;
+    cost 5;
+    stats 4/6;
+
+    effect {
+        fanfare {
+            if overflow {
+                add storm to self;
+            }
+        }
+    }
+
+    meta {
+        pack 10001;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "海沟大剑龙";
+        text """
+【<color=Keyword>入场曲</color>】若为【<color=Keyword>觉醒</color>】，则本随从获得【<color=Keyword>疾驰</color>】。
+""";
+    }
+
+    locale eng {
+        name "Swordsnout Trencher";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If you're in <b><color=Keyword>Overflow</color></b>, give this follower <b><color=Keyword>Storm</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"かいこう\">海溝</rub>の<rub=\"たいけんりゅう\">大剣竜</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>覚醒</color>】なら、これは【<color=Keyword>疾走</color>】を持つ。
+""";
+    }
+
+    locale kor {
+        name "해구의 대검룡";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>각성</color>]이라면, 이 추종자는 [<color=Keyword>질주</color>]를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "海溝大劍龍";
+        text """
+【<color=Keyword>入場曲</color>】如果【<color=Keyword>覺醒</color>】已發動，則會使這張卡片獲得【<color=Keyword>疾馳</color>】。
+""";
+    }
+
+}

@@ -1,0 +1,207 @@
+wbotest 0.1.0;
+use cards "../../cards";
+scenario "Ernesta buffs only other allied followers" {
+    seed 1201;
+    state {
+        turn own 6;
+        phase main;
+        player own {
+            pp 6/6;
+            hand {
+                follower source = 10121120;
+            }
+            field {
+                follower ally = 90021110;
+                amulet relic = 10001210;
+            }
+        }
+        player oppo {
+            field {
+                follower enemy = 90021110;
+            }
+        }
+    }
+    action {
+        play source;
+    }
+    expect {
+        legal;
+        source.stats == 4/6;
+        ally.stats == 2/2;
+        enemy.stats == 1/1;
+        relic.zone == field;
+        own.pp == 0/6;
+        rng.consumed == 0;
+    }
+}
+scenario "Lyrala does not heal for a summon blocked by field capacity" {
+    seed 1202;
+    state {
+        turn own 5;
+        phase main;
+        player own {
+            pp 3/5;
+            leader 10/20;
+            hand {
+                follower source = 10121130;
+            }
+            field {
+                amulet first = 10001210;
+                amulet second = 10001210;
+                amulet third = 10001210;
+                amulet fourth = 10001210;
+            }
+        }
+        player oppo {
+        }
+    }
+    action {
+        play source;
+    }
+    expect {
+        legal;
+        own.leader.life == 10;
+        own.field count card 90021120 == 0;
+        events excludes {
+            heal own.leader 1;
+        }
+        rng.consumed == 0;
+    }
+}
+scenario "Shinobi evolution summons a fresh unevolved identity" {
+    seed 1203;
+    state {
+        turn own 5;
+        phase main;
+        player own {
+            ep 1;
+            field {
+                follower source = 10122140 {
+                    stats 5/4;
+                }
+            }
+        }
+        player oppo {
+        }
+    }
+    action {
+        evolve source;
+    }
+    expect {
+        legal;
+        source.stats == 7/6;
+        source.evolved == true;
+        own.field count card 10122140 == 2;
+        all own.field where card 10122140 have stealth;
+        events contains ordered {
+            summon card 10122140 count 1;
+        }
+        rng.consumed == 0;
+    }
+}
+scenario "Ironcrown summons the listed first identity into the last slot" {
+    seed 1204;
+    state {
+        turn own 5;
+        phase main;
+        player own {
+            pp 3/5;
+            leader 10/20;
+            hand {
+                spell source = 10122310;
+            }
+            field {
+                follower healer = 10121130;
+                amulet first = 10001210;
+                amulet second = 10001210;
+                amulet third = 10001210;
+            }
+        }
+        player oppo {
+        }
+    }
+    action {
+        play source;
+        mode 1;
+    }
+    expect {
+        legal;
+        source.zone == graveyard;
+        own.pp == 0/5;
+        own.leader.life == 11;
+        own.field count card 90021120 == 1;
+        own.field count card 90021110 == 0;
+        rng.consumed == 0;
+    }
+}
+scenario "Zirconia buffs the summoned knight when only one fits" {
+    seed 1205;
+    state {
+        turn own 5;
+        phase main;
+        player own {
+            ep 1;
+            field {
+                follower source = 10123130;
+                follower first = 90021110;
+                follower second = 90021110;
+                amulet relic = 10001210;
+            }
+        }
+        player oppo {
+        }
+    }
+    action {
+        evolve source;
+    }
+    expect {
+        legal;
+        source.stats == 6/6;
+        first.stats == 2/2;
+        second.stats == 2/2;
+        own.field count card 90021110 == 3;
+        rng.consumed == 0;
+    }
+}
+scenario "Jeanne clears enemies before lastwords summons and buffs allies" {
+    seed 1206;
+    state {
+        turn own 7;
+        phase main;
+        player own {
+            pp 7/7;
+            hand {
+                follower source = 10164120;
+            }
+            field {
+                follower ally = 90021110;
+            }
+        }
+        player oppo {
+            field {
+                follower first = 10151130;
+                follower second = 10151130;
+            }
+        }
+    }
+    action {
+        play source;
+    }
+    expect {
+        legal;
+        source.stats == 6/6;
+        source has ward;
+        ally.stats == 3/5;
+        first.zone == graveyard;
+        second.zone == graveyard;
+        oppo.field count card 90051110 == 4;
+        events contains ordered {
+            damage first 2;
+            damage second 2;
+            destroy first;
+            destroy second;
+            summon card 90051110 count 1;
+        }
+        rng.consumed == 0;
+    }
+}

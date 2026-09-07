@@ -94,6 +94,8 @@ func (p FieldPredicate) MarshalJSON() ([]byte, error) {
 		object["class"] = p.Class
 	case "has_trait":
 		object["trait"] = p.Trait
+	case "has_form":
+		object["form"] = p.Form
 	case "compare":
 		object["field"], object["op"], object["value"] = p.Field, p.Op, p.Value
 	default:
@@ -151,19 +153,47 @@ func (e CardEffect) MarshalJSON() ([]byte, error) {
 func (e TargetEffect) MarshalJSON() ([]byte, error) {
 	object := effectObject(e.NodeBase, e.Kind)
 	object["target"] = e.Target
+	if !validDamageDistribution(e.Kind, e.Distribution, e.Target, e.Overflow) {
+		return nil, fmt.Errorf("invalid damage distribution")
+	}
+	if e.Distribution != "" {
+		object["distribution"] = e.Distribution
+		if e.Overflow != nil {
+			object["overflow"] = e.Overflow
+		}
+	}
+	if e.AmountExpr != nil && e.Kind != "damage" && e.Kind != "heal" ||
+		(e.AttackExpr != nil || e.LifeExpr != nil) && e.Kind != "buff_stats" {
+		return nil, fmt.Errorf("numeric expression is not supported for this effect")
+	}
+	amount, err := numericValue(e.Amount, e.AmountExpr, false)
+	if err != nil {
+		return nil, err
+	}
 	switch e.Kind {
 	case "damage":
-		object["amount"], object["damageType"] = e.Amount, e.DamageType
+		object["amount"], object["damageType"] = amount, e.DamageType
 		if e.Predicate != nil {
 			object["predicate"] = e.Predicate
 		}
 	case "heal":
-		object["amount"] = e.Amount
+		object["amount"] = amount
 		if e.Predicate != nil {
 			object["predicate"] = e.Predicate
 		}
 	case "buff_stats":
-		object["attackDelta"], object["lifeDelta"] = e.AttackDelta, e.LifeDelta
+		attack, err := numericValue(e.AttackDelta, e.AttackExpr, true)
+		if err != nil {
+			return nil, err
+		}
+		life, err := numericValue(e.LifeDelta, e.LifeExpr, true)
+		if err != nil {
+			return nil, err
+		}
+		object["attackDelta"], object["lifeDelta"] = attack, life
+		if e.Predicate != nil {
+			object["predicate"] = e.Predicate
+		}
 	case "destroy", "banish":
 		if e.Predicate != nil {
 			object["predicate"] = e.Predicate
@@ -175,6 +205,8 @@ func (e TargetEffect) MarshalJSON() ([]byte, error) {
 		}
 	case "add_keyword", "remove_keyword":
 		object["keyword"] = e.Keyword
+	case "set_attack_limit":
+		object["amount"] = e.Amount
 	case "silent_evolve":
 		object["form"] = e.Form
 	default:
@@ -188,8 +220,12 @@ func (e AdjustEffect) MarshalJSON() ([]byte, error) {
 	switch e.Kind {
 	case "adjust_resource":
 		object["owner"], object["resource"], object["delta"] = e.Owner, e.Resource, e.Delta
+	case "restore_resource":
+		object["owner"], object["resource"] = e.Owner, e.Resource
 	case "adjust_earthsigil":
 		object["owner"], object["delta"] = e.Owner, e.Delta
+	case "adjust_counter":
+		object["field"], object["delta"] = e.Field, e.Delta
 	case "adjust_entity_field":
 		object["field"], object["target"], object["delta"], object["minimum"] = e.Field, e.Target, e.Delta, e.Minimum
 	case "spellboost":

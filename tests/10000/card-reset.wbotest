@@ -1,0 +1,58 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Returning an evolved follower removes damage and granted abilities" {
+    seed 1701;
+    state {
+        turn own 7;
+        phase main;
+        player own {
+            pp 1/7;
+            hand { spell source = 10012310; }
+            field {
+                follower target = 10001120 {
+                    stats 8/1;
+                    evolved;
+                    storm;
+                }
+            }
+        }
+        player oppo { }
+    }
+    action { play source; select target; }
+    expect {
+        legal;
+        target.zone == hand;
+        target.stats == 0/2;
+        target.evolved == false;
+        target has ward;
+        target lacks storm;
+        own.shadows == 1;
+        own.hand count card 10001120 == 1;
+    }
+}
+
+scenario "A fused core gains the resulting follower stats and intrinsic ability" {
+    seed 1702;
+    state {
+        turn own 3;
+        phase main;
+        player own {
+            hand {
+                amulet source = 90071210;
+                amulet material = 90071220;
+            }
+        }
+        player oppo { }
+    }
+    action { fuse source; select material; }
+    expect {
+        legal;
+        source.zone == hand;
+        source.stats == 5/1;
+        source has rush;
+        own.hand count card 90072110 == 1;
+        own.hand count card 90071220 == 0;
+        own.shadows == 0;
+    }
+}

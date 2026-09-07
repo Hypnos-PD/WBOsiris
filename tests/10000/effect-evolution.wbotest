@@ -1,0 +1,163 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Olivia fanfare restores resources after paying for the card" {
+    seed 1601;
+    state {
+        turn own 7;
+        phase main;
+        player own {
+            pp 7/7;
+            leader 18/20;
+            hand { follower source = 10104110; }
+            deck top {
+                follower first = 10001110;
+                follower second = 10001110;
+            }
+        }
+        player oppo { }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.pp == 2/7;
+        own.leader.life == 20;
+        first.zone == hand;
+        second.zone == hand;
+        source.stats == 4/4;
+    }
+}
+
+scenario "Olivia effect super evolution does not activate point-based keyword abilities" {
+    seed 1602;
+    state {
+        turn own 8;
+        phase main;
+        player own {
+            sep 1;
+            field {
+                follower source = 10104110;
+                follower target = 10001120;
+                follower already_evolved = 10001110 { evolved; }
+            }
+            deck top { follower top = 10001110; }
+        }
+        player oppo { }
+    }
+    action { superevolve source; select target; }
+    expect {
+        legal;
+        own.sep == 0;
+        source.stats == 7/7;
+        target.stats == 3/5;
+        target.super_evolved == true;
+        already_evolved.super_evolved == false;
+        top.zone == deck;
+        events contains ordered {
+            evolve source;
+            superevolve source;
+            evolve target;
+            superevolve target;
+        }
+    }
+}
+
+scenario "Liu Feng only observes its own ability evolution" {
+    seed 1603;
+    state {
+        turn own 7;
+        phase main;
+        player own {
+            pp 7/7;
+            ep 1;
+            hand { follower source = 10143120; }
+            field { follower other = 10143120; }
+        }
+        player oppo { }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.pp == 4/8;
+        own.ep == 1;
+        source.stats == 5/5;
+        source.evolved == true;
+        other.stats == 3/3;
+        other.evolved == false;
+    }
+}
+
+scenario "Edelweiss earth rite evolves and queues damage with PP recovery" {
+    seed 1604;
+    state {
+        turn own 6;
+        phase main;
+        player own {
+            pp 4/6;
+            ep 1;
+            hand { follower source = 10133130; }
+            field { amulet sigil = 10031210 { earthsigil 2; } }
+        }
+        player oppo { field { follower target = 10001130; } }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.pp == 2/6;
+        own.ep == 1;
+        sigil.zone == graveyard;
+        own.shadows == 1;
+        source.stats == 4/4;
+        source.evolved == true;
+        target.stats == 4/1;
+        events contains ordered { evolve source; damage target 4; }
+    }
+}
+
+scenario "Mukan evolution summons a Ghost and grants Bane to Departed followers" {
+    seed 1605;
+    state {
+        turn own 6;
+        phase main;
+        player own {
+            pp 4/6;
+            shadows 8;
+            hand { follower source = 10153130; }
+            field { follower other = 10153130; }
+        }
+        player oppo { }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.shadows == 0;
+        source.stats == 5/5;
+        source.evolved == true;
+        own.field count card 90051130 == 1;
+        all own.field where card 90051130 have bane;
+        all own.field where card 90051130 have storm;
+    }
+}
+
+scenario "Manual super evolution inherits an ordinary evolution ability" {
+    seed 1606;
+    state {
+        turn own 8;
+        phase main;
+        player own {
+            sep 1;
+            field { follower source = 10001120; }
+            deck top { follower top = 10001110; }
+        }
+        player oppo { }
+    }
+    action { superevolve source; }
+    expect {
+        legal;
+        own.sep == 0;
+        source.stats == 3/5;
+        source.super_evolved == true;
+        top.zone == hand;
+        events contains ordered { evolve source; superevolve source; draw own 1; }
+    }
+}

@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10151140 {
+    type follower;
+    cost 6;
+    stats 5/5;
+
+    effect {
+        fanfare {
+            reanimate 4;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "杂耍亡灵";
+        text """
+【<color=Keyword>入场曲</color>】发动【<color=Keyword>亡者召还</color>_4】。
+""";
+    }
+
+    locale eng {
+        name "Ghost Juggler";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Reanimate</color> (4)</b>.
+""";
+    }
+
+    locale jpn {
+        name "ジャグリングゴースト";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>リアニメイト</color>_4】を行う。
+""";
+    }
+
+    locale kor {
+        name "저글링 고스트";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>소생</color> 4]를 발동.
+""";
+    }
+
+    locale cht {
+        name "雜技亡魂";
+        text """
+【<color=Keyword>入場曲</color>】發動【<color=Keyword>亡者召還</color>_4】。
+""";
+    }
+
+}

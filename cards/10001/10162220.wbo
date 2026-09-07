@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10162220 {
+    type amulet;
+    cost 3;
+
+    effect {
+        engage 0 {
+            destroy self;
+            choose target from oppo.field.followers;
+            damage target 4;
+            heal own.leader 1;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "神圣注射";
+        text """
+【<color=Keyword>启动</color>】破坏本卡牌。选择对手的战场上的1个随从，对其造成4点伤害。回复自己的主战者1点生命值。
+""";
+    }
+
+    locale eng {
+        name "Dose of Holiness";
+        text """
+<b><color=Keyword>Engage</color></b>: Destroy this card. Select an enemy follower on the field and deal it 4 damage. Restore 1 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "セイクリッドインジェクション";
+        text """
+【<color=Keyword>アクト</color>】これを破壊。相手の場のフォロワー1枚を選ぶ。それに4ダメージ。自分のリーダーを1回復。
+""";
+    }
+
+    locale kor {
+        name "세이크리드 인젝션";
+        text """
+[<color=Keyword>활성화</color>] 이 마법진을 파괴. 상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 4 피해. 내 리더를 1 회복.
+""";
+    }
+
+    locale cht {
+        name "聖潔注射";
+        text """
+【<color=Keyword>策動</color>】破壞這張卡片。指定1張敵方戰場上的從者卡。給予其4點傷害。回復自己的主戰者1點生命值。
+""";
+    }
+
+}

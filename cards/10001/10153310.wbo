@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10153310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class abysscraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "蛇神之怒";
+        text """
+选择对手的战场上的1个随从或对手的主战者，对其造成3点伤害。对自己的主战者造成2点伤害。
+""";
+    }
+
+    locale eng {
+        name "Rage of Serpents";
+        text """
+Select an enemy follower on the field or the enemy leader and deal it 3 damage. Deal 2 damage to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"じゃしん\">蛇神</rub>の<rub=\"いか\">怒</rub>り";
+        text """
+相手の場のフォロワー1枚か相手のリーダーを選ぶ。それに3ダメージ。自分のリーダーに2ダメージ。
+""";
+    }
+
+    locale kor {
+        name "뱀신의 분노";
+        text """
+상대방 리더나 상대방 전장에서 추종자 1장을 선택한다. 그 대상에게 3 피해. 내 리더에게 2 피해.
+""";
+    }
+
+    locale cht {
+        name "蛇神的嗔怒";
+        text """
+指定1張敵方戰場上的從者卡或敵方的主戰者。給予其3點傷害。給予自己的主戰者2點傷害。
+""";
+    }
+
+}

@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 10164120 {
+    type follower;
+    cost 7;
+    stats 6/6;
+
+    effect {
+        ward;
+        fanfare {
+            damage oppo.field.followers 6;
+            buff own.field.followers other +2/+4;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "纯白圣女·贞德";
+        text """
+【<color=Keyword>入场曲</color>】对对手的战场上的所有随从造成6点伤害。使自己的战场上的其他所有随从+2/+4。
+<hr>【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Jeanne, Saintly Knight";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Deal 6 damage to all enemy followers. Give all other allied followers on the field +2/+4.
+<hr><b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"じゅんぱく\">純白</rub>の<rub=\"せいじょ\">聖女</rub>・ジャンヌ";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワーすべてに6ダメージ。自分の場の他のフォロワーすべては+2/+4する。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "순백의 성녀 잔 다르크";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장의 추종자 모두에게 6 피해. 내 전장의 다른 추종자 모두는 +2/+4.
+<hr>[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "純白聖女‧貞德";
+        text """
+【<color=Keyword>入場曲</color>】給予敵方戰場上全部的從者卡6點傷害。使自己戰場上全部的其他從者卡+2/+4。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+}

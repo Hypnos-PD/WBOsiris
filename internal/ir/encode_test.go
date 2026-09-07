@@ -3,6 +3,7 @@ package ir
 import (
 	"bytes"
 	"encoding/json"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -12,6 +13,34 @@ func testOrigin() Origin {
 		SourceID: strings.Repeat("a", 32), StartByte: 0, EndByte: 1,
 		StartLine: 1, StartColumn: 1, EndLine: 1, EndColumn: 2,
 	}}
+}
+
+func TestFilteredTargetEffectsRoundTrip(t *testing.T) {
+	for _, kind := range []string{"buff_stats", "damage", "destroy", "banish"} {
+		t.Run(kind, func(t *testing.T) {
+			effect := TargetEffect{
+				NodeBase: NodeBase{ID: strings.Repeat("b", 32), Origin: testOrigin()}, Kind: kind,
+				Target:    ZoneRef{Kind: "zone", Side: "own", Zone: "hand", Member: "follower"},
+				Predicate: FieldPredicate{Kind: "has_trait", Trait: "puppetry"},
+			}
+			if kind == "buff_stats" {
+				effect.AttackDelta, effect.LifeDelta = 1, -2
+			} else if kind == "damage" {
+				effect.Amount, effect.DamageType = 2, "effect"
+			}
+			encoded, err := json.Marshal(effect)
+			if err != nil {
+				t.Fatal(err)
+			}
+			decoded, err := decodeEffect(encoded, map[string]bool{})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !reflect.DeepEqual(effect, decoded) {
+				t.Fatalf("filtered effect changed on round trip: want=%#v got=%#v", effect, decoded)
+			}
+		})
+	}
 }
 
 func TestEncodeCardPackCanonicalRoundTrip(t *testing.T) {

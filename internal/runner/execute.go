@@ -14,33 +14,37 @@ func (g *game) condition(c ir.Condition, self *instance) bool {
 	case ir.CompareCondition:
 		p, _ := g.playerForSide(self, x.Left.Side)
 		n := 0
-		switch x.Left.Field {
-		case "cost", "distinct":
-			if self == nil {
-				return false
+		if x.Left.Kind == "self_counter" {
+			n = g.numericValue(&x.Left, self, nil)
+		} else {
+			switch x.Left.Field {
+			case "cost", "distinct":
+				if self == nil {
+					return false
+				}
+				seen := map[int]bool{}
+				for _, material := range self.materials {
+					n += material.card.Cost
+					seen[material.card.ID] = true
+				}
+				if x.Left.Field == "distinct" {
+					n = len(seen)
+				}
+			case "combo":
+				n = p.combo
+			case "pp":
+				n = p.pp
+			case "maxpp":
+				n = p.maxpp
+			case "life":
+				n = p.leaderLife
+			case "ep":
+				n = p.ep
+			case "sep":
+				n = p.sep
+			case "shadows":
+				n = p.shadows
 			}
-			seen := map[int]bool{}
-			for _, material := range self.materials {
-				n += material.card.Cost
-				seen[material.card.ID] = true
-			}
-			if x.Left.Field == "distinct" {
-				n = len(seen)
-			}
-		case "combo":
-			n = p.combo
-		case "pp":
-			n = p.pp
-		case "maxpp":
-			n = p.maxpp
-		case "life":
-			n = p.leaderLife
-		case "ep":
-			n = p.ep
-		case "sep":
-			n = p.sep
-		case "shadows":
-			n = p.shadows
 		}
 		switch x.Op {
 		case "eq":
@@ -60,19 +64,11 @@ func (g *game) condition(c ir.Condition, self *instance) bool {
 	return false
 }
 
-func (g *game) fusionCandidates(source *instance, ability ...*ir.FusionAbility) []*instance {
-	if source == nil {
+func (g *game) fusionCandidates(source *instance, ability *ir.FusionAbility) []*instance {
+	if source == nil || ability == nil {
 		return nil
 	}
-	var filter *ir.MaterialFilter
-	if len(ability) > 0 {
-		filter = &ability[0].MaterialFilter
-	} else if len(source.card.FusionAbilities) > 0 {
-		filter = &source.card.FusionAbilities[0].MaterialFilter
-	}
-	if filter == nil {
-		return nil
-	}
+	filter := &ability.MaterialFilter
 	items := g.fromRef(filter.Source, source, frame{})
 	if filter.Predicate != nil {
 		items = g.filter(items, "", filter.Predicate)
@@ -86,8 +82,22 @@ func (g *game) fusionCandidates(source *instance, ability ...*ir.FusionAbility) 
 	return out
 }
 
+func (g *game) availableFusion(source *instance) (*ir.FusionAbility, []*instance) {
+	if source == nil || source.zone != "hand" || source.fusedThisTurn {
+		return nil, nil
+	}
+	for n := range source.card.FusionAbilities {
+		ability := &source.card.FusionAbilities[n]
+		items := g.fusionCandidates(source, ability)
+		if len(items) > 0 && len(items) >= ability.MaterialFilter.Minimum {
+			return ability, items
+		}
+	}
+	return nil, nil
+}
+
 func (g *game) commitFusion(source *instance, ability *ir.FusionAbility, materials []*instance) bool {
-	if source == nil || source.zone != "hand" || len(materials) == 0 {
+	if source == nil || source.zone != "hand" || source.fusedThisTurn || len(materials) == 0 {
 		return false
 	}
 	candidates := g.fusionCandidates(source, ability)
@@ -97,6 +107,12 @@ func (g *game) commitFusion(source *instance, ability *ir.FusionAbility, materia
 		}
 	}
 	owner := g.owner(source)
+	side := g.sideOf(source)
+	if !g.emit(ir.RuntimeEvent{Kind: "card_fused", Side: side, PrivateTo: side, From: "hand", Count: len(materials),
+		Subject: &ir.EventTarget{Kind: "instance", InstanceID: source.id, CardID: source.card.ID}}) {
+		return false
+	}
+	source.fusedThisTurn = true
 	for _, material := range materials {
 		g.remove(&owner.hand, material)
 		material.zone = "attached"
@@ -120,7 +136,7 @@ func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 		} else {
 			out = append(append([]*instance{}, g.own.field...), g.oppo.field...)
 		}
-		return g.filterVisible(out, r.Member, self)
+		return g.filter(out, r.Member, nil)
 	case ir.FilterRef:
 		return g.filter(g.fromRef(r.Source, self, f), "", r.Predicate)
 	case ir.ExcludeRef:
@@ -139,12 +155,20 @@ func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 	}
 	return nil
 }
-func (g *game) filterVisible(items []*instance, member string, self *instance) []*instance {
-	filtered := g.filter(items, member, nil)
+
+// Target restrictions apply to player choices, not to set queries or random effects.
+func (g *game) selectionCandidates(e ir.SelectionEffect, self *instance, f frame) []*instance {
+	items := g.fromRef(e.Source, self, f)
+	if e.Kind == "random_choose" {
+		return items
+	}
 	controller := g.sideOf(self)
-	out := filtered[:0]
-	for _, i := range filtered {
-		if i.abilities["stealth"] && g.sideOf(i) != controller {
+	out := make([]*instance, 0, len(items))
+	for _, i := range items {
+		if !g.chargeQueryVisits(1) {
+			break
+		}
+		if i.zone == "field" && (i.abilities["stealth"] || i.abilities["aura"] || i.earthsigil > 0) && g.sideOf(i) != controller {
 			continue
 		}
 		out = append(out, i)
@@ -196,7 +220,22 @@ func (g *game) matches(i *instance, p ir.Predicate) bool {
 			return i.card.CardType == x.CardType
 		case "has_class":
 			return i.card.Meta.Class == x.Class
+		case "has_form":
+			if i.card.CardType != "follower" {
+				return false
+			}
+			switch x.Form {
+			case "unevolved":
+				return !i.evolved && !i.superEvolved
+			case "evolved":
+				return i.evolved || i.superEvolved
+			case "super_evolved":
+				return i.superEvolved
+			}
 		case "has_trait":
+			if x.Trait == "departed" && i.departed {
+				return true
+			}
 			for _, t := range i.card.Traits {
 				if t == x.Trait {
 					return true
@@ -211,6 +250,8 @@ func (g *game) matches(i *instance, p ir.Predicate) bool {
 				return i.life < x.Value
 			case "eq":
 				return i.life == x.Value
+			case "ne":
+				return i.life != x.Value
 			case "ge":
 				return i.life >= x.Value
 			case "gt":
@@ -224,6 +265,13 @@ func (g *game) matches(i *instance, p ir.Predicate) bool {
 			}
 		}
 		return true
+	case ir.OrPredicate:
+		for _, t := range x.Terms {
+			if g.matches(i, t) {
+				return true
+			}
+		}
+		return false
 	}
 	return false
 }
@@ -267,13 +315,19 @@ func (g *game) putInHandOrOverdraw(owner *player, card *instance) {
 		owner.hand = append(owner.hand, card)
 		return
 	}
-	card.zone = "graveyard"
-	owner.graveyard = append(owner.graveyard, card)
+	g.putInGraveyard(owner, card)
 	event := ir.RuntimeEvent{Kind: "zone_moved", Side: g.sideOf(card), InstanceID: card.id}
 	if g.emit(event) {
 		g.queueEventTriggers(event, card, "")
 	}
 }
+
+// Initial-state loading uses addToZone directly: shadows may already be spent.
+func (g *game) putInGraveyard(owner *player, card *instance) {
+	g.addToZone(owner, card, "graveyard")
+	owner.shadows++
+}
+
 func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 	own, _ := g.playerForSide(self, e.Owner)
 	switch e.Kind {
@@ -291,20 +345,37 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 			g.putInHandOrOverdraw(own, i)
 		}
 	case "summon":
-		f[e.Output] = g.summonFor(self, e.Owner, e.Count, e.CardID)
+		f[e.Output] = g.summonFor(self, e.Owner, e.Count, e.CardID, false)
 	case "reanimate":
-		var best *ir.Card
+		f[e.Output] = nil
+		if len(own.field) >= fieldLimit {
+			return
+		}
+		var candidates []*ir.Card
+		bestCost := -1
 		for _, dead := range own.destroyed {
 			if !g.chargeQueryVisits(1) {
-				break
+				return
 			}
-			if dead.card.CardType == "follower" && dead.card.Cost <= e.MaxCost && (best == nil || dead.card.Cost > best.Cost) {
-				best = dead.card
+			card := dead.card
+			if card.CardType != "follower" || card.Cost > e.MaxCost || card.Cost < bestCost {
+				continue
 			}
+			if card.Cost > bestCost {
+				candidates = candidates[:0]
+				bestCost = card.Cost
+			}
+			// Each destruction is a ticket, including repeated card identities.
+			candidates = append(candidates, card)
 		}
-		if best != nil && (g.budget == nil || !g.budget.exceeded) {
-			f[e.Output] = g.summonFor(self, e.Owner, 1, best.ID)
+		if len(candidates) == 0 || g.budget != nil && !g.budget.chargeCandidates(uint64(len(candidates))) {
+			return
 		}
+		selected := 0
+		if len(candidates) > 1 {
+			selected = g.rng.Index(len(candidates))
+		}
+		f[e.Output] = g.summonFor(self, e.Owner, 1, candidates[selected].ID, true)
 	case "transform":
 		targets := g.fromRef(e.Target, self, f)
 		if g.budget != nil && g.budget.exceeded {
@@ -312,11 +383,21 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 		}
 		for _, i := range targets {
 			if c := g.cards[e.CardID]; c != nil {
-				if i.zone == "field" {
-					g.triggerIndex.remove(i)
+				event := ir.RuntimeEvent{Kind: "card_transformed", Side: g.sideOf(i), From: i.zone,
+					Subject: &ir.EventTarget{Kind: "instance", InstanceID: i.id, CardID: i.card.ID},
+					Target:  &ir.EventTarget{Kind: "instance", InstanceID: i.id, CardID: c.ID}}
+				if i.zone == "hand" || i.zone == "deck" || i.zone == "attached" {
+					event.PrivateTo = event.Side
 				}
-				i.card = c
+				if !g.emit(event) {
+					return
+				}
 				if i.zone == "field" {
+					g.detachFieldSource(i)
+				}
+				resetCardState(i, c)
+				if i.zone == "field" {
+					i.summoningSick = c.CardType == "follower"
 					g.triggerIndex.add(i)
 				}
 			}
@@ -326,10 +407,27 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 	own, oppo, ownSide := g.relativePlayers(self)
 	targets := g.fromRef(e.Target, self, f)
+	if e.Predicate != nil {
+		targets = g.filter(targets, "", e.Predicate)
+	}
+	// Snapshot all numeric inputs before any target or resulting event changes them.
+	if e.AmountExpr != nil {
+		e.Amount = max(0, g.numericValue(e.AmountExpr, self, f))
+	}
+	if e.AttackExpr != nil {
+		e.AttackDelta = g.numericValue(e.AttackExpr, self, f)
+	}
+	if e.LifeExpr != nil {
+		e.LifeDelta = g.numericValue(e.LifeExpr, self, f)
+	}
 	if g.budget != nil && g.budget.exceeded {
 		return
 	}
 	switch e.Kind {
+	case "set_attack_limit":
+		for _, i := range targets {
+			i.attackLimitValue = e.Amount
+		}
 	case "destroy":
 		g.destroyByEffect(targets)
 	case "banish":
@@ -372,11 +470,15 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 		}
 	case "silent_evolve":
 		for _, i := range targets {
-			i.evolved = true
+			g.applyEvolution(i, e.Form == "super_evolved")
 		}
 	case "damage":
+		if e.Distribution == "field_entry_order" {
+			g.distributeDamage(self, targets, e.Amount, e.Overflow)
+			return
+		}
 		if _, ok := e.Target.(ir.LeaderSetRef); ok {
-			g.damageLeaders(e.Amount)
+			g.damageLeaders(self, e.Amount)
 			return
 		}
 		if r, ok := e.Target.(ir.LeaderRef); ok {
@@ -384,21 +486,34 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 			if r.Side == "oppo" {
 				target, side = oppo, oppositeSide(ownSide)
 			}
-			g.damageLeader(target, side, e.Amount)
+			g.damageLeaderFrom(self, target, side, e.Amount)
 			return
 		}
 		for _, i := range targets {
-			g.damageInstance(i, e.Amount)
+			g.damageInstanceFrom(self, i, e.Amount, "effect")
 		}
 		g.resolveDeathBatch(nil)
 	}
 }
 func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
-	own, _ := g.playerForSide(self, e.Owner)
+	own, side := g.playerForSide(self, e.Owner)
 	switch e.Kind {
+	case "restore_resource":
+		amount := max(0, own.maxpp-own.pp)
+		if e.Resource == "pp" && g.emit(ir.RuntimeEvent{Kind: "pp_restored", Side: side, Actual: amount}) {
+			own.pp += amount
+		}
 	case "adjust_resource":
-		if e.Resource == "combo" {
+		if e.Resource == "pp" {
+			if e.Delta >= 0 {
+				own.pp += min(e.Delta, max(0, own.maxpp-own.pp))
+			} else {
+				own.pp = max(0, own.pp+e.Delta)
+			}
+		} else if e.Resource == "combo" {
 			own.combo += e.Delta
+		} else if e.Resource == "shadows" {
+			own.shadows = max(0, own.shadows+e.Delta)
 		} else if e.Resource == "maxpp" {
 			own.maxpp += e.Delta
 			if own.maxpp > 10 {
@@ -412,7 +527,9 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 		}
 		var expired []*instance
 		for _, i := range targets {
-			if e.Field == "countdown" {
+			if e.Field == "cost" {
+				i.cost = max(e.Minimum, i.cost+e.Delta)
+			} else if e.Field == "countdown" {
 				i.countdown += e.Delta
 				if i.countdown <= 0 {
 					expired = append(expired, i)
@@ -427,12 +544,34 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 			}
 			if i.earthsigil > 0 {
 				i.earthsigil += e.Delta
-				break
+				return
+			}
+		}
+		if e.Delta > 0 {
+			for _, sigil := range g.summonFor(self, "own", 1, ir.MagicSedimentCardID, false) {
+				sigil.earthsigil = e.Delta
+			}
+		}
+	case "spellboost":
+		targets := g.fromRef(e.Target, self, f)
+		for _, target := range targets {
+			if target == nil || target.zone != "hand" {
+				continue
+			}
+			for n := 0; n < e.Times; n++ {
+				for _, ability := range target.card.Abilities {
+					if ir.TriggerKind(ability.Trigger) == "spellboost" {
+						g.queueTrigger(triggerInvocation{body: ability.Body, blockID: abilityBlockID(target.card.ID, ability.ID), self: target, bindings: frame{}})
+					}
+				}
 			}
 		}
 	}
 }
 func (g *game) triggerSummoned(s *instance) {
+	if s.card.CardType != "follower" {
+		return
+	}
 	event := ir.RuntimeEvent{Kind: "follower_summoned", Side: g.sideOf(s), InstanceID: s.id, CardID: s.card.ID, Count: 1}
 	if !g.emit(event) {
 		return
@@ -449,10 +588,10 @@ func (g *game) triggerEngaged(engaged *instance) {
 }
 
 func (g *game) summon(count, id int) []*instance {
-	return g.summonFor(nil, "own", count, id)
+	return g.summonFor(nil, "own", count, id, false)
 }
 
-func (g *game) summonFor(self *instance, side string, count, id int) []*instance {
+func (g *game) summonFor(self *instance, side string, count, id int, departed bool) []*instance {
 	own, _ := g.playerForSide(self, side)
 	var batch []*instance
 	for n := 0; n < count && len(own.field) < fieldLimit; n++ {
@@ -465,7 +604,9 @@ func (g *game) summonFor(self *instance, side string, count, id int) []*instance
 		}
 		g.serial++
 		i := g.newInstance(c, fmt.Sprintf("summoned-%d", g.serial), fmt.Sprintf("@summoned%d", g.serial), "field")
+		i.departed = departed
 		g.addToZone(own, i, "field")
+		g.mergeEarthSigil(i)
 		i.summoningSick = i.card.CardType == "follower"
 		batch = append(batch, i)
 		g.triggerSummoned(i)
@@ -491,6 +632,9 @@ func (g *game) mergeEarthSigil(i *instance) {
 	}
 }
 func (g *game) consumeEarthSigil(self *instance, n int) bool {
+	if n == 0 {
+		return true
+	}
 	own, _, _ := g.relativePlayers(self)
 	total := 0
 	for _, i := range own.field {
@@ -514,7 +658,11 @@ func (g *game) consumeEarthSigil(self *instance, n int) bool {
 	if !g.chargeQueryVisits(visits) {
 		return false
 	}
+	var exhausted []*instance
 	for _, i := range append([]*instance{}, own.field...) {
+		if i.earthsigil == 0 {
+			continue
+		}
 		used := n
 		if used > i.earthsigil {
 			used = i.earthsigil
@@ -522,12 +670,13 @@ func (g *game) consumeEarthSigil(self *instance, n int) bool {
 		i.earthsigil -= used
 		n -= used
 		if i.earthsigil == 0 {
-			g.move(i, "banished")
+			exhausted = append(exhausted, i)
 		}
 		if n == 0 {
 			break
 		}
 	}
+	g.resolveDeathBatch(exhausted)
 	return true
 }
 
@@ -590,8 +739,8 @@ func (g *game) returnCard(i *instance, z string) {
 	}
 	p := g.owner(i)
 	if i.zone == "field" {
-		g.triggerIndex.remove(i)
-		resetCombatState(i)
+		g.detachFieldSource(i)
+		resetCardState(i, i.card)
 	}
 	g.removeFromPlayer(p, i)
 	pos := g.rng.Index(len(p.deck) + 1)
@@ -601,13 +750,26 @@ func (g *game) returnCard(i *instance, z string) {
 	i.zone = "deck"
 }
 func (g *game) move(i *instance, z string) {
+	if i.zone == z {
+		return
+	}
 	p := g.owner(i)
 	if i.zone == "field" {
-		g.triggerIndex.remove(i)
-		resetCombatState(i)
+		g.detachFieldSource(i)
+		if z == "hand" || z == "deck" {
+			resetCardState(i, i.card)
+		} else {
+			resetCombatState(i)
+		}
 	}
 	g.removeFromPlayer(p, i)
-	g.addToZone(p, i, z)
+	if z == "graveyard" {
+		g.putInGraveyard(p, i)
+	} else if z == "hand" {
+		g.putInHandOrOverdraw(p, i)
+	} else {
+		g.addToZone(p, i, z)
+	}
 }
 
 func resetCombatState(i *instance) {
@@ -620,7 +782,7 @@ func (g *game) owner(i *instance) *player {
 			return g.owner(source)
 		}
 	}
-	for _, z := range [][]*instance{g.oppo.field, g.oppo.hand, g.oppo.deck, g.oppo.graveyard, g.oppo.banished, g.oppo.destroyed} {
+	for _, z := range [][]*instance{g.oppo.field, g.oppo.hand, g.oppo.deck, g.oppo.graveyard, g.oppo.banished, g.oppo.resolving, g.oppo.destroyed} {
 		if contains(z, i) {
 			return &g.oppo
 		}
@@ -662,6 +824,7 @@ func (g *game) removeFromPlayer(p *player, i *instance) {
 	g.remove(&p.field, i)
 	g.remove(&p.graveyard, i)
 	g.remove(&p.banished, i)
+	g.remove(&p.resolving, i)
 }
 func (g *game) remove(v *[]*instance, target *instance) {
 	for n, i := range *v {

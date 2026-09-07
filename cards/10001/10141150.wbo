@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10141150 {
+    type follower;
+    cost 4;
+    stats 4/4;
+
+    effect {
+        fanfare {
+            if own.maxpp >= 7 {
+                heal own.leader 4;
+            }
+        }
+    }
+
+    meta {
+        pack 10001;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "白鳞的使者";
+        text """
+【<color=Keyword>入场曲</color>】若为【<color=Keyword>觉醒</color>】，则回复自己的主战者4点生命值。
+""";
+    }
+
+    locale eng {
+        name "Whitescale Herald";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If you're in <b><color=Keyword>Overflow</color></b>, restore 4 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はくりん\">白鱗</rub>の<rub=\"みつか\">御使</rub>い";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>覚醒</color>】なら、自分のリーダーを4回復。
+""";
+    }
+
+    locale kor {
+        name "백린의 사도";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>각성</color>]이라면, 내 리더를 4 회복.
+""";
+    }
+
+    locale cht {
+        name "白鱗聖使";
+        text """
+【<color=Keyword>入場曲</color>】如果【<color=Keyword>覺醒</color>】已發動，則會回復自己的主戰者4點生命值。
+""";
+    }
+
+}

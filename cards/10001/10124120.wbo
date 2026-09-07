@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10124120 {
+    type follower;
+    cost 6;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class swordcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "白银骑士团团长·艾蜜莉亚";
+        text """
+【<color=Keyword>入场曲</color>】抽取2张皇家护卫·随从。回复自己3点能量点。
+<hr><sev>【<color=Keyword>超进化时</color>】使自己的战场上的其他所有皇家护卫·随从获得【<color=Keyword>屏障</color>】。</sev>
+""";
+    }
+
+    locale eng {
+        name "Amelia, Silver Captain";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Draw 2 Swordcraft followers. Recover 3 play points.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Give all other allied Swordcraft followers on the field <b><color=Keyword>Barrier</color></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はくぎん\">白銀</rub>の<rub=\"きしだんちょう\">騎士団長</rub>・エミリア";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキからロイヤル・フォロワー2枚を引く。自分のPPを3回復。
+<hr><sev>【<color=Keyword>超進化時</color>】自分の場の他のロイヤル・フォロワーすべては【<color=Keyword>バリア</color>】を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "백은의 기사단장 에밀리아";
+        text """
+[<color=Keyword>출격</color>] 내 덱에서 로얄 추종자 2장을 뽑는다. 내 PP를 3 회복.
+<hr><sev>[<color=Keyword>초진화시</color>] 내 전장의 다른 로얄 추종자 모두는 [<color=Keyword>배리어</color>]를 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "白銀騎士團長‧艾蜜莉亞";
+        text """
+【<color=Keyword>入場曲</color>】由自己的牌堆中抽取2張皇家護衛‧從者卡。回復自己的PP 3點。
+<hr><sev>【<color=Keyword>超進化時</color>】使自己戰場上全部的其他皇家護衛‧從者卡獲得【<color=Keyword>障壁</color>】。</sev>
+""";
+    }
+
+}

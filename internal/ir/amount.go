@@ -1,0 +1,119 @@
+package ir
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+func validCountSource(source Ref) bool {
+	switch r := source.(type) {
+	case ZoneRef:
+		return r.Kind == "zone" && validZone(r.Zone) && (validSide(r.Side) || r.Side == "" && r.Zone == "field") &&
+			(r.Member == "" || oneOf(r.Member, "card", "follower", "spell", "amulet"))
+	case FilterRef:
+		_, ok := r.Source.(ZoneRef)
+		return r.Kind == "filter" && ok && validCountSource(r.Source) && r.Predicate != nil
+	default:
+		return false
+	}
+}
+
+func validNumericExpr(expr NumericExpr, signed bool) bool {
+	switch e := expr.(type) {
+	case *CountExpr:
+		return e != nil && e.Kind == "count" && validCountSource(e.Source)
+	case *Scalar:
+		return e != nil && (e.Kind == "scalar" && validSide(e.Side) && oneOf(e.Field, "combo", "pp", "maxpp", "life", "ep", "sep", "shadows") ||
+			e.Kind == "self_scalar" && e.Side == "" && oneOf(e.Field, "attack", "life", "cost") ||
+			e.Kind == "self_counter" && e.Side == "" && ValidCounterName(e.Field))
+	case *NegateExpr:
+		return signed && e != nil && e.Kind == "negate" && validNumericExpr(e.Value, false)
+	default:
+		return false
+	}
+}
+
+func decodeEffectAmount(data json.RawMessage) (int, NumericExpr, error) {
+	return decodeNumericValue(data, false)
+}
+
+func decodeNumericValue(data json.RawMessage, signed bool) (int, NumericExpr, error) {
+	var literal *int
+	if json.Unmarshal(data, &literal) == nil && literal != nil {
+		if !signed && *literal < 0 {
+			return 0, nil, fmt.Errorf("effect amount must be nonnegative")
+		}
+		return *literal, nil, nil
+	}
+	var raw struct {
+		Kind   string          `json:"kind"`
+		Source json.RawMessage `json:"source"`
+		Side   string          `json:"side"`
+		Field  string          `json:"field"`
+		Value  json.RawMessage `json:"value"`
+	}
+	if err := strict(data, &raw); err != nil {
+		return 0, nil, err
+	}
+	var expr NumericExpr
+	switch raw.Kind {
+	case "count":
+		if raw.Side != "" || raw.Field != "" || len(raw.Value) > 0 {
+			return 0, nil, fmt.Errorf("invalid count fields")
+		}
+		source, err := decodeRef(raw.Source)
+		if err != nil {
+			return 0, nil, err
+		}
+		expr = &CountExpr{Kind: "count", Source: source}
+	case "scalar", "self_scalar", "self_counter":
+		if len(raw.Source) > 0 || len(raw.Value) > 0 {
+			return 0, nil, fmt.Errorf("invalid scalar fields")
+		}
+		expr = &Scalar{Kind: raw.Kind, Side: raw.Side, Field: raw.Field}
+	case "negate":
+		if !signed || raw.Side != "" || raw.Field != "" || len(raw.Source) > 0 {
+			return 0, nil, fmt.Errorf("invalid negation fields")
+		}
+		_, value, err := decodeNumericValue(raw.Value, false)
+		if err != nil {
+			return 0, nil, err
+		}
+		expr = &NegateExpr{Kind: "negate", Value: value}
+	default:
+		return 0, nil, fmt.Errorf("invalid effect amount kind %q", raw.Kind)
+	}
+	if !validNumericExpr(expr, signed) {
+		return 0, nil, fmt.Errorf("invalid numeric expression")
+	}
+	return 0, expr, nil
+}
+
+func numericValue(literal int, expr NumericExpr, signed bool) (any, error) {
+	if expr == nil {
+		if !signed && literal < 0 {
+			return nil, fmt.Errorf("effect amount must be nonnegative")
+		}
+		return literal, nil
+	}
+	if literal != 0 || !validNumericExpr(expr, signed) {
+		return nil, fmt.Errorf("invalid numeric expression or conflicting literal")
+	}
+	return expr, nil
+}
+
+func numericCardRefs(expr NumericExpr, cards map[int]bool, cardType string) error {
+	switch e := expr.(type) {
+	case *CountExpr:
+		if source, ok := e.Source.(FilterRef); ok {
+			return validatePredicateCardRefs(source.Predicate, cards)
+		}
+	case *NegateExpr:
+		return numericCardRefs(e.Value, cards, cardType)
+	case *Scalar:
+		if e.Kind == "self_scalar" && e.Field != "cost" && cardType != "follower" {
+			return fmt.Errorf("self.%s requires a follower", e.Field)
+		}
+	}
+	return nil
+}

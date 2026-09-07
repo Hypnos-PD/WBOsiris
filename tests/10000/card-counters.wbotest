@@ -1,0 +1,115 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Insight increments only the Stormblast already held" {
+    seed 1901;
+    state {
+        turn own 3;
+        phase main;
+        player own {
+            pp 1/3;
+            hand { spell source = 10031310; spell held = 10131320; }
+            deck top { spell drawn = 10131320; }
+        }
+        player oppo { hand { spell enemy_hand = 10131320; } }
+    }
+    action { play source; }
+    expect {
+        legal;
+        held.counter.x == 3;
+        drawn.counter.x == 2;
+        enemy_hand.counter.x == 2;
+        drawn.zone == hand;
+        own.pp == 0/3;
+    }
+}
+
+scenario "Stormblast deals its own stored X without boosting itself" {
+    seed 1902;
+    state {
+        turn own 5;
+        phase main;
+        player own {
+            pp 1/5;
+            hand { spell source = 10131320 { counter x 7; } }
+        }
+        player oppo { field { follower target = 90021110 { stats 3/10; } } }
+    }
+    action { play source; select target; }
+    expect {
+        legal;
+        source.counter.x == 7;
+        source.zone == graveyard;
+        target.stats == 3/3;
+        own.pp == 0/5;
+        events contains ordered { damage target 7; }
+    }
+}
+
+scenario "William resolves X damage before lastwords replacements enter" {
+    seed 1903;
+    state {
+        turn own 6;
+        phase main;
+        player own {
+            pp 6/6;
+            hand { follower source = 10132130 { counter x 2; } }
+        }
+        player oppo { field { follower first = 10151130; follower second = 10151130; } }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.counter.x == 2;
+        source.stats == 5/5;
+        first.zone == graveyard;
+        second.zone == graveyard;
+        oppo.field count card 90051110 == 4;
+        events contains ordered { damage first 2; damage second 2; }
+    }
+}
+
+scenario "William evolution boosts the hand without changing its own X" {
+    seed 1904;
+    state {
+        turn own 6;
+        phase main;
+        player own {
+            ep 1;
+            field { follower source = 10132130 { counter x 5; } }
+            hand { spell held = 10131320; follower other = 10132130; }
+        }
+        player oppo { hand { spell enemy_hand = 10131320; } }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        source.counter.x == 5;
+        source.stats == 7/7;
+        held.counter.x == 4;
+        other.counter.x == 2;
+        enemy_hand.counter.x == 2;
+        own.ep == 0;
+    }
+}
+
+scenario "Stormblast without a legal target preserves counters and PP" {
+    seed 1905;
+    state {
+        turn own 3;
+        phase main;
+        player own {
+            pp 1/3;
+            hand { spell source = 10131320 { counter x 8; } spell held = 10131320; }
+        }
+        player oppo { }
+    }
+    action { play source; }
+    expect {
+        illegal target_required;
+        unchanged;
+        source.counter.x == 8;
+        held.counter.x == 2;
+        own.pp == 1/3;
+    }
+}

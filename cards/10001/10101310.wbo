@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10101310 {
+    type spell;
+    cost 5;
+
+    effect {
+        summon 5 card 90001110;
+    }
+
+    meta {
+        pack 10001;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "哥布林的偷袭";
+        text """
+召唤5个『<color=Keyword>哥布林</color>』。
+""";
+    }
+
+    locale eng {
+        name "Goblin Foray";
+        text """
+Summon 5 copies of <b><i><color=Keyword>Goblin</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "ゴブリンの<rub=\"しゅうげき\">襲撃</rub>";
+        text """
+『<color=Keyword>ゴブリン</color>』5枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "고블린의 습격";
+        text """
+<color=Keyword>고블린</color> 5장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "哥布林的襲擊";
+        text """
+召喚5張『<color=Keyword>哥布林</color>』到自己的戰場上。
+""";
+    }
+
+}

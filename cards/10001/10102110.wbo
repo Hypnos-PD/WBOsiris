@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10102110 {
+    type follower;
+    cost 3;
+    stats 1/2;
+
+    effect {
+        fanfare {
+            damage oppo.field.followers 1;
+        }
+        evolve {
+            damage oppo.field.followers 1;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class neutral;
+        rarity silver;
+    }
+
+    locale chs {
+        name "迸发的光明·阿波罗";
+        text """
+【<color=Keyword>入场曲</color>】对对手的战场上的所有随从造成1点伤害。
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Apollo, Heaven's Envoy";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Deal 1 damage to all enemy followers.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ほとばし\">迸</rub>る<rub=\"こうみょう\">光明</rub>・アポロン";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワーすべてに1ダメージ。
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "세찬 광명 아폴론";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장의 추종자 모두에게 1 피해.
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "飛馳的光明‧阿波羅";
+        text """
+【<color=Keyword>入場曲</color>】給予敵方戰場上全部的從者卡1點傷害。
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

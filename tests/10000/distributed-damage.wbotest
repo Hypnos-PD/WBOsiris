@@ -1,0 +1,161 @@
+wbotest 0.1.0;
+use cards "../../cards";
+scenario "Distributed damage follows field entry order" {
+    seed 1101;
+    state {
+        turn own 5;
+        phase main;
+        player own {
+            pp 5/5;
+            hand {
+                follower source = 10154130;
+            }
+        }
+        player oppo {
+            field {
+                follower first = 90001110 {
+                    stats 1/3;
+                }
+                follower second = 90001110 {
+                    stats 1/2;
+                }
+                follower third = 90001110 {
+                    stats 1/3;
+                }
+            }
+        }
+    }
+    action {
+        play source;
+    }
+    expect {
+        legal;
+        first.zone == graveyard;
+        second.zone == graveyard;
+        third.stats == 1/1;
+        oppo.leader.life == 20;
+        events contains ordered {
+            damage first 3;
+            damage second 2;
+            damage third 2;
+            destroy first;
+            destroy second;
+        }
+        rng.consumed == 0;
+    }
+}
+scenario "Barriers consume allocated damage without reallocating it" {
+    seed 1102;
+    state {
+        turn own 5;
+        phase main;
+        player own {
+            pp 5/5;
+            hand {
+                follower source = 10154130;
+            }
+        }
+        player oppo {
+            field {
+                follower first = 90001110 {
+                    stats 1/1;
+                    barrier;
+                }
+                follower second = 90001110 {
+                    stats 1/1;
+                    barrier;
+                }
+                follower third = 90001110 {
+                    stats 1/6;
+                }
+            }
+        }
+    }
+    action {
+        play source;
+    }
+    expect {
+        legal;
+        first.stats == 1/1;
+        second.stats == 1/1;
+        third.stats == 1/1;
+        first lacks barrier;
+        second lacks barrier;
+        events contains ordered {
+            damage first 0;
+            damage second 0;
+            damage third 5;
+        }
+        rng.consumed == 0;
+    }
+}
+scenario "Evolve distributes current hand count" {
+    seed 1103;
+    state {
+        turn own 5;
+        phase main;
+        player own {
+            ep 1;
+            field {
+                follower source = 10113120;
+            }
+            hand {
+                follower first_card = 90001110;
+                follower second_card = 90001110;
+                follower third_card = 90001110;
+            }
+        }
+        player oppo {
+            field {
+                follower first = 90001110 {
+                    stats 1/2;
+                }
+                follower second = 90001110 {
+                    stats 1/2;
+                }
+            }
+        }
+    }
+    action {
+        evolve source;
+    }
+    expect {
+        legal;
+        own.ep == 0;
+        source.evolved == true;
+        first.zone == graveyard;
+        second.stats == 1/1;
+        events contains ordered {
+            damage first 2;
+            damage second 1;
+        }
+        rng.consumed == 0;
+    }
+}
+scenario "Follower-only distribution does not hit an empty field's leader" {
+    seed 1104;
+    state {
+        turn own 5;
+        phase main;
+        player own {
+            pp 5/5;
+            hand {
+                follower source = 10154130;
+            }
+        }
+        player oppo {
+        }
+    }
+    action {
+        play source;
+    }
+    expect {
+        legal;
+        source.zone == field;
+        oppo.leader.life == 20;
+        events excludes {
+            damage oppo.leader 7;
+        }
+        rng.consumed == 0;
+    }
+}

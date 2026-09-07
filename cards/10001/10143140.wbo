@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10143140 {
+    type follower;
+    cost 9;
+    stats 9/9;
+
+    effect {
+        fanfare {
+            buff oppo.field.followers -0/-9;
+        }
+        superevolve {
+            draw 3;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class dragoncraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "夜幕龙";
+        text """
+【<color=Keyword>入场曲</color>】使对手的战场上的所有随从-0/-9。
+<hr><sev>【<color=Keyword>超进化时</color>】抽取3张卡牌。</sev>
+""";
+    }
+
+    locale eng {
+        name "Twilight Dragon";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Give all enemy followers on the field -0/-9.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Draw 3 cards.</sev>
+""";
+    }
+
+    locale jpn {
+        name "ナイトフォールドラゴン";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワーすべては-0/-9する。
+<hr><sev>【<color=Keyword>超進化時</color>】自分のデッキから3枚を引く。</sev>
+""";
+    }
+
+    locale kor {
+        name "나이트폴 드래곤";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장의 추종자 모두는 -0/-9.
+<hr><sev>[<color=Keyword>초진화시</color>] 내 덱에서 3장을 뽑는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "薄暮闇龍";
+        text """
+【<color=Keyword>入場曲</color>】使敵方戰場上全部的從者卡-0/-9。
+<hr><sev>【<color=Keyword>超進化時</color>】由自己的牌堆中抽取3張卡片。</sev>
+""";
+    }
+
+}

@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10161120 {
+    type follower;
+    cost 3;
+    stats 2/1;
+
+    effect {
+        ward;
+        barrier;
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "圣盾祭司";
+        text """
+【<color=Keyword>守护</color>】
+【<color=Keyword>屏障</color>】
+""";
+    }
+
+    locale eng {
+        name "Holy Shieldmaiden";
+        text """
+<b><color=Keyword>Ward</color></b>
+<b><color=Keyword>Barrier</color></b>
+""";
+    }
+
+    locale jpn {
+        name "セイントシールダー";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>バリア</color>】
+""";
+    }
+
+    locale kor {
+        name "세인트 실더";
+        text """
+[<color=Keyword>수호</color>]
+[<color=Keyword>배리어</color>]
+""";
+    }
+
+    locale cht {
+        name "聖盾神官";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>障壁</color>】
+""";
+    }
+
+}

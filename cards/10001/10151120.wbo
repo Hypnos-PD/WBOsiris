@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10151120 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        evolve {
+            summon 2 card 90051120;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "无名恶魔";
+        text """
+<ev>【<color=Keyword>进化时</color>】召唤2个『<color=Keyword>蝙蝠</color>』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Nameless Demon";
+        text """
+<ev><b><color=Keyword>Evolve</color></b>: Summon 2 copies of <b><i><color=Keyword>Bat</color></i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"むめい\">無名</rub>の<rub=\"あくま\">悪魔</rub>";
+        text """
+<ev>【<color=Keyword>進化時</color>】『<color=Keyword>バット</color>』2枚を自分の場に出す。</ev>
+""";
+    }
+
+    locale kor {
+        name "이름 없는 악마";
+        text """
+<ev>[<color=Keyword>진화시</color>] <color=Keyword>박쥐</color> 2장을 내 전장에 소환.</ev>
+""";
+    }
+
+    locale cht {
+        name "無名惡魔";
+        text """
+<ev>【<color=Keyword>進化時</color>】召喚2張『<color=Keyword>蝙蝠</color>』到自己的戰場上。</ev>
+""";
+    }
+
+}

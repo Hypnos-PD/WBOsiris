@@ -1,0 +1,41 @@
+wbo 0.1.0;
+
+card 90021120 {
+    type follower;
+    cost 1;
+    stats 2/2;
+    trait officer;
+
+    effect { }
+
+    meta {
+        pack 90000;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "铁甲骑士";
+        text "";
+    }
+
+    locale eng {
+        name "Steelclad Knight";
+        text "";
+    }
+
+    locale jpn {
+        name "スティールナイト";
+        text "";
+    }
+
+    locale kor {
+        name "철갑 기사";
+        text "";
+    }
+
+    locale cht {
+        name "鐵甲騎士";
+        text "";
+    }
+}

@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10162130 {
+    type follower;
+    cost 7;
+    stats 5/7;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "大地守护神·米维";
+        text """
+【<color=Keyword>守护</color>】
+【<color=Keyword>谢幕曲</color>】召唤随机1张与本次对战中被破坏的原始费用最大的自己的护符同名的护符。
+""";
+    }
+
+    locale eng {
+        name "Maeve, Guardian of Earth";
+        text """
+<b><color=Keyword>Ward</color></b>
+<b><color=Keyword>Last Words</color></b>: Summon a copy of a random allied amulet destroyed this match with the highest base cost.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"だいち\">大地</rub>の<rub=\"しゅごしん\">守護神</rub>・ミーヴェ";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>ラストワード</color>】このバトル中に破壊された自分の元のコスト最大のアミュレットからランダム1枚と同名のカード1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "대지의 수호신 미베";
+        text """
+[<color=Keyword>수호</color>]
+[<color=Keyword>유언</color>] 이번 대전에서 파괴된 원래 비용이 가장 높은 내 마법진 중 무작위로 1장과 동명의 마법진 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "大地守護神‧宓唯";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>謝幕曲</color>】隨機召喚1張與「本次對戰中自己已被破壞且原始消費最高的護符卡」同名的卡片到自己的戰場上。
+""";
+    }
+
+}

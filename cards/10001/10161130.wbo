@@ -1,0 +1,56 @@
+wbo 0.1.0;
+
+card 10161130 {
+    type follower;
+    cost 5;
+    stats 2/3;
+
+    effect {
+        fanfare {
+            draw 2;
+            heal own.leader 2;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "指明目标的光辉天使";
+        text """
+【<color=Keyword>入场曲</color>】抽取2张卡牌。回复自己的主战者2点生命值。
+""";
+    }
+
+    locale eng {
+        name "Radiant Guiding Angel";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Draw 2 cards. Restore 2 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しるべ\">標</rub>を<rub=\"あた\">与</rub>えるレディアンスエンジェル";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキから2枚を引く。自分のリーダーを2回復。
+""";
+    }
+
+    locale kor {
+        name "이정표의 레디언스 엔젤";
+        text """
+[<color=Keyword>출격</color>] 내 덱에서 2장을 뽑는다. 내 리더를 2 회복.
+""";
+    }
+
+    locale cht {
+        name "給予指引的光輝天使";
+        text """
+【<color=Keyword>入場曲</color>】由自己的牌堆中抽取2張卡片。回復自己的主戰者2點生命值。
+""";
+    }
+
+}

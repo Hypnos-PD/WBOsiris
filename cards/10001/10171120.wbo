@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10171120 {
+    type follower;
+    cost 5;
+    stats 5/5;
+
+    effect {
+        fanfare {
+            summon 1 card 90072120;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "钢铁佣兵·迪尔克";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>城堡创造物</color>』。
+""";
+    }
+
+    locale eng {
+        name "Dirk, Metal Mercenary";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Fortifier Artifact</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "メタルマーセナリー・ディルク";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>キャッスルアーティファクト</color>』1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "강철의 용병 딜크";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>캐슬 아티팩트</color> 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "鋼鐵傭兵‧迪爾克";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>堡壘的創造物</color>』到自己的戰場上。
+""";
+    }
+
+}

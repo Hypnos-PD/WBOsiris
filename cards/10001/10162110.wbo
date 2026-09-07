@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10162110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "煌枪魔兔·萨莉沙";
+        text """
+自己的拥有【<color=Keyword>守护</color>】的随从被破坏时，本随从+1/+1。
+<hr><ev>【<color=Keyword>进化时</color>】本随从获得【<color=Keyword>屏障</color>】。</ev>
+""";
+    }
+
+    locale eng {
+        name "Sarissa, Luxspear Al-mi'raj";
+        text """
+Whenever an allied follower with <b><color=Keyword>Ward</color></b> is destroyed, give this follower +1/+1.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Give this follower <b><color=Keyword>Barrier</color></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"こうそう\">煌槍</rub>のアルミラージ・サリッサ";
+        text """
+自分の【<color=Keyword>守護</color>】を持つフォロワーが破壊されたとき、これは+1/+1する。
+<hr><ev>【<color=Keyword>進化時</color>】これは【<color=Keyword>バリア</color>】を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "빛의 알미라지 사릿사";
+        text """
+[<color=Keyword>수호</color>]를 가진 내 추종자가 파괴되었을 때, 이 추종자는 +1/+1.
+<hr><ev>[<color=Keyword>진화시</color>] 이 추종자는 [<color=Keyword>배리어</color>]를 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "煌槍月兔妖‧薩莉沙";
+        text """
+當自己擁有【<color=Keyword>守護</color>】的從者卡被破壞時，使這張卡片+1/+1。
+<hr><ev>【<color=Keyword>進化時</color>】使這張卡片獲得【<color=Keyword>障壁</color>】。</ev>
+""";
+    }
+
+}

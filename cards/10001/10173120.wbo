@@ -1,0 +1,100 @@
+wbo 0.1.0;
+
+card 10173120 {
+    type follower;
+    cost 6;
+    stats 5/5;
+
+    effect {
+        fanfare {
+            mode {
+                option 1 {
+                    label chs "抽取2张卡牌。";
+                    label eng "Draw 2 cards.";
+                    label jpn "自分のデッキから2枚を引く。";
+                    label kor "내 덱에서 2장을 뽑는다.";
+                    label cht "由自己的牌堆中抽取2張卡片。";
+                    draw 2;
+                }
+                option 2 {
+                    label chs "回复自己的主战者4点生命值。";
+                    label eng "Restore 4 defense to your leader.";
+                    label jpn "自分のリーダーを4回復。";
+                    label kor "내 리더를 4 회복.";
+                    label cht "回復自己的主戰者4點生命值。";
+                    heal own.leader 4;
+                }
+            }
+        }
+        evolve {
+            choose target from oppo.field.followers;
+            destroy target;
+        }
+        superevolve replaces evolve {
+            choose targets from oppo.field.followers count 2;
+            destroy targets;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class portalcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "箱庭的断罪者·希尔薇娅";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）抽取2张卡牌。</ridx>
+<ridx=1>（2）回复自己的主战者4点生命值。</ridx>
+<hr><ev>【<color=Keyword>进化时</color>】选择对手的战场上的1个随从，破坏该随从。</ev>
+<sev>【<color=Keyword>超进化时</color>】改为破坏2个。</sev>
+""";
+    }
+
+    locale eng {
+        name "Sylvia, Garden Executioner";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Draw 2 cards.</ridx>
+<ridx=1>2. Restore 4 defense to your leader.</ridx>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select an enemy follower on the field and destroy it.</ev>
+<sev><b><color=Keyword>Super-Evolve</color></b>: Select 2 instead.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はこにわ\">箱庭</rub>の<rub=\"だんざいしゃ\">断罪者</rub>・シルヴィア";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）自分のデッキから2枚を引く。</ridx>
+<ridx=1>（2）自分のリーダーを4回復。</ridx>
+<hr><ev>【<color=Keyword>進化時</color>】相手の場のフォロワー1枚を選ぶ。それを破壊。</ev>
+<sev>【<color=Keyword>超進化時</color>】1枚ではなく2枚。</sev>
+""";
+    }
+
+    locale kor {
+        name "모형정원의 단죄자 실비아";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 내 덱에서 2장을 뽑는다.</ridx>
+<ridx=1>(2) 내 리더를 4 회복.</ridx>
+<hr><ev>[<color=Keyword>진화시</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴.</ev>
+<sev>[<color=Keyword>초진화시</color>] 1장 대신 2장.</sev>
+""";
+    }
+
+    locale cht {
+        name "箱庭斷罪者‧希爾薇婭";
+        text """
+【<color=Keyword>入場曲</color>】指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）由自己的牌堆中抽取2張卡片。</ridx>
+<ridx=1>（2）回復自己的主戰者4點生命值。</ridx>
+<hr><ev>【<color=Keyword>進化時</color>】指定1張敵方戰場上的從者卡。將其破壞。</ev>
+<sev>【<color=Keyword>超進化時</color>】由原本的1張轉變為2張。</sev>
+""";
+    }
+
+}

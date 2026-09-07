@@ -1,0 +1,121 @@
+.hand-dock .hand-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 48px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid #b8b287;
+  border-radius: 4px;
+  background: #10221d;
+  color: #f1df97;
+  pointer-events: auto;
+}
+
+.hand-dock.collapsed .hand-card:hover,
+.hand-dock.collapsed .hand-card.selected {
+  transform: translateY(27px) scale(.9);
+}
+
+.hand-dock.expanded {
+  left: 50%;
+  right: auto;
+  bottom: 8px;
+  width: min(700px, calc(100% - 24px));
+  height: 208px;
+  transform: translateX(-50%);
+}
+
+.hand-dock.expanded .hand-row {
+  inset: 36px 0 0;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 4px 4px 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: 4px;
+  scrollbar-color: #b8b287 #10221d;
+  scrollbar-width: thin;
+  touch-action: pan-x;
+}
+
+.hand-dock.expanded .hand-card,
+.hand-dock.expanded .hand-card:first-child,
+.hand-dock.expanded .hand-card:hover,
+.hand-dock.expanded .hand-card.selected {
+  flex: 0 0 108px;
+  width: 108px;
+  height: 151px;
+  margin: 0;
+  transform: none;
+  transition: filter .15s, border-color .15s;
+}
+
+.hand-dock .hand-card.selected {
+  border-color: #96e4bc;
+  box-shadow: 0 0 0 2px #96e4bc, 0 4px 10px #0008;
+}
+
+.hand-dock .hand-card:focus-visible,
+.hand-toggle:focus-visible {
+  outline: 2px solid #f9e7a0;
+  outline-offset: 2px;
+}
+
+.hand-dock.expanded .hand-art { inset: 3px 3px 28px; }
+.hand-dock.expanded .hand-cost { width: 25px; height: 25px; font-size: 16px; }
+.hand-dock.expanded .hand-info { height: 24px; }
+.hand-dock.expanded .hand-info > b { font-size: 10px; }
+.hand-dock.expanded .hand-info span { font-size: 12px; }
+
+.card-inspector { background: #101a1d; }
+
+.hand-dock.expanded ~ .card-inspector {
+  bottom: 228px;
+  max-height: calc(100dvh - 292px);
+  overflow-y: auto;
+}
+
+@media (max-width: 760px) {
+  .hand-dock.collapsed .hand-card:hover,
+  .hand-dock.collapsed .hand-card.selected { transform: translateY(18px) scale(.86); }
+  .hand-dock.expanded { height: 166px; }
+  .hand-dock.expanded .hand-card,
+  .hand-dock.expanded .hand-card:first-child,
+  .hand-dock.expanded .hand-card:hover,
+  .hand-dock.expanded .hand-card.selected { flex-basis: 82px; width: 82px; height: 117px; }
+  .hand-dock.expanded .hand-cost { width: 22px; height: 22px; font-size: 14px; }
+  .hand-dock.expanded .hand-info > b { font-size: 9px; }
+  .hand-dock.expanded ~ .card-inspector { bottom: 184px; max-height: calc(100dvh - 248px); }
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .hand-dock.collapsed .hand-toggle { top: -36px; }
+  .hand-dock.collapsed .hand-card:hover,
+  .hand-dock.collapsed .hand-card.selected { transform: none; }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .hand-dock.expanded { height: 140px; }
+  .hand-dock.expanded .hand-card,
+  .hand-dock.expanded .hand-card:first-child,
+  .hand-dock.expanded .hand-card:hover,
+  .hand-dock.expanded .hand-card.selected { flex-basis: 68px; width: 68px; height: 91px; }
+  .hand-dock.expanded .hand-art { inset: 2px 2px 22px; }
+  .hand-dock.expanded .hand-info { height: 18px; }
+  .hand-dock.expanded .hand-info > b { font-size: 8px; }
+  .hand-dock.expanded .hand-info span { font-size: 10px; }
+  .hand-dock.expanded .hand-cost { width: 20px; height: 20px; font-size: 12px; }
+  .hand-dock.expanded ~ .card-inspector { bottom: 158px; max-height: calc(100dvh - 222px); }
+  .hand-dock.expanded ~ .card-inspector > img { width: 68px; height: 91px; }
+}

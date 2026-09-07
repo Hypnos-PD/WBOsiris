@@ -39,6 +39,23 @@ func (x *triggerIndex) remove(i *instance) {
 	}
 }
 
+func (g *game) detachFieldSource(i *instance) {
+	g.triggerIndex.remove(i)
+	blocks := map[string]bool{}
+	for _, ability := range i.card.Abilities {
+		if _, ok := ability.Trigger.(ir.EventTrigger); ok {
+			blocks[abilityBlockID(i.card.ID, ability.ID)] = true
+		}
+	}
+	kept := g.triggers[:0]
+	for _, trigger := range g.triggers {
+		if trigger.self != i || !blocks[trigger.blockID] {
+			kept = append(kept, trigger)
+		}
+	}
+	g.triggers = kept
+}
+
 func (x *triggerIndex) abilities(kind string, source *instance) []int {
 	if x == nil || source == nil {
 		return nil
@@ -76,6 +93,9 @@ func (g *game) queueEventTriggers(event ir.RuntimeEvent, subject *instance, bind
 				}
 				ability := source.card.Abilities[abilityIndex]
 				trigger := ability.Trigger.(ir.EventTrigger)
+				if trigger.SelfOnly && subject != source {
+					continue
+				}
 				if !eventSideMatches(trigger.Side, side.name, event.Side) || subject != nil && !g.matches(subject, trigger.Predicate) || subject != nil && trigger.SubjectType != "" && subject.card.CardType != trigger.SubjectType {
 					continue
 				}

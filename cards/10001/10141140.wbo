@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10141140 {
+    type follower;
+    cost 2;
+    stats 1/1;
+
+    effect {
+        fanfare {
+            summon 1 card 90041110;
+        }
+        evolve {
+            summon 1 card 90041110;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "育龙少女";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>炽炎幼龙</color>』。
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Little Dragon Nanny";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Fire Drake Whelp</color></i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"りゅういく\">竜育</rub>の<rub=\"しょうじょ\">少女</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>ベビーファイアドレイク</color>』1枚を自分の場に出す。
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "용을 돌보는 소녀";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>어린 화염룡</color> 1장을 내 전장에 소환.
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "育龍少女";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>熾炎幼龍</color>』到自己的戰場上。
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10163110 {
+    type follower;
+    cost 6;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "终焉的白骨圣堂之主";
+        text """
+【<color=Keyword>入场曲</color>】破坏自己的战场上的所有护符。对对手的战场上的所有随从和对手的主战者造成X点伤害。X为因本能力破坏的张数。
+""";
+    }
+
+    locale eng {
+        name "Skullfane of Demise";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Destroy all allied amulets. Deal X damage to all enemies. X is the number of amulets destroyed by this ability.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しゅうえん\">終焉</rub>のスカルフェイン";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の場のアミュレットすべてを破壊。相手の場のフォロワーすべてと相手のリーダーにXダメージ。Xはこれで破壊した枚数である。
+""";
+    }
+
+    locale kor {
+        name "종언의 스컬페인";
+        text """
+[<color=Keyword>출격</color>] 내 전장의 마법진 모두를 파괴. 상대방 전장의 추종자 모두와 상대방 리더에게 X 피해. X는 이 능력으로 파괴한 수.
+""";
+    }
+
+    locale cht {
+        name "終焉之白骨聖堂教主";
+        text """
+【<color=Keyword>入場曲</color>】破壞自己戰場上全部的護符卡。給予敵方戰場上全部的從者卡與敵方的主戰者X點傷害。X為「這張卡片所破壞的張數」。
+""";
+    }
+
+}

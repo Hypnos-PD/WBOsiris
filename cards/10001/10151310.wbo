@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10151310 {
+    type spell;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "死神挥刀";
+        text """
+选择自己的战场上的1个随从和对手的战场上的1个随从。破坏这些随从。
+""";
+    }
+
+    locale eng {
+        name "Reaper's Deathslash";
+        text """
+Select an allied and enemy follower on the field and destroy them.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しにがみ\">死神</rub>の<rub=\"ひとふ\">一振</rub>り";
+        text """
+自分の場のフォロワー1枚と相手の場のフォロワー1枚を選ぶ。それを破壊。
+""";
+    }
+
+    locale kor {
+        name "사신의 일격";
+        text """
+내 전장에서 추종자 1장, 상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴.
+""";
+    }
+
+    locale cht {
+        name "死神揮鐮";
+        text """
+指定1張自己戰場上的從者卡與1張敵方戰場上的從者卡。將其破壞。
+""";
+    }
+
+}

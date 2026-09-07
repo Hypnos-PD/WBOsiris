@@ -1,0 +1,158 @@
+wbotest 0.1.0;
+use cards "../../cards";
+scenario "Sylvia super evolution destroys two selected followers together" {
+    seed 1501;
+    state {
+        turn own 8;
+        phase main;
+        player own {
+            sep 1;
+            field { follower source = 10173120; }
+        }
+        player oppo {
+            field {
+                follower first = 10151130;
+                follower second = 10151130;
+                follower spared = 10001110;
+            }
+        }
+    }
+    action { superevolve source; select second, first; }
+    expect {
+        legal;
+        own.sep == 0;
+        first.zone == graveyard;
+        second.zone == graveyard;
+        spared.zone == field;
+        oppo.field count card 90051110 == 4;
+        rng.consumed == 0;
+        events contains ordered {
+            destroy first;
+            destroy second;
+            summon card 90051110 count 1;
+        }
+    }
+}
+scenario "Sylvia super evolution uses the one available target" {
+    seed 1502;
+    state {
+        turn own 8;
+        phase main;
+        player own {
+            sep 1;
+            field { follower source = 10173120; }
+        }
+        player oppo {
+            field {
+                follower target = 10001110;
+                follower hidden = 10001110 { stealth; }
+            }
+        }
+    }
+    action { superevolve source; select target; }
+    expect {
+        legal;
+        target.zone == graveyard;
+        hidden.zone == field;
+        own.sep == 0;
+        rng.consumed == 0;
+    }
+}
+scenario "Sylvia normal evolution still selects only one target" {
+    seed 1503;
+    state {
+        turn own 8;
+        phase main;
+        player own {
+            ep 1;
+            field { follower source = 10173120; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110;
+                follower second = 10001110;
+            }
+        }
+    }
+    action { evolve source; select second; }
+    expect {
+        legal;
+        first.zone == field;
+        second.zone == graveyard;
+        own.ep == 0;
+        rng.consumed == 0;
+    }
+}
+scenario "Random three targets cannot hit lastwords replacements" {
+    seed 1504;
+    state {
+        turn own 4;
+        phase main;
+        player own {
+            pp 4/4;
+            combo 2;
+            hand { follower source = 10111150; }
+        }
+        player oppo {
+            field {
+                follower first = 10151130 { stealth; }
+                follower second = 10151130 { aura; }
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        first.zone == graveyard;
+        second.zone == graveyard;
+        oppo.field count card 90051110 == 4;
+        own.combo == 3;
+        rng.consumed == 2;
+    }
+}
+scenario "Sylvia fanfare healing mode" {
+    seed 1505;
+    state {
+        turn own 6;
+        phase main;
+        player own {
+            pp 6/6;
+            leader 10/20;
+            hand { follower source = 10173120; }
+        }
+        player oppo { }
+    }
+    action { play source; mode 2; }
+    expect {
+        legal;
+        own.leader.life == 14;
+        own.pp == 0/6;
+        rng.consumed == 0;
+    }
+}
+scenario "Sylvia fanfare draw mode" {
+    seed 1506;
+    state {
+        turn own 6;
+        phase main;
+        player own {
+            pp 6/6;
+            leader 10/20;
+            hand { follower source = 10173120; }
+            deck top {
+                follower first = 10001110;
+                follower second = 10001110;
+            }
+        }
+        player oppo { }
+    }
+    action { play source; mode 1; }
+    expect {
+        legal;
+        own.leader.life == 10;
+        first.zone == hand;
+        second.zone == hand;
+        own.pp == 0/6;
+        rng.consumed == 0;
+    }
+}

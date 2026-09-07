@@ -1,0 +1,64 @@
+wbo 0.1.0;
+
+card 10112130 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        fanfare {
+            choose target from own.field other;
+            return target to hand;
+        }
+        superevolve {
+            gain own.pp 3;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "年幼宝石兽";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的战场上的1张其他卡牌，使其返回手牌。
+<hr><sev>【<color=Keyword>超进化时</color>】回复自己3点能量点。</sev>
+""";
+    }
+
+    locale eng {
+        name "Baby Carbuncle";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select another allied card on the field and return it to hand.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Recover 3 play points.</sev>
+""";
+    }
+
+    locale jpn {
+        name "ベビーカーバンクル";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の場の他のカード1枚を選ぶ。それを手札に戻す。
+<hr><sev>【<color=Keyword>超進化時</color>】自分のPPを3回復。</sev>
+""";
+    }
+
+    locale kor {
+        name "아가 카벙클";
+        text """
+[<color=Keyword>출격</color>] 내 전장에서 다른 카드 1장을 선택한다. 그 카드를 패로 되돌린다.
+<hr><sev>[<color=Keyword>초진화시</color>] 내 PP를 3 회복.</sev>
+""";
+    }
+
+    locale cht {
+        name "幼年寶石獸";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己戰場上的其他卡片。使其返回手牌中。
+<hr><sev>【<color=Keyword>超進化時</color>】回復自己的PP 3點。</sev>
+""";
+    }
+
+}

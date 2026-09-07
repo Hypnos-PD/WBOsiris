@@ -1,0 +1,41 @@
+wbo 0.1.0;
+
+card 90001110 {
+    type follower;
+    cost 1;
+    stats 1/2;
+
+    effect {
+    }
+
+    meta {
+        pack 90000;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "哥布林";
+        text "";
+    }
+
+    locale eng {
+        name "Goblin";
+        text "";
+    }
+
+    locale jpn {
+        name "ゴブリン";
+        text "";
+    }
+
+    locale kor {
+        name "고블린";
+        text "";
+    }
+
+    locale cht {
+        name "哥布林";
+        text "";
+    }
+}

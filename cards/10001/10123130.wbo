@@ -1,0 +1,56 @@
+wbo 0.1.0;
+
+card 10123130 {
+    type follower;
+    cost 4;
+    stats 4/4;
+
+    effect {
+        evolve {
+            summon 2 card 90021110;
+            buff own.field.followers other +1/+1;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class swordcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "王断的天宫·斯塔奇乌姆";
+        text """
+<ev>【<color=Keyword>进化时</color>】召唤2个『<color=Keyword>骑士</color>』。使自己的战场上的其他所有随从+1/+1。</ev>
+""";
+    }
+
+    locale eng {
+        name "Zirconia, Ironcrown Ward";
+        text """
+<ev><b><color=Keyword>Evolve</color></b>: Summon 2 copies of <b><i><color=Keyword>Knight</color></i></b>. Give all other allied followers on the field +1/+1.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"おうだん\">王断</rub>の<rub=\"てんきゅう\">天宮</rub>・スタチウム";
+        text """
+<ev>【<color=Keyword>進化時</color>】『<color=Keyword>ナイト</color>』2枚を自分の場に出す。自分の場の他のフォロワーすべては+1/+1する。</ev>
+""";
+    }
+
+    locale kor {
+        name "왕단의 천궁 스타티움";
+        text """
+<ev>[<color=Keyword>진화시</color>] <color=Keyword>기사</color> 2장을 내 전장에 소환. 내 전장의 다른 추종자 모두는 +1/+1.</ev>
+""";
+    }
+
+    locale cht {
+        name "王斷天宮‧絲塔琪茉";
+        text """
+<ev>【<color=Keyword>進化時</color>】召喚2張『<color=Keyword>騎士</color>』到自己的戰場上。使自己戰場上全部的其他從者卡+1/+1。</ev>
+""";
+    }
+
+}

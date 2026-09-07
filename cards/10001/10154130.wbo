@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10154130 {
+    type follower;
+    cost 5;
+    stats 4/3;
+
+    effect {
+        fanfare {
+            damage oppo.field.followers 7 distributed;
+        }
+        evolve {
+            damage all.leaders 3;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class abysscraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "无极猎人·阿拉加维";
+        text """
+【<color=Keyword>入场曲</color>】对对手的战场上的所有随从分配7点伤害。
+<hr><ev>【<color=Keyword>进化时</color>】对所有主战者造成3点伤害。</ev>
+""";
+    }
+
+    locale eng {
+        name "Aragavy, Eternal Hunter";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Deal 7 damage split between all enemy followers.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Deal 3 damage to both leaders.</ev>
+""";
+    }
+
+    locale jpn {
+        name "エンドレスハンター・アラガヴィ";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワーすべてに7ダメージを割りふる。
+<hr><ev>【<color=Keyword>進化時</color>】リーダーすべてに3ダメージ。</ev>
+""";
+    }
+
+    locale kor {
+        name "엔드리스 헌터 알가비";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장의 추종자 모두에게 7 피해를 분배한다.
+<hr><ev>[<color=Keyword>진화시</color>] 리더 모두에게 3 피해.</ev>
+""";
+    }
+
+    locale cht {
+        name "無盡獵人‧阿拉加維";
+        text """
+【<color=Keyword>入場曲</color>】對敵方戰場上全部的從者卡分配7點傷害。
+<hr><ev>【<color=Keyword>進化時</color>】給予全部的主戰者3點傷害。</ev>
+""";
+    }
+
+}

@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10163130 {
+    type follower;
+    cost 8;
+    stats 7/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "伟大的炽天使·勒碧丝";
+        text """
+【<color=Keyword>谢幕曲</color>】使自己获得『纹章：伟大的炽天使·勒碧丝』。
+""";
+    }
+
+    locale eng {
+        name "Lapis, Shining Seraph";
+        text """
+<b><color=Keyword>Last Words</color></b>: Gain <b><i>Crest: Lapis, Shining Seraph</i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"おお\">大</rub>いなる<rub=\"してんし\">熾天使</rub>・ラピス";
+        text """
+【<color=Keyword>ラストワード</color>】自分は『クレスト：大いなる熾天使・ラピス』を持つ。
+""";
+    }
+
+    locale kor {
+        name "위대한 치천사 라피스";
+        text """
+[<color=Keyword>유언</color>] 나는 「크레스트: 위대한 치천사 라피스」를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "崇高的熾天使‧勒碧絲";
+        text """
+【<color=Keyword>謝幕曲</color>】使自己獲得『紋章：崇高的熾天使‧勒碧絲』。
+""";
+    }
+
+}

@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10123310 {
+    type spell;
+    cost 7;
+    trait levin;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class swordcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "触手撕咬";
+        text """
+选择对手的战场上的1个随从或对手的主战者，对其造成5点伤害。回复自己的主战者5点生命值。
+""";
+    }
+
+    locale eng {
+        name "Ravening Tentacles";
+        text """
+Select an enemy follower on the field or the enemy leader and deal it 5 damage. Restore 5 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "テンタクルバイト";
+        text """
+相手の場のフォロワー1枚か相手のリーダーを選ぶ。それに5ダメージ。自分のリーダーを5回復。
+""";
+    }
+
+    locale kor {
+        name "촉수의 물어뜯기";
+        text """
+상대방 리더나 상대방 전장에서 추종자 1장을 선택한다. 그 대상에게 5 피해. 내 리더를 5 회복.
+""";
+    }
+
+    locale cht {
+        name "觸手咬擊";
+        text """
+指定1張敵方戰場上的從者卡或敵方的主戰者。給予其5點傷害。回復自己的主戰者5點生命值。
+""";
+    }
+
+}

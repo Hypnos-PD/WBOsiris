@@ -27,14 +27,14 @@ func TestProjectCorpusAndReferenceStrictness(t *testing.T) {
 	if l.HasErrors() {
 		t.Fatalf("default check errors: %#v", l.Diagnostics)
 	}
-	if len(l.Cards) != 81 {
+	if len(l.Cards) != 231 {
 		t.Fatalf("cards=%d", len(l.Cards))
 	}
 	sc := 0
 	for _, tf := range l.Tests {
 		sc += len(tf.Scenarios)
 	}
-	if sc != 23 {
+	if sc != 73 {
 		t.Fatalf("scenarios=%d", sc)
 	}
 	if len(l.Unresolved) != 0 {
@@ -56,7 +56,7 @@ func TestCompileDeterministicAndStructured(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(typed.Cards) != 81 || len(typed.Sources) != 81 {
+	if len(typed.Cards) != 231 || len(typed.Sources) != 231 {
 		t.Fatalf("typed card pack has cards=%d sources=%d", len(typed.Cards), len(typed.Sources))
 	}
 	a, err := Compile(l, true)
@@ -101,7 +101,7 @@ func TestCompileTestPackStructured(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(typed.Scenarios) != 23 || typed.Scenarios[0].Name != "无敌方目标时零费启动仍先破坏自身" {
+	if len(typed.Scenarios) != 73 || typed.Scenarios[0].Name != "无敌方目标时零费启动仍先破坏自身" {
 		t.Fatalf("bad typed test pack: scenarios=%d", len(typed.Scenarios))
 	}
 	b, err := Compile(l, true)
@@ -119,7 +119,7 @@ func TestCompileTestPackStructured(t *testing.T) {
 		t.Fatal("test pack is missing ruleset dependency")
 	}
 	scenarios := pack["scenarios"].([]any)
-	if len(scenarios) != 23 {
+	if len(scenarios) != 73 {
 		t.Fatalf("scenarios=%d", len(scenarios))
 	}
 	first := scenarios[0].(map[string]any)
@@ -192,6 +192,13 @@ func TestStrictEffectReviewCounterexamples(t *testing.T) {
 		`mode { option 0 { draw 1; } option 0 { draw 1; } }`,
 		`superevolve replaces evolve { draw 1; }`,
 		`transform self into card 12345678 preserving materials;`,
+		`fanfare { buff self; }`,
+		`fanfare { buff own.hand other; }`,
+		`fanfare { buff self +1; }`,
+		`fanfare { buff self +1/+1 where; }`,
+		`trait shikigamii;`,
+		`fanfare { buff own.hand +1/+0 where trait puppetryy; }`,
+		`when own follower summoned where trait bat { draw 1; }`,
 	}
 	for _, effect := range cases {
 		f, pds := syntax.Parse("12345678.wbo", []byte(validCard(effect)))
@@ -201,6 +208,16 @@ func TestStrictEffectReviewCounterexamples(t *testing.T) {
 		if got := ValidateFile(f); !hasErrors(got) {
 			t.Errorf("accepted malformed effect: %s", effect)
 		}
+	}
+}
+
+func TestDiscardEventTriggerIsAccepted(t *testing.T) {
+	f, pds := syntax.Parse("12345678.wbo", []byte(validCard(`when own card discarded { draw 1; }`)))
+	if len(pds) != 0 {
+		t.Fatalf("parse discard event: %v", pds)
+	}
+	if ds := ValidateFile(f); hasErrors(ds) {
+		t.Fatalf("discard event rejected: %v", ds)
 	}
 }
 

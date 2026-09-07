@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10111310 {
+    type spell;
+    cost 1;
+
+    effect {
+        add 2 card 90011110 to hand;
+    }
+
+    meta {
+        pack 10001;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "妖精召集令";
+        text """
+将2张『<color=Keyword>妖精</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Fairy Convocation";
+        text """
+Add 2 copies of <b><i><color=Keyword>Fairy</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ようせい\">妖精</rub>の<rub=\"しょうしゅう\">招集</rub>";
+        text """
+『<color=Keyword>フェアリー</color>』2枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "요정 소집";
+        text """
+<color=Keyword>요정</color> 2장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "召集妖精";
+        text """
+增加2張『<color=Keyword>妖精</color>』到自己的手牌中。
+""";
+    }
+
+}

@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10144130 {
+    type follower;
+    cost 8;
+    stats 5/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "龙人演义·卧龙";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>霸道之金龙</color>』和1个『<color=Keyword>霸道之银龙</color>』。
+<hr><sev>【<color=Keyword>超进化时</color>】使自己的战场上的所有『<color=Keyword>霸道之金龙</color>』获得【<color=Keyword>疾驰</color>】。使自己的战场上的所有『<color=Keyword>霸道之银龙</color>』获得【<color=Keyword>屏障</color>】。</sev>
+""";
+    }
+
+    locale eng {
+        name "Garyu, Fabled Dragonkin";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Supreme Golden Dragon</color></i></b> and <b><i><color=Keyword>Supreme Silver Dragon</color></i></b>.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Give all allied copies of <b><i><color=Keyword>Supreme Golden Dragon</color></i></b> on the field <b><color=Keyword>Storm</color></b>. Give all allied copies of <b><i><color=Keyword>Supreme Silver Dragon</color></i></b> on the field <b><color=Keyword>Barrier</color></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"りゅうじんえんぎ\">龍人演義</rub>・ガリュウ";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>覇道の金龍</color>』1枚と『<color=Keyword>覇道の銀龍</color>』1枚を自分の場に出す。
+<hr><sev>【<color=Keyword>超進化時</color>】自分の場の『<color=Keyword>覇道の金龍</color>』すべては【<color=Keyword>疾走</color>】を持つ。自分の場の『<color=Keyword>覇道の銀龍</color>』すべては【<color=Keyword>バリア</color>】を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "용인연의 가류";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>패도의 금룡</color> 1장, <color=Keyword>패도의 은룡</color> 1장을 내 전장에 소환.
+<hr><sev>[<color=Keyword>초진화시</color>] 내 전장의 <color=Keyword>패도의 금룡</color> 모두는 [<color=Keyword>질주</color>]를 갖는다. 내 전장의 <color=Keyword>패도의 은룡</color> 모두는 [<color=Keyword>배리어</color>]를 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "龍人演義‧臥龍";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>霸業之金龍</color>』與1張『<color=Keyword>霸業之銀龍</color>』到自己的戰場上。
+<hr><sev>【<color=Keyword>超進化時</color>】使自己戰場上全部的『<color=Keyword>霸業之金龍</color>』獲得【<color=Keyword>疾馳</color>】。使自己戰場上全部的『<color=Keyword>霸業之銀龍</color>』獲得【<color=Keyword>障壁</color>】。</sev>
+""";
+    }
+
+}

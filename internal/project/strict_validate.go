@@ -3,6 +3,7 @@ package project
 import (
 	"math"
 	"strconv"
+	"wbo/internal/ir"
 
 	"wbo/internal/syntax"
 )
@@ -14,6 +15,7 @@ type effectContext struct {
 }
 
 func strictValidateCard(c *Card, ds *[]syntax.Diagnostic) {
+	validateCounters(c, ds)
 	if c.Cost < 0 || c.Cost > math.MaxUint16 {
 		diag(ds, "WBO-E014-INTEGER-RANGE", "错误", "cost 超出 u16 范围", c.Decl.Span)
 	}
@@ -25,7 +27,7 @@ func strictValidateCard(c *Card, ds *[]syntax.Diagnostic) {
 		if s.Word(0) == "evolve" && len(s.Blocks()) == 1 {
 			evolves++
 		}
-		if s.Word(0) == "superevolve" && len(s.Tokens()) == 3 {
+		if s.Word(0) == "superevolve" && len(s.Tokens()) == 3 && len(s.Blocks()) == 1 {
 			relations++
 		}
 	}
@@ -48,6 +50,13 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 			continue
 		}
 		h := t[0].Value
+		if ctx.cardType != "follower" && set("damage", "heal", "buff", "repeat")[h] {
+			for n := 1; n+2 < len(t); n++ {
+				if t[n].Value == "self" && t[n+1].Value == "." && set("attack", "life")[t[n+2].Value] {
+					diag(ds, "WBO-E008-TYPE-MISMATCH", "错误", "self.attack 与 self.life 只允许用于随从", s.Span)
+				}
+			}
+		}
 		if abilities[h] && len(b) == 0 && ctx.cardType != "follower" {
 			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", h+" 固有能力只允许用于随从", s.Span)
 		}
@@ -57,10 +66,10 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 		if (h == "countdown" || h == "earthsigil" || h == "engage") && ctx.cardType != "amulet" {
 			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", h+" 只允许用于护符", s.Span)
 		}
-		if (h == "attack" || h == "clash" || h == "evolve" && len(b) == 1 || h == "superevolve") && ctx.cardType != "follower" {
+		if (h == "attack" || h == "clash" || (h == "evolve" || h == "superevolve") && len(b) == 1) && ctx.cardType != "follower" {
 			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", h+" 只允许用于随从", s.Span)
 		}
-		if ctx.top && ctx.cardType != "spell" && isPlainOperation(s) {
+		if ctx.top && ctx.cardType != "spell" && (isPlainOperation(s) || h == "repeat") {
 			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", "随从或护符的最外层操作没有执行时点", s.Span)
 		}
 		if h == "transform" && !ctx.fusion {
@@ -70,6 +79,17 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 			diag(ds, "WBO-E008-TYPE-MISMATCH", "错误", "transform 当前只允许以 self 为目标", s.Span)
 		}
 		switch h {
+		case "counter":
+			if !ctx.top {
+				shapeError(ds, s, "counter 只能声明在 effect 最外层")
+			}
+			continue
+		case "repeat":
+			for _, block := range b {
+				if repeatHasRequire(block) {
+					diag(ds, "WBO-E008-TYPE-MISMATCH", "错误", "repeat 内不能使用前置校验 require；执行时选择使用 choose", s.Span)
+				}
+			}
 		case "countdown":
 			if len(t) == 2 {
 				checkU16(t[1], true, ds)
@@ -94,6 +114,9 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 			}
 			continue
 		case "when":
+			if len(t) > 1 && t[1].Value == "self" && ctx.cardType != "follower" {
+				diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", "自身进化事件只允许用于随从", s.Span)
+			}
 			end, subject, ok := parseEventPattern(t)
 			if ok && end < len(t) {
 				filterOK := subject != "" && (subject == "follower" || !filterContains(t[end:], "life"))
@@ -146,7 +169,12 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 					diag(ds, "WBO-E010-DUPLICATE-OPTION", "错误", "mode 选项编号重复", o.Span)
 				}
 				seen[n] = true
-				strictEffectBlock(o.Blocks()[0], effectContext{cardType: ctx.cardType, fusion: ctx.fusion}, ds)
+				_, body, err := modeOptionParts(o.Blocks()[0])
+				if err != nil {
+					shapeError(ds, o, err.Error())
+				} else {
+					strictEffectBlock(body, effectContext{cardType: ctx.cardType, fusion: ctx.fusion}, ds)
+				}
 			}
 			continue
 		}
@@ -157,15 +185,38 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 		}
 		if h == "buff" {
 			end := valueRefEnd(t, 1)
-			if end+4 < len(t) {
-				checkI16Magnitude(t[end+1], ds)
-				checkI16Magnitude(t[end+4], ds)
+			if end < len(t) && t[end].Value == "other" {
+				end++
+			}
+			for part := 0; part < 2 && end+1 < len(t); part++ {
+				if t[end+1].Kind == syntax.Integer {
+					checkI16Magnitude(t[end+1], ds)
+				}
+				next, ok := parseSignedAmount(t, end)
+				if !ok {
+					break
+				}
+				end = next + 1
 			}
 		}
 		for _, bb := range b {
 			strictEffectBlock(bb, effectContext{cardType: ctx.cardType, fusion: ctx.fusion}, ds)
 		}
 	}
+}
+
+func repeatHasRequire(body []*syntax.Statement) bool {
+	for _, s := range body {
+		if s.Word(0) == "require" {
+			return true
+		}
+		for _, block := range s.Blocks() {
+			if repeatHasRequire(block) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func checkI16Magnitude(t syntax.Token, ds *[]syntax.Diagnostic) {
@@ -176,9 +227,12 @@ func checkI16Magnitude(t syntax.Token, ds *[]syntax.Diagnostic) {
 }
 
 func isPlainOperation(s *syntax.Statement) bool {
-	return len(s.Blocks()) == 0 && set("draw", "add", "summon", "damage", "heal", "buff", "gain", "destroy", "banish", "remove", "return", "evolve", "reanimate", "reduce", "spellboost", "transform")[s.Word(0)]
+	return len(s.Blocks()) == 0 && set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "spellboost", "transform", "set_attack_limit")[s.Word(0)]
 }
 func parseEventPattern(t []syntax.Token) (int, string, bool) {
+	if len(t) == 3 && t[0].Value == "when" && t[1].Value == "self" && set("evolved", "super_evolved")[t[2].Value] {
+		return 3, "follower", true
+	}
 	if len(t) < 4 || t[0].Value != "when" || !set("own", "oppo")[t[1].Value] {
 		return 0, "", false
 	}
@@ -187,6 +241,9 @@ func parseEventPattern(t []syntax.Token) (int, string, bool) {
 	}
 	if set("follower", "amulet")[t[2].Value] && set("summoned", "engaged")[t[3].Value] {
 		return 4, t[2].Value, true
+	}
+	if t[2].Value == "card" && t[3].Value == "discarded" {
+		return 4, "", true
 	}
 	return 0, "", false
 }
@@ -203,6 +260,9 @@ func strictCondition(t []syntax.Token, fusion bool) bool {
 		return t[0].Value == "overflow"
 	}
 	op := func(x string) bool { return set("==", "!=", "<", "<=", ">", ">=")[x] }
+	if len(t) == 7 && counterRef(t, 0) {
+		return op(t[5].Value) && isUnsigned(t[6])
+	}
 	if len(t) == 3 {
 		return t[0].Value == "combo" && op(t[1].Value) && isUnsigned(t[2])
 	}
@@ -329,7 +389,14 @@ func strictInstances(s *syntax.Statement, a map[string]string, ds *[]syntax.Diag
 		}
 		a[t[1].Value] = t[0].Value
 		if len(x.Blocks()) == 1 {
+			seenCounters := map[string]bool{}
 			for _, o := range x.Blocks()[0] {
+				if o.Word(0) == "counter" {
+					if seenCounters[o.Word(1)] {
+						shapeError(ds, o, "counter override 不能重复")
+					}
+					seenCounters[o.Word(1)] = true
+				}
 				strictOverride(o, ds)
 			}
 		}
@@ -339,6 +406,8 @@ func strictOverride(s *syntax.Statement, ds *[]syntax.Diagnostic) {
 	t := s.Tokens()
 	ok := s.Terminated && len(s.Blocks()) == 0
 	switch s.Word(0) {
+	case "counter":
+		ok = ok && len(t) == 3 && t[1].Kind == syntax.Identifier && ir.ValidCounterName(t[1].Value) && isUnsigned(t[2])
 	case "stats":
 		ok = ok && len(t) == 4 && statPair(t, 1)
 		if ok {
@@ -347,9 +416,9 @@ func strictOverride(s *syntax.Statement, ds *[]syntax.Diagnostic) {
 		}
 	case "evolved", "super_evolved":
 		ok = ok && len(t) == 1
-	case "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader":
+	case "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader":
 		ok = ok && len(t) == 1
-	case "earthsigil", "countdown":
+	case "cost", "earthsigil", "countdown":
 		ok = ok && len(t) == 2
 		if ok {
 			checkU16(t[1], true, ds)
@@ -396,7 +465,17 @@ func strictAction(s *syntax.Statement, a map[string]string, ds *[]syntax.Diagnos
 		} else {
 			switch x.Word(0) {
 			case "select":
-				ok = ok && len(t) == 2 && aliasKnown(t[1], a, ds)
+				ok = ok && len(t) >= 2 && len(t)%2 == 0
+				seen := map[string]bool{}
+				for i := 1; i < len(t); i++ {
+					if i%2 == 0 {
+						ok = ok && t[i].Value == ","
+					} else {
+						known := aliasKnown(t[i], a, ds)
+						ok = ok && known && !seen[t[i].Value]
+						seen[t[i].Value] = true
+					}
+				}
 			case "mode":
 				ok = ok && len(t) == 2
 				if ok {
@@ -483,7 +562,10 @@ func assertionRef(t []syntax.Token, a map[string]string, ds *[]syntax.Diagnostic
 	if len(t) == 5 && set("own", "oppo")[t[0].Value] && values(t[1:4]) == ". leader ." && set("life", "maxlife")[t[4].Value] {
 		return true
 	}
-	if len(t) == 3 && a[t[0].Value] != "" && t[1].Value == "." && set("zone", "stats", "evolved", "super_evolved", "earthsigil", "countdown", "engaged")[t[2].Value] {
+	if len(t) == 3 && a[t[0].Value] != "" && t[1].Value == "." && set("zone", "stats", "cost", "evolved", "super_evolved", "earthsigil", "countdown", "engaged")[t[2].Value] {
+		return true
+	}
+	if len(t) == 5 && a[t[0].Value] != "" && t[1].Value == "." && t[2].Value == "counter" && t[3].Value == "." && t[4].Kind == syntax.Identifier && ir.ValidCounterName(t[4].Value) {
 		return true
 	}
 	return len(t) == 3 && values(t) == "rng . consumed"

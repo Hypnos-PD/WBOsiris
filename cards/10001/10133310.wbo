@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10133310 {
+    type spell;
+    cost 3;
+    trait mysteria;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class runecraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "做作业啦！";
+        text """
+X起始为0。
+【<color=Keyword>魔力增幅时</color>】使本卡牌的X+1。之后，若X为5或以上，则本卡牌变身为『<color=Keyword>有所成长了！</color>』。
+<hr>抽取2张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Homework Time!";
+        text """
+X starts at 0.
+<b><color=Keyword>On Spellboost</color></b>: Increase X by 1. Then, if X is at least 5, transform this card into a <b><i><color=Keyword>Looking Smart!</color></i></b>
+<hr>Draw 2 cards.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しゅくだい\">宿題</rub>やるですぅ！";
+        text """
+Xは0から始まる。
+【<color=Keyword>スペルブースト時</color>】これのXを+1する。その後、Xが5以上なら、これは『<color=Keyword>成長したですぅ！</color>』に変身する。
+<hr>自分のデッキから2枚を引く。
+""";
+    }
+
+    locale kor {
+        name "숙제할 거예요오!";
+        text """
+X는 0부터 시작.
+[<color=Keyword>주문증폭시</color>] 이 주문의 X를 +1. 그다음 X가 5 이상이라면, 이 주문은 <color=Keyword>성장했어요오!</color>로 변신한다.
+<hr>내 덱에서 2장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "要完成課題！";
+        text """
+X由0開始。
+【<color=Keyword>魔力增幅時</color>】使這張卡片的X+1。隨後，如果X為5以上，則會使這張卡片變身為『<color=Keyword>有所成長了！</color>』。
+<hr>由自己的牌堆中抽取2張卡片。
+""";
+    }
+
+}

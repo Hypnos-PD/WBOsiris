@@ -1,0 +1,22 @@
+wbo 0.1.0;
+
+card 90051110 {
+    type follower;
+    cost 0;
+    stats 1/1;
+    trait departed;
+
+    effect { }
+
+    meta {
+        pack 90000;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs { name "骸骨士兵"; text ""; }
+    locale eng { name "Skeleton"; text ""; }
+    locale jpn { name "スケルトン"; text ""; }
+    locale kor { name "스켈레톤"; text ""; }
+    locale cht { name "骸骨士兵"; text ""; }
+}

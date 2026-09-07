@@ -7,9 +7,19 @@ card 10051310 {
     effect {
         mode {
             option 1 {
+                label chs "抽取1张随从。";
+                label eng "Draw a follower.";
+                label jpn "自分のデッキからフォロワー1枚を引く。";
+                label kor "내 덱에서 추종자 1장을 뽑는다.";
+                label cht "由自己的牌堆中抽取1張從者卡。";
                 draw 1 from deck where type follower;
             }
             option 2 {
+                label chs "发动【亡者召还_2】。";
+                label eng "Reanimate (2).";
+                label jpn "【リアニメイト_2】を行う。";
+                label kor "[소생 2]를 발동.";
+                label cht "發動【亡者召還_2】。";
                 reanimate 2;
             }
         }

@@ -13,6 +13,7 @@ go run ./cmd/wbo simulate --source-root . --scenario "最大能量已满时保�
 npm --prefix web install
 npm --prefix web run dev
 go run ./cmd/wbo serve --source-root . --listen :8080
+./scripts/card_coverage.sh --min-percent 40
 ```
 
 ## 目录
@@ -27,6 +28,6 @@ web/        React/TypeScript 可操作牌桌客户端
 ```
 
 当前 `web/` 是本地牌桌 GUI，默认连接 `wbo serve` 提供的规则会话服务。
-GUI 参考了 `../WBArts` 的牌框、职业图标、卡背和卡牌素材，素材复制到 `web/public/assets/`。
+GUI 使用项目内置的牌框、职业图标、卡背和卡牌素材，素材位于 `web/public/assets/`。
 
 文档入口见 [docs/README.md](docs/README.md)。

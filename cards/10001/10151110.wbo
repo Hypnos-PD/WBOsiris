@@ -1,0 +1,64 @@
+wbo 0.1.0;
+
+card 10151110 {
+    type follower;
+    cost 3;
+    stats 1/1;
+
+    effect {
+        fanfare {
+            summon 1 card 90051120;
+        }
+        when own follower summoned where card 90051120 {
+            add storm to summoned;
+            damage own.leader 1;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "午夜眷属·埃拉尔";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>蝙蝠</color>』。
+<hr>自己的『<color=Keyword>蝙蝠</color>』进入战场时，使其获得【<color=Keyword>疾驰</color>】。对自己的主战者造成1点伤害。
+""";
+    }
+
+    locale eng {
+        name "Aryll, Moonstruck Vampire";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Bat</color></i></b>.
+<hr>Whenever an allied <b><i><color=Keyword>Bat</color></i></b> enters the field, give it <b><color=Keyword>Storm</color></b> and deal 1 damage to your leader.
+""";
+    }
+
+    locale jpn {
+        name "ミッドナイトヴァンパイア・エラル";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>バット</color>』1枚を自分の場に出す。
+<hr>自分の『<color=Keyword>バット</color>』が場に出たとき、それは【<color=Keyword>疾走</color>】を持つ。自分のリーダーに1ダメージ。
+""";
+    }
+
+    locale kor {
+        name "미드나이트 뱀파이어 에랄";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>박쥐</color> 1장을 내 전장에 소환.
+<hr>내 <color=Keyword>박쥐</color>가 전장에 소환되었을 때, 그 추종자는 [<color=Keyword>질주</color>]를 갖는다. 내 리더에게 1 피해.
+""";
+    }
+
+    locale cht {
+        name "午夜的吸血鬼‧艾菈露";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>蝙蝠</color>』到自己的戰場上。
+<hr>當自己的『<color=Keyword>蝙蝠</color>』進入戰場時，使其獲得【<color=Keyword>疾馳</color>】。給予自己的主戰者1點傷害。
+""";
+    }
+
+}

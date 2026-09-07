@@ -1,0 +1,23 @@
+.fusion-details { min-width: 0; margin-top: 12px; padding-top: 10px; border-top: 1px solid #52605b; }
+.fusion-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; font-size: 11px; }
+.fusion-heading strong { display: flex; align-items: center; gap: 5px; color: #f0dda0; font-size: 12px; }
+.fusion-heading > span { color: #bccfc4; }
+.fusion-heading > .fusion-used { color: #e6b798; }
+.fusion-totals { display: flex; justify-content: space-between; gap: 8px; margin: 10px 0; }
+.fusion-totals div { display: grid; gap: 3px; }
+.fusion-totals dt { color: #aabbb3; font-size: 10px; }
+.fusion-totals dd { margin: 0; color: #fff3c6; font-size: 14px; }
+.fusion-materials { max-height: 170px; overflow: auto; overscroll-behavior: contain; margin: 0; padding: 0; list-style: none; }
+.fusion-materials li { display: grid; grid-template-columns: 28px minmax(0, 1fr) 22px; align-items: center; gap: 7px; padding: 5px 0; border-top: 1px solid #43534e; font-size: 11px; }
+.fusion-materials li > img, .fusion-materials li > .card-art-missing { width: 28px; height: 36px; object-fit: cover; }
+.fusion-materials li > span { overflow-wrap: anywhere; }
+.fusion-materials li > b { text-align: center; color: #aaddcf; }
+.fusion-details .fusion-empty { color: #acbdb5; font-size: 11px; margin: 8px 0 0; }
+.card-inspector { max-height: min(65vh, 620px); overflow: auto; }
+.card-inspector > img, .card-inspector > .card-art-missing { flex: 0 0 100px; }
+.card-inspector > div { min-width: 0; flex: 1; }
+.rp-detail-content > div { min-width: 0; }
+@media (max-width: 600px) {
+  .card-inspector > img, .card-inspector > .card-art-missing { flex-basis: 72px; width: 72px; height: 100px; }
+  .card-inspector { width: min(330px, calc(100% - 16px)); max-height: 62vh; }
+}

@@ -1,0 +1,64 @@
+wbo 0.1.0;
+
+card 10152110 {
+    type follower;
+    cost 2;
+    stats 2/1;
+
+    effect {
+        enhance 4 {
+            add rush to self;
+            add bane to self;
+        }
+        lastwords {
+            add 1 card 90051110 to hand;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class abysscraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "干练的死神·蜜诺";
+        text """
+【<color=Keyword>爆能强化</color>_4】本随从获得【<color=Keyword>突进</color>】和【<color=Keyword>毁灭</color>】。
+<hr>【<color=Keyword>谢幕曲</color>】将1张『<color=Keyword>骸骨士兵</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Mino, Shrewd Reaper";
+        text """
+<b><color=Keyword>Enhance</color> (4)</b>: Give this follower <b><color=Keyword>Rush</color></b> and <b><color=Keyword>Bane</color></b>.
+<hr><b><color=Keyword>Last Words</color></b>: Add a <b><i><color=Keyword>Skeleton</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"らつわん\">辣腕</rub>の<rub=\"しにがみ\">死神</rub>・ミーノ";
+        text """
+【<color=Keyword>エンハンス</color>_4】これは【<color=Keyword>突進</color>】と【<color=Keyword>必殺</color>】を持つ。
+<hr>【<color=Keyword>ラストワード</color>】『<color=Keyword>スケルトン</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "수완가 사신 미노";
+        text """
+[<color=Keyword>증강</color> 4] 이 추종자는 [<color=Keyword>돌진</color>], [<color=Keyword>필살</color>]을 갖는다.
+<hr>[<color=Keyword>유언</color>] <color=Keyword>스켈레톤</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "幹練死神‧蜜諾";
+        text """
+【<color=Keyword>爆能強化</color>_4】使這張卡片獲得【<color=Keyword>突進</color>】與【<color=Keyword>必殺</color>】。
+<hr>【<color=Keyword>謝幕曲</color>】增加1張『<color=Keyword>骷髏士兵</color>』到自己的手牌中。
+""";
+    }
+
+}

@@ -128,14 +128,16 @@ func decodePlayer(data []byte, instances map[string]bool) (PlayerState, error) {
 }
 func decodeInstance(data []byte) (TestInstance, error) {
 	type overrides struct {
-		Stats           *Stats   `json:"stats,omitempty"`
-		Evolved         *bool    `json:"evolved,omitempty"`
-		SuperEvolved    *bool    `json:"super_evolved,omitempty"`
-		Engaged         *bool    `json:"engaged,omitempty"`
-		Keywords        []string `json:"keywords,omitempty"`
-		Countdown       *int     `json:"countdown,omitempty"`
-		Earthsigil      *int     `json:"earthsigil,omitempty"`
-		DamageReduction *int     `json:"damage_reduction,omitempty"`
+		Counters        map[string]int `json:"counters,omitempty"`
+		Cost            *int           `json:"cost,omitempty"`
+		Stats           *Stats         `json:"stats,omitempty"`
+		Evolved         *bool          `json:"evolved,omitempty"`
+		SuperEvolved    *bool          `json:"super_evolved,omitempty"`
+		Engaged         *bool          `json:"engaged,omitempty"`
+		Keywords        []string       `json:"keywords,omitempty"`
+		Countdown       *int           `json:"countdown,omitempty"`
+		Earthsigil      *int           `json:"earthsigil,omitempty"`
+		DamageReduction *int           `json:"damage_reduction,omitempty"`
 	}
 	type raw struct {
 		InstanceID   string    `json:"instanceId"`
@@ -151,7 +153,14 @@ func decodeInstance(data []byte) (TestInstance, error) {
 	if !nodeIDPattern.MatchString(v.InstanceID) || v.Alias == "" || !validCardID(v.CardID) || !oneOf(v.DeclaredType, "follower", "spell", "amulet") {
 		return TestInstance{}, fmt.Errorf("malformed test instance")
 	}
-	o := InstanceOverrides{v.Overrides.Stats, v.Overrides.Evolved, v.Overrides.SuperEvolved, v.Overrides.Engaged, v.Overrides.Keywords, v.Overrides.Countdown, v.Overrides.Earthsigil, v.Overrides.DamageReduction}
+	if v.Overrides.Cost != nil && (*v.Overrides.Cost < 0 || *v.Overrides.Cost > 65535) {
+		return TestInstance{}, fmt.Errorf("invalid instance cost override")
+	}
+	o := InstanceOverrides{Cost: v.Overrides.Cost, Stats: v.Overrides.Stats, Evolved: v.Overrides.Evolved, SuperEvolved: v.Overrides.SuperEvolved, Engaged: v.Overrides.Engaged, Keywords: v.Overrides.Keywords, Countdown: v.Overrides.Countdown, Earthsigil: v.Overrides.Earthsigil, DamageReduction: v.Overrides.DamageReduction}
+	if !ValidCounters(v.Overrides.Counters) {
+		return TestInstance{}, fmt.Errorf("invalid instance counter override")
+	}
+	o.Counters = v.Overrides.Counters
 	return TestInstance{v.InstanceID, v.Alias, v.CardID, v.DeclaredType, o}, nil
 }
 
@@ -189,16 +198,25 @@ func decodeAction(data []byte) (Action, error) {
 		return FusionAction{v.Kind, v.Actor, v.Source}, nil
 	case "select":
 		var v struct {
-			Kind   string `json:"kind"`
-			Target string `json:"target"`
+			Kind    string   `json:"kind"`
+			Target  string   `json:"target"`
+			Targets []string `json:"targets"`
 		}
 		if err := strict(data, &v); err != nil {
 			return nil, err
 		}
-		if !nodeIDPattern.MatchString(v.Target) {
+		if (v.Target == "") == (len(v.Targets) == 0) {
 			return nil, fmt.Errorf("malformed selection")
 		}
-		return SelectAction{v.Kind, v.Target}, nil
+		action := SelectAction{Kind: v.Kind, Target: v.Target, Targets: v.Targets}
+		seen := map[string]bool{}
+		for _, id := range action.InstanceIDs() {
+			if !nodeIDPattern.MatchString(id) || seen[id] {
+				return nil, fmt.Errorf("malformed selection target")
+			}
+			seen[id] = true
+		}
+		return action, nil
 	case "select_mode":
 		var v struct {
 			Kind     string `json:"kind"`
@@ -413,7 +431,7 @@ func decodeTestRef(data []byte) (TestRef, error) {
 			return TestRef{}, fmt.Errorf("malformed player reference")
 		}
 		return TestRef{Kind: v.Kind, Side: v.Side, Field: v.Field}, nil
-	case "instance_field":
+	case "instance_field", "instance_counter":
 		var v struct {
 			Kind       string `json:"kind"`
 			InstanceID string `json:"instanceId"`
@@ -422,7 +440,7 @@ func decodeTestRef(data []byte) (TestRef, error) {
 		if err := strict(data, &v); err != nil {
 			return TestRef{}, err
 		}
-		if !nodeIDPattern.MatchString(v.InstanceID) || !oneOf(v.Field, "zone", "stats", "attack", "life", "evolved", "super_evolved", "engaged", "countdown", "earthsigil") {
+		if !nodeIDPattern.MatchString(v.InstanceID) || v.Kind == "instance_field" && !oneOf(v.Field, "zone", "stats", "cost", "attack", "life", "evolved", "super_evolved", "engaged", "countdown", "earthsigil") || v.Kind == "instance_counter" && !ValidCounterName(v.Field) {
 			return TestRef{}, fmt.Errorf("malformed instance reference")
 		}
 		return TestRef{Kind: v.Kind, InstanceID: v.InstanceID, Field: v.Field}, nil
@@ -719,8 +737,10 @@ func validateScenarioReferences(s Scenario) error {
 				return fmt.Errorf("fusion action references unknown instance %s", x.Source)
 			}
 		case SelectAction:
-			if !instances[x.Target] {
-				return fmt.Errorf("selection references unknown instance %s", x.Target)
+			for _, id := range x.InstanceIDs() {
+				if !instances[id] {
+					return fmt.Errorf("selection references unknown instance %s", id)
+				}
 			}
 		case AttackAction:
 			if !instances[x.Attacker] || x.Kind == "attack_entity" && !instances[x.Defender] {

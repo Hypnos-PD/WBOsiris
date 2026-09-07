@@ -77,6 +77,7 @@ func compileCardsTyped(l *Loaded) (ir.CardPack, error) {
 }
 
 func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error) {
+	counters := map[string]int{}
 	intrinsic := []string{}
 	restrictions := []ir.Restriction{}
 	states := []ir.IntrinsicState{}
@@ -89,6 +90,8 @@ func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error)
 	for _, s := range c.Effect {
 		h := s.Word(0)
 		switch {
+		case h == "counter":
+			counters[s.Word(1)] = intAt(s, 2)
 		case abilities[h] && len(s.Blocks()) == 0:
 			intrinsic = append(intrinsic, h)
 		case h == "unplayable":
@@ -135,6 +138,9 @@ func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error)
 	plans := []ir.ActionPlan{}
 	if len(evolveIDs) == 1 {
 		plans = append(plans, ir.ActionPlan{Action: "evolve", Steps: []ir.PlanStep{{AbilityID: evolveIDs[0], Frame: "new"}}})
+		if len(superIDs) == 0 {
+			plans = append(plans, ir.ActionPlan{Action: "superevolve", Steps: []ir.PlanStep{{AbilityID: evolveIDs[0], Frame: "new"}}})
+		}
 	}
 	for _, x := range superIDs {
 		steps := []ir.PlanStep{}
@@ -157,6 +163,7 @@ func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error)
 		loc[code] = ir.Locale{Name: x.Name, Text: x.Text}
 	}
 	m := ir.Card{ID: mustInt(c.ID), CardType: c.Type, Cost: c.Cost, Traits: unique(c.Traits), Intrinsic: intrinsic, IntrinsicState: states, Restrictions: restrictions, Abilities: abilitiesIR, FusionAbilities: fusion, PlayEffects: play, ActionPlans: plans, Meta: ir.Meta{Pack: c.Meta.Pack, Class: c.Meta.Class, Rarity: c.Meta.Rarity}, Locales: loc, Origin: originIR(c.Decl.Span, sid)}
+	m.Counters = counters
 	if c.Stats != nil {
 		m.Stats = &ir.Stats{Attack: c.Stats[0], Life: c.Stats[1]}
 	}
@@ -227,21 +234,30 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 	h := s.Word(0)
 	base := ir.NodeBase{ID: id, Origin: originIR(s.Span, sid)}
 	switch h {
+	case "repeat":
+		times, expr := numericIR(t, 1)
+		body, err := compileEffectBlock(s.Blocks()[0], sid, id+"/body", ids)
+		return ir.RepeatEffect{NodeBase: base, Kind: "repeat", Times: times, TimesExpr: expr, Body: body}, err
 	case "choose", "require", "random":
 		src, end := setExprIR(t, 3)
 		if end < len(t) && t[end].Value == "other" {
 			src = ir.ExcludeRef{Kind: "exclude", Source: src, Value: ir.SelfRef{Kind: "self"}}
 			end++
 		}
-		if end < len(t) {
-			pred, _ := filterIR(t, end)
+		if end < len(t) && t[end].Value == "where" {
+			pred, next := filterIR(t, end)
 			src = ir.FilterRef{Kind: "filter", Source: src, Predicate: pred}
+			end = next
+		}
+		count := 0
+		if end < len(t) && t[end].Value == "count" {
+			count = intToken(t[end+1])
 		}
 		kind := h
 		if h == "random" {
 			kind = "random_choose"
 		}
-		return ir.SelectionEffect{NodeBase: base, Kind: kind, Policy: map[string]string{"choose": "optional", "require": "required", "random": "random"}[h], Binding: t[1].Value, Source: src}, nil
+		return ir.SelectionEffect{NodeBase: base, Kind: kind, Policy: map[string]string{"choose": "optional", "require": "required", "random": "random"}[h], Binding: t[1].Value, Source: src, Count: count}, nil
 	case "if":
 		blocks := s.Blocks()
 		then, err := compileEffectBlock(blocks[0], sid, id+"/then", ids)
@@ -259,11 +275,15 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 	case "mode":
 		opts := []ir.ModeOption{}
 		for _, o := range s.Blocks()[0] {
-			body, err := compileEffectBlock(o.Blocks()[0], sid, id+"/option/"+o.Word(1), ids)
+			labels, statements, err := modeOptionParts(o.Blocks()[0])
 			if err != nil {
 				return nil, err
 			}
-			opts = append(opts, ir.ModeOption{ID: intAt(o, 1), Body: body, Origin: originIR(o.Span, sid)})
+			body, err := compileEffectBlock(statements, sid, id+"/option/"+o.Word(1), ids)
+			if err != nil {
+				return nil, err
+			}
+			opts = append(opts, ir.ModeOption{ID: intAt(o, 1), Body: body, Origin: originIR(o.Span, sid), Labels: labels})
 		}
 		return ir.ModeEffect{NodeBase: base, Kind: "mode", Options: opts}, nil
 	case "earthrite", "necromancy":
@@ -286,6 +306,9 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		}
 		return e, nil
 	case "add":
+		if len(t) == 4 && t[2].Value == "counter" {
+			return ir.AdjustEffect{NodeBase: base, Kind: "adjust_counter", Field: t[3].Value, Delta: intToken(t[1])}, nil
+		}
 		if t[1].Kind == syntax.Integer && t[2].Value == "card" {
 			return ir.CardEffect{NodeBase: base, Kind: "add_card", Owner: "own", Count: intAt(s, 1), CardID: intToken(t[3]), Destination: "hand"}, nil
 		} else if t[1].Value == "combo" {
@@ -299,9 +322,19 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		return ir.CardEffect{NodeBase: base, Kind: "summon", Owner: "own", Count: intAt(s, 1), CardID: intToken(t[3]), Output: "summoned"}, nil
 	case "damage", "heal":
 		end := valueRefEnd(t, 1)
-		e := ir.TargetEffect{NodeBase: base, Kind: h, Target: valueRefIR(t, 1), Amount: intToken(t[end])}
-		if end+1 < len(t) {
-			e.Predicate, _ = filterIR(t, end+1)
+		e := ir.TargetEffect{NodeBase: base, Kind: h, Target: valueRefIR(t, 1)}
+		e.Amount, e.AmountExpr = numericIR(t, end)
+		end, _ = parseEffectAmount(t, end)
+		if end < len(t) && t[end].Value == "distributed" {
+			e.Distribution = "field_entry_order"
+			end++
+			if end < len(t) && t[end].Value == "overflow" {
+				e.Overflow = valueRefIR(t, end+1)
+				end += 4
+			}
+		}
+		if end < len(t) {
+			e.Predicate, _ = filterIR(t, end)
 		}
 		if h == "damage" {
 			e.DamageType = "effect"
@@ -309,9 +342,22 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		return e, nil
 	case "buff":
 		end := valueRefEnd(t, 1)
-		return ir.TargetEffect{NodeBase: base, Kind: "buff_stats", Target: valueRefIR(t, 1), AttackDelta: signedAt(t, end), LifeDelta: signedAt(t, end+3)}, nil
+		target := valueRefIR(t, 1)
+		if end < len(t) && t[end].Value == "other" {
+			target = ir.ExcludeRef{Kind: "exclude", Source: target, Value: ir.SelfRef{Kind: "self"}}
+			end++
+		}
+		e := ir.TargetEffect{NodeBase: base, Kind: "buff_stats", Target: target}
+		e.AttackDelta, e.AttackExpr, end = signedNumericIR(t, end)
+		e.LifeDelta, e.LifeExpr, end = signedNumericIR(t, end+1)
+		if end < len(t) {
+			e.Predicate, _ = filterIR(t, end)
+		}
+		return e, nil
 	case "gain":
 		return ir.AdjustEffect{NodeBase: base, Kind: "adjust_resource", Owner: t[1].Value, Resource: t[3].Value, Delta: intToken(t[4])}, nil
+	case "restore":
+		return ir.AdjustEffect{NodeBase: base, Kind: "restore_resource", Owner: t[1].Value, Resource: "pp"}, nil
 	case "destroy", "banish":
 		e := ir.TargetEffect{NodeBase: base, Kind: h, Target: valueRefIR(t, 1)}
 		end := valueRefEnd(t, 1)
@@ -321,6 +367,8 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		return e, nil
 	case "remove":
 		return ir.TargetEffect{NodeBase: base, Kind: "remove_keyword", Keyword: t[1].Value, Target: valueRefIR(t, 3)}, nil
+	case "set_attack_limit":
+		return ir.TargetEffect{NodeBase: base, Kind: "set_attack_limit", Target: valueRefIR(t, 1), Amount: intToken(t[2])}, nil
 	case "return":
 		end := valueRefEnd(t, 1)
 		e := ir.TargetEffect{NodeBase: base, Kind: "return", Target: valueRefIR(t, 1), Destination: t[end+1].Value}
@@ -328,8 +376,12 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			e.DeckInsertion = "uniform_random_position"
 		}
 		return e, nil
-	case "evolve":
-		return ir.TargetEffect{NodeBase: base, Kind: "silent_evolve", Target: valueRefIR(t, 1), Form: "evolved"}, nil
+	case "evolve", "superevolve":
+		form := "evolved"
+		if h == "superevolve" {
+			form = "super_evolved"
+		}
+		return ir.TargetEffect{NodeBase: base, Kind: "silent_evolve", Target: valueRefIR(t, 1), Form: form}, nil
 	case "reanimate":
 		return ir.CardEffect{NodeBase: base, Kind: "reanimate", Owner: "own", MaxCost: intAt(s, 1), TieBreak: "random", Output: "summoned"}, nil
 	case "reduce":
@@ -400,6 +452,15 @@ func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 		return nil, i
 	}
 	terms := []ir.Predicate{}
+	groups := []ir.Predicate{}
+	flush := func() {
+		if len(terms) == 1 {
+			groups = append(groups, terms[0])
+		} else {
+			groups = append(groups, ir.AndPredicate{Kind: "and", Terms: terms})
+		}
+		terms = nil
+	}
 	j := i + 1
 	for j < end {
 		switch t[j].Value {
@@ -415,20 +476,30 @@ func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 		case "trait":
 			terms = append(terms, ir.FieldPredicate{Kind: "has_trait", Trait: t[j+1].Value})
 			j += 2
+		case "form":
+			terms = append(terms, ir.FieldPredicate{Kind: "has_form", Form: t[j+1].Value})
+			j += 2
 		case "life":
 			terms = append(terms, ir.FieldPredicate{Kind: "compare", Field: "life", Op: compareOp(t[j+1].Value), Value: intToken(t[j+2])})
 			j += 3
 		}
 		if j < end && t[j].Value == "and" {
 			j++
+		} else if j < end && t[j].Value == "or" {
+			flush()
+			j++
 		}
 	}
-	if len(terms) == 1 {
-		return terms[0], end
+	flush()
+	if len(groups) == 1 {
+		return groups[0], end
 	}
-	return ir.AndPredicate{Kind: "and", Terms: terms}, end
+	return ir.OrPredicate{Kind: "or", Terms: groups}, end
 }
 func conditionIR(t []syntax.Token) ir.Condition {
+	if counterRef(t, 0) {
+		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "self_counter", Field: t[4].Value}, Op: compareOp(t[5].Value), Right: intToken(t[6])}
+	}
 	for i, x := range t {
 		if x.Value == "else" {
 			t = t[:i]
@@ -447,12 +518,15 @@ func conditionIR(t []syntax.Token) ir.Condition {
 	return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "scalar", Side: t[0].Value, Field: t[2].Value}, Op: compareOp(t[3].Value), Right: intToken(t[4])}
 }
 func eventPatternIR(t []syntax.Token) ir.Trigger {
+	if t[1].Value == "self" {
+		return ir.EventTrigger{Kind: "event", Event: t[2].Value, Side: "own", SubjectType: "follower", SelfOnly: true}
+	}
 	m := ir.EventTrigger{Kind: "event", Side: t[1].Value}
 	if t[2].Value == "turn" {
 		m.Event = map[string]string{"starts": "turn_started", "ends": "turn_ended"}[t[3].Value]
 	} else {
 		m.SubjectType = t[2].Value
-		m.Event = map[string]string{"summoned": "follower_summoned", "engaged": "amulet_engaged"}[t[3].Value]
+		m.Event = map[string]string{"summoned": "follower_summoned", "engaged": "amulet_engaged", "discarded": "card_discarded"}[t[3].Value]
 	}
 	if len(t) > 4 {
 		m.Predicate, _ = filterIR(t, 4)
@@ -581,6 +655,14 @@ func compilePlayerState(s *syntax.Statement, p *ir.PlayerState, a map[string]str
 					for _, o := range inst.Blocks()[0] {
 						ot := o.Tokens()
 						switch o.Word(0) {
+						case "counter":
+							if over.Counters == nil {
+								over.Counters = map[string]int{}
+							}
+							over.Counters[ot[1].Value] = intToken(ot[2])
+						case "cost":
+							v := intToken(ot[1])
+							over.Cost = &v
 						case "stats":
 							over.Stats = &ir.Stats{Attack: intToken(ot[1]), Life: intToken(ot[3])}
 						case "evolved":
@@ -620,7 +702,15 @@ func compileActions(s *syntax.Statement, a map[string]string) ([]ir.Action, erro
 		case "fuse":
 			action = ir.FusionAction{Kind: "fusion", Actor: "own", Source: a[t[1].Value]}
 		case "select":
-			action = ir.SelectAction{Kind: "select", Target: a[t[1].Value]}
+			selection := ir.SelectAction{Kind: "select"}
+			if len(t) == 2 {
+				selection.Target = a[t[1].Value]
+			} else {
+				for n := 1; n < len(t); n += 2 {
+					selection.Targets = append(selection.Targets, a[t[n].Value])
+				}
+			}
+			action = selection
 		case "mode":
 			action = ir.ModeAction{Kind: "select_mode", OptionID: intToken(t[1])}
 		case "end_turn":
@@ -750,6 +840,9 @@ func testRefIR(t []syntax.Token, a map[string]string) ir.TestRef {
 		return ir.TestRef{Kind: "rng_consumed"}
 	}
 	if a[t[0].Value] != "" {
+		if len(t) == 5 && t[2].Value == "counter" {
+			return ir.TestRef{Kind: "instance_counter", InstanceID: a[t[0].Value], Field: t[4].Value}
+		}
 		return ir.TestRef{Kind: "instance_field", InstanceID: a[t[0].Value], Field: t[2].Value}
 	}
 	field := t[len(t)-1].Value

@@ -1,0 +1,64 @@
+wbo 0.1.0;
+
+card 10171130 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        fanfare {
+            add 1 card 90071210 to hand;
+        }
+        evolve {
+            choose target from oppo.field.followers;
+            damage target 3;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "永不停火的枪手";
+        text """
+【<color=Keyword>入场曲</color>】将1张『<color=Keyword>未来核心</color>』加入手牌。
+<hr><ev>【<color=Keyword>进化时</color>】选择对手的战场上的1个随从，对其造成3点伤害。</ev>
+""";
+    }
+
+    locale eng {
+        name "Ironheart Hunter";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add a <b><i><color=Keyword>Gear of Ambition</color></i></b> to your hand.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select an enemy follower on the field and deal it 3 damage.</ev>
+""";
+    }
+
+    locale jpn {
+        name "アンストッパブルガンナー";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>フューチャー・コア</color>』1枚を自分の手札に加える。
+<hr><ev>【<color=Keyword>進化時</color>】相手の場のフォロワー1枚を選ぶ。それに3ダメージ。</ev>
+""";
+    }
+
+    locale kor {
+        name "언스토퍼블 거너";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>퓨처 코어</color> 1장을 내 패에 넣는다.
+<hr><ev>[<color=Keyword>진화시</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 3 피해.</ev>
+""";
+    }
+
+    locale cht {
+        name "永彈槍手";
+        text """
+【<color=Keyword>入場曲</color>】增加1張『<color=Keyword>未來之核</color>』到自己的手牌中。
+<hr><ev>【<color=Keyword>進化時</color>】指定1張敵方戰場上的從者卡。給予其3點傷害。</ev>
+""";
+    }
+
+}

@@ -1,0 +1,56 @@
+wbo 0.1.0;
+
+card 10162210 {
+    type amulet;
+    cost 2;
+
+    effect {
+        engage 1 {
+            choose target from own.field.followers;
+            buff target +1/+1;
+            heal own.leader 1;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "禁密的圣地";
+        text """
+费用1【<color=Keyword>启动</color>】选择自己的战场上的1个随从，使其+1/+1。回复自己的主战者1点生命值。
+""";
+    }
+
+    locale eng {
+        name "Darkhaven Grace";
+        text """
+<b><color=Keyword>Engage</color> (1)</b>: Select an allied follower on the field and give it +1/+1. Restore 1 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きんみつ\">禁密</rub>の<rub=\"せいち\">聖地</rub>";
+        text """
+コスト1【<color=Keyword>アクト</color>】自分の場のフォロワー1枚を選ぶ。それは+1/+1する。自分のリーダーを1回復。
+""";
+    }
+
+    locale kor {
+        name "금밀의 성지";
+        text """
+비용 1 [<color=Keyword>활성화</color>] 내 전장에서 추종자 1장을 선택한다. 그 추종자는 +1/+1. 내 리더를 1 회복.
+""";
+    }
+
+    locale cht {
+        name "禁密的聖地";
+        text """
+消費1【<color=Keyword>策動</color>】指定1張自己戰場上的從者卡。使其+1/+1。回復自己的主戰者1點生命值。
+""";
+    }
+
+}

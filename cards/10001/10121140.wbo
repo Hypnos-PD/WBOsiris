@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10121140 {
+    type follower;
+    cost 3;
+    stats 4/2;
+
+    effect {
+        rush;
+        enhance 6 {
+            summon 2 card 10121140;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "军犬";
+        text """
+【<color=Keyword>爆能强化</color>_6】召唤2个『<color=Keyword>军犬</color>』。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Hound of War";
+        text """
+<b><color=Keyword>Enhance</color> (6)</b>: Summon 2 copies of <b><i><color=Keyword>Hound of War</color></i></b>.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "ミリタリードッグ";
+        text """
+【<color=Keyword>エンハンス</color>_6】『<color=Keyword>ミリタリードッグ</color>』2枚を自分の場に出す。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "군견";
+        text """
+[<color=Keyword>증강</color> 6] <color=Keyword>군견</color> 2장을 내 전장에 소환.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "軍犬";
+        text """
+【<color=Keyword>爆能強化</color>_6】召喚2張『<color=Keyword>軍犬</color>』到自己的戰場上。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

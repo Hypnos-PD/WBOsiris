@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10112210 {
+    type amulet;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "磷光辉岩";
+        text """
+【<color=Keyword>入场曲</color>】将1张『<color=Keyword>妖精</color>』加入手牌。【<color=Keyword>连击</color>_3】将1张『<color=Keyword>森林的奥秘</color>』加入手牌。
+<hr>【<color=Keyword>启动</color>】破坏本卡牌。选择自己的战场上的1个随从，使其+1/+1。
+""";
+    }
+
+    locale eng {
+        name "Lambent Cairn";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add a <b><i><color=Keyword>Fairy</color></i></b> to your hand. <b><color=Keyword>Combo</color> (3)</b> - Add a <b><i><color=Keyword>Deepwood Bounty</color></i></b> to your hand.
+<hr><b><color=Keyword>Engage</color></b>: Destroy this card. Select an allied follower on the field and give it +1/+1.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"りんこう\">燐光</rub>の<rub=\"いわ\">岩</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>フェアリー</color>』1枚を自分の手札に加える。【<color=Keyword>コンボ</color>_3】『<color=Keyword>森の神秘</color>』1枚を自分の手札に加える。
+<hr>【<color=Keyword>アクト</color>】これを破壊。自分の場のフォロワー1枚を選ぶ。それは+1/+1する。
+""";
+    }
+
+    locale kor {
+        name "인광 바위";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>요정</color> 1장을 내 패에 넣는다. [<color=Keyword>콤보</color> 3] <color=Keyword>숲의 신비</color> 1장을 내 패에 넣는다.
+<hr>[<color=Keyword>활성화</color>] 이 마법진을 파괴. 내 전장에서 추종자 1장을 선택한다. 그 추종자는 +1/+1.
+""";
+    }
+
+    locale cht {
+        name "磷光輝岩";
+        text """
+【<color=Keyword>入場曲</color>】增加1張『<color=Keyword>妖精</color>』到自己的手牌中。【<color=Keyword>連擊</color>_3】增加1張『<color=Keyword>森林的奧祕</color>』到自己的手牌中。
+<hr>【<color=Keyword>策動</color>】破壞這張卡片。指定1張自己戰場上的從者卡。使其+1/+1。
+""";
+    }
+
+}

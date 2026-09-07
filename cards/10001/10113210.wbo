@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10113210 {
+    type amulet;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class forestcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "圣树法杖";
+        text """
+自己的回合结束时，【<color=Keyword>连击</color>_3】抽取1张卡牌。
+<hr>【<color=Keyword>启动</color>】破坏本卡牌。选择自己的战场上的1张其他卡牌，使其返回手牌。
+""";
+    }
+
+    locale eng {
+        name "Godwood Staff";
+        text """
+At the end of your turn, <b><color=Keyword>Combo</color> (3)</b> - Draw a card.
+<hr><b><color=Keyword>Engage</color></b>: Destroy this card. Select another allied card on the field and return it to hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"せいじゅ\">聖樹</rub>の<rub=\"つえ\">杖</rub>";
+        text """
+自分のターン終了時、【<color=Keyword>コンボ</color>_3】自分のデッキから1枚を引く。
+<hr>【<color=Keyword>アクト</color>】これを破壊。自分の場の他のカード1枚を選ぶ。それを手札に戻す。
+""";
+    }
+
+    locale kor {
+        name "신목의 지팡이";
+        text """
+내 턴 종료시, [<color=Keyword>콤보</color> 3] 내 덱에서 1장을 뽑는다.
+<hr>[<color=Keyword>활성화</color>] 이 마법진을 파괴. 내 전장에서 다른 카드 1장을 선택한다. 그 카드를 패로 되돌린다.
+""";
+    }
+
+    locale cht {
+        name "聖樹權杖";
+        text """
+自己的回合結束時，【<color=Keyword>連擊</color>_3】由自己的牌堆中抽取1張卡片。
+<hr>【<color=Keyword>策動</color>】破壞這張卡片。指定1張自己戰場上的其他卡片。使其返回手牌中。
+""";
+    }
+
+}

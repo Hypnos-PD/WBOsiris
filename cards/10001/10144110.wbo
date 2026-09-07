@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10144110 {
+    type follower;
+    cost 7;
+    stats 7/7;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "灼热的安纳提玛·班德奈特";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的1张手牌，舍弃该手牌。对对手的战场上的所有随从造成X点伤害。X为选择的卡牌的费用。
+<hr><sev>【<color=Keyword>超进化时</color>】使对手获得『纹章：灼热的安纳提玛·班德奈特』。</sev>
+""";
+    }
+
+    locale eng {
+        name "Burnite, Anathema of Flame";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a card in your hand and discard it. Deal X damage to all enemy followers. X is the cost of the selected card.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Give your opponent <b><i>Crest: Burnite, Anathema of Flame</i></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しゃくねつ\">灼熱</rub>のアナテマ・バーンドナイト";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札1枚を選ぶ。それを捨てる。相手の場のフォロワーすべてにXダメージ。Xは選んだカードのコストである。
+<hr><sev>【<color=Keyword>超進化時</color>】相手は『クレスト：灼熱のアナテマ・バーンドナイト』を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "작열의 아나테마 번드나이트";
+        text """
+[<color=Keyword>출격</color>] 내 패에서 1장을 선택한다. 그 카드를 버린다. 상대방 전장의 추종자 모두에게 X 피해. X는 선택한 카드의 비용.
+<hr><sev>[<color=Keyword>초진화시</color>] 상대방은 「크레스트: 작열의 아나테마 번드나이트」를 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "灼熱的弒滅者‧珀德奈特";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己手牌中的卡片。將其捨棄。給予敵方戰場上全部的從者卡X點傷害。X為「所指定卡片的消費值」。
+<hr><sev>【<color=Keyword>超進化時</color>】使敵方獲得『紋章：灼熱的弒滅者‧珀德奈特』。</sev>
+""";
+    }
+
+}

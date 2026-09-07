@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10134110 {
+    type follower;
+    cost 7;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "五行之巅·久苑";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>式神·天后</color>』和1个『<color=Keyword>式神·暴鬼</color>』和1个『<color=Keyword>式神·小纸人</color>』。
+【<color=Keyword>爆能强化</color>_10】破坏自己的战场上的所有式神·随从。召唤1个『<color=Keyword>式神·贵人</color>』。
+<hr><sev>【<color=Keyword>超进化时</color>】选择自己的战场上的1个式神·随从，使其获得【<color=Keyword>疾驰</color>】。</sev>
+""";
+    }
+
+    locale eng {
+        name "Kuon, Fivefold Master";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Celestial Shikigami</color></i></b>, <b><i><color=Keyword>Demonic Shikigami</color></i></b>, and <b><i><color=Keyword>Paper Shikigami</color></i></b>.
+<b><color=Keyword>Enhance</color> (10)</b>: Destroy all allied Shikigami followers. Summon a <b><i><color=Keyword>Noble Shikigami</color></i></b>.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Select an allied Shikigami follower on the field and give it <b><color=Keyword>Storm</color></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ごぎょう\">五行</rub>の<rub=\"は\">果</rub>て・クオン";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>式神・天后</color>』1枚と『<color=Keyword>式神・暴鬼</color>』1枚と『<color=Keyword>式神・形代</color>』1枚を自分の場に出す。
+【<color=Keyword>エンハンス</color>_10】自分の場の式神・フォロワーすべてを破壊。『<color=Keyword>式神・貴人</color>』1枚を自分の場に出す。
+<hr><sev>【<color=Keyword>超進化時</color>】自分の場の式神・フォロワー1枚を選ぶ。それは【<color=Keyword>疾走</color>】を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "오행의 정점 쿠온";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>식신 천후</color> 1장, <color=Keyword>식신 폭귀</color> 1장, <color=Keyword>식신 종이인형</color> 1장을 내 전장에 소환.
+[<color=Keyword>증강</color> 10] 내 전장의 식신 추종자 모두를 파괴. <color=Keyword>식신 귀인</color> 1장을 내 전장에 소환.
+<hr><sev>[<color=Keyword>초진화시</color>] 내 전장에서 식신 추종자 1장을 선택한다. 그 추종자는 [<color=Keyword>질주</color>]를 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "五行巔峰‧久苑";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>式神‧天后</color>』與1張『<color=Keyword>式神‧暴鬼</color>』與1張『<color=Keyword>式神‧小紙人</color>』到自己的戰場上。
+【<color=Keyword>爆能強化</color>_10】破壞自己戰場上全部的式神‧從者卡。召喚1張『<color=Keyword>式神‧貴人</color>』到自己的戰場上。
+<hr><sev>【<color=Keyword>超進化時</color>】指定1張自己戰場上的式神‧從者卡。使其獲得【<color=Keyword>疾馳</color>】。</sev>
+""";
+    }
+
+}

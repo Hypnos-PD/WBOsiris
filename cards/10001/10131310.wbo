@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10131310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "彩虹奇迹";
+        text """
+选择自己的手牌中的1张拥有【<color=Keyword>魔力增幅时</color>】的卡牌，使其发动1次魔力增幅。抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Radiant Rainbow";
+        text """
+Select a card in your hand with <b><color=Keyword>On Spellboost</color></b> and spellboost it. Draw a card.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"にじ\">虹</rub>の<rub=\"きせき\">奇跡</rub>";
+        text """
+自分の手札の【<color=Keyword>スペルブースト時</color>】を持つカード1枚を選ぶ。それは1回スペルブーストする。自分のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "무지개의 기적";
+        text """
+내 패에서 [<color=Keyword>주문증폭시</color>]를 가진 카드 1장을 선택한다. 그 카드를 1회 주문증폭. 내 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "彩虹奇蹟";
+        text """
+指定1張自己手牌中擁有【<color=Keyword>魔力增幅時</color>】的卡片。使其發動1次魔力增幅。由自己的牌堆中抽取1張卡片。
+""";
+    }
+
+}

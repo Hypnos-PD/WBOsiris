@@ -5,10 +5,30 @@ import {
   type DragEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { CircleHelp, History, Menu, Shield, Sparkles, X } from "lucide-react";
+import { CircleHelp, History, Menu, Shield, Sparkles, X, Home, Swords, Layers, Film, DoorOpen, Plus, Play, Combine, ChevronUp, ChevronDown } from "lucide-react";
 import { StatusEffects, type StatusEffect } from "./StatusEffects";
+import { DeckBuilder } from "./DeckBuilder";
+import { cardArt, cardText, classNames, deckProblems, readDeck, typeNames, type CatalogCard } from "./decks";
+import { CardArt } from "./CardArt";
+import type { Entity, ChoiceCandidate, Remote } from "./gameTypes";
+import { eventLabel, readReplays, mergeReplay, persistReplays, type ReplayResponse } from "./replays";
+import { ReplayViewer } from "./ReplayViewer";
+import { FusionDetails } from "./FusionDetails";
+import { CounterValues } from "./CounterValues";
+import { MatchConnection, type ConnectionStatus } from "./matchConnection";
+
+const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8080";
+const validPages = new Set(["home", "battle", "decks", "replays", "rooms"]);
+const initialPage = (): "home" | "battle" | "decks" | "replays" | "rooms" => {
+  const params = new URLSearchParams(location.search);
+  const page = params.get("page");
+  if (page && validPages.has(page)) return page as ReturnType<typeof initialPage>;
+  return params.has("match") ? "battle" : "home";
+};
 
 type Card = {
+  counters?: Record<string, number>;
+  fusion?: Entity["fusion"];
   id: string;
   instanceId?: string;
   name: string;
@@ -16,7 +36,7 @@ type Card = {
   attack?: number;
   life?: number;
   text: string;
-  art: string;
+  art: string | undefined;
   keywords?: string[];
   evolved?: boolean;
   superEvolved?: boolean;
@@ -28,110 +48,9 @@ type Card = {
   summoningSick?: boolean;
   type: "随从" | "法术" | "护符";
 };
-type Entity = {
-  instanceId: string;
-  cardId: number;
-  attack?: number;
-  life?: number;
-  cardType: string;
-  keywords?: string[];
-  evolved?: boolean;
-  superEvolved?: boolean;
-  earthsigil?: number;
-  countdown?: number;
-  damageReduction?: number;
-  attackLimit?: number;
-  attacksUsed?: number;
-  summoningSick?: boolean;
-};
-type LegalAction = {
-  kind: string;
-  actor: string;
-  source?: string;
-  defender?: string;
-};
-type ChoiceCandidate = { kind: string; instanceId?: string; optionId?: number };
-type ChoiceRequest = {
-  requestId: string;
-  actionId: string;
-  kind: string;
-  minSelections: number;
-  maxSelections: number;
-  candidates: ChoiceCandidate[];
-  stateRevision: number;
-};
-type RuntimeTarget = {
-  instanceId?: string;
-  InstanceID?: string;
-  kind?: string;
-  Kind?: string;
-};
-type RuntimeEvent = {
-  kind?: string;
-  Kind?: string;
-  instanceId?: string;
-  InstanceID?: string;
-  actual?: number;
-  Actual?: number;
-  side?: string;
-  Side?: string;
-  subject?: RuntimeTarget;
-  Subject?: RuntimeTarget;
-  target?: RuntimeTarget;
-  Target?: RuntimeTarget;
-};
-type Remote = {
-  sessionId: string;
-  matchId?: string;
-  playerToken?: string;
-  joinCode?: string;
-  side?: string;
-  waiting?: boolean;
-  matchPhase?: string;
-  mulliganReady?: boolean;
-  opponentReady?: boolean;
-  state: {
-    own: {
-      leaderLife: number;
-      leaderMax: number;
-      pp: number;
-      maxpp: number;
-      ep: number;
-      sep: number;
-      extraPPAvailable?: boolean;
-      extraPPUses?: number;
-      extraPPActive?: boolean;
-      deckCount?: number;
-      handCount?: number;
-      hand: Entity[];
-      field: Entity[];
-      graveyard?: Entity[];
-    };
-    oppo: {
-      leaderLife: number;
-      leaderMax: number;
-      pp: number;
-      maxpp: number;
-      ep: number;
-      sep: number;
-      extraPPAvailable?: boolean;
-      extraPPUses?: number;
-      handCount?: number;
-      deckCount?: number;
-      field: Entity[];
-      graveyard?: Entity[];
-    };
-    turn: { active: string; number: number };
-    pendingChoice?: ChoiceRequest;
-    gameOver?: boolean;
-    winner?: string;
-  };
-  legalActions?: LegalAction[];
-  events?: RuntimeEvent[];
-  result?: { status: string; errorCode?: string };
-};
+type RoomSummary = { id: string; waiting: boolean };
 
-const catalog: Record<string, Omit<Card, "id" | "instanceId">> = {
+const fallbackCatalog: Record<string, Omit<Card, "id" | "instanceId">> = {
   "10001110": {
     name: "不屈的剑斗士",
     cost: 2,
@@ -139,7 +58,7 @@ const catalog: Record<string, Omit<Card, "id" | "instanceId">> = {
     life: 2,
     type: "随从",
     text: "爆能强化 4：本随从 +3/+3。",
-    art: "/assets/card-10001110.webp",
+    art: cardArt(10001110),
   },
   "10012110": {
     name: "冒险精灵·小梅",
@@ -148,7 +67,7 @@ const catalog: Record<string, Omit<Card, "id" | "instanceId">> = {
     life: 1,
     type: "随从",
     text: "",
-    art: "/assets/card-10012110.webp",
+    art: cardArt(10012110),
   },
   "10001120": {
     name: "叮当天使·莉亚",
@@ -157,7 +76,7 @@ const catalog: Record<string, Omit<Card, "id" | "instanceId">> = {
     life: 2,
     type: "随从",
     text: "守护\n谢幕曲：抽取1张卡牌。\n进化时：抽取1张卡牌。",
-    art: "/assets/card-10001120.webp",
+    art: cardArt(10001120),
     keywords: ["守护"],
   },
   "10002110": {
@@ -167,7 +86,7 @@ const catalog: Record<string, Omit<Card, "id" | "instanceId">> = {
     life: 3,
     type: "随从",
     text: "进化时：回复自己的主战者2点生命值。",
-    art: "/assets/card-10002110.webp",
+    art: cardArt(10002110),
   },
   "10011130": {
     name: "温厚的树精",
@@ -176,28 +95,30 @@ const catalog: Record<string, Omit<Card, "id" | "instanceId">> = {
     life: 4,
     type: "随从",
     text: "入场曲：连击3，本随从进化。",
-    art: "/assets/card-10011130.webp",
+    art: cardArt(10011130),
   },
 };
 const fallbackHand: Card[] = [
-  { id: "fallback-10001110", ...catalog["10001110"] },
-  { id: "fallback-10001120", ...catalog["10001120"] },
-  { id: "fallback-10002110", ...catalog["10002110"] },
+  { id: "fallback-10001110", ...fallbackCatalog["10001110"] },
+  { id: "fallback-10001120", ...fallbackCatalog["10001120"] },
+  { id: "fallback-10002110", ...fallbackCatalog["10002110"] },
 ];
-const cardFor = (entity: Entity): Card => {
+const displayCardFor = (entity: Entity, catalog = fallbackCatalog): Card => {
   const base = catalog[String(entity.cardId)] ?? {
     name: "未知卡牌",
     cost: 0,
-    type: "随从" as const,
+    type: typeNames[entity.cardType] || "随从",
     text: "",
-    art: "/assets/card-10001120.webp",
+    art: undefined,
   };
   return {
     id: String(entity.cardId),
     instanceId: entity.instanceId,
     ...base,
-    attack: entity.attack ?? base.attack,
-    life: entity.life ?? base.life,
+    art: cardArt(entity.cardId, entity.evolved || entity.superEvolved),
+    cost: entity.cost ?? base.cost,
+    attack: entity.cardType === "follower" ? (entity.attack ?? base.attack) : undefined,
+    life: entity.cardType === "follower" ? (entity.life ?? base.life) : undefined,
     keywords: entity.keywords ?? base.keywords,
     evolved: entity.evolved,
     superEvolved: entity.superEvolved,
@@ -207,15 +128,48 @@ const cardFor = (entity: Entity): Card => {
     attackLimit: entity.attackLimit,
     attacksUsed: entity.attacksUsed,
     summoningSick: entity.summoningSick,
+    fusion: entity.fusion,
+    counters: entity.counters,
   };
 };
 
 export function App() {
+  const [catalog, setCatalog] = useState(fallbackCatalog);
+  const [catalogCards, setCatalogCards] = useState<CatalogCard[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogError, setCatalogError] = useState("");
+  const [catalogVersion, setCatalogVersion] = useState(0);
+  const [practiceCards, setPracticeCards] = useState<string[]>([]);
+  const [requestError, setRequestError] = useState("");
+  const [roomBusy, setRoomBusy] = useState(false);
+  const roomRequest = useRef(false);
+  const cardFor = (entity: Entity) => displayCardFor(entity, catalog);
+  const [activePage, setActivePage] = useState<"home" | "battle" | "decks" | "replays" | "rooms">(initialPage);
   const [remote, setRemote] = useState<Remote | null>(null);
+  const connection = useRef<MatchConnection | null>(null);
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("connecting");
+  const matchCallbacks = useRef({ receive: (_data: Remote) => {} });
   const [hand, setHand] = useState<Card[]>(fallbackHand);
   const [selected, setSelected] = useState<Card | null>(null);
   const [message, setMessage] = useState("请选择要进行的操作");
   const [events, setEvents] = useState(["你的回合开始"]);
+  const [savedReplays, setSavedReplays] = useState(readReplays);
+  const [replayError, setReplayError] = useState("");
+  const [replayStorageError, setReplayStorageError] = useState(false);
+  const [replayRetry, setReplayRetry] = useState(0);
+  const [replaySelection, setReplaySelection] = useState<string | null>(null);
+  const [deckCards, setDeckCards] = useState<string[]>(readDeck);
+  const deckInitialized = useRef(false);
+  const deckErrors = catalogCards.length ? deckProblems(deckCards, catalogCards) : ["卡池尚未就绪"];
+  const deckClass = catalogCards.find((card) => card.class !== "neutral" && deckCards.includes(String(card.id)))?.class || "neutral";
+  const changeDeck = (cards: string[]) => {
+    setDeckCards(cards);
+    try { localStorage.setItem("wbo-deck-cards", JSON.stringify(cards)); }
+    catch { setRequestError("无法保存牌组到本地存储"); }
+  };
+  const [roomList, setRoomList] = useState<RoomSummary[]>([]);
+  const [joinRoomId, setJoinRoomId] = useState("");
+  const [joinRoomCode, setJoinRoomCode] = useState("");
   const [demoPP, setDemoPP] = useState(5);
   const [attacker, setAttacker] = useState<string | null>(null);
   const [choiceSelection, setChoiceSelection] = useState<string[]>([]);
@@ -243,32 +197,69 @@ export function App() {
     y2: number;
   } | null>(null);
   const [mulliganSelection, setMulliganSelection] = useState<string[]>([]);
+  const fillPracticeDeck = () => {
+    if (practiceCards.length) changeDeck(practiceCards);
+  };
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setCatalogLoading(true);
+    setCatalogError("");
+    fetch(`${API_BASE}/api/cards`, { signal: controller.signal })
+      .then((response) => { if (!response.ok) throw new Error(); return response.json(); })
+      .then((data: { cards: CatalogCard[]; practiceDeck: number[] }) => {
+        const cards = data.cards.map((card) => ({ ...card, text: cardText(card.text) }));
+        setCatalogCards(cards);
+        const next = { ...fallbackCatalog };
+        for (const card of cards) next[String(card.id)] = { name: card.name, text: card.text, cost: card.cost, attack: card.attack, life: card.life, type: typeNames[card.cardType], art: cardArt(card.id), counters: card.counters };
+        setCatalog(next);
+        setHand((hand) => hand.map((card) => next[card.id] ? { ...card, name: next[card.id].name, text: next[card.id].text, art: next[card.id].art, type: next[card.id].type } : card));
+        const practice = data.practiceDeck.map(String);
+        setPracticeCards(practice);
+        if (!deckInitialized.current) {
+          deckInitialized.current = true;
+          try { if (localStorage.getItem("wbo-deck-cards") === null) changeDeck(practice); }
+          catch { setRequestError("无法读取本地牌组"); }
+        }
+      })
+      .catch((error) => { if (error.name !== "AbortError") setCatalogError("无法加载卡池，请确认规则服务已连接"); })
+      .finally(() => { if (!controller.signal.aborted) setCatalogLoading(false); });
+    return () => controller.abort();
+  }, [catalogVersion]);
 
   const acceptMatch = (data: Remote, previousToken = "") => {
     const token = data.playerToken || previousToken;
     if (!data.matchId || !token || !data.side) return;
     const auth = { id: data.matchId, token, side: data.side };
-    localStorage.setItem(
-      `wbo-match-${auth.id}-${auth.side}`,
-      JSON.stringify(auth),
-    );
-    if (data.joinCode) setJoinCode(data.joinCode);
+    connection.current?.stop();
+    connection.current = null;
+    try { localStorage.setItem(`wbo-match-${auth.id}-${auth.side}`, JSON.stringify(auth)); }
+    catch { setRequestError("无法保存房间凭据，刷新后将无法恢复对局"); }
+    setJoinCode(data.joinCode || "");
     setMatchAuth(auth);
     setRemote(data);
     sync(data);
   };
-  const createMatch = () => {
-    fetch("http://127.0.0.1:8080/api/matches", {
+  const createMatch = async () => {
+    if (roomRequest.current) return;
+    if (deckErrors.length) { setRequestError(deckErrors[0]); navigate("decks"); return; }
+    roomRequest.current = true;
+    setRoomBusy(true);
+    setRequestError("");
+    try {
+      const response = await fetch(`${API_BASE}/api/matches`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: "{}",
-    })
-      .then((response) => response.json())
-      .then((data: Remote) => {
-        history.replaceState(null, "", `?match=${data.matchId}`);
-        acceptMatch(data);
-      })
-      .catch(() => setMessage("无法连接对局服务"));
+      body: JSON.stringify({ deck: deckCards.map(Number) }),
+      });
+      if (!response.ok) throw new Error(await response.text());
+      const data: Remote = await response.json();
+      if (!data.matchId || !data.playerToken || data.side !== "own" || !data.state) throw new Error("房间响应无效");
+      history.replaceState(null, "", `?match=${data.matchId}`);
+      acceptMatch(data);
+      setActivePage("battle");
+    } catch (error) { setRequestError(error instanceof Error ? error.message : "无法连接对局服务"); }
+    finally { roomRequest.current = false; setRoomBusy(false); }
   };
   useEffect(() => {
     if (started.current) return;
@@ -276,69 +267,90 @@ export function App() {
     const params = new URLSearchParams(location.search);
     const id = params.get("match");
     const code = params.get("join");
-    const saved = id
-      ? localStorage.getItem(`wbo-match-${id}-own`) ||
-        localStorage.getItem(`wbo-match-${id}-oppo`)
-      : null;
+    let saved: string | null = null;
+    try { saved = id ? localStorage.getItem(`wbo-match-${id}-own`) || localStorage.getItem(`wbo-match-${id}-oppo`) : null; }
+    catch { setRequestError("无法读取本地房间凭据"); }
+    if (id && saved) {
+      try {
+        const auth = JSON.parse(saved);
+        if (auth.id === id && typeof auth.token === "string" && (auth.side === "own" || auth.side === "oppo")) { setMatchAuth(auth); return; }
+      } catch { setRequestError("本地房间凭据无效"); }
+    }
     if (id && code) {
-      fetch(
-        `http://127.0.0.1:8080/api/matches/${id}/join?code=${encodeURIComponent(code)}`,
-        { method: "POST" },
-      )
-        .then((response) => {
-          if (!response.ok) throw new Error();
-          return response.json();
-        })
-        .then((data: Remote) => {
-          history.replaceState(null, "", `?match=${id}`);
-          acceptMatch(data);
-        })
-        .catch(() => setMessage("加入码无效或房间已满"));
-    } else if (id && saved) {
-      const auth = JSON.parse(saved) as {
-        id: string;
-        token: string;
-        side: string;
-      };
-      setMatchAuth(auth);
-      return;
-    } else createMatch();
+      setJoinRoomId(id);
+      setJoinRoomCode(code);
+      setActivePage("rooms");
+    }
   }, []);
   useEffect(() => {
     if (!matchAuth) return;
-    const refresh = () =>
-      fetch(`http://127.0.0.1:8080/api/matches/${matchAuth.id}`, {
-        headers: { Authorization: `Bearer ${matchAuth.token}` },
-      })
-        .then((response) => (response.ok ? response.json() : Promise.reject()))
-        .then((data: Remote) => {
-          data.matchId = matchAuth.id;
-          data.playerToken = matchAuth.token;
-          data.side = matchAuth.side;
-          setRemote(data);
-          sync(data);
-        })
-        .catch(() => undefined);
-    refresh();
-    const timer = window.setInterval(refresh, 700);
-    return () => window.clearInterval(timer);
+    const client = new MatchConnection({
+      base: API_BASE,
+      auth: matchAuth,
+      onRemote: (data) => matchCallbacks.current.receive(data),
+      onStatus: setConnectionStatus,
+      onError: setRequestError,
+    });
+    connection.current = client;
+    client.start();
+    return () => { client.stop(); if (connection.current === client) connection.current = null; };
   }, [matchAuth]);
+  useEffect(() => {
+    if (activePage !== "rooms") return;
+    const controller = new AbortController();
+    const refreshRooms = () => fetch(`${API_BASE}/api/matches`, { signal: controller.signal }).then((r) => r.ok ? r.json() : []).then(setRoomList).catch((error) => { if (error?.name !== "AbortError") setRoomList([]); });
+    refreshRooms();
+    const timer = window.setInterval(refreshRooms, 5000);
+    return () => { window.clearInterval(timer); controller.abort(); };
+  }, [activePage, matchAuth, remote?.waiting]);
+  useEffect(() => {
+    if (!matchAuth) return;
+    const controller = new AbortController();
+    fetch(`${API_BASE}/api/matches/${matchAuth.id}/replay`, {
+      headers: { Authorization: `Bearer ${matchAuth.token}` },
+      signal: controller.signal,
+    })
+      .then((response) => response.ok ? response.json() : Promise.reject())
+      .then((data: ReplayResponse) => {
+        if (controller.signal.aborted) return;
+        setReplayError("");
+        setSavedReplays((current) => mergeReplay(current, data, catalog));
+      })
+      .catch(() => { if (!controller.signal.aborted) setReplayError("录像同步失败"); });
+    return () => controller.abort();
+  }, [matchAuth, remote?.state.revision, catalog, replayRetry]);
+  useEffect(() => {
+    setReplayStorageError(!persistReplays(savedReplays));
+  }, [savedReplays]);
 
   const sync = (data: Remote) => {
-    setHand(data.state.own.hand.map(cardFor));
-    if (data.events?.length)
-      setEvents(
-        data.events
+    setHand((data.state.own.hand || []).map(cardFor));
+    setSelected((current) => {
+      if (!current?.instanceId) return current;
+      const visible = [...(data.state.own.hand || []), ...data.state.own.field, ...data.state.oppo.field];
+      const entity = visible.find((item) => item.instanceId === current.instanceId);
+      return entity ? cardFor(entity) : null;
+    });
+    setEvents(
+        (data.events ?? [])
           .slice(-4)
           .reverse()
-          .map((event) => eventLabel(event, data)),
+          .map((event) => eventLabel(event, data, catalog)),
       );
   };
-  const send = (input: Record<string, unknown>) => {
-    if (!remote || !matchAuth) return;
+  matchCallbacks.current.receive = (data) => {
+    if (remote?.state.pendingChoice?.requestId !== data.state.pendingChoice?.requestId) {
+      setChoiceSelection([]);
+      setChoiceOption(null);
+    }
+    setRemote(data);
+    sync(data);
+  };
+  const send = async (input: Record<string, unknown>) => {
+    if (!remote || !matchAuth || !connection.current) return false;
     if (remote.state.gameOver) {
       setMessage("对局已经结束");
-      return;
+      return false;
     }
     const actionId =
       typeof input.actionId === "string"
@@ -346,54 +358,31 @@ export function App() {
         : `${Date.now().toString(16)}${Math.random().toString(16).slice(2)}`
             .padEnd(32, "0")
             .slice(0, 32);
-    fetch(`http://127.0.0.1:8080/api/matches/${matchAuth.id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${matchAuth.token}`,
-      },
-      body: JSON.stringify({ ...input, actionId }),
-    })
-      .then((response) => response.json())
-      .then((data: Remote) => {
-        data.matchId = matchAuth.id;
-        data.playerToken = matchAuth.token;
-        data.side = matchAuth.side;
-        setRemote(data);
-        sync(data);
+    const client = connection.current;
+    const accepted = await client.submit({ ...input, actionId });
+    if (accepted && connection.current === client) {
         setAttacker(null);
         setChoiceSelection([]);
         setChoiceOption(null);
-        if (data.result?.errorCode)
-          setMessage(`操作未完成：${data.result.errorCode}`);
-      });
+        setSelected(null);
+        setRequestError("");
+    }
+    return accepted;
   };
   const legal = (kind: string, source?: string, defender?: string) =>
-    remote?.legalActions?.some(
+    connectionStatus === "connected" && (remote?.legalActions?.some(
       (action) =>
         action.kind === kind &&
         (!source || action.source === source) &&
         (!defender || action.defender === defender),
-    ) ?? false;
-  const submitMulligan = () => {
-    if (!matchAuth || remote?.mulliganReady) return;
-    fetch(`http://127.0.0.1:8080/api/matches/${matchAuth.id}/mulligan`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${matchAuth.token}`,
-      },
-      body: JSON.stringify({ selectedInstanceIds: mulliganSelection }),
-    })
-      .then((response) => response.json())
-      .then((data: Remote) => {
-        data.matchId = matchAuth.id;
-        data.playerToken = matchAuth.token;
-        data.side = matchAuth.side;
-        setRemote(data);
-        sync(data);
+    ) ?? false);
+  const submitMulligan = async () => {
+    if (!matchAuth || remote?.mulliganReady || !connection.current) return;
+    const client = connection.current;
+    if (await client.submit({ selectedInstanceIds: mulliganSelection }, "/mulligan") && connection.current === client) {
         setMulliganSelection([]);
-      });
+        setRequestError("");
+    }
   };
   const submitAttack = (source: string, defender?: string) => {
     setFeedback({ attacker: source, defender, leader: !defender });
@@ -429,7 +418,7 @@ export function App() {
         stateRevision: pending.stateRevision,
         selectedOptionId: choiceOption,
       });
-    else if (choiceSelection.length >= pending.minSelections)
+    else if (choiceSelection.length >= pending.minSelections && choiceSelection.length <= pending.maxSelections)
       send({
         requestId: pending.requestId,
         actionId: pending.actionId,
@@ -447,7 +436,6 @@ export function App() {
       return;
     }
     send({ kind, source: card.instanceId });
-    setSelected(null);
     setMessage(
       kind === "fusion"
         ? "请选择融合材料"
@@ -467,10 +455,8 @@ export function App() {
         setMessage("这张卡牌当前无法使用");
         return;
       }
-      setHand((items) =>
-        items.filter((item) => item.instanceId !== card.instanceId),
-      );
       send({ kind: "play", source: card.instanceId });
+      return;
     } else {
       setDemoPP((value) => value - card.cost);
       setHand((items) => items.filter((item) => item.id !== card.id));
@@ -490,15 +476,15 @@ export function App() {
       setMessage("当前不能结束回合");
       return;
     }
-    if (remote)
+    if (remote) {
       send({
         kind: "end_turn",
         ...(remote.state.turn.active === "oppo" ? { actor: "oppo" } : {}),
       });
+      return;
+    }
     setEvents((items) => ["回合结束", ...items].slice(0, 4));
-    setMessage(
-      remote?.state.turn.active === "oppo" ? "对手回合结束" : "等待对手回合",
-    );
+    setMessage("等待对手回合");
   };
   const selectOwn = (card: Card) => {
     if (!card.instanceId) return;
@@ -604,6 +590,58 @@ export function App() {
   const pp = own?.pp ?? demoPP;
   const maxPP = own?.maxpp ?? 5;
 
+  const navigate = (page: typeof activePage) => {
+    setActivePage(page);
+    const params = new URLSearchParams(location.search);
+    if (page === "battle") params.delete("page"); else params.set("page", page);
+    history.replaceState(null, "", `${location.pathname}${params.toString() ? `?${params}` : ""}`);
+    if (page === "battle" && !matchAuth) createMatch();
+  };
+  const joinRoom = async () => {
+    if (roomRequest.current || !joinRoomId.trim() || !joinRoomCode.trim()) return;
+    if (deckErrors.length) { setRequestError(deckErrors[0]); navigate("decks"); return; }
+    roomRequest.current = true;
+    setRoomBusy(true);
+    setRequestError("");
+    try {
+      const response = await fetch(`${API_BASE}/api/matches/${encodeURIComponent(joinRoomId.trim())}/join?code=${encodeURIComponent(joinRoomCode.trim())}`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ deck: deckCards.map(Number) }),
+      });
+      if (!response.ok) throw new Error(response.status === 401 ? "邀请码无效" : response.status === 409 ? "房间已满" : await response.text());
+      const data: Remote = await response.json();
+      if (!data.matchId || !data.playerToken || data.side !== "oppo" || !data.state) throw new Error("房间响应无效");
+      history.replaceState(null, "", `?match=${data.matchId}`);
+      acceptMatch(data);
+      setActivePage("battle");
+    } catch (error) { setRequestError(error instanceof Error ? error.message : "无法加入房间"); }
+    finally { roomRequest.current = false; setRoomBusy(false); }
+  };
+  const workspacePage = activePage === "home" ? (
+    <section className="workspace-page home-page">
+      <div className="workspace-hero"><span className="eyebrow">WBO OSIRIS</span><h1>战术牌桌，随时开战</h1><p>构筑卡组，加入房间，记录每一次精彩对局。</p><button className="primary-action" onClick={() => navigate("battle")}><Play size={17}/>快速开始</button></div>
+      <div className="workspace-grid"><article><small>当前房间</small><strong>{matchAuth ? matchAuth.id : "尚未加入"}</strong><button onClick={() => navigate("rooms")}>管理房间</button></article><article><small>最近对局</small><strong>{events[0] ?? "暂无记录"}</strong><button onClick={() => navigate("replays")}>查看录像</button></article><article><small>当前牌组</small><strong>{classNames[deckClass]} · {deckCards.length}/40</strong><button onClick={() => navigate("decks")}>打开卡组</button></article></div>
+    </section>
+  ) : activePage === "decks" ? (
+    <DeckBuilder cards={catalogCards} deck={deckCards} onChange={changeDeck} onPractice={fillPracticeDeck} onBattle={createMatch} loading={catalogLoading} busy={roomBusy} error={catalogError} onRetry={() => setCatalogVersion((version) => version + 1)}/>
+  ) : activePage === "replays" ? (
+    <section className="workspace-page replay-page">
+      <div className="page-heading"><div><span className="eyebrow">MATCH LOG</span><h1>录像</h1></div></div>
+      {replayError && <p role="alert">{replayError} <button onClick={() => setReplayRetry((value) => value + 1)}>重试</button></p>}
+      {replayStorageError && <p role="alert">本地存储空间不足或不可用，新录像仅保留在当前页面。</p>}
+      {replaySelection ? (() => {
+        const record = savedReplays.find((item) => item.id === replaySelection);
+        return record ? <ReplayViewer key={record.id} record={record} catalog={catalog} onClose={() => setReplaySelection(null)} /> : null;
+      })() : <div className="replay-list">{savedReplays.length ? savedReplays.map((record) => <article key={record.id}>
+        <Film size={18}/><div><strong>{record.matchId === "本地记录" ? record.events[0] : `房间 ${record.matchId}`}</strong>
+          <small>第 {record.turn} 回合 · {record.events.length} 条事件 · {record.frames?.length || 0} 帧{record.viewer ? ` · ${record.viewer === "own" ? "房主" : "客方"}视角` : ""}{record.winner ? ` · ${record.winner === "draw" ? "平局" : record.winner === "own" ? "我方胜利" : "对手胜利"}` : ""}</small>
+          <p className="replay-events">{record.events.slice(-3).join(" · ")}</p>
+        </div><button onClick={() => setReplaySelection(record.id)}><Play size={15}/>查看</button>
+      </article>) : <p className="empty-state">暂无录像</p>}</div>}
+    </section>
+  ) : activePage === "rooms" ? (
+    <section className="workspace-page"><div className="page-heading"><div><span className="eyebrow">NETWORK</span><h1>房间</h1></div><button className="primary-action" disabled={roomBusy || catalogLoading} onClick={createMatch}><Plus size={17}/>创建房间</button></div><div className="room-deck-status">当前牌组：{deckCards.length}/40 · {deckErrors.length ? deckErrors[0] : "可用于对战"}<button onClick={() => navigate("decks")}>编辑牌组</button></div><div className="room-panel">{matchAuth ? <><span className="status-dot"/>当前房间 <strong>{matchAuth.id}</strong><small>{remote?.waiting ? `等待对手加入 · 邀请码 ${joinCode}` : "对局进行中"}</small><button onClick={() => navigate("battle")}><DoorOpen size={15}/>进入牌桌</button></> : <p className="empty-state">暂无活动房间</p>}</div><div className="join-panel"><h2>加入房间</h2><input aria-label="房间 ID" value={joinRoomId} onChange={(e) => setJoinRoomId(e.target.value)} placeholder="房间 ID"/><input aria-label="邀请码" value={joinRoomCode} onChange={(e) => setJoinRoomCode(e.target.value)} placeholder="邀请码"/><button disabled={roomBusy || catalogLoading || !joinRoomId.trim() || !joinRoomCode.trim()} onClick={joinRoom}><DoorOpen size={15}/>{roomBusy ? "连接中" : "使用牌组加入"}</button></div><div className="room-directory"><h2>公开房间</h2>{roomList.length ? roomList.map((room) => <div className="room-entry" key={room.id}><span>{room.id}</span><small>{room.waiting ? "等待加入" : "对局进行中"}</small></div>) : <p className="empty-state">暂无公开房间</p>}</div></section>
+  ) : null;
+
   const arc = dragGuide
     ? `M ${dragGuide.x1} ${dragGuide.y1} Q ${(dragGuide.x1 + dragGuide.x2) / 2} ${Math.min(dragGuide.y1, dragGuide.y2) - Math.max(55, Math.abs(dragGuide.x2 - dragGuide.x1) * 0.18)} ${dragGuide.x2} ${dragGuide.y2}`
     : "";
@@ -616,28 +654,29 @@ export function App() {
       onPointerCancel={() => setDragGuide(null)}
     >
       <div className="battle-vignette" />
+      {requestError && <div className="network-notice" role="alert"><span>{requestError}</span><button aria-label="关闭提示" title="关闭" onClick={() => setRequestError("")}><X size={17}/></button></div>}
+      {matchAuth && activePage === "battle" && connectionStatus !== "connected" && (
+        <div className={`match-connection ${connectionStatus}`} role="status">
+          {connectionStatus === "sending" ? "正在提交" : connectionStatus === "connecting" ? "正在连接对局" : "连接中断，正在同步"}
+        </div>
+      )}
       <header className="battle-topbar">
+        <nav className="main-nav">{([["home", Home, "主页"],["battle", Swords, "对战"],["decks", Layers, "卡组"],["replays", Film, "录像"],["rooms", DoorOpen, "房间"]] as const).map(([page, Icon, label]) => <button key={page} className={activePage === page ? "active" : ""} onClick={() => navigate(page)} title={label}><Icon size={17}/><span>{label}</span></button>)}</nav>
         <div className="topbar-actions">
           <button title="帮助">
             <CircleHelp size={18} />
           </button>
           <button
             title="创建新对局"
-            onClick={() => {
-              if (matchAuth)
-                localStorage.removeItem(
-                  `wbo-match-${matchAuth.id}-${matchAuth.side}`,
-                );
-              history.replaceState(null, "", location.pathname);
-              setMatchAuth(null);
-              setJoinCode("");
-              createMatch();
-            }}
+            disabled={roomBusy}
+            onClick={createMatch}
           >
             <Menu size={18} />
           </button>
         </div>
       </header>
+      {activePage !== "battle" && workspacePage}
+      <div className={activePage !== "battle" ? "battle-table dimmed" : "battle-table"}>
       <section className="battle-table">
         <div className="leader-hud opponent-hud">
           <div className="opponent-side-meta">
@@ -649,7 +688,7 @@ export function App() {
             <ZoneBanner
               hand={oppo?.handCount ?? 0}
               deck={oppo?.deckCount ?? 0}
-              grave={oppo?.graveyard?.length ?? 0}
+              grave={oppo?.shadows ?? 0}
             />
           </div>
           <div className="leader-core">
@@ -780,7 +819,7 @@ export function App() {
             <ZoneBanner
               hand={own?.handCount ?? hand.length}
               deck={own?.deckCount ?? 0}
-              grave={own?.graveyard?.length ?? 0}
+              grave={own?.shadows ?? 0}
             />
           </div>
           <div className="leader-core">
@@ -808,7 +847,7 @@ export function App() {
           <ResourcePanel pp={oppo?.pp ?? 0} max={oppo?.maxpp ?? 0} enemy />
           <button
             className="end-turn"
-            disabled={remote?.waiting || remote?.state.turn.active !== "own"}
+            disabled={!legal("end_turn")}
             onClick={endTurn}
           >
             <small>第 {remote?.state.turn.number ?? 1} 回合</small>
@@ -846,23 +885,45 @@ export function App() {
             ))}
           </aside>
         )}
-      </section>
+      </section></div>
       <section
         className={`hand-dock ${handExpanded ? "expanded" : "collapsed"}`}
-        onFocusCapture={() => setHandExpanded(true)}
+        aria-label="手牌"
+        onFocusCapture={(event) => {
+          if (event.target.matches(".hand-card:focus-visible"))
+            setHandExpanded(true);
+        }}
         onBlurCapture={(event) => {
-          if (!event.currentTarget.contains(event.relatedTarget as Node | null))
+          const next = event.relatedTarget as HTMLElement | null;
+          if (!event.currentTarget.contains(next) && !next?.closest(".card-inspector"))
             setHandExpanded(false);
         }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            setSelected(null);
+            setHandExpanded(false);
+          }
+        }}
       >
-        <div className="hand-row">
+        <button
+          className="hand-toggle"
+          title={handExpanded ? "收起手牌" : "展开手牌"}
+          aria-label={handExpanded ? "收起手牌" : "展开手牌"}
+          aria-expanded={handExpanded}
+          aria-controls="battle-hand"
+          onClick={() => setHandExpanded((expanded) => !expanded)}
+        >
+          {handExpanded ? <ChevronDown size={18}/> : <ChevronUp size={18}/>}
+          <span>{hand.length}</span>
+        </button>
+        <div className="hand-row" id="battle-hand">
           {hand.map((card, index) => (
             <HandCard
               key={card.instanceId ?? card.id}
               card={card}
               index={index}
               selected={
-                selected?.id === card.id ||
+                Boolean(selected && (selected.instanceId ?? selected.id) === (card.instanceId ?? card.id)) ||
                 Boolean(
                   card.instanceId &&
                     (choiceSelection.includes(card.instanceId) ||
@@ -879,14 +940,15 @@ export function App() {
                           (candidate) =>
                             candidate.instanceId === card.instanceId,
                         )
-                      : legal("play", card.instanceId)),
+                      : legal("play", card.instanceId) || legal("fusion", card.instanceId)),
                 )
               }
               onClick={() => {
+                setHandExpanded(true);
                 if (
                   remote?.matchPhase === "mulligan" &&
                   card.instanceId &&
-                  !remote.mulliganReady
+                  !remote.mulliganReady && connectionStatus === "connected"
                 )
                   setMulliganSelection((items) =>
                     items.includes(card.instanceId!)
@@ -899,7 +961,7 @@ export function App() {
                     instanceId: card.instanceId,
                   });
                 else {
-                  setSelected(selected?.id === card.id ? null : card);
+                  setSelected((current) => current && (current.instanceId ?? current.id) === (card.instanceId ?? card.id) ? null : card);
                   setMessage(`已选择 ${card.name}`);
                 }
               }}
@@ -939,7 +1001,7 @@ export function App() {
           ) : (
             <>
               <span>选择要替换的起始手牌</span>
-              <button onClick={submitMulligan}>
+              <button disabled={connectionStatus !== "connected"} onClick={submitMulligan}>
                 确认 ({mulliganSelection.length})
               </button>
             </>
@@ -948,7 +1010,7 @@ export function App() {
         </aside>
       )}
       {pending && (
-        <aside className="choice-panel">
+        <aside className={`choice-panel ${pending.kind === "mode" ? "mode-panel" : ""}`} aria-label={pending.kind === "mode" ? "选择模式" : "选择目标"}>
           <div className="choice-title">
             <b>
               {pending.kind === "fusion_material"
@@ -960,28 +1022,44 @@ export function App() {
             <small>
               {pending.kind === "mode"
                 ? "请选择一个模式"
-                : `请选择 ${pending.minSelections} 至 ${pending.maxSelections} 张`}
+                : pending.minSelections === pending.maxSelections
+                  ? `选择 ${pending.maxSelections} 张`
+                  : `选择 ${pending.minSelections} 至 ${pending.maxSelections} 张`}
             </small>
           </div>
-          <div className="choice-options">
+          <div className="choice-options" role={pending.kind === "mode" ? "radiogroup" : undefined} aria-label={pending.kind === "mode" ? "模式" : undefined}>
             {pending.candidates.map((candidate, index) =>
               candidate.optionId !== undefined ? (
-                <button
+                <label
                   className={`mode-option ${choiceOption === candidate.optionId ? "selected" : ""}`}
                   key={`option-${candidate.optionId}`}
-                  onClick={() => setChoiceOption(candidate.optionId!)}
                 >
-                  模式 {candidate.optionId}
-                </button>
+                  <input
+                    type="radio"
+                    name={`mode-${pending.requestId}`}
+                    value={candidate.optionId}
+                    checked={choiceOption === candidate.optionId}
+                    disabled={connectionStatus !== "connected"}
+                    onChange={() => setChoiceOption(candidate.optionId!)}
+                  />
+                  <span>
+                    <b>模式 {candidate.optionId}</b>
+                    {(candidate.labels?.chs || candidate.labels?.eng) && (
+                      <span className="mode-description">{candidate.labels?.chs || candidate.labels?.eng}</span>
+                    )}
+                  </span>
+                </label>
               ) : (
                 <button
                   className={`candidate-card ${candidate.instanceId && choiceSelection.includes(candidate.instanceId) ? "selected" : ""}`}
                   key={`candidate-${candidate.instanceId ?? index}`}
+                  aria-pressed={!!candidate.instanceId && choiceSelection.includes(candidate.instanceId)}
+                  disabled={choiceSelection.length >= pending.maxSelections && !choiceSelection.includes(candidate.instanceId ?? "")}
                   onClick={() => chooseCandidate(candidate)}
                 >
                   {candidateCard(candidate.instanceId) ? (
                     <>
-                      <img
+                      <CardArt
                         src={candidateCard(candidate.instanceId)!.art}
                         alt=""
                       />
@@ -997,9 +1075,9 @@ export function App() {
           <button
             className="choice-confirm"
             disabled={
-              pending.kind === "mode"
+              connectionStatus !== "connected" || (pending.kind === "mode"
                 ? choiceOption === null
-                : choiceSelection.length < pending.minSelections
+                : choiceSelection.length < pending.minSelections || choiceSelection.length > pending.maxSelections)
             }
             onClick={confirmChoice}
           >
@@ -1024,11 +1102,11 @@ export function App() {
         </aside>
       )}
       {selected && (
-        <aside className="card-inspector">
-          <button className="close-card" onClick={() => setSelected(null)}>
+        <aside className="card-inspector" data-instance-id={selected.instanceId}>
+          <button className="close-card" aria-label="关闭卡牌详情" title="关闭卡牌详情" onClick={() => setSelected(null)}>
             <X size={17} />
           </button>
-          <img src={selected.art} alt={selected.name} />
+          <CardArt src={selected.art} alt={selected.name} />
           <div>
             <small>
               {selected.type} · 费用 {selected.cost}
@@ -1059,7 +1137,7 @@ export function App() {
                   className="use-card"
                   onClick={() => doSourceAction("fusion", selected)}
                 >
-                  融合
+                  <Combine size={15}/>融合
                 </button>
               )}
               {selected.instanceId && legal("evolve", selected.instanceId) && (
@@ -1080,6 +1158,8 @@ export function App() {
                   </button>
                 )}
             </div>
+            <CounterValues counters={selected.counters}/>
+            <FusionDetails fusion={selected.fusion} catalog={catalog}/>
           </div>
         </aside>
       )}
@@ -1326,13 +1406,16 @@ function BoardCard({
       onClick={onClick}
     >
       <div className="board-art">
-        <img src={card.art} alt="" />
+        <CardArt src={card.art} alt="" />
       </div>
       {statuses.length > 0 && <StatusEffects statuses={statuses} />}
-      <div className="board-stats">
-        <b>{card.attack ?? 0}</b>
-        <em>{card.life ?? 0}</em>
-      </div>
+      <CounterValues counters={card.counters} compact/>
+      {card.type === "随从" && (
+        <div className="board-stats">
+          <b>{card.attack ?? 0}</b>
+          <em>{card.life ?? 0}</em>
+        </div>
+      )}
       {ward && (
         <span className="ward-overlay">
           <img src="/assets/status-ward.png" alt="" />
@@ -1376,6 +1459,9 @@ function HandCard({
   return (
     <button
       draggable={Boolean(card.instanceId)}
+      aria-label={`${card.name}，费用 ${card.cost}`}
+      aria-pressed={selected}
+      data-instance-id={card.instanceId}
       className={`hand-card hand-${index} ${selected ? "selected" : ""} ${active ? "active" : "inactive"}`}
       onClick={onClick}
       onDragStart={(event) => {
@@ -1385,8 +1471,9 @@ function HandCard({
       onDoubleClick={() => onDrop(card)}
     >
       <div className="hand-art">
-        <img src={card.art} alt={card.name} />
+        <CardArt src={card.art} alt={card.name} />
         <span className="hand-cost">{card.cost}</span>
+        <CounterValues counters={card.counters} compact/>
       </div>
       <div className="hand-info">
         <b>{card.name}</b>
@@ -1399,38 +1486,4 @@ function HandCard({
       </div>
     </button>
   );
-}
-
-function eventLabel(event: RuntimeEvent, remote: Remote): string {
-  const kind = event.kind ?? event.Kind ?? "event";
-  const actual = event.actual ?? event.Actual;
-  const target =
-    event.instanceId ??
-    event.InstanceID ??
-    event.subject?.instanceId ??
-    event.subject?.InstanceID ??
-    event.target?.instanceId ??
-    event.target?.InstanceID;
-  const entity = [
-    ...remote.state.own.hand,
-    ...remote.state.own.field,
-    ...remote.state.oppo.field,
-  ].find((item) => item.instanceId === target);
-  const name = entity ? cardFor(entity).name : "随从";
-  if (kind === "attacked") return `${name} 发起攻击`;
-  if (kind === "damaged")
-    return `${name} ${actual ? `受到 ${actual} 点伤害` : "受到伤害"}`;
-  if (kind === "healed")
-    return `${name} ${actual ? `回复 ${actual} 点生命` : "回复生命"}`;
-  if (kind === "follower_summoned") return `${name} 入场`;
-  if (kind === "evolved") return `${name} 完成进化`;
-  if (kind === "super_evolved") return `${name} 完成超进化`;
-  if (kind === "card_drawn") return "抽取卡牌";
-  if (kind === "destroyed") return `${name} 被破坏`;
-  if (kind === "turn_started")
-    return event.Side === "own" || event.side === "own"
-      ? "你的回合开始"
-      : "对手回合开始";
-  if (kind === "turn_ended") return "回合结束";
-  return kind.replaceAll("_", " ");
 }

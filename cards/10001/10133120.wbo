@@ -1,0 +1,65 @@
+wbo 0.1.0;
+
+card 10133120 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        fanfare {
+            add 2 earthsigil;
+        }
+        superevolve {
+            draw 2;
+            heal own.leader 2;
+            add 2 earthsigil;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class runecraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "魔法药剂师·佩内洛普";
+        text """
+【<color=Keyword>入场曲</color>】使自己的战场上的土之印+2。
+<hr><sev>【<color=Keyword>超进化时</color>】抽取2张卡牌。回复自己的主战者2点生命值。使自己的战场上的土之印+2。</sev>
+""";
+    }
+
+    locale eng {
+        name "Penelope, Potions Prodigy";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Gain 2 earth sigils.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Draw 2 cards. Restore 2 defense to your leader. Gain 2 earth sigils.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"まほう\">魔法</rub>の<rub=\"やくざいし\">薬剤師</rub>・ペネロピー";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の場の土の印を+2する。
+<hr><sev>【<color=Keyword>超進化時</color>】自分のデッキから2枚を引く。自分のリーダーを2回復。自分の場の土の印を+2する。</sev>
+""";
+    }
+
+    locale kor {
+        name "마법 약제사 페넬로피";
+        text """
+[<color=Keyword>출격</color>] 내 전장의 대지의 인장을 +2.
+<hr><sev>[<color=Keyword>초진화시</color>] 내 덱에서 2장을 뽑는다. 내 리더를 2 회복. 내 전장의 대지의 인장을 +2.</sev>
+""";
+    }
+
+    locale cht {
+        name "魔法藥劑師‧蓓妮露佩";
+        text """
+【<color=Keyword>入場曲</color>】使自己戰場上的土之印+2。
+<hr><sev>【<color=Keyword>超進化時</color>】由自己的牌堆中抽取2張卡片。回復自己的主戰者2點生命值。使自己戰場上的土之印+2。</sev>
+""";
+    }
+
+}

@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10124110 {
+    type follower;
+    cost 5;
+    stats 3/5;
+    trait levin;
+
+    effect {
+        storm;
+        enhance 9 {
+            damage oppo.field.followers 3;
+            set_attack_limit self 2;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class swordcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "雷维翁的迅雷·阿尔贝尔";
+        text """
+【<color=Keyword>爆能强化</color>_9】对对手的战场上的所有随从造成3点伤害。本随从获得「1回合可以攻击2次」。
+<hr>【<color=Keyword>疾驰</color>】
+""";
+    }
+
+    locale eng {
+        name "Albert, Levin Stormsaber";
+        text """
+<b><color=Keyword>Enhance</color> (9)</b>: Deal 3 damage to all enemy followers. Give this follower \"Can attack 2 times per turn.\"
+<hr><b><color=Keyword>Storm</color></b>
+""";
+    }
+
+    locale jpn {
+        name "レヴィオンの<rub=\"じんらい\">迅雷</rub>・アルベール";
+        text """
+【<color=Keyword>エンハンス</color>_9】相手の場のフォロワーすべてに3ダメージ。これは「1ターンに2回攻撃できる。」を持つ。
+<hr>【<color=Keyword>疾走</color>】
+""";
+    }
+
+    locale kor {
+        name "레비온의 뇌격 알베르";
+        text """
+[<color=Keyword>증강</color> 9] 상대방 전장의 추종자 모두에게 3 피해. 이 추종자는 「1턴에 2회 공격 가능」을 갖는다.
+<hr>[<color=Keyword>질주</color>]
+""";
+    }
+
+    locale cht {
+        name "雷維翁迅雷‧阿爾貝爾";
+        text """
+【<color=Keyword>爆能強化</color>_9】給予敵方戰場上全部的從者卡3點傷害。使這張卡片獲得「1回合中可進行2次攻擊」。
+<hr>【<color=Keyword>疾馳</color>】
+""";
+    }
+
+}

@@ -1,0 +1,94 @@
+wbo 0.1.0;
+
+card 10132310 {
+    type spell;
+    cost 3;
+
+    effect {
+        mode {
+            option 1 {
+                label chs "使自己的战场上的土之印+4。";
+                label eng "Gain 4 earth sigils.";
+                label jpn "自分の場の土の印を+4する。";
+                label kor "내 전장의 대지의 인장을 +4.";
+                label cht "使自己戰場上的土之印+4。";
+                add 4 earthsigil;
+            }
+            option 2 {
+                label chs "回复自己的主战者4点生命值。";
+                label eng "Restore 4 defense to your leader.";
+                label jpn "自分のリーダーを4回復。";
+                label kor "내 리더를 4 회복.";
+                label cht "回復自己的主戰者4點生命值。";
+                heal own.leader 4;
+            }
+            option 3 {
+                label chs "【土之秘术_3】对对手的战场上的所有随从造成4点伤害。";
+                label eng "Earth Rite (3) - Deal 4 damage to all enemy followers.";
+                label jpn "【土の秘術_3】相手の場のフォロワーすべてに4ダメージ。";
+                label kor "[대지의 비술 3] 상대방 전장의 추종자 모두에게 4 피해.";
+                label cht "【土之秘術_3】給予敵方戰場上全部的從者卡4點傷害。";
+                earthrite 3 {
+                    damage oppo.field.followers 4;
+                }
+            }
+        }
+    }
+
+    meta {
+        pack 10001;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "理光的证明";
+        text """
+【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）使自己的战场上的土之印+4。</ridx>
+<ridx=1>（2）回复自己的主战者4点生命值。</ridx>
+<ridx=2>（3）【<color=Keyword>土之秘术</color>_3】对对手的战场上的所有随从造成4点伤害。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Sagelight Teachings";
+        text """
+Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Gain 4 earth sigils.</ridx>
+<ridx=1>2. Restore 4 defense to your leader.</ridx>
+<ridx=2>3. <b><color=Keyword>Earth Rite</color> (3)</b> - Deal 4 damage to all enemy followers.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"りこう\">理光</rub>の<rub=\"しょうめい\">証明</rub>";
+        text """
+【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）自分の場の土の印を+4する。</ridx>
+<ridx=1>（2）自分のリーダーを4回復。</ridx>
+<ridx=2>（3）【<color=Keyword>土の秘術</color>_3】相手の場のフォロワーすべてに4ダメージ。</ridx>
+""";
+    }
+
+    locale kor {
+        name "이광의 증명";
+        text """
+[<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 내 전장의 대지의 인장을 +4.</ridx>
+<ridx=1>(2) 내 리더를 4 회복.</ridx>
+<ridx=2>(3) [<color=Keyword>대지의 비술</color> 3] 상대방 전장의 추종자 모두에게 4 피해.</ridx>
+""";
+    }
+
+    locale cht {
+        name "理光的證明";
+        text """
+指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）使自己戰場上的土之印+4。</ridx>
+<ridx=1>（2）回復自己的主戰者4點生命值。</ridx>
+<ridx=2>（3）【<color=Keyword>土之秘術</color>_3】給予敵方戰場上全部的從者卡4點傷害。</ridx>
+""";
+    }
+
+}

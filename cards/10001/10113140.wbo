@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10113140 {
+    type follower;
+    cost 3;
+    stats 0/2;
+
+    effect {
+        storm;
+        fanfare {
+            buff self +own.combo/+0;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class forestcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "屠戮破魔虫";
+        text """
+【<color=Keyword>入场曲</color>】本随从+X/+0。X为自己的【<color=Keyword>连击</color>】。
+<hr>【<color=Keyword>疾驰</color>】
+""";
+    }
+
+    locale eng {
+        name "Killer Rhinoceroach";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Give this follower +X/+0. X is your <b><color=Keyword>Combo</color></b>.
+<hr><b><color=Keyword>Storm</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"さつりく\">殺戮</rub>のリノセウス";
+        text """
+【<color=Keyword>ファンファーレ</color>】これは+X/+0する。Xは自分の【<color=Keyword>コンボ</color>】である。
+<hr>【<color=Keyword>疾走</color>】
+""";
+    }
+
+    locale kor {
+        name "살육의 리노세우스";
+        text """
+[<color=Keyword>출격</color>] 이 추종자는 +X/+0. X는 내 [<color=Keyword>콤보</color>].
+<hr>[<color=Keyword>질주</color>]
+""";
+    }
+
+    locale cht {
+        name "殺戮破魔蟲";
+        text """
+【<color=Keyword>入場曲</color>】使這張卡片+X/+0。X為「自己的【<color=Keyword>連擊</color>】數」。
+<hr>【<color=Keyword>疾馳</color>】
+""";
+    }
+
+}

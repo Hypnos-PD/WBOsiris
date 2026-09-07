@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10114120 {
+    type follower;
+    cost 9;
+    stats 6/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "丰丽的玫瑰皇后";
+        text """
+【<color=Keyword>入场曲</color>】使自己的手牌中的所有费用为2或以下的精灵·卡牌变身为『<color=Keyword>蔷薇之闪击</color>』。
+<hr>【<color=Keyword>守护</color>】
+1回合可以攻击2次。
+""";
+    }
+
+    locale eng {
+        name "Opulent Rose Queen";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Transform all Forestcraft cards in your hand that cost 2 or less into copies of <b><i><color=Keyword>Bramble Burst</color></i></b>.
+<hr><b><color=Keyword>Ward</color></b>
+Can attack 2 times per turn.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ほうれい\">豊麗</rub>なるローズクイーン";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札のコスト2以下のエルフ・カードすべては『<color=Keyword>薔薇の閃撃</color>』に変身する。
+<hr>【<color=Keyword>守護</color>】
+1ターンに2回攻撃できる。
+""";
+    }
+
+    locale kor {
+        name "풍려한 로즈 퀸";
+        text """
+[<color=Keyword>출격</color>] 비용이 2 이하인 내 패의 엘프 카드 모두는 <color=Keyword>장미의 섬격</color>으로 변신한다.
+<hr>[<color=Keyword>수호</color>]
+1턴에 2회 공격 가능.
+""";
+    }
+
+    locale cht {
+        name "豔麗的玫瑰皇后";
+        text """
+【<color=Keyword>入場曲</color>】使自己手牌中消費為2以下的全部精靈‧卡片變身為『<color=Keyword>薔薇的閃擊</color>』。
+<hr>【<color=Keyword>守護</color>】
+1回合中可進行2次攻擊。
+""";
+    }
+
+}

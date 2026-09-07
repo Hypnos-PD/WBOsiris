@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10142120 {
+    type follower;
+    cost 3;
+    stats 2/1;
+
+    effect {
+        storm;
+        fanfare {
+            if overflow {
+                add intimidate to self;
+            }
+        }
+    }
+
+    meta {
+        pack 10001;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "御风者·叶花";
+        text """
+【<color=Keyword>入场曲</color>】若为【<color=Keyword>觉醒</color>】，则本随从获得【<color=Keyword>威慑</color>】。
+<hr>【<color=Keyword>疾驰</color>】
+""";
+    }
+
+    locale eng {
+        name "Eyfa, Windrider";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If you're in <b><color=Keyword>Overflow</color></b>, give this follower <b><color=Keyword>Intimidate</color></b>.
+<hr><b><color=Keyword>Storm</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"かぜ\">風</rub>を<rub=\"か\">駆</rub>る<rub=\"もの\">者</rub>・エイファ";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>覚醒</color>】なら、これは【<color=Keyword>威圧</color>】を持つ。
+<hr>【<color=Keyword>疾走</color>】
+""";
+    }
+
+    locale kor {
+        name "바람을 가르는 자 에이파";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>각성</color>]이라면, 이 추종자는 [<color=Keyword>위압</color>]을 갖는다.
+<hr>[<color=Keyword>질주</color>]
+""";
+    }
+
+    locale cht {
+        name "追風者‧葉花";
+        text """
+【<color=Keyword>入場曲</color>】如果【<color=Keyword>覺醒</color>】已發動，則會使這張卡片獲得【<color=Keyword>威懾</color>】。
+<hr>【<color=Keyword>疾馳</color>】
+""";
+    }
+
+}

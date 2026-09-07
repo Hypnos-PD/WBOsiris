@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10124130 {
+    type follower;
+    cost 3;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class swordcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "常在战场·景光";
+        text """
+【<color=Keyword>谢幕曲</color>】使自己获得『纹章：常在战场·景光』。
+<hr><sev>【<color=Keyword>超进化时</color>】本随从获得【<color=Keyword>疾驰</color>】。</sev>
+""";
+    }
+
+    locale eng {
+        name "Kagemitsu, Enduring Warrior";
+        text """
+<b><color=Keyword>Last Words</color></b>: Gain <b><i>Crest: Kagemitsu, Enduring Warrior</i></b>.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Give this follower <b><color=Keyword>Storm</color></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"じょうざいせんじょう\">常在戦場</rub>・カゲミツ";
+        text """
+【<color=Keyword>ラストワード</color>】自分は『クレスト：常在戦場・カゲミツ』を持つ。
+<hr><sev>【<color=Keyword>超進化時</color>】これは【<color=Keyword>疾走</color>】を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "항재전장 카게미츠";
+        text """
+[<color=Keyword>유언</color>] 나는 「크레스트: 항재전장 카게미츠」를 갖는다.
+<hr><sev>[<color=Keyword>초진화시</color>] 이 추종자는 [<color=Keyword>질주</color>]를 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "備戰不息‧景光";
+        text """
+【<color=Keyword>謝幕曲</color>】使自己獲得『紋章：備戰不息‧景光』。
+<hr><sev>【<color=Keyword>超進化時</color>】使這張卡片獲得【<color=Keyword>疾馳</color>】。</sev>
+""";
+    }
+
+}

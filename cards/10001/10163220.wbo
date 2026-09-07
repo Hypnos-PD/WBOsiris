@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10163220 {
+    type amulet;
+    cost 6;
+
+    effect {
+        engage 0 {
+            destroy self;
+            destroy field.followers;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class havencraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "邪教法器";
+        text """
+【<color=Keyword>启动</color>】破坏本卡牌。破坏战场上的所有随从。
+""";
+    }
+
+    locale eng {
+        name "Unholy Vessel";
+        text """
+<b><color=Keyword>Engage</color></b>: Destroy this card and all followers.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"じゃきょう\">邪教</rub>の<rub=\"うつわ\">器</rub>";
+        text """
+【<color=Keyword>アクト</color>】これを破壊。場のフォロワーすべてを破壊。
+""";
+    }
+
+    locale kor {
+        name "사교의 잔";
+        text """
+[<color=Keyword>활성화</color>] 이 마법진을 파괴. 전장의 추종자 모두를 파괴.
+""";
+    }
+
+    locale cht {
+        name "邪教之器";
+        text """
+【<color=Keyword>策動</color>】破壞這張卡片。破壞戰場上全部的從者卡。
+""";
+    }
+
+}

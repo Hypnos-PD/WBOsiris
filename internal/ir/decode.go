@@ -319,6 +319,7 @@ func decodeSources(items []json.RawMessage) ([]Source, error) {
 
 func decodeCard(data []byte, abilityIDs, nodeIDs map[string]bool) (Card, error) {
 	type rawCard struct {
+		Counters        map[string]int    `json:"counters,omitempty"`
 		ID              int               `json:"id"`
 		CardType        string            `json:"cardType"`
 		Cost            int               `json:"cost"`
@@ -351,14 +352,15 @@ func decodeCard(data []byte, abilityIDs, nodeIDs map[string]bool) (Card, error) 
 		}
 	}
 	for _, trait := range raw.Traits {
-		if trait == "" {
-			return Card{}, fmt.Errorf("empty trait")
+		if !ValidTrait(trait) {
+			return Card{}, fmt.Errorf("invalid trait %q", trait)
 		}
 	}
 	if !validOrigin(raw.Origin) {
 		return Card{}, fmt.Errorf("malformed card origin")
 	}
 	c := Card{ID: raw.ID, CardType: raw.CardType, Cost: raw.Cost, Stats: raw.Stats, Traits: raw.Traits, Intrinsic: raw.Intrinsic, Meta: raw.Meta, Locales: raw.Locales, Origin: raw.Origin}
+	c.Counters = raw.Counters
 	for _, x := range raw.IntrinsicState {
 		type v struct {
 			Kind    string `json:"kind"`
@@ -427,7 +429,7 @@ func decodeCard(data []byte, abilityIDs, nodeIDs map[string]bool) (Card, error) 
 		}
 		c.ActionPlans = append(c.ActionPlans, plan)
 	}
-	return c, nil
+	return c, validateCounterRefs(c)
 }
 
 type ActionPlanRaw struct {
@@ -554,6 +556,7 @@ func decodeTrigger(data []byte) (Trigger, error) {
 			Event       string          `json:"event"`
 			Side        string          `json:"side"`
 			SubjectType string          `json:"subjectType,omitempty"`
+			SelfOnly    bool            `json:"selfOnly,omitempty"`
 			Predicate   json.RawMessage `json:"predicate,omitempty"`
 		}
 		var v raw
@@ -565,10 +568,13 @@ func decodeTrigger(data []byte) (Trigger, error) {
 		if len(v.Predicate) > 0 {
 			p, err = decodePredicate(v.Predicate)
 		}
-		if !validSide(v.Side) || !oneOf(v.Event, "follower_summoned", "amulet_engaged", "turn_started", "turn_ended") || v.SubjectType != "" && !oneOf(v.SubjectType, "follower", "amulet") {
+		if !validSide(v.Side) || !oneOf(v.Event, "follower_summoned", "amulet_engaged", "card_discarded", "turn_started", "turn_ended", "evolved", "super_evolved") || v.SubjectType != "" && !oneOf(v.SubjectType, "follower", "amulet") {
 			return nil, fmt.Errorf("invalid event trigger")
 		}
-		return EventTrigger{v.Kind, v.Event, v.Side, v.SubjectType, p}, err
+		if v.SelfOnly && (v.Side != "own" || v.SubjectType != "follower" || !oneOf(v.Event, "evolved", "super_evolved") || p != nil) {
+			return nil, fmt.Errorf("invalid self evolution trigger")
+		}
+		return EventTrigger{Kind: v.Kind, Event: v.Event, Side: v.Side, SubjectType: v.SubjectType, SelfOnly: v.SelfOnly, Predicate: p}, err
 	case "replacement":
 		type raw struct {
 			Kind    string          `json:"kind"`
@@ -614,6 +620,7 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			Policy  string          `json:"policy"`
 			Binding string          `json:"binding"`
 			Source  json.RawMessage `json:"source"`
+			Count   json.RawMessage `json:"count"`
 			Origin  Origin          `json:"origin"`
 		}
 		var v raw
@@ -628,7 +635,13 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if v.Policy != wantPolicy || v.Binding == "" {
 			return nil, fmt.Errorf("invalid selection effect")
 		}
-		return SelectionEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Policy, v.Binding, s}, err
+		count := 0
+		if len(v.Count) != 0 {
+			if err := json.Unmarshal(v.Count, &count); err != nil || count < 1 || count > 65535 {
+				return nil, fmt.Errorf("invalid selection count")
+			}
+		}
+		return SelectionEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Policy: v.Policy, Binding: v.Binding, Source: s, Count: count}, err
 	case "if":
 		type raw struct {
 			ID        string            `json:"id"`
@@ -655,6 +668,26 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		}
 		b, err := decodeEffects(v.Else, nodeIDs)
 		return IfEffect{NodeBase{v.ID, v.Origin}, v.Kind, c, a, b}, err
+	case "repeat":
+		var v struct {
+			ID     string            `json:"id"`
+			Kind   string            `json:"kind"`
+			Times  json.RawMessage   `json:"times"`
+			Body   []json.RawMessage `json:"body"`
+			Origin Origin            `json:"origin"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
+			return nil, err
+		}
+		times, expr, err := decodeEffectAmount(v.Times)
+		if err != nil {
+			return nil, err
+		}
+		body, err := decodeEffects(v.Body, nodeIDs)
+		return RepeatEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Times: times, TimesExpr: expr, Body: body}, err
 	case "mode":
 		type raw struct {
 			ID      string            `json:"id"`
@@ -676,12 +709,13 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 				ID     int               `json:"id"`
 				Body   []json.RawMessage `json:"body"`
 				Origin Origin            `json:"origin"`
+				Labels map[string]string `json:"labels,omitempty"`
 			}
 			var o option
 			if err := strict(x, &o); err != nil {
 				return nil, err
 			}
-			if seen[o.ID] || o.ID <= 0 || o.ID > 65535 || !validOrigin(o.Origin) {
+			if seen[o.ID] || o.ID <= 0 || o.ID > 65535 || !validOrigin(o.Origin) || !ValidChoiceLabels(o.Labels) {
 				return nil, fmt.Errorf("duplicate mode option")
 			}
 			seen[o.ID] = true
@@ -689,7 +723,7 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			if err != nil {
 				return nil, err
 			}
-			e.Options = append(e.Options, ModeOption{o.ID, b, o.Origin})
+			e.Options = append(e.Options, ModeOption{ID: o.ID, Body: b, Origin: o.Origin, Labels: o.Labels})
 		}
 		if len(e.Options) < 2 {
 			return nil, fmt.Errorf("mode requires at least two options")
@@ -786,12 +820,18 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			}
 		}
 		return CardEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.Destination, v.Output, v.Count, v.CardID, v.MaxCost, v.TieBreak, v.PreserveInstanceID, v.PreserveMaterials, r}, err
-	case "damage", "heal", "buff_stats", "destroy", "banish", "return", "add_keyword", "remove_keyword", "silent_evolve":
+	case "damage", "heal", "buff_stats", "destroy", "banish", "return", "add_keyword", "remove_keyword", "silent_evolve", "set_attack_limit":
 		type raw struct {
 			ID                                                          string `json:"id"`
 			Kind, DamageType, Keyword, Form, Destination, DeckInsertion string
+			Distribution                                                string          `json:"distribution,omitempty"`
+			Overflow                                                    json.RawMessage `json:"overflow,omitempty"`
 			Target                                                      json.RawMessage `json:"target"`
-			Amount, AttackDelta, LifeDelta                              int
+			Amount                                                      int             `json:"-"`
+			AmountValue                                                 json.RawMessage `json:"amount"`
+			AttackDelta, LifeDelta                                      int             `json:"-"`
+			AttackValue                                                 json.RawMessage `json:"attackDelta"`
+			LifeValue                                                   json.RawMessage `json:"lifeDelta"`
 			Predicate                                                   json.RawMessage `json:"predicate,omitempty"`
 			Origin                                                      Origin          `json:"origin"`
 		}
@@ -810,6 +850,45 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if len(v.Predicate) > 0 {
 			p, err = decodePredicate(v.Predicate)
 		}
+		var amountExpr, attackExpr, lifeExpr NumericExpr
+		if len(v.AmountValue) > 0 {
+			var amountErr error
+			v.Amount, amountExpr, amountErr = decodeEffectAmount(v.AmountValue)
+			if amountErr != nil {
+				return nil, amountErr
+			}
+		}
+		if amountExpr != nil && v.Kind != "damage" && v.Kind != "heal" {
+			return nil, fmt.Errorf("numeric amount is only supported for damage and heal")
+		}
+		if len(v.AttackValue) > 0 {
+			var deltaErr error
+			v.AttackDelta, attackExpr, deltaErr = decodeNumericValue(v.AttackValue, true)
+			if deltaErr != nil {
+				return nil, deltaErr
+			}
+		}
+		if len(v.LifeValue) > 0 {
+			var deltaErr error
+			v.LifeDelta, lifeExpr, deltaErr = decodeNumericValue(v.LifeValue, true)
+			if deltaErr != nil {
+				return nil, deltaErr
+			}
+		}
+		if (attackExpr != nil || lifeExpr != nil) && v.Kind != "buff_stats" {
+			return nil, fmt.Errorf("numeric deltas are only supported for buffs")
+		}
+		var overflow Ref
+		if len(v.Overflow) > 0 {
+			var overflowErr error
+			overflow, overflowErr = decodeRef(v.Overflow)
+			if overflowErr != nil {
+				return nil, overflowErr
+			}
+		}
+		if !validDamageDistribution(v.Kind, v.Distribution, r, overflow) {
+			return nil, fmt.Errorf("invalid damage distribution")
+		}
 		switch v.Kind {
 		case "damage":
 			if v.DamageType != "effect" || v.Amount < 0 || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 {
@@ -820,7 +899,7 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 				return nil, fmt.Errorf("invalid heal shape")
 			}
 		case "buff_stats":
-			if v.DamageType != "" || v.Amount != 0 || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || p != nil {
+			if v.DamageType != "" || v.Amount != 0 || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" {
 				return nil, fmt.Errorf("invalid buff shape")
 			}
 		case "destroy", "banish":
@@ -836,12 +915,21 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 				return nil, fmt.Errorf("invalid keyword effect")
 			}
 		case "silent_evolve":
-			if v.Form != "evolved" || v.DamageType != "" || v.Amount != 0 || v.Keyword != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
+			if !oneOf(v.Form, "evolved", "super_evolved") || v.DamageType != "" || v.Amount != 0 || v.Keyword != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
 				return nil, fmt.Errorf("invalid silent evolve")
 			}
+		case "set_attack_limit":
+			if v.Amount < 1 || v.DamageType != "" || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
+				return nil, fmt.Errorf("invalid attack limit shape")
+			}
 		}
-		return TargetEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.DamageType, v.Keyword, v.Form, v.Destination, v.DeckInsertion, r, v.Amount, v.AttackDelta, v.LifeDelta, p}, err
-	case "adjust_resource", "adjust_earthsigil", "adjust_entity_field", "spellboost":
+		return TargetEffect{
+			NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, DamageType: v.DamageType,
+			Distribution: v.Distribution, Overflow: overflow,
+			Keyword: v.Keyword, Form: v.Form, Destination: v.Destination, DeckInsertion: v.DeckInsertion,
+			Target: r, Amount: v.Amount, AmountExpr: amountExpr, AttackDelta: v.AttackDelta, LifeDelta: v.LifeDelta, AttackExpr: attackExpr, LifeExpr: lifeExpr, Predicate: p,
+		}, err
+	case "adjust_resource", "restore_resource", "adjust_earthsigil", "adjust_entity_field", "spellboost", "adjust_counter":
 		type raw struct {
 			ID                           string `json:"id"`
 			Kind, Owner, Resource, Field string
@@ -862,8 +950,16 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			r, err = decodeRef(v.Target)
 		}
 		switch v.Kind {
+		case "adjust_counter":
+			if v.Owner != "" || v.Resource != "" || !ValidCounterName(v.Field) || r != nil || v.Minimum != 0 || v.Times != 0 || v.Delta < 0 || v.Delta > MaxCounterValue {
+				return nil, fmt.Errorf("invalid counter adjustment")
+			}
+		case "restore_resource":
+			if !validSide(v.Owner) || v.Resource != "pp" || v.Field != "" || r != nil || v.Delta != 0 || v.Minimum != 0 || v.Times != 0 {
+				return nil, fmt.Errorf("invalid resource restoration")
+			}
 		case "adjust_resource":
-			if !validSide(v.Owner) || !oneOf(v.Resource, "combo", "maxpp") || v.Field != "" || r != nil || v.Minimum != 0 || v.Times != 0 {
+			if !validSide(v.Owner) || !oneOf(v.Resource, "pp", "combo", "maxpp", "shadows") || v.Field != "" || r != nil || v.Minimum != 0 || v.Times != 0 {
 				return nil, fmt.Errorf("invalid resource adjustment")
 			}
 		case "adjust_earthsigil":
@@ -993,7 +1089,7 @@ func decodePredicate(data []byte) (Predicate, error) {
 	if err := json.Unmarshal(data, &k); err != nil {
 		return nil, err
 	}
-	if k.Kind == "and" {
+	if k.Kind == "and" || k.Kind == "or" {
 		var v struct {
 			Kind  string            `json:"kind"`
 			Terms []json.RawMessage `json:"terms"`
@@ -1002,7 +1098,7 @@ func decodePredicate(data []byte) (Predicate, error) {
 			return nil, err
 		}
 		if len(v.Terms) < 2 {
-			return nil, fmt.Errorf("and predicate requires at least two terms")
+			return nil, fmt.Errorf("%s predicate requires at least two terms", k.Kind)
 		}
 		p := AndPredicate{Kind: v.Kind}
 		for _, x := range v.Terms {
@@ -1011,6 +1107,9 @@ func decodePredicate(data []byte) (Predicate, error) {
 				return nil, err
 			}
 			p.Terms = append(p.Terms, t)
+		}
+		if k.Kind == "or" {
+			return OrPredicate{Kind: k.Kind, Terms: p.Terms}, nil
 		}
 		return p, nil
 	}
@@ -1059,10 +1158,22 @@ func decodePredicate(data []byte) (Predicate, error) {
 		if err := strict(data, &v); err != nil {
 			return nil, err
 		}
-		if v.Trait == "" {
-			return nil, fmt.Errorf("empty predicate trait")
+		if !ValidTrait(v.Trait) {
+			return nil, fmt.Errorf("invalid predicate trait %q", v.Trait)
 		}
 		return FieldPredicate{Kind: v.Kind, Trait: v.Trait}, nil
+	case "has_form":
+		var v struct {
+			Kind string `json:"kind"`
+			Form string `json:"form"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if !oneOf(v.Form, "unevolved", "evolved", "super_evolved") {
+			return nil, fmt.Errorf("invalid predicate form")
+		}
+		return FieldPredicate{Kind: v.Kind, Form: v.Form}, nil
 	case "compare":
 		var v struct {
 			Kind, Field, Op string
@@ -1109,11 +1220,14 @@ func decodeCondition(data []byte) (Condition, error) {
 	if err := strict(data, &v); err != nil {
 		return nil, err
 	}
-	if !oneOf(v.Left.Kind, "scalar", "fusion_material_scalar") || !validOp(v.Op) {
+	if !oneOf(v.Left.Kind, "scalar", "fusion_material_scalar", "self_counter") || !validOp(v.Op) {
 		return nil, fmt.Errorf("unknown scalar kind")
 	}
 	if v.Left.Kind == "scalar" && (!validSide(v.Left.Side) || !oneOf(v.Left.Field, "life", "pp", "maxpp", "ep", "sep", "combo", "shadows")) || v.Left.Kind == "fusion_material_scalar" && (v.Left.Side != "" || !oneOf(v.Left.Field, "cost", "distinct")) {
 		return nil, fmt.Errorf("invalid condition scalar")
+	}
+	if v.Left.Kind == "self_counter" && (v.Left.Side != "" || !ValidCounterName(v.Left.Field)) {
+		return nil, fmt.Errorf("invalid counter condition")
 	}
 	return CompareCondition{v.Kind, v.Op, v.Left, v.Right}, nil
 }
@@ -1144,11 +1258,28 @@ func validateCardRefs(c Card, cards map[int]bool) error {
 				if x.CardID != 0 && (!validCardID(x.CardID) || !cards[x.CardID]) {
 					return fmt.Errorf("bad card ref %d", x.CardID)
 				}
+			case AdjustEffect:
+				if x.Kind == "adjust_earthsigil" && x.Delta > 0 && !cards[MagicSedimentCardID] {
+					return fmt.Errorf("earth sigil gain requires card %d", MagicSedimentCardID)
+				}
+			case TargetEffect:
+				for _, expr := range []NumericExpr{x.AmountExpr, x.AttackExpr, x.LifeExpr} {
+					if err := numericCardRefs(expr, cards, c.CardType); err != nil {
+						return err
+					}
+				}
 			case IfEffect:
 				if err := walk(x.Then); err != nil {
 					return err
 				}
 				if err := walk(x.Else); err != nil {
+					return err
+				}
+			case RepeatEffect:
+				if err := numericCardRefs(x.TimesExpr, cards, c.CardType); err != nil {
+					return err
+				}
+				if err := walk(x.Body); err != nil {
 					return err
 				}
 			case ModeEffect:
@@ -1181,8 +1312,31 @@ func validateCardRefs(c Card, cards map[int]bool) error {
 	return nil
 }
 func validCardID(id int) bool { return id >= 10000000 && id <= 99999999 }
+
+func validatePredicateCardRefs(predicate Predicate, cards map[int]bool) error {
+	switch p := predicate.(type) {
+	case FieldPredicate:
+		if p.Kind == "has_card" && !cards[p.CardID] {
+			return fmt.Errorf("bad card ref %d", p.CardID)
+		}
+	case AndPredicate:
+		for _, term := range p.Terms {
+			if err := validatePredicateCardRefs(term, cards); err != nil {
+				return err
+			}
+		}
+	case OrPredicate:
+		for _, term := range p.Terms {
+			if err := validatePredicateCardRefs(term, cards); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 func validKeyword(v string) bool {
-	return oneOf(v, "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")
+	return oneOf(v, "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")
 }
 func validOp(v string) bool { return oneOf(v, "eq", "ne", "lt", "le", "gt", "ge") }
 func oneOf(s string, v ...string) bool {

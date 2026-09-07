@@ -1,0 +1,60 @@
+wbo 0.1.0;
+
+card 10133320 {
+    type spell;
+    cost 7;
+
+    effect {
+        spellboost {
+            reduce cost self 1 minimum 0;
+        }
+        summon 1 card 90031140;
+    }
+
+    meta {
+        pack 10001;
+        class runecraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "唤鬼术";
+        text """
+【<color=Keyword>魔力增幅时</color>】使本卡牌的费用-1。
+<hr>召唤1个『<color=Keyword>式神·暴鬼</color>』。
+""";
+    }
+
+    locale eng {
+        name "Demonic Call";
+        text """
+<b><color=Keyword>On Spellboost</color></b>: Reduce the cost of this card by 1.
+<hr>Summon a <b><i><color=Keyword>Demonic Shikigami</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"おによ\">鬼呼</rub>びの<rub=\"じゅつ\">術</rub>";
+        text """
+【<color=Keyword>スペルブースト時</color>】これのコストを-1する。
+<hr>『<color=Keyword>式神・暴鬼</color>』1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "혼령술";
+        text """
+[<color=Keyword>주문증폭시</color>] 이 주문의 비용을 -1.
+<hr><color=Keyword>식신 폭귀</color> 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "喚鬼之術";
+        text """
+【<color=Keyword>魔力增幅時</color>】使這張卡片的消費-1。
+<hr>召喚1張『<color=Keyword>式神‧暴鬼</color>』到自己的戰場上。
+""";
+    }
+
+}

@@ -163,8 +163,8 @@ func addToken(line, text, value string, indent int) string {
 		return line + " " + strings.Join(parts, "\n")
 	}
 	last := line[len(line)-1:]
-	noBefore := value == "." || value == "/" || value == "," || value == "]"
-	noAfterPrev := last == "." || last == "/" || last == "[" || last == "+" || last == "-"
+	noBefore := value == "." || value == "/" || value == "," || value == "]" || value == "(" || value == ")"
+	noAfterPrev := last == "." || last == "/" || last == "[" || last == "(" || last == "+" || last == "-"
 	if noBefore || noAfterPrev || (value == "+" || value == "-") {
 		return line + text
 	}

@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10134310 {
+    type spell;
+    cost 18;
+
+    effect {
+        spellboost {
+            reduce cost self 1 minimum 0;
+        }
+        return own.hand to deck;
+        draw 5;
+        spellboost own.hand 5;
+        restore own.pp;
+    }
+
+    meta {
+        pack 10001;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "超越次元";
+        text """
+【<color=Keyword>魔力增幅时</color>】使本卡牌的费用-1。
+<hr>使自己的所有手牌返回牌组。抽取5张卡牌。使自己的所有手牌发动5次魔力增幅。回复自己的能量点至上限。
+""";
+    }
+
+    locale eng {
+        name "Dimension Climb";
+        text """
+<b><color=Keyword>On Spellboost</color></b>: Reduce the cost of this card by 1.
+<hr>Return your hand to deck. Draw 5 cards. Spellboost your hand 5 times. Fully recover your play points.
+""";
+    }
+
+    locale jpn {
+        name "オーバーディメンション";
+        text """
+【<color=Keyword>スペルブースト時</color>】これのコストを-1する。
+<hr>自分の手札すべてをデッキに戻す。自分のデッキから5枚を引く。自分の手札すべては5回スペルブーストする。自分のPPを上限まで回復。
+""";
+    }
+
+    locale kor {
+        name "오버 디멘션";
+        text """
+[<color=Keyword>주문증폭시</color>] 이 주문의 비용을 -1.
+<hr>내 패 모두를 덱으로 되돌린다. 내 덱에서 5장을 뽑는다. 내 패 모두를 5회 주문증폭. 내 PP를 최대치까지 회복.
+""";
+    }
+
+    locale cht {
+        name "飛越次元";
+        text """
+【<color=Keyword>魔力增幅時</color>】使這張卡片的消費-1。
+<hr>使自己手牌中全部的卡片返回牌堆中。由自己的牌堆中抽取5張卡片。使自己手牌中全部的卡片發動5次魔力增幅。使自己的PP回復至上限。
+""";
+    }
+
+}

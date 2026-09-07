@@ -2,6 +2,7 @@ package runner
 
 import (
 	"fmt"
+	"maps"
 
 	"wbo/internal/ir"
 	"wbo/internal/ruleset"
@@ -20,18 +21,22 @@ type Result struct {
 func (r Result) Passed() bool { return len(r.Failures) == 0 }
 
 type instance struct {
-	id, alias, zone                                                        string
-	card                                                                   *ir.Card
-	attack, life, earthsigil, countdown, damageReduction, attackLimitValue int
-	attacksUsed                                                            int
-	engaged, summoningSick                                                 bool
-	evolved, superEvolved                                                  bool
-	abilities                                                              map[string]bool
-	materials                                                              []*instance
+	counters                                                                     map[string]int
+	id, alias, zone                                                              string
+	card                                                                         *ir.Card
+	attack, life, cost, earthsigil, countdown, damageReduction, attackLimitValue int
+	attacksUsed                                                                  int
+	engaged, summoningSick                                                       bool
+	evolved, superEvolved                                                        bool
+	departed                                                                     bool
+	abilities                                                                    map[string]bool
+	materials                                                                    []*instance
+	fusedThisTurn                                                                bool
 }
 type player struct {
 	pp, maxpp, leaderLife, leaderMax, ep, sep, combo, shadows int
 	deck, hand, field, graveyard, banished, destroyed         []*instance
+	resolving                                                 []*instance
 	attackedThisTurn, evolvedThisTurn                         bool
 	extraPPEarly, extraPPLate                                 bool
 	extraPPActive                                             bool
@@ -138,7 +143,7 @@ func runScenario(path string, s *ir.Scenario, cards map[int]*ir.Card) Result {
 		response := ChoiceResponse{RequestID: step.Choice.RequestID, ActionID: step.Choice.ActionID, StateRevision: step.Choice.StateRevision}
 		switch x := s.Actions[next].(type) {
 		case ir.SelectAction:
-			response.SelectedInstanceIDs = []string{x.Target}
+			response.SelectedInstanceIDs = x.InstanceIDs()
 		case ir.ModeAction:
 			response.SelectedOptionID = x.OptionID
 		default:
@@ -206,6 +211,21 @@ func (g *game) loadState(s ir.State) error {
 				}
 				i := g.newInstance(c, decl.InstanceID, decl.Alias, zone)
 				o := decl.Overrides
+				if !ir.ValidCounters(o.Counters) {
+					return fmt.Errorf("invalid initial counters")
+				}
+				for name, value := range o.Counters {
+					if _, ok := c.Counters[name]; !ok {
+						return fmt.Errorf("undeclared initial counter %q", name)
+					}
+					i.counters[name] = value
+				}
+				if o.Cost != nil {
+					if *o.Cost < 0 || *o.Cost > 65535 {
+						return fmt.Errorf("invalid initial card cost")
+					}
+					i.cost = *o.Cost
+				}
 				if o.Stats != nil {
 					i.attack, i.life = o.Stats.Attack, o.Stats.Life
 				}
@@ -237,7 +257,16 @@ func (g *game) loadState(s ir.State) error {
 	return nil
 }
 func (g *game) newInstance(c *ir.Card, id, alias, zone string) *instance {
-	i := &instance{id: id, alias: alias, card: c, zone: zone, abilities: map[string]bool{}}
+	i := &instance{id: id, alias: alias, zone: zone}
+	resetCardState(i, c)
+	g.instances[id] = i
+	return i
+}
+
+// Identity and attached materials survive replacement of the card's mutable state.
+func resetCardState(i *instance, c *ir.Card) {
+	*i = instance{id: i.id, alias: i.alias, zone: i.zone, materials: i.materials,
+		card: c, cost: c.Cost, abilities: map[string]bool{}, counters: maps.Clone(c.Counters)}
 	if c.Stats != nil {
 		i.attack, i.life = c.Stats.Attack, c.Stats.Life
 	}
@@ -255,8 +284,6 @@ func (g *game) newInstance(c *ir.Card, id, alias, zone string) *instance {
 			i.attackLimitValue = s.Initial
 		}
 	}
-	g.instances[id] = i
-	return i
 }
 
 func (g *game) reserveCreatedInstance() bool {
@@ -299,6 +326,8 @@ func (g *game) addToZone(p *player, i *instance, z string) {
 		g.triggerIndex.add(i)
 	case "graveyard":
 		p.graveyard = append(p.graveyard, i)
+	case "resolving":
+		p.resolving = append(p.resolving, i)
 	case "banished":
 		p.banished = append(p.banished, i)
 	case "destroyed":
@@ -323,7 +352,12 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 		if source == nil || source.zone != "hand" || !contains(g.player(x.Actor).hand, source) {
 			return "invalid_fusion_source"
 		}
-		if len(g.fusionCandidates(source)) == 0 {
+		if source.fusedThisTurn {
+			return "already_fused"
+		}
+		sandbox := *g
+		sandbox.budget = budget
+		if ability, _ := sandbox.availableFusion(source); ability == nil {
 			return "fusion_material_required"
 		}
 		return ""
@@ -362,7 +396,7 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 	switch x.Kind {
 	case "play":
 		actor := g.player(x.Actor)
-		if i.zone != "hand" || !contains(actor.hand, i) || actor.pp < i.card.Cost {
+		if i.zone != "hand" || !contains(actor.hand, i) || actor.pp < g.playCost(i, actor.pp) {
 			return "cost"
 		}
 		for _, restriction := range i.card.Restrictions {
@@ -376,12 +410,14 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 		sandbox := g.clone()
 		sandbox.budget = budget
 		sandboxSource := sandbox.instances[i.id]
+		enhanceCost := sandbox.enhanceCost(sandboxSource, actor.pp)
 		sandbox.applyPlaySetup(sandboxSource, false)
 		if code := sandbox.preflightRequirements(sandboxSource.card.PlayEffects, sandboxSource, frame{}, true); code != "" {
 			return code
 		}
 		for _, ability := range sandboxSource.card.Abilities {
-			if ir.TriggerKind(ability.Trigger) == "fanfare" {
+			trigger, isCost := ability.Trigger.(ir.CostTrigger)
+			if kind := ir.TriggerKind(ability.Trigger); kind == "fanfare" || kind == "enhance" && isCost && trigger.Cost <= enhanceCost {
 				if code := sandbox.preflightRequirements(ability.Body, sandboxSource, frame{}, true); code != "" {
 					return code
 				}
@@ -414,6 +450,8 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 			sandboxSource := sandbox.instances[i.id]
 			sandbox.player(x.Actor).ep--
 			sandboxSource.evolved = true
+			sandboxSource.attack += 2
+			sandboxSource.life += 2
 			if code := sandbox.preflightPlan(sandboxSource, plan); code != "" {
 				return code
 			}
@@ -432,6 +470,8 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 		sandboxSource := sandbox.instances[i.id]
 		sandbox.player(x.Actor).sep--
 		sandboxSource.evolved, sandboxSource.superEvolved = true, true
+		sandboxSource.attack += 3
+		sandboxSource.life += 3
 		abilities := map[string]ir.Ability{}
 		for _, ability := range sandboxSource.card.Abilities {
 			abilities[ability.ID] = ability
@@ -566,7 +606,7 @@ func (g *game) preflightAttack(a ir.AttackAction) string {
 
 func hasAttackableWard(p *player) bool {
 	for _, i := range p.field {
-		if i.card.CardType == "follower" && i.abilities["ward"] && !i.abilities["intimidate"] {
+		if i.card.CardType == "follower" && i.abilities["ward"] && !i.abilities["intimidate"] && !i.abilities["stealth"] {
 			return true
 		}
 	}
@@ -698,6 +738,10 @@ func attackLimit(i *instance) int {
 }
 
 func (g *game) damageLeader(target *player, side string, amount int) int {
+	return g.damageLeaderFrom(nil, target, side, amount)
+}
+
+func (g *game) damageLeaderFrom(source *instance, target *player, side string, amount int) int {
 	if amount < 0 {
 		amount = 0
 	}
@@ -706,6 +750,7 @@ func (g *game) damageLeader(target *player, side string, amount int) int {
 	event := ir.RuntimeEvent{Kind: "damaged", Side: side, Actual: actual, Target: &t}
 	if g.emit(event) {
 		target.leaderLife -= actual
+		removeStealthAfterEffectDamage(source, actual)
 		g.queueEventTriggers(event, nil, "")
 		if target.leaderLife == 0 {
 			g.finishGame(oppositeSide(side))
@@ -714,7 +759,7 @@ func (g *game) damageLeader(target *player, side string, amount int) int {
 	return actual
 }
 
-func (g *game) damageLeaders(amount int) {
+func (g *game) damageLeaders(source *instance, amount int) {
 	if amount < 0 {
 		amount = 0
 	}
@@ -730,6 +775,7 @@ func (g *game) damageLeaders(amount int) {
 		event := ir.RuntimeEvent{Kind: "damaged", Side: target.side, Actual: actual, Target: eventTarget}
 		if g.emit(event) {
 			target.player.leaderLife -= actual
+			removeStealthAfterEffectDamage(source, actual)
 			g.queueEventTriggers(event, nil, "")
 		}
 	}
@@ -769,12 +815,18 @@ func (g *game) damageInstanceFrom(source, target *instance, amount int, damageTy
 	}
 	actual := g.modifyDamage(damageContext{source: source, target: target, amount: amount, damageType: damageType})
 	target.life -= actual
+	if damageType == "effect" {
+		removeStealthAfterEffectDamage(source, actual)
+	}
 	t := &ir.EventTarget{Kind: "instance", InstanceID: target.id}
 	g.emitDamage(actual, t, target)
-	if actual > 0 && damageType == "effect" && source != nil && g.sideOf(source) != g.sideOf(target) {
-		delete(target.abilities, "stealth")
-	}
 	return actual
+}
+
+func removeStealthAfterEffectDamage(source *instance, actual int) {
+	if source != nil && actual > 0 {
+		delete(source.abilities, "stealth")
+	}
 }
 
 func (g *game) modifyDamage(context damageContext) int {
@@ -793,7 +845,7 @@ func (g *game) modifyDamage(context damageContext) int {
 func (g *game) destroyByEffect(targets []*instance) {
 	allowed := make([]*instance, 0, len(targets))
 	for _, target := range targets {
-		if target == nil || target.zone != "field" {
+		if target == nil || target.zone != "field" || target.earthsigil > 0 {
 			continue
 		}
 		if target.superEvolved && g.sideOf(target) == g.turn.Active {
@@ -828,32 +880,66 @@ func (g *game) emitDamage(amount int, target *ir.EventTarget, subject *instance)
 }
 
 func (g *game) commitPlay(i *instance) []execFrame {
+	enhanceCost := g.enhanceCost(i, g.owner(i).pp)
 	g.applyPlaySetup(i, true)
 	frames := []execFrame{{body: i.card.PlayEffects, blockID: cardPlayBlockID(i.card.ID), self: i, bindings: frame{}}}
 	for _, a := range i.card.Abilities {
-		if ir.TriggerKind(a.Trigger) == "fanfare" && (i.zone == "field" || i.card.CardType == "spell") {
+		kind := ir.TriggerKind(a.Trigger)
+		trigger, isCost := a.Trigger.(ir.CostTrigger)
+		if (kind == "fanfare" || kind == "enhance" && isCost && trigger.Cost <= enhanceCost) && (i.zone == "field" || i.card.CardType == "spell") {
 			frames = append(frames, execFrame{body: a.Body, blockID: abilityBlockID(i.card.ID, a.ID), self: i, bindings: frame{}})
 		}
 	}
 	return frames
 }
 
+func (g *game) playCost(i *instance, pp int) int {
+	if enhance := g.enhanceCost(i, pp); enhance >= 0 {
+		return enhance
+	}
+	return i.cost
+}
+
+// -1 distinguishes an ordinary play from a zero-cost enhancement.
+func (g *game) enhanceCost(i *instance, pp int) int {
+	enhance := -1
+	for _, ability := range i.card.Abilities {
+		trigger, ok := ability.Trigger.(ir.CostTrigger)
+		if ok && trigger.Kind == "enhance" && trigger.Cost <= pp && trigger.Cost > enhance {
+			enhance = trigger.Cost
+		}
+	}
+	return enhance
+}
+
 func (g *game) applyPlaySetup(i *instance, emit bool) {
 	actor := g.owner(i)
-	g.spendPP(actor, i.card.Cost)
+	g.spendPP(actor, g.playCost(i, actor.pp))
 	g.remove(&actor.hand, i)
+	actor.combo++
 	if i.card.CardType == "spell" {
-		g.addToZone(actor, i, "graveyard")
+		g.addToZone(actor, i, "resolving")
+		if emit {
+			g.execAdjust(ir.AdjustEffect{Kind: "spellboost", Target: ir.ZoneRef{Kind: "zone", Side: "own", Zone: "hand"}, Times: 1}, i, frame{})
+		}
 	} else {
 		g.addToZone(actor, i, "field")
 		i.summoningSick = i.card.CardType == "follower"
-		actor.combo++
 		g.mergeEarthSigil(i)
 		if emit && i.card.CardType == "follower" {
 			g.triggerSummoned(i)
 		}
 	}
 }
+
+func (g *game) finishSpell() {
+	for _, p := range []*player{&g.own, &g.oppo} {
+		for len(p.resolving) > 0 {
+			g.move(p.resolving[0], "graveyard")
+		}
+	}
+}
+
 func (g *game) commitEngage(i *instance) []execFrame {
 	a := findAbility(i.card, "engage")
 	g.spendPP(g.owner(i), a.Trigger.(ir.CostTrigger).Cost)
@@ -871,9 +957,13 @@ func (g *game) spendPP(actor *player, amount int) {
 	if amount <= before-1 {
 		return
 	}
-	if g.turn.Number <= 5 {
+	if actor.extraPPEarly {
 		actor.extraPPEarly = false
-	} else if !actor.extraPPEarly {
+		// The sixth-turn refresh is lost if the first use was still unspent.
+		if g.turn.Number >= 6 {
+			actor.extraPPLate = false
+		}
+	} else {
 		actor.extraPPLate = false
 	}
 	actor.extraPPActive = false
@@ -882,18 +972,7 @@ func (g *game) commitSuperEvolve(i *instance) []execFrame {
 	owner := g.owner(i)
 	owner.sep--
 	owner.evolvedThisTurn = true
-	i.evolved, i.superEvolved = true, true
-	i.attack += 3
-	i.life += 3
-	target := &ir.EventTarget{Kind: "instance", InstanceID: i.id}
-	evolved := ir.RuntimeEvent{Kind: "evolved", Side: g.sideOf(i), InstanceID: i.id, CardID: i.card.ID, Subject: target}
-	if g.emit(evolved) {
-		g.queueEventTriggers(evolved, i, "")
-	}
-	superEvolved := ir.RuntimeEvent{Kind: "super_evolved", Side: g.sideOf(i), InstanceID: i.id, CardID: i.card.ID, Subject: target}
-	if g.emit(superEvolved) {
-		g.queueEventTriggers(superEvolved, i, "")
-	}
+	g.applyEvolution(i, true)
 	abilities := map[string]ir.Ability{}
 	for _, a := range i.card.Abilities {
 		abilities[a.ID] = a
@@ -920,15 +999,33 @@ func (g *game) commitEvolve(i *instance) []execFrame {
 	owner := g.owner(i)
 	owner.ep--
 	owner.evolvedThisTurn = true
-	i.evolved = true
-	i.attack += 2
-	i.life += 2
-	target := &ir.EventTarget{Kind: "instance", InstanceID: i.id}
+	g.applyEvolution(i, false)
+	return g.commitActionPlan(i, "evolve")
+}
+
+// Point payment and keyword abilities belong to the manual action, not the form change.
+func (g *game) applyEvolution(i *instance, super bool) {
+	if i == nil || i.zone != "field" || i.card.CardType != "follower" || i.evolved || i.superEvolved {
+		return
+	}
+	bonus := 2
+	if super {
+		bonus = 3
+	}
+	i.evolved, i.superEvolved = true, super
+	i.attack += bonus
+	i.life += bonus
+	target := &ir.EventTarget{Kind: "instance", InstanceID: i.id, CardID: i.card.ID, Side: g.sideOf(i)}
 	event := ir.RuntimeEvent{Kind: "evolved", Side: g.sideOf(i), InstanceID: i.id, CardID: i.card.ID, Subject: target}
 	if g.emit(event) {
 		g.queueEventTriggers(event, i, "")
 	}
-	return g.commitActionPlan(i, "evolve")
+	if super {
+		event.Kind = "super_evolved"
+		if g.emit(event) {
+			g.queueEventTriggers(event, i, "")
+		}
+	}
 }
 
 func (g *game) commitActionPlan(i *instance, action string) []execFrame {
@@ -999,8 +1096,8 @@ func (g *game) advanceTurn() {
 		active.combo = 0
 		active.attackedThisTurn = false
 		active.evolvedThisTurn = false
-		if g.turn.Number >= 6 && !active.extraPPEarly {
-			active.extraPPLate = true
+		for _, i := range g.instances {
+			i.fusedThisTurn = false
 		}
 		var expired []*instance
 		for _, i := range active.field {
@@ -1054,11 +1151,11 @@ func (g *game) preflightRequirementsAtDepth(body []ir.Effect, self *instance, bi
 				if !querySafe {
 					return "unsupported_preflight"
 				}
-				candidates := g.fromRef(e.Source, self, bindings)
+				candidates := g.selectionCandidates(e, self, bindings)
 				if g.budget != nil && (g.budget.exceeded || !g.budget.chargeCandidates(uint64(len(candidates)))) {
 					return executionBudgetExceeded
 				}
-				if len(candidates) == 0 {
+				if len(candidates) < e.SelectionCount() {
 					return "target_required"
 				}
 				querySafe = false
@@ -1080,6 +1177,11 @@ func (g *game) preflightRequirementsAtDepth(body []ir.Effect, self *instance, bi
 				}
 			}
 			querySafe = false
+		case ir.RepeatEffect:
+			if containsRequire(e.Body) {
+				return "unsupported_preflight"
+			}
+			querySafe = false
 		case ir.PayResourceEffect:
 			if containsRequire(e.OnPaid) {
 				return "unsupported_preflight"
@@ -1098,6 +1200,10 @@ func containsRequire(body []ir.Effect) bool {
 			return true
 		}
 		switch e := effect.(type) {
+		case ir.RepeatEffect:
+			if containsRequire(e.Body) {
+				return true
+			}
 		case ir.IfEffect:
 			if containsRequire(e.Then) || containsRequire(e.Else) {
 				return true

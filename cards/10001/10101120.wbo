@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10101120 {
+    type follower;
+    cost 3;
+    stats 3/3;
+
+    effect {
+        lastwords {
+            add 1 card 10001210 to hand;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "观察的侦探";
+        text """
+【<color=Keyword>谢幕曲</color>】将1张『<color=Keyword>侦探的放大镜</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Vigilant Detective";
+        text """
+<b><color=Keyword>Last Words</color></b>: Add a <b><i><color=Keyword>Detective's Lens</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"かんさつ\">観察</rub>の<rub=\"たんてい\">探偵</rub>";
+        text """
+【<color=Keyword>ラストワード</color>】『<color=Keyword>探偵のルーペ</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "관찰하는 탐정";
+        text """
+[<color=Keyword>유언</color>] <color=Keyword>탐정의 돋보기</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "觀察的偵探";
+        text """
+【<color=Keyword>謝幕曲</color>】增加1張『<color=Keyword>偵探的放大鏡</color>』到自己的手牌中。
+""";
+    }
+
+}

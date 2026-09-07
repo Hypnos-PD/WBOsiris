@@ -1,0 +1,54 @@
+wbo 0.1.0;
+
+card 10172310 {
+    type spell;
+    cost 2;
+
+    effect {
+        require target from oppo.field.followers;
+        damage target 3;
+        add 1 card 90071220 to hand;
+    }
+
+    meta {
+        pack 10001;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "生命的奔流";
+        text """
+选择对手的战场上的1个随从，对其造成3点伤害。将1张『<color=Keyword>过往核心</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Stream of Life";
+        text """
+Select an enemy follower on the field and deal it 3 damage. Add a <b><i><color=Keyword>Gear of Remembrance</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"いのち\">命</rub>の<rub=\"ほんりゅう\">奔流</rub>";
+        text """
+相手の場のフォロワー1枚を選ぶ。それに3ダメージ。『<color=Keyword>パスト・コア</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "생명의 격류";
+        text """
+상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 3 피해. <color=Keyword>패스트 코어</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "生命的奔流";
+        text """
+指定1張敵方戰場上的從者卡。給予其3點傷害。增加1張『<color=Keyword>過往之核</color>』到自己的手牌中。
+""";
+    }
+
+}

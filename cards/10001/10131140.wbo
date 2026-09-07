@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10131140 {
+    type follower;
+    cost 4;
+    stats 2/2;
+
+    effect {
+        fanfare {
+            draw 2;
+        }
+        evolve {
+            spellboost own.hand 2;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "追梦的企鹅魔法师";
+        text """
+【<color=Keyword>入场曲</color>】抽取2张卡牌。
+<hr><ev>【<color=Keyword>进化时</color>】使自己的所有手牌发动2次魔力增幅。</ev>
+""";
+    }
+
+    locale eng {
+        name "Starry-Eyed Penguin Wizard";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Draw 2 cards.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Spellboost your hand 2 times.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"むそう\">夢想</rub>のペンギンウィザード";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキから2枚を引く。
+<hr><ev>【<color=Keyword>進化時</color>】自分の手札すべては2回スペルブーストする。</ev>
+""";
+    }
+
+    locale kor {
+        name "꿈꾸는 펭귄 마법사";
+        text """
+[<color=Keyword>출격</color>] 내 덱에서 2장을 뽑는다.
+<hr><ev>[<color=Keyword>진화시</color>] 내 패 모두를 2회 주문증폭.</ev>
+""";
+    }
+
+    locale cht {
+        name "追夢的企鵝魔法師";
+        text """
+【<color=Keyword>入場曲</color>】由自己的牌堆中抽取2張卡片。
+<hr><ev>【<color=Keyword>進化時</color>】使自己手牌中全部的卡片發動2次魔力增幅。</ev>
+""";
+    }
+
+}

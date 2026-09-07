@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10104120 {
+    type follower;
+    cost 10;
+    stats 10/10;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10001;
+        class neutral;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "终极之罪·深渊之主";
+        text """
+【<color=Keyword>入场曲</color>】使自己的牌组变为『<color=Keyword>启示录牌组</color>』。
+""";
+    }
+
+    locale eng {
+        name "Ruler of Cocytus";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Replace your deck with the <b><color=Keyword>Apocalypse Deck</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"さいは\">最果</rub>ての<rub=\"つみ\">罪</rub>・サタン";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキを【<color=Keyword>アポカリプスデッキ</color>】にする。
+""";
+    }
+
+    locale kor {
+        name "종막의 죄 사탄";
+        text """
+[<color=Keyword>출격</color>] 내 덱을 [<color=Keyword>아포칼립스 덱</color>]으로 바꾼다.
+""";
+    }
+
+    locale cht {
+        name "終末之罪‧撒旦";
+        text """
+【<color=Keyword>入場曲</color>】以【<color=Keyword>啟示錄牌組</color>】取代自己牌堆中的卡片。
+""";
+    }
+
+}

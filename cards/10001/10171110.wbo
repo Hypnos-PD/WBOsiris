@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10171110 {
+    type follower;
+    cost 1;
+    stats 1/1;
+
+    effect {
+        lastwords {
+            add 1 card 90071220 to hand;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "耀眼的发明家·伊莉斯";
+        text """
+【<color=Keyword>谢幕曲</color>】将1张『<color=Keyword>过往核心</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Elise, Electrifying Inventor";
+        text """
+<b><color=Keyword>Last Words</color></b>: Add a <b><i><color=Keyword>Gear of Remembrance</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "ビビッドインベンター・イリス";
+        text """
+【<color=Keyword>ラストワード</color>】『<color=Keyword>パスト・コア</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "활발한 발명가 이리스";
+        text """
+[<color=Keyword>유언</color>] <color=Keyword>패스트 코어</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "熱忱的發明家‧伊俐思";
+        text """
+【<color=Keyword>謝幕曲</color>】增加1張『<color=Keyword>過往之核</color>』到自己的手牌中。
+""";
+    }
+
+}

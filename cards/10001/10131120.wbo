@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10131120 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        fanfare {
+            choose target from own.hand;
+            return target to deck;
+            draw 1;
+            add 1 earthsigil;
+        }
+    }
+
+    meta {
+        pack 10001;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "见习占星术师";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的1张手牌，使其返回牌组。抽取1张卡牌。使自己的战场上的土之印+1。
+""";
+    }
+
+    locale eng {
+        name "Apprentice Astrologer";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a card in your hand and return it to deck. Draw a card. Gain an earth sigil.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"みなら\">見習</rub>い<rub=\"せんせいじゅつし\">占星術師</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札1枚を選ぶ。それをデッキに戻す。自分のデッキから1枚を引く。自分の場の土の印を+1する。
+""";
+    }
+
+    locale kor {
+        name "견습 점성술사";
+        text """
+[<color=Keyword>출격</color>] 내 패에서 1장을 선택한다. 그 카드를 덱으로 되돌린다. 내 덱에서 1장을 뽑는다. 내 전장의 대지의 인장을 +1.
+""";
+    }
+
+    locale cht {
+        name "見習占星術師";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己手牌中的卡片。使其返回牌堆中。由自己的牌堆中抽取1張卡片。使自己戰場上的土之印+1。
+""";
+    }
+
+}

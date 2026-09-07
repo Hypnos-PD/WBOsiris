@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10143110 {
+    type follower;
+    cost 10;
+    stats 9/10;
+
+    effect {
+        storm;
+    }
+
+    meta {
+        pack 10001;
+        class dragoncraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "再临之创世龙";
+        text """
+【<color=Keyword>疾驰</color>】
+""";
+    }
+
+    locale eng {
+        name "Genesis Dragon Reborn";
+        text """
+<b><color=Keyword>Storm</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"さいりん\">再臨</rub>のジェネシスドラゴン";
+        text """
+【<color=Keyword>疾走</color>】
+""";
+    }
+
+    locale kor {
+        name "재림의 창세룡";
+        text """
+[<color=Keyword>질주</color>]
+""";
+    }
+
+    locale cht {
+        name "再臨之創世龍";
+        text """
+【<color=Keyword>疾馳</color>】
+""";
+    }
+
+}
