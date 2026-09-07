@@ -62,6 +62,7 @@ type command struct {
 	StateRevision       uint64   `json:"stateRevision,omitempty"`
 	ExpectedRevision    *uint64  `json:"expectedRevision,omitempty"`
 	SelectedInstanceIDs []string `json:"selectedInstanceIds,omitempty"`
+	SelectedLeaderSides []string `json:"selectedLeaderSides,omitempty"`
 	SelectedOptionID    int      `json:"selectedOptionId,omitempty"`
 }
 
@@ -562,7 +563,7 @@ func (s *Server) sessionHandler(w http.ResponseWriter, r *http.Request) {
 
 func submit(session *runner.Session, input command) runner.StepResult {
 	if pending := session.PendingChoice(); pending != nil {
-		request := runner.ChoiceResponse{RequestID: input.RequestID, ActionID: input.ActionID, StateRevision: input.StateRevision, SelectedInstanceIDs: input.SelectedInstanceIDs, SelectedOptionID: input.SelectedOptionID}
+		request := runner.ChoiceResponse{RequestID: input.RequestID, ActionID: input.ActionID, StateRevision: input.StateRevision, SelectedInstanceIDs: input.SelectedInstanceIDs, SelectedLeaderSides: input.SelectedLeaderSides, SelectedOptionID: input.SelectedOptionID}
 		if request.RequestID == "" {
 			request.RequestID = pending.RequestID
 		}

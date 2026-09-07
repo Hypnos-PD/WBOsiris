@@ -57,10 +57,10 @@ func TestDestructionBindingOrderAndEmptyOverwrite(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f := frame{"targets": {s.g.instances[ids[1]], s.g.instances[ids[0]]}}
+	f := frame{"targets": bindEntities(s.g.instances[ids[1]], s.g.instances[ids[0]])}
 	e := ir.TargetEffect{Kind: "destroy", Output: "destroyed", Target: ir.BindingRef{Kind: "binding", Name: "targets"}}
 	s.g.execTargetEffect(e, s.g.instances[ids[0]], f)
-	if len(f["destroyed"]) != 2 || f["destroyed"][0].id != ids[0] || f["destroyed"][1].id != ids[1] {
+	if len(f["destroyed"]) != 2 || f["destroyed"][0].InstanceID != ids[0] || f["destroyed"][1].InstanceID != ids[1] {
 		t.Fatal("result lost field death order")
 	}
 	s.g.execTargetEffect(e, s.g.instances[ids[0]], f)

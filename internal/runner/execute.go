@@ -132,7 +132,7 @@ func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 	case ir.SelfRef:
 		return []*instance{self}
 	case ir.BindingRef:
-		return f[r.Name]
+		return g.boundInstances(f[r.Name])
 	case ir.ZoneRef:
 		var out []*instance
 		if r.Side == "oppo" {
@@ -367,7 +367,7 @@ func (g *game) draw(e ir.DrawEffect, self *instance, f frame) {
 		selected[i] = true
 		g.putInHandOrOverdraw(own, i)
 		if i.zone == "hand" {
-			f[e.Output] = append(f[e.Output], i)
+			f[e.Output] = append(f[e.Output], bindEntities(i)...)
 		}
 	}
 	kept := own.deck[:0]
@@ -419,9 +419,9 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 			g.putInHandOrOverdraw(own, i)
 		}
 	case "summon":
-		f[e.Output] = g.summonFor(self, e.Owner, e.Count, e.CardID, false)
+		f[e.Output] = bindEntities(g.summonFor(self, e.Owner, e.Count, e.CardID, false)...)
 	case "summon_copies":
-		f[e.Output] = g.summonCopies(self, e.Owner, g.fromRef(e.Target, self, f))
+		f[e.Output] = bindEntities(g.summonCopies(self, e.Owner, g.fromRef(e.Target, self, f))...)
 	case "reanimate":
 		f[e.Output] = nil
 		if len(own.field) >= fieldLimit {
@@ -451,7 +451,7 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 		if len(candidates) > 1 {
 			selected = g.rng.Index(len(candidates))
 		}
-		f[e.Output] = g.summonFor(self, e.Owner, 1, candidates[selected].ID, true)
+		f[e.Output] = bindEntities(g.summonFor(self, e.Owner, 1, candidates[selected].ID, true)...)
 	case "transform":
 		targets := g.fromRef(e.Target, self, f)
 		if g.budget != nil && g.budget.exceeded {
@@ -481,10 +481,12 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 	}
 }
 func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
-	own, oppo, ownSide := g.relativePlayers(self)
+	_, _, ownSide := g.relativePlayers(self)
 	targets := g.fromRef(e.Target, self, f)
+	leaders := g.boundLeaderSides(e.Target, self, f)
 	if e.Predicate != nil {
 		targets = g.filter(targets, "", e.Predicate)
+		leaders = nil
 	}
 	// Snapshot all numeric inputs before any target or resulting event changes them.
 	if e.AmountExpr != nil {
@@ -515,7 +517,7 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 	case "destroy":
 		destroyed := g.destroyByEffect(targets)
 		if e.Output != "" {
-			f[e.Output] = destroyed
+			f[e.Output] = bindEntities(destroyed...)
 		}
 	case "discard":
 		g.discardCards(targets)
@@ -528,11 +530,8 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 			g.returnCard(i, e.Destination)
 		}
 	case "heal":
-		if r, ok := e.Target.(ir.LeaderRef); ok {
-			target, side := own, ownSide
-			if r.Side == "oppo" {
-				target, side = oppo, oppositeSide(ownSide)
-			}
+		for _, side := range leaders {
+			target := g.player(side)
 			life := target.leaderLife + e.Amount
 			if target.leaderMax > 0 && life > target.leaderMax {
 				life = target.leaderMax
@@ -571,16 +570,11 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 			g.damageLeaders(self, e.Amount)
 			return
 		}
-		if r, ok := e.Target.(ir.LeaderRef); ok {
-			target, side := own, ownSide
-			if r.Side == "oppo" {
-				target, side = oppo, oppositeSide(ownSide)
-			}
-			g.damageLeaderFrom(self, target, side, e.Amount)
-			return
-		}
 		for _, i := range targets {
 			g.damageInstanceFrom(self, i, e.Amount, "effect")
+		}
+		for _, side := range leaders {
+			g.damageLeaderFrom(self, g.player(side), side, e.Amount)
 		}
 		g.resolveDeathBatch(nil)
 	}

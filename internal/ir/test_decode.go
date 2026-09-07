@@ -198,23 +198,30 @@ func decodeAction(data []byte) (Action, error) {
 		return FusionAction{v.Kind, v.Actor, v.Source}, nil
 	case "select":
 		var v struct {
-			Kind    string   `json:"kind"`
-			Target  string   `json:"target"`
-			Targets []string `json:"targets"`
+			Kind        string   `json:"kind"`
+			Target      string   `json:"target"`
+			Targets     []string `json:"targets"`
+			LeaderSides []string `json:"leaderSides"`
 		}
 		if err := strict(data, &v); err != nil {
 			return nil, err
 		}
-		if (v.Target == "") == (len(v.Targets) == 0) {
+		if v.Target != "" && len(v.Targets) != 0 || v.Target == "" && len(v.Targets) == 0 && len(v.LeaderSides) == 0 {
 			return nil, fmt.Errorf("malformed selection")
 		}
-		action := SelectAction{Kind: v.Kind, Target: v.Target, Targets: v.Targets}
+		action := SelectAction{Kind: v.Kind, Target: v.Target, Targets: v.Targets, LeaderSides: v.LeaderSides}
 		seen := map[string]bool{}
 		for _, id := range action.InstanceIDs() {
 			if !nodeIDPattern.MatchString(id) || seen[id] {
 				return nil, fmt.Errorf("malformed selection target")
 			}
 			seen[id] = true
+		}
+		for _, side := range v.LeaderSides {
+			if !validSide(side) || seen[side] {
+				return nil, fmt.Errorf("malformed leader selection")
+			}
+			seen[side] = true
 		}
 		return action, nil
 	case "select_mode":

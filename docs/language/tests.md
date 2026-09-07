@@ -168,6 +168,10 @@ damage all.leaders 5;
 数量时，整个玩家指令非法。一次多选响应写为 `select first, second;`，别名必须互不
 相同并满足当前请求的数量。它响应一个请求，不等同于两条连续的 `select`。
 
+混合目标请求可使用 `select oppo.leader;` 或 `select own.leader;`。
+多选可写为 `select target, oppo.leader;`，实例和主战者合计必须满足请求数量，
+每个目标只能出现一次。测试中的 `own`、`oppo` 指初始状态中的固定席位。
+
 用于验证回合时点的测试可以使用测试驱动动作：
 
 ```wbotest

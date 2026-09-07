@@ -6,7 +6,9 @@ card 10123310 {
     trait levin;
 
     effect {
-        unplayable;
+        require target from oppo.field.followers or oppo.leader;
+        damage target 5;
+        heal own.leader 5;
     }
 
     meta {

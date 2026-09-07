@@ -24,7 +24,7 @@ func TestSetLifeIsNotDamageAndResetsOnReturn(t *testing.T) {
 	i.abilities["barrier"] = true
 	i.damageReduction = 9
 	e := ir.TargetEffect{Kind: "set_life", Target: ir.BindingRef{Kind: "binding", Name: "targets"}, Amount: 1}
-	f := frame{"targets": {i, s.g.instances[c], nil}}
+	f := frame{"targets": bindEntities(i, s.g.instances[c], nil)}
 	s.g.execTargetEffect(e, i, f)
 	if i.life != 1 || !i.abilities["barrier"] || len(s.g.events) != 0 || s.g.instances[c].life != 0 {
 		t.Fatal("set life was treated as damage or affected amulet")
@@ -39,7 +39,7 @@ func TestSetLifeIsNotDamageAndResetsOnReturn(t *testing.T) {
 		t.Fatal("return did not reset set life")
 	}
 	e.Amount = 0
-	f["targets"] = []*instance{s.g.instances[b]}
+	f["targets"] = bindEntities(s.g.instances[b])
 	s.g.execTargetEffect(e, i, f)
 	if s.g.instances[b].zone != "graveyard" || len(s.g.events) != 3 || s.g.events[0].Kind != "follower_left" || s.g.events[1].Kind != "follower_left" || s.g.events[2].Kind != "destroyed" || s.g.own.shadows != 1 {
 		t.Fatal("zero life did not cause destruction", s.g.events)

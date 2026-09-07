@@ -26,7 +26,7 @@ export type FusionState = {
   materials: { cardId: number; cost: number }[];
 };
 export type LegalAction = { kind: string; actor: string; source?: string; defender?: string };
-export type ChoiceCandidate = { kind: string; instanceId?: string; optionId?: number; labels?: Record<string, string> };
+export type ChoiceCandidate = { kind: string; instanceId?: string; leaderSide?: string; optionId?: number; labels?: Record<string, string> };
 export type ChoiceRequest = {
   requestId: string;
   actionId: string;

@@ -106,16 +106,25 @@
 }
 
 @media (max-height: 500px) and (orientation: landscape) {
-  .hand-dock.expanded { height: 140px; }
+  .hand-dock.collapsed, .hand-dock.expanded {
+    left: 152px; right: 152px; bottom: 8px; width: auto; height: 100px; transform: none;
+  }
+  .hand-dock.collapsed .hand-row,
+  .hand-dock.expanded .hand-row { inset: 8px 0 0; width: 100%; height: 92px; padding: 4px; }
+  .hand-dock .hand-toggle { top: 42px; right: -60px; }
+  .hand-dock.collapsed .hand-card,
+  .hand-dock.collapsed .hand-card:hover,
+  .hand-dock.collapsed .hand-card.selected { width: 60px; flex-basis: 60px; height: 84px; margin-left: -28px; transform: none; }
+  .hand-dock.collapsed .hand-card:first-child { margin-left: 0; }
   .hand-dock.expanded .hand-card,
   .hand-dock.expanded .hand-card:first-child,
   .hand-dock.expanded .hand-card:hover,
-  .hand-dock.expanded .hand-card.selected { flex-basis: 68px; width: 68px; height: 91px; }
+  .hand-dock.expanded .hand-card.selected { flex-basis: 60px; width: 60px; height: 84px; }
   .hand-dock.expanded .hand-art { inset: 2px 2px 22px; }
   .hand-dock.expanded .hand-info { height: 18px; }
   .hand-dock.expanded .hand-info > b { font-size: 8px; }
   .hand-dock.expanded .hand-info span { font-size: 10px; }
   .hand-dock.expanded .hand-cost { width: 20px; height: 20px; font-size: 12px; }
-  .hand-dock.expanded ~ .card-inspector { bottom: 158px; max-height: calc(100dvh - 222px); }
+  .hand-dock.expanded ~ .card-inspector { bottom: 118px; max-height: calc(100dvh - 172px); }
   .hand-dock.expanded ~ .card-inspector > img { width: 68px; height: 91px; }
 }

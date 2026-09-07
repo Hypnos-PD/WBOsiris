@@ -106,7 +106,7 @@ func TestReanimateEmptyUniqueAndFullField(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			bindings := frame{"summoned": {&instance{id: "stale"}}}
+			bindings := frame{"summoned": bindEntities(&instance{id: "stale"})}
 			maxCost := 4
 			if name == "zero_cost" {
 				maxCost = 0
@@ -119,7 +119,7 @@ func TestReanimateEmptyUniqueAndFullField(t *testing.T) {
 				if len(bindings["summoned"]) != 0 {
 					t.Fatal("failed summon retained a stale output binding")
 				}
-			} else if len(bindings["summoned"]) != 1 || !bindings["summoned"][0].departed {
+			} else if len(bindings["summoned"]) != 1 || !session.g.instances[bindings["summoned"][0].InstanceID].departed {
 				t.Fatalf("unique candidate not reanimated: %#v", bindings)
 			}
 		})

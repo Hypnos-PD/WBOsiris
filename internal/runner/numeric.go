@@ -5,6 +5,9 @@ import "wbo/internal/ir"
 func (g *game) numericValue(expr ir.NumericExpr, self *instance, bindings frame) int {
 	switch e := expr.(type) {
 	case *ir.CountExpr:
+		if binding, ok := e.Source.(ir.BindingRef); ok {
+			return len(bindings[binding.Name])
+		}
 		return len(g.fromRef(e.Source, self, bindings))
 	case *ir.NegateExpr:
 		return -g.numericValue(e.Value, self, bindings)

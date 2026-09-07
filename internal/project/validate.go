@@ -370,6 +370,16 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			continue
 		case "choose", "require", "random":
 			end, setOK := parseTargetSet(t, 3)
+			if setOK && end < len(t) && t[end].Value == "or" {
+				if end == 8 && len(t) >= 12 && values(t[4:8]) == ". field . followers" && values(t[end:end+4]) == "or "+t[3].Value+" . leader" {
+					end += 4
+				} else {
+					setOK = false
+				}
+				if end < len(t) && t[end].Value != "count" {
+					setOK = false
+				}
+			}
 			if setOK && end < len(t) && t[end].Value == "other" {
 				end++
 			}
@@ -923,6 +933,15 @@ func scanAliases(body []*syntax.Statement, aliases map[string]bool, ds *[]syntax
 }
 func checkAliasUse(s *syntax.Statement, a map[string]bool, ds *[]syntax.Diagnostic) {
 	t := s.Tokens()
+	if s.Word(0) == "select" {
+		entities, _, _ := parseSelectionResponse(t)
+		for _, entity := range entities {
+			if !a[entity.Value] {
+				diag(ds, "WBT-E006-UNKNOWN-ALIAS", "错误", "未知实例别名: "+entity.Value, entity.Span)
+			}
+		}
+		return
+	}
 	if len(t) > 1 && set("play", "engage", "evolve", "superevolve", "select", "attack")[t[0].Value] && !a[t[1].Value] {
 		diag(ds, "WBT-E006-UNKNOWN-ALIAS", "错误", "未知实例别名: "+t[1].Value, t[1].Span)
 	}

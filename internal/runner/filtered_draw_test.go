@@ -100,22 +100,22 @@ func TestFilteredDrawModesAndOverflow(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			s, eligible := filteredDrawFixture(t, "own", 7)
-			f := frame{"drawn": {s.g.own.deck[0]}}
+			f := frame{"drawn": bindEntities(s.g.own.deck[0])}
 			s.g.draw(ir.DrawEffect{Kind: "draw", Owner: "own", Count: tc.count, All: tc.all, Output: "drawn", Predicate: tc.predicate}, nil, f)
 			if len(f["drawn"]) != tc.want || len(s.g.own.hand) != tc.want || int(s.g.rng.Consumed()) != tc.rng || s.g.gameOver {
 				t.Fatal("wrong draw count, RNG or deck-out")
 			}
 			seen := map[string]bool{}
 			for n, card := range f["drawn"] {
-				if seen[card.id] {
+				if seen[card.InstanceID] {
 					t.Fatal("drew an instance twice")
 				}
-				seen[card.id] = true
-				if tc.all && card.id != eligible[n] {
+				seen[card.InstanceID] = true
+				if tc.all && card.InstanceID != eligible[n] {
 					t.Fatal("draw all lost stable order")
 				}
 			}
-			if tc.name == "top" && (f["drawn"][0].id != fmt.Sprintf("%032x", 1) || f["drawn"][1].id != fmt.Sprintf("%032x", 2)) {
+			if tc.name == "top" && (f["drawn"][0].InstanceID != fmt.Sprintf("%032x", 1) || f["drawn"][1].InstanceID != fmt.Sprintf("%032x", 2)) {
 				t.Fatal("ordinary draw stopped using deck top")
 			}
 		})

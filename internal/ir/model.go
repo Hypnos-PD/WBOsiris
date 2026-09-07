@@ -252,6 +252,13 @@ type LeaderSetRef struct {
 
 func (r LeaderSetRef) refKind() string { return r.Kind }
 
+type CharacterSetRef struct {
+	Kind string `json:"kind"`
+	Side string `json:"side"`
+}
+
+func (r CharacterSetRef) refKind() string { return r.Kind }
+
 type ZoneRef struct {
 	Kind   string `json:"kind"`
 	Side   string `json:"side,omitempty"`
@@ -600,9 +607,10 @@ type FusionAction struct {
 func (a FusionAction) actionKind() string { return a.Kind }
 
 type SelectAction struct {
-	Kind    string   `json:"kind"`
-	Target  string   `json:"target,omitempty"`
-	Targets []string `json:"targets,omitempty"`
+	Kind        string   `json:"kind"`
+	Target      string   `json:"target,omitempty"`
+	Targets     []string `json:"targets,omitempty"`
+	LeaderSides []string `json:"leaderSides,omitempty"`
 }
 
 func (a SelectAction) actionKind() string { return a.Kind }

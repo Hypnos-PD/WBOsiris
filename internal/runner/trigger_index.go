@@ -107,7 +107,7 @@ func (g *game) queueEventTriggers(event ir.RuntimeEvent, subject *instance, bind
 				}
 				bindings := frame{}
 				if binding != "" && subject != nil {
-					bindings[binding] = []*instance{subject}
+					bindings[binding] = bindEntities(subject)
 				}
 				if !g.queueTrigger(triggerInvocation{body: ability.Body, blockID: ability.blockID, self: source, bindings: bindings}) {
 					return false

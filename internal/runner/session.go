@@ -24,6 +24,7 @@ const (
 type ChoiceCandidate struct {
 	Kind       string            `json:"kind"`
 	InstanceID string            `json:"instanceId,omitempty"`
+	LeaderSide string            `json:"leaderSide,omitempty"`
 	OptionID   int               `json:"optionId,omitempty"`
 	Labels     map[string]string `json:"labels,omitempty"`
 }
@@ -45,6 +46,7 @@ type ChoiceResponse struct {
 	ActionID            string   `json:"actionId"`
 	StateRevision       uint64   `json:"stateRevision"`
 	SelectedInstanceIDs []string `json:"selectedInstanceIds,omitempty"`
+	SelectedLeaderSides []string `json:"selectedLeaderSides,omitempty"`
 	SelectedOptionID    int      `json:"selectedOptionId,omitempty"`
 }
 
@@ -270,7 +272,8 @@ func (s *Session) Resume(response ChoiceResponse) StepResult {
 		return StepResult{Status: StatusRejected, Choice: s.PendingChoice(), ErrorCode: "stale_or_mismatched_response"}
 	}
 	if p.request.Kind == "target" {
-		if len(response.SelectedInstanceIDs) < p.request.MinSelections || len(response.SelectedInstanceIDs) > p.request.MaxSelections || response.SelectedOptionID != 0 {
+		count := len(response.SelectedInstanceIDs) + len(response.SelectedLeaderSides)
+		if count < p.request.MinSelections || count > p.request.MaxSelections || response.SelectedOptionID != 0 {
 			return StepResult{Status: StatusRejected, Choice: s.PendingChoice(), ErrorCode: "invalid_selection_count"}
 		}
 		seen := map[string]bool{}
@@ -280,15 +283,30 @@ func (s *Session) Resume(response ChoiceResponse) StepResult {
 			}
 			seen[id] = true
 		}
-		selected := []*instance{}
+		leaders := map[string]bool{}
+		for _, side := range response.SelectedLeaderSides {
+			found := false
+			for _, candidate := range p.request.Candidates {
+				if candidate.Kind == "leader" && candidate.LeaderSide == side {
+					found = true
+				}
+			}
+			if leaders[side] || !found {
+				return StepResult{Status: StatusRejected, Choice: s.PendingChoice(), ErrorCode: "invalid_candidate"}
+			}
+			leaders[side] = true
+		}
+		selected := []ir.EventTarget{}
 		for _, candidate := range p.request.Candidates {
-			if seen[candidate.InstanceID] {
-				selected = append(selected, s.g.instances[candidate.InstanceID])
+			if candidate.Kind == "entity" && seen[candidate.InstanceID] {
+				selected = append(selected, ir.EventTarget{Kind: "instance", InstanceID: candidate.InstanceID})
+			} else if candidate.Kind == "leader" && leaders[candidate.LeaderSide] {
+				selected = append(selected, ir.EventTarget{Kind: "leader", Side: candidate.LeaderSide})
 			}
 		}
 		p.bindings[p.binding] = selected
 	} else if p.request.Kind == "fusion_material" {
-		if len(response.SelectedInstanceIDs) < p.request.MinSelections || len(response.SelectedInstanceIDs) > p.request.MaxSelections || response.SelectedOptionID != 0 {
+		if len(response.SelectedLeaderSides) != 0 || len(response.SelectedInstanceIDs) < p.request.MinSelections || len(response.SelectedInstanceIDs) > p.request.MaxSelections || response.SelectedOptionID != 0 {
 			return StepResult{Status: StatusRejected, Choice: s.PendingChoice(), ErrorCode: "invalid_selection_count"}
 		}
 		seen := map[string]bool{}
@@ -310,7 +328,7 @@ func (s *Session) Resume(response ChoiceResponse) StepResult {
 		s.pushFrame(execFrame{body: p.fusion.Body, blockID: fusionBlockID(p.fusionSource.card.ID, p.fusion.ID), self: p.fusionSource, bindings: frame{}})
 	} else if p.request.Kind == "mode" {
 		body, ok := p.options[response.SelectedOptionID]
-		if !ok || len(response.SelectedInstanceIDs) != 0 {
+		if !ok || len(response.SelectedInstanceIDs) != 0 || len(response.SelectedLeaderSides) != 0 {
 			return StepResult{Status: StatusRejected, Choice: s.PendingChoice(), ErrorCode: "invalid_option"}
 		}
 		s.pushFrame(execFrame{body: body, blockID: p.optionBlockIDs[response.SelectedOptionID], self: p.self, bindings: p.bindings})
@@ -448,14 +466,14 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 				bindings: copyRepeatBindings(bindings), repeatRemaining: times, repeatBindings: bindings})
 		}
 	case ir.SelectionEffect:
-		candidates := s.g.selectionCandidates(e, self, bindings)
+		candidates := s.g.selectionValues(e, self, bindings)
 		if s.budget.exceeded {
 			return nil
 		}
 		bindings[e.Binding] = nil
 		if e.Kind == "random_choose" {
-			remaining := append([]*instance(nil), candidates...)
-			selected := map[*instance]bool{}
+			remaining := append([]ir.EventTarget(nil), candidates...)
+			selected := map[ir.EventTarget]bool{}
 			for n := 0; n < e.SelectionCount() && len(remaining) > 0; n++ {
 				index := s.g.rng.Index(len(remaining))
 				selected[remaining[index]] = true
@@ -524,13 +542,13 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 	return nil
 }
 
-func (s *Session) targetRequest(e ir.SelectionEffect, candidates []*instance, bindings frame, self *instance) *pendingChoice {
+func (s *Session) targetRequest(e ir.SelectionEffect, candidates []ir.EventTarget, bindings frame, self *instance) *pendingChoice {
 	if !s.budget.chargeCandidates(uint64(len(candidates))) {
 		return nil
 	}
 	items := make([]ChoiceCandidate, 0, len(candidates))
 	for _, candidate := range candidates {
-		items = append(items, ChoiceCandidate{Kind: "entity", InstanceID: candidate.id})
+		items = append(items, candidateForValue(candidate))
 	}
 	count := min(e.SelectionCount(), len(candidates))
 	request := s.newRequest(e.ID, "target", count, count, items, s.g.sideOf(self))
@@ -728,12 +746,7 @@ func (g *game) clone() *game {
 	clone.oppo = clonePlayer(g.oppo, clone.instances)
 	clone.rebuildTriggerIndex()
 	for _, trigger := range g.triggers {
-		bindings := frame{}
-		for name, values := range trigger.bindings {
-			for _, value := range values {
-				bindings[name] = append(bindings[name], clone.instances[value.id])
-			}
-		}
+		bindings := copyRepeatBindings(trigger.bindings)
 		var self *instance
 		if trigger.self != nil {
 			self = clone.instances[trigger.self.id]

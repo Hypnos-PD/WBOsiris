@@ -57,11 +57,11 @@ func TestAbilityTargetGuardCandidates(t *testing.T) {
 			s.g.instances[second].abilities["stealth"] = true
 			check()
 			delete(s.g.instances[first].abilities, "aura")
-			s.g.execTargetEffect(ir.TargetEffect{Kind: "remove_keyword", Keyword: "ability_target_guard", Target: ir.BindingRef{Kind: "binding", Name: "target"}}, s.g.instances[source], frame{"target": {s.g.instances[first]}})
+			s.g.execTargetEffect(ir.TargetEffect{Kind: "remove_keyword", Keyword: "ability_target_guard", Target: ir.BindingRef{Kind: "binding", Name: "target"}}, s.g.instances[source], frame{"target": bindEntities(s.g.instances[first])})
 			check()
 			s.g.returnCard(s.g.instances[second], "hand")
 			check(first, other)
-			s.g.execTargetEffect(ir.TargetEffect{Kind: "add_keyword", Keyword: "ability_target_guard", Target: ir.BindingRef{Kind: "binding", Name: "target"}}, s.g.instances[source], frame{"target": {s.g.instances[other]}})
+			s.g.execTargetEffect(ir.TargetEffect{Kind: "add_keyword", Keyword: "ability_target_guard", Target: ir.BindingRef{Kind: "binding", Name: "target"}}, s.g.instances[source], frame{"target": bindEntities(s.g.instances[other])})
 			check(other)
 			s.g.budget = &budgetTracker{policy: s.budgetPolicy}
 			s.g.budget.policy.QueryVisits = 2

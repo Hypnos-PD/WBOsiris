@@ -122,6 +122,22 @@ choose targets from oppo.field.followers count 2;
 destroy targets;
 ```
 
+同一方的随从和主战者可组成一次混合选择，例如触手撕咬：
+
+```wbo
+require target from oppo.field.followers or oppo.leader;
+damage target 5;
+heal own.leader 5;
+```
+
+两侧必须同为 `own` 或同为 `oppo`，候选按战场随从顺序排列，最后是主战者。
+同样支持 `choose`、`random` 和末尾的 `count N`，不支持在混合来源上追加
+`other`、`where` 或极值筛选。敌方随从仍受潜行、不能被选中等保护；敌方存在
+`ability_target_guard` 时，主战者也不能成为玩家选择的目标。随机选择不受这些选择保护限制。
+混合绑定当前仅支持不带筛选的 `damage`；`count(target)` 包含主战者，
+`count(target where ...)` 仅统计满足卡牌筛选的实例。治疗、破坏、增益及复制等
+操作不能直接使用混合绑定，编译器会报告类型错误。
+
 `require` 表示在验证玩家指令时进行必选目标选择。候选数量不足 `count`（默认 1）时，
 该卡牌或启动能力不能使用，不支付费用也不改变状态。数量要求依据卡牌文本：
 [官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#bxi2b429pl7)

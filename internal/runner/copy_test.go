@@ -124,12 +124,12 @@ func TestCopyInheritsEffectsAndFormButResetsActions(t *testing.T) {
 		original.buffStats(2, 3, side)
 		original.addKeyword("barrier", side)
 		original.addKeyword("storm", oppositeSide(side))
-		f := frame{"summoned": {original}}
+		f := frame{"summoned": bindEntities(original)}
 		s.g.execCardEffect(ir.CardEffect{Kind: "summon_copies", Owner: "own", Target: ir.BindingRef{Kind: "binding", Name: "summoned"}, Output: "summoned"}, original, f)
 		if len(f["summoned"]) != 1 {
 			t.Fatal("copy cleared its input binding")
 		}
-		copy := f["summoned"][0]
+		copy := s.g.instances[f["summoned"][0].InstanceID]
 		if copy.attack != 9 || copy.life != 7 || copy.cost != 1 || !copy.evolved || !copy.superEvolved || !copy.departed || copy.damageReduction != 1 || copy.attacksUsed != 0 || copy.engaged || !copy.summoningSick || attackLimit(copy) != 3 {
 			t.Fatal("copy lost form, effects, damage or action reset")
 		}
@@ -228,10 +228,10 @@ func TestCopyAmuletStateAndIgnoreUnsupportedZones(t *testing.T) {
 	}
 	source := s.g.own.field[0]
 	source.engaged, source.countdown = true, 2
-	f := frame{"sources": {source, s.g.own.hand[0], s.g.own.graveyard[0], s.g.own.deck[0]}}
+	f := frame{"sources": bindEntities(source, s.g.own.hand[0], s.g.own.graveyard[0], s.g.own.deck[0])}
 	e := ir.CardEffect{Kind: "summon_copies", Owner: "own", Target: ir.BindingRef{Kind: "binding", Name: "sources"}, Output: "summoned"}
 	s.g.execCardEffect(e, source, f)
-	if len(f["summoned"]) != 1 || f["summoned"][0].engaged || f["summoned"][0].countdown != 2 || len(s.g.events) != 0 {
+	if len(f["summoned"]) != 1 || s.g.instances[f["summoned"][0].InstanceID].engaged || s.g.instances[f["summoned"][0].InstanceID].countdown != 2 || len(s.g.events) != 0 {
 		t.Fatal("amulet copy lost countdown, retained engage, or copied invalid sources")
 	}
 	f["sources"] = nil

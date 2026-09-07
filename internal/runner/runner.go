@@ -56,7 +56,7 @@ type damageContext struct {
 	amount     int
 	damageType string
 }
-type frame map[string][]*instance
+type frame map[string][]ir.EventTarget
 type game struct {
 	cards                           map[int]*ir.Card
 	own, oppo                       player
@@ -149,6 +149,7 @@ func runScenario(path string, s *ir.Scenario, cards map[int]*ir.Card) Result {
 		switch x := s.Actions[next].(type) {
 		case ir.SelectAction:
 			response.SelectedInstanceIDs = x.InstanceIDs()
+			response.SelectedLeaderSides = x.LeaderSides
 		case ir.ModeAction:
 			response.SelectedOptionID = x.OptionID
 		default:
@@ -734,7 +735,7 @@ func (g *game) queueSimpleTriggers(source *instance, kind string) {
 					other = state.attacker
 				}
 				if opponent := g.instances[other]; opponent != nil {
-					bindings["opponent"] = []*instance{opponent}
+					bindings["opponent"] = bindEntities(opponent)
 				}
 			}
 			g.queueTrigger(triggerInvocation{body: ability.Body, blockID: abilityBlockID(source.card.ID, ability.ID), self: source, bindings: bindings})
@@ -1171,7 +1172,7 @@ func (g *game) preflightRequirementsAtDepth(body []ir.Effect, self *instance, bi
 				if !querySafe {
 					return "unsupported_preflight"
 				}
-				candidates := g.selectionCandidates(e, self, bindings)
+				candidates := g.selectionValues(e, self, bindings)
 				if g.budget != nil && (g.budget.exceeded || !g.budget.chargeCandidates(uint64(len(candidates)))) {
 					return executionBudgetExceeded
 				}

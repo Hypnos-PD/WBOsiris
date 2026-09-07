@@ -1,9 +1,11 @@
 package runner
 
+import "wbo/internal/ir"
+
 func copyRepeatBindings(parent frame) frame {
 	bindings := frame{}
 	for name, items := range parent {
-		bindings[name] = append([]*instance(nil), items...)
+		bindings[name] = append([]ir.EventTarget(nil), items...)
 	}
 	return bindings
 }

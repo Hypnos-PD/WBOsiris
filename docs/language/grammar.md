@@ -197,7 +197,10 @@ fusion_block       = "fusion" , "material" , "from" , target_set ,
 
 ```ebnf
 selection_statement = selection_kind , binding_name , "from" , target_set ,
-                      ["other"] , [where_clause] , [extremum_clause] , ["count" , integer] , ";" ;
+                      ["other"] , [where_clause] , [extremum_clause] , ["count" , integer] , ";"
+                    | selection_kind , binding_name , "from" , character_set , ["count" , integer] , ";" ;
+character_set       = "own.field.followers" , "or" , "own.leader"
+                    | "oppo.field.followers" , "or" , "oppo.leader" ;
 selection_kind      = "choose" | "require" | "random" ;
 extremum_clause     = ("highest" | "lowest") , ("attack" | "life" | "cost") ;
 binding_name        = identifier ;
@@ -472,7 +475,8 @@ primary_action    = "play" , alias , ";"
                   | "advance" , advance_point , participant , ";" ;
 attack_target     = alias | participant , "." , "leader" ;
 advance_point     = "turn_start" | "turn_end" ;
-action_response   = "select" , alias , {"," , alias} , ";" | "mode" , integer , ";" ;
+action_response   = "select" , selected_target , {"," , selected_target} , ";" | "mode" , integer , ";" ;
+selected_target   = alias | participant , "." , "leader" ;
 ```
 
 一个 `action` 恰有一个玩家指令或测试驱动 `advance`，其后按引擎请求顺序给出

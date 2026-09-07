@@ -94,7 +94,7 @@ func TestTriggerIndexTracksTransformAndZoneMoves(t *testing.T) {
 		t.Fatal(err)
 	}
 	source := session.g.instances[sourceID]
-	binding := frame{"source": {source}}
+	binding := frame{"source": bindEntities(source)}
 	session.g.execCardEffect(ir.CardEffect{Kind: "transform", Target: ir.BindingRef{Kind: "binding", Name: "source"}, CardID: listener.ID}, nil, binding)
 	session.g.triggerSummoned(source)
 	if len(session.g.triggers) != 1 {

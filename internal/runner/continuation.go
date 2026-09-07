@@ -17,11 +17,11 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.21.0"
+const continuationVersion = "0.22.0"
 
 type ContinuationBindings struct {
-	ID     string              `json:"id"`
-	Values map[string][]string `json:"values"`
+	ID     string                      `json:"id"`
+	Values map[string][]ir.EventTarget `json:"values"`
 }
 
 type ContinuationPending struct {
@@ -391,9 +391,9 @@ func (s *Session) makeContinuation() *Continuation {
 		}
 		id := fmt.Sprintf("frame-%d", len(frameIDs)+1)
 		frameIDs[key] = id
-		values := map[string][]string{}
-		for name, instances := range f {
-			values[name] = instanceIDs(instances)
+		values := map[string][]ir.EventTarget{}
+		for name, targets := range f {
+			values[name] = append([]ir.EventTarget(nil), targets...)
 		}
 		c.BindingFrames = append(c.BindingFrames, ContinuationBindings{ID: id, Values: values})
 		return id
@@ -824,16 +824,18 @@ func restoreBindings(saved []ContinuationBindings, instances map[string]*instanc
 			return nil, fmt.Errorf("invalid continuation binding frame")
 		}
 		f := frame{}
-		for name, ids := range bindingFrame.Values {
+		for name, values := range bindingFrame.Values {
 			if name == "" {
 				return nil, fmt.Errorf("invalid continuation binding name")
 			}
-			for _, id := range ids {
-				if instances[id] == nil {
-					return nil, fmt.Errorf("unknown bound instance %q", id)
+			for _, value := range values {
+				if value.Kind == "instance" && (instances[value.InstanceID] == nil || value.Side != "" || value.CardID != 0) ||
+					value.Kind == "leader" && (value.Side != "own" && value.Side != "oppo" || value.InstanceID != "" || value.CardID != 0) ||
+					value.Kind != "instance" && value.Kind != "leader" {
+					return nil, fmt.Errorf("invalid bound target")
 				}
-				f[name] = append(f[name], instances[id])
 			}
+			f[name] = append([]ir.EventTarget(nil), values...)
 		}
 		result[bindingFrame.ID] = f
 	}
@@ -844,22 +846,27 @@ func validateChoiceRequest(request ChoiceRequest, instances map[string]*instance
 	if !validRuntimeID(request.RequestID) || !validRuntimeID(request.ActionID) || request.NodeID == "" || request.PublicTo != "own" && request.PublicTo != "oppo" || request.MinSelections < 0 || request.MaxSelections < request.MinSelections || request.MaxSelections > len(request.Candidates) {
 		return fmt.Errorf("invalid continuation choice request")
 	}
-	seenEntities, seenOptions := map[string]bool{}, map[int]bool{}
+	seenEntities, seenOptions, seenLeaders := map[string]bool{}, map[int]bool{}, map[string]bool{}
 	for _, candidate := range request.Candidates {
 		switch candidate.Kind {
 		case "entity":
 			if request.Kind != "target" && request.Kind != "fusion_material" {
 				return fmt.Errorf("entity candidate on non-target request")
 			}
-			if candidate.InstanceID == "" || instances[candidate.InstanceID] == nil || candidate.OptionID != 0 || seenEntities[candidate.InstanceID] || len(candidate.Labels) != 0 {
+			if candidate.LeaderSide != "" || candidate.InstanceID == "" || instances[candidate.InstanceID] == nil || candidate.OptionID != 0 || seenEntities[candidate.InstanceID] || len(candidate.Labels) != 0 {
 				return fmt.Errorf("invalid continuation entity candidate")
 			}
 			seenEntities[candidate.InstanceID] = true
+		case "leader":
+			if request.Kind != "target" || candidate.LeaderSide != "own" && candidate.LeaderSide != "oppo" || candidate.InstanceID != "" || candidate.OptionID != 0 || len(candidate.Labels) != 0 || seenLeaders[candidate.LeaderSide] {
+				return fmt.Errorf("invalid continuation leader candidate")
+			}
+			seenLeaders[candidate.LeaderSide] = true
 		case "option":
 			if request.Kind != "mode" {
 				return fmt.Errorf("option candidate on non-mode request")
 			}
-			if candidate.InstanceID != "" || candidate.OptionID == 0 || seenOptions[candidate.OptionID] || !ir.ValidChoiceLabels(candidate.Labels) {
+			if candidate.LeaderSide != "" || candidate.InstanceID != "" || candidate.OptionID == 0 || seenOptions[candidate.OptionID] || !ir.ValidChoiceLabels(candidate.Labels) {
 				return fmt.Errorf("invalid continuation option candidate")
 			}
 			seenOptions[candidate.OptionID] = true
@@ -906,12 +913,13 @@ func validatePendingNode(s *Session, pending *pendingChoice) error {
 		if count < 1 || node.Kind == "require" && count != node.SelectionCount() || pending.request.Kind != "target" || node.Kind != "choose" && node.Kind != "require" || pending.binding != node.Binding || pending.request.MinSelections != count || pending.request.MaxSelections != count {
 			return fmt.Errorf("continuation target request does not match its IR node")
 		}
-		candidates := s.g.selectionCandidates(node, pending.self, pending.bindings)
+		candidates := s.g.selectionValues(node, pending.self, pending.bindings)
 		if len(candidates) != len(pending.request.Candidates) {
 			return fmt.Errorf("continuation target candidates changed")
 		}
 		for n, candidate := range candidates {
-			if pending.request.Candidates[n].Kind != "entity" || pending.request.Candidates[n].InstanceID != candidate.id {
+			want := candidateForValue(candidate)
+			if got := pending.request.Candidates[n]; got.Kind != want.Kind || got.InstanceID != want.InstanceID || got.LeaderSide != want.LeaderSide {
 				return fmt.Errorf("continuation target candidates changed")
 			}
 		}

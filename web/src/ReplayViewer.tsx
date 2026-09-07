@@ -87,6 +87,7 @@ export function ReplayViewer({ record, catalog, onClose }: { record: ReplayRecor
           <div className="rp-hand" aria-label="我方手牌">{(state.own.hand || []).map(renderCard)}</div>
           {state.pendingChoice && <div className="rp-choice"><strong>{state.pendingChoice.kind === "mode" ? "模式选择" : state.pendingChoice.kind === "fusion_material" ? "选择融合材料" : `选择目标 ${state.pendingChoice.minSelections}`}</strong><span>{state.pendingChoice.candidates.map((candidate) => {
             if (candidate.optionId !== undefined) return `选项 ${candidate.optionId}`;
+            if (candidate.kind === "leader") return candidate.leaderSide === state.viewer ? "我方主战者" : "对手主战者";
             const entity = [...(state.own.hand || []), ...(state.own.field || []), ...(state.oppo.field || []), ...(state.own.graveyard || [])].find((item) => item.instanceId === candidate.instanceId);
             return entity ? nameFor(entity) : "卡牌";
           }).join(" · ")}</span></div>}

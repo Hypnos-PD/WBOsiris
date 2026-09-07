@@ -175,6 +175,13 @@ IntrinsicState =
 
 ## 值、集合与绑定
 
+当前可执行 IR 的混合选择来源为 `CharacterSetRef { kind: "characters", side: Side }`，
+仅允许直接用作选择节点的 `source`。它表示指定方的场上随从，随后附加该方主战者；
+不能嵌入 `filter`、`exclude` 或附带 `extremum`。`side` 在此处相对能力来源解释。
+普通绑定使用实例引用；混合绑定可同时包含实例与主战者。直接 `count(binding)`
+统计全部目标，带卡牌筛选的计数仅统计实例。源语言限制混合绑定作为操作目标时
+只能用于无筛选的伤害，避免把主战者传给卡牌专用操作。
+
 ### ValueRef
 
 ```text
@@ -915,12 +922,16 @@ ChoiceRequest = {
 
 ChoiceCandidate =
   EntityCandidate { kind: "entity", instanceId: InstanceId }
+| LeaderCandidate { kind: "leader", leaderSide: Side }
 | OptionCandidate { kind: "option", optionId: OptionId,
                     labels?: { [LocaleId]: non-empty string } }
 
 ChoiceResponse = {
   requestId: RequestId,
+  actionId: CommandId,
+  stateRevision: u64,
   selectedInstanceIds: [InstanceId]?,
+  selectedLeaderSides: [Side]?,
   selectedOptionId: OptionId?
 }
 ```
@@ -928,6 +939,11 @@ ChoiceResponse = {
 `FusionCommand.source` 必须是行动方手牌中具有 `FusionAbility` 的实例；
 `Unplayable` 不会使该命令非法。命令完成前，材料请求及其响应与同一个
 `CommandId` 关联，不能拆成多条命令，也不能用多个单选响应累积材料。
+
+`leaderSide` 与 `selectedLeaderSides` 是对局固定席位，不相对请求接收者转换；
+客户端以 `state.viewer` 判断“你的主战者”和“对手主战者”。目标响应合计实例与
+主战者数量，拒绝重复或候选外的值，再按原候选顺序保存。模式与融合响应禁止
+携带主战者。候选列表和选中绑定仅对选择方可见，录像遵循相同的可见范围。
 
 模式候选的 `labels` 来自当前执行的 `ModeOption`，与卡牌当前区域或变身后的身份无关。
 其语言键只允许 `chs/eng/jpn/kor/cht`，缺省兼容无标签卡牌；不增加可执行节点。
@@ -1184,6 +1200,7 @@ TestAction =
 | EndTurn      { kind: "end_turn", actor: Side }
 | Select       { kind: "select", target: InstanceId }
 | SelectMany   { kind: "select", targets: [InstanceId] }
+| SelectMixed  { kind: "select", target?: InstanceId, targets?: [InstanceId], leaderSides: [Side] }
 | SelectMode   { kind: "select_mode", optionId: OptionId }
 | Advance      { kind: "advance", timing: "turn_start" | "turn_end", side: Side }
 ```

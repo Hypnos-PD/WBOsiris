@@ -17,6 +17,7 @@ type effectContext struct {
 
 func strictValidateCard(c *Card, ds *[]syntax.Diagnostic) {
 	validateCounters(c, ds)
+	validateMixedBindings(c.Effect, nil, ds)
 	if c.Cost < 0 || c.Cost > math.MaxUint16 {
 		diag(ds, "WBO-E014-INTEGER-RANGE", "错误", "cost 超出 u16 范围", c.Decl.Span)
 	}
@@ -516,16 +517,11 @@ func strictAction(s *syntax.Statement, a map[string]string, ds *[]syntax.Diagnos
 		} else {
 			switch x.Word(0) {
 			case "select":
-				ok = ok && len(t) >= 2 && len(t)%2 == 0
-				seen := map[string]bool{}
-				for i := 1; i < len(t); i++ {
-					if i%2 == 0 {
-						ok = ok && t[i].Value == ","
-					} else {
-						known := aliasKnown(t[i], a, ds)
-						ok = ok && known && !seen[t[i].Value]
-						seen[t[i].Value] = true
-					}
+				entities, _, parsed := parseSelectionResponse(t)
+				ok = ok && parsed
+				for _, entity := range entities {
+					known := aliasKnown(entity, a, ds)
+					ok = ok && known
 				}
 			case "mode":
 				ok = ok && len(t) == 2

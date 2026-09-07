@@ -392,6 +392,8 @@ export function App() {
     send({ kind: "attack", source, ...(defender ? { defender } : {}) });
   };
   const pending = remote?.state.pendingChoice;
+  const candidateKey = (candidate: ChoiceCandidate) => candidate.kind === "leader" ? `leader:${candidate.leaderSide}` : candidate.instanceId ?? "";
+  const leaderCandidate = (enemy: boolean) => pending?.candidates.find(candidate => candidate.kind === "leader" && (candidate.leaderSide === remote?.state.viewer) !== enemy);
   const candidateCard = (instanceId?: string) => {
     if (!instanceId) return null;
     const entity = [
@@ -402,13 +404,14 @@ export function App() {
     return entity ? cardFor(entity) : null;
   };
   const chooseCandidate = (candidate: ChoiceCandidate) => {
-    if (!pending || !candidate.instanceId) return;
+    const key = candidateKey(candidate);
+    if (!pending || !key) return;
     setChoiceSelection((current) =>
-      current.includes(candidate.instanceId!)
-        ? current.filter((id) => id !== candidate.instanceId)
+      current.includes(key)
+        ? current.filter((id) => id !== key)
         : current.length >= pending.maxSelections
           ? current
-          : [...current, candidate.instanceId!],
+          : [...current, key],
     );
   };
   const confirmChoice = () => {
@@ -425,7 +428,8 @@ export function App() {
         requestId: pending.requestId,
         actionId: pending.actionId,
         stateRevision: pending.stateRevision,
-        selectedInstanceIds: choiceSelection,
+        selectedInstanceIds: pending.candidates.filter(candidate => candidate.kind === "entity" && choiceSelection.includes(candidateKey(candidate))).map(candidate => candidate.instanceId!),
+        selectedLeaderSides: pending.candidates.filter(candidate => candidate.kind === "leader" && choiceSelection.includes(candidateKey(candidate))).map(candidate => candidate.leaderSide!),
       });
   };
   const doSourceAction = (
@@ -705,9 +709,10 @@ export function App() {
               life={oppo?.leaderLife ?? 20}
               max={oppo?.leaderMax ?? 20}
               enemy
-              active={Boolean(attacker && legal("attack_leader", attacker))}
+              active={Boolean(leaderCandidate(true) || attacker && legal("attack_leader", attacker))}
+              selected={!!leaderCandidate(true) && choiceSelection.includes(candidateKey(leaderCandidate(true)!))}
               feedback={feedback.leader ? "hit" : ""}
-              onClick={attackLeader}
+              onClick={() => leaderCandidate(true) ? chooseCandidate(leaderCandidate(true)!) : attackLeader()}
             />
             <EvoPip kind="sep" value={oppo?.sep ?? 0} />
           </div>
@@ -840,6 +845,9 @@ export function App() {
               name="你的主战者"
               life={own?.leaderLife ?? 20}
               max={own?.leaderMax ?? 20}
+              active={!!leaderCandidate(false)}
+              selected={!!leaderCandidate(false) && choiceSelection.includes(candidateKey(leaderCandidate(false)!))}
+              onClick={() => { if (leaderCandidate(false)) chooseCandidate(leaderCandidate(false)!); }}
             />
             <EvoPip
               kind="sep"
@@ -1031,8 +1039,8 @@ export function App() {
               {pending.kind === "mode"
                 ? "请选择一个模式"
                 : pending.minSelections === pending.maxSelections
-                  ? `选择 ${pending.maxSelections} 张`
-                  : `选择 ${pending.minSelections} 至 ${pending.maxSelections} 张`}
+                  ? `选择 ${pending.maxSelections} ${pending.kind === "fusion_material" ? "张" : "个目标"}`
+                  : `选择 ${pending.minSelections} 至 ${pending.maxSelections} ${pending.kind === "fusion_material" ? "张" : "个目标"}`}
             </small>
           </div>
           <div className="choice-options" role={pending.kind === "mode" ? "radiogroup" : undefined} aria-label={pending.kind === "mode" ? "模式" : undefined}>
@@ -1059,13 +1067,15 @@ export function App() {
                 </label>
               ) : (
                 <button
-                  className={`candidate-card ${candidate.instanceId && choiceSelection.includes(candidate.instanceId) ? "selected" : ""}`}
-                  key={`candidate-${candidate.instanceId ?? index}`}
-                  aria-pressed={!!candidate.instanceId && choiceSelection.includes(candidate.instanceId)}
-                  disabled={choiceSelection.length >= pending.maxSelections && !choiceSelection.includes(candidate.instanceId ?? "")}
+                  className={`candidate-card ${choiceSelection.includes(candidateKey(candidate)) ? "selected" : ""}`}
+                  key={`candidate-${candidateKey(candidate) || index}`}
+                  aria-pressed={choiceSelection.includes(candidateKey(candidate))}
+                  disabled={choiceSelection.length >= pending.maxSelections && !choiceSelection.includes(candidateKey(candidate))}
                   onClick={() => chooseCandidate(candidate)}
                 >
-                  {candidateCard(candidate.instanceId) ? (
+                  {candidate.kind === "leader" ? (
+                    <><Shield size={28} aria-hidden="true"/><span>{candidate.leaderSide === remote?.state.viewer ? "你的主战者" : "对手主战者"}</span></>
+                  ) : candidateCard(candidate.instanceId) ? (
                     <>
                       <CardArt
                         src={candidateCard(candidate.instanceId)!.art}
@@ -1194,6 +1204,7 @@ function Leader({
   max,
   enemy = false,
   active = false,
+  selected = false,
   feedback = "",
   onClick,
 }: {
@@ -1202,14 +1213,16 @@ function Leader({
   max: number;
   enemy?: boolean;
   active?: boolean;
+  selected?: boolean;
   feedback?: string;
   onClick?: () => void;
 }) {
   return (
     <button
       aria-label={name}
+      aria-pressed={selected}
       data-leader-target={enemy ? "oppo" : "own"}
-      className={`leader ${enemy ? "enemy" : ""} ${active ? "active" : ""} ${feedback}`}
+      className={`leader ${enemy ? "enemy" : ""} ${active ? "active" : ""} ${selected ? "selected" : ""} ${feedback}`}
       onClick={onClick}
     >
       <SpinePortrait />

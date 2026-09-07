@@ -1,0 +1,76 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Ravening Tentacles targets a leader on an empty field" {
+    seed 3001;
+    state { player own { pp 7/7; leader 10/20; hand { spell source = 10123310; } } }
+    action { play source; select oppo.leader; }
+    expect { legal; own.pp == 0/7; own.leader.life == 15; oppo.leader.life == 15; source.zone == graveyard; rng.consumed == 0; }
+}
+
+scenario "Ravening Tentacles can choose the leader instead of a follower" {
+    seed 3002;
+    state {
+        player own { pp 7/7; leader 17/20; hand { spell source = 10123310; } }
+        player oppo { field { follower target = 10001110; } }
+    }
+    action { play source; select oppo.leader; }
+    expect { legal; own.leader.life == 20; oppo.leader.life == 15; target.stats == 2/2; own.pp == 0/7; }
+}
+
+scenario "Ravening Tentacles destroys a follower and heals its owner" {
+    seed 3003;
+    state {
+        player own { pp 7/7; leader 10/20; hand { spell source = 10123310; } }
+        player oppo { field { follower target = 10001110; } }
+    }
+    action { play source; select target; }
+    expect { legal; own.leader.life == 15; oppo.leader.life == 20; target.zone == graveyard; own.pp == 0/7; }
+}
+
+scenario "Ravening Tentacles heals even when a barrier prevents its damage" {
+    seed 3004;
+    state {
+        player own { pp 7/7; leader 10/20; hand { spell source = 10123310; } }
+        player oppo { field { follower target = 10001110 { barrier; } } }
+    }
+    action { play source; select target; }
+    expect { legal; own.leader.life == 15; target.stats == 2/2; target lacks barrier; own.pp == 0/7; }
+}
+
+scenario "Lloyd excludes the leader from Ravening Tentacles targets" {
+    seed 3005;
+    state {
+        player own { pp 7/7; hand { spell source = 10123310; } }
+        player oppo { field { follower lloyd = 90074120; follower ally = 10001110; } }
+    }
+    action { play source; select lloyd; }
+    expect { legal; lloyd.stats == 1/1; ally.stats == 2/2; oppo.leader.life == 20; own.pp == 0/7; }
+}
+
+scenario "Protected Lloyd prevents Ravening Tentacles from being played" {
+    seed 3006;
+    state {
+        player own { pp 7/7; hand { spell source = 10123310; } }
+        player oppo { field { follower lloyd = 90074120 { aura; } } }
+    }
+    action { play source; }
+    expect { illegal target_required; unchanged; source.zone == hand; own.pp == 7/7; }
+}
+
+scenario "Ravening Tentacles needs seven PP" {
+    seed 3007;
+    state { player own { pp 6/7; hand { spell source = 10123310; } } }
+    action { play source; }
+    expect { illegal cost; unchanged; source.zone == hand; own.pp == 6/7; }
+}
+
+scenario "Stealth and aura followers leave the opposing leader available" {
+    seed 3008;
+    state {
+        player own { pp 7/7; hand { spell source = 10123310; } }
+        player oppo { field { follower hidden = 10001110 { stealth; } follower protected = 10001110 { aura; } } }
+    }
+    action { play source; select oppo.leader; }
+    expect { legal; oppo.leader.life == 15; hidden.stats == 2/2; protected.stats == 2/2; own.leader.life == 20; }
+}

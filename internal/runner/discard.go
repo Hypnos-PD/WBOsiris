@@ -20,7 +20,7 @@ func (g *game) discardCards(targets []*instance) {
 		for _, ability := range item.card.Abilities {
 			trigger, ok := ability.Trigger.(ir.EventTrigger)
 			if ok && trigger.SelfOnly && trigger.Event == "card_discarded" {
-				if !g.queueTrigger(triggerInvocation{body: ability.Body, blockID: abilityBlockID(item.card.ID, ability.ID), self: item, bindings: frame{"discarded": {item}}}) {
+				if !g.queueTrigger(triggerInvocation{body: ability.Body, blockID: abilityBlockID(item.card.ID, ability.ID), self: item, bindings: frame{"discarded": bindEntities(item)}}) {
 					return
 				}
 			}

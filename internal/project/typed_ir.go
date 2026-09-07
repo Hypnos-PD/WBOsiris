@@ -240,6 +240,10 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		return ir.RepeatEffect{NodeBase: base, Kind: "repeat", Times: times, TimesExpr: expr, Body: body}, err
 	case "choose", "require", "random":
 		src, end := setExprIR(t, 3)
+		if end < len(t) && t[end].Value == "or" {
+			src = ir.CharacterSetRef{Kind: "characters", Side: t[3].Value}
+			end += 4
+		}
 		if end < len(t) && t[end].Value == "other" {
 			src = ir.ExcludeRef{Kind: "exclude", Source: src, Value: ir.SelfRef{Kind: "self"}}
 			end++
@@ -762,12 +766,16 @@ func compileActions(s *syntax.Statement, a map[string]string) ([]ir.Action, erro
 			action = ir.FusionAction{Kind: "fusion", Actor: "own", Source: a[t[1].Value]}
 		case "select":
 			selection := ir.SelectAction{Kind: "select"}
-			if len(t) == 2 {
-				selection.Target = a[t[1].Value]
+			entities, leaders, _ := parseSelectionResponse(t)
+			if len(entities) == 1 {
+				selection.Target = a[entities[0].Value]
 			} else {
-				for n := 1; n < len(t); n += 2 {
-					selection.Targets = append(selection.Targets, a[t[n].Value])
+				for _, entity := range entities {
+					selection.Targets = append(selection.Targets, a[entity.Value])
 				}
+			}
+			for _, leader := range leaders {
+				selection.LeaderSides = append(selection.LeaderSides, leader.Value)
 			}
 			action = selection
 		case "mode":

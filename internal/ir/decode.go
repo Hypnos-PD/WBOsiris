@@ -632,13 +632,16 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
 			return nil, err
 		}
-		s, err := decodeRef(v.Source)
+		s, err := decodeSelectionSource(v.Source)
 		wantPolicy := map[string]string{"choose": "optional", "require": "required", "random_choose": "random"}[v.Kind]
 		if v.Policy != wantPolicy || v.Binding == "" {
 			return nil, fmt.Errorf("invalid selection effect")
 		}
 		if v.Extremum != nil && (!oneOf(v.Extremum.Direction, "highest", "lowest") || !oneOf(v.Extremum.Field, "attack", "life", "cost")) {
 			return nil, fmt.Errorf("invalid selection extremum")
+		}
+		if _, mixed := s.(CharacterSetRef); mixed && v.Extremum != nil {
+			return nil, fmt.Errorf("character sets do not have card extrema")
 		}
 		count := 0
 		if len(v.Count) != 0 {
