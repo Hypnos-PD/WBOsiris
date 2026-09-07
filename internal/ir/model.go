@@ -455,6 +455,7 @@ func (e *NegateExpr) numericKind() string { return e.Kind }
 type TargetEffect struct {
 	NodeBase
 	Kind          string      `json:"kind"`
+	Output        string      `json:"output,omitempty"`
 	DamageType    string      `json:"damageType,omitempty"`
 	Distribution  string      `json:"distribution,omitempty"`
 	Overflow      Ref         `json:"overflow,omitempty"`

@@ -842,8 +842,9 @@ func (g *game) modifyDamage(context damageContext) int {
 	return min(amount, max(context.target.life, 0))
 }
 
-func (g *game) destroyByEffect(targets []*instance) {
+func (g *game) destroyByEffect(targets []*instance) []*instance {
 	allowed := make([]*instance, 0, len(targets))
+	selected := map[*instance]bool{}
 	for _, target := range targets {
 		if target == nil || target.zone != "field" || target.earthsigil > 0 {
 			continue
@@ -852,8 +853,15 @@ func (g *game) destroyByEffect(targets []*instance) {
 			continue
 		}
 		allowed = append(allowed, target)
+		selected[target] = true
 	}
-	g.resolveDeathBatch(allowed)
+	var destroyed []*instance
+	for _, target := range g.resolveDeathBatch(allowed) {
+		if selected[target] {
+			destroyed = append(destroyed, target)
+		}
+	}
+	return destroyed
 }
 
 func (g *game) finishGame(winner string) {

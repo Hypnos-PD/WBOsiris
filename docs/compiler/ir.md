@@ -522,7 +522,9 @@ Summon = NodeBase & {
 
 Destroy = NodeBase & {
   kind: "destroy",
-  target: ValueRef | SetExpr
+  target: ValueRef | SetExpr,
+  predicate?: Predicate,
+  output?: "destroyed"
 }
 
 Banish = NodeBase & {
@@ -604,7 +606,7 @@ AttachedMaterial = {
 ### 数值、能力与状态操作
 
 ```text
-NumericExpr = Count { kind: "count", source: ZoneSet | FilterSet }
+NumericExpr = Count { kind: "count", source: ZoneSet | BindingRef | FilterSet }
             | PlayerScalar { kind: "scalar", side: "own" | "oppo",
                              field: "combo" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" }
             | SelfScalar { kind: "self_scalar", field: "attack" | "life" | "cost" }
@@ -697,6 +699,12 @@ Spellboost = NodeBase & {
   times: IntExpr
 }
 ```
+
+`Destroy.output` 由编译器写为 `destroyed`。运行器按死亡批次顺序记录本条操作实际
+破坏的目标，不记录受保护目标、重复目标或同批其他死亡；空结果覆盖此前绑定。
+旧 IR 可省略输出，此时只执行破坏。`Count.source` 可引用区域集合或当前帧的集合绑定，
+`FilterSet` 的计数来源也可为这两者；绑定定义与作用域由源语言校验。
+选择暂停的存档通过既有帧绑定保存这些实例 ID，不增加独立计数器。
 
 `Damage.distribution` 省略时，对每个目标造成完整的 `amount` 伤害。
 数值表达式在该效果实际执行时读取，目标修改前同时确定伤害量或两项增益量。

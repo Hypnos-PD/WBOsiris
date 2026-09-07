@@ -13,7 +13,8 @@ func numericIR(t []syntax.Token, i int) (int, ir.NumericExpr) {
 		return intToken(t[i]), nil
 	}
 	if t[i].Value == "count" {
-		source, next := setExprIR(t, i+2)
+		source := valueRefIR(t, i+2)
+		next, _ := parseCountSource(t, i+2)
 		if t[next].Value == "where" {
 			predicate, _ := filterIR(t, next)
 			source = ir.FilterRef{Kind: "filter", Source: source, Predicate: predicate}

@@ -6,7 +6,11 @@ card 10163110 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fanfare {
+            destroy own.field.amulets;
+            damage oppo.field.followers count(destroyed);
+            damage oppo.leader count(destroyed);
+        }
     }
 
     meta {

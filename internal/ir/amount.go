@@ -7,12 +7,15 @@ import (
 
 func validCountSource(source Ref) bool {
 	switch r := source.(type) {
+	case BindingRef:
+		return r.Kind == "binding" && r.Name != ""
 	case ZoneRef:
 		return r.Kind == "zone" && validZone(r.Zone) && (validSide(r.Side) || r.Side == "" && r.Zone == "field") &&
 			(r.Member == "" || oneOf(r.Member, "card", "follower", "spell", "amulet"))
 	case FilterRef:
-		_, ok := r.Source.(ZoneRef)
-		return r.Kind == "filter" && ok && validCountSource(r.Source) && r.Predicate != nil
+		_, zone := r.Source.(ZoneRef)
+		_, binding := r.Source.(BindingRef)
+		return r.Kind == "filter" && (zone || binding) && validCountSource(r.Source) && r.Predicate != nil
 	default:
 		return false
 	}

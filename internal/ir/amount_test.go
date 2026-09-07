@@ -43,7 +43,7 @@ func TestRejectMalformedIRAmounts(t *testing.T) {
 		`null`, ` null `, `-1`, `1.5`, `"1"`, `true`, `[]`, `{}`, `{"kind":"value","value":1}`,
 		`{"kind":"count"}`, `{"kind":"count","source":null}`,
 		`{"kind":"count","source":{"kind":"leader","side":"own","valueType":"leader"}}`,
-		`{"kind":"count","source":{"kind":"binding","name":"target"}}`,
+		`{"kind":"count","source":{"kind":"binding","name":""}}`,
 		`{"kind":"count","source":{"kind":"zone","zone":"hand"}}`,
 		`{"kind":"count","source":{"kind":"zone","side":"own","zone":"unknown"}}`,
 		`{"kind":"count","source":{"kind":"zone","side":"own","zone":"hand"},"extra":1}`,

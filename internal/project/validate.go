@@ -227,6 +227,11 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			continue
 		}
 		h := t[0].Value
+		for n := 0; n+2 < len(t); n++ {
+			if t[n].Value == "count" && t[n+1].Value == "(" {
+				checkBindingAt(t, n+2, n+3, bindings, ds)
+			}
+		}
 		if abilities[h] || h == "unplayable" || h == "earthsigil" {
 			if len(t) != 1 || !s.Terminated || len(b) > 0 {
 				shapeError(ds, s, h+";")
@@ -412,6 +417,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 		if h == "draw" {
 			bindings["drawn"] = true
 		}
+		if h == "destroy" {
+			bindings["destroyed"] = true
+		}
 		if h == "summon" || h == "reanimate" {
 			bindings["summoned"] = true
 		}
@@ -424,6 +432,8 @@ func producedBindings(body []*syntax.Statement) map[string]bool {
 		switch s.Word(0) {
 		case "draw":
 			out["drawn"] = true
+		case "destroy":
+			out["destroyed"] = true
 		case "summon", "reanimate":
 			out["summoned"] = true
 		case "choose", "require", "random":
@@ -593,7 +603,7 @@ func parseEffectAmount(t []syntax.Token, i int) (int, bool) {
 	if i+1 >= len(t) || t[i].Value != "count" || t[i+1].Value != "(" {
 		return i, false
 	}
-	end, ok := parseTargetSet(t, i+2)
+	end, ok := parseCountSource(t, i+2)
 	if ok && end < len(t) && t[end].Value == "where" {
 		end, ok = parseWhere(t, end)
 	}
@@ -608,6 +618,13 @@ func parseSignedAmount(t []syntax.Token, i int) (int, bool) {
 		return i, false
 	}
 	return parseEffectAmount(t, i+1)
+}
+
+func parseCountSource(t []syntax.Token, i int) (int, bool) {
+	if i < len(t) && t[i].Kind == syntax.Identifier && !set("self", "own", "oppo", "field", "all", "leaders")[t[i].Value] {
+		return i + 1, true
+	}
+	return parseTargetSet(t, i)
 }
 
 func parseTargetSet(t []syntax.Token, i int) (int, bool) {

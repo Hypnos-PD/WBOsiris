@@ -1,0 +1,77 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Skullfane counts destroyed amulets before lastwords" {
+    seed 2201;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10163110; }
+            field { amulet first = 10001210; amulet church = 10161210; }
+            deck top { follower draw1 = 10001110; follower draw2 = 10001110; }
+        }
+        player oppo { field { follower enemy = 10001110; } }
+    }
+    action { play source; }
+    expect {
+        legal; own.pp == 0/6; own.shadows == 2; oppo.leader.life == 18;
+        first.zone == graveyard; church.zone == graveyard; enemy.zone == graveyard;
+        draw1.zone == hand; draw2.zone == hand;
+        events contains ordered { destroy first; destroy church; damage enemy 2; destroy enemy; damage oppo.leader 2; draw own 2; }
+    }
+}
+
+scenario "Skullfane does not count indestructible earth sigils" {
+    seed 2202;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10163110; }
+            field { amulet sigil = 90031210 { earthsigil 3; } amulet target = 10001210; }
+        }
+        player oppo { field { follower enemy = 10001110; } }
+    }
+    action { play source; }
+    expect {
+        legal; sigil.zone == field; sigil.earthsigil == 3; target.zone == graveyard;
+        own.shadows == 1; enemy.stats == 2/1; oppo.leader.life == 19;
+        events excludes { destroy sigil; }
+    }
+}
+
+scenario "Skullfane without allied amulets deals no damage" {
+    seed 2203;
+    state {
+        player own { pp 6/6; hand { follower source = 10163110; } }
+        player oppo { field { follower enemy = 10001110; } }
+    }
+    action { play source; }
+    expect { legal; source.zone == field; own.shadows == 0; enemy.stats == 2/2; oppo.leader.life == 20; }
+}
+
+scenario "Skullfane damage protection does not change destruction count" {
+    seed 2204;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10163110; }
+            field { amulet first = 10001210; amulet second = 10001210; }
+        }
+        player oppo { field { follower enemy = 10001110 { barrier; } } }
+    }
+    action { play source; }
+    expect { legal; own.shadows == 2; enemy.stats == 2/2; enemy lacks barrier; oppo.leader.life == 18; }
+}
+
+scenario "Skullfane cannot free a slot before being played" {
+    seed 2205;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10163110; }
+            field { amulet a = 10001210; amulet b = 10001210; amulet c = 10001210; amulet d = 10001210; amulet e = 10001210; }
+        }
+    }
+    action { play source; }
+    expect { illegal field_full; unchanged; source.zone == hand; own.shadows == 0; }
+}

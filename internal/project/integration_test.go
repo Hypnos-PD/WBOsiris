@@ -34,7 +34,7 @@ func TestProjectCorpusAndReferenceStrictness(t *testing.T) {
 	for _, tf := range l.Tests {
 		sc += len(tf.Scenarios)
 	}
-	if sc != 82 {
+	if sc != 87 {
 		t.Fatalf("scenarios=%d", sc)
 	}
 	if len(l.Unresolved) != 0 {
@@ -101,7 +101,7 @@ func TestCompileTestPackStructured(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(typed.Scenarios) != 82 || typed.Scenarios[0].Name != "无敌方目标时零费启动仍先破坏自身" {
+	if len(typed.Scenarios) != 87 || typed.Scenarios[0].Name != "无敌方目标时零费启动仍先破坏自身" {
 		t.Fatalf("bad typed test pack: scenarios=%d", len(typed.Scenarios))
 	}
 	b, err := Compile(l, true)
@@ -119,7 +119,7 @@ func TestCompileTestPackStructured(t *testing.T) {
 		t.Fatal("test pack is missing ruleset dependency")
 	}
 	scenarios := pack["scenarios"].([]any)
-	if len(scenarios) != 82 {
+	if len(scenarios) != 87 {
 		t.Fatalf("scenarios=%d", len(scenarios))
 	}
 	first := scenarios[0].(map[string]any)

@@ -429,7 +429,10 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 			i.attackLimitValue = e.Amount
 		}
 	case "destroy":
-		g.destroyByEffect(targets)
+		destroyed := g.destroyByEffect(targets)
+		if e.Output != "" {
+			f[e.Output] = destroyed
+		}
 	case "discard":
 		g.discardCards(targets)
 	case "banish":
@@ -688,7 +691,7 @@ type deathRecord struct {
 	abilities []int
 }
 
-func (g *game) resolveDeathBatch(explicit []*instance) {
+func (g *game) resolveDeathBatch(explicit []*instance) []*instance {
 	// 先收齐本批死亡对象，避免谢幕曲看到只离场了一半的状态。
 	marked := map[*instance]bool{}
 	for _, i := range explicit {
@@ -705,14 +708,14 @@ func (g *game) resolveDeathBatch(explicit []*instance) {
 		}
 	}
 	if len(deaths) == 0 {
-		return
+		return nil
 	}
 	triggerCount := 0
 	for _, death := range deaths {
 		triggerCount += len(death.abilities)
 	}
 	if g.budget != nil && (!g.budget.chargeEvents(uint64(len(deaths))) || !g.budget.chargeTriggers(uint64(triggerCount))) {
-		return
+		return nil
 	}
 	g.deathBatchSerial++
 	batchID := g.deathBatchSerial
@@ -733,6 +736,11 @@ func (g *game) resolveDeathBatch(explicit []*instance) {
 			g.triggers = append(g.triggers, triggerInvocation{body: ability.Body, blockID: abilityBlockID(death.instance.card.ID, ability.ID), self: death.instance, bindings: frame{}})
 		}
 	}
+	destroyed := make([]*instance, 0, len(deaths))
+	for _, death := range deaths {
+		destroyed = append(destroyed, death.instance)
+	}
+	return destroyed
 }
 func (g *game) returnCard(i *instance, z string) {
 	if z != "deck" {

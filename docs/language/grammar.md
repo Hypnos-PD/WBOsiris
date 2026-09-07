@@ -307,10 +307,11 @@ numeric_operation = "damage" , value_ref , effect_amount , [damage_distribution]
                   | "gain" , scalar_ref , integer , ";"
                   | "restore" , participant , "." , "pp" , ";" ;
 
-effect_amount     = integer | counter_ref | "count" , "(" , target_set , [where_clause] , ")"
+effect_amount     = integer | counter_ref | "count" , "(" , count_source , [where_clause] , ")"
                   | participant , "." , ("combo" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows")
                   | "self" , "." , ("cost" | "attack" | "life") ;
 signed_amount     = ("+" | "-") , effect_amount ;
+count_source      = target_set | binding_name ; (* binding must already be defined in this scope *)
 repeat_statement  = "repeat" , effect_amount , effect_block ;
 damage_distribution = "distributed" , ["overflow" , participant , "." , "leader"] ;
 
@@ -340,6 +341,8 @@ scalar_ref        = participant , "." , scalar_field ;
 `summon` 按数量依次创建实例并覆盖 `summoned`；`draw` 按牌组顺序移动实例并
 覆盖 `drawn`。`add card ... to hand` 创建实例但不视为抽牌。批量操作只把
 实际成功进入目标区域的实例写入输出绑定。
+`destroy` 覆盖 `destroyed`，只记录本条操作实际破坏的目标；空结果也覆盖。
+`count(destroyed)` 统计该结果，其他伤害或独立触发能力不会改写它。
 
 `return T to deck` 在 `0..牌组长度` 的插入位置中等概率选择一个位置，只插入目标
 而不改变其他牌的相对顺序。每次成功返回牌组消费一次规则层随机决策；返回手牌不
@@ -557,11 +560,11 @@ fact_object       = alias | participant , "." , "leader" | "card" , card_id ;
    对手。绑定具有所在效果调用帧的词法作用域：内层块可读外层绑定；同名新绑定
    覆盖当前帧旧值，离开帧后恢复外层值。
 9. `choose`、`require`、`random` 的 `binding_name` 建立或覆盖绑定；当前语料
-   使用稳定名 `target`。操作输出 `summoned`、`drawn` 和事件输出同样是绑定。
+   使用稳定名 `target`。操作输出 `summoned`、`drawn`、`destroyed` 和事件输出同样是绑定。
    使用前必须在所有可达控制流上已定义，`superevolve extends evolve` 是允许
    读取普通进化块输出绑定的特例。绑定值必须满足操作所需的单值、集合和类型。
-10. 新的召唤或抽牌操作即使成功数为零，也以对应空集合替换旧的 `summoned` 或
-    `drawn`。事件绑定只在对应监听器调用帧有效。实例离开原区域后，绑定和测试
+10. 新的召唤、抽牌或破坏操作即使成功数为零，也以对应空集合替换旧的 `summoned`、
+    `drawn` 或 `destroyed`。事件绑定只在对应监听器调用帧有效。实例离开原区域后，绑定和测试
     别名仍指向同一实例。
 11. `where` 的字段必须适用于候选类型；例如 `life` 只适用于随从，`trait` 只
     匹配具有该种族的卡牌。应用于操作的 `where` 先过滤其紧邻集合操作数，再按

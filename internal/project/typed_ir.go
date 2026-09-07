@@ -360,6 +360,9 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		return ir.AdjustEffect{NodeBase: base, Kind: "restore_resource", Owner: t[1].Value, Resource: "pp"}, nil
 	case "destroy", "banish", "discard":
 		e := ir.TargetEffect{NodeBase: base, Kind: h, Target: valueRefIR(t, 1)}
+		if h == "destroy" {
+			e.Output = "destroyed"
+		}
 		end := valueRefEnd(t, 1)
 		if end < len(t) {
 			e.Predicate, _ = filterIR(t, end)

@@ -95,6 +95,7 @@ effect {
 - `oppo`：当前控制者的对手。
 - `target`：最近一次目标选择所绑定的值。
 - `summoned`、`drawn`：最近一次对应操作成功产生的有序集合。
+- `destroyed`：最近一次 `destroy` 操作实际破坏的目标集合。
 
 对 `summoned` 或 `drawn` 执行操作时，会按顺序对集合中的每个实例执行。手牌
 或战场空间不足时，集合只包含实际成功进入目标区域的实例。新的召唤或抽牌
@@ -229,6 +230,8 @@ fanfare {
 主战者生命值不会超过上限。空集合计数为零。计数支持区域集合与类型后缀，
 例如 `count(own.field.followers where trait golem)`；括号内的 `where` 筛选计数来源，
 括号外的 `where` 筛选效果目标。一次效果只读取一次计数，对全部目标使用同一数值。
+也可统计已定义的集合绑定，如 `count(drawn)`、`count(summoned)`、`count(targets)`，
+以及 `count(destroyed where type amulet)`。绑定必须在当前作用域内先定义再使用。
 计数不消耗随机决策；查询预算耗尽时不使用部分结果执行效果。
 数值也可直接读取 `own`/`oppo` 的 `combo`、`pp`、`maxpp`、`life`、`ep`、`sep`、`shadows`，
 或者读取 `self.cost`；随从还可读取 `self.attack` 和 `self.life`。
@@ -428,6 +431,25 @@ trait departed;
 强化档位。`enhance 0` 也是可支付档位，不能与未发动强化混同。
 
 多个强化档位累计发动的判例见[官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#e03skkdj6s6)。
+
+## 破坏结果
+
+每条 `destroy` 操作将实际破坏的目标写入 `destroyed`，包括空结果；后续 `destroy`
+会替换同名绑定。集合按照本批破坏的顺序排列，同一实例最多出现一次。
+已离开战场、土之印或因保护而未被破坏的目标不计入；其他随从因生命值归零而在同批
+离场，也不会加入本操作的结果。伤害和后续谢幕曲产生的破坏不会改写当前块的绑定。
+
+```wbo
+fanfare {
+    destroy own.field.amulets;
+    damage oppo.field.followers count(destroyed);
+    damage oppo.leader count(destroyed);
+}
+```
+
+这里两条伤害读取相同的破坏张数，新触发的谢幕曲等待入场曲结束后结算。
+`destroyed` 保存实例集合，不是墓场总数；`own.destroyed` 仍表示已有的破坏历史区域。
+结果不会跨越独立能力块，选择暂停与恢复保留当前块内的结果。
 
 ## 舍弃与弃牌事件
 

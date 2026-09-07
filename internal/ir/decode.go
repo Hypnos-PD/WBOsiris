@@ -822,6 +822,7 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		return CardEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.Destination, v.Output, v.Count, v.CardID, v.MaxCost, v.TieBreak, v.PreserveInstanceID, v.PreserveMaterials, r}, err
 	case "damage", "heal", "buff_stats", "destroy", "banish", "discard", "return", "add_keyword", "remove_keyword", "silent_evolve", "set_attack_limit":
 		type raw struct {
+			Output                                                      string `json:"output,omitempty"`
 			ID                                                          string `json:"id"`
 			Kind, DamageType, Keyword, Form, Destination, DeckInsertion string
 			Distribution                                                string          `json:"distribution,omitempty"`
@@ -838,6 +839,9 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		var v raw
 		if err := strict(data, &v); err != nil {
 			return nil, err
+		}
+		if v.Output != "" && (v.Kind != "destroy" || v.Output != "destroyed") {
+			return nil, fmt.Errorf("invalid target effect output")
 		}
 		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
 			return nil, err
@@ -927,7 +931,7 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			}
 		}
 		return TargetEffect{
-			NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, DamageType: v.DamageType,
+			NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Output: v.Output, DamageType: v.DamageType,
 			Distribution: v.Distribution, Overflow: overflow,
 			Keyword: v.Keyword, Form: v.Form, Destination: v.Destination, DeckInsertion: v.DeckInsertion,
 			Target: r, Amount: v.Amount, AmountExpr: amountExpr, AttackDelta: v.AttackDelta, LifeDelta: v.LifeDelta, AttackExpr: attackExpr, LifeExpr: lifeExpr, Predicate: p,

@@ -153,6 +153,12 @@ func (e CardEffect) MarshalJSON() ([]byte, error) {
 func (e TargetEffect) MarshalJSON() ([]byte, error) {
 	object := effectObject(e.NodeBase, e.Kind)
 	object["target"] = e.Target
+	if e.Output != "" {
+		if e.Kind != "destroy" || e.Output != "destroyed" {
+			return nil, fmt.Errorf("invalid target effect output")
+		}
+		object["output"] = e.Output
+	}
 	if !validDamageDistribution(e.Kind, e.Distribution, e.Target, e.Overflow) {
 		return nil, fmt.Errorf("invalid damage distribution")
 	}
