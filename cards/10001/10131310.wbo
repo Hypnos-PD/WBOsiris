@@ -5,7 +5,9 @@ card 10131310 {
     cost 2;
 
     effect {
-        unplayable;
+        require target from own.hand where spellboost;
+        spellboost target 1;
+        draw 1;
     }
 
     meta {

@@ -1,0 +1,67 @@
+wbo 0.1.0;
+
+card 90034130 {
+    type follower;
+    cost 3;
+    stats 5/5;
+    trait mysteria;
+
+    effect {
+        rush;
+        ward;
+        when oppo turn ends {
+            destroy self;
+        }
+    }
+
+    meta {
+        pack 90000;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "安的巨大英灵";
+        text """
+【<color=Keyword>突进</color>】
+【<color=Keyword>守护</color>】
+对手的回合结束时，破坏本卡牌。
+""";
+    }
+
+    locale eng {
+        name "Anne's Summoning";
+        text """
+<b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Ward</color></b>
+At the end of your opponent's turn, destroy this card.
+""";
+    }
+
+    locale jpn {
+        name "アンの<rub=\"だいえいれい\">大英霊</rub>";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>守護</color>】
+相手のターン終了時、これを破壊。
+""";
+    }
+
+    locale kor {
+        name "앤의 대영령";
+        text """
+[<color=Keyword>돌진</color>]
+[<color=Keyword>수호</color>]
+상대방 턴 종료시, 이 추종자를 파괴.
+""";
+    }
+
+    locale cht {
+        name "安的巨大英靈";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>守護</color>】
+敵方的回合結束時，破壞這張卡片。
+""";
+    }
+}

@@ -261,6 +261,13 @@ func (g *game) matches(i *instance, p ir.Predicate) bool {
 	switch x := p.(type) {
 	case ir.FieldPredicate:
 		switch x.Kind {
+		case "has_spellboost":
+			for _, ability := range i.card.Abilities {
+				if ir.TriggerKind(ability.Trigger) == "spellboost" {
+					return true
+				}
+			}
+			return false
 		case "has_card":
 			return i.card.ID == x.CardID
 		case "has_type":

@@ -1169,6 +1169,14 @@ func decodePredicate(data []byte) (Predicate, error) {
 			return nil, fmt.Errorf("invalid predicate class")
 		}
 		return FieldPredicate{Kind: v.Kind, Class: v.Class}, nil
+	case "has_spellboost":
+		var v struct {
+			Kind string `json:"kind"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		return FieldPredicate{Kind: v.Kind}, nil
 	case "has_trait":
 		var v struct {
 			Kind  string `json:"kind"`

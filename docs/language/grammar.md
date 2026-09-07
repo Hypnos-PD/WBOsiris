@@ -206,6 +206,7 @@ where_clause        = "where" , filter_expression ;
 filter_expression   = filter_conjunction , {"or" , filter_conjunction} ;
 filter_conjunction  = filter_term , {"and" , filter_term} ;
 filter_term         = "card" , card_id
+                    | "spellboost"
                     | "type" , card_type
                     | "class" , identifier
                     | "trait" , identifier

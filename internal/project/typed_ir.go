@@ -479,6 +479,9 @@ func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 	j := i + 1
 	for j < end {
 		switch t[j].Value {
+		case "spellboost":
+			terms = append(terms, ir.FieldPredicate{Kind: "has_spellboost"})
+			j++
 		case "card":
 			terms = append(terms, ir.FieldPredicate{Kind: "has_card", CardID: intToken(t[j+1])})
 			j += 2

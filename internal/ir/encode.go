@@ -86,6 +86,7 @@ func (m EventMatcher) MarshalJSON() ([]byte, error) {
 func (p FieldPredicate) MarshalJSON() ([]byte, error) {
 	object := map[string]any{"kind": p.Kind}
 	switch p.Kind {
+	case "has_spellboost":
 	case "has_card":
 		object["cardId"] = p.CardID
 	case "has_type":

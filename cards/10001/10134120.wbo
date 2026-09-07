@@ -7,7 +7,14 @@ card 10134120 {
     trait mysteria;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90034130;
+            spellboost own.hand 3;
+        }
+        evolve {
+            choose target from oppo.field.followers;
+            damage target 3;
+        }
     }
 
     meta {

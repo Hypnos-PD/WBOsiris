@@ -776,6 +776,10 @@
   "90033310": {
     "base": "/assets/cards/900333100-22d7064bda210b8d.webp"
   },
+  "90034130": {
+    "base": "/assets/cards/900341300-64a142cfa3fec10f.webp",
+    "evolved": "/assets/cards/900341301-a5fae6dad7c4c9b4.webp"
+  },
   "90041110": {
     "base": "/assets/cards/900411100-919a014adcd34123.webp",
     "evolved": "/assets/cards/900411101-6238b1bc76d6da8c.webp"

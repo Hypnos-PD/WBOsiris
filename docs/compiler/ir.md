@@ -250,6 +250,7 @@ BoolExpr =
 | HasCard     { kind: "has_card", value: ValueRef, cardId: CardId }
 | HasTrait    { kind: "has_trait", value: ValueRef, trait: TraitId }
 | HasForm     { kind: "has_form", form: "unevolved" | "evolved" | "super_evolved" }
+| HasSpellboost { kind: "has_spellboost" }
 | HasKeyword  { kind: "has_keyword", value: ValueRef, keyword: Keyword }
 | Overflow    { kind: "overflow", side: Side }
 | SelfForm    { kind: "self_form", form: "unevolved" | "evolved" | "super_evolved" }
@@ -269,6 +270,8 @@ BoolExpr =
 拒绝解码；暂停续局沿用既有的来源实例、形态、先手和回合记录，无需新增存档字段。
 
 `HasForm` 使用当前候选随从的形态；`evolved` 包含超进化，非随从总是不匹配。
+`HasSpellboost` 检查候选当前卡牌定义是否声明 `spellboost` 触发能力，不读取卡牌文本，
+不检查职业或卡牌类型；没有额外字段。变身后按新的卡牌定义判断。
 `when self evolved` 编译为 `{kind:"event", event:"evolved", side:"own", subjectType:"follower", selfOnly:true}`；
 `when self super_evolved` 将 `event` 改为 `super_evolved`。`selfOnly` 必须按实例身份匹配，
 上述进化事件只允许己方随从且不附带谓词。`when self discarded` 编译为

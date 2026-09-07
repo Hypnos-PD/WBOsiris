@@ -607,6 +607,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 	case "spellboost":
 		end, good := parseValueRef(t, 1)
 		ok = good && end+1 == len(t) && isUnsigned(t[end])
+		checkBindingAt(t, 1, end, bindings, ds)
 	case "transform":
 		end, good := parseValueRef(t, 1)
 		ok = good && end+3 <= len(t) && t[end].Value == "into" && t[end+1].Value == "card" && isCardID(t[end+2]) && (end+3 == len(t) || end+5 == len(t) && t[end+3].Value == "preserving" && t[end+4].Value == "materials")
@@ -704,6 +705,8 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 	for i < len(t) {
 		start := i
 		switch t[i].Value {
+		case "spellboost":
+			i++
 		case "card":
 			if i+1 < len(t) && isCardID(t[i+1]) {
 				i += 2

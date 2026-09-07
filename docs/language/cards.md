@@ -253,8 +253,22 @@ evolve {
 `gain own.shadows N` 或 `gain oppo.shadows N` 只增加墓场资源计数，不创建墓场卡牌或
 被破坏记录；与 `necromancy` 的资源支付共用同一个计数。
 
-`spellboost S N` 使集合 `S` 中每张手牌的魔力增幅能力按声明顺序发动 `N` 次。费用等
+`spellboost S N` 使集合或绑定 `S` 中每张手牌的魔力增幅能力按声明顺序发动 `N` 次。费用等
 实例状态修改会保留在手牌实例上，并在费用降低时以 `minimum` 指定的下限截断。
+
+`where spellboost` 匹配当前卡牌定义中声明了 `spellboost { ... }` 的对象，可与
+`type`、`class` 等过滤器组合。它不匹配仅在入场曲中让其他手牌增幅的卡，也不匹配
+已经变身为没有魔力增幅能力的卡牌。指定对象增幅可写为：
+
+```wbo
+require target from own.hand where spellboost;
+spellboost target 1;
+draw 1;
+```
+
+这张法术仍会自动使原有手牌增幅一次，因此选中的卡累计增幅两次，其他原有手牌
+增幅一次，随后抽到的卡不参与这两次增幅。没有可选对象时，`require` 在支付费用前
+拒绝出牌，参见[无法使用法术的官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#lm9y3xju9y0z)。
 
 正常使用法术时，规则执行器自动使控制者当时剩余的每张手牌魔力增幅一次；卡牌作者
 不需要为此添加 `spellboost own.hand 1`。法术自身和随后抽到的卡牌不参与这一次增幅，

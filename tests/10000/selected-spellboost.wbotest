@@ -1,0 +1,72 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Rainbow boosts the selected card twice and other held cards once" {
+    seed 3101;
+    state { player own { pp 2/2; hand { spell source = 10131310; spell target = 10131320; spell other = 10131320; } deck top { spell drawn = 10131320; } } }
+    action { play source; select target; }
+    expect { legal; target.counter.x == 4; other.counter.x == 3; drawn.counter.x == 2; drawn.zone == hand; source.zone == graveyard; own.pp == 0/2; rng.consumed == 0; }
+}
+
+scenario "Rainbow cannot be played without a boostable card" {
+    seed 3102;
+    state { player own { pp 2/2; hand { spell source = 10131310; follower other = 10001110; } deck top { spell drawn = 10131320; } } }
+    action { play source; }
+    expect { illegal target_required; unchanged; own.pp == 2/2; source.zone == hand; drawn.zone == deck; }
+}
+
+scenario "Rainbow does not target an already transformed Homework" {
+    seed 3103;
+    state { player own { pp 2/2; hand { spell source = 10131310; spell smart = 90033310; } } }
+    action { play source; }
+    expect { illegal target_required; unchanged; }
+}
+
+scenario "Rainbow can select a follower with a cost reducing spellboost" {
+    seed 3104;
+    state { player own { pp 2/2; hand { spell source = 10131310; follower target = 10032120; } deck top { follower drawn = 10001110; } } }
+    action { play source; select target; }
+    expect { legal; target.cost == 8; drawn.zone == hand; }
+}
+
+scenario "Anne and Grea summons and boosts all held cards three times" {
+    seed 3105;
+    state { player own { pp 5/5; hand { follower source = 10134120; spell storm = 10131320; spell snowman = 10132320; follower plain = 10001110; } } }
+    action { play source; }
+    expect { legal; own.field count card 90034130 == 1; all own.field where card 90034130 have rush; all own.field where card 90034130 have ward; storm.counter.x == 5; snowman.cost == 5; plain.cost == 2; }
+}
+
+scenario "Blocked Summoning does not stop Anne and Grea spellboosts" {
+    seed 3106;
+    state { player own { pp 5/5; hand { follower source = 10134120; spell storm = 10131320; } field { follower a = 10001110; follower b = 10001110; follower c = 10001110; follower d = 10001110; } } }
+    action { play source; }
+    expect { legal; own.field count card 90034130 == 0; storm.counter.x == 5; }
+}
+
+scenario "Anne and Grea evolution deals three damage to the chosen enemy" {
+    seed 3107;
+    state { turn own 7; player own { ep 1; field { follower source = 10134120; } } player oppo { field { follower target = 10001110 { stats 5/5; } } } }
+    action { evolve source; select target; }
+    expect { legal; target.stats == 5/2; source.stats == 6/6; own.ep == 0; }
+}
+
+scenario "Anne and Grea super evolution inherits the damage effect" {
+    seed 3108;
+    state { turn own 7; player own { sep 1; field { follower source = 10134120; } } player oppo { field { follower target = 10001110; } } }
+    action { superevolve source; select target; }
+    expect { legal; target.zone == graveyard; source.stats == 7/7; own.sep == 0; }
+}
+
+scenario "Annes Summoning survives its controller turn end" {
+    seed 3109;
+    state { player own { field { follower source = 90034130; } } }
+    action { advance turn_end own; }
+    expect { legal; source.zone == field; source has ward; source has rush; }
+}
+
+scenario "Annes Summoning destroys itself at the opponent turn end" {
+    seed 3110;
+    state { player own { field { follower source = 90034130 { barrier; } } } }
+    action { advance turn_end oppo; }
+    expect { legal; source.zone == graveyard; own.shadows == 1; }
+}
