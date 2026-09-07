@@ -151,7 +151,7 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 				}
 			}
 			if !strictCondition(cond, ctx.fusion) || len(b) < 1 || len(b) > 2 || hasElse != (len(b) == 2) {
-				shapeError(ds, s, "if overflow|scalar 比较 整数 { ... } [else { ... }]")
+				shapeError(ds, s, "if 合法条件 { ... } [else { ... }]")
 			}
 			for _, bb := range b {
 				strictEffectBlock(bb, effectContext{cardType: ctx.cardType, fusion: ctx.fusion, spellboost: ctx.spellboost}, ds)
@@ -272,6 +272,9 @@ func filterContains(t []syntax.Token, field string) bool {
 	return false
 }
 func strictCondition(t []syntax.Token, fusion bool) bool {
+	if evolutionCondition(t) {
+		return true
+	}
 	if len(t) == 1 {
 		return t[0].Value == "overflow"
 	}
@@ -283,6 +286,11 @@ func strictCondition(t []syntax.Token, fusion bool) bool {
 		return t[0].Value == "combo" && op(t[1].Value) && isUnsigned(t[2])
 	}
 	return len(t) == 5 && (set("own", "oppo")[t[0].Value] && t[1].Value == "." && set("life", "pp", "maxpp", "ep", "sep", "combo", "shadows")[t[2].Value] || fusion && t[0].Value == "fused" && t[1].Value == "." && set("cost", "distinct")[t[2].Value]) && op(t[3].Value) && isUnsigned(t[4])
+}
+
+func evolutionCondition(t []syntax.Token) bool {
+	return len(t) == 3 && (t[0].Value == "self" && t[1].Value == "form" && set("unevolved", "evolved", "super_evolved")[t[2].Value] ||
+		set("own", "oppo")[t[0].Value] && t[1].Value == "." && set("evolve_unlocked", "superevolve_unlocked")[t[2].Value])
 }
 func values(t []syntax.Token) string {
 	v := make([]string, len(t))

@@ -8,6 +8,11 @@ import (
 
 func (g *game) condition(c ir.Condition, self *instance) bool {
 	switch x := c.(type) {
+	case ir.SelfFormCondition:
+		return self != nil && g.matches(self, ir.FieldPredicate{Kind: "has_form", Form: x.Form})
+	case ir.EvolutionUnlockedCondition:
+		_, side := g.playerForSide(self, x.Side)
+		return g.evolutionUnlocked(side, x.Form == "super_evolved")
 	case ir.OverflowCondition:
 		p, _ := g.playerForSide(self, x.Side)
 		return p.maxpp >= 7

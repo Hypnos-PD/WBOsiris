@@ -252,6 +252,8 @@ BoolExpr =
 | HasForm     { kind: "has_form", form: "unevolved" | "evolved" | "super_evolved" }
 | HasKeyword  { kind: "has_keyword", value: ValueRef, keyword: Keyword }
 | Overflow    { kind: "overflow", side: Side }
+| SelfForm    { kind: "self_form", form: "unevolved" | "evolved" | "super_evolved" }
+| EvolutionUnlocked { kind: "evolution_unlocked", side: Side, form: "evolved" | "super_evolved" }
 ```
 
 当前 `where type follower and class swordcraft` 编译为两个谓词的 `And`；
@@ -259,6 +261,12 @@ BoolExpr =
 编译为组，再以 `Or` 连接各组；每个逻辑节点至少包含两个子项。
 `where life <= 3` 编译为 `Compare`；`if combo >= 3` 默认读取 `own.combo`；
 `if overflow` 编译为 `Overflow(own)`。IR 不保留这些省略写法。
+`if self form super_evolved` 编译为 `SelfForm`，不建立候选集合；它读取能力来源当前的
+随从形态，`evolved` 包含超进化，非随从不匹配。`if own.superevolve_unlocked`
+编译为 `EvolutionUnlocked(own, super_evolved)`；`evolve_unlocked` 使用 `evolved`。
+解禁条件只比较对应玩家的先后手回合门槛，不检查点数、当前行动方或当回合已用次数。
+条件在执行到 `If` 节点时求值，合法性预检使用相同规则。未知形态、非法玩家及额外字段
+拒绝解码；暂停续局沿用既有的来源实例、形态、先手和回合记录，无需新增存档字段。
 
 `HasForm` 使用当前候选随从的形态；`evolved` 包含超进化，非随从总是不匹配。
 `when self evolved` 编译为 `{kind:"event", event:"evolved", side:"own", subjectType:"follower", selfOnly:true}`；

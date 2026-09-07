@@ -525,6 +525,16 @@ func conditionIR(t []syntax.Token) ir.Condition {
 		return ir.OverflowCondition{Kind: "overflow", Side: "own"}
 	}
 	if len(t) == 3 {
+		if t[0].Value == "self" {
+			return ir.SelfFormCondition{Kind: "self_form", Form: t[2].Value}
+		}
+		if t[1].Value == "." {
+			form := "evolved"
+			if t[2].Value == "superevolve_unlocked" {
+				form = "super_evolved"
+			}
+			return ir.EvolutionUnlockedCondition{Kind: "evolution_unlocked", Side: t[0].Value, Form: form}
+		}
 		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "scalar", Side: "own", Field: "combo"}, Op: compareOp(t[1].Value), Right: intToken(t[2])}
 	}
 	if t[0].Value == "fused" {

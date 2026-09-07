@@ -6,7 +6,15 @@ card 10153110 {
     stats 1/4;
 
     effect {
-        unplayable;
+        bane;
+        when own turn ends {
+            if self form super_evolved {
+                heal own.leader 4;
+                add barrier to self;
+            } else {
+                heal own.leader 2;
+            }
+        }
     }
 
     meta {

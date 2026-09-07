@@ -6,7 +6,12 @@ card 10121150 {
     stats 2/1;
 
     effect {
-        unplayable;
+        rush;
+        fanfare {
+            if own.superevolve_unlocked {
+                add bane to self;
+            }
+        }
     }
 
     meta {

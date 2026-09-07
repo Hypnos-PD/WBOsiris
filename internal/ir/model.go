@@ -313,6 +313,21 @@ type OverflowCondition struct {
 
 func (c OverflowCondition) conditionKind() string { return c.Kind }
 
+type SelfFormCondition struct {
+	Kind string `json:"kind"`
+	Form string `json:"form"`
+}
+
+func (c SelfFormCondition) conditionKind() string { return c.Kind }
+
+type EvolutionUnlockedCondition struct {
+	Kind string `json:"kind"`
+	Side string `json:"side"`
+	Form string `json:"form"`
+}
+
+func (c EvolutionUnlockedCondition) conditionKind() string { return c.Kind }
+
 type CompareCondition struct {
 	Kind  string `json:"kind"`
 	Op    string `json:"op"`

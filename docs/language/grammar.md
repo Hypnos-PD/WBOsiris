@@ -231,7 +231,11 @@ comparison_operator = "==" | "!=" | "<" | "<=" | ">" | ">=" ;
 ```ebnf
 if_statement      = "if" , condition , effect_block , ["else" , effect_block] ;
 condition         = "overflow"
+                  | "self" , "form" , follower_form
+                  | participant , "." , evolution_unlock
                   | scalar_value , comparison_operator , integer ;
+follower_form     = "unevolved" | "evolved" | "super_evolved" ;
+evolution_unlock  = "evolve_unlocked" | "superevolve_unlocked" ;
 scalar_value      = "combo" | participant , "." , scalar_field
                   | counter_ref
                   | "fused" , "." , fusion_scalar_field ;

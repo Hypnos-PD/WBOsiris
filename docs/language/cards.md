@@ -455,6 +455,39 @@ when self evolved {
 能力产生的事件等待当前动作能力完整执行后结算，选择暂停与恢复不重复发送事件。
 来源离场后，其尚未开始执行的场上事件监听不再发动；谢幕曲不受此限制。
 
+条件判断可直接读取能力来源的当前形态：
+
+```wbo
+when own turn ends {
+    if self form super_evolved {
+        heal own.leader 4;
+        add barrier to self;
+    } else {
+        heal own.leader 2;
+    }
+}
+```
+
+`self form unevolved` 只匹配进化前随从，`self form evolved` 包含普通进化和超进化，
+`self form super_evolved` 只匹配超进化；非随从不匹配任何形态。条件在执行到 `if` 时
+求值，因此同一能力之前造成的进化会影响后续判断。
+
+判断是否到了进化解禁回合使用 `own.evolve_unlocked`、`own.superevolve_unlocked`，
+也可将 `own` 换成 `oppo`。两者只检查对应玩家的回合门槛，分别是先手第 5/7 回合、
+后手第 4/6 回合；即使点数用尽或本回合已经进化，解禁条件仍然成立。
+
+```wbo
+fanfare {
+    if own.superevolve_unlocked {
+        add bane to self;
+    }
+}
+```
+
+这里的条件只在入场曲执行时判断一次，不会在以后到达门槛时自动赋予能力。
+规则测试未提供先手信息时，解禁条件按 `own` 为先手、`oppo` 为后手计算；
+测试中手动进化动作原有的门槛豁免不会令卡牌条件提前成立。
+
 选择未进化随从可使用 `where form unevolved`。另支持 `form evolved`（包含超进化）
 及 `form super_evolved`，可与其他条件通过 `and` 组合。非随从不匹配任何形态条件。
 例如奥莉薇的能力使用 `choose target from own.field.followers other where form unevolved;`。

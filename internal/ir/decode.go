@@ -1214,6 +1214,26 @@ func decodeCondition(data []byte) (Condition, error) {
 	if err := json.Unmarshal(data, &k); err != nil {
 		return nil, err
 	}
+	if k.Kind == "self_form" {
+		var v SelfFormCondition
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if !oneOf(v.Form, "unevolved", "evolved", "super_evolved") {
+			return nil, fmt.Errorf("invalid self form condition")
+		}
+		return v, nil
+	}
+	if k.Kind == "evolution_unlocked" {
+		var v EvolutionUnlockedCondition
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if !validSide(v.Side) || !oneOf(v.Form, "evolved", "super_evolved") {
+			return nil, fmt.Errorf("invalid evolution unlock condition")
+		}
+		return v, nil
+	}
 	if k.Kind == "overflow" {
 		var v struct {
 			Kind string `json:"kind"`

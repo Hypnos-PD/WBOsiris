@@ -1,0 +1,58 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Unevolved Ceres heals two without granting Barrier" {
+    seed 3001;
+    state { player own { leader 10/20; field { follower source = 10153110; } } }
+    action { advance turn_end own; }
+    expect { legal; own.leader.life == 12; source has bane; source lacks barrier; }
+}
+
+scenario "Normally evolved Ceres still heals two without Barrier" {
+    seed 3002;
+    state { player own { leader 10/20; field { follower source = 10153110 { evolved; } } } }
+    action { advance turn_end own; }
+    expect { legal; own.leader.life == 12; source lacks barrier; }
+}
+
+scenario "Super evolved Ceres heals four and grants Barrier" {
+    seed 3003;
+    state { player own { leader 10/20; field { follower source = 10153110 { super_evolved; } } } }
+    action { advance turn_end own; }
+    expect { legal; own.leader.life == 14; source has barrier; source has bane; }
+}
+
+scenario "Ceres does not trigger at the opponent turn end" {
+    seed 3004;
+    state { player own { leader 10/20; field { follower source = 10153110 { super_evolved; } } } }
+    action { advance turn_end oppo; }
+    expect { legal; own.leader.life == 10; source lacks barrier; }
+}
+
+scenario "Ceres grants Barrier even when her leader is already at full life" {
+    seed 3005;
+    state { player own { leader 20/20; field { follower source = 10153110 { super_evolved; } } } }
+    action { advance turn_end own; }
+    expect { legal; own.leader.life == 20; source has barrier; }
+}
+
+scenario "Samurai played before the first player unlock does not gain Bane" {
+    seed 3006;
+    state { turn own 6; player own { pp 2/6; hand { follower source = 10121150; } } }
+    action { play source; }
+    expect { legal; source has rush; source lacks bane; own.pp == 0/6; }
+}
+
+scenario "Samurai gains Bane after unlock even with no super evolution points" {
+    seed 3007;
+    state { turn own 7; player own { pp 2/7; sep 0; hand { follower source = 10121150; } } }
+    action { play source; }
+    expect { legal; source has rush; source has bane; own.sep == 0; }
+}
+
+scenario "An existing Samurai does not gain Bane merely by reaching the unlock turn" {
+    seed 3008;
+    state { turn own 7; player own { field { follower source = 10121150; } } }
+    action { advance turn_start own; }
+    expect { legal; source has rush; source lacks bane; }
+}

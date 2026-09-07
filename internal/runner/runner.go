@@ -440,11 +440,7 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 		return sandbox.preflightRequirements(a.Body, sandboxSource, frame{}, true)
 	case "evolve":
 		actor := g.player(x.Actor)
-		unlockTurn := 5
-		if g.firstPlayer != "" && x.Actor != g.firstPlayer {
-			unlockTurn = 4
-		}
-		if i.zone != "field" || !contains(actor.field, i) || i.card.CardType != "follower" || i.evolved || actor.ep < 1 || actor.evolvedThisTurn || g.firstPlayer != "" && g.turn.Number < unlockTurn {
+		if i.zone != "field" || !contains(actor.field, i) || i.card.CardType != "follower" || i.evolved || actor.ep < 1 || actor.evolvedThisTurn || g.firstPlayer != "" && !g.evolutionUnlocked(x.Actor, false) {
 			return "cost"
 		}
 		if plan := findActionPlan(i.card, "evolve"); plan != nil {
@@ -461,11 +457,7 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 		}
 	case "superevolve":
 		actor := g.player(x.Actor)
-		unlockTurn := 7
-		if g.firstPlayer != "" && x.Actor != g.firstPlayer {
-			unlockTurn = 6
-		}
-		if i.zone != "field" || !contains(actor.field, i) || i.card.CardType != "follower" || i.evolved || i.superEvolved || actor.sep < 1 || actor.evolvedThisTurn || g.firstPlayer != "" && g.turn.Number < unlockTurn {
+		if i.zone != "field" || !contains(actor.field, i) || i.card.CardType != "follower" || i.evolved || i.superEvolved || actor.sep < 1 || actor.evolvedThisTurn || g.firstPlayer != "" && !g.evolutionUnlocked(x.Actor, true) {
 			return "cost"
 		}
 		sandbox := g.clone()
