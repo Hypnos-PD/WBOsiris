@@ -803,8 +803,13 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 				i += 2
 			}
 		case "life", "cost":
-			if i+2 < len(t) && set("==", "!=", "<", "<=", ">", ">=")[t[i+1].Value] && isUnsigned(t[i+2]) {
-				i += 3
+			if i+2 < len(t) && set("==", "!=", "<", "<=", ">", ">=")[t[i+1].Value] {
+				if isUnsigned(t[i+2]) {
+					i += 3
+				} else if i+4 < len(t) && set("own", "oppo")[t[i+2].Value] && t[i+3].Value == "." &&
+					set("combo", "pp", "maxpp", "life", "ep", "sep", "shadows")[t[i+4].Value] {
+					i += 5
+				}
 			}
 		}
 		if i == start {

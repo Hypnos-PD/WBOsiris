@@ -299,8 +299,8 @@ func parseBaseEventPattern(t []syntax.Token) (int, string, bool) {
 	return 0, "", false
 }
 func filterContains(t []syntax.Token, field string) bool {
-	for _, x := range t {
-		if x.Value == field {
+	for n, x := range t {
+		if x.Value == field && (n == 0 || t[n-1].Value != ".") {
 			return true
 		}
 	}

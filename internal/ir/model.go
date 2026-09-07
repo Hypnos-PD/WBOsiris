@@ -294,15 +294,16 @@ func (r ExcludeRef) refKind() string { return r.Kind }
 
 type Predicate interface{ predicateKind() string }
 type FieldPredicate struct {
-	Kind     string `json:"kind"`
-	CardType string `json:"cardType,omitempty"`
-	Class    string `json:"class,omitempty"`
-	Trait    string `json:"trait,omitempty"`
-	Form     string `json:"form,omitempty"`
-	Field    string `json:"field,omitempty"`
-	Op       string `json:"op,omitempty"`
-	CardID   int    `json:"cardId,omitempty"`
-	Value    int    `json:"value,omitempty"`
+	Kind        string  `json:"kind"`
+	CardType    string  `json:"cardType,omitempty"`
+	Class       string  `json:"class,omitempty"`
+	Trait       string  `json:"trait,omitempty"`
+	Form        string  `json:"form,omitempty"`
+	Field       string  `json:"field,omitempty"`
+	Op          string  `json:"op,omitempty"`
+	CardID      int     `json:"cardId,omitempty"`
+	Value       int     `json:"value,omitempty"`
+	ValueScalar *Scalar `json:"-"`
 }
 
 func (p FieldPredicate) predicateKind() string { return p.Kind }

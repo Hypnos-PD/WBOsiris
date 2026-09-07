@@ -547,8 +547,15 @@ func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 			terms = append(terms, ir.FieldPredicate{Kind: "has_form", Form: t[j+1].Value})
 			j += 2
 		case "life", "cost":
-			terms = append(terms, ir.FieldPredicate{Kind: "compare", Field: t[j].Value, Op: compareOp(t[j+1].Value), Value: intToken(t[j+2])})
-			j += 3
+			predicate := ir.FieldPredicate{Kind: "compare", Field: t[j].Value, Op: compareOp(t[j+1].Value)}
+			if t[j+2].Kind == syntax.Integer {
+				predicate.Value = intToken(t[j+2])
+				j += 3
+			} else {
+				predicate.ValueScalar = &ir.Scalar{Kind: "scalar", Side: t[j+2].Value, Field: t[j+4].Value}
+				j += 5
+			}
+			terms = append(terms, predicate)
 		}
 		if j < end && t[j].Value == "and" {
 			j++

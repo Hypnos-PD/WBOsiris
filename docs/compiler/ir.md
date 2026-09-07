@@ -292,6 +292,12 @@ BoolExpr =
 `HasSpellboost` 检查候选当前卡牌定义是否声明 `spellboost` 触发能力，不读取卡牌文本，
 不检查职业或卡牌类型；没有额外字段。变身后按新的卡牌定义判断。
 筛选器的 `compare` 节点支持 `field: "life" | "cost"`；`cost` 读取实例当前费用。
+其 `value` 保留整数编码，并支持 `{kind:"scalar", side:"own"|"oppo", field:...}`，
+字段限于 `combo`、`pp`、`maxpp`、`life`、`ep`、`sep`、`shadows`。玩家引用相对于
+能力来源求值，不能使用候选拥有者或抽牌接收者替代；测试断言中对应测试席位。
+缺失值、`null`、自身字段、算术和聚合表达式均拒绝解码。筛选时读取玩家值；效果在
+任何目标修改之前完成集合筛选，事件触发器在事件入队时完成筛选。暂停续局只保存既有
+执行栈和玩家资源，尚未执行的筛选在恢复后求值，无需新增续局字段。
 `when self evolved` 编译为 `{kind:"event", event:"evolved", side:"own", subjectType:"follower", selfOnly:true}`；
 `when self super_evolved` 将 `event` 改为 `super_evolved`。`selfOnly` 必须按实例身份匹配，
 上述进化事件只允许己方随从且不附带谓词。`when self summoned` 使用相同的自身匹配结构，

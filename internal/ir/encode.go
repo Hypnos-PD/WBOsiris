@@ -99,6 +99,12 @@ func (p FieldPredicate) MarshalJSON() ([]byte, error) {
 		object["form"] = p.Form
 	case "compare":
 		object["field"], object["op"], object["value"] = p.Field, p.Op, p.Value
+		if p.ValueScalar != nil {
+			if p.Value != 0 || p.ValueScalar.Kind != "scalar" || !validNumericExpr(p.ValueScalar, false) {
+				return nil, fmt.Errorf("invalid predicate scalar or conflicting literal")
+			}
+			object["value"] = p.ValueScalar
+		}
 	default:
 		return nil, fmt.Errorf("encode unknown field predicate kind %q", p.Kind)
 	}

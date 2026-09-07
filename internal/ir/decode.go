@@ -1281,7 +1281,7 @@ func decodePredicate(data []byte) (Predicate, error) {
 	case "compare":
 		var v struct {
 			Kind, Field, Op string
-			Value           int
+			Value           json.RawMessage
 		}
 		if err := strict(data, &v); err != nil {
 			return nil, err
@@ -1289,7 +1289,19 @@ func decodePredicate(data []byte) (Predicate, error) {
 		if !oneOf(v.Field, "life", "cost") || !validOp(v.Op) {
 			return nil, fmt.Errorf("invalid comparison predicate")
 		}
-		return FieldPredicate{Kind: v.Kind, Field: v.Field, Op: v.Op, Value: v.Value}, nil
+		value, expr, err := decodeNumericValue(v.Value, true)
+		if err != nil {
+			return nil, err
+		}
+		var scalar *Scalar
+		if expr != nil {
+			var ok bool
+			scalar, ok = expr.(*Scalar)
+			if !ok || scalar.Kind != "scalar" {
+				return nil, fmt.Errorf("predicate value requires an integer or player scalar")
+			}
+		}
+		return FieldPredicate{Kind: v.Kind, Field: v.Field, Op: v.Op, Value: value, ValueScalar: scalar}, nil
 	default:
 		return nil, fmt.Errorf("unknown predicate kind %q", k.Kind)
 	}

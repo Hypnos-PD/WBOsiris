@@ -221,7 +221,8 @@ filter_term         = "card" , card_id
                     | "class" , identifier
                     | "trait" , identifier
                     | "form" , ("unevolved" | "evolved" | "super_evolved")
-                    | ("life" | "cost") , comparison_operator , integer ;
+                    | ("life" | "cost") , comparison_operator , (integer | player_scalar) ;
+player_scalar       = participant , "." , ("combo" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows") ;
 comparison_operator = "==" | "!=" | "<" | "<=" | ">" | ">=" ;
 ```
 
@@ -229,6 +230,9 @@ comparison_operator = "==" | "!=" | "<" | "<=" | ">" | ">=" ;
 和护符。复数类型后缀缩窄集合类型。`other` 只排除与 `self` 同一实例的对象，
 必须写在 `where` 前。`and` 的优先级高于 `or`；不支持括号过滤器。
 `cost` 比较实例的当前费用，包括加费或降费效果，不比较原始费用。
+比较右侧可使用显式玩家数值，例如 `cost == own.combo`；`own` 和 `oppo` 相对于
+能力来源，而非候选对象、抽牌接收者或当前回合玩家。测试断言中按测试席位解释。
+右侧在筛选发生时读取，支持与常量比较相同的六种运算符，不支持省略玩家、算术或嵌套聚合。
 `destroyed` 是随从与护符的破坏历史，不是区域，在集合语法中按只读历史集合处理。
 每次破坏保存独立记录；同一实例被多次破坏时不去重。历史集合可用于 `count` 和 `sum`，
 不能作为选择或修改操作的目标。其筛选读取破坏时的卡牌身份与属性。

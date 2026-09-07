@@ -1,0 +1,51 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Grasshopper as the first play draws a one cost follower" {
+    seed 4001;
+    state { player own { pp 3/3; hand { follower source = 10111140; } deck top { follower wrong = 10001110; follower drawn = 10001110 { cost 1; } } } }
+    action { play source; }
+    expect { legal; own.combo == 1; own.pp == 0/3; drawn.zone == hand; wrong.zone == deck; source.zone == field; }
+}
+
+scenario "Grasshopper as the third play draws a three cost follower" {
+    seed 4002;
+    state { player own { pp 3/3; combo 2; hand { follower source = 10111140; } deck top { follower wrong = 10001110; follower drawn = 10111140; } } }
+    action { play source; }
+    expect { legal; own.combo == 3; drawn.zone == hand; wrong.zone == deck; }
+}
+
+scenario "Grasshopper ignores spells with the matching cost" {
+    seed 4003;
+    state { player own { pp 3/3; combo 2; hand { follower source = 10111140; } deck top { spell wrong = 10131320 { cost 3; } follower drawn = 10111140; } } }
+    action { play source; }
+    expect { legal; drawn.zone == hand; wrong.zone == deck; }
+}
+
+scenario "Grasshopper matches current cost rather than printed cost" {
+    seed 4004;
+    state { player own { pp 3/3; combo 2; hand { follower source = 10111140; } deck top { follower wrong = 10111140 { cost 2; } follower drawn = 10001110 { cost 3; } } } }
+    action { play source; }
+    expect { legal; drawn.zone == hand; wrong.zone == deck; }
+}
+
+scenario "Grasshopper with no matching follower leaves the deck intact" {
+    seed 4005;
+    state { player own { pp 3/3; hand { follower source = 10111140; } deck top { follower wrong = 10001110; } } }
+    action { play source; }
+    expect { legal; own.hand count card 10111140 == 0; rng.consumed == 0; wrong.zone == deck; own.leader.life == 20; }
+}
+
+scenario "Grasshopper searching an empty deck does not cause deck out" {
+    seed 4006;
+    state { player own { pp 3/3; hand { follower source = 10111140; } } }
+    action { play source; }
+    expect { legal; own.hand count card 10111140 == 0; rng.consumed == 0; own.leader.life == 20; source.zone == field; }
+}
+
+scenario "Grasshopper supports combo values above the normal PP cap" {
+    seed 4007;
+    state { player own { pp 3/3; combo 11; hand { follower source = 10111140; } deck top { follower drawn = 10001110 { cost 12; } } } }
+    action { play source; }
+    expect { legal; own.combo == 12; drawn.zone == hand; }
+}

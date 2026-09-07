@@ -102,7 +102,7 @@ func (g *game) queueEventTriggers(event ir.RuntimeEvent, subject *instance, bind
 				if trigger.SelfOnly && subject != source {
 					continue
 				}
-				if !eventSideMatches(trigger.Side, side.name, event.Side) || subject != nil && !g.matches(subject, trigger.Predicate) || subject != nil && trigger.SubjectType != "" && subject.card.CardType != trigger.SubjectType {
+				if !eventSideMatches(trigger.Side, side.name, event.Side) || subject != nil && !g.matches(subject, trigger.Predicate, source) || subject != nil && trigger.SubjectType != "" && subject.card.CardType != trigger.SubjectType {
 					continue
 				}
 				if trigger.OncePerTurn != "" && (source.usedTriggers[ability.ID] || !triggerTurnMatches(trigger.OncePerTurn, side.name, g.turn.Active)) {

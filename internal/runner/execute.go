@@ -9,7 +9,7 @@ import (
 func (g *game) condition(c ir.Condition, self *instance) bool {
 	switch x := c.(type) {
 	case ir.SelfFormCondition:
-		return self != nil && g.matches(self, ir.FieldPredicate{Kind: "has_form", Form: x.Form})
+		return self != nil && g.matches(self, ir.FieldPredicate{Kind: "has_form", Form: x.Form}, self)
 	case ir.EvolutionUnlockedCondition:
 		_, side := g.playerForSide(self, x.Side)
 		return g.evolutionUnlocked(side, x.Form == "super_evolved")
@@ -76,7 +76,7 @@ func (g *game) fusionCandidates(source *instance, ability *ir.FusionAbility) []*
 	filter := &ability.MaterialFilter
 	items := g.fromRef(filter.Source, source, frame{})
 	if filter.Predicate != nil {
-		items = g.filter(items, "", filter.Predicate)
+		items = g.filter(items, "", filter.Predicate, source)
 	}
 	out := make([]*instance, 0, len(items))
 	for _, item := range items {
@@ -140,7 +140,7 @@ func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 				records = append(records, record)
 			}
 		}
-		return g.filter(historyInstances(records, g.cards), r.Member, nil)
+		return g.filter(historyInstances(records, g.cards), r.Member, nil, self)
 	case ir.SelfRef:
 		return []*instance{self}
 	case ir.BindingRef:
@@ -169,9 +169,9 @@ func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 		} else {
 			out = append(append([]*instance{}, g.own.field...), g.oppo.field...)
 		}
-		return g.filter(out, r.Member, nil)
+		return g.filter(out, r.Member, nil, self)
 	case ir.FilterRef:
-		return g.filter(g.fromRef(r.Source, self, f), "", r.Predicate)
+		return g.filter(g.fromRef(r.Source, self, f), "", r.Predicate, self)
 	case ir.ExcludeRef:
 		out := g.fromRef(r.Source, self, f)
 		excluded := g.fromRef(r.Value, self, f)
@@ -273,7 +273,7 @@ func (g *game) zone(p *player, z string) []*instance {
 	}
 	return nil
 }
-func (g *game) filter(items []*instance, member string, p ir.Predicate) []*instance {
+func (g *game) filter(items []*instance, member string, p ir.Predicate, self *instance) []*instance {
 	var out []*instance
 	for _, i := range items {
 		if !g.chargeQueryVisits(1) {
@@ -282,13 +282,13 @@ func (g *game) filter(items []*instance, member string, p ir.Predicate) []*insta
 		if member != "" && member != "card" && i.card.CardType != member {
 			continue
 		}
-		if g.matches(i, p) {
+		if g.matches(i, p, self) {
 			out = append(out, i)
 		}
 	}
 	return out
 }
-func (g *game) matches(i *instance, p ir.Predicate) bool {
+func (g *game) matches(i *instance, p ir.Predicate, self *instance) bool {
 	if p == nil {
 		return true
 	}
@@ -331,35 +331,39 @@ func (g *game) matches(i *instance, p ir.Predicate) bool {
 			}
 			return false
 		case "compare":
+			right := x.Value
+			if x.ValueScalar != nil {
+				right = g.numericValue(x.ValueScalar, self, nil)
+			}
 			value := i.life
 			if x.Field == "cost" {
 				value = i.cost
 			}
 			switch x.Op {
 			case "le":
-				return value <= x.Value
+				return value <= right
 			case "lt":
-				return value < x.Value
+				return value < right
 			case "eq":
-				return value == x.Value
+				return value == right
 			case "ne":
-				return value != x.Value
+				return value != right
 			case "ge":
-				return value >= x.Value
+				return value >= right
 			case "gt":
-				return value > x.Value
+				return value > right
 			}
 		}
 	case ir.AndPredicate:
 		for _, t := range x.Terms {
-			if !g.matches(i, t) {
+			if !g.matches(i, t, self) {
 				return false
 			}
 		}
 		return true
 	case ir.OrPredicate:
 		for _, t := range x.Terms {
-			if g.matches(i, t) {
+			if g.matches(i, t, self) {
 				return true
 			}
 		}
@@ -369,7 +373,7 @@ func (g *game) matches(i *instance, p ir.Predicate) bool {
 }
 func (g *game) draw(e ir.DrawEffect, self *instance, f frame) {
 	own, ownSide := g.playerForSide(self, e.Owner)
-	candidates := g.filter(own.deck, "", e.Predicate)
+	candidates := g.filter(own.deck, "", e.Predicate, self)
 	if g.budget != nil && g.budget.exceeded {
 		return
 	}
@@ -518,7 +522,7 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 	targets := g.effectTargets(e.Target, self, f)
 	leaders := g.boundLeaderSides(e.Target, self, f)
 	if e.Predicate != nil {
-		targets = g.filter(targets, "", e.Predicate)
+		targets = g.filter(targets, "", e.Predicate, self)
 		leaders = nil
 	}
 	// Snapshot all numeric inputs before any target or resulting event changes them.

@@ -6,7 +6,9 @@ card 10111140 {
     stats 2/1;
 
     effect {
-        unplayable;
+        fanfare {
+            draw 1 from deck where type follower and cost == own.combo;
+        }
     }
 
     meta {
