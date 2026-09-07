@@ -529,12 +529,24 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 		}
 		g.resolveDeathBatch(nil)
 	case "add_keyword":
+		endingSide := ""
+		switch e.Until {
+		case "turn_end":
+			endingSide = g.turn.Active
+			if g.endingSide != "" {
+				endingSide = g.endingSide
+			}
+		case "own_turn_end":
+			endingSide = ownSide
+		case "oppo_turn_end":
+			endingSide = oppositeSide(ownSide)
+		}
 		for _, i := range targets {
-			i.abilities[e.Keyword] = true
+			i.addKeyword(e.Keyword, endingSide)
 		}
 	case "remove_keyword":
 		for _, i := range targets {
-			delete(i.abilities, e.Keyword)
+			i.removeKeyword(e.Keyword)
 		}
 	case "silent_evolve":
 		for _, i := range targets {

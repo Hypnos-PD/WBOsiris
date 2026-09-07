@@ -17,7 +17,7 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.16.0"
+const continuationVersion = "0.17.0"
 
 type ContinuationBindings struct {
 	ID     string              `json:"id"`
@@ -62,6 +62,7 @@ type ContinuationGame struct {
 	FirstPlayer      string               `json:"firstPlayer,omitempty"`
 	Phase            string               `json:"phase"`
 	TurnTransition   string               `json:"turnTransition"`
+	EndingSide       string               `json:"endingSide,omitempty"`
 	GameOver         bool                 `json:"gameOver"`
 	Winner           string               `json:"winner,omitempty"`
 	Attack           *ContinuationAttack  `json:"attack,omitempty"`
@@ -100,27 +101,28 @@ type ContinuationPlayer struct {
 }
 
 type ContinuationEntity struct {
-	Counters        map[string]int `json:"counters,omitempty"`
-	FusedThisTurn   bool           `json:"fusedThisTurn"`
-	ID              string         `json:"id"`
-	Alias           string         `json:"alias"`
-	Zone            string         `json:"zone"`
-	CardID          int            `json:"cardId"`
-	Cost            int            `json:"cost"`
-	Attack          int            `json:"attack"`
-	Life            int            `json:"life"`
-	Earthsigil      int            `json:"earthsigil"`
-	DamageReduction int            `json:"damageReduction"`
-	Countdown       int            `json:"countdown"`
-	AttacksUsed     int            `json:"attacksUsed"`
-	AttackLimit     int            `json:"attackLimit"`
-	Engaged         bool           `json:"engaged"`
-	SummoningSick   bool           `json:"summoningSick"`
-	Evolved         bool           `json:"evolved"`
-	SuperEvolved    bool           `json:"superEvolved"`
-	Departed        bool           `json:"departed,omitempty"`
-	Abilities       []string       `json:"abilities"`
-	Materials       []string       `json:"materials,omitempty"`
+	Counters          map[string]int           `json:"counters,omitempty"`
+	FusedThisTurn     bool                     `json:"fusedThisTurn"`
+	ID                string                   `json:"id"`
+	Alias             string                   `json:"alias"`
+	Zone              string                   `json:"zone"`
+	CardID            int                      `json:"cardId"`
+	Cost              int                      `json:"cost"`
+	Attack            int                      `json:"attack"`
+	Life              int                      `json:"life"`
+	Earthsigil        int                      `json:"earthsigil"`
+	DamageReduction   int                      `json:"damageReduction"`
+	Countdown         int                      `json:"countdown"`
+	AttacksUsed       int                      `json:"attacksUsed"`
+	AttackLimit       int                      `json:"attackLimit"`
+	Engaged           bool                     `json:"engaged"`
+	SummoningSick     bool                     `json:"summoningSick"`
+	Evolved           bool                     `json:"evolved"`
+	SuperEvolved      bool                     `json:"superEvolved"`
+	Departed          bool                     `json:"departed,omitempty"`
+	Abilities         []string                 `json:"abilities"`
+	TemporaryKeywords map[string]KeywordExpiry `json:"temporaryKeywords,omitempty"`
+	Materials         []string                 `json:"materials,omitempty"`
 }
 
 type ContinuationEvent struct {
@@ -423,7 +425,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 	snapshot := ContinuationGame{
 		Own: snapshotContinuationPlayer(g.own), Oppo: snapshotContinuationPlayer(g.oppo),
 		RNG:    ContinuationRNG{State: g.rng.Snapshot().State, Consumed: g.rng.Snapshot().Consumed},
-		Serial: g.serial, EventSequence: g.eventSequence, DeathBatchSerial: g.deathBatchSerial, Revision: g.revision, Legal: g.legal, Illegal: g.illegal, Unchanged: g.unchanged, Turn: g.turn, FirstPlayer: g.firstPlayer, Phase: g.phase, TurnTransition: g.turnTransition, GameOver: g.gameOver, Winner: g.winner,
+		Serial: g.serial, EventSequence: g.eventSequence, DeathBatchSerial: g.deathBatchSerial, Revision: g.revision, Legal: g.legal, Illegal: g.illegal, Unchanged: g.unchanged, Turn: g.turn, FirstPlayer: g.firstPlayer, Phase: g.phase, TurnTransition: g.turnTransition, EndingSide: g.endingSide, GameOver: g.gameOver, Winner: g.winner,
 	}
 	if g.attack != nil {
 		snapshot.Attack = &ContinuationAttack{Stage: g.attack.stage, Actor: g.attack.actor, Attacker: g.attack.attacker, Defender: g.attack.defender, AttackerAttack: g.attack.attackerAttack, DefenderAttack: g.attack.defenderAttack}
@@ -443,8 +445,9 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 		}
 		sort.Strings(abilities)
 		snapshot.Instances = append(snapshot.Instances, ContinuationEntity{
-			Counters: maps.Clone(i.counters),
-			ID:       i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life,
+			Counters:          maps.Clone(i.counters),
+			TemporaryKeywords: maps.Clone(i.temporaryKeywords),
+			ID:                i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life,
 			Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i),
 			Engaged: i.engaged, SummoningSick: i.summoningSick, Evolved: i.evolved,
 			SuperEvolved: i.superEvolved, Departed: i.departed, FusedThisTurn: i.fusedThisTurn, DamageReduction: i.damageReduction, Abilities: abilities, Materials: instanceIDs(i.materials),
@@ -468,12 +471,17 @@ func snapshotContinuationPlayer(p player) ContinuationPlayer {
 }
 
 func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) {
-	g := &game{cards: cards, instances: map[string]*instance{}, legal: saved.Legal, illegal: saved.Illegal, unchanged: saved.Unchanged, rng: ruleset.NewRNG(0), serial: saved.Serial, eventSequence: saved.EventSequence, deathBatchSerial: saved.DeathBatchSerial, revision: saved.Revision, turn: saved.Turn, firstPlayer: saved.FirstPlayer, phase: saved.Phase, turnTransition: saved.TurnTransition, gameOver: saved.GameOver, winner: saved.Winner}
+	g := &game{cards: cards, instances: map[string]*instance{}, legal: saved.Legal, illegal: saved.Illegal, unchanged: saved.Unchanged, rng: ruleset.NewRNG(0), serial: saved.Serial, eventSequence: saved.EventSequence, deathBatchSerial: saved.DeathBatchSerial, revision: saved.Revision, turn: saved.Turn, firstPlayer: saved.FirstPlayer, phase: saved.Phase, turnTransition: saved.TurnTransition, endingSide: saved.EndingSide, gameOver: saved.GameOver, winner: saved.Winner}
 	if saved.Serial < 0 || saved.Serial < generatedInstanceSerial(saved.Instances) {
 		return nil, fmt.Errorf("invalid continuation instance serial")
 	}
 	validTransition := saved.Turn.Active == "own" || saved.Turn.Active == "oppo"
 	if saved.TurnTransition != "" && saved.TurnTransition != "ending" && saved.TurnTransition != "starting" && saved.TurnTransition != "starting_triggers" {
+		validTransition = false
+	}
+	if saved.EndingSide != "" && saved.EndingSide != "own" && saved.EndingSide != "oppo" ||
+		saved.TurnTransition == "ending" && saved.EndingSide != saved.Turn.Active ||
+		saved.EndingSide != "" && saved.TurnTransition != "" && saved.TurnTransition != "ending" {
 		validTransition = false
 	}
 	if !validTransition || saved.Turn.Number < 0 || saved.Phase != "main" {
@@ -509,6 +517,14 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 				return nil, fmt.Errorf("invalid continuation ability")
 			}
 			i.abilities[ability] = true
+		}
+		for keyword, expiry := range entity.TemporaryKeywords {
+			if !ir.ValidKeyword(keyword) || !i.abilities[keyword] || !expiry.OwnTurnEnd && !expiry.OppoTurnEnd {
+				return nil, fmt.Errorf("invalid temporary keyword")
+			}
+		}
+		if len(entity.TemporaryKeywords) > 0 {
+			i.temporaryKeywords = maps.Clone(entity.TemporaryKeywords)
 		}
 		if !ir.ValidCounters(i.counters) || len(i.counters) != len(card.Counters) {
 			return nil, fmt.Errorf("invalid continuation counters")

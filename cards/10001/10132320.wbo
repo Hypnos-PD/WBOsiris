@@ -5,7 +5,12 @@ card 10132320 {
     cost 8;
 
     effect {
-        unplayable;
+        spellboost {
+            reduce cost self 1 minimum 0;
+        }
+        require target from oppo.field.followers;
+        set life target 1;
+        add cannot_attack to target until oppo turn ends;
     }
 
     meta {

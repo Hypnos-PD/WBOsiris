@@ -158,6 +158,25 @@ remove ward from oppo.field.followers where life <= 3;
 赋予关键词是对实例的一次修改，不会持续影响以后入场的随从。要响应之后的入场事件，
 使用 `when own follower summoned`，并在块内操作该次事件的 `summoned` 绑定。
 
+### 临时关键词
+
+`add` 可在末尾追加 `until turn ends`、`until own turn ends` 或 `until oppo turn ends`。
+前者持续到当前回合结束，后两者持续到能力控制者或对手的下一个回合结束；期限在赋予
+时确定，不依赖能力来源之后是否还在战场。回合结束触发能力全部处理完毕后才到期。
+
+```wbo
+require target from oppo.field.followers;
+set life target 1;
+add cannot_attack to target until oppo turn ends;
+```
+
+临时赋予与永久能力独立：重复赋予不会覆盖另一个回合的期限，到期不会删除原生或
+后来永久获得的同名能力。显式 `remove`、屏障抵消伤害或潜行解除时清除该能力的全部
+赋予记录，旧期限不会影响随后新获得的能力。从战场返回手牌或牌组会清除临时记录；
+手牌返回牌组则保留，到期仍会移除。设置生命值本身不随攻击限制一起到期。
+
+当前期限修饰只适用于添加关键词，临时属性增益和临时移除关键词仍会被显式拒绝。
+
 `random ... count N` 从当前候选中等概率、不重复地抽取最多 N 个实例，每取一个
 消耗一次对局随机数；空集合不消耗。同名卡牌的不同实例仍是不同候选。选中集合按
 原候选顺序绑定，后续一次 `damage` 或 `destroy` 同时处理全部目标。

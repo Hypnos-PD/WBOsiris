@@ -1,0 +1,47 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Snowman sets life and locks attacks without consuming barrier" {
+    seed 2801;
+    state {
+        player own { pp 8/8; hand { spell source = 10132320; } }
+        player oppo { field { follower target = 10001110 { stats 5/7; barrier; } } }
+    }
+    action { play source; select target; }
+    expect { legal; source.zone == graveyard; target.stats == 5/1; target has cannot_attack; target has barrier; own.pp == 0/8; rng.consumed == 0; }
+}
+
+scenario "Zero cost Snowman still sets life and locks attacks" {
+    seed 2802;
+    state { player own { pp 0/8; hand { spell source = 10132320 { cost 0; } } } player oppo { field { follower target = 10001110; } } }
+    action { play source; select target; }
+    expect { legal; target has cannot_attack; target.stats == 2/1; own.pp == 0/8; }
+}
+
+scenario "Snowman cannot select an enemy with Aura" {
+    seed 2803;
+    state { player own { pp 8/8; hand { spell source = 10132320; } } player oppo { field { follower target = 10001110 { aura; } } } }
+    action { play source; }
+    expect { illegal target_required; unchanged; target lacks cannot_attack; target.stats == 2/2; }
+}
+
+scenario "Snowman can select an already attack restricted follower" {
+    seed 2804;
+    state { player own { pp 8/8; hand { spell source = 10132320; } } player oppo { field { follower target = 10001110 { cannot_attack; } } } }
+    action { play source; select target; }
+    expect { legal; target has cannot_attack; target.stats == 2/1; }
+}
+
+scenario "Snowman needs a target before paying PP" {
+    seed 2805;
+    state { player own { pp 8/8; hand { spell source = 10132320; } } }
+    action { play source; }
+    expect { illegal target_required; unchanged; source.zone == hand; own.pp == 8/8; }
+}
+
+scenario "Snowman cost is reduced when another spell is played" {
+    seed 2806;
+    state { player own { pp 1/1; hand { spell source = 10031310; spell snowman = 10132320; } deck top { follower drawn = 10001110; } } }
+    action { play source; }
+    expect { legal; snowman.cost == 7; snowman.zone == hand; drawn.zone == hand; }
+}

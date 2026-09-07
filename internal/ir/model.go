@@ -466,6 +466,7 @@ type TargetEffect struct {
 	Distribution  string      `json:"distribution,omitempty"`
 	Overflow      Ref         `json:"overflow,omitempty"`
 	Keyword       string      `json:"keyword,omitempty"`
+	Until         string      `json:"until,omitempty"`
 	Form          string      `json:"form,omitempty"`
 	Destination   string      `json:"destination,omitempty"`
 	DeckInsertion string      `json:"deckInsertion,omitempty"`

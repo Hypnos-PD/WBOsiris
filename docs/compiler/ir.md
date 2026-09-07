@@ -660,7 +660,8 @@ AddKeyword = NodeBase & {
   kind: "add_keyword",
   target: ValueRef | SetExpr,
   keyword: Keyword,
-  predicate?: Predicate
+  predicate?: Predicate,
+  until?: "turn_end" | "own_turn_end" | "oppo_turn_end"
 }
 
 RemoveKeyword = NodeBase & {
@@ -736,6 +737,10 @@ Spellboost = NodeBase & {
 此节点拒绝主战者引用，不携带伤害类型、过滤器、增益量或输出绑定；非随从实例不受影响。
 `AddKeyword` 与 `RemoveKeyword` 的 `predicate` 在修改任何目标前应用；`other` 编译为
 以 `self` 为排除值的 `exclude` 引用。它们不创建玩家选择，也不应用敌方选择限制。
+仅 `AddKeyword` 支持 `until`。它在执行时将相对期限解析为绝对玩家，记录临时赋予；
+省略表示永久。到期只撤销临时赋予，不删除原生或后来永久获得的同名能力。
+不同玩家的到期期限独立保存，同一截止回合的重复赋予合并；显式移除或消耗会清除
+该能力的全部赋予记录。其他效果携带 `until` 时拒绝解码。
 数值表达式在该效果实际执行时读取，目标修改前同时确定伤害量或两项增益量。
 `self_scalar` 使用能力来源实例的当前数值，攻击力和生命值仅适用于随从；`scalar` 的玩家
 相对能力控制者解析。增益保留负数，伤害和回复的动态数值以零为下限。计数查询超出预算时

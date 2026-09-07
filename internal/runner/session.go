@@ -249,6 +249,7 @@ func (s *Session) Advance(action ir.AdvanceAction) StepResult {
 	kind := "turn_started"
 	if action.Timing == "turn_end" {
 		kind = "turn_ended"
+		s.g.endingSide = action.Side
 	}
 	event := ir.RuntimeEvent{Kind: kind, Side: action.Side}
 	if s.g.emit(event) {
@@ -385,6 +386,12 @@ func (s *Session) run() StepResult {
 			if !s.drainingTrigger && s.g.attack != nil {
 				s.g.advanceAttack()
 				continue
+			}
+			if s.g.endingSide != "" {
+				if !s.g.expireKeywords(s.g.endingSide) {
+					return s.budgetFault()
+				}
+				s.g.endingSide = ""
 			}
 			if s.g.turnTransition == "ending" || s.g.turnTransition == "starting_triggers" {
 				s.g.advanceTurn()
@@ -610,6 +617,7 @@ type instanceSnapshot struct {
 	Evolved, SuperEvolved               bool
 	Departed                            bool
 	Abilities                           map[string]bool
+	TemporaryKeywords                   map[string]KeywordExpiry
 }
 
 type gameSnapshot struct {
@@ -625,6 +633,7 @@ type gameSnapshot struct {
 	FirstPlayer                     string
 	Phase                           string
 	TurnTransition                  string
+	EndingSide                      string
 	GameOver                        bool
 	Winner                          string
 	Attack                          *attackSnapshot
@@ -645,7 +654,7 @@ type playerSnapshot struct {
 }
 
 func (g *game) snapshot() gameSnapshot {
-	snapshot := gameSnapshot{Own: snapshotPlayer(g.own), Oppo: snapshotPlayer(g.oppo), Events: append([]ir.RuntimeEvent(nil), g.events...), RNG: g.rng.Snapshot(), Serial: g.serial, EventSequence: g.eventSequence, DeathBatchSerial: g.deathBatchSerial, Revision: g.revision, Triggers: len(g.triggers), Turn: g.turn, FirstPlayer: g.firstPlayer, Phase: g.phase, GameOver: g.gameOver, Winner: g.winner}
+	snapshot := gameSnapshot{Own: snapshotPlayer(g.own), Oppo: snapshotPlayer(g.oppo), Events: append([]ir.RuntimeEvent(nil), g.events...), RNG: g.rng.Snapshot(), Serial: g.serial, EventSequence: g.eventSequence, DeathBatchSerial: g.deathBatchSerial, Revision: g.revision, Triggers: len(g.triggers), Turn: g.turn, FirstPlayer: g.firstPlayer, Phase: g.phase, TurnTransition: g.turnTransition, EndingSide: g.endingSide, GameOver: g.gameOver, Winner: g.winner}
 	if g.attack != nil {
 		snapshot.Attack = &attackSnapshot{Stage: g.attack.stage, Actor: g.attack.actor, Attacker: g.attack.attacker, Defender: g.attack.defender, AttackerAttack: g.attack.attackerAttack, DefenderAttack: g.attack.defenderAttack}
 	}
@@ -657,8 +666,9 @@ func (g *game) snapshot() gameSnapshot {
 					abilities[name] = value
 				}
 				snapshot.Instances = append(snapshot.Instances, instanceSnapshot{
-					Counters: maps.Clone(i.counters),
-					ID:       i.id, Zone: i.zone, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life,
+					Counters:          maps.Clone(i.counters),
+					TemporaryKeywords: maps.Clone(i.temporaryKeywords),
+					ID:                i.id, Zone: i.zone, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life,
 					Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed,
 					Engaged: i.engaged, SummoningSick: i.summoningSick, Evolved: i.evolved,
 					SuperEvolved: i.superEvolved, Departed: i.departed, FusedThisTurn: i.fusedThisTurn, Abilities: abilities,
@@ -685,7 +695,7 @@ func (g *game) clone() *game {
 		cards: g.cards, instances: map[string]*instance{}, legal: g.legal, illegal: g.illegal,
 		unchanged: g.unchanged, rng: g.rng.Clone(), events: append([]ir.RuntimeEvent(nil), g.events...),
 		serial: g.serial, eventSequence: g.eventSequence, deathBatchSerial: g.deathBatchSerial, revision: g.revision,
-		turn: g.turn, firstPlayer: g.firstPlayer, phase: g.phase, turnTransition: g.turnTransition, gameOver: g.gameOver, winner: g.winner,
+		turn: g.turn, firstPlayer: g.firstPlayer, phase: g.phase, turnTransition: g.turnTransition, endingSide: g.endingSide, gameOver: g.gameOver, winner: g.winner,
 	}
 	if g.attack != nil {
 		attack := *g.attack
@@ -694,6 +704,7 @@ func (g *game) clone() *game {
 	for id, original := range g.instances {
 		copy := *original
 		copy.counters = maps.Clone(original.counters)
+		copy.temporaryKeywords = maps.Clone(original.temporaryKeywords)
 		copy.abilities = map[string]bool{}
 		for name, value := range original.abilities {
 			copy.abilities[name] = value

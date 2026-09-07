@@ -830,6 +830,7 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			ID                                                          string `json:"id"`
 			Kind, DamageType, Keyword, Form, Destination, DeckInsertion string
 			Distribution                                                string          `json:"distribution,omitempty"`
+			Until                                                       string          `json:"until,omitempty"`
 			Overflow                                                    json.RawMessage `json:"overflow,omitempty"`
 			Target                                                      json.RawMessage `json:"target"`
 			Amount                                                      int             `json:"-"`
@@ -846,6 +847,9 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		}
 		if v.Output != "" && (v.Kind != "destroy" || v.Output != "destroyed") {
 			return nil, fmt.Errorf("invalid target effect output")
+		}
+		if v.Until != "" && (v.Kind != "add_keyword" || !oneOf(v.Until, "turn_end", "own_turn_end", "oppo_turn_end")) {
+			return nil, fmt.Errorf("invalid keyword duration")
 		}
 		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
 			return nil, err
@@ -941,7 +945,7 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		return TargetEffect{
 			NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Output: v.Output, DamageType: v.DamageType,
 			Distribution: v.Distribution, Overflow: overflow,
-			Keyword: v.Keyword, Form: v.Form, Destination: v.Destination, DeckInsertion: v.DeckInsertion,
+			Keyword: v.Keyword, Until: v.Until, Form: v.Form, Destination: v.Destination, DeckInsertion: v.DeckInsertion,
 			Target: r, Amount: v.Amount, AmountExpr: amountExpr, AttackDelta: v.AttackDelta, LifeDelta: v.LifeDelta, AttackExpr: attackExpr, LifeExpr: lifeExpr, Predicate: p,
 		}, err
 	case "adjust_resource", "restore_resource", "adjust_earthsigil", "adjust_entity_field", "spellboost", "adjust_counter":
@@ -1353,7 +1357,9 @@ func validatePredicateCardRefs(predicate Predicate, cards map[int]bool) error {
 func validKeyword(v string) bool {
 	return oneOf(v, "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "ability_target_guard", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")
 }
-func validOp(v string) bool { return oneOf(v, "eq", "ne", "lt", "le", "gt", "ge") }
+
+func ValidKeyword(v string) bool { return validKeyword(v) }
+func validOp(v string) bool      { return oneOf(v, "eq", "ne", "lt", "le", "gt", "ge") }
 func oneOf(s string, v ...string) bool {
 	for _, x := range v {
 		if s == x {

@@ -30,6 +30,7 @@ type instance struct {
 	evolved, superEvolved                                                        bool
 	departed                                                                     bool
 	abilities                                                                    map[string]bool
+	temporaryKeywords                                                            map[string]KeywordExpiry
 	materials                                                                    []*instance
 	fusedThisTurn                                                                bool
 }
@@ -72,6 +73,7 @@ type game struct {
 	firstPlayer                     string
 	phase                           string
 	turnTransition                  string
+	endingSide                      string
 	gameOver                        bool
 	winner                          string
 	attack                          *attackState
@@ -514,6 +516,7 @@ func (g *game) commitAction(a ir.Action) ([]execFrame, string) {
 			actor.extraPPActive = false
 		}
 		g.turnTransition = "ending"
+		g.endingSide = g.turn.Active
 		event := ir.RuntimeEvent{Kind: "turn_ended", Side: g.turn.Active}
 		if g.emit(event) {
 			g.queueEventTriggers(event, nil, "")
@@ -620,7 +623,7 @@ func (g *game) commitAttack(a ir.AttackAction) string {
 		defender = g.instances[a.Defender]
 	}
 	attacker.attacksUsed++
-	delete(attacker.abilities, "stealth")
+	attacker.removeKeyword("stealth")
 	g.player(a.Actor).attackedThisTurn = true
 	g.attack = &attackState{stage: "attack", actor: a.Actor, attacker: attacker.id}
 	attackerTarget := ir.EventTarget{Kind: "instance", InstanceID: attacker.id}
@@ -825,14 +828,14 @@ func (g *game) damageInstanceFrom(source, target *instance, amount int, damageTy
 
 func removeStealthAfterEffectDamage(source *instance, actual int) {
 	if source != nil && actual > 0 {
-		delete(source.abilities, "stealth")
+		source.removeKeyword("stealth")
 	}
 }
 
 func (g *game) modifyDamage(context damageContext) int {
 	amount := max(context.amount, 0)
 	if context.target.abilities["barrier"] {
-		delete(context.target.abilities, "barrier")
+		context.target.removeKeyword("barrier")
 		return 0
 	}
 	if context.target.superEvolved && g.sideOf(context.target) == g.turn.Active {
