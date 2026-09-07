@@ -301,14 +301,14 @@ add_operation     = "add" , integer , "card" , card_id , "to" , "hand" , ";"
                   | "add" , "combo" , integer , ";"
                   | "add" , integer , "earthsigil" , ";"
                   | "add" , integer , "counter" , counter_name , ";"
-                  | "add" , ability , "to" , value_ref , ["other"] , [where_clause] , [keyword_duration] , ";" ;
-keyword_duration  = "until" , [participant] , "turn" , "ends" ;
+                  | "add" , ability , "to" , value_ref , ["other"] , [where_clause] , [effect_duration] , ";" ;
+effect_duration   = "until" , [participant] , "turn" , "ends" ;
 
 summon_operation  = "summon" , integer , "card" , card_id , ";" ;
 numeric_operation = "damage" , value_ref , effect_amount , [damage_distribution] , [where_clause] , ";"
                   | "heal" , value_ref , effect_amount , [where_clause] , ";"
                   | "set" , "life" , value_ref , effect_amount , ";"
-                  | "buff" , value_ref , ["other"] , signed_amount , "/" , signed_amount , [where_clause] , ";"
+                  | "buff" , value_ref , ["other"] , signed_amount , "/" , signed_amount , [where_clause] , [effect_duration] , ";"
                   | "gain" , scalar_ref , integer , ";"
                   | "restore" , participant , "." , "pp" , ";" ;
 

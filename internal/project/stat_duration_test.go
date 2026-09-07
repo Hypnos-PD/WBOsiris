@@ -9,7 +9,7 @@ import (
 	"wbo/internal/syntax"
 )
 
-func TestCompileKeywordDurations(t *testing.T) {
+func TestCompileStatDurations(t *testing.T) {
 	for _, tc := range []struct{ suffix, until string }{{"turn ends", "turn_end"}, {"own turn ends", "own_turn_end"}, {"oppo turn ends", "oppo_turn_end"}} {
 		root := t.TempDir()
 		dir := filepath.Join(root, "12345")
@@ -17,8 +17,8 @@ func TestCompileKeywordDurations(t *testing.T) {
 			t.Fatal(err)
 		}
 		path := filepath.Join(dir, "12345678.wbo")
-		text := validCard(`fanfare { add barrier to own.field.followers other where life <= 3 until ` + tc.suffix + `; }`)
-		if err := os.WriteFile(path, []byte(text), 0600); err != nil {
+		source := validCard(`fanfare { buff own.field.followers other +own.combo/-2 where life >= 3 until ` + tc.suffix + `; }`)
+		if err := os.WriteFile(path, []byte(source), 0600); err != nil {
 			t.Fatal(err)
 		}
 		loaded := LoadWithRoot([]string{path}, true, root)
@@ -35,25 +35,25 @@ func TestCompileKeywordDurations(t *testing.T) {
 			t.Fatal(err)
 		}
 		e := decoded.Cards[0].Abilities[0].Body[0].(ir.TargetEffect)
-		if e.Until != tc.until || e.Predicate == nil {
-			t.Fatal("lost duration or filter", e)
+		if e.Until != tc.until || e.Predicate == nil || e.AttackExpr == nil || e.LifeDelta != -2 {
+			t.Fatal("lost duration, dynamic amount or filter", e)
 		}
 		if _, ok := e.Target.(ir.ExcludeRef); !ok {
-			t.Fatal("lost other exclusion")
+			t.Fatal("lost exclusion")
 		}
 	}
 }
 
-func TestRejectMalformedKeywordDurations(t *testing.T) {
+func TestRejectMalformedStatDurations(t *testing.T) {
 	for _, operation := range []string{
-		"add storm to self until", "add storm to self until own", "add storm to self until turn",
-		"add storm to self until enemy turn ends", "add storm to self until own turn starts",
-		"add storm to self until turn ends extra", "add storm to self until turn ends where life == 1",
-		"remove storm from self until turn ends", "buff self +1/+0 until turn starts",
+		"buff self +1/+0 until", "buff self +1/+0 until own", "buff self +1/+0 until turn",
+		"buff self +1/+0 until enemy turn ends", "buff self +1/+0 until own turn starts",
+		"buff self +1/+0 until turn ends extra", "buff self +1/+0 until turn ends where life == 1",
+		"buff self until turn ends +1/+0", "buff self +1/+0 where until turn ends",
 	} {
 		f, ds := syntax.Parse("12345678.wbo", []byte(validCard("fanfare { "+operation+"; }")))
 		if len(ds) == 0 && !hasErrors(ValidateFile(f)) {
-			t.Fatal("accepted invalid duration", operation)
+			t.Fatal("accepted malformed duration", operation)
 		}
 	}
 }

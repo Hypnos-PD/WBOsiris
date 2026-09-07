@@ -31,6 +31,7 @@ type instance struct {
 	departed                                                                     bool
 	abilities                                                                    map[string]bool
 	temporaryKeywords                                                            map[string]KeywordExpiry
+	temporaryStats                                                               map[string]ir.Stats
 	materials                                                                    []*instance
 	fusedThisTurn                                                                bool
 }

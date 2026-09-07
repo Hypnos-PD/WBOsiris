@@ -22,11 +22,11 @@ func TestTemporaryKeywordGrantsRemainIndependent(t *testing.T) {
 	i.addKeyword("storm", "own")
 	i.addKeyword("storm", "own")
 	i.addKeyword("storm", "oppo")
-	s.g.expireKeywords("own")
+	s.g.expireTurnEffects("own")
 	if !i.abilities["storm"] {
 		t.Fatal("expired the other player's grant")
 	}
-	s.g.expireKeywords("oppo")
+	s.g.expireTurnEffects("oppo")
 	if i.abilities["storm"] || len(i.temporaryKeywords) != 0 {
 		t.Fatal("temporary grant survived both deadlines")
 	}
@@ -39,7 +39,7 @@ func TestTemporaryKeywordGrantsRemainIndependent(t *testing.T) {
 		if !permanentFirst {
 			i.addKeyword("storm", "")
 		}
-		s.g.expireKeywords("own")
+		s.g.expireTurnEffects("own")
 		if !i.abilities["storm"] {
 			t.Fatal("expiration removed a permanent grant")
 		}
@@ -50,7 +50,7 @@ func TestTemporaryKeywordGrantsRemainIndependent(t *testing.T) {
 		t.Fatal("consumed barrier kept an expiration record")
 	}
 	i.addKeyword("barrier", "")
-	s.g.expireKeywords("own")
+	s.g.expireTurnEffects("own")
 	if !i.abilities["barrier"] {
 		t.Fatal("old deadline removed a newly granted barrier")
 	}
@@ -64,7 +64,7 @@ func TestTemporaryKeywordGrantsRemainIndependent(t *testing.T) {
 	if !i.abilities["cannot_attack"] {
 		t.Fatal("hand to deck lost attached effects")
 	}
-	s.g.expireKeywords("oppo")
+	s.g.expireTurnEffects("oppo")
 	if i.abilities["cannot_attack"] {
 		t.Fatal("effect did not expire in deck")
 	}
@@ -152,6 +152,7 @@ func TestTemporaryKeywordsWaitForEndTriggerAndRestore(t *testing.T) {
 			t.Fatal(err)
 		}
 		s.g.instances[id].addKeyword("cannot_attack", "own")
+		s.g.instances[id].buffStats(3, 2, "own")
 		cloned := s.g.clone()
 		cloned.instances[id].removeKeyword("cannot_attack")
 		if len(s.g.instances[id].temporaryKeywords) != 1 {
@@ -163,7 +164,7 @@ func TestTemporaryKeywordsWaitForEndTriggerAndRestore(t *testing.T) {
 		} else {
 			step = s.Submit(strings.Repeat("a", 32), SimulatorCommand{Kind: "end_turn"})
 		}
-		if step.Status != StatusSuspended || !s.g.instances[id].abilities["cannot_attack"] {
+		if step.Status != StatusSuspended || !s.g.instances[id].abilities["cannot_attack"] || s.g.instances[id].attack != 4 {
 			t.Fatal("expired before end trigger completed", step)
 		}
 		data, err := s.EncodeContinuation()
@@ -182,7 +183,7 @@ func TestTemporaryKeywordsWaitForEndTriggerAndRestore(t *testing.T) {
 			if r := current.Resume(ChoiceResponse{RequestID: step.Choice.RequestID, ActionID: step.Choice.ActionID, StateRevision: step.Choice.StateRevision, SelectedOptionID: 1}); r.Status != StatusCompleted {
 				t.Fatal(r)
 			}
-			if current.g.instances[id].abilities["cannot_attack"] || current.g.endingSide != "" {
+			if current.g.instances[id].abilities["cannot_attack"] || current.g.endingSide != "" || current.g.instances[id].attack != 1 || current.g.instances[id].life != 2 {
 				t.Fatal("expiration did not finish")
 			}
 		}

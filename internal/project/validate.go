@@ -512,7 +512,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 				end, good = parseWhere(t, end)
 			}
 			if good && end < len(t) {
-				end, good = parseKeywordDuration(t, end)
+				end, good = parseEffectDuration(t, end)
 			}
 			ok = good && end == len(t)
 			checkBindingAt(t, 3, end, bindings, ds)
@@ -550,10 +550,11 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 			} else {
 				good = false
 			}
-			if end < len(t) {
-				if good {
-					end, good = parseWhere(t, end)
-				}
+			if good && end < len(t) && t[end].Value == "where" {
+				end, good = parseWhere(t, end)
+			}
+			if good && end < len(t) {
+				end, good = parseEffectDuration(t, end)
 			}
 			ok = good && end == len(t)
 		}

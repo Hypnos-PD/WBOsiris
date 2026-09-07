@@ -151,11 +151,14 @@ func (e CardEffect) MarshalJSON() ([]byte, error) {
 }
 
 func (e TargetEffect) MarshalJSON() ([]byte, error) {
-	if e.Until != "" && (e.Kind != "add_keyword" || !oneOf(e.Until, "turn_end", "own_turn_end", "oppo_turn_end")) {
-		return nil, fmt.Errorf("invalid keyword duration")
+	if e.Until != "" && (!oneOf(e.Kind, "add_keyword", "buff_stats") || !oneOf(e.Until, "turn_end", "own_turn_end", "oppo_turn_end")) {
+		return nil, fmt.Errorf("invalid effect duration")
 	}
 	object := effectObject(e.NodeBase, e.Kind)
 	object["target"] = e.Target
+	if e.Until != "" {
+		object["until"] = e.Until
+	}
 	if e.Output != "" {
 		if e.Kind != "destroy" || e.Output != "destroyed" {
 			return nil, fmt.Errorf("invalid target effect output")
@@ -214,9 +217,6 @@ func (e TargetEffect) MarshalJSON() ([]byte, error) {
 		}
 	case "add_keyword", "remove_keyword":
 		object["keyword"] = e.Keyword
-		if e.Until != "" {
-			object["until"] = e.Until
-		}
 		if e.Predicate != nil {
 			object["predicate"] = e.Predicate
 		}

@@ -6,7 +6,10 @@ card 10161140 {
     stats 2/2;
 
     effect {
-        unplayable;
+        aura;
+        when own amulet engaged {
+            buff self +1/+0 until turn ends;
+        }
     }
 
     meta {

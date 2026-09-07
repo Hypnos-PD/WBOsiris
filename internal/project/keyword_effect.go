@@ -17,15 +17,19 @@ func keywordEffectIR(base ir.NodeBase, kind string, t []syntax.Token) ir.TargetE
 		e.Predicate, end = filterIR(t, end)
 	}
 	if end < len(t) {
-		e.Until = "turn_end"
-		if t[end+1].Value != "turn" {
-			e.Until = t[end+1].Value + "_turn_end"
-		}
+		e.Until = effectDurationIR(t, end)
 	}
 	return e
 }
 
-func parseKeywordDuration(t []syntax.Token, start int) (int, bool) {
+func effectDurationIR(t []syntax.Token, start int) string {
+	if t[start+1].Value == "turn" {
+		return "turn_end"
+	}
+	return t[start+1].Value + "_turn_end"
+}
+
+func parseEffectDuration(t []syntax.Token, start int) (int, bool) {
 	if start >= len(t) || t[start].Value != "until" {
 		return start, false
 	}

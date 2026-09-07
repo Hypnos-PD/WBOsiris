@@ -17,7 +17,7 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.17.0"
+const continuationVersion = "0.18.0"
 
 type ContinuationBindings struct {
 	ID     string              `json:"id"`
@@ -122,6 +122,7 @@ type ContinuationEntity struct {
 	Departed          bool                     `json:"departed,omitempty"`
 	Abilities         []string                 `json:"abilities"`
 	TemporaryKeywords map[string]KeywordExpiry `json:"temporaryKeywords,omitempty"`
+	TemporaryStats    map[string]ir.Stats      `json:"temporaryStats,omitempty"`
 	Materials         []string                 `json:"materials,omitempty"`
 }
 
@@ -447,6 +448,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 		snapshot.Instances = append(snapshot.Instances, ContinuationEntity{
 			Counters:          maps.Clone(i.counters),
 			TemporaryKeywords: maps.Clone(i.temporaryKeywords),
+			TemporaryStats:    maps.Clone(i.temporaryStats),
 			ID:                i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life,
 			Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i),
 			Engaged: i.engaged, SummoningSick: i.summoningSick, Evolved: i.evolved,
@@ -525,6 +527,14 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 		}
 		if len(entity.TemporaryKeywords) > 0 {
 			i.temporaryKeywords = maps.Clone(entity.TemporaryKeywords)
+		}
+		for side, delta := range entity.TemporaryStats {
+			if side != "own" && side != "oppo" || delta.Attack == 0 && delta.Life == 0 {
+				return nil, fmt.Errorf("invalid temporary stats")
+			}
+		}
+		if len(entity.TemporaryStats) > 0 {
+			i.temporaryStats = maps.Clone(entity.TemporaryStats)
 		}
 		if !ir.ValidCounters(i.counters) || len(i.counters) != len(card.Counters) {
 			return nil, fmt.Errorf("invalid continuation counters")

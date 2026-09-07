@@ -848,8 +848,8 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if v.Output != "" && (v.Kind != "destroy" || v.Output != "destroyed") {
 			return nil, fmt.Errorf("invalid target effect output")
 		}
-		if v.Until != "" && (v.Kind != "add_keyword" || !oneOf(v.Until, "turn_end", "own_turn_end", "oppo_turn_end")) {
-			return nil, fmt.Errorf("invalid keyword duration")
+		if v.Until != "" && (!oneOf(v.Kind, "add_keyword", "buff_stats") || !oneOf(v.Until, "turn_end", "own_turn_end", "oppo_turn_end")) {
+			return nil, fmt.Errorf("invalid effect duration")
 		}
 		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
 			return nil, err

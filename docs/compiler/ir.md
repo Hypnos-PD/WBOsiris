@@ -653,7 +653,8 @@ BuffStats = NodeBase & {
   target: ValueRef | SetExpr,
   attackDelta: StatDelta,
   lifeDelta: StatDelta,
-  predicate?: Predicate
+  predicate?: Predicate,
+  until?: "turn_end" | "own_turn_end" | "oppo_turn_end"
 }
 
 AddKeyword = NodeBase & {
@@ -737,10 +738,13 @@ Spellboost = NodeBase & {
 此节点拒绝主战者引用，不携带伤害类型、过滤器、增益量或输出绑定；非随从实例不受影响。
 `AddKeyword` 与 `RemoveKeyword` 的 `predicate` 在修改任何目标前应用；`other` 编译为
 以 `self` 为排除值的 `exclude` 引用。它们不创建玩家选择，也不应用敌方选择限制。
-仅 `AddKeyword` 支持 `until`。它在执行时将相对期限解析为绝对玩家，记录临时赋予；
+`AddKeyword` 和 `BuffStats` 支持 `until`。它在执行时将相对期限解析为绝对玩家，记录临时赋予；
 省略表示永久。到期只撤销临时赋予，不删除原生或后来永久获得的同名能力。
 不同玩家的到期期限独立保存，同一截止回合的重复赋予合并；显式移除或消耗会清除
 该能力的全部赋予记录。其他效果携带 `until` 时拒绝解码。
+`BuffStats` 按绝对玩家合计已经求值的攻击力、生命值增量；到期撤销相应增量，
+保留之后的永久修改和伤害。`SetLife` 清除先前临时增益中的生命值部分，保留攻击力部分。
+所有到期属性一起更新，再统一检查死亡并处理谢幕曲，完成后才进入下一回合。
 数值表达式在该效果实际执行时读取，目标修改前同时确定伤害量或两项增益量。
 `self_scalar` 使用能力来源实例的当前数值，攻击力和生命值仅适用于随从；`scalar` 的玩家
 相对能力控制者解析。增益保留负数，伤害和回复的动态数值以零为下限。计数查询超出预算时
@@ -784,7 +788,7 @@ Spellboost = NodeBase & {
 | `summon N card C` | `Summon` |
 | `damage T N`、`heal T N` | `Damage`、`Heal` |
 | `set life T N` | `SetLife` |
-| `buff T +A/+L [where P]` | `BuffStats`，可带 `predicate` |
+| `buff T +A/+L [where P] [until [own/oppo] turn ends]` | `BuffStats`，可带 `predicate` 和 `until` |
 | `destroy T`、`banish T`、`discard T` | `Destroy`、`Banish`、`Discard` |
 | `transform self into card C [preserving materials]` | `Transform` |
 | `return T to hand/deck` | `Return` |

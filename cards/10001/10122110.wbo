@@ -7,7 +7,12 @@ card 10122110 {
     trait luminous;
 
     effect {
-        unplayable;
+        when own follower summoned where trait officer {
+            buff self +1/+0 until turn ends;
+        }
+        evolve {
+            summon 1 card 90021110;
+        }
     }
 
     meta {

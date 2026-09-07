@@ -484,6 +484,7 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 		for _, item := range targets {
 			if item != nil && item.card.CardType == "follower" {
 				item.life = e.Amount
+				item.clearTemporaryLife()
 			}
 		}
 		g.resolveDeathBatch(nil)
@@ -523,24 +524,13 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 			}
 		}
 	case "buff_stats":
+		endingSide := g.effectEndingSide(e.Until, ownSide)
 		for _, i := range targets {
-			i.attack += e.AttackDelta
-			i.life += e.LifeDelta
+			i.buffStats(e.AttackDelta, e.LifeDelta, endingSide)
 		}
 		g.resolveDeathBatch(nil)
 	case "add_keyword":
-		endingSide := ""
-		switch e.Until {
-		case "turn_end":
-			endingSide = g.turn.Active
-			if g.endingSide != "" {
-				endingSide = g.endingSide
-			}
-		case "own_turn_end":
-			endingSide = ownSide
-		case "oppo_turn_end":
-			endingSide = oppositeSide(ownSide)
-		}
+		endingSide := g.effectEndingSide(e.Until, ownSide)
 		for _, i := range targets {
 			i.addKeyword(e.Keyword, endingSide)
 		}

@@ -39,15 +39,23 @@ func (i *instance) removeKeyword(keyword string) {
 	}
 }
 
-func (g *game) expireKeywords(side string) bool {
+func (g *game) expireTurnEffects(side string) bool {
 	visits := len(g.instances)
 	for _, i := range g.instances {
-		visits += len(i.temporaryKeywords)
+		visits += len(i.temporaryKeywords) + len(i.temporaryStats)
 	}
 	if !g.chargeQueryVisits(visits) {
 		return false
 	}
 	for _, i := range g.instances {
+		if delta, ok := i.temporaryStats[side]; ok {
+			i.attack -= delta.Attack
+			i.life -= delta.Life
+			delete(i.temporaryStats, side)
+			if len(i.temporaryStats) == 0 {
+				i.temporaryStats = nil
+			}
+		}
 		for keyword, expiry := range i.temporaryKeywords {
 			if side == "own" {
 				expiry.OwnTurnEnd = false
@@ -67,5 +75,6 @@ func (g *game) expireKeywords(side string) bool {
 			i.temporaryKeywords = nil
 		}
 	}
-	return true
+	g.resolveDeathBatch(nil)
+	return g.budget == nil || !g.budget.exceeded
 }

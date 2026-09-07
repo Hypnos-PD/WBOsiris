@@ -388,8 +388,11 @@ func (s *Session) run() StepResult {
 				continue
 			}
 			if s.g.endingSide != "" {
-				if !s.g.expireKeywords(s.g.endingSide) {
+				if !s.g.expireTurnEffects(s.g.endingSide) {
 					return s.budgetFault()
+				}
+				if len(s.g.triggers) > 0 {
+					continue
 				}
 				s.g.endingSide = ""
 			}
@@ -618,6 +621,7 @@ type instanceSnapshot struct {
 	Departed                            bool
 	Abilities                           map[string]bool
 	TemporaryKeywords                   map[string]KeywordExpiry
+	TemporaryStats                      map[string]ir.Stats
 }
 
 type gameSnapshot struct {
@@ -668,6 +672,7 @@ func (g *game) snapshot() gameSnapshot {
 				snapshot.Instances = append(snapshot.Instances, instanceSnapshot{
 					Counters:          maps.Clone(i.counters),
 					TemporaryKeywords: maps.Clone(i.temporaryKeywords),
+					TemporaryStats:    maps.Clone(i.temporaryStats),
 					ID:                i.id, Zone: i.zone, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life,
 					Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed,
 					Engaged: i.engaged, SummoningSick: i.summoningSick, Evolved: i.evolved,
@@ -705,6 +710,7 @@ func (g *game) clone() *game {
 		copy := *original
 		copy.counters = maps.Clone(original.counters)
 		copy.temporaryKeywords = maps.Clone(original.temporaryKeywords)
+		copy.temporaryStats = maps.Clone(original.temporaryStats)
 		copy.abilities = map[string]bool{}
 		for name, value := range original.abilities {
 			copy.abilities[name] = value

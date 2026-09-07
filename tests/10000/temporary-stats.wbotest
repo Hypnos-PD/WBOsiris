@@ -1,0 +1,58 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Commander gains attack for each allied Officer entering" {
+    seed 2901;
+    state { player own { pp 5/5; hand { follower source = 10122120; } field { follower commander = 10122110; } } }
+    action { play source; }
+    expect { legal; commander.stats == 4/1; own.field count card 90021120 == 3; rng.consumed == 0; }
+}
+
+scenario "Commander ignores non Officer entries" {
+    seed 2902;
+    state { player own { pp 2/2; hand { follower source = 10001110; } field { follower commander = 10122110; } } }
+    action { play source; }
+    expect { legal; commander.stats == 1/1; }
+}
+
+scenario "Commander evolution summons a Knight and gains temporary attack" {
+    seed 2903;
+    state { turn own 7; player own { ep 1; field { follower source = 10122110; } } }
+    action { evolve source; }
+    expect { legal; source.stats == 4/3; own.field count card 90021110 == 1; own.ep == 0; }
+}
+
+scenario "Commander super evolution also summons a Knight" {
+    seed 2904;
+    state { turn own 7; player own { sep 1; field { follower source = 10122110; } } }
+    action { superevolve source; }
+    expect { legal; source.stats == 5/4; own.field count card 90021110 == 1; own.sep == 0; }
+}
+
+scenario "Commander does not gain attack when the field is full" {
+    seed 2905;
+    state { turn own 7; player own { ep 1; field { follower source = 10122110; follower a = 10001110; follower b = 10001110; follower c = 10001110; follower d = 10001110; } } }
+    action { evolve source; }
+    expect { legal; source.stats == 3/3; own.field count card 90021110 == 0; }
+}
+
+scenario "Mainyu gains attack when an allied amulet engages" {
+    seed 2906;
+    state { player own { pp 1/1; field { amulet source = 10161210; follower mainyu = 10161140; } } }
+    action { engage source; }
+    expect { legal; mainyu.stats == 3/2; mainyu has aura; source.countdown == 2; source.engaged == true; }
+}
+
+scenario "Mainyu ignores enemy amulet engagement" {
+    seed 2907;
+    state { player own { pp 1/1; field { amulet source = 10161210; } } player oppo { field { follower mainyu = 10161140; } } }
+    action { engage source; }
+    expect { legal; mainyu.stats == 2/2; mainyu has aura; }
+}
+
+scenario "Unpaid engagement does not grant temporary attack" {
+    seed 2908;
+    state { player own { pp 0/1; field { amulet source = 10161210; follower mainyu = 10161140; } } }
+    action { engage source; }
+    expect { illegal cost; unchanged; mainyu.stats == 2/2; source.engaged == false; }
+}
