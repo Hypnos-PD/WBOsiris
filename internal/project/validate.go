@@ -212,6 +212,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 	if event == "discarded" {
 		bindings["discarded"] = true
 	}
+	if event == "attack" || event == "clash" {
+		bindings["opponent"] = true
+	}
 	var evolveOutputs map[string]bool
 	for _, candidate := range body {
 		if candidate.Word(0) == "evolve" && len(candidate.Blocks()) == 1 {
@@ -275,7 +278,7 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			continue
 		case "fanfare", "lastwords", "attack", "clash", "evolve", "spellboost":
 			if len(t) == 1 && len(b) == 1 && !s.Terminated {
-				validateEffectBlock(b[0], ds, bindings, "")
+				validateEffectBlock(b[0], ds, bindings, h)
 				continue
 			}
 			if h != "evolve" && h != "spellboost" {

@@ -647,6 +647,7 @@ type gameSnapshot struct {
 }
 
 type attackSnapshot struct {
+	DefenderDestroyed              bool
 	Stage                          string
 	Actor, Attacker, Defender      string
 	AttackerAttack, DefenderAttack int
@@ -663,7 +664,7 @@ type playerSnapshot struct {
 func (g *game) snapshot() gameSnapshot {
 	snapshot := gameSnapshot{Own: snapshotPlayer(g.own), Oppo: snapshotPlayer(g.oppo), Events: append([]ir.RuntimeEvent(nil), g.events...), RNG: g.rng.Snapshot(), Serial: g.serial, EventSequence: g.eventSequence, DeathBatchSerial: g.deathBatchSerial, Revision: g.revision, Triggers: len(g.triggers), Turn: g.turn, FirstPlayer: g.firstPlayer, Phase: g.phase, TurnTransition: g.turnTransition, EndingSide: g.endingSide, GameOver: g.gameOver, Winner: g.winner}
 	if g.attack != nil {
-		snapshot.Attack = &attackSnapshot{Stage: g.attack.stage, Actor: g.attack.actor, Attacker: g.attack.attacker, Defender: g.attack.defender, AttackerAttack: g.attack.attackerAttack, DefenderAttack: g.attack.defenderAttack}
+		snapshot.Attack = &attackSnapshot{Stage: g.attack.stage, Actor: g.attack.actor, Attacker: g.attack.attacker, Defender: g.attack.defender, AttackerAttack: g.attack.attackerAttack, DefenderAttack: g.attack.defenderAttack, DefenderDestroyed: g.attack.defenderDestroyed}
 	}
 	for _, side := range []*player{&g.own, &g.oppo} {
 		for _, zone := range [][]*instance{side.deck, side.hand, side.field, side.graveyard, side.banished, side.resolving} {

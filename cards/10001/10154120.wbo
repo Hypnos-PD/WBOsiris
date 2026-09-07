@@ -6,7 +6,11 @@ card 10154120 {
     stats 3/7;
 
     effect {
-        unplayable;
+        rush;
+        attack_limit 3;
+        attack {
+            destroy opponent;
+        }
     }
 
     meta {

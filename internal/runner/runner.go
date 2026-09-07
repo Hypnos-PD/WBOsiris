@@ -45,6 +45,7 @@ type player struct {
 	extraPPActive                                             bool
 }
 type attackState struct {
+	defenderDestroyed              bool
 	stage                          string
 	actor, attacker, defender      string
 	attackerAttack, defenderAttack int
@@ -657,7 +658,7 @@ func (g *game) advanceAttack() {
 		} else {
 			defender := g.instances[state.defender]
 			if defender == nil || defender.zone != "field" || !contains(g.player(opponentSide).field, defender) {
-				if attacker.superEvolved && defender != nil && defender.zone != "field" {
+				if attacker.superEvolved && state.defenderDestroyed {
 					g.damageLeader(g.player(opponentSide), opponentSide, 1)
 				}
 				g.attack = nil
@@ -671,7 +672,7 @@ func (g *game) advanceAttack() {
 	if state.stage == "clash_attacker" {
 		defender := g.instances[state.defender]
 		if defender == nil || defender.zone != "field" || !contains(g.player(opponentSide).field, defender) {
-			if attacker.superEvolved && defender != nil && defender.zone != "field" {
+			if attacker.superEvolved && state.defenderDestroyed {
 				g.damageLeader(g.player(opponentSide), opponentSide, 1)
 			}
 			g.attack = nil
@@ -694,6 +695,9 @@ func (g *game) advanceAttack() {
 	}
 	defender := g.instances[state.defender]
 	if defender == nil || defender.zone != "field" || !contains(g.player(opponentSide).field, defender) {
+		if attacker.superEvolved && state.defenderDestroyed {
+			g.damageLeader(g.player(opponentSide), opponentSide, 1)
+		}
 		g.attack = nil
 		return
 	}
@@ -710,7 +714,7 @@ func (g *game) advanceAttack() {
 		g.destroyByEffect([]*instance{attacker})
 	}
 	g.resolveDeathBatch(nil)
-	if attacker.superEvolved && defender.zone != "field" {
+	if attacker.superEvolved && state.defenderDestroyed {
 		g.damageLeader(g.player(opponentSide), opponentSide, 1)
 	}
 	g.attack = nil
@@ -722,7 +726,17 @@ func (g *game) queueSimpleTriggers(source *instance, kind string) {
 	}
 	for _, ability := range source.card.Abilities {
 		if ir.TriggerKind(ability.Trigger) == kind {
-			g.queueTrigger(triggerInvocation{body: ability.Body, blockID: abilityBlockID(source.card.ID, ability.ID), self: source, bindings: frame{}})
+			bindings := frame{"opponent": nil}
+			if state := g.attack; state != nil && state.defender != "" {
+				other := state.defender
+				if source.id == state.defender {
+					other = state.attacker
+				}
+				if opponent := g.instances[other]; opponent != nil {
+					bindings["opponent"] = []*instance{opponent}
+				}
+			}
+			g.queueTrigger(triggerInvocation{body: ability.Body, blockID: abilityBlockID(source.card.ID, ability.ID), self: source, bindings: bindings})
 		}
 	}
 }

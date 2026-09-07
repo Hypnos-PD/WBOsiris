@@ -1,0 +1,49 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Medusa destroys the defender before combat damage" {
+    seed 3301;
+    state {
+        player own { field { follower source = 10154120; } }
+        player oppo { field { follower target = 10001110; } }
+    }
+    action { attack source into target; }
+    expect { legal; source.stats == 3/7; target.zone == graveyard; oppo.leader.life == 20; }
+}
+
+scenario "Medusa attacks a leader with an empty opponent binding" {
+    seed 3302;
+    state { player own { field { follower source = 10154120; } } }
+    action { attack source into oppo.leader; }
+    expect { legal; source.stats == 3/7; oppo.leader.life == 17; }
+}
+
+scenario "Defending Medusa does not activate her strike ability" {
+    seed 3303;
+    state {
+        player own { field { follower source = 10001110; } }
+        player oppo { field { follower target = 10154120; } }
+    }
+    action { attack source into target; }
+    expect { legal; source.zone == graveyard; target.stats == 3/5; }
+}
+
+scenario "Super evolved Medusa gains one bonus damage from ability destruction" {
+    seed 3304;
+    state {
+        player own { field { follower source = 10154120 { super_evolved; } } }
+        player oppo { field { follower target = 10001110; } }
+    }
+    action { attack source into target; }
+    expect { legal; target.zone == graveyard; oppo.leader.life == 19; }
+}
+
+scenario "Medusa does not redirect her attack to a lastwords summon" {
+    seed 3305;
+    state {
+        player own { field { follower source = 10154120; } }
+        player oppo { field { follower target = 10151130; } }
+    }
+    action { attack source into target; }
+    expect { legal; source.stats == 3/7; target.zone == graveyard; oppo.field count card 90051110 == 2; }
+}

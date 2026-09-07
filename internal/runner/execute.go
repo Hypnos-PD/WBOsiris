@@ -805,6 +805,9 @@ func (g *game) resolveDeathBatch(explicit []*instance) []*instance {
 	for _, death := range deaths {
 		g.move(death.instance, "graveyard")
 		death.owner.destroyed = append(death.owner.destroyed, death.instance)
+		if g.attack != nil && death.instance.id == g.attack.defender {
+			g.attack.defenderDestroyed = true
+		}
 	}
 	for _, death := range deaths {
 		g.eventSequence++

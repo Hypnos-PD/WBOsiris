@@ -17,7 +17,7 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.19.0"
+const continuationVersion = "0.20.0"
 
 type ContinuationBindings struct {
 	ID     string              `json:"id"`
@@ -69,12 +69,13 @@ type ContinuationGame struct {
 }
 
 type ContinuationAttack struct {
-	Stage          string `json:"stage"`
-	Actor          string `json:"actor"`
-	Attacker       string `json:"attacker"`
-	Defender       string `json:"defender,omitempty"`
-	AttackerAttack int    `json:"attackerAttack,omitempty"`
-	DefenderAttack int    `json:"defenderAttack,omitempty"`
+	DefenderDestroyed bool   `json:"defenderDestroyed"`
+	Stage             string `json:"stage"`
+	Actor             string `json:"actor"`
+	Attacker          string `json:"attacker"`
+	Defender          string `json:"defender,omitempty"`
+	AttackerAttack    int    `json:"attackerAttack,omitempty"`
+	DefenderAttack    int    `json:"defenderAttack,omitempty"`
 }
 
 type ContinuationPlayer struct {
@@ -430,7 +431,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 		Serial: g.serial, EventSequence: g.eventSequence, DeathBatchSerial: g.deathBatchSerial, Revision: g.revision, Legal: g.legal, Illegal: g.illegal, Unchanged: g.unchanged, Turn: g.turn, FirstPlayer: g.firstPlayer, Phase: g.phase, TurnTransition: g.turnTransition, EndingSide: g.endingSide, GameOver: g.gameOver, Winner: g.winner,
 	}
 	if g.attack != nil {
-		snapshot.Attack = &ContinuationAttack{Stage: g.attack.stage, Actor: g.attack.actor, Attacker: g.attack.attacker, Defender: g.attack.defender, AttackerAttack: g.attack.attackerAttack, DefenderAttack: g.attack.defenderAttack}
+		snapshot.Attack = &ContinuationAttack{Stage: g.attack.stage, Actor: g.attack.actor, Attacker: g.attack.attacker, Defender: g.attack.defender, AttackerAttack: g.attack.attackerAttack, DefenderAttack: g.attack.defenderAttack, DefenderDestroyed: g.attack.defenderDestroyed}
 	}
 	ids := make([]string, 0, len(g.instances))
 	for id := range g.instances {
@@ -657,16 +658,40 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 			return nil, fmt.Errorf("invalid continuation attack state")
 		}
 		attacker := g.instances[saved.Attack.Attacker]
-		if attacker == nil || attacker.zone != "field" || attacker.card.CardType != "follower" || !contains(g.player(saved.Attack.Actor).field, attacker) || saved.Attack.Actor != g.turn.Active {
+		if attacker == nil || zoneOwner[attacker.id] != saved.Attack.Actor || saved.Attack.Actor != g.turn.Active {
 			return nil, fmt.Errorf("invalid continuation attack state")
 		}
 		if saved.Attack.Defender != "" {
 			defender := g.instances[saved.Attack.Defender]
-			if defender == nil || defender.zone != "field" || defender.card.CardType != "follower" || !contains(g.player(oppositeSide(saved.Attack.Actor)).field, defender) {
+			if defender == nil || zoneOwner[defender.id] != oppositeSide(saved.Attack.Actor) {
 				return nil, fmt.Errorf("invalid continuation attack state")
 			}
 		}
-		g.attack = &attackState{stage: saved.Attack.Stage, actor: saved.Attack.Actor, attacker: saved.Attack.Attacker, defender: saved.Attack.Defender, attackerAttack: saved.Attack.AttackerAttack, defenderAttack: saved.Attack.DefenderAttack}
+		if saved.Attack.DefenderDestroyed && !destroyedHistory[saved.Attack.Defender] {
+			return nil, fmt.Errorf("invalid continuation attack destruction")
+		}
+		// Participants may leave during an ability; validate against the committed attack.
+		foundAttack, defenderDestroyed := false, false
+		for n := len(g.events) - 1; n >= 0; n-- {
+			event := g.events[n]
+			if event.Kind == "destroyed" && event.Subject != nil && event.Subject.InstanceID == saved.Attack.Defender {
+				defenderDestroyed = true
+			}
+			if event.Kind != "attacked" {
+				continue
+			}
+			if event.Attacker == nil || event.Attacker.InstanceID != saved.Attack.Attacker || event.Defender == nil ||
+				saved.Attack.Defender != "" && (event.Defender.Kind != "instance" || event.Defender.InstanceID != saved.Attack.Defender) ||
+				saved.Attack.Defender == "" && (event.Defender.Kind != "leader" || event.Defender.Side != oppositeSide(saved.Attack.Actor)) {
+				return nil, fmt.Errorf("invalid continuation attack event")
+			}
+			foundAttack = true
+			break
+		}
+		if !foundAttack || defenderDestroyed != saved.Attack.DefenderDestroyed {
+			return nil, fmt.Errorf("invalid continuation attack destruction")
+		}
+		g.attack = &attackState{stage: saved.Attack.Stage, actor: saved.Attack.Actor, attacker: saved.Attack.Attacker, defender: saved.Attack.Defender, attackerAttack: saved.Attack.AttackerAttack, defenderAttack: saved.Attack.DefenderAttack, defenderDestroyed: saved.Attack.DefenderDestroyed}
 	}
 	g.rebuildTriggerIndex()
 	return g, nil
