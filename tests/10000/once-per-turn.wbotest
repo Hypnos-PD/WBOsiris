@@ -1,0 +1,78 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Medical-Grade Assassin adds an Enhanced Puppet on play" {
+    seed 3601;
+    state { player own { pp 3/3; hand { follower source = 10171140; } } }
+    action { play source; }
+    expect { legal; source.zone == field; source.stats == 2/2; source lacks bane; own.pp == 0/3; own.hand count card 90071120 == 1; }
+}
+
+scenario "Assassin grants Bane to an allied Enhanced Puppet" {
+    seed 3602;
+    state { player own {
+        pp 1/1;
+        field { follower assassin = 10171140; }
+        hand { follower source = 90071120; }
+    } }
+    action { play source; }
+    expect { legal; source has bane; source has rush; source.stats == 3/3; assassin lacks bane; }
+}
+
+scenario "Assassin grants Bane to a zero cost Puppet" {
+    seed 3603;
+    state { player own {
+        field { follower assassin = 10171140; }
+        hand { follower source = 90071110; }
+    } }
+    action { play source; }
+    expect { legal; source has bane; source has rush; source.stats == 1/1; }
+}
+
+scenario "Assassin ignores an allied follower without Puppetry" {
+    seed 3604;
+    state { player own {
+        pp 2/2;
+        field { follower assassin = 10171140; }
+        hand { follower source = 10001110; }
+    } }
+    action { play source; }
+    expect { legal; source lacks bane; }
+}
+
+scenario "An opposing Assassin does not grant Bane to your Puppet" {
+    seed 3605;
+    state {
+        player own { hand { follower source = 90071110; } }
+        player oppo { field { follower assassin = 10171140; } }
+    }
+    action { play source; }
+    expect { legal; source lacks bane; }
+}
+
+scenario "An Assassin in hand does not listen to Puppet summons" {
+    seed 3606;
+    state { player own { hand { follower assassin = 10171140; follower source = 90071110; } } }
+    action { play source; }
+    expect { legal; source lacks bane; assassin.zone == hand; }
+}
+
+scenario "An evolved Assassin retains its printed Puppet listener" {
+    seed 3607;
+    state { player own {
+        field { follower assassin = 10171140 { evolved; } }
+        hand { follower source = 90071110; }
+    } }
+    action { play source; }
+    expect { legal; source has bane; assassin.evolved == true; }
+}
+
+scenario "Two Assassins both respond to the same first Puppet" {
+    seed 3608;
+    state { player own {
+        field { follower first = 10171140; follower second = 10171140; }
+        hand { follower source = 90071110; }
+    } }
+    action { play source; }
+    expect { legal; source has bane; first lacks bane; second lacks bane; rng.consumed == 0; }
+}

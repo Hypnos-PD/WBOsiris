@@ -105,12 +105,21 @@ func (g *game) queueEventTriggers(event ir.RuntimeEvent, subject *instance, bind
 				if !eventSideMatches(trigger.Side, side.name, event.Side) || subject != nil && !g.matches(subject, trigger.Predicate) || subject != nil && trigger.SubjectType != "" && subject.card.CardType != trigger.SubjectType {
 					continue
 				}
+				if trigger.OncePerTurn != "" && (source.usedTriggers[ability.ID] || !triggerTurnMatches(trigger.OncePerTurn, side.name, g.turn.Active)) {
+					continue
+				}
 				bindings := frame{}
 				if binding != "" && subject != nil {
 					bindings[binding] = bindEntities(subject)
 				}
 				if !g.queueTrigger(triggerInvocation{body: ability.Body, blockID: ability.blockID, self: source, bindings: bindings}) {
 					return false
+				}
+				if trigger.OncePerTurn != "" {
+					if source.usedTriggers == nil {
+						source.usedTriggers = map[string]bool{}
+					}
+					source.usedTriggers[ability.ID] = true
 				}
 			}
 		}

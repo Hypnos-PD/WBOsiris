@@ -1,4 +1,5 @@
 export type Entity = {
+  triggerLimits?: { abilityId: string; turnScope: "own" | "oppo" | "any"; used: boolean }[];
   grantedAbilities?: { kind: string; labels?: Record<string, string> }[];
   counters?: Record<string, number>;
   fusion?: FusionState;

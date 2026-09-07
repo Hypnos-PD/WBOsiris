@@ -17,7 +17,7 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.23.0"
+const continuationVersion = "0.24.0"
 
 type ContinuationBindings struct {
 	ID     string                      `json:"id"`
@@ -102,6 +102,7 @@ type ContinuationPlayer struct {
 }
 
 type ContinuationEntity struct {
+	UsedTriggers      map[string]bool          `json:"usedTriggers,omitempty"`
 	Grants            []string                 `json:"grants,omitempty"`
 	Counters          map[string]int           `json:"counters,omitempty"`
 	FusedThisTurn     bool                     `json:"fusedThisTurn"`
@@ -366,6 +367,13 @@ func RestoreSession(cards *ir.CardPack, c *Continuation) (*Session, error) {
 		if err != nil {
 			return nil, err
 		}
+		if self != nil {
+			for ability := range self.triggeredAbilities() {
+				if trigger, ok := ability.Trigger.(ir.EventTrigger); ok && ability.blockID == saved.BlockID && trigger.OncePerTurn != "" && !self.usedTriggers[ability.ID] {
+					return nil, fmt.Errorf("queued continuation trigger has no recorded usage")
+				}
+			}
+		}
 		s.g.triggers = append(s.g.triggers, triggerInvocation{body: body, blockID: saved.BlockID, self: self, bindings: bindingFrame})
 	}
 	g.budget = &s.budget
@@ -449,6 +457,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 		sort.Strings(abilities)
 		snapshot.Instances = append(snapshot.Instances, ContinuationEntity{
 			Counters:          maps.Clone(i.counters),
+			UsedTriggers:      maps.Clone(i.usedTriggers),
 			TemporaryKeywords: maps.Clone(i.temporaryKeywords),
 			TemporaryStats:    maps.Clone(i.temporaryStats),
 			ID:                i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life,
@@ -514,8 +523,9 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 			return nil, fmt.Errorf("invalid continuation combat state")
 		}
 		i := &instance{
-			counters: maps.Clone(entity.Counters),
-			id:       entity.ID, alias: entity.Alias, zone: entity.Zone, card: card,
+			counters:     maps.Clone(entity.Counters),
+			usedTriggers: maps.Clone(entity.UsedTriggers),
+			id:           entity.ID, alias: entity.Alias, zone: entity.Zone, card: card,
 			attack: entity.Attack, life: entity.Life, cost: entity.Cost, earthsigil: entity.Earthsigil, countdown: entity.Countdown,
 			attacksUsed: entity.AttacksUsed, attackLimitValue: limit, engaged: entity.Engaged, summoningSick: entity.SummoningSick,
 			evolved: entity.Evolved, superEvolved: entity.SuperEvolved, departed: entity.Departed, fusedThisTurn: entity.FusedThisTurn, damageReduction: entity.DamageReduction, abilities: map[string]bool{},
@@ -558,6 +568,17 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 			}
 		}
 		g.instances[i.id] = i
+		limited := map[string]bool{}
+		for _, ability := range card.Abilities {
+			if trigger, ok := ability.Trigger.(ir.EventTrigger); ok && trigger.OncePerTurn != "" {
+				limited[ability.ID] = true
+			}
+		}
+		for id, used := range i.usedTriggers {
+			if !used || !limited[id] {
+				return nil, fmt.Errorf("invalid continuation trigger usage")
+			}
+		}
 	}
 	for _, entity := range saved.Instances {
 		source := g.instances[entity.ID]
@@ -640,6 +661,15 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 	for id, i := range g.instances {
 		if !seen[id] && (i.zone != "destroyed" || historyOnly[id] == "") {
 			return nil, fmt.Errorf("continuation contains an unzoned entity")
+		}
+		owner := zoneOwner[id]
+		if owner == "" {
+			owner = historyOnly[id]
+		}
+		for _, ability := range i.card.Abilities {
+			if trigger, ok := ability.Trigger.(ir.EventTrigger); ok && i.usedTriggers[ability.ID] && !triggerTurnMatches(trigger.OncePerTurn, owner, g.turn.Active) {
+				return nil, fmt.Errorf("continuation trigger usage outside permitted turn")
+			}
 		}
 	}
 	for _, event := range saved.Events {

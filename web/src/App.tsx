@@ -15,6 +15,7 @@ import { eventLabel, readReplays, mergeReplay, persistReplays, type ReplayRespon
 import { ReplayViewer } from "./ReplayViewer";
 import { FusionDetails } from "./FusionDetails";
 import { CounterValues } from "./CounterValues";
+import { TriggerLimits } from "./TriggerLimits";
 import { MatchConnection, type ConnectionStatus } from "./matchConnection";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8080";
@@ -27,6 +28,7 @@ const initialPage = (): "home" | "battle" | "decks" | "replays" | "rooms" => {
 };
 
 type Card = {
+  triggerLimits?: Entity["triggerLimits"];
   grantedAbilities?: Entity["grantedAbilities"];
   counters?: Record<string, number>;
   fusion?: Entity["fusion"];
@@ -131,6 +133,7 @@ const displayCardFor = (entity: Entity, catalog = fallbackCatalog): Card => {
     summoningSick: entity.summoningSick,
     fusion: entity.fusion,
     counters: entity.counters,
+    triggerLimits: entity.triggerLimits,
     grantedAbilities: entity.grantedAbilities,
   };
 };
@@ -1185,6 +1188,7 @@ export function App() {
                 )}
             </div>
             <CounterValues counters={selected.counters}/>
+            <TriggerLimits limits={selected.triggerLimits}/>
             {selected.grantedAbilities?.map((ability, index) => (
               <p className="granted-ability" key={index}>
                 {ability.labels?.chs ?? ability.labels?.eng ?? (ability.kind === "lastwords" ? "谢幕曲" : "回合触发能力")}

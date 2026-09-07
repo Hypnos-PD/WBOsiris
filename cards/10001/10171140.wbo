@@ -6,7 +6,12 @@ card 10171140 {
     stats 2/2;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 90071120 to hand;
+        }
+        when own follower summoned once per own turn where trait puppetry {
+            add bane to summoned;
+        }
     }
 
     meta {

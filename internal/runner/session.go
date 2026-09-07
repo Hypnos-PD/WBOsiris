@@ -631,6 +631,7 @@ func deriveRuntimeID(parts ...string) string {
 }
 
 type instanceSnapshot struct {
+	UsedTriggers                        map[string]bool
 	Grants                              []string
 	Counters                            map[string]int
 	FusedThisTurn                       bool
@@ -695,6 +696,7 @@ func (g *game) snapshot() gameSnapshot {
 				snapshot.Instances = append(snapshot.Instances, instanceSnapshot{
 					Grants:            grantIDs(i),
 					Counters:          maps.Clone(i.counters),
+					UsedTriggers:      maps.Clone(i.usedTriggers),
 					TemporaryKeywords: maps.Clone(i.temporaryKeywords),
 					TemporaryStats:    maps.Clone(i.temporaryStats),
 					ID:                i.id, Zone: i.zone, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life,
@@ -734,6 +736,7 @@ func (g *game) clone() *game {
 		copy := *original
 		copy.grants = append([]ir.GrantEffect(nil), original.grants...)
 		copy.counters = maps.Clone(original.counters)
+		copy.usedTriggers = maps.Clone(original.usedTriggers)
 		copy.temporaryKeywords = maps.Clone(original.temporaryKeywords)
 		copy.temporaryStats = maps.Clone(original.temporaryStats)
 		copy.abilities = map[string]bool{}

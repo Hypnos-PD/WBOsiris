@@ -264,6 +264,19 @@ func parseEventPattern(t []syntax.Token) (int, string, bool) {
 		}
 		end += 4
 	}
+	if ok && end < len(t) && t[end].Value == "once" {
+		if t[1].Value == "self" || end+2 >= len(t) || t[end+1].Value != "per" {
+			return 0, "", false
+		}
+		end += 2
+		if set("own", "oppo")[t[end].Value] {
+			end++
+		}
+		if end >= len(t) || t[end].Value != "turn" {
+			return 0, "", false
+		}
+		end++
+	}
 	return end, subject, ok
 }
 

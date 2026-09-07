@@ -596,8 +596,15 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 	}
 	baseEnd, _, _ := parseBaseEventPattern(t)
 	end, _, _ := parseEventPattern(t)
-	if end > baseEnd {
+	if baseEnd < len(t) && t[baseEnd].Value == "while" {
 		m.SourceZone = t[baseEnd+3].Value
+		baseEnd += 4
+	}
+	if baseEnd < len(t) && t[baseEnd].Value == "once" {
+		m.OncePerTurn = "any"
+		if t[baseEnd+2].Value != "turn" {
+			m.OncePerTurn = t[baseEnd+2].Value
+		}
 	}
 	if len(t) > end {
 		m.Predicate, _ = filterIR(t, end)

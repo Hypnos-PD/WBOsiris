@@ -416,6 +416,7 @@ EventPattern = {
   event: EventKind,
   side: Side?,
   sourceZone: ("field" | "hand")?,
+  oncePerTurn: ("own" | "oppo" | "any")?,
   subjectType: CardType?,
   zone: Zone?,
   predicate: BoolExpr?
@@ -447,6 +448,13 @@ MovePattern = {
 `follower_left` 在状态重置前匹配事件对象并保存 `left` 绑定，包含离场前卡牌身份、
 `from=field` 与目的区域；`card_fused` 匹配一次成功融合，使用融合前的来源卡筛选，
 本体融合能力执行完毕后才排空外部监听队列。
+
+`once per own turn`、`once per oppo turn` 与 `once per turn` 分别编译为
+`EventTrigger.oncePerTurn=own|oppo|any`，省略表示不限次数。范围相对于来源持有者；
+运行时按实例 ID 与印刷能力 ID 记录已用次数，在筛选通过且成功入队后标记，避免同一效果
+连续产生事件时重复占用次数。换回合时先清空记录，再处理倒数与回合开始触发。
+状态沙箱和 Continuation 复制记录；新卡牌副本不继承发动历史，进化保留记录，区域重置和变身清空。
+解码器拒绝未知范围、自身专用触发及附加能力上的限次字段。
 
 替换能力在原移动提交前执行，并取消原移动。替换执行上下文记录已应用的
 `ReplacementTrigger.id` 集合；同一移动因替换块产生后续移动时，不得再次应用同一

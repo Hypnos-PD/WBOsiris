@@ -1,0 +1,5 @@
+.trigger-limits { display: grid; gap: 5px; margin: 8px 0; padding: 7px 0; border-block: 1px solid #526662; font-size: 11px; }
+.trigger-limits > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; }
+.trigger-limits dt { color: #c4d5d0; overflow-wrap: anywhere; }
+.trigger-limits dd { margin: 0; white-space: nowrap; }
+.trigger-limits b { color: #9ce5cb; font-variant-numeric: tabular-nums; }

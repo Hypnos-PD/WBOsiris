@@ -557,6 +557,7 @@ func decodeTrigger(data []byte) (Trigger, error) {
 			Side        string          `json:"side"`
 			SubjectType string          `json:"subjectType,omitempty"`
 			SourceZone  string          `json:"sourceZone,omitempty"`
+			OncePerTurn string          `json:"oncePerTurn,omitempty"`
 			SelfOnly    bool            `json:"selfOnly,omitempty"`
 			Predicate   json.RawMessage `json:"predicate,omitempty"`
 		}
@@ -572,10 +573,13 @@ func decodeTrigger(data []byte) (Trigger, error) {
 		if !validSide(v.Side) || !oneOf(v.Event, "follower_summoned", "follower_left", "card_fused", "amulet_engaged", "card_discarded", "turn_started", "turn_ended", "evolved", "super_evolved") || v.SubjectType != "" && !oneOf(v.SubjectType, "follower", "amulet") || v.SourceZone != "" && !oneOf(v.SourceZone, "hand", "field") {
 			return nil, fmt.Errorf("invalid event trigger")
 		}
-		if v.SelfOnly && (v.SourceZone != "" || v.Side != "own" || !(v.SubjectType == "follower" && oneOf(v.Event, "evolved", "super_evolved") || v.SubjectType == "" && v.Event == "card_discarded") || p != nil) {
+		if v.OncePerTurn != "" && !oneOf(v.OncePerTurn, "any", "own", "oppo") {
+			return nil, fmt.Errorf("invalid trigger turn limit")
+		}
+		if v.SelfOnly && (v.OncePerTurn != "" || v.SourceZone != "" || v.Side != "own" || !(v.SubjectType == "follower" && oneOf(v.Event, "evolved", "super_evolved") || v.SubjectType == "" && v.Event == "card_discarded") || p != nil) {
 			return nil, fmt.Errorf("invalid self event trigger")
 		}
-		return EventTrigger{Kind: v.Kind, Event: v.Event, Side: v.Side, SourceZone: v.SourceZone, SubjectType: v.SubjectType, SelfOnly: v.SelfOnly, Predicate: p}, err
+		return EventTrigger{Kind: v.Kind, Event: v.Event, Side: v.Side, SourceZone: v.SourceZone, SubjectType: v.SubjectType, SelfOnly: v.SelfOnly, Predicate: p, OncePerTurn: v.OncePerTurn}, err
 	case "replacement":
 		type raw struct {
 			Kind    string          `json:"kind"`

@@ -183,6 +183,7 @@ type PlayerView struct {
 }
 
 type EntityView struct {
+	TriggerLimits    []TriggerLimitView   `json:"triggerLimits,omitempty"`
 	GrantedAbilities []GrantedAbilityView `json:"grantedAbilities,omitempty"`
 	Counters         map[string]int       `json:"counters,omitempty"`
 	Fusion           *FusionView          `json:"fusion,omitempty"`
@@ -408,6 +409,7 @@ func entityViews(instances []*instance, revealMaterials bool) []EntityView {
 		views = append(views, EntityView{
 			GrantedAbilities: grantedAbilityViews(i),
 			Counters:         maps.Clone(i.counters),
+			TriggerLimits:    triggerLimitViews(i),
 			Fusion:           fusionView(i, revealMaterials),
 			InstanceID:       i.id, Alias: i.alias, CardID: i.card.ID, CardType: i.card.CardType, Cost: i.cost,
 			Attack: i.attack, Life: i.life, Countdown: i.countdown, Earthsigil: i.earthsigil, DamageReduction: i.damageReduction,

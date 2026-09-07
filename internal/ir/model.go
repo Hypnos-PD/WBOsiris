@@ -196,6 +196,7 @@ type CostTrigger struct {
 func (t CostTrigger) triggerKind() string { return t.Kind }
 
 type EventTrigger struct {
+	OncePerTurn string    `json:"oncePerTurn,omitempty"`
 	Kind        string    `json:"kind"`
 	Event       string    `json:"event"`
 	Side        string    `json:"side"`

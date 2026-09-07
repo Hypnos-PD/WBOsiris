@@ -7,6 +7,7 @@ import { eventLabel, frameEvents, type ReplayRecord } from "./replays";
 import "./replays.css";
 import { FusionDetails } from "./FusionDetails";
 import { CounterValues } from "./CounterValues";
+import { TriggerLimits } from "./TriggerLimits";
 
 type Catalog = Record<string, { name: string; text: string; cost: number; attack?: number; life?: number }>;
 
@@ -108,6 +109,7 @@ export function ReplayViewer({ record, catalog, onClose }: { record: ReplayRecor
           {!!selected.keywords?.length && <p>{selected.keywords.join(" · ")}</p>}
           <FusionDetails fusion={selected.fusion} catalog={catalog}/>
           <CounterValues counters={selected.counters}/>
+          <TriggerLimits limits={selected.triggerLimits}/>
         </div>
       </div>}
     </dialog>

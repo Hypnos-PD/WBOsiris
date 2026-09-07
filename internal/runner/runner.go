@@ -21,6 +21,7 @@ type Result struct {
 func (r Result) Passed() bool { return len(r.Failures) == 0 }
 
 type instance struct {
+	usedTriggers                                                                 map[string]bool
 	grants                                                                       []ir.GrantEffect
 	counters                                                                     map[string]int
 	id, alias, zone                                                              string
@@ -1119,6 +1120,7 @@ func (g *game) advanceTurn() {
 		active.evolvedThisTurn = false
 		for _, i := range g.instances {
 			i.fusedThisTurn = false
+			i.usedTriggers = nil
 		}
 		var expired []*instance
 		for _, i := range active.field {

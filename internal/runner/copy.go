@@ -42,6 +42,7 @@ func (g *game) copyInstance(source *instance) *instance {
 		}
 		g.serial++
 		copy := *original
+		copy.usedTriggers = nil
 		copy.grants = append([]ir.GrantEffect(nil), original.grants...)
 		copy.id, copy.alias = fmt.Sprintf("summoned-%d", g.serial), fmt.Sprintf("@summoned%d", g.serial)
 		copy.counters = maps.Clone(original.counters)
