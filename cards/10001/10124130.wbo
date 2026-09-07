@@ -6,7 +6,59 @@ card 10124130 {
     stats 2/2;
 
     effect {
-        unplayable;
+        lastwords {
+            gain own crest 10124130;
+        }
+        superevolve {
+            add storm to self;
+        }
+    }
+
+    crest {
+        countdown 2;
+        lastwords {
+            summon 1 card 10124130;
+        }
+
+        locale chs {
+            name "纹章：常在战场·景光";
+            text """
+【<color=Keyword>吟唱</color>_2】
+【<color=Keyword>谢幕曲</color>】召唤1个『<color=Keyword>常在战场·景光</color>』。
+""";
+        }
+
+        locale eng {
+            name "Crest: Kagemitsu, Enduring Warrior";
+            text """
+<b><color=Keyword>Countdown</color> (2)</b>
+<b><color=Keyword>Last Words</color></b>: Summon a <b><i><color=Keyword>Kagemitsu, Enduring Warrior</color></i></b>.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"じょうざいせんじょう\">常在戦場</rub>・カゲミツ";
+            text """
+【<color=Keyword>カウントダウン</color>_2】
+【<color=Keyword>ラストワード</color>】『<color=Keyword>常在戦場・カゲミツ</color>』1枚を自分の場に出す。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 항재전장 카게미츠";
+            text """
+[<color=Keyword>카운트다운</color> 2]
+[<color=Keyword>유언</color>] <color=Keyword>항재전장 카게미츠</color> 1장을 내 전장에 소환.
+""";
+        }
+
+        locale cht {
+            name "紋章：備戰不息‧景光";
+            text """
+【<color=Keyword>倒數</color>_2】
+【<color=Keyword>謝幕曲</color>】召喚1張『<color=Keyword>備戰不息‧景光</color>』到自己的戰場上。
+""";
+        }
     }
 
     meta {

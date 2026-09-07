@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ChevronLeft, ChevronRight, Pause, Play, SkipBack, SkipForward, X } from "lucide-react";
 import { CardArt } from "./CardArt";
-import { cardArt, typeNames } from "./decks";
+import { cardArt, cardText, typeNames } from "./decks";
 import type { Entity, PlayerView } from "./gameTypes";
 import { eventLabel, frameEvents, type ReplayRecord } from "./replays";
 import "./replays.css";
 import { FusionDetails } from "./FusionDetails";
 import { CounterValues } from "./CounterValues";
 import { TriggerLimits } from "./TriggerLimits";
+import { CrestZone, crestName } from "./CrestZone";
 
 type Catalog = Record<string, { name: string; text: string; cost: number; attack?: number; life?: number }>;
 
@@ -35,7 +36,7 @@ export function ReplayViewer({ record, catalog, onClose }: { record: ReplayRecor
     setPlaying((value) => !value);
   };
   const inspect = (entity: Entity) => { setPlaying(false); setSelected(entity); };
-  const nameFor = (entity: Entity) => catalog[String(entity.cardId)]?.name || `卡牌 ${entity.cardId}`;
+  const nameFor = (entity: Entity) => entity.cardType === "crest" ? crestName(entity) : catalog[String(entity.cardId)]?.name || `卡牌 ${entity.cardId}`;
   const renderCard = (entity: Entity) => <button className={`rp-card${entity.superEvolved ? " super-evolved" : entity.evolved ? " evolved" : ""}`} key={entity.instanceId} onClick={() => inspect(entity)} title={nameFor(entity)} aria-label={`查看 ${nameFor(entity)}`}>
     <div className="rp-art"><CardArt src={cardArt(entity.cardId, entity.evolved || entity.superEvolved)} alt={nameFor(entity)}/>
       <span className="rp-cost">{entity.cost ?? catalog[String(entity.cardId)]?.cost ?? 0}</span>
@@ -79,11 +80,13 @@ export function ReplayViewer({ record, catalog, onClose }: { record: ReplayRecor
       <div className="rp-layout">
         <div className="rp-table">
           {resources(state.oppo, "对手", state.turn.active === "oppo")}
+          <CrestZone crests={state.oppo.crests} label="对手" onInspect={inspect}/>
           <div className="rp-hidden-hand" aria-label={`对手手牌 ${state.oppo.handCount || 0} 张`}><div>{Array.from({ length: Math.min(9, state.oppo.handCount || 0) }, (_, i) => <img src="/assets/card-back.webp" alt="隐藏手牌" key={i}/>)}</div><span>手牌 {state.oppo.handCount || 0}</span></div>
           {field(state.oppo, "对手")}
           <div className="rp-turn"><strong>第 {state.turn.number} 回合</strong><span>{state.gameOver ? state.winner === "draw" ? "平局" : state.winner === "own" ? "我方胜利" : "对手胜利" : state.pendingChoice ? "等待选择" : state.phase === "mulligan" ? "起手换牌" : state.turn.active === "own" ? "我方行动" : "对手行动"}</span></div>
           {field(state.own, "我方")}
           {resources(state.own, "我方", state.turn.active === "own")}
+          <CrestZone crests={state.own.crests} label="我方" onInspect={inspect}/>
           <div className="rp-hand-heading">我方手牌 <b>{state.own.handCount ?? state.own.hand?.length ?? 0}</b></div>
           <div className="rp-hand" aria-label="我方手牌">{(state.own.hand || []).map(renderCard)}</div>
           {state.pendingChoice && <div className="rp-choice"><strong>{state.pendingChoice.kind === "mode" ? "模式选择" : state.pendingChoice.kind === "fusion_material" ? "选择融合材料" : `选择目标 ${state.pendingChoice.minSelections}`}</strong><span>{state.pendingChoice.candidates.map((candidate) => {
@@ -103,10 +106,10 @@ export function ReplayViewer({ record, catalog, onClose }: { record: ReplayRecor
     <dialog className="rp-detail" ref={detail} onCancel={() => setSelected(null)} onClose={() => setSelected(null)} onClick={(event) => { if (event.target === event.currentTarget) setSelected(null); }}>
       {selected && <div className="rp-detail-content"><button className="rp-detail-close" autoFocus aria-label="关闭卡牌详情" title="关闭" onClick={() => setSelected(null)}><X size={20}/></button>
         <div className="rp-detail-art"><CardArt src={cardArt(selected.cardId, selected.evolved || selected.superEvolved)} alt={nameFor(selected)}/></div>
-        <div><h2>{nameFor(selected)}</h2><p>{typeNames[selected.cardType]} · {selected.cost ?? card?.cost ?? 0} PP{selected.superEvolved ? " · 超进化" : selected.evolved ? " · 进化" : ""}</p>
+        <div><h2>{nameFor(selected)}</h2><p>{typeNames[selected.cardType]}{selected.cardType === "crest" ? selected.countdown ? ` · 吟唱 ${selected.countdown}` : "" : ` · ${selected.cost ?? card?.cost ?? 0} PP`}{selected.superEvolved ? " · 超进化" : selected.evolved ? " · 进化" : ""}</p>
           {selected.cardType === "follower" && <p>攻击 {selected.attack ?? 0} · 生命 {selected.life ?? 0}</p>}
-          <p className="rp-rules">{card?.text || "无能力"}</p>
-          {!!selected.keywords?.length && <p>{selected.keywords.join(" · ")}</p>}
+          <p className="rp-rules">{selected.cardType === "crest" ? cardText(selected.crestLocales?.chs?.text || "") : card?.text || "无能力"}</p>
+          {selected.cardType !== "crest" && !!selected.keywords?.length && <p>{selected.keywords.join(" · ")}</p>}
           <FusionDetails fusion={selected.fusion} catalog={catalog}/>
           <CounterValues counters={selected.counters}/>
           <TriggerLimits limits={selected.triggerLimits}/>

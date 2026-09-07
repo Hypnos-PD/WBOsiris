@@ -6,7 +6,56 @@ card 10153140 {
     stats 3/1;
 
     effect {
-        unplayable;
+        fanfare {
+            gain own crest 10153140;
+        }
+    }
+
+    crest {
+        countdown 4;
+        when own turn ends {
+            damage all.leaders 1;
+        }
+
+        locale chs {
+            name "纹章：地下赏金猎人·巴尔特";
+            text """
+【<color=Keyword>吟唱</color>_4】
+自己的回合结束时，对所有主战者造成1点伤害。
+""";
+        }
+
+        locale eng {
+            name "Crest: Balto, Dusk Bounty Hunter";
+            text """
+<b><color=Keyword>Countdown</color> (4)</b>
+At the end of your turn, deal 1 damage to both leaders.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"やみ\">闇</rub>の<rub=\"しょうきんかせ\">賞金稼</rub>ぎ・バルト";
+            text """
+【<color=Keyword>カウントダウン</color>_4】
+自分のターン終了時、リーダーすべてに1ダメージ。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 어둠의 현상금 사냥꾼 바르트";
+            text """
+[<color=Keyword>카운트다운</color> 4]
+내 턴 종료시, 리더 모두에게 1 피해.
+""";
+        }
+
+        locale cht {
+            name "紋章：法外的賞金獵人‧巴爾特";
+            text """
+【<color=Keyword>倒數</color>_4】
+自己的回合結束時，給予全部的主戰者1點傷害。
+""";
+        }
     }
 
     meta {

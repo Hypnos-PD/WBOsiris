@@ -13,6 +13,18 @@
 事件中的卡牌身份快照不影响只指定实例的断言；显式指定的身份仍须精确匹配。
 舍弃用 `alias.zone == graveyard;`、`own.shadows == N;` 及已破坏历史检查结果。
 
+纹章使用独立初始区域，ID 指向声明了 `crest` 的卡牌：
+
+```wbotest
+player own {
+    crests { crest lapis = 10163130 { countdown 1; } }
+}
+```
+
+省略覆盖时使用纹章定义的初始状态。只允许覆盖已声明的计数器及正数吟唱，后者不能
+超过初始吟唱。每位玩家最多声明五个不同纹章。可用
+`own.crests count card 10163130 == 1;` 和 `lapis.countdown == 1;` 检查结果。
+
 ## 文件结构
 
 ```wbotest

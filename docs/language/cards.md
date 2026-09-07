@@ -6,7 +6,7 @@
 ## 待扩展语义
 
 当前卡牌包中仍有部分文本保留为 `unplayable`，原因是其效果依赖尚未定型的规则对象，
-包括纹章对象、按不同名称召唤和牌组替换。实现这些语义前，
+包括按不同名称召唤、牌组替换及尚未支持的纹章能力。实现这些语义前，
 编译器与运行器会明确拒绝相关效果，不以客户端表现推断规则。
 
 随从效果可以声明固定伤害减免和潜行：
@@ -37,6 +37,35 @@ effect {
 效果；它不会将伤害转移给洛伊德。`require` 没有候选时拒绝使用并保留费用，`choose`
 没有候选时继续结算。限制在极值比较前应用，并在暂停恢复时重新核验。能力可以通过
 `add ability_target_guard to T` 与 `remove ability_target_guard from T` 修改。
+
+## 纹章
+
+在卡牌的 `effect` 之后、`meta` 之前可以声明一个 `crest` 块。纹章以所属卡牌 ID
+引用，运行时使用独立实例，不占用战场位置，也不进入牌组、手牌或破坏卡牌历史。
+
+```wbo
+effect {
+    fanfare { gain own crest 10153140; }
+}
+crest {
+    countdown 4;
+    when own turn ends { damage all.leaders 1; }
+    locale chs { name "纹章：地下赏金猎人·巴尔特"; text "吟唱 4。自己的回合结束时，对所有主战者造成1点伤害。"; }
+    // 依次补齐 eng、jpn、kor、cht 本地化。
+}
+```
+
+`gain own|oppo crest ID;` 的玩家相对能力来源解释。每位玩家最多拥有五个不同纹章，
+同一定义重复获得时不新增实例，也不刷新吟唱。来源随从离场不移除纹章。
+省略 `countdown` 表示永久保留；显式吟唱必须为 `1..65535`，在控制者回合开始时减少，
+归零后离开主战者区域并结算谢幕曲，不增加墓场数。
+
+纹章块允许命名 `counter`、`countdown`、`lastwords` 和 `when` 事件能力，之后按固定
+顺序声明五种本地化。至少声明一个能力。纹章监听来源固定为主战者区域，不能使用
+`when self ...` 或 `while self in ...`。入场监听可使用 `summoned`，例如
+`when own follower summoned where trait pixie { add storm to summoned; }`。
+同类纹章按获得顺序触发；回合能力先于战场卡牌，开始阶段的纹章能力先于普通抽牌。
+当前普通卡牌选择器不能查询或修改主战者区域，信仰及纹章消失效果尚未实现。
 
 ## 文件结构
 

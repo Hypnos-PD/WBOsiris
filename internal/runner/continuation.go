@@ -17,7 +17,7 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.26.0"
+const continuationVersion = "0.27.0"
 
 type ContinuationBindings struct {
 	ID     string                      `json:"id"`
@@ -79,6 +79,8 @@ type ContinuationAttack struct {
 }
 
 type ContinuationPlayer struct {
+	Crests           []string            `json:"crests"`
+	RetiredCrests    []string            `json:"retiredCrests"`
 	PP               int                 `json:"pp"`
 	MaxPP            int                 `json:"maxpp"`
 	LeaderLife       int                 `json:"leaderLife"`
@@ -102,6 +104,7 @@ type ContinuationPlayer struct {
 }
 
 type ContinuationEntity struct {
+	Crest             bool                     `json:"crest,omitempty"`
 	UsedTriggers      map[string]bool          `json:"usedTriggers,omitempty"`
 	Grants            []string                 `json:"grants,omitempty"`
 	Counters          map[string]int           `json:"counters,omitempty"`
@@ -456,6 +459,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 		}
 		sort.Strings(abilities)
 		snapshot.Instances = append(snapshot.Instances, ContinuationEntity{
+			Crest:             i.card.CardType == "crest",
 			Counters:          maps.Clone(i.counters),
 			UsedTriggers:      maps.Clone(i.usedTriggers),
 			TemporaryKeywords: maps.Clone(i.temporaryKeywords),
@@ -474,6 +478,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 
 func snapshotContinuationPlayer(p player) ContinuationPlayer {
 	return ContinuationPlayer{
+		Crests: instanceIDs(p.crests), RetiredCrests: instanceIDs(p.retiredCrests),
 		PP: p.pp, MaxPP: p.maxpp, LeaderLife: p.leaderLife, LeaderMax: p.leaderMax,
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, AttackedThisTurn: p.attackedThisTurn,
 		Deck: instanceIDs(p.deck), Hand: instanceIDs(p.hand), Field: instanceIDs(p.field), EvolvedThisTurn: p.evolvedThisTurn,
@@ -493,7 +498,7 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 		return nil, fmt.Errorf("invalid continuation instance serial")
 	}
 	validTransition := saved.Turn.Active == "own" || saved.Turn.Active == "oppo"
-	if saved.TurnTransition != "" && saved.TurnTransition != "ending" && saved.TurnTransition != "starting" && saved.TurnTransition != "starting_triggers" {
+	if saved.TurnTransition != "" && saved.TurnTransition != "ending" && saved.TurnTransition != "starting" && saved.TurnTransition != "starting_triggers" && saved.TurnTransition != "starting_crests" {
 		validTransition = false
 	}
 	if saved.EndingSide != "" && saved.EndingSide != "own" && saved.EndingSide != "oppo" ||
@@ -509,8 +514,18 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 	}
 	for _, entity := range saved.Instances {
 		card := cards[entity.CardID]
+		if card != nil && entity.Crest {
+			card = card.CrestCard()
+		}
 		if entity.ID == "" || card == nil || g.instances[entity.ID] != nil || !validZone(entity.Zone) {
 			return nil, fmt.Errorf("invalid continuation entity %q", entity.ID)
+		}
+		if entity.Crest != (entity.Zone == "crests" || entity.Zone == "retired_crest") || entity.Crest &&
+			(entity.Cost != 0 || entity.Attack != 0 || entity.Life != 0 || entity.Evolved || entity.SuperEvolved || entity.Engaged || entity.FusedThisTurn || entity.Earthsigil != 0 || entity.DamageReduction != 0 || len(entity.Materials) > 0 || len(entity.Abilities) > 0 || len(entity.TemporaryStats) > 0 || entity.Countdown < 0 || entity.Countdown > cards[entity.CardID].Crest.Countdown || entity.Zone == "crests" && cards[entity.CardID].Crest.Countdown > 0 && entity.Countdown == 0) {
+			return nil, fmt.Errorf("invalid continuation crest state")
+		}
+		if entity.Crest && (entity.AttackLimit != 1 || entity.Zone == "retired_crest" && (entity.Countdown != 0 || cards[entity.CardID].Crest.Countdown == 0)) {
+			return nil, fmt.Errorf("invalid continuation crest lifetime")
 		}
 		limit := entity.AttackLimit
 		if limit == 0 {
@@ -609,7 +624,7 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 	for _, side := range []struct {
 		name  string
 		zones [][]*instance
-	}{{"own", [][]*instance{g.own.deck, g.own.hand, g.own.field, g.own.graveyard, g.own.banished, g.own.resolving}}, {"oppo", [][]*instance{g.oppo.deck, g.oppo.hand, g.oppo.field, g.oppo.graveyard, g.oppo.banished, g.oppo.resolving}}} {
+	}{{"own", [][]*instance{g.own.deck, g.own.hand, g.own.field, g.own.graveyard, g.own.banished, g.own.resolving, g.own.crests, g.own.retiredCrests}}, {"oppo", [][]*instance{g.oppo.deck, g.oppo.hand, g.oppo.field, g.oppo.graveyard, g.oppo.banished, g.oppo.resolving, g.oppo.crests, g.oppo.retiredCrests}}} {
 		for _, zone := range side.zones {
 			for _, i := range zone {
 				if seen[i.id] {
@@ -674,6 +689,9 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 		}
 	}
 	for _, event := range saved.Events {
+		if (event.Kind == "crest_gained" || event.Kind == "crest_countdown" || event.Kind == "crest_destroyed") && zoneOwner[event.InstanceID] != event.Side {
+			return nil, fmt.Errorf("invalid continuation crest event owner")
+		}
 		g.events = append(g.events, ir.RuntimeEvent{PrivateTo: event.PrivateTo, Kind: event.Kind, Side: event.Side, InstanceID: event.InstanceID, From: event.From, To: event.To, Reason: event.Reason, CardID: event.CardID, Count: event.Count, Actual: event.Actual, Target: cloneEventTarget(event.Target), Subject: cloneEventTarget(event.Subject), Attacker: cloneEventTarget(event.Attacker), Defender: cloneEventTarget(event.Defender), Sequence: event.Sequence, BatchID: event.BatchID})
 	}
 	destroyedHistory := map[string]bool{}
@@ -736,6 +754,12 @@ func validateContinuationEvents(events []ir.RuntimeEvent, sequence, deathBatchSe
 	var lastBatch uint64
 	previousBatch := uint64(0)
 	for n, event := range events {
+		if event.Kind == "crest_gained" || event.Kind == "crest_countdown" || event.Kind == "crest_destroyed" {
+			i := instances[event.InstanceID]
+			if i == nil || i.card.CardType != "crest" || i.card.ID != event.CardID || event.Side != "own" && event.Side != "oppo" || event.PrivateTo != "" || event.Count < 0 || event.Kind == "crest_destroyed" && i.zone != "retired_crest" {
+				return fmt.Errorf("invalid continuation crest event")
+			}
+		}
 		if event.PrivateTo != "" && (event.PrivateTo != "own" && event.PrivateTo != "oppo" || event.PrivateTo != event.Side) {
 			return fmt.Errorf("invalid continuation event visibility")
 		}
@@ -786,7 +810,7 @@ func validateContinuationEvents(events []ir.RuntimeEvent, sequence, deathBatchSe
 func generatedInstanceSerial(instances []ContinuationEntity) int {
 	maximum := 0
 	for _, entity := range instances {
-		for _, prefix := range []string{"added-", "summoned-"} {
+		for _, prefix := range []string{"added-", "summoned-", "crest-"} {
 			if !strings.HasPrefix(entity.ID, prefix) {
 				continue
 			}
@@ -802,6 +826,22 @@ func generatedInstanceSerial(instances []ContinuationEntity) int {
 func restorePlayer(saved ContinuationPlayer, instances map[string]*instance, cards map[int]*ir.Card) (player, error) {
 	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, attackedThisTurn: saved.AttackedThisTurn, evolvedThisTurn: saved.EvolvedThisTurn, extraPPEarly: saved.ExtraPPEarly, extraPPLate: saved.ExtraPPLate, extraPPActive: saved.ExtraPPActive}
 	var err error
+	if p.crests, err = restoreInstanceList(saved.Crests, instances, "crests"); err != nil {
+		return player{}, err
+	}
+	if p.retiredCrests, err = restoreInstanceList(saved.RetiredCrests, instances, "retired_crest"); err != nil {
+		return player{}, err
+	}
+	if len(p.crests) > crestLimit {
+		return player{}, fmt.Errorf("too many continuation crests")
+	}
+	seenCrests := map[int]bool{}
+	for _, crest := range p.crests {
+		if seenCrests[crest.card.ID] {
+			return player{}, fmt.Errorf("duplicate continuation crest")
+		}
+		seenCrests[crest.card.ID] = true
+	}
 	if p.deck, err = restoreInstanceList(saved.Deck, instances, "deck"); err != nil {
 		return player{}, err
 	}
@@ -1033,6 +1073,16 @@ func indexBlocks(cards map[int]*ir.Card) (map[string][]ir.Effect, error) {
 				return nil, err
 			}
 		}
+		if card.Crest != nil {
+			for _, ability := range card.Crest.Abilities {
+				if ability.ID == "" {
+					return nil, fmt.Errorf("crest %d has an unstable ability ID", id)
+				}
+				if err := addBlock(blocks, abilityBlockID(id, ability.ID), ability.Body); err != nil {
+					return nil, err
+				}
+			}
+		}
 		for _, ability := range card.FusionAbilities {
 			if ability.ID == "" {
 				return nil, fmt.Errorf("card %d has an unstable fusion ability ID", id)
@@ -1214,7 +1264,7 @@ func cloneEventTarget(target *ir.EventTarget) *ir.EventTarget {
 }
 func validZone(zone string) bool {
 	switch zone {
-	case "deck", "hand", "field", "graveyard", "banished", "destroyed", "resolving", "attached":
+	case "deck", "hand", "field", "graveyard", "banished", "destroyed", "resolving", "attached", "crests", "retired_crest":
 		return true
 	}
 	return false

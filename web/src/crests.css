@@ -1,0 +1,15 @@
+.crest-zone{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;width:100%;max-width:176px;margin:0 auto;min-width:0}
+.crest-token,.crest-empty{position:relative;display:block;width:100%;aspect-ratio:1;min-width:0;padding:0;border:1px solid #b6a770;border-radius:50%;background:#15251feb;box-sizing:border-box}
+.crest-empty{opacity:.45}
+.crest-token{cursor:pointer;box-shadow:0 1px 5px #0008}
+.crest-token>img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 30%;border-radius:50%}
+.crest-token:hover{border-color:#fff1b8;box-shadow:0 0 7px #ead1878c}
+.crest-token:focus-visible{outline:2px solid #fff1b8;outline-offset:2px}
+.crest-countdown{position:absolute;right:-2px;bottom:-2px;display:grid;place-items:center;min-width:14px;height:14px;padding:0 2px;box-sizing:border-box;border:1px solid #d9c590;border-radius:50%;background:#252e3c;color:#fff;font-size:10px;line-height:1}
+.rp-table>.crest-zone{margin:8px auto;max-width:176px}
+.battle-screen:has(.hand-dock.expanded) .own-side-meta{top:0;transform:translateY(-100%)}
+.battle-screen .hand-dock.expanded{pointer-events:none}
+.battle-screen .hand-dock.expanded .hand-toggle,.battle-screen .hand-dock.expanded .hand-row{pointer-events:auto}
+@media(max-width:760px),(max-height:500px){.leader-hud .crest-zone{gap:2px}.leader-hud .crest-countdown{min-width:11px;height:11px;font-size:8px}}
+@media(max-width:760px) and (min-height:501px){.battle-screen:has(.hand-dock.expanded) .own-side-meta{top:50%;transform:translateY(-75%)}}
+@media(max-height:500px) and (orientation:landscape){.battle-screen:has(.hand-dock.expanded) .own-side-meta{transform:none}}

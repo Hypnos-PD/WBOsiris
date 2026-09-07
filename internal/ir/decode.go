@@ -156,8 +156,12 @@ func DecodeCardPack(data []byte) (*CardPack, error) {
 		seenCards[c.ID] = true
 		p.Cards = append(p.Cards, c)
 	}
+	crests := map[int]bool{}
 	for _, c := range p.Cards {
-		if err := validateCardRefs(c, seenCards); err != nil {
+		crests[c.ID] = c.Crest != nil
+	}
+	for _, c := range p.Cards {
+		if err := validateCardRefs(c, seenCards, crests); err != nil {
 			return nil, err
 		}
 	}
@@ -319,6 +323,7 @@ func decodeSources(items []json.RawMessage) ([]Source, error) {
 
 func decodeCard(data []byte, abilityIDs, nodeIDs map[string]bool) (Card, error) {
 	type rawCard struct {
+		Crest           json.RawMessage   `json:"crest"`
 		Counters        map[string]int    `json:"counters,omitempty"`
 		ID              int               `json:"id"`
 		CardType        string            `json:"cardType"`
@@ -428,6 +433,15 @@ func decodeCard(data []byte, abilityIDs, nodeIDs map[string]bool) (Card, error) 
 			return Card{}, fmt.Errorf("action plan starts with continue frame")
 		}
 		c.ActionPlans = append(c.ActionPlans, plan)
+	}
+	if len(raw.Crest) > 0 {
+		c.Crest, err = decodeCrest(raw.Crest, abilityIDs, nodeIDs)
+		if err != nil {
+			return Card{}, err
+		}
+		if err = validateCounterRefs(*c.CrestCard()); err != nil {
+			return Card{}, err
+		}
 	}
 	return c, validateCounterRefs(c)
 }
@@ -844,7 +858,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			return nil, fmt.Errorf("invalid summon_copies shape")
 		}
 		return CardEffect{NodeBase: v.NodeBase, Kind: v.Kind, Owner: v.Owner, Target: target, Output: v.Output}, nil
-	case "add_card", "summon", "reanimate", "transform":
+	case "add_card", "summon", "reanimate", "transform", "gain_crest":
 		type raw struct {
 			ID                                         string `json:"id"`
 			Kind, Owner, Destination, Output, TieBreak string
@@ -867,6 +881,10 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			r, err = decodeRef(v.Target)
 		}
 		switch v.Kind {
+		case "gain_crest":
+			if !validSide(v.Owner) || !validCardID(v.CardID) || v.Count != 0 || v.Output != "" || v.Destination != "" || v.TieBreak != "" || v.MaxCost != 0 || r != nil || v.PreserveInstanceID || v.PreserveMaterials {
+				return nil, fmt.Errorf("invalid gain_crest shape")
+			}
 		case "add_card":
 			if !validSide(v.Owner) || v.Destination != "hand" || v.Count < 0 || !validCardID(v.CardID) || v.Output != "" || v.TieBreak != "" || v.MaxCost != 0 || r != nil || v.PreserveInstanceID || v.PreserveMaterials {
 				return nil, fmt.Errorf("invalid add_card shape")
@@ -1142,7 +1160,7 @@ func decodeRef(data []byte) (Ref, error) {
 		if err := strict(data, &v); err != nil {
 			return nil, err
 		}
-		if v.Side != "" && !validSide(v.Side) || !validZone(v.Zone) || v.Member != "" && !oneOf(v.Member, "card", "follower", "spell", "amulet") {
+		if v.Side != "" && !validSide(v.Side) || !validZone(v.Zone) || v.Zone == "crests" || v.Member != "" && !oneOf(v.Member, "card", "follower", "spell", "amulet") {
 			return nil, fmt.Errorf("invalid zone reference")
 		}
 		return ZoneRef{v.Kind, v.Side, v.Zone, v.Member}, nil
@@ -1385,17 +1403,25 @@ func validOrigin(o Origin) bool {
 	return nodeIDPattern.MatchString(o.Primary.SourceID) && o.Primary.StartLine != 0
 }
 
-func validateCardRefs(c Card, cards map[int]bool) error {
+func validateCardRefs(c Card, cards, crests map[int]bool) error {
+	if c.Crest != nil {
+		if err := validateCardRefs(*c.CrestCard(), cards, crests); err != nil {
+			return err
+		}
+	}
 	var walk func([]Effect) error
 	walk = func(es []Effect) error {
 		for _, e := range es {
 			switch x := e.(type) {
 			case GrantEffect:
 				granted := Card{CardType: "follower", Abilities: []Ability{x.Ability}}
-				if err := validateCardRefs(granted, cards); err != nil {
+				if err := validateCardRefs(granted, cards, crests); err != nil {
 					return err
 				}
 			case CardEffect:
+				if x.Kind == "gain_crest" && !crests[x.CardID] {
+					return fmt.Errorf("card %d has no crest definition", x.CardID)
+				}
 				if x.CardID != 0 && (!validCardID(x.CardID) || !cards[x.CardID]) {
 					return fmt.Errorf("bad card ref %d", x.CardID)
 				}

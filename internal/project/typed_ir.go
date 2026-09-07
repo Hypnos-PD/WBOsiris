@@ -84,7 +84,11 @@ func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error)
 	abilitiesIR := []ir.Ability{}
 	fusion := []ir.FusionAbility{}
 	play := []ir.Effect{}
-	scope := newScope(nodeID("card", c.ID), ids)
+	kind := "card"
+	if c.Type == "crest" {
+		kind = "crest"
+	}
+	scope := newScope(nodeID(kind, c.ID), ids)
 	evolveIDs := []string{}
 	superIDs := []struct{ id, relation string }{}
 	for _, s := range c.Effect {
@@ -166,6 +170,18 @@ func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error)
 	m.Counters = counters
 	if c.Stats != nil {
 		m.Stats = &ir.Stats{Attack: c.Stats[0], Life: c.Stats[1]}
+	}
+	if c.Crest != nil {
+		crest, err := compileTypedCard(c.Crest, sid, ids)
+		if err != nil {
+			return ir.Card{}, err
+		}
+		m.Crest = &ir.CrestDefinition{Counters: crest.Counters, Abilities: crest.Abilities, Locales: crest.Locales, Origin: crest.Origin}
+		for _, state := range crest.IntrinsicState {
+			if state.Kind == "countdown" {
+				m.Crest.Countdown = state.Initial
+			}
+		}
 	}
 	return m, nil
 }
@@ -387,6 +403,9 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		}
 		return e, nil
 	case "gain":
+		if len(t) == 4 && t[2].Value == "crest" {
+			return ir.CardEffect{NodeBase: base, Kind: "gain_crest", Owner: t[1].Value, CardID: intToken(t[3])}, nil
+		}
 		return ir.AdjustEffect{NodeBase: base, Kind: "adjust_resource", Owner: t[1].Value, Resource: t[3].Value, Delta: intToken(t[4])}, nil
 	case "restore":
 		return ir.AdjustEffect{NodeBase: base, Kind: "restore_resource", Owner: t[1].Value, Resource: "pp"}, nil

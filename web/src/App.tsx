@@ -16,6 +16,7 @@ import { ReplayViewer } from "./ReplayViewer";
 import { FusionDetails } from "./FusionDetails";
 import { CounterValues } from "./CounterValues";
 import { TriggerLimits } from "./TriggerLimits";
+import { CrestZone, crestName } from "./CrestZone";
 import { MatchConnection, type ConnectionStatus } from "./matchConnection";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8080";
@@ -49,7 +50,7 @@ type Card = {
   attackLimit?: number;
   attacksUsed?: number;
   summoningSick?: boolean;
-  type: "随从" | "法术" | "护符";
+  type: "随从" | "法术" | "护符" | "纹章";
 };
 type RoomSummary = { id: string; waiting: boolean };
 
@@ -118,6 +119,7 @@ const displayCardFor = (entity: Entity, catalog = fallbackCatalog): Card => {
     id: String(entity.cardId),
     instanceId: entity.instanceId,
     ...base,
+    ...(entity.cardType === "crest" ? { type: "纹章" as const, name: crestName(entity), text: cardText(entity.crestLocales?.chs?.text || "") } : {}),
     art: cardArt(entity.cardId, entity.evolved || entity.superEvolved),
     cost: entity.cost ?? base.cost,
     attack: entity.cardType === "follower" ? (entity.attack ?? base.attack) : undefined,
@@ -332,7 +334,7 @@ export function App() {
     setHand((data.state.own.hand || []).map(cardFor));
     setSelected((current) => {
       if (!current?.instanceId) return current;
-      const visible = [...(data.state.own.hand || []), ...data.state.own.field, ...data.state.oppo.field];
+      const visible = [...(data.state.own.hand || []), ...data.state.own.field, ...data.state.oppo.field, ...(data.state.own.crests || []), ...(data.state.oppo.crests || [])];
       const entity = visible.find((item) => item.instanceId === current.instanceId);
       return entity ? cardFor(entity) : null;
     });
@@ -694,11 +696,7 @@ export function App() {
       <section className="battle-table">
         <div className="leader-hud opponent-hud">
           <div className="opponent-side-meta">
-            <div className="emblem-zone">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <span className="emblem-slot" key={index} />
-              ))}
-            </div>
+            <CrestZone crests={oppo?.crests} label="对手" onInspect={(entity) => setSelected(cardFor(entity))}/>
             <ZoneBanner
               hand={oppo?.handCount ?? 0}
               deck={oppo?.deckCount ?? 0}
@@ -823,15 +821,7 @@ export function App() {
         </div>
         <div className="leader-hud own-hud">
           <div className="own-side-meta">
-            <div className="emblem-zone">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <span
-                  className="emblem-slot"
-                  key={index}
-                  aria-label={`纹章/信仰槽位 ${index + 1}`}
-                />
-              ))}
-            </div>
+            <CrestZone crests={own?.crests} label="我方" onInspect={(entity) => setSelected(cardFor(entity))}/>
             <ZoneBanner
               hand={own?.handCount ?? hand.length}
               deck={own?.deckCount ?? 0}
@@ -1130,7 +1120,7 @@ export function App() {
           <CardArt src={selected.art} alt={selected.name} />
           <div>
             <small>
-              {selected.type} · 费用 {selected.cost}
+              {selected.type}{selected.type === "纹章" ? selected.countdown ? ` · 吟唱 ${selected.countdown}` : "" : ` · 费用 ${selected.cost}`}
             </small>
             <h2>{selected.name}</h2>
             <p>{selected.text}</p>

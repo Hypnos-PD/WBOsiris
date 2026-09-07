@@ -7,6 +7,19 @@ const state = (revision = 0, viewer = 'own') => ({ revision, viewer, own: player
 const catalog = { 1: { name: 'A' }, 2: { name: 'B' } };
 const fixture = () => ({ matchId: 'room', state: state(2), events: [{ Kind: 'turn_started', Side: 'own' }, { Kind: 'card_drawn', Side: 'own', Count: 1 }], frames: [{ revision: 0, eventCount: 0, state: state() }, { revision: 1, eventCount: 1, state: state(1) }, { revision: 2, eventCount: 2, state: state(2) }] });
 
+test('crest events preserve independent names, countdown zero and opponent perspective', () => {
+  const before = state(1, 'oppo'), after = state(2, 'oppo');
+  before.oppo.crests = [{ instanceId: 'crest-1', cardId: 1, cardType: 'crest', crestLocales: { chs: { name: '纹章：A', text: 'Rules' } } }];
+  const event = { Kind: 'crest_destroyed', InstanceID: 'crest-1', CardID: 1, Side: 'own' };
+  assert.equal(eventLabel(event, { state: after }, catalog, before), '纹章：A 被破坏');
+  assert.equal(eventLabel({ ...event, Kind: 'crest_countdown', Count: 0 }, { state: after }, catalog, before), '纹章：A 吟唱 0');
+  assert.equal(eventLabel({ ...event, Kind: 'crest_gained' }, { state: before }, catalog), '对手获得 纹章：A');
+  const record = { id: 'crests', matchId: 'room', events: [], frames: [{ revision: 1, state: before }] };
+  assert.deepEqual(readReplays({ getItem: () => JSON.stringify([record]) })[0].frames[0].state.oppo.crests, before.oppo.crests);
+  before.oppo.crests = 'invalid';
+  assert.deepEqual(readReplays({ getItem: () => JSON.stringify([record]) })[0].frames, []);
+});
+
 test('frame boundaries, repeated polls and seat identities preserve exact history', () => {
   const data = fixture();
   const records = mergeReplay([], data, catalog);

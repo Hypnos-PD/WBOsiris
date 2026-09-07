@@ -415,12 +415,9 @@ func (s *Session) run() StepResult {
 				}
 				s.g.endingSide = ""
 			}
-			if s.g.turnTransition == "ending" || s.g.turnTransition == "starting_triggers" {
+			if s.g.turnTransition != "" {
 				s.g.advanceTurn()
 				continue
-			}
-			if s.g.turnTransition == "starting" {
-				s.g.turnTransition = ""
 			}
 			s.actionID = ""
 			return StepResult{Status: StatusCompleted}
@@ -631,6 +628,7 @@ func deriveRuntimeID(parts ...string) string {
 }
 
 type instanceSnapshot struct {
+	Crest                               bool
 	UsedTriggers                        map[string]bool
 	Grants                              []string
 	Counters                            map[string]int
@@ -674,6 +672,7 @@ type attackSnapshot struct {
 }
 
 type playerSnapshot struct {
+	Crests, RetiredCrests                                     []string
 	PP, MaxPP, LeaderLife, LeaderMax, EP, SEP, Combo, Shadows int
 	Deck, Hand, Field, Graveyard, Banished                    []string
 	Destroyed                                                 []DestructionRecord
@@ -688,13 +687,14 @@ func (g *game) snapshot() gameSnapshot {
 		snapshot.Attack = &attackSnapshot{Stage: g.attack.stage, Actor: g.attack.actor, Attacker: g.attack.attacker, Defender: g.attack.defender, AttackerAttack: g.attack.attackerAttack, DefenderAttack: g.attack.defenderAttack, DefenderDestroyed: g.attack.defenderDestroyed}
 	}
 	for _, side := range []*player{&g.own, &g.oppo} {
-		for _, zone := range [][]*instance{side.deck, side.hand, side.field, side.graveyard, side.banished, side.resolving} {
+		for _, zone := range [][]*instance{side.deck, side.hand, side.field, side.graveyard, side.banished, side.resolving, side.crests, side.retiredCrests} {
 			for _, i := range zone {
 				abilities := map[string]bool{}
 				for name, value := range i.abilities {
 					abilities[name] = value
 				}
 				snapshot.Instances = append(snapshot.Instances, instanceSnapshot{
+					Crest:             i.card.CardType == "crest",
 					Grants:            grantIDs(i),
 					Counters:          maps.Clone(i.counters),
 					UsedTriggers:      maps.Clone(i.usedTriggers),
@@ -713,6 +713,7 @@ func (g *game) snapshot() gameSnapshot {
 
 func snapshotPlayer(p player) playerSnapshot {
 	return playerSnapshot{
+		Crests: ids(p.crests), RetiredCrests: ids(p.retiredCrests),
 		PP: p.pp, MaxPP: p.maxpp, LeaderLife: p.leaderLife, LeaderMax: p.leaderMax,
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows,
 		Deck: ids(p.deck), Hand: ids(p.hand), Field: ids(p.field), Graveyard: ids(p.graveyard),
@@ -762,6 +763,7 @@ func (g *game) clone() *game {
 
 func clonePlayer(original player, instances map[string]*instance) player {
 	return player{
+		crests: cloneInstances(original.crests, instances), retiredCrests: cloneInstances(original.retiredCrests, instances),
 		pp: original.pp, maxpp: original.maxpp, leaderLife: original.leaderLife, leaderMax: original.leaderMax,
 		ep: original.ep, sep: original.sep, combo: original.combo, shadows: original.shadows,
 		deck: cloneInstances(original.deck, instances), hand: cloneInstances(original.hand, instances),

@@ -106,10 +106,25 @@ ID 或场景 ID、节点语义角色、父节点 ID、节点规范化语法指�
 编译器检测到 128 位截断碰撞必须报错，不得自动换盐。测试场景 ID 由测试文件
 `SourceId` 与场景名称生成；同一文件内场景名称必须唯一。
 
+## 纹章定义
+
+`Card.crest` 是可选的嵌套定义，包含 `counters`、`countdown`、`abilities`、五种
+`locales` 与 `origin`。省略或为零的 `countdown` 表示永久纹章。能力 ID 在独立
+`crest` 作用域生成，与所属卡牌能力不得碰撞。只允许独立关系的谢幕曲及事件能力，
+事件来源不能指定手牌、战场或 `selfOnly`。
+
+获得操作为 `{ kind: "gain_crest", owner: "own" | "oppo", cardId: CardId }`，连同
+普通效果节点的稳定 ID 与来源字段编码。加载器必须确认引用卡牌声明了纹章。
+运行时从嵌套定义派生 `cardType: "crest"` 实例，所属卡牌 ID 不变，实例 ID 独立。
+公开状态的 `PlayerView.crests` 保留获得顺序，实体的 `crestLocales` 携带纹章本地化，
+避免客户端误显示所属随从的能力。普通卡牌 `ZoneRef` 不接受 `crests`。
+测试状态允许第七个区域 `crests`，其中实例 `declaredType` 必须为 `crest`。
+
 ## 卡牌定义
 
 ```text
 Card = {
+  crest?: CrestDefinition,
   counters?: { CounterName: nonnegative_i32 },
   id: CardId,
   cardType: CardType,

@@ -1,4 +1,5 @@
 export type Entity = {
+  crestLocales?: Record<string, { name: string; text: string }>;
   triggerLimits?: { abilityId: string; turnScope: "own" | "oppo" | "any"; used: boolean }[];
   grantedAbilities?: { kind: string; labels?: Record<string, string> }[];
   counters?: Record<string, number>;
@@ -55,6 +56,7 @@ export type RuntimeEvent = RuntimeTarget & {
   to?: string; To?: string;
 };
 export type PlayerView = {
+  crests?: Entity[];
   leaderLife: number;
   leaderMax: number;
   pp: number;

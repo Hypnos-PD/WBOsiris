@@ -160,6 +160,7 @@ type TurnView struct {
 }
 
 type PlayerView struct {
+	Crests           []EntityView `json:"crests"`
 	LeaderLife       int          `json:"leaderLife"`
 	LeaderMax        int          `json:"leaderMax"`
 	PP               int          `json:"pp"`
@@ -183,6 +184,7 @@ type PlayerView struct {
 }
 
 type EntityView struct {
+	CrestLocales     map[string]ir.Locale `json:"crestLocales,omitempty"`
 	TriggerLimits    []TriggerLimitView   `json:"triggerLimits,omitempty"`
 	GrantedAbilities []GrantedAbilityView `json:"grantedAbilities,omitempty"`
 	Counters         map[string]int       `json:"counters,omitempty"`
@@ -363,6 +365,7 @@ func (s *Session) pendingChoiceFor(viewer string) *ChoiceRequest {
 
 func playerView(p *player, revealHand bool, turn int, side, firstPlayer string, cards map[int]*ir.Card) PlayerView {
 	view := PlayerView{
+		Crests:     entityViews(p.crests, false),
 		LeaderLife: p.leaderLife, LeaderMax: p.leaderMax, PP: p.pp, MaxPP: p.maxpp,
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, AttackedThisTurn: p.attackedThisTurn,
 		DeckCount: len(p.deck), HandCount: len(p.hand), Field: entityViews(p.field, revealHand),
@@ -416,6 +419,9 @@ func entityViews(instances []*instance, revealMaterials bool) []EntityView {
 			Engaged: i.engaged, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i), SummoningSick: i.summoningSick,
 			Evolved: i.evolved, SuperEvolved: i.superEvolved, Keywords: keywords, Traits: traits,
 		})
+		if i.card.CardType == "crest" {
+			views[len(views)-1].CrestLocales = maps.Clone(i.card.Locales)
+		}
 	}
 	return views
 }

@@ -72,12 +72,12 @@ func TestNumericBuffReferencesAreValidated(t *testing.T) {
 			expr = &NegateExpr{Kind: "negate", Value: expr}
 		}
 		card := Card{ID: 12345678, CardType: "follower", PlayEffects: []Effect{TargetEffect{Kind: "buff_stats", AttackExpr: expr}}}
-		if err := validateCardRefs(card, map[int]bool{12345678: true}); err == nil {
+		if err := validateCardRefs(card, map[int]bool{12345678: true}, nil); err == nil {
 			t.Fatal("buff count accepted unknown card")
 		}
 	}
 	card := Card{ID: 12345678, CardType: "spell", PlayEffects: []Effect{TargetEffect{Kind: "damage", AmountExpr: &Scalar{Kind: "self_scalar", Field: "attack"}}}}
-	if err := validateCardRefs(card, map[int]bool{12345678: true}); err == nil {
+	if err := validateCardRefs(card, map[int]bool{12345678: true}, nil); err == nil {
 		t.Fatal("spell read follower stats")
 	}
 }

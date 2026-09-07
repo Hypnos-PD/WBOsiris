@@ -142,6 +142,8 @@ func (e DrawEffect) MarshalJSON() ([]byte, error) {
 func (e CardEffect) MarshalJSON() ([]byte, error) {
 	object := effectObject(e.NodeBase, e.Kind)
 	switch e.Kind {
+	case "gain_crest":
+		object["owner"], object["cardId"] = e.Owner, e.CardID
 	case "add_card":
 		object["owner"], object["count"], object["cardId"], object["destination"] = e.Owner, e.Count, e.CardID, e.Destination
 	case "summon":

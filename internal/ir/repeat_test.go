@@ -24,10 +24,10 @@ func TestRepeatRoundTripAndReferences(t *testing.T) {
 			t.Fatalf("repeat changed: %#v %v", decoded, err)
 		}
 		card := Card{ID: 12345678, CardType: "follower", PlayEffects: []Effect{decoded}}
-		if err := validateCardRefs(card, map[int]bool{12345678: true}); err == nil {
+		if err := validateCardRefs(card, map[int]bool{12345678: true}, nil); err == nil {
 			t.Fatal("repeat body hid unresolved card")
 		}
-		if err := validateCardRefs(card, map[int]bool{12345678: true, 23456789: true}); err != nil {
+		if err := validateCardRefs(card, map[int]bool{12345678: true, 23456789: true}, nil); err != nil {
 			t.Fatal(err)
 		}
 	}

@@ -68,7 +68,7 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 		if set("fanfare", "lastwords", "replace")[h] && ctx.cardType == "spell" {
 			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", h+" 需要场上实体，不能用于法术", s.Span)
 		}
-		if (h == "countdown" || h == "earthsigil" || h == "engage") && ctx.cardType != "amulet" {
+		if (h == "countdown" || h == "earthsigil" || h == "engage") && ctx.cardType != "amulet" && !(h == "countdown" && ctx.cardType == "crest") {
 			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", h+" 只允许用于护符", s.Span)
 		}
 		if (h == "attack" || h == "clash" || (h == "evolve" || h == "superevolve") && len(b) == 1) && ctx.cardType != "follower" {
@@ -425,7 +425,7 @@ func strictPlayer(s *syntax.Statement, a map[string]string, ds *[]syntax.Diagnos
 			} else {
 				strictInstances(x, a, ds)
 			}
-		case "hand", "field", "graveyard", "banished", "destroyed":
+		case "hand", "field", "graveyard", "banished", "destroyed", "crests":
 			strictInstances(x, a, ds)
 		default:
 			shapeError(ds, x, "玩家数值或区域声明")
@@ -439,7 +439,7 @@ func strictInstances(s *syntax.Statement, a map[string]string, ds *[]syntax.Diag
 	}
 	for _, x := range s.Blocks()[0] {
 		t := x.Tokens()
-		if len(t) != 4 || !cardTypes[t[0].Value] || t[1].Kind != syntax.Identifier || t[2].Value != "=" || !isCardID(t[3]) || !(x.Terminated && len(x.Blocks()) == 0 || !x.Terminated && len(x.Blocks()) == 1) {
+		if len(t) != 4 || !(cardTypes[t[0].Value] && s.Word(0) != "crests" || t[0].Value == "crest" && s.Word(0) == "crests") || t[1].Kind != syntax.Identifier || t[2].Value != "=" || !isCardID(t[3]) || !(x.Terminated && len(x.Blocks()) == 0 || !x.Terminated && len(x.Blocks()) == 1) {
 			shapeError(ds, x, "card_type alias = card_id [overrides]")
 			continue
 		}
@@ -591,7 +591,7 @@ func strictAssertion(s *syntax.Statement, a map[string]string, ds *[]syntax.Diag
 		end, ok = parseWhere(t, end)
 		return ok && end+2 == len(t) && t[end].Value == "have" && abilities[t[end+1].Value]
 	}
-	if (h == "own" || h == "oppo") && len(t) >= 8 && t[1].Value == "." && set("deck", "hand", "field", "graveyard", "banished", "destroyed")[t[2].Value] && t[3].Value == "count" && t[4].Value == "card" && isCardID(t[5]) && t[6].Value == "==" && isUnsigned(t[7]) && len(t) == 8 {
+	if (h == "own" || h == "oppo") && len(t) >= 8 && t[1].Value == "." && set("deck", "hand", "field", "graveyard", "banished", "destroyed", "crests")[t[2].Value] && t[3].Value == "count" && t[4].Value == "card" && isCardID(t[5]) && t[6].Value == "==" && isUnsigned(t[7]) && len(t) == 8 {
 		return true
 	}
 	if isOrderAssertion(t, a, ds) {

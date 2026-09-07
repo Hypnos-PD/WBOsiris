@@ -103,19 +103,22 @@ func decodePlayer(data []byte, instances map[string]bool) (PlayerState, error) {
 	if err := strict(data, &v); err != nil {
 		return PlayerState{}, fmt.Errorf("player: %w", err)
 	}
-	if len(v.Zones) != 6 {
+	if len(v.Zones) != 6 && !(len(v.Zones) == 7 && v.Zones["crests"] != nil) {
 		return PlayerState{}, fmt.Errorf("malformed zones")
 	}
 	p := PlayerState{Leader: v.Leader, PP: v.PP, MaxPP: v.MaxPP, EP: v.EP, SEP: v.SEP, Combo: v.Combo, Shadows: v.Shadows, Zones: map[string][]TestInstance{}}
-	for _, zone := range []string{"deck", "hand", "field", "graveyard", "banished", "destroyed"} {
+	for _, zone := range []string{"deck", "hand", "field", "graveyard", "banished", "destroyed", "crests"} {
 		items, ok := v.Zones[zone]
-		if !ok {
+		if !ok && zone != "crests" {
 			return PlayerState{}, fmt.Errorf("missing zone %s", zone)
 		}
 		for _, x := range items {
 			i, err := decodeInstance(x)
 			if err != nil {
 				return PlayerState{}, err
+			}
+			if (zone == "crests") != (i.DeclaredType == "crest") {
+				return PlayerState{}, fmt.Errorf("invalid crest zone")
 			}
 			if instances[i.InstanceID] {
 				return PlayerState{}, fmt.Errorf("duplicate instance ID %s", i.InstanceID)
@@ -150,7 +153,7 @@ func decodeInstance(data []byte) (TestInstance, error) {
 	if err := strict(data, &v); err != nil {
 		return TestInstance{}, fmt.Errorf("instance: %w", err)
 	}
-	if !nodeIDPattern.MatchString(v.InstanceID) || v.Alias == "" || !validCardID(v.CardID) || !oneOf(v.DeclaredType, "follower", "spell", "amulet") {
+	if !nodeIDPattern.MatchString(v.InstanceID) || v.Alias == "" || !validCardID(v.CardID) || !oneOf(v.DeclaredType, "follower", "spell", "amulet", "crest") {
 		return TestInstance{}, fmt.Errorf("malformed test instance")
 	}
 	if v.Overrides.Cost != nil && (*v.Overrides.Cost < 0 || *v.Overrides.Cost > 65535) {
@@ -796,8 +799,11 @@ func ValidateRuntimePacks(cards *CardPack, tests *TestPack) error {
 					if !ok {
 						return fmt.Errorf("scenario %q references unknown card %d", s.Name, i.CardID)
 					}
-					if c.CardType != i.DeclaredType {
+					if c.CardType != i.DeclaredType && !(i.DeclaredType == "crest" && c.Crest != nil) {
 						return fmt.Errorf("scenario %q card %d type mismatch", s.Name, i.CardID)
+					}
+					if i.DeclaredType == "crest" && !ValidCrestOverrides(i.Overrides, c.Crest.Countdown) {
+						return fmt.Errorf("scenario %q invalid crest overrides", s.Name)
 					}
 				}
 			}
@@ -815,5 +821,5 @@ func ValidateRuntimePacks(cards *CardPack, tests *TestPack) error {
 
 func validSide(v string) bool { return oneOf(v, "own", "oppo") }
 func validZone(v string) bool {
-	return oneOf(v, "deck", "hand", "field", "graveyard", "banished", "destroyed")
+	return oneOf(v, "deck", "hand", "field", "graveyard", "banished", "destroyed", "crests")
 }

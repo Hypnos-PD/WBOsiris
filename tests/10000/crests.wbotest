@@ -1,0 +1,58 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Aria gains an independent permanent crest" {
+    seed 4101;
+    state { player own { pp 6/6; hand { follower source = 10114110; } } }
+    action { play source; }
+    expect { legal; source.zone == field; own.crests count card 10114110 == 1; own.field count card 10114110 == 1; }
+}
+
+scenario "Aria crest gives Storm to all three evolved summons" {
+    seed 4102;
+    state { turn own 7; player own { ep 1; field { follower source = 10114110; } crests { crest aria = 10114110; } } }
+    action { evolve source; }
+    expect { legal; own.field count card 90011110 == 3; all own.field where card 90011110 have storm; source lacks storm; }
+}
+
+scenario "Aria crest grants Storm to a played Fairy" {
+    seed 4103;
+    state { player own { pp 1/1; hand { follower fairy = 90011110; } crests { crest aria = 10114110; } } }
+    action { play fairy; }
+    expect { legal; fairy has storm; own.crests count card 10114110 == 1; }
+}
+
+scenario "Opponent Aria crest does not grant Storm to my Fairy" {
+    seed 4104;
+    state { player own { pp 1/1; hand { follower fairy = 90011110; } } player oppo { crests { crest aria = 10114110; } } }
+    action { play fairy; }
+    expect { legal; fairy lacks storm; oppo.crests count card 10114110 == 1; }
+}
+
+scenario "Balto crest damages both leaders at its controllers turn end" {
+    seed 4105;
+    state { player own { crests { crest balto = 10153140; } } player oppo { deck top { follower topcard = 10001110; } } }
+    action { end_turn; }
+    expect { legal; own.leader.life == 19; oppo.leader.life == 19; balto.countdown == 4; }
+}
+
+scenario "Expired Lapis crest summons a fresh Storm follower before draw" {
+    seed 4106;
+    state { turn own 4; player oppo { crests { crest lapis = 10163130 { countdown 1; } } deck top { follower topcard = 10001110; } } }
+    action { end_turn; }
+    expect { legal; oppo.crests count card 10163130 == 0; oppo.field count card 10163130 == 1; all oppo.field where card 10163130 have storm; oppo.shadows == 0; oppo.destroyed count card 10163130 == 0; topcard.zone == hand; }
+}
+
+scenario "Expired Kagemitsu crest summons a follower without Storm" {
+    seed 4107;
+    state { turn own 4; player oppo { crests { crest kagemitsu = 10124130 { countdown 1; } } deck top { follower topcard = 10001110; } } }
+    action { end_turn; }
+    expect { legal; oppo.crests count card 10124130 == 0; oppo.field count card 10124130 == 1; oppo.shadows == 0; oppo.destroyed count card 10124130 == 0; }
+}
+
+scenario "Kagemitsu super evolution grants itself Storm" {
+    seed 4108;
+    state { turn own 7; player own { sep 1; field { follower source = 10124130; } } }
+    action { superevolve source; }
+    expect { legal; source has storm; own.crests count card 10124130 == 0; }
+}

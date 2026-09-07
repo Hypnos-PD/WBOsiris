@@ -10,7 +10,7 @@ func TestEarthSigilDependencyValidation(t *testing.T) {
 			if present {
 				cards[MagicSedimentCardID] = true
 			}
-			if err := validateCardRefs(card, cards); (err != nil) != (delta > 0 && !present) {
+			if err := validateCardRefs(card, cards, nil); (err != nil) != (delta > 0 && !present) {
 				t.Fatalf("delta=%d present=%t err=%v", delta, present, err)
 			}
 		}

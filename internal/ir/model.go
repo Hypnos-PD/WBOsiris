@@ -127,6 +127,7 @@ type Locale struct {
 }
 
 type Card struct {
+	Crest           *CrestDefinition  `json:"crest,omitempty"`
 	Counters        map[string]int    `json:"counters,omitempty"`
 	ID              int               `json:"id"`
 	CardType        string            `json:"cardType"`

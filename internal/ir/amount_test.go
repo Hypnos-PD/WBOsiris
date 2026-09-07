@@ -92,7 +92,7 @@ func TestCountPredicateCardReferencesMustExist(t *testing.T) {
 				}},
 			},
 		}}
-		if err := validateCardRefs(card, cards); (err == nil) != known {
+		if err := validateCardRefs(card, cards, nil); (err == nil) != known {
 			t.Fatalf("known=%v err=%v", known, err)
 		}
 	}

@@ -92,7 +92,7 @@ separator         = white_space | line_comment | block_comment ;
 wbo_file          = "wbo" , version , ";" , card_decl ;
 card_decl         = "card" , card_id , "{" , card_body , "}" ;
 card_body         = type_decl , cost_decl , [stats_decl] , {trait_decl} ,
-                    effect_decl , meta_decl , locale_decl , {locale_decl} ;
+                    effect_decl , [crest_decl] , meta_decl , locale_decl , {locale_decl} ;
 
 type_decl         = "type" , card_type , ";" ;
 card_type         = "follower" | "spell" | "amulet" ;
@@ -103,6 +103,9 @@ trait_decl        = "trait" , identifier , ";" ;
 
 effect_decl       = "effect" , effect_block ;
 effect_block      = "{" , {effect_statement} , "}" ;
+crest_decl        = "crest" , "{" , {crest_statement} , locale_decl , {locale_decl} , "}" ;
+crest_statement   = counter_declaration | "countdown" , integer , ";"
+                  | "lastwords" , effect_block | event_block ;
 
 meta_decl         = "meta" , "{" , pack_decl , class_decl , rarity_decl , "}" ;
 pack_decl         = "pack" , integer , ";" ;
@@ -347,6 +350,7 @@ numeric_operation = "damage" , value_ref , effect_amount , [damage_distribution]
                   | "set" , "life" , value_ref , effect_amount , ";"
                   | "buff" , value_ref , ["other"] , signed_amount , "/" , signed_amount , [where_clause] , [effect_duration] , ";"
                   | "gain" , scalar_ref , integer , ";"
+                  | "gain" , participant , "crest" , card_id , ";"
                   | "restore" , participant , "." , "pp" , ";" ;
 
 effect_amount     = integer | counter_ref | "count" , "(" , count_source , [where_clause] , ")"
@@ -456,7 +460,9 @@ player_scalar_decl = "leader" , stat_pair , ";"
                    | ("ep" | "sep" | "combo" | "shadows") , integer , ";" ;
 
 zone_decl         = "deck" , "top" , instance_block
-                  | zone_name , instance_block ;
+                  | zone_name , instance_block
+                  | "crests" , "{" , {crest_instance} , "}" ;
+crest_instance    = "crest" , alias , "=" , card_id , (";" | instance_override_block) ;
 zone_name         = "hand" | "field" | "graveyard" | "banished" | "destroyed" ;
 instance_block    = "{" , {instance_decl} , "}" ;
 instance_decl     = card_type , alias , "=" , card_id ,

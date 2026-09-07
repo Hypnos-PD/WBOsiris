@@ -107,6 +107,12 @@ func validateCard(f *syntax.File, ds *[]syntax.Diagnostic) *Card {
 				validateEffectBlock(c.Effect, ds, map[string]bool{"self": true}, "")
 			}
 			stage = 4
+		case "crest":
+			if stage != 4 || c.Crest != nil || len(t) != 1 || len(s.Blocks()) != 1 || s.Terminated {
+				shapeError(ds, s, "crest { 能力与五种本地化 }")
+			} else {
+				c.Crest = validateCrest(c, s, ds)
+			}
 		case "meta":
 			if stage != 4 || len(t) != 1 || len(s.Blocks()) != 1 {
 				shapeError(ds, s, "meta { pack ...; class ...; rarity ...; }")
@@ -604,6 +610,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		checkBindingAt(t, 1, end, bindings, ds)
 	case "gain":
 		ok = len(t) == 5 && (t[1].Value == "own" || t[1].Value == "oppo") && t[2].Value == "." && set("life", "pp", "maxpp", "ep", "sep", "combo", "shadows")[t[3].Value] && isUnsigned(t[4])
+		ok = ok || len(t) == 4 && set("own", "oppo")[t[1].Value] && t[2].Value == "crest" && isCardID(t[3])
 	case "restore":
 		ok = len(t) == 4 && set("own", "oppo")[t[1].Value] && t[2].Value == "." && t[3].Value == "pp"
 	case "destroy", "banish", "discard":
@@ -960,7 +967,7 @@ func validateScenario(b []*syntax.Statement, ds *[]syntax.Diagnostic) {
 func scanAliases(body []*syntax.Statement, aliases map[string]bool, ds *[]syntax.Diagnostic) {
 	for _, s := range body {
 		t := s.Tokens()
-		if len(t) >= 4 && cardTypes[t[0].Value] && t[2].Value == "=" {
+		if len(t) >= 4 && (cardTypes[t[0].Value] || t[0].Value == "crest") && t[2].Value == "=" {
 			if aliases[t[1].Value] {
 				diag(ds, "WBT-E002-DUPLICATE-ALIAS", "错误", "实例别名重复: "+t[1].Value, t[1].Span)
 			}
@@ -1022,31 +1029,11 @@ func validateCollection(l *Loaded, strict bool) {
 			ids[c.ID] = c
 		}
 	}
-	check := func(s *syntax.Statement) {
-		checkEarthSigilRef(s, ids, l)
-		t := s.Tokens()
-		for i := 0; i+1 < len(t); i++ {
-			if t[i].Value == "card" && t[i+1].Kind == syntax.Integer && len(t[i+1].Value) == 8 {
-				if ids[t[i+1].Value] == nil {
-					l.Unresolved[t[i+1].Value] = t[i+1].Span
-				}
-			}
-		}
-		for _, b := range s.Blocks() {
-			for _, x := range b {
-				checkStatementRefs(x, ids, l)
-			}
-		}
-	}
 	for _, c := range l.Cards {
-		for _, s := range c.Effect {
-			check(s)
-		}
+		checkStatementRefs(c.Decl, ids, l)
 	}
 	for _, c := range l.Dependencies {
-		for _, s := range c.Effect {
-			check(s)
-		}
+		checkStatementRefs(c.Decl, ids, l)
 	}
 	for _, tf := range l.Tests {
 		for _, s := range tf.Scenarios {
@@ -1071,18 +1058,28 @@ func validateCollection(l *Loaded, strict bool) {
 
 func checkDeclaredTypes(s *syntax.Statement, ids map[string]*Card, ds *[]syntax.Diagnostic) {
 	t := s.Tokens()
-	if len(t) >= 4 && cardTypes[t[0].Value] && t[2].Value == "=" {
+	if len(t) >= 4 && (cardTypes[t[0].Value] || t[0].Value == "crest") && t[2].Value == "=" {
 		if c := ids[t[3].Value]; c != nil {
+			if t[0].Value == "crest" {
+				if c.Crest == nil {
+					diag(ds, "WBT-E003-CARD-TYPE", "错误", "卡牌没有纹章定义", t[0].Span)
+					return
+				}
+				c = c.Crest
+			}
 			if c.Type != t[0].Value {
 				diag(ds, "WBT-E003-CARD-TYPE", "错误", "实例声明类型与卡牌定义不一致: "+t[1].Value, t[0].Span)
 			}
 			if len(s.Blocks()) == 1 {
 				for _, o := range s.Blocks()[0] {
 					h := o.Word(0)
+					if c.Type == "crest" && !set("counter", "countdown")[h] {
+						diag(ds, "WBT-E004-INVALID-OVERRIDE", "错误", "纹章仅允许覆盖计数器和吟唱", o.Span)
+					}
 					if (set("stats", "evolved", "super_evolved")[h] || abilities[h]) && c.Type != "follower" {
 						diag(ds, "WBT-E004-INVALID-OVERRIDE", "错误", h+" override 只适用于随从", o.Span)
 					}
-					if set("earthsigil", "countdown", "engaged")[h] && c.Type != "amulet" {
+					if set("earthsigil", "countdown", "engaged")[h] && c.Type != "amulet" && !(h == "countdown" && c.Type == "crest") {
 						diag(ds, "WBT-E004-INVALID-OVERRIDE", "错误", h+" override 只适用于护符", o.Span)
 					}
 				}
@@ -1099,8 +1096,13 @@ func checkStatementRefs(s *syntax.Statement, ids map[string]*Card, l *Loaded) {
 	checkEarthSigilRef(s, ids, l)
 	t := s.Tokens()
 	for i := 0; i+1 < len(t); i++ {
-		if (t[i].Value == "card" || t[i].Value == "=") && t[i+1].Kind == syntax.Integer && len(t[i+1].Value) == 8 && ids[t[i+1].Value] == nil {
-			l.Unresolved[t[i+1].Value] = t[i+1].Span
+		if (t[i].Value == "card" || t[i].Value == "=" || t[i].Value == "crest") && t[i+1].Kind == syntax.Integer && len(t[i+1].Value) == 8 {
+			card := ids[t[i+1].Value]
+			if card == nil {
+				l.Unresolved[t[i+1].Value] = t[i+1].Span
+			} else if t[i].Value == "crest" && card.Crest == nil {
+				diag(&l.Diagnostics, "WBO-E008-TYPE-MISMATCH", "错误", "引用的卡牌没有纹章定义: "+card.ID, t[i+1].Span)
+			}
 		}
 	}
 	for _, b := range s.Blocks() {

@@ -38,6 +38,7 @@ type instance struct {
 	fusedThisTurn                                                                bool
 }
 type player struct {
+	crests, retiredCrests                                     []*instance
 	pp, maxpp, leaderLife, leaderMax, ep, sep, combo, shadows int
 	deck, hand, field, graveyard, banished                    []*instance
 	destroyed                                                 []DestructionRecord
@@ -208,14 +209,33 @@ func (g *game) loadState(s ir.State) error {
 		p.leaderLife, p.leaderMax = src.Leader.Life, src.Leader.MaxLife
 		p.pp, p.maxpp, p.ep, p.sep, p.combo, p.shadows = src.PP, src.MaxPP, src.EP, src.SEP, src.Combo, src.Shadows
 		p.extraPPEarly, p.extraPPLate = src.ExtraPPEarly, src.ExtraPPLate
-		for _, zone := range []string{"deck", "hand", "field", "graveyard", "banished", "destroyed"} {
+		for _, zone := range []string{"deck", "hand", "field", "graveyard", "banished", "destroyed", "crests"} {
 			for _, decl := range src.Zones[zone] {
 				c := g.cards[decl.CardID]
+				if c != nil && decl.DeclaredType == "crest" {
+					c = c.CrestCard()
+				}
 				if c == nil {
 					return fmt.Errorf("unknown card %d", decl.CardID)
 				}
 				if c.CardType != decl.DeclaredType {
 					return fmt.Errorf("card type mismatch for %d", decl.CardID)
+				}
+				if (zone == "crests") != (c.CardType == "crest") {
+					return fmt.Errorf("invalid initial crest zone")
+				}
+				if zone == "crests" {
+					if !ir.ValidCrestOverrides(decl.Overrides, g.cards[decl.CardID].Crest.Countdown) {
+						return fmt.Errorf("invalid initial crest overrides")
+					}
+					if len(p.crests) >= crestLimit {
+						return fmt.Errorf("too many initial crests")
+					}
+					for _, crest := range p.crests {
+						if crest.card.ID == c.ID {
+							return fmt.Errorf("duplicate initial crest")
+						}
+					}
 				}
 				i := g.newInstance(c, decl.InstanceID, decl.Alias, zone)
 				o := decl.Overrides
@@ -325,6 +345,11 @@ func (g *game) chargeQueryVisits(amount int) bool {
 func (g *game) addToZone(p *player, i *instance, z string) {
 	i.zone = z
 	switch z {
+	case "crests":
+		p.crests = append(p.crests, i)
+		g.triggerIndex.add(i)
+	case "retired_crest":
+		p.retiredCrests = append(p.retiredCrests, i)
 	case "deck":
 		p.deck = append(p.deck, i)
 	case "hand":
@@ -1107,10 +1132,7 @@ func (g *game) advanceTurn() {
 		g.turn.Active = oppositeSide(g.turn.Active)
 		g.turnTransition = "starting"
 	}
-	startingTriggers := g.turnTransition == "starting_triggers"
-	if startingTriggers {
-		g.turnTransition = ""
-	} else {
+	if g.turnTransition == "starting" {
 		active := g.player(g.turn.Active)
 		if active.maxpp < 10 {
 			active.maxpp++
@@ -1123,11 +1145,19 @@ func (g *game) advanceTurn() {
 			i.fusedThisTurn = false
 			i.usedTriggers = nil
 		}
-		var expired []*instance
 		for _, i := range active.field {
 			i.engaged = false
 			i.attacksUsed = 0
 			i.summoningSick = false
+		}
+		g.turnTransition = "starting_crests"
+		g.tickCrests(active)
+		g.queueEventTriggersIn(ir.RuntimeEvent{Kind: "turn_started", Side: g.turn.Active}, nil, "", "crests")
+		return
+	}
+	if g.turnTransition == "starting_crests" {
+		var expired []*instance
+		for _, i := range g.player(g.turn.Active).field {
 			if i.card.CardType == "amulet" && i.countdown > 0 {
 				i.countdown--
 				if i.countdown == 0 {
@@ -1136,18 +1166,17 @@ func (g *game) advanceTurn() {
 			}
 		}
 		g.resolveDeathBatch(expired)
-		if len(g.triggers) > 0 {
-			g.turnTransition = "starting_triggers"
-			return
-		}
+		g.turnTransition = "starting_triggers"
+		return
 	}
+	g.turnTransition = ""
 	g.draw(ir.DrawEffect{Kind: "draw", Owner: g.turn.Active, Count: 1}, nil, frame{})
 	if g.gameOver {
 		return
 	}
 	event := ir.RuntimeEvent{Kind: "turn_started", Side: g.turn.Active}
 	if g.emit(event) {
-		g.queueEventTriggers(event, nil, "")
+		g.queueEventTriggersIn(event, nil, "", "cards")
 	}
 }
 

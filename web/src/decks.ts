@@ -20,8 +20,8 @@ export const classNames: Record<string, string> = {
   neutral: "中立", forestcraft: "精灵", swordcraft: "皇家护卫", runecraft: "巫师",
   dragoncraft: "龙族", abysscraft: "梦魇", havencraft: "主教", portalcraft: "超越者",
 };
-export const typeNames: Record<string, "随从" | "法术" | "护符"> = {
-  follower: "随从", spell: "法术", amulet: "护符",
+export const typeNames: Record<string, "随从" | "法术" | "护符" | "纹章"> = {
+  follower: "随从", spell: "法术", amulet: "护符", crest: "纹章",
 };
 const illustrations: Record<string, { base: string; evolved?: string }> = artIndex;
 export const cardArt = (id: number, evolved = false) => evolved ? illustrations[id]?.evolved ?? illustrations[id]?.base : illustrations[id]?.base;

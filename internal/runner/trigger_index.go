@@ -9,7 +9,7 @@ type triggerIndex struct {
 // 索引只保存候选位置，实际顺序始终以当前场面为准。
 
 func (x *triggerIndex) add(i *instance) {
-	if i == nil || i.zone != "field" && i.zone != "hand" {
+	if i == nil || i.zone != "field" && i.zone != "hand" && i.zone != "crests" {
 		return
 	}
 	if x.byKind == nil {
@@ -17,6 +17,9 @@ func (x *triggerIndex) add(i *instance) {
 	}
 	for ability := range i.triggeredAbilities() {
 		zone := "field"
+		if i.card.CardType == "crest" {
+			zone = "crests"
+		}
 		if event, ok := ability.Trigger.(ir.EventTrigger); ok && event.SourceZone != "" {
 			zone = event.SourceZone
 		}
@@ -85,15 +88,23 @@ func indexedTriggerKind(trigger ir.Trigger) string {
 func (g *game) rebuildTriggerIndex() {
 	g.triggerIndex = triggerIndex{byKind: map[string]map[string][]runtimeAbility{}}
 	for _, p := range []*player{&g.own, &g.oppo} {
-		for _, i := range append(append([]*instance{}, p.field...), p.hand...) {
+		for _, i := range append(append(append([]*instance{}, p.crests...), p.field...), p.hand...) {
 			g.triggerIndex.add(i)
 		}
 	}
 }
 
 func (g *game) queueEventTriggers(event ir.RuntimeEvent, subject *instance, binding string) bool {
+	return g.queueEventTriggersIn(event, subject, binding, "")
+}
+
+func (g *game) queueEventTriggersIn(event ir.RuntimeEvent, subject *instance, binding, area string) bool {
 	for _, side := range g.orderedSides() {
-		for _, source := range append(append([]*instance{}, side.field...), g.player(side.name).hand...) {
+		p := g.player(side.name)
+		for _, source := range append(append(append([]*instance{}, p.crests...), side.field...), p.hand...) {
+			if area == "crests" && source.zone != "crests" || area == "cards" && source.zone == "crests" {
+				continue
+			}
 			for _, ability := range g.triggerIndex.abilities(event.Kind, source) {
 				if !g.chargeQueryVisits(1) {
 					return false

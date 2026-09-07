@@ -17,6 +17,7 @@ type Names = Record<string, { name: string }>;
 const zones = (player: PlayerView): Entity[] => [
   ...(player.hand || []), ...(player.field || []), ...(player.graveyard || []),
   ...(player.resolving || []), ...(player.banished || []), ...(player.destroyed || []),
+  ...(player.crests || []),
 ];
 
 export function eventLabel(event: RuntimeEvent, remote: { state: GameState }, catalog: Names, previous?: GameState): string {
@@ -35,6 +36,11 @@ export function eventLabel(event: RuntimeEvent, remote: { state: GameState }, ca
   const side = sideLabel(event.side || event.Side);
   const target = event.subject || event.Subject || event.target || event.Target || event;
   const name = nameFor(target);
+  const crest = entities.find((item) => item.instanceId === (event.instanceId || event.InstanceID) && item.cardType === "crest");
+  const crestLabel = crest?.crestLocales?.chs?.name || `纹章：${name}`;
+  if (kind === "crest_gained") return `${side}获得 ${crestLabel}`;
+  if (kind === "crest_countdown") return `${crestLabel} 吟唱 ${event.count ?? event.Count ?? 0}`;
+  if (kind === "crest_destroyed") return `${crestLabel} 被破坏`;
   if (kind === "card_fused") return (event.subject || event.Subject) ? `${name} 融合 ${event.count ?? event.Count ?? 0} 张材料` : `${side}融合 ${event.count ?? event.Count ?? 0} 张材料`;
   if (kind === "card_transformed") return (event.subject || event.Subject) ? `${name} 变身为 ${nameFor(event.target || event.Target)}` : `${side}卡牌变身`;
   if (kind === "pp_restored") return `${side}回复 ${actual ?? 0} 点能量`;
@@ -88,7 +94,7 @@ function validState(value: unknown): value is GameState {
   const state = value as GameState;
   const validEntities = (items: unknown) => items === undefined || items === null || Array.isArray(items) && items.every((item) => item && typeof item.instanceId === "string" && typeof item.cardId === "number");
   return !!state.turn && typeof state.turn.number === "number" && [state.own, state.oppo].every((player) => player &&
-    typeof player.leaderLife === "number" && [player.field, player.hand, player.graveyard, player.banished, player.destroyed, player.resolving].every(validEntities));
+    typeof player.leaderLife === "number" && [player.field, player.hand, player.graveyard, player.banished, player.destroyed, player.resolving, player.crests].every(validEntities));
 }
 
 export function readReplays(storage?: Pick<Storage, "getItem">): ReplayRecord[] {

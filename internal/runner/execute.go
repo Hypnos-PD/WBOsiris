@@ -258,6 +258,8 @@ func (g *game) extremumCandidates(items []*instance, extremum *ir.SelectionExtre
 }
 func (g *game) zone(p *player, z string) []*instance {
 	switch z {
+	case "crests":
+		return p.crests
 	case "deck":
 		return p.deck
 	case "hand":
@@ -442,6 +444,8 @@ func (g *game) putInGraveyard(owner *player, card *instance) {
 func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 	own, _ := g.playerForSide(self, e.Owner)
 	switch e.Kind {
+	case "gain_crest":
+		g.gainCrest(self, e.Owner, e.CardID)
 	case "add_card":
 		for n := 0; n < e.Count; n++ {
 			c := g.cards[e.CardID]
@@ -914,7 +918,7 @@ func (g *game) owner(i *instance) *player {
 			return g.owner(source)
 		}
 	}
-	for _, z := range [][]*instance{g.oppo.field, g.oppo.hand, g.oppo.deck, g.oppo.graveyard, g.oppo.banished, g.oppo.resolving} {
+	for _, z := range [][]*instance{g.oppo.field, g.oppo.hand, g.oppo.deck, g.oppo.graveyard, g.oppo.banished, g.oppo.resolving, g.oppo.crests, g.oppo.retiredCrests} {
 		if contains(z, i) {
 			return &g.oppo
 		}
