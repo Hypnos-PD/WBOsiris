@@ -206,7 +206,7 @@ extremum_clause     = ("highest" | "lowest") , ("attack" | "life" | "cost") ;
 binding_name        = identifier ;
 
 target_set          = "field" , ["." , card_type_plural]
-                     | participant , "." , zone , ["." , card_type_plural] ;
+                     | participant , "." , zone , ["." , card_type_plural] , ["this" , "turn"] ;
 participant         = "own" | "oppo" ;
 zone                = "deck" | "hand" | "field" | "graveyard" | "banished"
                     | "destroyed" ;
@@ -230,8 +230,11 @@ comparison_operator = "==" | "!=" | "<" | "<=" | ">" | ">=" ;
 必须写在 `where` 前。`and` 的优先级高于 `or`；不支持括号过滤器。
 `cost` 比较实例的当前费用，包括加费或降费效果，不比较原始费用。
 `destroyed` 是随从与护符的破坏历史，不是区域，在集合语法中按只读历史集合处理。
-每次破坏保存独立记录；同一实例被多次破坏时不去重。历史集合可用于 `count`，
+每次破坏保存独立记录；同一实例被多次破坏时不去重。历史集合可用于 `count` 和 `sum`，
 不能作为选择或修改操作的目标。其筛选读取破坏时的卡牌身份与属性。
+`this turn` 仅允许跟在破坏历史集合后、`where` 前，限制为当前行动方的当前回合；
+无论是己方还是对手回合，`own.destroyed` 的 `own` 始终表示能力控制者。
+测试初始历史没有破坏回合，不计入 `this turn`。
 
 选择数量 `count` 必须为 1 至 65535 的整数，省略时为 1，且必须写在过滤条件之后。
 `choose` 和 `random` 在空集合上将绑定设为 `none` 并继续；非空时选择
@@ -278,7 +281,7 @@ event_block       = "when" , event_pattern , [source_zone] , [turn_limit] , [whe
 event_pattern     = participant , event_subject , event_verb
                   | participant , "follower" , "leaves" , "field"
                   | participant , "turn" , turn_boundary
-                  | "self" , ("evolved" | "super_evolved" | "discarded") ;
+                  | "self" , ("evolved" | "super_evolved" | "discarded" | "summoned") ;
 event_subject     = "follower" | "amulet" | "card" ;
 event_verb        = "summoned" | "engaged" | "discarded" | "fused" ;
 source_zone       = "while" , "self" , "in" , ("hand" | "field") ;
@@ -296,6 +299,8 @@ leaving field` 在原区域移动前执行并取消原移动，同一替换块�
 `when self evolved` 与 `when self super_evolved` 只允许在随从上声明，不附带 `where`。
 它们匹配自身的形态变化，前者也包含超进化；不同于仅在支付点数后执行的进化关键词能力。
 `when self discarded` 允许用于任何卡牌种类且不附带 `where`，只由被舍弃实例自身发动。
+`when self summoned` 仅用于随从，响应本实例进入战场，包括使用、召唤和亡者召还；
+其他实例入场或本实例在战场上变身不会触发。它不属于 `fanfare`。
 `when own card discarded` 与 `when oppo card discarded` 由战场监听器按弃牌拥有者匹配。
 `card fused` 匹配成功融合的来源卡，每次操作只触发一次。`follower leaves field` 绑定 `left`。
 `source_zone` 只用于玩家侧事件，不用于 `when self ...` 或 `grant` 内的附加能力；
@@ -341,6 +346,7 @@ numeric_operation = "damage" , value_ref , effect_amount , [damage_distribution]
                   | "restore" , participant , "." , "pp" , ";" ;
 
 effect_amount     = integer | counter_ref | "count" , "(" , count_source , [where_clause] , ")"
+                  | "sum" , "(" , count_source , [where_clause] , "," , "base" , "." , ("attack" | "life" | "cost") , ")"
                   | participant , "." , ("combo" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows")
                   | "self" , "." , ("cost" | "attack" | "life") ;
 signed_amount     = ("+" | "-") , effect_amount ;

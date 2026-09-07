@@ -9,13 +9,16 @@ func validCountSource(source Ref) bool {
 	switch r := source.(type) {
 	case BindingRef:
 		return r.Kind == "binding" && r.Name != ""
+	case HistoryRef:
+		return validHistoryRef(r)
 	case ZoneRef:
 		return r.Kind == "zone" && validZone(r.Zone) && (validSide(r.Side) || r.Side == "" && r.Zone == "field") &&
 			(r.Member == "" || oneOf(r.Member, "card", "follower", "spell", "amulet"))
 	case FilterRef:
 		_, zone := r.Source.(ZoneRef)
 		_, binding := r.Source.(BindingRef)
-		return r.Kind == "filter" && (zone || binding) && validCountSource(r.Source) && r.Predicate != nil
+		_, history := r.Source.(HistoryRef)
+		return r.Kind == "filter" && (zone || binding || history) && validCountSource(r.Source) && r.Predicate != nil
 	default:
 		return false
 	}
@@ -25,6 +28,8 @@ func validNumericExpr(expr NumericExpr, signed bool) bool {
 	switch e := expr.(type) {
 	case *CountExpr:
 		return e != nil && e.Kind == "count" && validCountSource(e.Source)
+	case *SumExpr:
+		return e != nil && e.Kind == "sum" && validCountSource(e.Source) && oneOf(e.Field, "base_attack", "base_life", "base_cost")
 	case *Scalar:
 		return e != nil && (e.Kind == "scalar" && validSide(e.Side) && oneOf(e.Field, "combo", "pp", "maxpp", "life", "ep", "sep", "shadows") ||
 			e.Kind == "self_scalar" && e.Side == "" && oneOf(e.Field, "attack", "life", "cost") ||
@@ -60,8 +65,8 @@ func decodeNumericValue(data json.RawMessage, signed bool) (int, NumericExpr, er
 	}
 	var expr NumericExpr
 	switch raw.Kind {
-	case "count":
-		if raw.Side != "" || raw.Field != "" || len(raw.Value) > 0 {
+	case "count", "sum":
+		if raw.Side != "" || raw.Kind == "count" && raw.Field != "" || len(raw.Value) > 0 {
 			return 0, nil, fmt.Errorf("invalid count fields")
 		}
 		source, err := decodeRef(raw.Source)
@@ -69,6 +74,9 @@ func decodeNumericValue(data json.RawMessage, signed bool) (int, NumericExpr, er
 			return 0, nil, err
 		}
 		expr = &CountExpr{Kind: "count", Source: source}
+		if raw.Kind == "sum" {
+			expr = &SumExpr{Kind: "sum", Source: source, Field: raw.Field}
+		}
 	case "scalar", "self_scalar", "self_counter":
 		if len(raw.Source) > 0 || len(raw.Value) > 0 {
 			return 0, nil, fmt.Errorf("invalid scalar fields")
@@ -108,6 +116,10 @@ func numericValue(literal int, expr NumericExpr, signed bool) (any, error) {
 func numericCardRefs(expr NumericExpr, cards map[int]bool, cardType string) error {
 	switch e := expr.(type) {
 	case *CountExpr:
+		if source, ok := e.Source.(FilterRef); ok {
+			return validatePredicateCardRefs(source.Predicate, cards)
+		}
+	case *SumExpr:
 		if source, ok := e.Source.(FilterRef); ok {
 			return validatePredicateCardRefs(source.Predicate, cards)
 		}

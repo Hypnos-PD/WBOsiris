@@ -477,6 +477,14 @@ type CountExpr struct {
 	Source Ref    `json:"source"`
 }
 
+type SumExpr struct {
+	Kind   string `json:"kind"`
+	Source Ref    `json:"source"`
+	Field  string `json:"field"`
+}
+
+func (e *SumExpr) numericKind() string { return e.Kind }
+
 type NumericExpr interface{ numericKind() string }
 
 func (e *CountExpr) numericKind() string { return e.Kind }

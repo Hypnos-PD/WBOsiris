@@ -154,17 +154,22 @@ func TestRestoreRejectsMalformedDestructionRecords(t *testing.T) {
 	s, _, _, id := historySession(t, "own", 1)
 	s.g.destroyByEffect([]*instance{s.g.instances[id]})
 	for name, mutate := range map[string]func(*ContinuationGame){
-		"unknown identity":    func(g *ContinuationGame) { g.Own.Destroyed[0].CardID = 88888888 },
-		"wrong identity":      func(g *ContinuationGame) { g.Own.Destroyed[0].CardID = 77771003 },
-		"spell identity":      func(g *ContinuationGame) { g.Own.Destroyed[0].CardID = 77771001 },
-		"unknown instance":    func(g *ContinuationGame) { g.Own.Destroyed[0].InstanceID = "missing" },
-		"wrong owner":         func(g *ContinuationGame) { g.Oppo.Destroyed, g.Own.Destroyed = g.Own.Destroyed, nil },
-		"missing record":      func(g *ContinuationGame) { g.Own.Destroyed = nil },
-		"duplicate event":     func(g *ContinuationGame) { g.Own.Destroyed = append(g.Own.Destroyed, g.Own.Destroyed[0]) },
-		"missing event":       func(g *ContinuationGame) { g.Own.Destroyed[0].EventSequence = 1000 },
-		"wrong event":         func(g *ContinuationGame) { g.Own.Destroyed[0].EventSequence = 1 },
-		"fake initial record": func(g *ContinuationGame) { g.Own.Destroyed[0].EventSequence = 0 },
-		"negative cost":       func(g *ContinuationGame) { g.Own.Destroyed[0].Cost = -1 },
+		"unknown identity":     func(g *ContinuationGame) { g.Own.Destroyed[0].CardID = 88888888 },
+		"wrong identity":       func(g *ContinuationGame) { g.Own.Destroyed[0].CardID = 77771003 },
+		"spell identity":       func(g *ContinuationGame) { g.Own.Destroyed[0].CardID = 77771001 },
+		"unknown instance":     func(g *ContinuationGame) { g.Own.Destroyed[0].InstanceID = "missing" },
+		"wrong owner":          func(g *ContinuationGame) { g.Oppo.Destroyed, g.Own.Destroyed = g.Own.Destroyed, nil },
+		"missing record":       func(g *ContinuationGame) { g.Own.Destroyed = nil },
+		"duplicate event":      func(g *ContinuationGame) { g.Own.Destroyed = append(g.Own.Destroyed, g.Own.Destroyed[0]) },
+		"missing event":        func(g *ContinuationGame) { g.Own.Destroyed[0].EventSequence = 1000 },
+		"wrong event":          func(g *ContinuationGame) { g.Own.Destroyed[0].EventSequence = 1 },
+		"fake initial record":  func(g *ContinuationGame) { g.Own.Destroyed[0].EventSequence = 0 },
+		"negative cost":        func(g *ContinuationGame) { g.Own.Destroyed[0].Cost = -1 },
+		"missing turn":         func(g *ContinuationGame) { g.Own.Destroyed[0].TurnSide = "" },
+		"unknown turn side":    func(g *ContinuationGame) { g.Own.Destroyed[0].TurnSide = "both" },
+		"future turn":          func(g *ContinuationGame) { g.Own.Destroyed[0].TurnNumber = g.Turn.Number + 1 },
+		"future opponent turn": func(g *ContinuationGame) { g.Own.Destroyed[0].TurnSide = "oppo" },
+		"negative turn":        func(g *ContinuationGame) { g.Own.Destroyed[0].TurnNumber = -1 },
 	} {
 		t.Run(name, func(t *testing.T) {
 			saved := snapshotContinuationGame(s.g)

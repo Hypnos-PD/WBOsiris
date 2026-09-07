@@ -576,7 +576,7 @@ func decodeTrigger(data []byte) (Trigger, error) {
 		if v.OncePerTurn != "" && !oneOf(v.OncePerTurn, "any", "own", "oppo") {
 			return nil, fmt.Errorf("invalid trigger turn limit")
 		}
-		if v.SelfOnly && (v.OncePerTurn != "" || v.SourceZone != "" || v.Side != "own" || !(v.SubjectType == "follower" && oneOf(v.Event, "evolved", "super_evolved") || v.SubjectType == "" && v.Event == "card_discarded") || p != nil) {
+		if v.SelfOnly && (v.OncePerTurn != "" || v.SourceZone != "" || v.Side != "own" || !(v.SubjectType == "follower" && oneOf(v.Event, "evolved", "super_evolved", "follower_summoned") || v.SubjectType == "" && v.Event == "card_discarded") || p != nil) {
 			return nil, fmt.Errorf("invalid self event trigger")
 		}
 		return EventTrigger{Kind: v.Kind, Event: v.Event, Side: v.Side, SourceZone: v.SourceZone, SubjectType: v.SubjectType, SelfOnly: v.SelfOnly, Predicate: p, OncePerTurn: v.OncePerTurn}, err
@@ -1074,6 +1074,15 @@ func decodeRef(data []byte) (Ref, error) {
 		return nil, err
 	}
 	switch k.Kind {
+	case "history":
+		var ref HistoryRef
+		if err := strict(data, &ref); err != nil {
+			return nil, err
+		}
+		if !validHistoryRef(ref) {
+			return nil, fmt.Errorf("invalid history reference")
+		}
+		return ref, nil
 	case "self":
 		var v struct {
 			Kind      string `json:"kind"`

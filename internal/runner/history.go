@@ -13,11 +13,13 @@ type DestructionRecord struct {
 	SuperEvolved  bool   `json:"superEvolved"`
 	Departed      bool   `json:"departed,omitempty"`
 	EventSequence uint64 `json:"eventSequence"`
+	TurnSide      string `json:"turnSide,omitempty"`
+	TurnNumber    int    `json:"turnNumber"`
 }
 
-func destructionRecord(i *instance, sequence uint64) DestructionRecord {
+func destructionRecord(i *instance, sequence uint64, turn ir.Turn) DestructionRecord {
 	return DestructionRecord{InstanceID: i.id, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life,
-		Evolved: i.evolved, SuperEvolved: i.superEvolved, Departed: i.departed, EventSequence: sequence}
+		Evolved: i.evolved, SuperEvolved: i.superEvolved, Departed: i.departed, EventSequence: sequence, TurnSide: turn.Active, TurnNumber: turn.Number}
 }
 
 func historyInstances(history []DestructionRecord, cards map[int]*ir.Card) []*instance {

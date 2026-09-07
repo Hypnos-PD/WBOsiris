@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 90034110 {
+    type follower;
+    cost 4;
+    stats 4/5;
+    trait shikigami;
+
+    effect {
+        ward;
+        lastwords {
+            spellboost own.hand 3;
+        }
+    }
+
+    meta {
+        pack 90000;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "式神·天后";
+        text """
+【<color=Keyword>守护</color>】
+【<color=Keyword>谢幕曲</color>】使自己的所有手牌发动3次魔力增幅。
+""";
+    }
+
+    locale eng {
+        name "Celestial Shikigami";
+        text """
+<b><color=Keyword>Ward</color></b>
+<b><color=Keyword>Last Words</color></b>: Spellboost your hand 3 times.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しきがみ\">式神</rub>・<rub=\"てんごう\">天后</rub>";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>ラストワード</color>】自分の手札すべては3回スペルブーストする。
+""";
+    }
+
+    locale kor {
+        name "식신 천후";
+        text """
+[<color=Keyword>수호</color>]
+[<color=Keyword>유언</color>] 내 패 모두를 3회 주문증폭.
+""";
+    }
+
+    locale cht {
+        name "式神‧天后";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>謝幕曲</color>】使自己手牌中全部的卡片發動3次魔力增幅。
+""";
+    }
+}

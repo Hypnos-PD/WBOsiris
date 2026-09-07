@@ -769,6 +769,10 @@
     "base": "/assets/cards/900311200-e2081cedba57cd44.webp",
     "evolved": "/assets/cards/900311201-2ca4706ae6ffa1e1.webp"
   },
+  "90031130": {
+    "base": "/assets/cards/900311300-d0aec59ed34678b7.webp",
+    "evolved": "/assets/cards/900311301-5ac42f4d8a56df98.webp"
+  },
   "90031140": {
     "base": "/assets/cards/900311400-9aec04180d863876.webp",
     "evolved": "/assets/cards/900311401-bb43c8820a0481fe.webp"
@@ -778,6 +782,14 @@
   },
   "90033310": {
     "base": "/assets/cards/900333100-22d7064bda210b8d.webp"
+  },
+  "90034110": {
+    "base": "/assets/cards/900341100-b42c850e8d323cf7.webp",
+    "evolved": "/assets/cards/900341101-f22655f95144baae.webp"
+  },
+  "90034120": {
+    "base": "/assets/cards/900341200-a9a1c31d04488c7e.webp",
+    "evolved": "/assets/cards/900341201-80e1e3568390f78d.webp"
   },
   "90034130": {
     "base": "/assets/cards/900341300-64a142cfa3fec10f.webp",

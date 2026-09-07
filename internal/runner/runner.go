@@ -340,7 +340,7 @@ func (g *game) addToZone(p *player, i *instance, z string) {
 	case "banished":
 		p.banished = append(p.banished, i)
 	case "destroyed":
-		p.destroyed = append(p.destroyed, destructionRecord(i, 0))
+		p.destroyed = append(p.destroyed, destructionRecord(i, 0, ir.Turn{}))
 	}
 }
 func (g *game) preflight(a ir.Action, budget *budgetTracker) string {

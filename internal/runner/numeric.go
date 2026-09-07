@@ -4,6 +4,23 @@ import "wbo/internal/ir"
 
 func (g *game) numericValue(expr ir.NumericExpr, self *instance, bindings frame) int {
 	switch e := expr.(type) {
+	case *ir.SumExpr:
+		total := 0
+		for _, i := range g.fromRef(e.Source, self, bindings) {
+			if !g.chargeQueryVisits(1) {
+				return 0
+			}
+			if e.Field == "base_cost" {
+				total += i.card.Cost
+			} else if i.card.Stats != nil {
+				if e.Field == "base_attack" {
+					total += i.card.Stats.Attack
+				} else if e.Field == "base_life" {
+					total += i.card.Stats.Life
+				}
+			}
+		}
+		return total
 	case *ir.CountExpr:
 		if binding, ok := e.Source.(ir.BindingRef); ok {
 			return len(bindings[binding.Name])

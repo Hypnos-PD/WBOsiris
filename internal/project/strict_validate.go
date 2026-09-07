@@ -278,7 +278,7 @@ func parseBaseEventPattern(t []syntax.Token) (int, string, bool) {
 	if len(t) == 3 && values(t) == "when self discarded" {
 		return 3, "card", true
 	}
-	if len(t) == 3 && t[0].Value == "when" && t[1].Value == "self" && set("evolved", "super_evolved")[t[2].Value] {
+	if len(t) == 3 && t[0].Value == "when" && t[1].Value == "self" && set("evolved", "super_evolved", "summoned")[t[2].Value] {
 		return 3, "follower", true
 	}
 	if len(t) < 4 || t[0].Value != "when" || !set("own", "oppo")[t[1].Value] {

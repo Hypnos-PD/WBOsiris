@@ -388,6 +388,22 @@ fanfare {
 括号外的 `where` 筛选效果目标。一次效果只读取一次计数，对全部目标使用同一数值。
 也可统计已定义的集合绑定，如 `count(drawn)`、`count(summoned)`、`count(targets)`，
 以及 `count(destroyed where type amulet)`。绑定必须在当前作用域内先定义再使用。
+
+`sum(集合 [where 筛选], base.attack)` 对原始攻击力求和；`base.life` 和 `base.cost`
+分别求原始生命值与费用之和。没有身材的卡牌对攻击力、生命值的贡献为零，主战者不参与求和。
+空集合结果为零，每条历史记录独立参与。筛选读取当前实例属性或破坏记录属性，求和投影则
+读取对应身份的卡牌定义，不计强化、伤害、进化加成或费用修正。
+
+```wbo
+when self summoned {
+    buff self +sum(own.destroyed.followers this turn where trait shikigami, base.attack)/+sum(own.destroyed.followers this turn where trait shikigami, base.life);
+}
+```
+
+`this turn` 位于历史集合之后、筛选之前，只统计当前回合发生的破坏；回合开始阶段的
+倒计时和谢幕曲结算也属于新回合。上例只在本随从入场时触发，包括由能力召唤入场；
+其他随从入场以及战场上的变身都不会触发。两项增量在本条强化操作开始时分别读取，
+暂停恢复保留破坏记录的回合归属。测试初始历史不计入本回合。
 计数不消耗随机决策；查询预算耗尽时不使用部分结果执行效果。
 数值也可直接读取 `own`/`oppo` 的 `combo`、`pp`、`maxpp`、`life`、`ep`、`sep`、`shadows`，
 或者读取 `self.cost`；随从还可读取 `self.attack` 和 `self.life`。

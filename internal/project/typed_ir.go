@@ -497,8 +497,16 @@ func setExprIR(t []syntax.Token, i int) (ir.Ref, int) {
 		side = zone
 		zone = t[start+2].Value
 	}
-	if end >= 2 && set("followers", "spells", "amulets")[t[end-1].Value] {
-		member = strings.TrimSuffix(t[end-1].Value, "s")
+	memberEnd := end
+	thisTurn := end >= 2 && values(t[end-2:end]) == "this turn"
+	if thisTurn {
+		memberEnd -= 2
+	}
+	if memberEnd >= 2 && set("followers", "spells", "amulets")[t[memberEnd-1].Value] {
+		member = strings.TrimSuffix(t[memberEnd-1].Value, "s")
+	}
+	if thisTurn {
+		return ir.HistoryRef{Kind: "history", Side: side, Member: member, Window: "this_turn"}, end
 	}
 	return ir.ZoneRef{Kind: "zone", Side: side, Zone: zone, Member: member}, end
 }
@@ -590,6 +598,9 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 	if t[1].Value == "self" {
 		if t[2].Value == "discarded" {
 			return ir.EventTrigger{Kind: "event", Event: "card_discarded", Side: "own", SelfOnly: true}
+		}
+		if t[2].Value == "summoned" {
+			return ir.EventTrigger{Kind: "event", Event: "follower_summoned", Side: "own", SubjectType: "follower", SelfOnly: true}
 		}
 		return ir.EventTrigger{Kind: "event", Event: t[2].Value, Side: "own", SubjectType: "follower", SelfOnly: true}
 	}

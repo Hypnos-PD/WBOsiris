@@ -246,8 +246,10 @@ MemberKind = "card" | "follower" | "spell" | "amulet"
 
 下列 `IntExpr` 是通用表达式模型；当前执行格式中的常量数值仍直接编码为 JSON
 整数，不使用 `literal` 包装。`Damage.amount`、`Heal.amount`、`BuffStats.attackDelta`
-和 `BuffStats.lifeDelta` 支持下方 `NumericExpr`。集合计数来源必须是区域集合或一层区域筛选，
-区域省略 `side` 时只允许 `field`。增益还支持单层 `negate`，不能嵌套取负或包装整数。
+和 `BuffStats.lifeDelta` 支持下方 `NumericExpr`。集合计数与求和来源支持区域集合、
+当前回合破坏履历、集合绑定，以及对这些来源的一层筛选；区域省略 `side` 时只允许
+`field`。求和字段限于卡牌定义中的原始攻击力、生命值和费用，筛选条件仍读取实例或
+破坏履历快照。增益还支持单层 `negate`，不能嵌套取负或包装整数。
 其他操作的数值字段仍只接受整数；尚未实现通用 `IntValue` 或一般算术求值。
 
 ```text
@@ -292,7 +294,10 @@ BoolExpr =
 筛选器的 `compare` 节点支持 `field: "life" | "cost"`；`cost` 读取实例当前费用。
 `when self evolved` 编译为 `{kind:"event", event:"evolved", side:"own", subjectType:"follower", selfOnly:true}`；
 `when self super_evolved` 将 `event` 改为 `super_evolved`。`selfOnly` 必须按实例身份匹配，
-上述进化事件只允许己方随从且不附带谓词。`when self discarded` 编译为
+上述进化事件只允许己方随从且不附带谓词。`when self summoned` 使用相同的自身匹配结构，
+将 `event` 设为 `follower_summoned`；仅允许随从声明，不附带谓词或次数限制。
+它在该实例通过打出或召唤进入战场时触发，其他实例入场或变身均不触发。
+`when self discarded` 编译为
 `{kind:"event", event:"card_discarded", side:"own", selfOnly:true}`，不声明 `subjectType`。
 该弃牌触发器由已进入墓场的被舍弃实例派发，不依赖战场监听索引。
 普通弃牌监听器省略 `selfOnly`，使用 `side` 匹配拥有者并用 `discarded` 绑定事件对象。
@@ -688,7 +693,11 @@ AttachedMaterial = {
 ### 数值、能力与状态操作
 
 ```text
-NumericExpr = Count { kind: "count", source: ZoneSet | BindingRef | FilterSet }
+HistorySet = { kind: "history", side: "own" | "oppo", window: "this_turn",
+               member?: "card" | "follower" | "amulet" }
+NumericExpr = Count { kind: "count", source: ZoneSet | HistorySet | BindingRef | FilterSet }
+            | Sum { kind: "sum", source: ZoneSet | HistorySet | BindingRef | FilterSet,
+                    field: "base_attack" | "base_life" | "base_cost" }
             | PlayerScalar { kind: "scalar", side: "own" | "oppo",
                              field: "combo" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" }
             | SelfScalar { kind: "self_scalar", field: "attack" | "life" | "cost" }

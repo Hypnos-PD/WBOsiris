@@ -12,12 +12,16 @@ func numericIR(t []syntax.Token, i int) (int, ir.NumericExpr) {
 	if t[i].Kind == syntax.Integer {
 		return intToken(t[i]), nil
 	}
-	if t[i].Value == "count" {
+	if t[i].Value == "count" || t[i].Value == "sum" {
 		source := valueRefIR(t, i+2)
 		next, _ := parseCountSource(t, i+2)
 		if t[next].Value == "where" {
-			predicate, _ := filterIR(t, next)
+			var predicate ir.Predicate
+			predicate, next = filterIR(t, next)
 			source = ir.FilterRef{Kind: "filter", Source: source, Predicate: predicate}
+		}
+		if t[i].Value == "sum" {
+			return 0, &ir.SumExpr{Kind: "sum", Source: source, Field: "base_" + t[next+3].Value}
 		}
 		return 0, &ir.CountExpr{Kind: "count", Source: source}
 	}

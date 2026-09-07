@@ -6,7 +6,19 @@ card 10134110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90034110;
+            summon 1 card 90031140;
+            summon 1 card 90031130;
+        }
+        enhance 10 {
+            destroy own.field.followers where trait shikigami;
+            summon 1 card 90034120;
+        }
+        superevolve {
+            choose target from own.field.followers where trait shikigami;
+            add storm to target;
+        }
     }
 
     meta {

@@ -129,6 +129,18 @@ func (g *game) commitFusion(source *instance, ability *ir.FusionAbility, materia
 func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 	own, oppo, _ := g.relativePlayers(self)
 	switch r := ref.(type) {
+	case ir.HistoryRef:
+		p, _ := g.playerForSide(self, r.Side)
+		var records []DestructionRecord
+		for _, record := range p.destroyed {
+			if !g.chargeQueryVisits(1) {
+				return nil
+			}
+			if record.TurnSide == g.turn.Active && record.TurnNumber == g.turn.Number {
+				records = append(records, record)
+			}
+		}
+		return g.filter(historyInstances(records, g.cards), r.Member, nil)
 	case ir.SelfRef:
 		return []*instance{self}
 	case ir.BindingRef:
@@ -826,7 +838,7 @@ func (g *game) resolveDeathBatch(explicit []*instance) []*instance {
 		}
 	}
 	for n, death := range deaths {
-		death.owner.destroyed = append(death.owner.destroyed, destructionRecord(death.instance, g.eventSequence+uint64(n)+1))
+		death.owner.destroyed = append(death.owner.destroyed, destructionRecord(death.instance, g.eventSequence+uint64(n)+1, g.turn))
 	}
 	for _, death := range deaths {
 		g.eventSequence++

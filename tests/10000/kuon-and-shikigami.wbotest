@@ -1,0 +1,79 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Kuon summons all three Shikigami in its base form" {
+    seed 3901;
+    state { player own { pp 7/7; hand { follower source = 10134110; } } }
+    action { play source; }
+    expect { legal; source.stats == 3/3; own.pp == 0/7; own.field count card 90034110 == 1; own.field count card 90031140 == 1; own.field count card 90031130 == 1; own.field count card 90034120 == 0; all own.field where card 90034110 have ward; all own.field where card 90031130 have rush; }
+}
+
+scenario "Kuon fills its last free slot with Celestial Shikigami first" {
+    seed 3902;
+    state { player own { pp 7/7; hand { follower source = 10134110; } field { follower a = 10001110; follower b = 10001110; follower c = 10001110; } } }
+    action { play source; }
+    expect { legal; own.field count card 90034110 == 1; own.field count card 90031140 == 0; own.field count card 90031130 == 0; }
+}
+
+scenario "Enhanced Kuon destroys its summons and spellboosts the held hand five times" {
+    seed 3903;
+    state { player own { pp 10/10; hand { follower source = 10134110; spell held = 10131320; } } }
+    action { play source; }
+    expect { legal; own.pp == 0/10; own.shadows == 3; held.counter.x == 7; own.field count card 90034120 == 1; own.destroyed count card 90034110 == 1; own.destroyed count card 90031140 == 1; own.destroyed count card 90031130 == 1; all own.field where card 90034120 have ward; all own.field where card 90034120 have aura; }
+}
+
+scenario "Enhanced Kuon leaves unrelated allied and opposing followers in place" {
+    seed 3904;
+    state { player own { pp 10/10; hand { follower source = 10134110; } field { follower ally = 10001110; } } player oppo { field { follower enemy = 90031140; } } }
+    action { play source; }
+    expect { legal; ally.zone == field; enemy.zone == field; own.shadows == 3; oppo.shadows == 0; own.field count card 90034120 == 1; }
+}
+
+scenario "Noble Shikigami without current turn deaths stays one one" {
+    seed 3905;
+    state { player own { pp 10/10; hand { follower source = 90034120; } } }
+    action { play source; }
+    expect { legal; source.stats == 1/1; source has ward; source has aura; }
+}
+
+scenario "Noble Shikigami does not treat initial history as current turn deaths" {
+    seed 3906;
+    state { player own { pp 10/10; hand { follower source = 90034120; } destroyed { follower old = 90034110; } } }
+    action { play source; }
+    expect { legal; source.stats == 1/1; own.destroyed count card 90034110 == 1; }
+}
+
+scenario "Kuon super evolution grants Storm to the chosen Shikigami" {
+    seed 3907;
+    state { turn own 9; player own { sep 1; field { follower source = 10134110; follower target = 90034120; follower other = 90031130; } } }
+    action { superevolve source; select target; }
+    expect { legal; source.stats == 6/6; target has storm; other lacks storm; source lacks storm; }
+}
+
+scenario "Kuon super evolution remains legal without a Shikigami" {
+    seed 3908;
+    state { turn own 9; player own { sep 1; field { follower source = 10134110; follower other = 10001110; } } }
+    action { superevolve source; }
+    expect { legal; source.stats == 6/6; other lacks storm; }
+}
+
+scenario "Kuon normal evolution does not grant Storm" {
+    seed 3909;
+    state { turn own 9; player own { ep 1; field { follower source = 10134110; follower target = 90031130; } } }
+    action { evolve source; }
+    expect { legal; source.stats == 5/5; target lacks storm; }
+}
+
+scenario "Paper Shikigami Last Words spellboosts once" {
+    seed 3910;
+    state { player own { hand { spell held = 10131320; } field { follower source = 90031130; } } player oppo { field { follower target = 10001110; } } }
+    action { attack source into target; }
+    expect { legal; source.zone == graveyard; target.zone == graveyard; held.counter.x == 3; own.shadows == 1; }
+}
+
+scenario "Celestial Shikigami Last Words spellboosts three times" {
+    seed 3911;
+    state { player own { hand { spell held = 10131320; } field { follower source = 90034110; } } player oppo { field { follower target = 10001110 { stats 5/4; } } } }
+    action { attack source into target; }
+    expect { legal; source.zone == graveyard; target.zone == graveyard; held.counter.x == 5; own.shadows == 1; }
+}

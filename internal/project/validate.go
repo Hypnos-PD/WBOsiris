@@ -234,7 +234,7 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 		}
 		h := t[0].Value
 		for n := 0; n+2 < len(t); n++ {
-			if t[n].Value == "count" && t[n+1].Value == "(" {
+			if (t[n].Value == "count" || t[n].Value == "sum") && t[n+1].Value == "(" {
 				checkBindingAt(t, n+2, n+3, bindings, ds)
 			}
 		}
@@ -694,12 +694,16 @@ func parseEffectAmount(t []syntax.Token, i int) (int, bool) {
 			return i + 3, true
 		}
 	}
-	if i+1 >= len(t) || t[i].Value != "count" || t[i+1].Value != "(" {
+	if i+1 >= len(t) || !set("count", "sum")[t[i].Value] || t[i+1].Value != "(" {
 		return i, false
 	}
 	end, ok := parseCountSource(t, i+2)
 	if ok && end < len(t) && t[end].Value == "where" {
 		end, ok = parseWhere(t, end)
+	}
+	if ok && t[i].Value == "sum" {
+		ok = end+3 < len(t) && t[end].Value == "," && t[end+1].Value == "base" && t[end+2].Value == "." && set("attack", "life", "cost")[t[end+3].Value]
+		end += 4
 	}
 	if !ok || end >= len(t) || t[end].Value != ")" {
 		return end, false
@@ -722,6 +726,7 @@ func parseCountSource(t []syntax.Token, i int) (int, bool) {
 }
 
 func parseTargetSet(t []syntax.Token, i int) (int, bool) {
+	start := i
 	if i >= len(t) {
 		return i, false
 	}
@@ -740,6 +745,12 @@ func parseTargetSet(t []syntax.Token, i int) (int, bool) {
 	}
 	i += 3
 	if i+1 < len(t) && t[i].Value == "." && set("followers", "spells", "amulets")[t[i+1].Value] {
+		i += 2
+	}
+	if i+1 < len(t) && t[i].Value == "this" && t[i+1].Value == "turn" {
+		if t[start+2].Value != "destroyed" || t[i-1].Value == "spells" {
+			return i, false
+		}
 		i += 2
 	}
 	return i, true

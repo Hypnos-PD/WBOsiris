@@ -1,0 +1,67 @@
+wbo 0.1.0;
+
+card 90034120 {
+    type follower;
+    cost 10;
+    stats 1/1;
+    trait shikigami;
+
+    effect {
+        ward;
+        aura;
+        when self summoned {
+            buff self +sum(own.destroyed.followers this turn where trait shikigami, base.attack)/+sum(own.destroyed.followers this turn where trait shikigami, base.life);
+        }
+    }
+
+    meta {
+        pack 90000;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "式神·贵人";
+        text """
+本随从进入战场时，本随从+X/+Y。X/Y为本回合中被破坏的自己的式神·随从的原始的攻击力/生命值的合计。
+<hr>【<color=Keyword>守护</color>】
+【<color=Keyword>灵气</color>】
+""";
+    }
+
+    locale eng {
+        name "Noble Shikigami";
+        text """
+When this follower enters the field, give it +X/+Y. X/Y is the total base attack/defense of allied Shikigami followers destroyed this turn.
+<hr><b><color=Keyword>Ward</color></b>
+<b><color=Keyword>Aura</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しきがみ\">式神</rub>・<rub=\"きじん\">貴人</rub>";
+        text """
+これが場に出たとき、これは+X/+Yする。X/Yはこのターン中に破壊された自分の式神・フォロワーの元の攻撃力/体力の合計である。
+<hr>【<color=Keyword>守護</color>】
+【<color=Keyword>オーラ</color>】
+""";
+    }
+
+    locale kor {
+        name "식신 귀인";
+        text """
+이 추종자가 전장에 소환되었을 때, 이 추종자는 +X/+Y. X/Y는 이번 턴에 파괴된 내 식신 추종자의 원래 공격력/체력의 합계.
+<hr>[<color=Keyword>수호</color>]
+[<color=Keyword>오라</color>]
+""";
+    }
+
+    locale cht {
+        name "式神‧貴人";
+        text """
+當這張卡片進入戰場時，使這張卡片+X/+Y。X/Y為「本回合中自己已被破壞的式神‧從者卡的原始攻擊力/生命值之合計」。
+<hr>【<color=Keyword>守護</color>】
+【<color=Keyword>光紋</color>】
+""";
+    }
+}

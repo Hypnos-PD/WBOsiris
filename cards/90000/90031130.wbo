@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 90031130 {
+    type follower;
+    cost 2;
+    stats 2/1;
+    trait shikigami;
+
+    effect {
+        rush;
+        lastwords {
+            spellboost own.hand 1;
+        }
+    }
+
+    meta {
+        pack 90000;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "式神·小纸人";
+        text """
+【<color=Keyword>突进</color>】
+【<color=Keyword>谢幕曲</color>】使自己的所有手牌发动1次魔力增幅。
+""";
+    }
+
+    locale eng {
+        name "Paper Shikigami";
+        text """
+<b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Last Words</color></b>: Spellboost your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しきがみ\">式神</rub>・<rub=\"かたしろ\">形代</rub>";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>ラストワード</color>】自分の手札すべては1回スペルブーストする。
+""";
+    }
+
+    locale kor {
+        name "식신 종이인형";
+        text """
+[<color=Keyword>돌진</color>]
+[<color=Keyword>유언</color>] 내 패 모두를 1회 주문증폭.
+""";
+    }
+
+    locale cht {
+        name "式神‧小紙人";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>謝幕曲</color>】使自己手牌中全部的卡片發動1次魔力增幅。
+""";
+    }
+}
