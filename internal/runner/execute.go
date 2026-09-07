@@ -17,9 +17,8 @@ func (g *game) condition(c ir.Condition, self *instance) bool {
 		p, _ := g.playerForSide(self, x.Side)
 		return p.maxpp >= 7
 	case ir.CompareCondition:
-		p, _ := g.playerForSide(self, x.Left.Side)
 		n := 0
-		if x.Left.Kind == "self_counter" {
+		if x.Left.Kind == "self_counter" || x.Left.Kind == "scalar" {
 			n = g.numericValue(&x.Left, self, nil)
 		} else {
 			switch x.Left.Field {
@@ -35,20 +34,6 @@ func (g *game) condition(c ir.Condition, self *instance) bool {
 				if x.Left.Field == "distinct" {
 					n = len(seen)
 				}
-			case "combo":
-				n = p.combo
-			case "pp":
-				n = p.pp
-			case "maxpp":
-				n = p.maxpp
-			case "life":
-				n = p.leaderLife
-			case "ep":
-				n = p.ep
-			case "sep":
-				n = p.sep
-			case "shadows":
-				n = p.shadows
 			}
 		}
 		switch x.Op {
@@ -673,7 +658,7 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 			}
 		}
 		if e.Delta > 0 {
-			for _, sigil := range g.summonFor(self, "own", 1, ir.MagicSedimentCardID, false) {
+			for _, sigil := range g.summonFor(self, e.Owner, 1, ir.MagicSedimentCardID, false) {
 				sigil.earthsigil = e.Delta
 			}
 		}

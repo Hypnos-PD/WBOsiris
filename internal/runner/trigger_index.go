@@ -119,6 +119,9 @@ func (g *game) queueEventTriggersIn(event ir.RuntimeEvent, subject *instance, bi
 				if trigger.OncePerTurn != "" && (source.usedTriggers[ability.ID] || !triggerTurnMatches(trigger.OncePerTurn, side.name, g.turn.Active)) {
 					continue
 				}
+				if trigger.Condition != nil && !g.condition(trigger.Condition, source) {
+					continue
+				}
 				bindings := frame{}
 				if binding != "" && subject != nil {
 					bindings[binding] = bindEntities(subject)

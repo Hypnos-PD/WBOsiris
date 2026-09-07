@@ -697,7 +697,7 @@ func parseEffectAmount(t []syntax.Token, i int) (int, bool) {
 	}
 	if i+2 < len(t) && t[i+1].Value == "." {
 		if t[i].Value == "self" && set("attack", "life", "cost")[t[i+2].Value] ||
-			set("own", "oppo")[t[i].Value] && set("combo", "pp", "maxpp", "life", "ep", "sep", "shadows")[t[i+2].Value] {
+			set("own", "oppo")[t[i].Value] && ir.ValidPlayerScalar(t[i+2].Value) {
 			return i + 3, true
 		}
 	}
@@ -814,7 +814,7 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 				if isUnsigned(t[i+2]) {
 					i += 3
 				} else if i+4 < len(t) && set("own", "oppo")[t[i+2].Value] && t[i+3].Value == "." &&
-					set("combo", "pp", "maxpp", "life", "ep", "sep", "shadows")[t[i+4].Value] {
+					ir.ValidPlayerScalar(t[i+4].Value) {
 					i += 5
 				}
 			}

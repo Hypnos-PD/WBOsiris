@@ -225,7 +225,7 @@ filter_term         = "card" , card_id
                     | "trait" , identifier
                     | "form" , ("unevolved" | "evolved" | "super_evolved")
                     | ("life" | "cost") , comparison_operator , (integer | player_scalar) ;
-player_scalar       = participant , "." , ("combo" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows") ;
+player_scalar       = participant , "." , ("combo" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" | "hand_count" | "earthsigils") ;
 comparison_operator = "==" | "!=" | "<" | "<=" | ">" | ">=" ;
 ```
 
@@ -260,7 +260,7 @@ condition         = "overflow"
                   | scalar_value , comparison_operator , integer ;
 follower_form     = "unevolved" | "evolved" | "super_evolved" ;
 evolution_unlock  = "evolve_unlocked" | "superevolve_unlocked" ;
-scalar_value      = "combo" | participant , "." , scalar_field
+scalar_value      = "combo" | player_scalar
                   | counter_ref
                   | "fused" , "." , fusion_scalar_field ;
 scalar_field      = "life" | "pp" | "maxpp" | "ep" | "sep" | "combo"
@@ -284,7 +284,7 @@ option_label      = "label" , locale_id , string , ";" ;
 ### 2.6 事件与替换
 
 ```ebnf
-event_block       = "when" , event_pattern , [source_zone] , [turn_limit] , [where_clause] , effect_block ;
+event_block       = "when" , event_pattern , [source_zone] , [turn_limit] , [where_clause] , ["if" , condition] , effect_block ;
 event_pattern     = participant , event_subject , event_verb
                   | participant , "follower" , "leaves" , "field"
                   | participant , "turn" , turn_boundary
@@ -355,7 +355,7 @@ numeric_operation = "damage" , value_ref , effect_amount , [damage_distribution]
 
 effect_amount     = integer | counter_ref | "count" , "(" , count_source , [where_clause] , ")"
                   | "sum" , "(" , count_source , [where_clause] , "," , "base" , "." , ("attack" | "life" | "cost") , ")"
-                  | participant , "." , ("combo" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows")
+                  | player_scalar
                   | "self" , "." , ("cost" | "attack" | "life") ;
 signed_amount     = ("+" | "-") , effect_amount ;
 count_source      = target_set | binding_name ; (* binding must already be defined in this scope *)

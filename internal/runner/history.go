@@ -38,7 +38,7 @@ func (g *game) effectTargets(ref ir.Ref, self *instance, bindings frame) []*inst
 	items := g.fromRef(ref, self, bindings)
 	targets := make([]*instance, 0, len(items))
 	for _, i := range items {
-		if i != nil && i.zone != "destroyed" && i.card.CardType != "crest" {
+		if i != nil && i.zone != "destroyed" && (i.card == nil || i.card.CardType != "crest") {
 			targets = append(targets, i)
 		}
 	}

@@ -50,6 +50,17 @@ func (g *game) numericValue(expr ir.NumericExpr, self *instance, bindings frame)
 		}
 		p, _ := g.playerForSide(self, e.Side)
 		switch e.Field {
+		case "hand_count":
+			return len(p.hand)
+		case "earthsigils":
+			total := 0
+			for _, i := range p.field {
+				if !g.chargeQueryVisits(1) {
+					return 0
+				}
+				total += i.earthsigil
+			}
+			return total
 		case "combo":
 			return p.combo
 		case "pp":

@@ -6,7 +6,62 @@ card 10174110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            draw 1;
+        }
+        evolve {
+            gain own crest 10174110;
+        }
+    }
+
+    crest {
+        countdown 3;
+        when own turn ends if own.hand_count <= 5 {
+            draw 1;
+        }
+        when own turn ends if own.hand_count >= 6 {
+            heal own.leader 1;
+        }
+
+        locale chs {
+            name "纹章：崭新的少女·欧丝";
+            text """
+【<color=Keyword>吟唱</color>_3】
+自己的回合结束时，若自己的手牌的张数为5张或以下，则抽取1张卡牌。若为6张或以上，则回复自己的主战者1点生命值。
+""";
+        }
+
+        locale eng {
+            name "Crest: Eudie, Maiden Reborn";
+            text """
+<b><color=Keyword>Countdown</color> (3)</b>
+At the end of your turn, if you have 5 cards or less in your hand, draw a card. If you have at least 6, restore 1 defense to your leader.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"あら\">新</rub>たなる<rub=\"しょうじょ\">少女</rub>・エース";
+            text """
+【<color=Keyword>カウントダウン</color>_3】
+自分のターン終了時、自分の手札の枚数が5以下なら、自分のデッキから1枚を引く。6以上なら、自分のリーダーを1回復。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 새로운 소녀 에이스";
+            text """
+[<color=Keyword>카운트다운</color> 3]
+내 턴 종료시 내 패의 수가 5 이하라면, 내 덱에서 1장을 뽑는다. 6 이상이라면, 내 리더를 1 회복.
+""";
+        }
+
+        locale cht {
+            name "紋章：嶄新的少女‧歐絲";
+            text """
+【<color=Keyword>倒數</color>_3】
+自己的回合結束時，如果自己手牌中的卡片張數為5以下，則會由自己的牌堆中抽取1張卡片。如果為6以上，則會回復自己的主戰者1點生命值。
+""";
+        }
     }
 
     meta {

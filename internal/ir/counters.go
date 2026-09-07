@@ -100,6 +100,13 @@ func validateCounterRefs(card Card) error {
 		return err
 	}
 	for _, ability := range card.Abilities {
+		if trigger, ok := ability.Trigger.(EventTrigger); ok {
+			if c, ok := trigger.Condition.(CompareCondition); ok && c.Left.Kind == "self_counter" {
+				if err := check(c.Left.Field); err != nil {
+					return err
+				}
+			}
+		}
 		if err := walk(ability.Body); err != nil {
 			return err
 		}

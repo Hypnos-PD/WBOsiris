@@ -449,10 +449,12 @@ when self summoned {
 其他随从入场以及战场上的变身都不会触发。两项增量在本条强化操作开始时分别读取，
 暂停恢复保留破坏记录的回合归属。测试初始历史不计入本回合。
 计数不消耗随机决策；查询预算耗尽时不使用部分结果执行效果。
-数值也可直接读取 `own`/`oppo` 的 `combo`、`pp`、`maxpp`、`life`、`ep`、`sep`、`shadows`，
+数值也可直接读取 `own`/`oppo` 的 `combo`、`pp`、`maxpp`、`life`、`ep`、`sep`、`shadows`、`hand_count`、`earthsigils`，
 或者读取 `self.cost`；随从还可读取 `self.attack` 和 `self.life`。
 `own` 始终相对能力控制者，`self` 为发动能力的卡牌实例。费用支付和使用卡牌的连击计数
 在入场曲之前发生，因此入场曲中的 `own.pp` 已扣除费用，`own.combo` 包含本卡牌。
+`hand_count` 是手牌张数；`earthsigils` 是己方或对方战场上土之印的总层数，
+不是土之印实例数。二者均只读，不能用 `gain` 修改；读取土之印层数不会消耗土之印。
 
 ```wbo
 fanfare {
@@ -1009,6 +1011,28 @@ when own card fused {
 
 `card fused` 每次成功融合触发一次，不按素材张数重复。本体融合能力先完整执行，再执行监听；
 非法素材响应和重复融合不触发。融合来源和材料的身份仍按手牌信息隐藏。
+
+## 事件触发条件
+
+事件头部可在 `where` 之后添加 `if`，在事件产生、能力入队时判断条件：
+
+```wbo
+when own turn ends if own.hand_count <= 5 {
+    draw 1;
+}
+when own turn ends if own.hand_count >= 6 {
+    heal own.leader 1;
+}
+```
+
+结束回合时有五张手牌，只会排入抽牌能力；抽到第六张后不会追加回复能力。
+同一事件先执行的其他纹章即使改变手牌，也不会改变已经确定的触发资格。
+暂停和恢复保留已排队能力，不重新判断头部条件。能力体内的 `if` 则在执行到该语句时判断。
+结束回合时统一判定触发资格的机制，参见[官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#75wdwp8ysf)。
+
+头部条件支持玩家数值、已声明的自身计数器、溢出、进化形态和进化解禁条件；
+不支持事件对象绑定或 `fused` 数值。自身专用 `when self ...` 与 `grant` 内的事件
+暂不接受头部条件。条件不成立时不消耗每回合发动次数。
 
 ## 每回合限次
 

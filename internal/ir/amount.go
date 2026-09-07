@@ -5,6 +5,10 @@ import (
 	"fmt"
 )
 
+func ValidPlayerScalar(field string) bool {
+	return oneOf(field, "combo", "pp", "maxpp", "life", "ep", "sep", "shadows", "hand_count", "earthsigils")
+}
+
 func validCountSource(source Ref) bool {
 	switch r := source.(type) {
 	case BindingRef:
@@ -31,7 +35,7 @@ func validNumericExpr(expr NumericExpr, signed bool) bool {
 	case *SumExpr:
 		return e != nil && e.Kind == "sum" && validCountSource(e.Source) && oneOf(e.Field, "base_attack", "base_life", "base_cost")
 	case *Scalar:
-		return e != nil && (e.Kind == "scalar" && validSide(e.Side) && oneOf(e.Field, "combo", "pp", "maxpp", "life", "ep", "sep", "shadows") ||
+		return e != nil && (e.Kind == "scalar" && validSide(e.Side) && ValidPlayerScalar(e.Field) ||
 			e.Kind == "self_scalar" && e.Side == "" && oneOf(e.Field, "attack", "life", "cost") ||
 			e.Kind == "self_counter" && e.Side == "" && ValidCounterName(e.Field))
 	case *NegateExpr:

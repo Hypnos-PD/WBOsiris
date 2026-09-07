@@ -133,14 +133,18 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 				diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", "自身进化事件只允许用于随从", s.Span)
 			}
 			end, subject, ok := parseEventPattern(t)
-			if ok && end < len(t) {
+			if ok && end < len(t) && t[end].Value == "where" {
 				filterOK := subject != "" && (subject == "follower" || !filterContains(t[end:], "life"))
 				var whereOK bool
 				end, whereOK = parseWhere(t, end)
 				ok = filterOK && whereOK
 			}
+			if ok && end < len(t) && t[end].Value == "if" {
+				ok = strictCondition(t[end+1:], false)
+				end = len(t)
+			}
 			if !ok || end != len(t) || len(b) != 1 || s.Terminated {
-				shapeError(ds, s, "when 规范事件 [where 完整筛选] { ... }")
+				shapeError(ds, s, "when 规范事件 [where 完整筛选] [if 条件] { ... }")
 			} else {
 				strictEffectBlock(b[0], effectContext{cardType: ctx.cardType}, ds)
 			}
@@ -320,7 +324,7 @@ func strictCondition(t []syntax.Token, fusion bool) bool {
 	if len(t) == 3 {
 		return t[0].Value == "combo" && op(t[1].Value) && isUnsigned(t[2])
 	}
-	return len(t) == 5 && (set("own", "oppo")[t[0].Value] && t[1].Value == "." && set("life", "pp", "maxpp", "ep", "sep", "combo", "shadows")[t[2].Value] || fusion && t[0].Value == "fused" && t[1].Value == "." && set("cost", "distinct")[t[2].Value]) && op(t[3].Value) && isUnsigned(t[4])
+	return len(t) == 5 && (set("own", "oppo")[t[0].Value] && t[1].Value == "." && ir.ValidPlayerScalar(t[2].Value) || fusion && t[0].Value == "fused" && t[1].Value == "." && set("cost", "distinct")[t[2].Value]) && op(t[3].Value) && isUnsigned(t[4])
 }
 
 func evolutionCondition(t []syntax.Token) bool {

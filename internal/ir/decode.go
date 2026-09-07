@@ -574,6 +574,7 @@ func decodeTrigger(data []byte) (Trigger, error) {
 			OncePerTurn string          `json:"oncePerTurn,omitempty"`
 			SelfOnly    bool            `json:"selfOnly,omitempty"`
 			Predicate   json.RawMessage `json:"predicate,omitempty"`
+			Condition   json.RawMessage `json:"condition,omitempty"`
 		}
 		var v raw
 		if err := strict(data, &v); err != nil {
@@ -584,16 +585,29 @@ func decodeTrigger(data []byte) (Trigger, error) {
 		if len(v.Predicate) > 0 {
 			p, err = decodePredicate(v.Predicate)
 		}
+		if err != nil {
+			return nil, err
+		}
+		var condition Condition
+		if len(v.Condition) > 0 {
+			condition, err = decodeCondition(v.Condition)
+			if err != nil {
+				return nil, err
+			}
+			if c, ok := condition.(CompareCondition); ok && c.Left.Kind == "fusion_material_scalar" {
+				return nil, fmt.Errorf("event conditions cannot access fusion materials")
+			}
+		}
 		if !validSide(v.Side) || !oneOf(v.Event, "follower_summoned", "follower_left", "card_fused", "amulet_engaged", "card_discarded", "turn_started", "turn_ended", "evolved", "super_evolved") || v.SubjectType != "" && !oneOf(v.SubjectType, "follower", "amulet") || v.SourceZone != "" && !oneOf(v.SourceZone, "hand", "field") {
 			return nil, fmt.Errorf("invalid event trigger")
 		}
 		if v.OncePerTurn != "" && !oneOf(v.OncePerTurn, "any", "own", "oppo") {
 			return nil, fmt.Errorf("invalid trigger turn limit")
 		}
-		if v.SelfOnly && (v.OncePerTurn != "" || v.SourceZone != "" || v.Side != "own" || !(v.SubjectType == "follower" && oneOf(v.Event, "evolved", "super_evolved", "follower_summoned") || v.SubjectType == "" && v.Event == "card_discarded") || p != nil) {
+		if v.SelfOnly && (condition != nil || v.OncePerTurn != "" || v.SourceZone != "" || v.Side != "own" || !(v.SubjectType == "follower" && oneOf(v.Event, "evolved", "super_evolved", "follower_summoned") || v.SubjectType == "" && v.Event == "card_discarded") || p != nil) {
 			return nil, fmt.Errorf("invalid self event trigger")
 		}
-		return EventTrigger{Kind: v.Kind, Event: v.Event, Side: v.Side, SourceZone: v.SourceZone, SubjectType: v.SubjectType, SelfOnly: v.SelfOnly, Predicate: p, OncePerTurn: v.OncePerTurn}, err
+		return EventTrigger{Kind: v.Kind, Event: v.Event, Side: v.Side, SourceZone: v.SourceZone, SubjectType: v.SubjectType, SelfOnly: v.SelfOnly, Predicate: p, OncePerTurn: v.OncePerTurn, Condition: condition}, nil
 	case "replacement":
 		type raw struct {
 			Kind    string          `json:"kind"`
@@ -1377,7 +1391,7 @@ func decodeCondition(data []byte) (Condition, error) {
 	if !oneOf(v.Left.Kind, "scalar", "fusion_material_scalar", "self_counter") || !validOp(v.Op) {
 		return nil, fmt.Errorf("unknown scalar kind")
 	}
-	if v.Left.Kind == "scalar" && (!validSide(v.Left.Side) || !oneOf(v.Left.Field, "life", "pp", "maxpp", "ep", "sep", "combo", "shadows")) || v.Left.Kind == "fusion_material_scalar" && (v.Left.Side != "" || !oneOf(v.Left.Field, "cost", "distinct")) {
+	if v.Left.Kind == "scalar" && (!validSide(v.Left.Side) || !ValidPlayerScalar(v.Left.Field)) || v.Left.Kind == "fusion_material_scalar" && (v.Left.Side != "" || !oneOf(v.Left.Field, "cost", "distinct")) {
 		return nil, fmt.Errorf("invalid condition scalar")
 	}
 	if v.Left.Kind == "self_counter" && (v.Left.Side != "" || !ValidCounterName(v.Left.Field)) {

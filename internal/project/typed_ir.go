@@ -652,8 +652,11 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 			m.OncePerTurn = t[baseEnd+2].Value
 		}
 	}
-	if len(t) > end {
-		m.Predicate, _ = filterIR(t, end)
+	if len(t) > end && t[end].Value == "where" {
+		m.Predicate, end = filterIR(t, end)
+	}
+	if len(t) > end && t[end].Value == "if" {
+		m.Condition = conditionIR(t[end+1:])
 	}
 	return m
 }

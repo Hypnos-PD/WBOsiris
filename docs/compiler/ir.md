@@ -308,7 +308,7 @@ BoolExpr =
 不检查职业或卡牌类型；没有额外字段。变身后按新的卡牌定义判断。
 筛选器的 `compare` 节点支持 `field: "life" | "cost"`；`cost` 读取实例当前费用。
 其 `value` 保留整数编码，并支持 `{kind:"scalar", side:"own"|"oppo", field:...}`，
-字段限于 `combo`、`pp`、`maxpp`、`life`、`ep`、`sep`、`shadows`。玩家引用相对于
+字段限于 `combo`、`pp`、`maxpp`、`life`、`ep`、`sep`、`shadows`、`hand_count`、`earthsigils`。玩家引用相对于
 能力来源求值，不能使用候选拥有者或抽牌接收者替代；测试断言中对应测试席位。
 缺失值、`null`、自身字段、算术和聚合表达式均拒绝解码。筛选时读取玩家值；效果在
 任何目标修改之前完成集合筛选，事件触发器在事件入队时完成筛选。暂停续局只保存既有
@@ -408,7 +408,7 @@ Trigger =
 | EngageTrigger        { kind: "engage", cost: u16 }
 | EnhanceTrigger       { kind: "enhance", cost: u16 }
 | SpellboostTrigger    { kind: "spellboost" }
-| EventTrigger         { kind: "event", pattern: EventPattern }
+| EventTrigger         { kind: "event", pattern: EventPattern, condition?: Condition }
 | ReplacementTrigger   { kind: "replacement", pattern: MovePattern }
 ```
 
@@ -481,6 +481,13 @@ MovePattern = {
 连续产生事件时重复占用次数。换回合时先清空记录，再处理倒数与回合开始触发。
 状态沙箱和 Continuation 复制记录；新卡牌副本不继承发动历史，进化保留记录，区域重置和变身清空。
 解码器拒绝未知范围、自身专用触发及附加能力上的限次字段。
+
+事件头部的 `if` 编译为可选的 `EventTrigger.condition`，使用与效果体相同的
+`Condition` 节点。它在事件筛选通过后、消耗限次次数和入队之前求值；条件为假则不入队。
+同一事件的其他能力执行后不重新判断，Continuation 恢复也只继续已有队列。
+头部不能引用融合材料或事件绑定；自身专用事件和附加能力不接受此字段。
+自身计数器必须已声明。缺失字段表示无条件，显式 `null` 或非法条件拒绝解码。
+`hand_count` 与 `earthsigils` 分别读取手牌张数与土之印总层数，只能读取，不能作为资源修改目标。
 
 替换能力在原移动提交前执行，并取消原移动。替换执行上下文记录已应用的
 `ReplacementTrigger.id` 集合；同一移动因替换块产生后续移动时，不得再次应用同一
@@ -720,7 +727,7 @@ NumericExpr = Count { kind: "count", source: ZoneSet | HistorySet | BindingRef |
             | Sum { kind: "sum", source: ZoneSet | HistorySet | BindingRef | FilterSet,
                     field: "base_attack" | "base_life" | "base_cost" }
             | PlayerScalar { kind: "scalar", side: "own" | "oppo",
-                             field: "combo" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" }
+                             field: "combo" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" | "hand_count" | "earthsigils" }
             | SelfScalar { kind: "self_scalar", field: "attack" | "life" | "cost" }
             | SelfCounter { kind: "self_counter", field: CounterName }
 EffectAmount = nonnegative_integer | NumericExpr

@@ -6,7 +6,62 @@ card 10133110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from oppo.field.followers;
+            damage target own.earthsigils;
+        }
+        evolve {
+            gain own crest 10133110;
+        }
+    }
+
+    crest {
+        countdown 3;
+        when own turn ends {
+            earthrite 1 {
+                summon 1 card 90031120;
+            }
+        }
+
+        locale chs {
+            name "纹章：黎明炼金术师·诺诺";
+            text """
+【<color=Keyword>吟唱</color>_3】
+自己的回合结束时，【<color=Keyword>土之秘术</color>_1】召唤1个『<color=Keyword>守护者巨像</color>』。
+""";
+        }
+
+        locale eng {
+            name "Crest: Juno, Visionary Alchemist";
+            text """
+<b><color=Keyword>Countdown</color> (3)</b>
+At the end of your turn, <b><color=Keyword>Earth Rite</color> (1)</b> - Summon a <b><i><color=Keyword>Guardian Golem</color></i></b>.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"れいめい\">黎明</rub>の<rub=\"れんきんじゅつし\">錬金術師</rub>・ノノ";
+            text """
+【<color=Keyword>カウントダウン</color>_3】
+自分のターン終了時、【<color=Keyword>土の秘術</color>_1】『<color=Keyword>ガーディアンゴーレム</color>』1枚を自分の場に出す。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 여명의 연금술사 노노";
+            text """
+[<color=Keyword>카운트다운</color> 3]
+내 턴 종료시, [<color=Keyword>대지의 비술</color> 1] <color=Keyword>수호 골렘</color> 1장을 내 전장에 소환.
+""";
+        }
+
+        locale cht {
+            name "紋章：拂曉鍊金術師‧諾諾";
+            text """
+【<color=Keyword>倒數</color>_3】
+自己的回合結束時，【<color=Keyword>土之秘術</color>_1】召喚1張『<color=Keyword>守護者巨像</color>』到自己的戰場上。
+""";
+        }
     }
 
     meta {

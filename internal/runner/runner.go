@@ -1169,15 +1169,17 @@ func (g *game) advanceTurn() {
 		g.turnTransition = "starting_triggers"
 		return
 	}
+	if g.turnTransition == "starting_triggers" {
+		g.turnTransition = "starting_draw"
+		g.queueEventTriggersIn(ir.RuntimeEvent{Kind: "turn_started", Side: g.turn.Active}, nil, "", "cards")
+		return
+	}
 	g.turnTransition = ""
 	g.draw(ir.DrawEffect{Kind: "draw", Owner: g.turn.Active, Count: 1}, nil, frame{})
 	if g.gameOver {
 		return
 	}
-	event := ir.RuntimeEvent{Kind: "turn_started", Side: g.turn.Active}
-	if g.emit(event) {
-		g.queueEventTriggersIn(event, nil, "", "cards")
-	}
+	g.emit(ir.RuntimeEvent{Kind: "turn_started", Side: g.turn.Active})
 }
 
 func findAbility(card *ir.Card, kind string) *ir.Ability {

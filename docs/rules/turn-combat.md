@@ -43,7 +43,7 @@ Continuation 中的动作控制者；所有待处理触发和选择完成后才�
    临时效果也在结束阶段清理，玩家选择仍可暂停结算。
 3. 将行动方切换为另一方；若从 `oppo` 切换为 `own`，`number` 加一。
 4. 执行新行动方的回合开始准备。
-5. 发出 `turn_started <active>` 事实并排空触发队列。
+5. 发出 `turn_started <active>` 事实，标记回合开始准备已经完成。
 
 回合开始准备按以下固定顺序执行：
 
@@ -57,11 +57,14 @@ Continuation 中的动作控制者；所有待处理触发和选择完成后才�
    纹章的回合开始能力，排空该阶段触发队列。
 8. 所有该行动方场上护符的 `countdown` 减少一点；减至零的护符形成一个死亡批次，
    先整体离场，再按现有死亡批次规则排入谢幕曲。
-9. 从该行动方牌组顶部抽一张牌。正式对局中无法完成普通抽牌时，该玩家立即败北；
+9. 排入普通卡牌的回合开始能力并排空触发队列。
+10. 从该行动方牌组顶部抽一张牌。正式对局中无法完成普通抽牌时，该玩家立即败北；
    测试 DSL 未声明 `firstPlayer` 时仍允许省略与当前断言无关的牌组。
 
-普通卡牌的 `turn_started` 监听器看到的是上述准备步骤完成后的状态；纹章监听器在
-步骤 7 结算。回合开始和结束的同类纹章能力按获得顺序、先于战场卡牌排队。
+普通卡牌的 `turn_started` 监听器在步骤 9 结算；纹章监听器在步骤 7 结算，
+两者均先于正常抽牌。回合开始和结束的同类纹章能力按获得顺序、先于战场卡牌排队。
+纹章能力先于战场吟唱处理，参见[官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#r6iwd8iutw)；
+正常抽牌在回合开始能力之后，参见[官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#noxkybph23d4)。
 准备步骤产生的事实和触发
    队列必须在 `turn_started` 之前按规则检查点排空；其中任何选择都暂停同一个回合
    动作，不得提前接受下一玩家动作。
@@ -92,7 +95,7 @@ turn_start <side>;
 暂停的回合动作必须在 Continuation 中额外保存：
 
 ```text
-turnTransition: "" | "ending" | "starting" | "starting_crests" | "starting_triggers"
+turnTransition: "" | "ending" | "starting" | "starting_crests" | "starting_triggers" | "starting_draw"
 transitionSide: "own" | "oppo"
 ```
 

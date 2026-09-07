@@ -17,7 +17,7 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.27.0"
+const continuationVersion = "0.28.0"
 
 type ContinuationBindings struct {
 	ID     string                      `json:"id"`
@@ -498,7 +498,7 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 		return nil, fmt.Errorf("invalid continuation instance serial")
 	}
 	validTransition := saved.Turn.Active == "own" || saved.Turn.Active == "oppo"
-	if saved.TurnTransition != "" && saved.TurnTransition != "ending" && saved.TurnTransition != "starting" && saved.TurnTransition != "starting_triggers" && saved.TurnTransition != "starting_crests" {
+	if saved.TurnTransition != "" && saved.TurnTransition != "ending" && saved.TurnTransition != "starting" && saved.TurnTransition != "starting_triggers" && saved.TurnTransition != "starting_crests" && saved.TurnTransition != "starting_draw" {
 		validTransition = false
 	}
 	if saved.EndingSide != "" && saved.EndingSide != "own" && saved.EndingSide != "oppo" ||

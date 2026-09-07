@@ -1,0 +1,86 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Juno damage counts sigil layers and does not spend them" {
+    seed 4201;
+    state { player own { pp 5/5; hand { follower source = 10133110; } field { amulet sigil = 90031210 { earthsigil 4; } } } player oppo { field { follower target = 10163130; } } }
+    action { play source; select target; }
+    expect { legal; target.stats == 7/2; sigil.earthsigil == 4; own.pp == 0/5; }
+}
+
+scenario "Juno deals zero damage with no sigils" {
+    seed 4202;
+    state { player own { pp 5/5; hand { follower source = 10133110; } } player oppo { field { follower target = 10001110; } } }
+    action { play source; select target; }
+    expect { legal; target.stats == 2/2; }
+}
+
+scenario "Juno remains playable without an enemy target" {
+    seed 4203;
+    state { player own { pp 5/5; hand { follower source = 10133110; } } }
+    action { play source; }
+    expect { legal; source.zone == field; own.crests count card 10133110 == 0; }
+}
+
+scenario "Juno evolution gains its countdown crest" {
+    seed 4204;
+    state { turn own 7; player own { ep 1; field { follower source = 10133110; } } }
+    action { evolve source; }
+    expect { legal; own.crests count card 10133110 == 1; source.stats == 5/5; }
+}
+
+scenario "Juno super evolution inherits the crest gain" {
+    seed 4205;
+    state { turn own 7; player own { sep 1; field { follower source = 10133110; } } }
+    action { superevolve source; }
+    expect { legal; own.crests count card 10133110 == 1; source.stats == 6/6; }
+}
+
+scenario "Juno crest consumes the final sigil and summons a Guardian Golem" {
+    seed 4206;
+    state { player own { crests { crest juno = 10133110; } field { amulet sigil = 90031210; } } }
+    action { end_turn; }
+    expect { legal; own.field count card 90031120 == 1; all own.field where card 90031120 have ward; sigil.zone == graveyard; juno.countdown == 3; }
+}
+
+scenario "Juno crest cannot summon without a sigil" {
+    seed 4207;
+    state { player own { crests { crest juno = 10133110; } } }
+    action { end_turn; }
+    expect { legal; own.field count card 90031120 == 0; juno.countdown == 3; }
+}
+
+scenario "Eudie fanfare draws before leaving its crest for evolution" {
+    seed 4208;
+    state { player own { pp 3/3; hand { follower source = 10174110; } deck top { follower topcard = 10001110; } } }
+    action { play source; }
+    expect { legal; topcard.zone == hand; own.crests count card 10174110 == 0; }
+}
+
+scenario "Eudie evolution gains its crest" {
+    seed 4209;
+    state { turn own 7; player own { ep 1; field { follower source = 10174110; } } }
+    action { evolve source; }
+    expect { legal; own.crests count card 10174110 == 1; source.stats == 5/5; }
+}
+
+scenario "Eudie super evolution also gains its crest" {
+    seed 4210;
+    state { turn own 7; player own { sep 1; field { follower source = 10174110; } } }
+    action { superevolve source; }
+    expect { legal; own.crests count card 10174110 == 1; source.stats == 6/6; }
+}
+
+scenario "Eudie draws the sixth card without also healing" {
+    seed 4211;
+    state { player own { leader 17/20; crests { crest eudie = 10174110; } hand { follower a = 10001110; follower b = 10001110; follower c = 10001110; follower d = 10001110; follower e = 10001110; } deck top { follower topcard = 10001110; } } }
+    action { end_turn; }
+    expect { legal; own.hand count card 10001110 == 6; own.leader.life == 17; topcard.zone == hand; }
+}
+
+scenario "Eudie with six cards heals without drawing" {
+    seed 4212;
+    state { player own { leader 17/20; crests { crest eudie = 10174110; } hand { follower a = 10001110; follower b = 10001110; follower c = 10001110; follower d = 10001110; follower e = 10001110; follower f = 10001110; } deck top { follower topcard = 10001110; } } }
+    action { end_turn; }
+    expect { legal; own.hand count card 10001110 == 6; own.leader.life == 18; topcard.zone == deck; }
+}
