@@ -39,7 +39,8 @@ type instance struct {
 }
 type player struct {
 	pp, maxpp, leaderLife, leaderMax, ep, sep, combo, shadows int
-	deck, hand, field, graveyard, banished, destroyed         []*instance
+	deck, hand, field, graveyard, banished                    []*instance
+	destroyed                                                 []DestructionRecord
 	resolving                                                 []*instance
 	attackedThisTurn, evolvedThisTurn                         bool
 	extraPPEarly, extraPPLate                                 bool
@@ -339,7 +340,7 @@ func (g *game) addToZone(p *player, i *instance, z string) {
 	case "banished":
 		p.banished = append(p.banished, i)
 	case "destroyed":
-		p.destroyed = append(p.destroyed, i)
+		p.destroyed = append(p.destroyed, destructionRecord(i, 0))
 	}
 }
 func (g *game) preflight(a ir.Action, budget *budgetTracker) string {

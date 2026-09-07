@@ -17,7 +17,7 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.24.0"
+const continuationVersion = "0.25.0"
 
 type ContinuationBindings struct {
 	ID     string                      `json:"id"`
@@ -79,26 +79,26 @@ type ContinuationAttack struct {
 }
 
 type ContinuationPlayer struct {
-	PP               int      `json:"pp"`
-	MaxPP            int      `json:"maxpp"`
-	LeaderLife       int      `json:"leaderLife"`
-	LeaderMax        int      `json:"leaderMax"`
-	EP               int      `json:"ep"`
-	SEP              int      `json:"sep"`
-	Combo            int      `json:"combo"`
-	Shadows          int      `json:"shadows"`
-	AttackedThisTurn bool     `json:"attackedThisTurn"`
-	EvolvedThisTurn  bool     `json:"evolvedThisTurn"`
-	ExtraPPEarly     bool     `json:"extraPPEarly"`
-	ExtraPPLate      bool     `json:"extraPPLate"`
-	ExtraPPActive    bool     `json:"extraPPActive"`
-	Deck             []string `json:"deck"`
-	Hand             []string `json:"hand"`
-	Field            []string `json:"field"`
-	Graveyard        []string `json:"graveyard"`
-	Resolving        []string `json:"resolving"`
-	Banished         []string `json:"banished"`
-	Destroyed        []string `json:"destroyed"`
+	PP               int                 `json:"pp"`
+	MaxPP            int                 `json:"maxpp"`
+	LeaderLife       int                 `json:"leaderLife"`
+	LeaderMax        int                 `json:"leaderMax"`
+	EP               int                 `json:"ep"`
+	SEP              int                 `json:"sep"`
+	Combo            int                 `json:"combo"`
+	Shadows          int                 `json:"shadows"`
+	AttackedThisTurn bool                `json:"attackedThisTurn"`
+	EvolvedThisTurn  bool                `json:"evolvedThisTurn"`
+	ExtraPPEarly     bool                `json:"extraPPEarly"`
+	ExtraPPLate      bool                `json:"extraPPLate"`
+	ExtraPPActive    bool                `json:"extraPPActive"`
+	Deck             []string            `json:"deck"`
+	Hand             []string            `json:"hand"`
+	Field            []string            `json:"field"`
+	Graveyard        []string            `json:"graveyard"`
+	Resolving        []string            `json:"resolving"`
+	Banished         []string            `json:"banished"`
+	Destroyed        []DestructionRecord `json:"destroyed"`
 }
 
 type ContinuationEntity struct {
@@ -477,7 +477,7 @@ func snapshotContinuationPlayer(p player) ContinuationPlayer {
 		PP: p.pp, MaxPP: p.maxpp, LeaderLife: p.leaderLife, LeaderMax: p.leaderMax,
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, AttackedThisTurn: p.attackedThisTurn,
 		Deck: instanceIDs(p.deck), Hand: instanceIDs(p.hand), Field: instanceIDs(p.field), EvolvedThisTurn: p.evolvedThisTurn,
-		Graveyard: instanceIDs(p.graveyard), Banished: instanceIDs(p.banished), Destroyed: instanceIDs(p.destroyed),
+		Graveyard: instanceIDs(p.graveyard), Banished: instanceIDs(p.banished), Destroyed: append([]DestructionRecord{}, p.destroyed...),
 		Resolving:    instanceIDs(p.resolving),
 		ExtraPPEarly: p.extraPPEarly, ExtraPPLate: p.extraPPLate, ExtraPPActive: p.extraPPActive,
 	}
@@ -590,10 +590,10 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 			source.materials = append(source.materials, material)
 		}
 	}
-	if g.own, err = restorePlayer(saved.Own, g.instances); err != nil {
+	if g.own, err = restorePlayer(saved.Own, g.instances, cards); err != nil {
 		return nil, err
 	}
-	if g.oppo, err = restorePlayer(saved.Oppo, g.instances); err != nil {
+	if g.oppo, err = restorePlayer(saved.Oppo, g.instances, cards); err != nil {
 		return nil, err
 	}
 	if len(g.own.resolving)+len(g.oppo.resolving) > 1 || len(g.player(oppositeSide(g.turn.Active)).resolving) != 0 {
@@ -644,9 +644,10 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 	historyOnly := map[string]string{}
 	for _, side := range []struct {
 		name    string
-		history []*instance
+		history []DestructionRecord
 	}{{"own", g.own.destroyed}, {"oppo", g.oppo.destroyed}} {
-		for _, i := range side.history {
+		for _, record := range side.history {
+			i := g.instances[record.InstanceID]
 			if i.zone != "destroyed" && zoneOwner[i.id] != side.name {
 				return nil, fmt.Errorf("invalid continuation destroyed history owner")
 			}
@@ -676,8 +677,11 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 		g.events = append(g.events, ir.RuntimeEvent{PrivateTo: event.PrivateTo, Kind: event.Kind, Side: event.Side, InstanceID: event.InstanceID, From: event.From, To: event.To, Reason: event.Reason, CardID: event.CardID, Count: event.Count, Actual: event.Actual, Target: cloneEventTarget(event.Target), Subject: cloneEventTarget(event.Subject), Attacker: cloneEventTarget(event.Attacker), Defender: cloneEventTarget(event.Defender), Sequence: event.Sequence, BatchID: event.BatchID})
 	}
 	destroyedHistory := map[string]bool{}
-	for _, i := range append(append([]*instance{}, g.own.destroyed...), g.oppo.destroyed...) {
-		destroyedHistory[i.id] = true
+	for _, record := range append(append([]DestructionRecord{}, g.own.destroyed...), g.oppo.destroyed...) {
+		destroyedHistory[record.InstanceID] = true
+	}
+	if err := validateDestructionRecords(g); err != nil {
+		return nil, err
 	}
 	if err := validateContinuationEvents(g.events, saved.EventSequence, saved.DeathBatchSerial, g.instances, destroyedHistory); err != nil {
 		return nil, err
@@ -795,7 +799,7 @@ func generatedInstanceSerial(instances []ContinuationEntity) int {
 	return maximum
 }
 
-func restorePlayer(saved ContinuationPlayer, instances map[string]*instance) (player, error) {
+func restorePlayer(saved ContinuationPlayer, instances map[string]*instance, cards map[int]*ir.Card) (player, error) {
 	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, attackedThisTurn: saved.AttackedThisTurn, evolvedThisTurn: saved.EvolvedThisTurn, extraPPEarly: saved.ExtraPPEarly, extraPPLate: saved.ExtraPPLate, extraPPActive: saved.ExtraPPActive}
 	var err error
 	if p.deck, err = restoreInstanceList(saved.Deck, instances, "deck"); err != nil {
@@ -816,7 +820,7 @@ func restorePlayer(saved ContinuationPlayer, instances map[string]*instance) (pl
 	if p.banished, err = restoreInstanceList(saved.Banished, instances, "banished"); err != nil {
 		return player{}, err
 	}
-	if p.destroyed, err = restoreHistory(saved.Destroyed, instances); err != nil {
+	if p.destroyed, err = restoreHistory(saved.Destroyed, instances, cards); err != nil {
 		return player{}, err
 	}
 	return p, nil
@@ -836,15 +840,47 @@ func restoreInstanceList(ids []string, instances map[string]*instance, zone stri
 	return items, nil
 }
 
-func restoreHistory(ids []string, instances map[string]*instance) ([]*instance, error) {
-	items := make([]*instance, 0, len(ids))
-	for _, id := range ids {
-		if instances[id] == nil {
+func restoreHistory(records []DestructionRecord, instances map[string]*instance, cards map[int]*ir.Card) ([]DestructionRecord, error) {
+	items := make([]DestructionRecord, 0, len(records))
+	var previous uint64
+	for _, record := range records {
+		card := cards[record.CardID]
+		if instances[record.InstanceID] == nil || card == nil || card.CardType != "follower" && card.CardType != "amulet" ||
+			record.Cost < 0 || record.Cost > 65535 ||
+			(record.Evolved || record.SuperEvolved || record.Departed) && card.CardType != "follower" ||
+			previous > 0 && record.EventSequence <= previous {
 			return nil, fmt.Errorf("invalid continuation destroyed history")
 		}
-		items = append(items, instances[id])
+		previous = record.EventSequence
+		items = append(items, record)
 	}
 	return items, nil
+}
+
+func validateDestructionRecords(g *game) error {
+	recorded := map[uint64]bool{}
+	for _, side := range []string{"own", "oppo"} {
+		for _, record := range g.player(side).destroyed {
+			if record.EventSequence == 0 {
+				continue
+			}
+			if record.EventSequence > uint64(len(g.events)) || recorded[record.EventSequence] {
+				return fmt.Errorf("invalid continuation destruction record sequence")
+			}
+			event := g.events[record.EventSequence-1]
+			if event.Kind != "destroyed" || event.Side != side || event.Subject == nil ||
+				event.Subject.InstanceID != record.InstanceID || event.Subject.CardID != record.CardID {
+				return fmt.Errorf("continuation destruction record does not match its event")
+			}
+			recorded[record.EventSequence] = true
+		}
+	}
+	for _, event := range g.events {
+		if event.Kind == "destroyed" && !recorded[event.Sequence] {
+			return fmt.Errorf("continuation death event has no destruction record")
+		}
+	}
+	return nil
 }
 
 func restoreBindings(saved []ContinuationBindings, instances map[string]*instance) (map[string]frame, error) {

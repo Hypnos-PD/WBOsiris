@@ -283,7 +283,7 @@ func TestReanimateContinuationPreservesRepeatedInstanceDeaths(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(restored.g.own.destroyed) != 2 || restored.g.own.destroyed[0] != restored.g.own.destroyed[1] {
+	if len(restored.g.own.destroyed) != 2 || restored.g.own.destroyed[0].InstanceID != restored.g.own.destroyed[1].InstanceID || restored.g.own.destroyed[0].EventSequence == restored.g.own.destroyed[1].EventSequence {
 		t.Fatal("restoration deduplicated destruction records")
 	}
 	choice := step.Choice

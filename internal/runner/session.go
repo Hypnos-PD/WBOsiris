@@ -675,7 +675,8 @@ type attackSnapshot struct {
 
 type playerSnapshot struct {
 	PP, MaxPP, LeaderLife, LeaderMax, EP, SEP, Combo, Shadows int
-	Deck, Hand, Field, Graveyard, Banished, Destroyed         []string
+	Deck, Hand, Field, Graveyard, Banished                    []string
+	Destroyed                                                 []DestructionRecord
 	Resolving                                                 []string
 	AttackedThisTurn, EvolvedThisTurn                         bool
 	ExtraPPEarly, ExtraPPLate, ExtraPPActive                  bool
@@ -716,7 +717,7 @@ func snapshotPlayer(p player) playerSnapshot {
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows,
 		Deck: ids(p.deck), Hand: ids(p.hand), Field: ids(p.field), Graveyard: ids(p.graveyard),
 		Resolving: ids(p.resolving),
-		Banished:  ids(p.banished), Destroyed: ids(p.destroyed), AttackedThisTurn: p.attackedThisTurn, EvolvedThisTurn: p.evolvedThisTurn,
+		Banished:  ids(p.banished), Destroyed: append([]DestructionRecord{}, p.destroyed...), AttackedThisTurn: p.attackedThisTurn, EvolvedThisTurn: p.evolvedThisTurn,
 		ExtraPPEarly: p.extraPPEarly, ExtraPPLate: p.extraPPLate, ExtraPPActive: p.extraPPActive,
 	}
 }
@@ -765,7 +766,7 @@ func clonePlayer(original player, instances map[string]*instance) player {
 		ep: original.ep, sep: original.sep, combo: original.combo, shadows: original.shadows,
 		deck: cloneInstances(original.deck, instances), hand: cloneInstances(original.hand, instances),
 		field: cloneInstances(original.field, instances), graveyard: cloneInstances(original.graveyard, instances),
-		banished: cloneInstances(original.banished, instances), destroyed: cloneInstances(original.destroyed, instances),
+		banished: cloneInstances(original.banished, instances), destroyed: append([]DestructionRecord{}, original.destroyed...),
 		resolving:        cloneInstances(original.resolving, instances),
 		attackedThisTurn: original.attackedThisTurn, evolvedThisTurn: original.evolvedThisTurn,
 		extraPPEarly: original.extraPPEarly, extraPPLate: original.extraPPLate, extraPPActive: original.extraPPActive,

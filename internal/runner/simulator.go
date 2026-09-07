@@ -348,7 +348,7 @@ func (s *Session) View(viewer string) (StateView, error) {
 		Turn: TurnView{Active: active, Number: s.g.turn.Number}, Phase: s.g.phase,
 		Revision: s.g.revision, Viewer: viewer,
 		GameOver: s.g.gameOver, Winner: winner,
-		Own: playerView(own, true, s.g.turn.Number, viewer, s.g.firstPlayer), Oppo: playerView(oppo, false, s.g.turn.Number, oppositeSide(viewer), s.g.firstPlayer), PendingChoice: s.pendingChoiceFor(viewer),
+		Own: playerView(own, true, s.g.turn.Number, viewer, s.g.firstPlayer, s.g.cards), Oppo: playerView(oppo, false, s.g.turn.Number, oppositeSide(viewer), s.g.firstPlayer, s.g.cards), PendingChoice: s.pendingChoiceFor(viewer),
 	}, nil
 }
 
@@ -361,12 +361,12 @@ func (s *Session) pendingChoiceFor(viewer string) *ChoiceRequest {
 	return request
 }
 
-func playerView(p *player, revealHand bool, turn int, side, firstPlayer string) PlayerView {
+func playerView(p *player, revealHand bool, turn int, side, firstPlayer string, cards map[int]*ir.Card) PlayerView {
 	view := PlayerView{
 		LeaderLife: p.leaderLife, LeaderMax: p.leaderMax, PP: p.pp, MaxPP: p.maxpp,
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, AttackedThisTurn: p.attackedThisTurn,
 		DeckCount: len(p.deck), HandCount: len(p.hand), Field: entityViews(p.field, revealHand),
-		Graveyard: entityViews(p.graveyard, revealHand), Banished: entityViews(p.banished, revealHand), Destroyed: entityViews(p.destroyed, revealHand),
+		Graveyard: entityViews(p.graveyard, revealHand), Banished: entityViews(p.banished, revealHand), Destroyed: entityViews(historyInstances(p.destroyed, cards), false),
 		Resolving: entityViews(p.resolving, revealHand),
 	}
 	if firstPlayer != "" && side != firstPlayer {

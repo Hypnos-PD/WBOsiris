@@ -613,6 +613,14 @@ func decodeEffects(raw []json.RawMessage, nodeIDs map[string]bool) ([]Effect, er
 	return out, nil
 }
 func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
+	effect, err := decodeEffectShape(data, nodeIDs)
+	if err == nil && hasHistoryEffectTarget(effect) {
+		return nil, fmt.Errorf("destroyed history is read-only")
+	}
+	return effect, err
+}
+
+func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 	var k rawKind
 	if err := json.Unmarshal(data, &k); err != nil {
 		return nil, err

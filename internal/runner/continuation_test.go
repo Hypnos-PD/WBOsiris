@@ -382,7 +382,7 @@ func TestRestoreGameRejectsGeneratedSerialAndHistoryOwner(t *testing.T) {
 		id := strings.Repeat("f", 32)
 		saved.Instances = []ContinuationEntity{{ID: id, Zone: "graveyard", CardID: card.ID}}
 		saved.Oppo.Graveyard = []string{id}
-		saved.Own.Destroyed = []string{id}
+		saved.Own.Destroyed = []DestructionRecord{{InstanceID: id, CardID: card.ID}}
 		if _, err := restoreGame(cards, saved); err == nil {
 			t.Fatal("cross-owner destroyed history was accepted")
 		}

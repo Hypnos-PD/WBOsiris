@@ -41,7 +41,7 @@ func (i *instance) triggeredAbilities() iter.Seq[runtimeAbility] {
 }
 
 func (g *game) grantAbility(e ir.GrantEffect, self *instance, bindings frame) {
-	for _, target := range g.fromRef(e.Target, self, bindings) {
+	for _, target := range g.effectTargets(e.Target, self, bindings) {
 		if !g.chargeQueryVisits(1) {
 			return
 		}

@@ -370,6 +370,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			continue
 		case "choose", "require", "random":
 			end, setOK := parseTargetSet(t, 3)
+			if setOK && len(t) > 5 && t[5].Value == "destroyed" {
+				setOK = false
+			}
 			if setOK && end < len(t) && t[end].Value == "or" {
 				if end == 8 && len(t) >= 12 && values(t[4:8]) == ". field . followers" && values(t[end:end+4]) == "or "+t[3].Value+" . leader" {
 					end += 4
@@ -754,7 +757,8 @@ func parseValueRef(t []syntax.Token, i int) (int, bool) {
 	if (t[i].Value == "own" || t[i].Value == "oppo") && i+2 < len(t) && t[i+1].Value == "." && t[i+2].Value == "leader" {
 		return i + 3, true
 	}
-	return parseTargetSet(t, i)
+	end, ok := parseTargetSet(t, i)
+	return end, ok && !(i+2 < len(t) && t[i+2].Value == "destroyed")
 }
 func parseWhere(t []syntax.Token, i int) (int, bool) {
 	if i >= len(t) || t[i].Value != "where" {

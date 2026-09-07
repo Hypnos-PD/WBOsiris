@@ -163,12 +163,18 @@ func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 	case ir.ExcludeRef:
 		out := g.fromRef(r.Source, self, f)
 		excluded := g.fromRef(r.Value, self, f)
+		excludedIDs := map[string]bool{}
+		for _, i := range excluded {
+			if i != nil {
+				excludedIDs[i.id] = true
+			}
+		}
 		var result []*instance
 		for _, i := range out {
 			if !g.chargeQueryVisits(1) {
 				break
 			}
-			if !contains(excluded, i) {
+			if i != nil && !excludedIDs[i.id] {
 				result = append(result, i)
 			}
 		}
@@ -179,7 +185,7 @@ func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 
 // Target restrictions apply to player choices, not to set queries or random effects.
 func (g *game) selectionCandidates(e ir.SelectionEffect, self *instance, f frame) []*instance {
-	items := g.fromRef(e.Source, self, f)
+	items := g.effectTargets(e.Source, self, f)
 	if e.Kind == "random_choose" {
 		return g.extremumCandidates(items, e.Extremum)
 	}
@@ -251,7 +257,7 @@ func (g *game) zone(p *player, z string) []*instance {
 	case "banished":
 		return p.banished
 	case "destroyed":
-		return p.destroyed
+		return historyInstances(p.destroyed, g.cards)
 	}
 	return nil
 }
@@ -436,7 +442,7 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 	case "summon":
 		f[e.Output] = bindEntities(g.summonFor(self, e.Owner, e.Count, e.CardID, false)...)
 	case "summon_copies":
-		f[e.Output] = bindEntities(g.summonCopies(self, e.Owner, g.fromRef(e.Target, self, f))...)
+		f[e.Output] = bindEntities(g.summonCopies(self, e.Owner, g.effectTargets(e.Target, self, f))...)
 	case "reanimate":
 		f[e.Output] = nil
 		if len(own.field) >= fieldLimit {
@@ -448,7 +454,7 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 			if !g.chargeQueryVisits(1) {
 				return
 			}
-			card := dead.card
+			card := g.cards[dead.CardID]
 			if card.CardType != "follower" || card.Cost > e.MaxCost || card.Cost < bestCost {
 				continue
 			}
@@ -468,7 +474,7 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 		}
 		f[e.Output] = bindEntities(g.summonFor(self, e.Owner, 1, candidates[selected].ID, true)...)
 	case "transform":
-		targets := g.fromRef(e.Target, self, f)
+		targets := g.effectTargets(e.Target, self, f)
 		if g.budget != nil && g.budget.exceeded {
 			return
 		}
@@ -497,7 +503,7 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 }
 func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 	_, _, ownSide := g.relativePlayers(self)
-	targets := g.fromRef(e.Target, self, f)
+	targets := g.effectTargets(e.Target, self, f)
 	leaders := g.boundLeaderSides(e.Target, self, f)
 	if e.Predicate != nil {
 		targets = g.filter(targets, "", e.Predicate)
@@ -620,7 +626,7 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 			}
 		}
 	case "adjust_entity_field":
-		targets := g.fromRef(e.Target, self, f)
+		targets := g.effectTargets(e.Target, self, f)
 		if g.budget != nil && g.budget.exceeded {
 			return
 		}
@@ -652,7 +658,7 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 			}
 		}
 	case "spellboost":
-		targets := g.fromRef(e.Target, self, f)
+		targets := g.effectTargets(e.Target, self, f)
 		for _, target := range targets {
 			if target == nil || target.zone != "hand" {
 				continue
@@ -815,14 +821,16 @@ func (g *game) resolveDeathBatch(explicit []*instance) []*instance {
 	batchID := g.deathBatchSerial
 	for _, death := range deaths {
 		g.move(death.instance, "graveyard")
-		death.owner.destroyed = append(death.owner.destroyed, death.instance)
 		if g.attack != nil && death.instance.id == g.attack.defender {
 			g.attack.defenderDestroyed = true
 		}
 	}
+	for n, death := range deaths {
+		death.owner.destroyed = append(death.owner.destroyed, destructionRecord(death.instance, g.eventSequence+uint64(n)+1))
+	}
 	for _, death := range deaths {
 		g.eventSequence++
-		subject := ir.EventTarget{Kind: "instance", InstanceID: death.instance.id}
+		subject := ir.EventTarget{Kind: "instance", InstanceID: death.instance.id, CardID: death.instance.card.ID}
 		event := ir.RuntimeEvent{Kind: "destroyed", Side: g.sideOf(death.instance), Subject: &subject, Sequence: g.eventSequence, BatchID: batchID}
 		g.events = append(g.events, event)
 		g.queueEventTriggers(event, death.instance, "")
@@ -890,8 +898,13 @@ func (g *game) owner(i *instance) *player {
 			return g.owner(source)
 		}
 	}
-	for _, z := range [][]*instance{g.oppo.field, g.oppo.hand, g.oppo.deck, g.oppo.graveyard, g.oppo.banished, g.oppo.resolving, g.oppo.destroyed} {
+	for _, z := range [][]*instance{g.oppo.field, g.oppo.hand, g.oppo.deck, g.oppo.graveyard, g.oppo.banished, g.oppo.resolving} {
 		if contains(z, i) {
+			return &g.oppo
+		}
+	}
+	for _, record := range g.oppo.destroyed {
+		if record.InstanceID == i.id {
 			return &g.oppo
 		}
 	}
