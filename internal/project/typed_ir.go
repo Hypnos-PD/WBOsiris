@@ -321,7 +321,7 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		} else if t[2].Value == "earthsigil" {
 			return ir.AdjustEffect{NodeBase: base, Kind: "adjust_earthsigil", Owner: "own", Delta: intToken(t[1])}, nil
 		} else {
-			return ir.TargetEffect{NodeBase: base, Kind: "add_keyword", Keyword: t[1].Value, Target: valueRefIR(t, 3)}, nil
+			return keywordEffectIR(base, "add_keyword", t), nil
 		}
 	case "summon":
 		return ir.CardEffect{NodeBase: base, Kind: "summon", Owner: "own", Count: intAt(s, 1), CardID: intToken(t[3]), Output: "summoned"}, nil
@@ -374,7 +374,7 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		}
 		return e, nil
 	case "remove":
-		return ir.TargetEffect{NodeBase: base, Kind: "remove_keyword", Keyword: t[1].Value, Target: valueRefIR(t, 3)}, nil
+		return keywordEffectIR(base, "remove_keyword", t), nil
 	case "set_attack_limit":
 		return ir.TargetEffect{NodeBase: base, Kind: "set_attack_limit", Target: valueRefIR(t, 1), Amount: intToken(t[2])}, nil
 	case "set":

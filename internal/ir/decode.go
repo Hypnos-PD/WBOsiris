@@ -922,7 +922,7 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 				return nil, fmt.Errorf("invalid return shape")
 			}
 		case "add_keyword", "remove_keyword":
-			if !validKeyword(v.Keyword) || v.DamageType != "" || v.Amount != 0 || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
+			if !validKeyword(v.Keyword) || v.DamageType != "" || v.Amount != 0 || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 {
 				return nil, fmt.Errorf("invalid keyword effect")
 			}
 		case "silent_evolve":

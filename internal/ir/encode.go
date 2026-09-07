@@ -211,6 +211,9 @@ func (e TargetEffect) MarshalJSON() ([]byte, error) {
 		}
 	case "add_keyword", "remove_keyword":
 		object["keyword"] = e.Keyword
+		if e.Predicate != nil {
+			object["predicate"] = e.Predicate
+		}
 	case "set_attack_limit", "set_life":
 		object["amount"] = e.Amount
 		if e.Kind == "set_life" {

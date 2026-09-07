@@ -657,13 +657,15 @@ BuffStats = NodeBase & {
 AddKeyword = NodeBase & {
   kind: "add_keyword",
   target: ValueRef | SetExpr,
-  keyword: Keyword
+  keyword: Keyword,
+  predicate?: Predicate
 }
 
 RemoveKeyword = NodeBase & {
   kind: "remove_keyword",
   target: ValueRef | SetExpr,
-  keyword: Keyword
+  keyword: Keyword,
+  predicate?: Predicate
 }
 
 SetAttackLimit = NodeBase & {
@@ -730,6 +732,8 @@ Spellboost = NodeBase & {
 `SetLife` 对随从直接设置当前生命值，不使用伤害管线、不消费屏障、不产生伤害或回复事件。
 数值在修改任何目标前确定；零生命值的战场随从随后统一进入死亡批次。
 此节点拒绝主战者引用，不携带伤害类型、过滤器、增益量或输出绑定；非随从实例不受影响。
+`AddKeyword` 与 `RemoveKeyword` 的 `predicate` 在修改任何目标前应用；`other` 编译为
+以 `self` 为排除值的 `exclude` 引用。它们不创建玩家选择，也不应用敌方选择限制。
 数值表达式在该效果实际执行时读取，目标修改前同时确定伤害量或两项增益量。
 `self_scalar` 使用能力来源实例的当前数值，攻击力和生命值仅适用于随从；`scalar` 的玩家
 相对能力控制者解析。增益保留负数，伤害和回复的动态数值以零为下限。计数查询超出预算时

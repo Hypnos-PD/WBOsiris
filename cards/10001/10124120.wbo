@@ -6,7 +6,13 @@ card 10124120 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fanfare {
+            draw 2 from deck where class swordcraft and type follower;
+            gain own.pp 3;
+        }
+        superevolve {
+            add barrier to own.field.followers other where class swordcraft;
+        }
     }
 
     meta {

@@ -1,0 +1,110 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Amalia grants keywords to her summons but not herself" {
+    seed 2601;
+    state {
+        player own { pp 8/8; hand { follower source = 10123140; } }
+        player oppo { field { follower enemy = 90021120; } }
+    }
+    action { play source; }
+    expect {
+        legal; source.stats == 6/6; source lacks rush; source lacks ward;
+        own.field count card 90021120 == 4;
+        all own.field where card 90021120 have rush;
+        all own.field where card 90021120 have ward;
+        enemy.stats == 2/2; enemy lacks rush; enemy lacks ward;
+        rng.consumed == 0;
+    }
+}
+
+scenario "Amalia does not grant keywords to existing allies or blocked summons" {
+    seed 2602;
+    state {
+        player own {
+            pp 8/8; hand { follower source = 10123140; }
+            field { follower ally = 90021120; amulet a = 10001210; amulet b = 10001210; amulet c = 10001210; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal; source.stats == 6/6; source lacks rush; source lacks ward;
+        ally.stats == 2/2; ally lacks rush; ally lacks ward;
+        own.field count card 90021120 == 1; rng.consumed == 0;
+    }
+}
+
+scenario "Two Amalias exclude only their own source instances" {
+    seed 2603;
+    state {
+        player own {
+            pp 8/8; hand { follower source = 10123140; }
+            field { follower first = 10123140; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal; source.stats == 7/6; source has rush; source has ward;
+        first.stats == 6/6; first lacks rush; first lacks ward;
+        own.field count card 90021120 == 3;
+        all own.field where card 90021120 have rush;
+        all own.field where card 90021120 have ward;
+        rng.consumed == 0;
+    }
+}
+
+scenario "Amelia draws only Swordcraft followers then recovers PP" {
+    seed 2604;
+    state {
+        player own {
+            pp 6/6; hand { follower source = 10124120; }
+            deck top { follower first = 90021110; follower second = 90021120; follower neutral = 10001110; amulet relic = 10022210; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal; first.zone == hand; second.zone == hand; neutral.zone == deck; relic.zone == deck;
+        own.pp == 3/6; own.hand count card 90021110 == 1; own.hand count card 90021120 == 1; rng.consumed == 2;
+        events contains ordered { draw own 2; }
+    }
+}
+
+scenario "Amelia recovers PP when the deck has no matching follower" {
+    seed 2605;
+    state {
+        player own {
+            pp 6/6; hand { follower source = 10124120; }
+            deck top { follower neutral = 10001110; amulet relic = 10022210; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.pp == 3/6; neutral.zone == deck; relic.zone == deck; rng.consumed == 0; }
+}
+
+scenario "Amelia super evolution shields only other allied Swordcraft followers" {
+    seed 2606;
+    state {
+        turn own 6;
+        player own {
+            sep 1;
+            field { follower source = 10124120; follower ally = 90021110; follower twin = 10124120; follower neutral = 10001110; amulet relic = 10022210; }
+        }
+        player oppo { field { follower enemy = 90021120; } }
+    }
+    action { superevolve source; }
+    expect {
+        legal; own.sep == 0; source.stats == 7/7; source lacks barrier;
+        ally has barrier; twin has barrier; neutral lacks barrier; relic lacks barrier; enemy lacks barrier;
+        rng.consumed == 0;
+    }
+}
+
+scenario "Amelia normal evolution does not grant barrier" {
+    seed 2607;
+    state {
+        turn own 5;
+        player own { ep 1; field { follower source = 10124120; follower ally = 90021110; } }
+    }
+    action { evolve source; }
+    expect { legal; own.ep == 0; source.stats == 6/6; source lacks barrier; ally lacks barrier; }
+}

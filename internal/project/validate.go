@@ -505,6 +505,12 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		}
 		if len(t) >= 4 && abilities[t[1].Value] && t[2].Value == "to" {
 			end, good := parseValueRef(t, 3)
+			if good && end < len(t) && t[end].Value == "other" {
+				end++
+			}
+			if good && end < len(t) {
+				end, good = parseWhere(t, end)
+			}
 			ok = good && end == len(t)
 			checkBindingAt(t, 3, end, bindings, ds)
 		}
@@ -566,6 +572,12 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 	case "remove":
 		if len(t) >= 4 && abilities[t[1].Value] && t[2].Value == "from" {
 			end, good := parseValueRef(t, 3)
+			if good && end < len(t) && t[end].Value == "other" {
+				end++
+			}
+			if good && end < len(t) {
+				end, good = parseWhere(t, end)
+			}
 			ok = good && end == len(t)
 			checkBindingAt(t, 3, end, bindings, ds)
 		}
