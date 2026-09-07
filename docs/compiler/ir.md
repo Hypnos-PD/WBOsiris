@@ -429,7 +429,8 @@ Choose = NodeBase & {
   policy: "optional",
   source: SetExpr,
   binding: Binding,
-  count: UInt16? // 1..65535; omitted means 1
+  count: UInt16?, // 1..65535; omitted means 1
+  extremum?: SelectionExtremum
 }
 
 Require = NodeBase & {
@@ -437,7 +438,8 @@ Require = NodeBase & {
   policy: "required",
   source: SetExpr,
   binding: Binding,
-  count: UInt16?
+  count: UInt16?,
+  extremum?: SelectionExtremum
 }
 
 RandomChoose = NodeBase & {
@@ -445,8 +447,11 @@ RandomChoose = NodeBase & {
   policy: "random",
   source: SetExpr,
   binding: Binding,
-  count: UInt16?
+  count: UInt16?,
+  extremum?: SelectionExtremum
 }
+
+SelectionExtremum = { direction: "highest" | "lowest", field: "attack" | "life" | "cost" }
 
 If = NodeBase & {
   kind: "if",
@@ -479,6 +484,11 @@ PayResource = NodeBase & {
 `min(count, 候选数)` 个不同实例，请求的最小与最大数量相同。
 `require` 在动作预检阶段求候选集合，候选不足 `count` 使整个动作非法且状态、事件序号
 和 RNG 均不改变；足够时产生数量为 `count` 的必选请求。
+`extremum` 在来源集合筛选以及玩家目标限制之后计算；随机选择不应用玩家目标限制。
+只保留当前数值等于极值的候选，维持原候选顺序；`attack`、`life` 排除非随从，
+`cost` 使用不小于零的当前费用。它不表示取前 N 名，`count` 仅作用于极值并列集合。
+候选查询预算不足时不返回部分结果；续局恢复用同一节点重新验证保存的候选。
+
 `random_choose` 从当前候选不放回抽样，每个选中实例消费一次随机决策，最多选取
 `count` 个。选择绑定保留候选顺序，不因随机抽取顺序或客户端提交顺序而变化。
 `earthrite N` 和 `necromancy N` 分别编译为 `PayResource`；资源不足时不支付并跳过

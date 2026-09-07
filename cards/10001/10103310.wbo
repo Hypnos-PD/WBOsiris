@@ -5,7 +5,9 @@ card 10103310 {
     cost 4;
 
     effect {
-        unplayable;
+        random target from oppo.field.followers highest attack;
+        destroy target;
+        damage oppo.field.followers 1;
     }
 
     meta {

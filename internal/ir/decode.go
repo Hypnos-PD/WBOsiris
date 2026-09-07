@@ -615,13 +615,14 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 	switch k.Kind {
 	case "choose", "require", "random_choose":
 		type raw struct {
-			ID      string          `json:"id"`
-			Kind    string          `json:"kind"`
-			Policy  string          `json:"policy"`
-			Binding string          `json:"binding"`
-			Source  json.RawMessage `json:"source"`
-			Count   json.RawMessage `json:"count"`
-			Origin  Origin          `json:"origin"`
+			ID       string             `json:"id"`
+			Kind     string             `json:"kind"`
+			Policy   string             `json:"policy"`
+			Binding  string             `json:"binding"`
+			Source   json.RawMessage    `json:"source"`
+			Count    json.RawMessage    `json:"count"`
+			Extremum *SelectionExtremum `json:"extremum,omitempty"`
+			Origin   Origin             `json:"origin"`
 		}
 		var v raw
 		if err := strict(data, &v); err != nil {
@@ -635,13 +636,16 @@ func decodeEffect(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if v.Policy != wantPolicy || v.Binding == "" {
 			return nil, fmt.Errorf("invalid selection effect")
 		}
+		if v.Extremum != nil && (!oneOf(v.Extremum.Direction, "highest", "lowest") || !oneOf(v.Extremum.Field, "attack", "life", "cost")) {
+			return nil, fmt.Errorf("invalid selection extremum")
+		}
 		count := 0
 		if len(v.Count) != 0 {
 			if err := json.Unmarshal(v.Count, &count); err != nil || count < 1 || count > 65535 {
 				return nil, fmt.Errorf("invalid selection count")
 			}
 		}
-		return SelectionEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Policy: v.Policy, Binding: v.Binding, Source: s, Count: count}, err
+		return SelectionEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Policy: v.Policy, Binding: v.Binding, Source: s, Count: count, Extremum: v.Extremum}, err
 	case "if":
 		type raw struct {
 			ID        string            `json:"id"`

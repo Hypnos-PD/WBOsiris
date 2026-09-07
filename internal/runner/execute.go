@@ -160,7 +160,7 @@ func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 func (g *game) selectionCandidates(e ir.SelectionEffect, self *instance, f frame) []*instance {
 	items := g.fromRef(e.Source, self, f)
 	if e.Kind == "random_choose" {
-		return items
+		return g.extremumCandidates(items, e.Extremum)
 	}
 	controller := g.sideOf(self)
 	out := make([]*instance, 0, len(items))
@@ -172,6 +172,36 @@ func (g *game) selectionCandidates(e ir.SelectionEffect, self *instance, f frame
 			continue
 		}
 		out = append(out, i)
+	}
+	return g.extremumCandidates(out, e.Extremum)
+}
+
+func (g *game) extremumCandidates(items []*instance, extremum *ir.SelectionExtremum) []*instance {
+	if extremum == nil {
+		return items
+	}
+	var out []*instance
+	best := 0
+	for _, item := range items {
+		if !g.chargeQueryVisits(1) {
+			return nil
+		}
+		if item == nil || extremum.Field != "cost" && item.card.CardType != "follower" {
+			continue
+		}
+		value := max(0, item.cost)
+		switch extremum.Field {
+		case "attack":
+			value = item.attack
+		case "life":
+			value = item.life
+		}
+		if len(out) == 0 || extremum.Direction == "highest" && value > best || extremum.Direction == "lowest" && value < best {
+			best, out = value, out[:0]
+		}
+		if value == best {
+			out = append(out, item)
+		}
 	}
 	return out
 }

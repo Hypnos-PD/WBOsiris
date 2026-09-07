@@ -354,6 +354,10 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			if setOK && end < len(t) && t[end].Value == "where" {
 				end, setOK = parseWhere(t, end)
 			}
+			if setOK && end < len(t) && set("highest", "lowest")[t[end].Value] {
+				setOK = end+1 < len(t) && set("attack", "life", "cost")[t[end+1].Value]
+				end += 2
+			}
 			if setOK && end < len(t) && t[end].Value == "count" {
 				if end+1 < len(t) {
 					count, ok := integer(t[end+1])
@@ -364,7 +368,7 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 				}
 			}
 			if len(t) < 4 || t[1].Kind != syntax.Identifier || t[2].Value != "from" || !s.Terminated || len(b) > 0 || !setOK || end != len(t) {
-				shapeError(ds, s, h+" 绑定 from 集合 [other] [where ...] [count 正整数];")
+				shapeError(ds, s, h+" 绑定 from 集合 [other] [where ...] [highest|lowest attack|life|cost] [count 正整数];")
 			} else {
 				bindings[t[1].Value] = true
 			}

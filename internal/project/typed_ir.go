@@ -249,6 +249,11 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			src = ir.FilterRef{Kind: "filter", Source: src, Predicate: pred}
 			end = next
 		}
+		var extremum *ir.SelectionExtremum
+		if end < len(t) && (t[end].Value == "highest" || t[end].Value == "lowest") {
+			extremum = &ir.SelectionExtremum{Direction: t[end].Value, Field: t[end+1].Value}
+			end += 2
+		}
 		count := 0
 		if end < len(t) && t[end].Value == "count" {
 			count = intToken(t[end+1])
@@ -257,7 +262,7 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		if h == "random" {
 			kind = "random_choose"
 		}
-		return ir.SelectionEffect{NodeBase: base, Kind: kind, Policy: map[string]string{"choose": "optional", "require": "required", "random": "random"}[h], Binding: t[1].Value, Source: src, Count: count}, nil
+		return ir.SelectionEffect{NodeBase: base, Kind: kind, Policy: map[string]string{"choose": "optional", "require": "required", "random": "random"}[h], Binding: t[1].Value, Source: src, Count: count, Extremum: extremum}, nil
 	case "if":
 		blocks := s.Blocks()
 		then, err := compileEffectBlock(blocks[0], sid, id+"/then", ids)

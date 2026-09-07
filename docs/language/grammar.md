@@ -188,8 +188,9 @@ fusion_block       = "fusion" , "material" , "from" , target_set ,
 
 ```ebnf
 selection_statement = selection_kind , binding_name , "from" , target_set ,
-                      ["other"] , [where_clause] , ["count" , integer] , ";" ;
+                      ["other"] , [where_clause] , [extremum_clause] , ["count" , integer] , ";" ;
 selection_kind      = "choose" | "require" | "random" ;
+extremum_clause     = ("highest" | "lowest") , ("attack" | "life" | "cost") ;
 binding_name        = identifier ;
 
 target_set          = "field" , ["." , card_type_plural]

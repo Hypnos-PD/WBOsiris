@@ -1,0 +1,64 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Divine Thunder uses current attack before damaging survivors" {
+    seed 2401;
+    state {
+        player own { pp 4/4; hand { spell source = 10103310; } }
+        player oppo {
+            field {
+                follower stronger = 10001110 { stats 6/6; }
+                follower weaker = 10001110 { stats 3/3; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; stronger.zone == graveyard; weaker.stats == 3/2; rng.consumed == 1; events contains ordered { destroy stronger; damage weaker 1; } }
+}
+
+scenario "Divine Thunder breaks ties among the highest attack only" {
+    seed 2402;
+    state {
+        player own { pp 4/4; hand { spell source = 10103310; } }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 5/5; }
+                follower second = 10001110 { stats 5/5; }
+                follower weaker = 10021110 { stats 1/3; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; oppo.graveyard count card 10001110 == 1; oppo.field count card 10001110 == 1; weaker.stats == 1/2; rng.consumed == 1; }
+}
+
+scenario "Random highest attack can destroy a hidden follower" {
+    seed 2403;
+    state {
+        player own { pp 4/4; hand { spell source = 10103310; } }
+        player oppo { field { follower hidden = 10001110 { stats 5/5; stealth; } follower other = 10021110; } }
+    }
+    action { play source; }
+    expect { legal; hidden.zone == graveyard; events contains ordered { destroy hidden; } rng.consumed == 1; }
+}
+
+scenario "Divine Thunder lastwords summons do not receive the follow-up damage" {
+    seed 2404;
+    state {
+        player own { pp 4/4; hand { spell source = 10103310; } }
+        player oppo { field { follower target = 10151130 { stats 5/5; } follower survivor = 10001110; } }
+    }
+    action { play source; }
+    expect {
+        legal; target.zone == graveyard; survivor.stats == 2/1;
+        oppo.field count card 90051110 == 2;
+        events contains ordered { destroy target; damage survivor 1; summon card 90051110 count 1; summon card 90051110 count 1; }
+    }
+}
+
+scenario "Divine Thunder on an empty field consumes no random decision" {
+    seed 2405;
+    state { player own { pp 4/4; hand { spell source = 10103310; } } }
+    action { play source; }
+    expect { legal; own.pp == 0/4; source.zone == graveyard; rng.consumed == 0; }
+}

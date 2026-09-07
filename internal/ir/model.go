@@ -338,11 +338,17 @@ type NodeBase struct {
 }
 type SelectionEffect struct {
 	NodeBase
-	Kind    string `json:"kind"`
-	Policy  string `json:"policy"`
-	Binding string `json:"binding"`
-	Source  Ref    `json:"source"`
-	Count   int    `json:"count,omitempty"`
+	Kind     string             `json:"kind"`
+	Policy   string             `json:"policy"`
+	Binding  string             `json:"binding"`
+	Source   Ref                `json:"source"`
+	Count    int                `json:"count,omitempty"`
+	Extremum *SelectionExtremum `json:"extremum,omitempty"`
+}
+
+type SelectionExtremum struct {
+	Direction string `json:"direction"`
+	Field     string `json:"field"`
 }
 
 func (e SelectionEffect) effectKind() string   { return e.Kind }

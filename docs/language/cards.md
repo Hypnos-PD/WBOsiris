@@ -149,6 +149,23 @@ damage targets 3;
 玩家多选也按候选顺序绑定，不以点击顺序决定伤害或死亡顺序；同一实例不能重复选择。
 `count N` 是一次多选，`repeat N` 则会每次重新求候选，同一存活目标可以再次被选中。
 
+选择可以在筛选器之后、`count` 之前使用 `highest attack`、`lowest life` 或
+`highest cost` 等修饰符，只保留该字段达到极值的全部并列候选：
+
+```wbo
+random target from oppo.field.followers highest attack;
+destroy target;
+damage oppo.field.followers 1;
+choose cheapest from own.hand lowest cost;
+```
+
+`highest` 与 `lowest` 均支持 `attack`、`life`、`cost`，读取实例当前数值；费用以零
+为下限，攻击力和生命值只对随从有意义，其他卡牌不参加这两类比较。先应用 `other`
+和 `where`；玩家选择还会先移除不能被选择的目标，再求极值。随机效果不受潜行、
+灵气的目标选择限制。极值查询本身不消费随机数；后续 `random` 只在极值候选中抽取。
+`highest attack count 2` 最多取两个并列最高者，不会补选攻击力次高者。
+暂停时保存极值候选，恢复会重新核对候选合法性；查询预算不足不会使用部分结果。
+
 ## 效果操作
 
 `repeat 数值 { ... }` 按顺序重复执行块内效果。次数可以是非负整数、数值引用或
