@@ -239,6 +239,15 @@ func (s *Session) SubmitAs(actionID, actor string, command SimulatorCommand) Ste
 		return StepResult{Status: StatusRejected, ErrorCode: "invalid_actor"}
 	}
 	switch command.Kind {
+	case "concede":
+		if !validRuntimeID(actionID) {
+			return StepResult{Status: StatusRejected, ErrorCode: "invalid_action_id"}
+		}
+		if s.g.gameOver {
+			return StepResult{Status: StatusRejected, ErrorCode: "game_over"}
+		}
+		s.g.finishGameReason(oppositeSide(actor), "concede")
+		return StepResult{Status: StatusCompleted}
 	case "play", "engage", "evolve", "superevolve", "fusion", "end_turn", "use_extra_pp":
 		if command.Kind == "fusion" {
 			return s.Begin(actionID, ir.FusionAction{Kind: "fusion", Actor: actor, Source: command.Source})

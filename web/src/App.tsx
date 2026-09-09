@@ -716,6 +716,7 @@ export function App() {
           <button title="帮助">
             <CircleHelp size={18} />
           </button>
+          {matchAuth && remote && !remote.waiting && !remote.state.gameOver && <button title="认输" onClick={() => { if (window.confirm("确定要认输吗？")) void send({ kind: "concede" }); }}>认输</button>}
           <button
             title="创建新对局"
             disabled={roomBusy}

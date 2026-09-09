@@ -59,7 +59,7 @@ export function eventLabel(event: RuntimeEvent, remote: { state: GameState }, ca
   if (kind === "card_discarded") return `${side}舍弃 ${name}`;
   if (kind === "turn_started") return `${side}回合开始`;
   if (kind === "turn_ended") return `${side}回合结束`;
-  if (kind === "game_ended") return state.winner === "draw" ? "对局平局" : `${side}胜利`;
+  if (kind === "game_ended") return event.reason === "concede" ? `${side}认输，对手胜利` : state.winner === "draw" ? "对局平局" : `${side}胜利`;
   if (kind === "zone_moved") {
     const names: Record<string, string> = { hand: "手牌", field: "战场", graveyard: "墓场", deck: "牌堆", banished: "消失区", resolving: "结算区" };
     const to = event.to || event.To || "";

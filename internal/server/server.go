@@ -371,16 +371,22 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "waiting for player", http.StatusConflict)
 		return
 	}
-	if !room.started {
-		http.Error(w, "mulligan in progress", http.StatusConflict)
-		return
-	}
 	var input command
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, "invalid request", http.StatusBadRequest)
 		return
 	}
 	input.Actor = side
+	if input.Kind == "concede" {
+		result := room.session.SubmitAs(input.ActionID, side, runner.SimulatorCommand{Kind: "concede"})
+		recordReplay(room)
+		writeMatch(w, parts[0], "", side, room, &result)
+		return
+	}
+	if !room.started {
+		http.Error(w, "mulligan in progress", http.StatusConflict)
+		return
+	}
 	view, _ := room.session.View(side)
 	if input.ExpectedRevision != nil && *input.ExpectedRevision != view.Revision {
 		result := runner.StepResult{Status: runner.StatusRejected, ErrorCode: "stale_state"}

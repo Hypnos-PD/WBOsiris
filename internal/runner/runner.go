@@ -920,11 +920,15 @@ func (g *game) destroyByEffect(targets []*instance) []*instance {
 }
 
 func (g *game) finishGame(winner string) {
+	g.finishGameReason(winner, "")
+}
+
+func (g *game) finishGameReason(winner, reason string) {
 	if g.gameOver {
 		return
 	}
 	g.gameOver, g.winner = true, winner
-	g.emit(ir.RuntimeEvent{Kind: "game_ended", Side: winner})
+	g.emit(ir.RuntimeEvent{Kind: "game_ended", Side: winner, Reason: reason})
 }
 
 func (g *game) emitDamage(amount int, target *ir.EventTarget, subject *instance) {

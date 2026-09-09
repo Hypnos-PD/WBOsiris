@@ -55,6 +55,7 @@ export type RuntimeEvent = RuntimeTarget & {
   sequence?: number; Sequence?: number;
   from?: string; From?: string;
   to?: string; To?: string;
+  reason?: string; Reason?: string;
 };
 export type PlayerView = {
   crests?: Entity[];
