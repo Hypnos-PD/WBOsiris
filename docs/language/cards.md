@@ -1175,6 +1175,9 @@ when self survives damage once per own turn {
     random target from oppo.field.followers count 1;
     damage target 3;
 }
+when own follower survives damage once per own turn {
+    add 1 card 90044320 to hand;
+}
 ```
 
 `when self survives damage` 仅用于随从。伤害应用后该随从仍有生命时，将能力排入队列；
@@ -1188,7 +1191,14 @@ when self survives damage once per own turn {
 `during own turn` 仅允许自己的回合，`during oppo turn` 仅允许对方回合，省略则双方回合
 均可发动。此范围不会限制次数；需要限次时使用既有的 `once per own turn` 等语法。
 后者同时限定回合与次数，因此通常无需再写相同的 `during`。也可在末尾用 `if` 声明
-事件发生时检查的条件。此事件不接受 `where` 或来源区域声明，正文直接使用 `self`。
+事件发生时检查的条件。自身模式不接受 `where` 或来源区域声明，正文直接使用 `self`。
+
+`when own follower survives damage` 与 `when oppo follower survives damage` 分别监听己方与对方
+随从，可声明在纹章上，正文用 `damaged` 引用受伤随从。它们支持玩家侧事件的来源区域和
+`where` 筛选器，筛选读取受伤后的状态；存活条件检查受伤随从，而非监听器来源。
+每回合次数按监听器实例与能力记录，因此同一纹章看到多名随从同时存活也只生成一次卡牌，
+多名嘉尔缪则各自保有一次反击。纹章优先于场上随从排队；反击在执行时随机选择仍在场的敌方
+随从，没有目标仍消耗本次发动次数。
 
 ## 每回合限次
 

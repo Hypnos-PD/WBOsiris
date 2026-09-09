@@ -289,6 +289,7 @@ event_block       = "when" , event_pattern , [during_turn] , [source_zone] , [tu
 event_pattern     = participant , event_subject , event_verb
                   | participant , "leader" , "healed"
                   | participant , "follower" , "leaves" , "field"
+                  | participant , "follower" , "survives" , "damage"
                   | participant , "turn" , turn_boundary
                   | "self" , ("evolved" | "super_evolved" | "discarded" | "summoned")
                   | "self" , "survives" , "damage" ;
@@ -321,8 +322,10 @@ leaving field` 在原区域移动前执行并取消原移动，同一替换块�
 `source_zone` 只用于玩家侧事件，不用于 `when self ...` 或 `grant` 内的附加能力；
 省略时来源位于战场。区域条件约束来源，`where` 则约束事件对象。
 `turn_limit` 用于玩家侧事件及 `when self survives damage`，不用于其他自身事件或 `grant`。
-`during_turn` 仅用于 `when self survives damage`，限定发生伤害时的回合归属。
-此事件只能声明在随从上，不接受 `source_zone` 或 `where`；可附加限次与头部 `if` 条件。
+`during_turn` 仅用于 `survives damage`，限定发生伤害时的回合归属。
+自身受伤存活事件只能声明在随从上，不接受 `source_zone` 或 `where`；可附加限次与头部 `if` 条件。
+`when own follower survives damage` 与 `when oppo follower survives damage` 监听指定一方的随从，
+可用于纹章，绑定 `damaged`；接受玩家侧事件的来源区域、筛选器、限次和头部条件。
 原始或减免后的伤害为 0 仍产生伤害事实；致命伤害不满足存活条件，来源离场取消未发动的监听。
 `once per own turn` 只在持有者回合限一次，`once per oppo turn` 只在对方回合限一次，
 `once per turn` 则在双方各自的每个回合限一次。次数按来源实例与能力分别记录，成功入队时消耗。

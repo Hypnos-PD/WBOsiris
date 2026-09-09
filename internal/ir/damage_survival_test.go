@@ -7,6 +7,14 @@ import (
 )
 
 func TestDamageSurvivalTriggerDecode(t *testing.T) {
+	for _, side := range []string{"own", "oppo"} {
+		trigger := EventTrigger{Kind: "event", Event: "damaged", Side: side, SubjectType: "follower", SourceZone: "hand", DuringTurn: "oppo", OncePerTurn: "any"}
+		data, _ := json.Marshal(trigger)
+		decoded, err := decodeTrigger(data)
+		if err != nil || !reflect.DeepEqual(trigger, decoded) {
+			t.Fatal(decoded, err)
+		}
+	}
 	for _, during := range []string{"", "own", "oppo"} {
 		for _, once := range []string{"", "any", "own", "oppo"} {
 			trigger := EventTrigger{Kind: "event", Event: "damaged", Side: "own", SubjectType: "follower", SelfOnly: true, DuringTurn: during, OncePerTurn: once}
@@ -19,7 +27,7 @@ func TestDamageSurvivalTriggerDecode(t *testing.T) {
 	}
 	base := EventTrigger{Kind: "event", Event: "damaged", Side: "own", SubjectType: "follower", SelfOnly: true}
 	for _, change := range []func(*EventTrigger){
-		func(v *EventTrigger) { v.SelfOnly = false }, func(v *EventTrigger) { v.Side = "oppo" },
+		func(v *EventTrigger) { v.SelfOnly = false; v.SubjectType = "amulet" }, func(v *EventTrigger) { v.Side = "oppo" },
 		func(v *EventTrigger) { v.SourceZone = "hand" }, func(v *EventTrigger) { v.SubjectType = "leader" },
 		func(v *EventTrigger) { v.DuringTurn = "any" }, func(v *EventTrigger) { v.OncePerTurn = "self" },
 		func(v *EventTrigger) { v.Event = "evolved"; v.DuringTurn = "own" },

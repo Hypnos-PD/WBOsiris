@@ -1,0 +1,98 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Galmieux at five PP gains its crest without Storm" {
+    seed 4901;
+    state { player own { pp 5/5; hand { follower source = 10344120; } } }
+    action { play source; }
+    expect { legal; source.stats == 5/5; source lacks storm; own.pp == 0/5; own.crests count card 10344120 == 1; }
+}
+
+scenario "Galmieux enhance gains Storm and still grants its crest" {
+    seed 4902;
+    state { player own { pp 7/7; hand { follower source = 10344120; } } }
+    action { play source; }
+    expect { legal; source.stats == 5/5; source has storm; own.pp == 0/7; own.crests count card 10344120 == 1; }
+}
+
+scenario "Galmieux does not duplicate an existing crest" {
+    seed 4903;
+    state { player own { pp 5/5; hand { follower source = 10344120; } crests { crest existing = 10344120; } } }
+    action { play source; }
+    expect { legal; own.crests count card 10344120 == 1; }
+}
+
+scenario "Galmieux zero attack combat triggers after combat deaths" {
+    seed 4904;
+    state {
+        player own { field { follower source = 10344120; } crests { crest emblem = 10344120; } }
+        player oppo { field { follower lyria = 10001120; follower enemy = 10144110; } }
+    }
+    action { attack source into lyria; }
+    expect { legal; source.stats == 5/5; lyria.zone == graveyard; enemy.stats == 7/4; own.hand count card 90044320 == 1; events contains ordered { damage source 0; destroy lyria; damage enemy 3; } }
+}
+
+scenario "Super evolved Galmieux survives combat without losing life" {
+    seed 4905;
+    state {
+        turn own 7;
+        player own { field { follower source = 10344120 { stats 8/8; super_evolved; } } crests { crest emblem = 10344120; } }
+        player oppo { field { follower goliath = 10001110; follower enemy = 10144110; } }
+    }
+    action { attack source into goliath; }
+    expect { legal; source.stats == 8/8; goliath.zone == graveyard; enemy.stats == 7/4; own.hand count card 90044320 == 1; events contains ordered { damage source 0; damage enemy 3; } }
+}
+
+scenario "Galmieux and its crest do not trigger on the opponent turn" {
+    seed 4906;
+    state {
+        player own { field { follower lyria = 10001120; } }
+        player oppo { field { follower source = 10344120; } crests { crest emblem = 10344120; } }
+    }
+    action { attack lyria into source; }
+    expect { legal; source.stats == 5/5; oppo.hand count card 90044320 == 0; }
+}
+
+scenario "Fangs damages both fields and triggers each surviving ally" {
+    seed 4907;
+    state {
+        player own { hand { spell source = 90044320; } field { follower galmieux = 10344120; follower devotee = 10341110; } crests { crest emblem = 10344120; } deck top { follower dragon = 10041110; } }
+        player oppo { field { follower enemy = 10144110; } }
+    }
+    action { play source; }
+    expect { legal; source.zone == graveyard; galmieux.stats == 5/4; devotee.stats == 2/1; enemy.stats == 7/3; own.hand count card 90044320 == 1; dragon.zone == hand; events contains ordered { damage galmieux 1; damage devotee 1; damage enemy 1; damage enemy 3; draw own 1; } }
+}
+
+scenario "Lethal Fangs damage grants neither a crest token nor a Devotee draw" {
+    seed 4908;
+    state { player own { hand { spell source = 90044320; } field { follower devotee = 10341110 { stats 2/1; } } crests { crest emblem = 10344120; } deck top { follower dragon = 10041110; } } }
+    action { play source; }
+    expect { legal; devotee.zone == graveyard; dragon.zone == deck; own.hand count card 90044320 == 0; }
+}
+
+scenario "Two Galmieux instances each retaliate but share one crest reward" {
+    seed 4911;
+    state {
+        player own { hand { spell source = 90044320; } field { follower first = 10344120; follower second = 10344120; } crests { crest emblem = 10344120; } }
+        player oppo { field { follower enemy = 10144110 { stats 7/10; } } }
+    }
+    action { play source; }
+    expect { legal; first.stats == 5/4; second.stats == 5/4; enemy.stats == 7/3; own.hand count card 90044320 == 1; events contains ordered { damage enemy 1; damage enemy 3; damage enemy 3; } }
+}
+
+scenario "Fangs ignores amulets and leaders" {
+    seed 4909;
+    state { player own { hand { spell source = 90044320; } field { amulet ally = 10001210; } crests { crest emblem = 10344120; } } player oppo { field { amulet enemy = 10001210; } } }
+    action { play source; }
+    expect { legal; ally.zone == field; enemy.zone == field; own.leader.life == 20; oppo.leader.life == 20; own.hand count card 90044320 == 0; }
+}
+
+scenario "End of turn damage cannot trigger the opposing Galmieux crest" {
+    seed 4910;
+    state {
+        player own { field { follower source = 10344120; follower demon = 90073130; } crests { crest emblem = 10344120; } deck top { follower owncard = 10041110; } }
+        player oppo { field { follower enemy = 10344120; } crests { crest opposing = 10344120; } deck top { follower oppocard = 10041110; } }
+    }
+    action { end_turn; }
+    expect { legal; enemy.stats == 5/2; own.hand count card 90044320 == 0; oppo.hand count card 90044320 == 0; oppocard.zone == hand; }
+}

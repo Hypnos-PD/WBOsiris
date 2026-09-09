@@ -113,7 +113,7 @@ func (g *game) queueEventTriggersIn(event ir.RuntimeEvent, subject *instance, bi
 				if trigger.SelfOnly && subject != source {
 					continue
 				}
-				if trigger.Event == "damaged" && trigger.SelfOnly && (source.life <= 0 || source.zone != "field") {
+				if trigger.Event == "damaged" && (subject == nil || subject.life <= 0 || subject.zone != "field") {
 					continue
 				}
 				if trigger.DuringTurn != "" && !triggerTurnMatches(trigger.DuringTurn, side.name, g.turn.Active) {
@@ -132,7 +132,9 @@ func (g *game) queueEventTriggersIn(event ir.RuntimeEvent, subject *instance, bi
 					continue
 				}
 				bindings := frame{}
-				if binding != "" && subject != nil {
+				if trigger.Event == "damaged" && !trigger.SelfOnly {
+					bindings["damaged"] = bindEntities(subject)
+				} else if binding != "" && subject != nil {
 					bindings[binding] = bindEntities(subject)
 				} else if binding == "healed" && event.Target != nil && event.Target.Kind == "leader" {
 					bindings[binding] = []ir.EventTarget{*event.Target}

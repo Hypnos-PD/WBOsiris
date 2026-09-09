@@ -259,7 +259,7 @@ func isPlainOperation(s *syntax.Statement) bool {
 }
 func parseEventPattern(t []syntax.Token) (int, string, bool) {
 	end, subject, ok := parseBaseEventPattern(t)
-	survivesDamage := len(t) >= 4 && values(t[:4]) == "when self survives damage"
+	survivesDamage := ok && subject == "follower" && t[end-1].Value == "damage"
 	if ok && end < len(t) && t[end].Value == "during" {
 		if !survivesDamage || len(t) < end+3 || !set("own", "oppo")[t[end+1].Value] || t[end+2].Value != "turn" {
 			return 0, "", false
@@ -314,6 +314,9 @@ func parseBaseEventPattern(t []syntax.Token) (int, string, bool) {
 		return 4, "card", true
 	}
 	if len(t) >= 5 && values(t[2:5]) == "follower leaves field" {
+		return 5, "follower", true
+	}
+	if len(t) >= 5 && values(t[2:5]) == "follower survives damage" {
 		return 5, "follower", true
 	}
 	return 0, "", false

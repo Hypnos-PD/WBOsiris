@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 90044320 {
+    type spell;
+    cost 0;
+
+    effect {
+        damage field.followers 1;
+    }
+
+    meta {
+        pack 90000;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "烈绝的灭牙";
+        text """
+对战场上的所有随从造成1点伤害。
+""";
+    }
+
+    locale eng {
+        name "Fangs of Ardent Destruction";
+        text """
+Deal 1 damage to all followers.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"れつぜつ\">烈絶</rub>の<rub=\"めつが\">滅牙</rub>";
+        text """
+場のフォロワーすべてに1ダメージ。
+""";
+    }
+
+    locale kor {
+        name "작열의 멸아";
+        text """
+전장의 추종자 모두에게 1 피해.
+""";
+    }
+
+    locale cht {
+        name "烈絕的滅牙";
+        text """
+給予戰場上全部的從者卡1點傷害。
+""";
+    }
+
+}

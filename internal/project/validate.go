@@ -224,6 +224,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 	if event == "healed" {
 		bindings["healed"] = true
 	}
+	if event == "survives" {
+		bindings["damaged"] = true
+	}
 	if event == "leaves" {
 		bindings["left"] = true
 	}
@@ -359,6 +362,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 				if _, _, ok := parseBaseEventPattern(t); ok {
 					if t[1].Value == "self" {
 						ev = t[2].Value
+						if ev == "survives" {
+							ev = ""
+						}
 					} else {
 						ev = t[3].Value
 					}

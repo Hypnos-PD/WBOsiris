@@ -1,0 +1,114 @@
+wbo 0.1.0;
+
+card 10344120 {
+    type follower;
+    cost 5;
+    stats 5/5;
+
+    effect {
+        fanfare {
+            gain own crest 10344120;
+        }
+        enhance 7 {
+            add storm to self;
+        }
+        when self survives damage once per own turn {
+            random target from oppo.field.followers;
+            damage target 3;
+        }
+    }
+
+    crest {
+        when own follower survives damage once per own turn {
+            add 1 card 90044320 to hand;
+        }
+
+        locale chs {
+            name "纹章：烈绝的显现·嘉尔缪";
+            text """
+自己的随从受到伤害且没被破坏时，自己的每回合中可触发1次，将1张『<color=Keyword>烈绝的灭牙</color>』加入手牌。
+""";
+        }
+
+        locale eng {
+            name "Crest: Galmieux, Ardor Manifest";
+            text """
+Once on each of your turns, when an allied follower takes damage but isn't destroyed, add a <b><i><color=Keyword>Fangs of Ardent Destruction</color></i></b> to your hand.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"れつぜつ\">烈絶</rub>の<rub=\"けんげん\">顕現</rub>・ガルミーユ";
+            text """
+自分のフォロワーがダメージを受けて破壊されなかったとき、自分のターンごとに1回、『<color=Keyword>烈絶の滅牙</color>』1枚を自分の手札に加える。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 작열의 현현 가르미유";
+            text """
+내 추종자가 피해를 받고도 파괴되지 않았을 때, 내 턴마다 1회에 한해 <color=Keyword>작열의 멸아</color> 1장을 내 패에 넣는다.
+""";
+        }
+
+        locale cht {
+            name "紋章：烈絕的顯現‧嘉魯蜜兒";
+            text """
+當自己的從者卡受到傷害而未被破壞時，每個自己的回合僅限發動1次，增加1張『<color=Keyword>烈絕的滅牙</color>』到自己的手牌中。
+""";
+        }
+
+    }
+
+    meta {
+        pack 10003;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "烈绝的显现·嘉尔缪";
+        text """
+【<color=Keyword>入场曲</color>】使自己获得『纹章：烈绝的显现·嘉尔缪』。
+【<color=Keyword>爆能强化</color>_7】本随从获得【<color=Keyword>疾驰</color>】。
+<hr>本随从受到伤害且没被破坏时，自己的每回合中可触发1次，对对手的战场上的随机1个随从造成3点伤害。
+""";
+    }
+
+    locale eng {
+        name "Galmieux, Ardor Manifest";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Gain <b><i>Crest: Galmieux, Ardor Manifest</i></b>.
+<b><color=Keyword>Enhance</color> (7)</b>: Give this follower <b><color=Keyword>Storm</color></b>.
+<hr>Once on each of your turns, when this follower takes damage but isn't destroyed, deal 3 damage to a random enemy follower.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"れつぜつ\">烈絶</rub>の<rub=\"けんげん\">顕現</rub>・ガルミーユ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分は『クレスト：烈絶の顕現・ガルミーユ』を持つ。
+【<color=Keyword>エンハンス</color>_7】これは【<color=Keyword>疾走</color>】を持つ。
+<hr>これがダメージを受けて破壊されなかったとき、自分のターンごとに1回、相手の場のフォロワーからランダム1枚に3ダメージ。
+""";
+    }
+
+    locale kor {
+        name "작열의 현현 가르미유";
+        text """
+[<color=Keyword>출격</color>] 나는 「크레스트: 작열의 현현 가르미유」를 갖는다.
+[<color=Keyword>증강</color> 7] 이 추종자는 [<color=Keyword>질주</color>]를 갖는다.
+<hr>이 추종자가 피해를 받고도 파괴되지 않았을 때, 내 턴마다 1회에 한해 상대방 전장의 추종자 중 무작위로 1장에게 3 피해.
+""";
+    }
+
+    locale cht {
+        name "烈絕的顯現‧嘉魯蜜兒";
+        text """
+【<color=Keyword>入場曲</color>】使自己獲得『紋章：烈絕的顯現‧嘉魯蜜兒』。
+【<color=Keyword>爆能強化</color>_7】使這張卡片獲得【<color=Keyword>疾馳</color>】。
+<hr>當這張卡片受到傷害而未被破壞時，每個自己的回合僅限發動1次，隨機給予1張敵方戰場上的從者卡3點傷害。
+""";
+    }
+
+}
