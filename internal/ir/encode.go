@@ -243,6 +243,9 @@ func (e TargetEffect) MarshalJSON() ([]byte, error) {
 		}
 		object["amount"] = e.Amount
 	case "set_attack_limit", "set_life":
+		if e.Kind == "set_attack_limit" && (e.Amount < 1 || e.Amount > 65535) {
+			return nil, fmt.Errorf("attack limit exceeds u16 range")
+		}
 		object["amount"] = e.Amount
 		if e.Kind == "set_life" {
 			object["amount"] = amount

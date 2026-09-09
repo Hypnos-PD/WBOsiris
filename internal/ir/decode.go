@@ -1115,7 +1115,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 				return nil, fmt.Errorf("invalid silent evolve")
 			}
 		case "set_attack_limit":
-			if v.Amount < 1 || v.DamageType != "" || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
+			if v.Amount < 1 || v.Amount > 65535 || v.DamageType != "" || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
 				return nil, fmt.Errorf("invalid attack limit shape")
 			}
 		case "set_damage_reduction":

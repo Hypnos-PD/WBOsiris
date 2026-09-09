@@ -535,7 +535,11 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		}
 		ok = t[1].Value == "life" && good && end == len(t)
 	case "set_attack_limit":
-		ok = len(t) == 3 && t[1].Value == "self" && isUnsigned(t[2])
+		ok = len(t) == 3 && t[1].Value == "self" && isU16(t[2])
+		if ok {
+			n, _ := integer(t[2])
+			ok = n >= 1
+		}
 	case "set_damage_reduction":
 		end, good := parseValueRef(t, 1)
 		checkBindingAt(t, 1, end, bindings, ds)
