@@ -347,6 +347,7 @@ operation         = draw_operation
                   | reduce_operation
                   | spellboost_operation
                   | set_attack_limit_operation
+                  | set_damage_reduction_operation
                   | transform_operation ;
 
 draw_operation    = "draw" , draw_amount , ["from" , "deck" , where_clause] , ";" ;
@@ -397,11 +398,12 @@ reduce_operation  = "reduce" , "countdown" , value_ref , integer , ";"
                   | "reduce" , "cost" , value_ref , integer , "minimum" , integer , ";" ;
 spellboost_operation = "spellboost" , value_ref , integer , ";" ;
 set_attack_limit_operation = "set_attack_limit" , "self" , positive_integer , ";" ;
-set_damage_reduction_operation = "set_damage_reduction" , "self" , integer , ";" ;
+set_damage_reduction_operation = "set_damage_reduction" , "self" , nonnegative_integer , ";" ;
 transform_operation = "transform" , value_ref , "into" , "card" , card_id ,
                       ["preserving" , "materials"] , [where_clause] , ";" ;
 
 positive_integer  = integer ; (* semantic constraint: value >= 1 *)
+nonnegative_integer = integer ; (* semantic constraint: value >= 0 *)
 value_ref         = binding_name
                   | "self" | "target" | "summoned" | "drawn"
                   | participant , "." , "leader"
