@@ -19,4 +19,8 @@ func TestSetDamageReductionEffect(t *testing.T) {
 	if second.damageReduction != 3 {
 		t.Fatalf("target damage reduction = %d, want 3", second.damageReduction)
 	}
+	g.execTargetEffect(ir.TargetEffect{Kind: "set_damage_reduction", Target: ir.BindingRef{Kind: "binding", Name: "target"}, Amount: 0}, first, frame{"target": bindEntities(second)})
+	if second.damageReduction != 0 {
+		t.Fatalf("target damage reduction reset = %d, want 0", second.damageReduction)
+	}
 }
