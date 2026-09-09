@@ -1162,8 +1162,33 @@ when own turn ends if own.hand_count >= 6 {
 结束回合时统一判定触发资格的机制，参见[官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#75wdwp8ysf)。
 
 头部条件支持玩家数值、已声明的自身计数器、溢出、进化形态和进化解禁条件；
-不支持事件对象绑定或 `fused` 数值。自身专用 `when self ...` 与 `grant` 内的事件
-暂不接受头部条件。条件不成立时不消耗每回合发动次数。
+不支持事件对象绑定或 `fused` 数值。自身事件中仅 `when self survives damage` 接受头部条件；
+其他自身事件与 `grant` 内的事件暂不接受头部条件。条件不成立时不消耗每回合发动次数。
+
+## 受到伤害后存活
+
+```wbo
+when self survives damage during own turn {
+    draw 1 from deck where class dragoncraft and type follower;
+}
+when self survives damage once per own turn {
+    random target from oppo.field.followers count 1;
+    damage target 3;
+}
+```
+
+`when self survives damage` 仅用于随从。伤害应用后该随从仍有生命时，将能力排入队列；
+当前能力或战斗检查点先完成，来源在能力发动前离场会取消等待中的监听。致命伤害及
+本次交战中被必杀破坏的随从不发动此能力。
+
+攻击力为 0 的交战也产生伤害事实；伤害因屏障、超进化保护或减免变为 0 时，同样可满足
+存活事件。原始伤害为 0 时不消耗屏障。参见[零攻击交战 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#10nvv2q1zaop)
+与[超进化保护 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#v-6amcbgd2vc)。
+
+`during own turn` 仅允许自己的回合，`during oppo turn` 仅允许对方回合，省略则双方回合
+均可发动。此范围不会限制次数；需要限次时使用既有的 `once per own turn` 等语法。
+后者同时限定回合与次数，因此通常无需再写相同的 `during`。也可在末尾用 `if` 声明
+事件发生时检查的条件。此事件不接受 `where` 或来源区域声明，正文直接使用 `self`。
 
 ## 每回合限次
 
@@ -1177,7 +1202,7 @@ when own follower summoned once per own turn where trait puppetry {
 
 `once per own turn` 仅在持有者回合发动，每个持有者回合限一次；对方回合不发动也不消耗次数。
 `once per oppo turn` 仅在对方回合发动；`once per turn` 在任一玩家的每个回合各限一次。
-不写限次条件则保留每次事件都可触发的行为。自身专用事件及 `grant` 暂不接受限次条件。
+不写限次条件则保留每次事件都可触发的行为。其他自身专用事件及 `grant` 暂不接受限次条件。
 
 次数按卡牌实例与能力分别记录，在事件通过区域、玩家侧与对象筛选并成功入队时消耗。
 同一效果先后召唤多个符合条件的随从时，只有第一个事件占用该能力的次数；当前效果完整执行后

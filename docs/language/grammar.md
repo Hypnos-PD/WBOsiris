@@ -285,16 +285,18 @@ option_label      = "label" , locale_id , string , ";" ;
 ### 2.6 事件与替换
 
 ```ebnf
-event_block       = "when" , event_pattern , [source_zone] , [turn_limit] , [where_clause] , ["if" , condition] , effect_block ;
+event_block       = "when" , event_pattern , [during_turn] , [source_zone] , [turn_limit] , [where_clause] , ["if" , condition] , effect_block ;
 event_pattern     = participant , event_subject , event_verb
                   | participant , "leader" , "healed"
                   | participant , "follower" , "leaves" , "field"
                   | participant , "turn" , turn_boundary
-                  | "self" , ("evolved" | "super_evolved" | "discarded" | "summoned") ;
+                  | "self" , ("evolved" | "super_evolved" | "discarded" | "summoned")
+                  | "self" , "survives" , "damage" ;
 event_subject     = "follower" | "amulet" | "card" ;
 event_verb        = "summoned" | "engaged" | "discarded" | "fused" | "destroyed" ;
 source_zone       = "while" , "self" , "in" , ("hand" | "field") ;
 turn_limit        = "once" , "per" , [participant] , "turn" ;
+during_turn       = "during" , participant , "turn" ;
 turn_boundary     = "starts" | "ends" ;
 
 replace_block     = "replace" , "self" , "leaving" , "field" , effect_block ;
@@ -318,7 +320,10 @@ leaving field` 在原区域移动前执行并取消原移动，同一替换块�
 不接受 `where` 或自身专用模式。回复为零或已满生命不产生事件、不消耗限次。
 `source_zone` 只用于玩家侧事件，不用于 `when self ...` 或 `grant` 内的附加能力；
 省略时来源位于战场。区域条件约束来源，`where` 则约束事件对象。
-`turn_limit` 同样只用于玩家侧事件，不用于 `when self ...` 或 `grant`。
+`turn_limit` 用于玩家侧事件及 `when self survives damage`，不用于其他自身事件或 `grant`。
+`during_turn` 仅用于 `when self survives damage`，限定发生伤害时的回合归属。
+此事件只能声明在随从上，不接受 `source_zone` 或 `where`；可附加限次与头部 `if` 条件。
+原始或减免后的伤害为 0 仍产生伤害事实；致命伤害不满足存活条件，来源离场取消未发动的监听。
 `once per own turn` 只在持有者回合限一次，`once per oppo turn` 只在对方回合限一次，
 `once per turn` 则在双方各自的每个回合限一次。次数按来源实例与能力分别记录，成功入队时消耗。
 

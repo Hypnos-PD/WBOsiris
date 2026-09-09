@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10341110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        when self survives damage during own turn {
+            draw 1 from deck where class dragoncraft and type follower;
+        }
+    }
+
+    meta {
+        pack 10003;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "侮蔑的肯定者";
+        text """
+本随从受到伤害且没被破坏时，若为自己的回合，则抽取1张龙族·随从。
+""";
+    }
+
+    locale eng {
+        name "Devotee of Disdain";
+        text """
+During your turn, whenever this follower takes damage but isn't destroyed, draw a Dragoncraft follower.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぶべつ\">侮蔑</rub>の<rub=\"こうていしゃ\">肯定者</rub>";
+        text """
+これがダメージを受けて破壊されなかったとき、自分のターンなら、自分のデッキからドラゴン・フォロワー1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "모멸의 긍정자";
+        text """
+이 추종자가 피해를 받고도 파괴되지 않았을 때 내 턴이라면, 내 덱에서 드래곤 추종자 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "侮蔑的肯定者";
+        text """
+當這張卡片受到傷害而未被破壞時，如果是自己的回合，則會由自己的牌堆中抽取1張龍族‧從者卡。
+""";
+    }
+
+}

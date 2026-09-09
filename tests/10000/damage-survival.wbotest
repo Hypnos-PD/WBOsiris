@@ -1,0 +1,43 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Devotee draws after fighting a zero-attack Lyria" {
+    seed 4801;
+    state {
+        player own { field { follower source = 10341110; } deck top { follower dragon = 10041110; follower neutral = 10001110; } }
+        player oppo { field { follower lyria = 10001120; } }
+    }
+    action { attack source into lyria; }
+    expect { legal; source.stats == 2/2; dragon.zone == hand; neutral.zone == deck; lyria.zone == graveyard; events contains ordered { damage source 0; draw own 1; } }
+}
+
+scenario "Devotee draws after super evolution prevents combat damage" {
+    seed 4802;
+    state {
+        turn own 7;
+        player own { field { follower source = 10341110 { stats 5/5; super_evolved; } } deck top { follower dragon = 10041110; } }
+        player oppo { field { follower enemy = 10001110; } }
+    }
+    action { attack source into enemy; }
+    expect { legal; source.stats == 5/5; dragon.zone == hand; enemy.zone == graveyard; events contains ordered { damage source 0; draw own 1; } }
+}
+
+scenario "Lethal combat does not trigger Devotee" {
+    seed 4803;
+    state {
+        player own { field { follower source = 10341110; } deck top { follower dragon = 10041110; } }
+        player oppo { field { follower enemy = 10001110; } }
+    }
+    action { attack source into enemy; }
+    expect { legal; source.zone == graveyard; dragon.zone == deck; events excludes { draw own 1; } }
+}
+
+scenario "Devotee does not draw outside its controller turn" {
+    seed 4804;
+    state {
+        player own { field { follower lyria = 10001120; } }
+        player oppo { field { follower source = 10341110; } deck top { follower dragon = 10041110; } }
+    }
+    action { attack lyria into source; }
+    expect { legal; source.stats == 2/2; dragon.zone == deck; events excludes { draw oppo 1; } }
+}

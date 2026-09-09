@@ -572,6 +572,7 @@ func decodeTrigger(data []byte) (Trigger, error) {
 			SubjectType string          `json:"subjectType,omitempty"`
 			SourceZone  string          `json:"sourceZone,omitempty"`
 			OncePerTurn string          `json:"oncePerTurn,omitempty"`
+			DuringTurn  string          `json:"duringTurn,omitempty"`
 			SelfOnly    bool            `json:"selfOnly,omitempty"`
 			Predicate   json.RawMessage `json:"predicate,omitempty"`
 			Condition   json.RawMessage `json:"condition,omitempty"`
@@ -598,7 +599,7 @@ func decodeTrigger(data []byte) (Trigger, error) {
 				return nil, fmt.Errorf("event conditions cannot access fusion materials")
 			}
 		}
-		if !validSide(v.Side) || !oneOf(v.Event, "follower_summoned", "amulet_summoned", "follower_left", "destroyed", "healed", "card_fused", "amulet_engaged", "card_discarded", "turn_started", "turn_ended", "evolved", "super_evolved") || v.SubjectType != "" && !oneOf(v.SubjectType, "follower", "amulet", "leader") || v.SourceZone != "" && !oneOf(v.SourceZone, "hand", "field") || v.Event == "destroyed" && v.SubjectType == "" {
+		if !validSide(v.Side) || !oneOf(v.Event, "follower_summoned", "amulet_summoned", "follower_left", "destroyed", "healed", "damaged", "card_fused", "amulet_engaged", "card_discarded", "turn_started", "turn_ended", "evolved", "super_evolved") || v.SubjectType != "" && !oneOf(v.SubjectType, "follower", "amulet", "leader") || v.SourceZone != "" && !oneOf(v.SourceZone, "hand", "field") || v.Event == "destroyed" && v.SubjectType == "" {
 			return nil, fmt.Errorf("invalid event trigger")
 		}
 		if v.Event == "amulet_summoned" && (v.SubjectType != "amulet" || v.SelfOnly) || v.Event == "follower_summoned" && v.SubjectType == "amulet" {
@@ -610,10 +611,13 @@ func decodeTrigger(data []byte) (Trigger, error) {
 		if v.OncePerTurn != "" && !oneOf(v.OncePerTurn, "any", "own", "oppo") {
 			return nil, fmt.Errorf("invalid trigger turn limit")
 		}
-		if v.SelfOnly && (condition != nil || v.OncePerTurn != "" || v.SourceZone != "" || v.Side != "own" || !(v.SubjectType == "follower" && oneOf(v.Event, "evolved", "super_evolved", "follower_summoned") || v.SubjectType == "" && v.Event == "card_discarded") || p != nil) {
+		if v.DuringTurn != "" && (v.Event != "damaged" || !validSide(v.DuringTurn)) || v.Event == "damaged" && (!v.SelfOnly || v.SubjectType != "follower") {
+			return nil, fmt.Errorf("damage survival listeners require self and a valid turn scope")
+		}
+		if v.SelfOnly && (v.Event != "damaged" && (condition != nil || v.OncePerTurn != "") || v.SourceZone != "" || v.Side != "own" || !(v.SubjectType == "follower" && oneOf(v.Event, "evolved", "super_evolved", "follower_summoned", "damaged") || v.SubjectType == "" && v.Event == "card_discarded") || p != nil) {
 			return nil, fmt.Errorf("invalid self event trigger")
 		}
-		return EventTrigger{Kind: v.Kind, Event: v.Event, Side: v.Side, SourceZone: v.SourceZone, SubjectType: v.SubjectType, SelfOnly: v.SelfOnly, Predicate: p, OncePerTurn: v.OncePerTurn, Condition: condition}, nil
+		return EventTrigger{Kind: v.Kind, Event: v.Event, Side: v.Side, SourceZone: v.SourceZone, SubjectType: v.SubjectType, SelfOnly: v.SelfOnly, Predicate: p, OncePerTurn: v.OncePerTurn, DuringTurn: v.DuringTurn, Condition: condition}, nil
 	case "replacement":
 		type raw struct {
 			Kind    string          `json:"kind"`

@@ -113,6 +113,12 @@ func (g *game) queueEventTriggersIn(event ir.RuntimeEvent, subject *instance, bi
 				if trigger.SelfOnly && subject != source {
 					continue
 				}
+				if trigger.Event == "damaged" && trigger.SelfOnly && (source.life <= 0 || source.zone != "field") {
+					continue
+				}
+				if trigger.DuringTurn != "" && !triggerTurnMatches(trigger.DuringTurn, side.name, g.turn.Active) {
+					continue
+				}
 				if trigger.SubjectType == "leader" && (event.Target == nil || event.Target.Kind != "leader" || event.Actual <= 0) {
 					continue
 				}

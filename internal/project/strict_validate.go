@@ -130,11 +130,11 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 			continue
 		case "when":
 			if len(t) > 2 && t[1].Value == "self" && t[2].Value != "discarded" && ctx.cardType != "follower" {
-				diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", "自身进化事件只允许用于随从", s.Span)
+				diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", "自身随从事件只允许用于随从", s.Span)
 			}
 			end, subject, ok := parseEventPattern(t)
 			if ok && end < len(t) && t[end].Value == "where" {
-				filterOK := subject != "" && (subject == "follower" || !filterContains(t[end:], "life"))
+				filterOK := t[1].Value != "self" && subject != "" && (subject == "follower" || !filterContains(t[end:], "life"))
 				var whereOK bool
 				end, whereOK = parseWhere(t, end)
 				ok = filterOK && whereOK
@@ -259,6 +259,13 @@ func isPlainOperation(s *syntax.Statement) bool {
 }
 func parseEventPattern(t []syntax.Token) (int, string, bool) {
 	end, subject, ok := parseBaseEventPattern(t)
+	survivesDamage := len(t) >= 4 && values(t[:4]) == "when self survives damage"
+	if ok && end < len(t) && t[end].Value == "during" {
+		if !survivesDamage || len(t) < end+3 || !set("own", "oppo")[t[end+1].Value] || t[end+2].Value != "turn" {
+			return 0, "", false
+		}
+		end += 3
+	}
 	if ok && end < len(t) && t[end].Value == "while" {
 		if t[1].Value == "self" || len(t) < end+4 || values(t[end:end+3]) != "while self in" || !set("field", "hand")[t[end+3].Value] {
 			return 0, "", false
@@ -266,7 +273,7 @@ func parseEventPattern(t []syntax.Token) (int, string, bool) {
 		end += 4
 	}
 	if ok && end < len(t) && t[end].Value == "once" {
-		if t[1].Value == "self" || end+2 >= len(t) || t[end+1].Value != "per" {
+		if t[1].Value == "self" && !survivesDamage || end+2 >= len(t) || t[end+1].Value != "per" {
 			return 0, "", false
 		}
 		end += 2
@@ -282,6 +289,9 @@ func parseEventPattern(t []syntax.Token) (int, string, bool) {
 }
 
 func parseBaseEventPattern(t []syntax.Token) (int, string, bool) {
+	if len(t) >= 4 && values(t[:4]) == "when self survives damage" {
+		return 4, "follower", true
+	}
 	if len(t) == 3 && values(t) == "when self discarded" {
 		return 3, "card", true
 	}

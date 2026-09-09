@@ -634,7 +634,8 @@ func conditionIR(t []syntax.Token) ir.Condition {
 	return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "scalar", Side: t[0].Value, Field: t[2].Value}, Op: compareOp(t[3].Value), Right: intToken(t[4])}
 }
 func eventPatternIR(t []syntax.Token) ir.Trigger {
-	if t[1].Value == "self" {
+	survivesDamage := len(t) >= 4 && values(t[:4]) == "when self survives damage"
+	if t[1].Value == "self" && !survivesDamage {
 		if t[2].Value == "discarded" {
 			return ir.EventTrigger{Kind: "event", Event: "card_discarded", Side: "own", SelfOnly: true}
 		}
@@ -644,7 +645,9 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 		return ir.EventTrigger{Kind: "event", Event: t[2].Value, Side: "own", SubjectType: "follower", SelfOnly: true}
 	}
 	m := ir.EventTrigger{Kind: "event", Side: t[1].Value}
-	if t[2].Value == "turn" {
+	if survivesDamage {
+		m.Side, m.Event, m.SubjectType, m.SelfOnly = "own", "damaged", "follower", true
+	} else if t[2].Value == "turn" {
 		m.Event = map[string]string{"starts": "turn_started", "ends": "turn_ended"}[t[3].Value]
 	} else {
 		m.SubjectType = t[2].Value
@@ -658,6 +661,10 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 	}
 	baseEnd, _, _ := parseBaseEventPattern(t)
 	end, _, _ := parseEventPattern(t)
+	if baseEnd < len(t) && t[baseEnd].Value == "during" {
+		m.DuringTurn = t[baseEnd+1].Value
+		baseEnd += 3
+	}
 	if baseEnd < len(t) && t[baseEnd].Value == "while" {
 		m.SourceZone = t[baseEnd+3].Value
 		baseEnd += 4

@@ -447,6 +447,7 @@ EventPattern = {
   side: Side?,
   sourceZone: ("field" | "hand")?,
   oncePerTurn: ("own" | "oppo" | "any")?,
+  duringTurn: ("own" | "oppo")?,
   subjectType: (CardType | "leader")?,
   zone: Zone?,
   predicate: BoolExpr?
@@ -471,6 +472,11 @@ MovePattern = {
 `side=own`、`subjectType=follower` 与 `HasTrait`。`when own turn ends` 对应
 `turn_ended`。`replace self leaving field` 对应 `subject=self`、`from=field`、`to`
 为空；空 `to` 表示任意离场目的地。
+`when self survives damage` 对应 `event=damaged`、`side=own`、`subjectType=follower`、
+`selfOnly=true`。解码器仅允许这一种伤害监听模式，可附加 `duringTurn`、`oncePerTurn`
+及 `condition`，不允许 `sourceZone` 或 `predicate`。`duringTurn` 不能用于其他事件。
+伤害事实的 `Actual` 可为 0；队列派发时检查来源生命大于 0，之后离场会取消待发动监听。
+回合范围在预占限次之前判断，恢复时也验证已用次数符合两个范围。
 `when own amulet summoned` 对应 `amulet_summoned` 与 `subjectType=amulet`，
 预置 `summoned` 绑定；它不触发随从入场监听。护符的使用、创建、复制、历史召唤及
 牌组召唤均发出该公开事件，启动仍发出 `amulet_engaged`。解码器拒绝两个入场事件

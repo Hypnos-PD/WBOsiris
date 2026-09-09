@@ -853,7 +853,7 @@ func (g *game) damageInstance(target *instance, amount int) int {
 }
 
 func (g *game) damageInstanceFrom(source, target *instance, amount int, damageType string) int {
-	if target == nil || target.zone != "field" || amount <= 0 {
+	if target == nil || target.zone != "field" {
 		return 0
 	}
 	actual := g.modifyDamage(damageContext{source: source, target: target, amount: amount, damageType: damageType})
@@ -874,6 +874,9 @@ func removeStealthAfterEffectDamage(source *instance, actual int) {
 
 func (g *game) modifyDamage(context damageContext) int {
 	amount := max(context.amount, 0)
+	if amount == 0 {
+		return 0
+	}
 	if context.target.abilities["barrier"] {
 		context.target.removeKeyword("barrier")
 		return 0

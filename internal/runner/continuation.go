@@ -17,7 +17,7 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.32.0"
+const continuationVersion = "0.33.0"
 
 type ContinuationBindings struct {
 	ID     string                      `json:"id"`
@@ -685,7 +685,7 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 			owner = historyOnly[id]
 		}
 		for _, ability := range i.card.Abilities {
-			if trigger, ok := ability.Trigger.(ir.EventTrigger); ok && i.usedTriggers[ability.ID] && !triggerTurnMatches(trigger.OncePerTurn, owner, g.turn.Active) {
+			if trigger, ok := ability.Trigger.(ir.EventTrigger); ok && i.usedTriggers[ability.ID] && (!triggerTurnMatches(trigger.OncePerTurn, owner, g.turn.Active) || trigger.DuringTurn != "" && !triggerTurnMatches(trigger.DuringTurn, owner, g.turn.Active)) {
 				return nil, fmt.Errorf("continuation trigger usage outside permitted turn")
 			}
 		}
