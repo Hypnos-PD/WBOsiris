@@ -886,6 +886,12 @@ SetAttackLimit = NodeBase & {
   amount: u16
 }
 
+SetDamageReduction = NodeBase & {
+  kind: "set_damage_reduction",
+  target: ValueRef,
+  amount: u16
+}
+
 SetLife = NodeBase & {
   kind: "set_life",
   target: ValueRef | SetExpr,
@@ -1005,6 +1011,7 @@ ability: Ability, labels?: map<LocaleId, string> }` 附加一个独立触发能�
 | `grant T { 能力 }` | `GrantAbility` |
 | `damage T N`、`heal T N` | `Damage`、`Heal` |
 | `set life T N` | `SetLife` |
+| `set_damage_reduction T N` | `SetDamageReduction` |
 | `set maxlife own.leader N` | `LeaderMaxLife` |
 | `replace own.deck with shuffled N card C, ...` | `DeckReplace` |
 | `buff T +A/+L [where P] [until [own/oppo] turn ends]` | `BuffStats`，可带 `predicate` 和 `until` |
