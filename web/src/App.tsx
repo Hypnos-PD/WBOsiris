@@ -1137,6 +1137,7 @@ export function App() {
                 : "对局结束"}
           </strong>
           <span>规则引擎已结束本局对战</span>
+          <button className="primary-action" onClick={createMatch} disabled={roomBusy}>再开一局</button>
         </aside>
       )}
       {selected && (
