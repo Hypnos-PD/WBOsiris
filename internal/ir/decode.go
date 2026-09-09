@@ -858,6 +858,30 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			return nil, fmt.Errorf("invalid granted ability")
 		}
 		return GrantEffect{NodeBase: v.NodeBase, Kind: v.Kind, Target: target, Ability: ability, Labels: v.Labels}, nil
+	case "replace_deck":
+		var e DeckReplaceEffect
+		if err := strict(data, &e); err != nil {
+			return nil, err
+		}
+		if err := newNode(e.ID, nodeIDs, e.Origin); err != nil {
+			return nil, err
+		}
+		if !validSide(e.Owner) || !ValidDeckRecipe(e.Cards) {
+			return nil, fmt.Errorf("invalid replace_deck shape")
+		}
+		return e, nil
+	case "set_leader_max_life":
+		var e LeaderMaxLifeEffect
+		if err := strict(data, &e); err != nil {
+			return nil, err
+		}
+		if err := newNode(e.ID, nodeIDs, e.Origin); err != nil {
+			return nil, err
+		}
+		if !validSide(e.Side) || e.Amount < 1 || e.Amount > 65535 {
+			return nil, fmt.Errorf("invalid leader maximum life")
+		}
+		return e, nil
 	case "summon_from_deck":
 		var v struct {
 			NodeBase
@@ -1503,6 +1527,12 @@ func validateCardRefs(c Card, cards, crests map[int]bool) error {
 				}
 				if x.CardID != 0 && (!validCardID(x.CardID) || !cards[x.CardID]) {
 					return fmt.Errorf("bad card ref %d", x.CardID)
+				}
+			case DeckReplaceEffect:
+				for _, entry := range x.Cards {
+					if !cards[entry.CardID] {
+						return fmt.Errorf("bad deck card ref %d", entry.CardID)
+					}
 				}
 			case AdjustEffect:
 				if x.Kind == "adjust_earthsigil" && x.Delta > 0 && !cards[MagicSedimentCardID] {

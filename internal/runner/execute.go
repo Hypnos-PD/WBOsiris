@@ -127,6 +127,9 @@ func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 		}
 		return g.filter(historyInstances(records, g.cards), r.Member, nil, self)
 	case ir.SelfRef:
+		if self != nil && self.zone == "retired_deck" {
+			return nil
+		}
 		return []*instance{self}
 	case ir.BindingRef:
 		return g.boundInstances(f[r.Name])
@@ -854,6 +857,9 @@ func (g *game) resolveDeathBatch(explicit []*instance) []*instance {
 	return destroyed
 }
 func (g *game) returnCard(i *instance, z string) {
+	if i.zone == "retired_deck" {
+		return
+	}
 	if i.zone == "graveyard" || i.zone == "banished" {
 		resetCardState(i, i.card)
 	}
@@ -875,6 +881,9 @@ func (g *game) returnCard(i *instance, z string) {
 	i.zone = "deck"
 }
 func (g *game) move(i *instance, z string) {
+	if i.zone == "retired_deck" {
+		return
+	}
 	if i.zone == z {
 		return
 	}
@@ -908,7 +917,7 @@ func (g *game) owner(i *instance) *player {
 			return g.owner(source)
 		}
 	}
-	for _, z := range [][]*instance{g.oppo.field, g.oppo.hand, g.oppo.deck, g.oppo.graveyard, g.oppo.banished, g.oppo.resolving, g.oppo.crests, g.oppo.retiredCrests} {
+	for _, z := range [][]*instance{g.oppo.field, g.oppo.hand, g.oppo.deck, g.oppo.graveyard, g.oppo.banished, g.oppo.resolving, g.oppo.crests, g.oppo.retiredCrests, g.oppo.retiredDeck} {
 		if contains(z, i) {
 			return &g.oppo
 		}

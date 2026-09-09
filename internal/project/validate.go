@@ -367,6 +367,12 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			}
 			continue
 		case "replace":
+			if len(b) == 0 {
+				if _, ok := deckReplaceIR(t, ir.NodeBase{}); !ok || !s.Terminated {
+					shapeError(ds, s, "replace own.deck|oppo.deck with shuffled 数量 card ID [, 数量 card ID ...];")
+				}
+				continue
+			}
 			if words(tokenValuesPrefix(t, len(t))) != "replace self leaving field" || len(b) != 1 {
 				shapeError(ds, s, "replace self leaving field { ... }")
 			} else {
@@ -509,6 +515,10 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 	ok := false
 	switch h {
 	case "set":
+		if t[1].Value == "maxlife" {
+			_, ok = leaderMaxLifeIR(t, ir.NodeBase{})
+			break
+		}
 		end, good := parseValueRef(t, 2)
 		checkBindingAt(t, 2, end, bindings, ds)
 		if good && (end == 5 && t[4].Value == "leader" || end == 3 && t[2].Value == "leaders" || end == 5 && values(t[2:5]) == "all . leaders") {

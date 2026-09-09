@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 90004310 {
+    type spell;
+    cost 10;
+
+    effect {
+        set maxlife oppo.leader 1;
+    }
+
+    meta {
+        pack 90000;
+        class neutral;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "阿斯塔罗特的宣判";
+        text """
+使对手的主战者的生命值的最大值变为1。
+""";
+    }
+
+    locale eng {
+        name "Astaroth's Reckoning";
+        text """
+Set the enemy leader's max defense to 1.
+""";
+    }
+
+    locale jpn {
+        name "アスタロトの<rub=\"せんこく\">宣告</rub>";
+        text """
+相手のリーダーの体力の最大値を1にする。
+""";
+    }
+
+    locale kor {
+        name "아스타로트의 선고";
+        text """
+상대방 리더의 체력 최대치를 1로 만든다.
+""";
+    }
+
+    locale cht {
+        name "亞斯她錄的宣判";
+        text """
+使敵方主戰者生命值的最大值轉變為1。
+""";
+    }
+
+}

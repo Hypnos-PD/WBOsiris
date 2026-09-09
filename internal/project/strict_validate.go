@@ -65,7 +65,7 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 		if abilities[h] && len(b) == 0 && ctx.cardType != "follower" {
 			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", h+" 固有能力只允许用于随从", s.Span)
 		}
-		if set("fanfare", "lastwords", "replace")[h] && ctx.cardType == "spell" {
+		if (set("fanfare", "lastwords")[h] || h == "replace" && len(b) > 0) && ctx.cardType == "spell" {
 			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", h+" 需要场上实体，不能用于法术", s.Span)
 		}
 		if (h == "countdown" || h == "earthsigil" || h == "engage") && ctx.cardType != "amulet" && !(h == "countdown" && ctx.cardType == "crest") {
@@ -252,6 +252,9 @@ func checkI16Magnitude(t syntax.Token, ds *[]syntax.Diagnostic) {
 }
 
 func isPlainOperation(s *syntax.Statement) bool {
+	if s.Word(0) == "replace" && len(s.Blocks()) == 0 {
+		return true
+	}
 	return len(s.Blocks()) == 0 && set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "spellboost", "transform", "set_attack_limit", "set")[s.Word(0)]
 }
 func parseEventPattern(t []syntax.Token) (int, string, bool) {

@@ -44,6 +44,8 @@ export function eventLabel(event: RuntimeEvent, remote: { state: GameState }, ca
   if (kind === "card_fused") return (event.subject || event.Subject) ? `${name} 融合 ${event.count ?? event.Count ?? 0} 张材料` : `${side}融合 ${event.count ?? event.Count ?? 0} 张材料`;
   if (kind === "card_transformed") return (event.subject || event.Subject) ? `${name} 变身为 ${nameFor(event.target || event.Target)}` : `${side}卡牌变身`;
   if (kind === "pp_restored") return `${side}回复 ${actual ?? 0} 点能量`;
+  if (kind === "deck_replaced") return `${side}牌组替换为 ${event.count ?? event.Count ?? 0} 张卡牌`;
+  if (kind === "leader_max_life_set") return `${side}主战者生命上限变为 ${event.count ?? event.Count ?? 0}`;
   if (kind === "attacked") return `${nameFor(event.attacker || event.Attacker)} 攻击 ${nameFor(event.defender || event.Defender)}`;
   if (kind === "damaged") return `${name} 受到 ${actual ?? 0} 点伤害`;
   if (kind === "healed") return `${name} 回复 ${actual ?? 0} 点生命`;

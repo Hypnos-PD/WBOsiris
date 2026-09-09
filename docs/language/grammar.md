@@ -326,6 +326,7 @@ leaving field` 在原区域移动前执行并取消原移动，同一替换块�
 
 ```ebnf
 operation         = draw_operation
+                  | deck_replace_operation
                   | add_operation
                   | summon_operation
                   | numeric_operation
@@ -340,6 +341,8 @@ operation         = draw_operation
                   | transform_operation ;
 
 draw_operation    = "draw" , draw_amount , ["from" , "deck" , where_clause] , ";" ;
+deck_replace_operation = "replace" , participant , "." , "deck" , "with" , "shuffled" , deck_entry , {"," , deck_entry} , ";" ;
+deck_entry        = integer , "card" , card_id ;
 draw_amount       = integer | "all" ;
 
 add_operation     = "add" , integer , "card" , card_id , "to" , "hand" , ";"
@@ -358,6 +361,7 @@ history_source    = participant , "." , "destroyed" , ["." , ("followers" | "amu
 numeric_operation = "damage" , value_ref , effect_amount , [damage_distribution] , [where_clause] , ";"
                   | "heal" , value_ref , effect_amount , [where_clause] , ";"
                   | "set" , "life" , value_ref , effect_amount , ";"
+                  | "set" , "maxlife" , participant , "." , "leader" , integer , ";"
                   | "buff" , value_ref , ["other"] , signed_amount , "/" , signed_amount , [where_clause] , [effect_duration] , ";"
                   | "gain" , scalar_ref , integer , ";"
                   | "gain" , participant , "crest" , card_id , ";"
@@ -646,9 +650,13 @@ fact_object       = alias | participant , "." , "leader" | "card" , card_id ;
 11. `where` 的字段必须适用于候选类型；例如 `life` 只适用于随从，`trait` 只
     匹配具有该种族的卡牌。应用于操作的 `where` 先过滤其紧邻集合操作数，再按
     稳定集合顺序执行。对单实例附加 `where` 是类型错误。
-12. `replace` 只允许作为具有场上实体的卡牌能力，且来源必须是 `self`。替换块
+12. `replace self leaving field` 只允许作为具有场上实体的卡牌能力。替换块
     执行期间应设置重入标记；它产生的离场不能再次进入同一替换块。原离场取消后，
     替换块造成的新移动仍正常产生其自身允许的事件。
+    `replace own.deck|oppo.deck with shuffled ...;` 是即时牌组操作，不带效果块。
+    配方各项数量及总量必须为 1..65535；它创建新实体，旧实体退出可操作区域，
+    不产生卡牌移动、破坏或消失事实。洗牌消费总量减一的随机决策，只公开新牌组数量。
+    `set maxlife` 只接受单侧主战者与 1..65535 的常量；当前生命仅向下截断，不产生伤害或回复。
 13. 手动进化支付并检查 `ep`，手动超进化支付并检查 `sep`；静默进化不支付且
     不触发目标的进化能力。进化后的随从保留已有关键词和触发能力。每个护符实体
     每个控制者回合最多成功 `engage` 一次，入场回合可启动。

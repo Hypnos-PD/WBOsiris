@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 90004110 {
+    type follower;
+    cost 6;
+    stats 10/10;
+
+    effect {
+        storm;
+    }
+
+    meta {
+        pack 90000;
+        class neutral;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "沉默的魔将";
+        text """
+【<color=Keyword>疾驰</color>】
+""";
+    }
+
+    locale eng {
+        name "Silent Rider";
+        text """
+<b><color=Keyword>Storm</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ちんもく\">沈黙</rub>の<rub=\"ましょう\">魔将</rub>";
+        text """
+【<color=Keyword>疾走</color>】
+""";
+    }
+
+    locale kor {
+        name "침묵의 마왕";
+        text """
+[<color=Keyword>질주</color>]
+""";
+    }
+
+    locale cht {
+        name "沉默的魔將";
+        text """
+【<color=Keyword>疾馳</color>】
+""";
+    }
+
+}

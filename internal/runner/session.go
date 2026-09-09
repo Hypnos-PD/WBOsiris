@@ -518,6 +518,10 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 		bindings[e.Output] = bindEntities(s.g.summonFromHistory(e, self, bindings)...)
 	case ir.DeckSummonEffect:
 		bindings[e.Output] = bindEntities(s.g.summonFromDeck(e, self, bindings)...)
+	case ir.DeckReplaceEffect:
+		s.g.replaceDeck(e, self)
+	case ir.LeaderMaxLifeEffect:
+		s.g.setLeaderMaxLife(e, self)
 	case ir.GrantEffect:
 		s.g.grantAbility(e, self, bindings)
 	case ir.TargetEffect:
@@ -676,6 +680,7 @@ type attackSnapshot struct {
 }
 
 type playerSnapshot struct {
+	RetiredDeck                                               []string
 	Crests, RetiredCrests                                     []string
 	PP, MaxPP, LeaderLife, LeaderMax, EP, SEP, Combo, Shadows int
 	Deck, Hand, Field, Graveyard, Banished                    []string
@@ -691,7 +696,7 @@ func (g *game) snapshot() gameSnapshot {
 		snapshot.Attack = &attackSnapshot{Stage: g.attack.stage, Actor: g.attack.actor, Attacker: g.attack.attacker, Defender: g.attack.defender, AttackerAttack: g.attack.attackerAttack, DefenderAttack: g.attack.defenderAttack, DefenderDestroyed: g.attack.defenderDestroyed}
 	}
 	for _, side := range []*player{&g.own, &g.oppo} {
-		for _, zone := range [][]*instance{side.deck, side.hand, side.field, side.graveyard, side.banished, side.resolving, side.crests, side.retiredCrests} {
+		for _, zone := range [][]*instance{side.deck, side.hand, side.field, side.graveyard, side.banished, side.resolving, side.crests, side.retiredCrests, side.retiredDeck} {
 			for _, i := range zone {
 				abilities := map[string]bool{}
 				for name, value := range i.abilities {
@@ -717,7 +722,8 @@ func (g *game) snapshot() gameSnapshot {
 
 func snapshotPlayer(p player) playerSnapshot {
 	return playerSnapshot{
-		Crests: ids(p.crests), RetiredCrests: ids(p.retiredCrests),
+		RetiredDeck: ids(p.retiredDeck),
+		Crests:      ids(p.crests), RetiredCrests: ids(p.retiredCrests),
 		PP: p.pp, MaxPP: p.maxpp, LeaderLife: p.leaderLife, LeaderMax: p.leaderMax,
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows,
 		Deck: ids(p.deck), Hand: ids(p.hand), Field: ids(p.field), Graveyard: ids(p.graveyard),
@@ -767,7 +773,8 @@ func (g *game) clone() *game {
 
 func clonePlayer(original player, instances map[string]*instance) player {
 	return player{
-		crests: cloneInstances(original.crests, instances), retiredCrests: cloneInstances(original.retiredCrests, instances),
+		retiredDeck: cloneInstances(original.retiredDeck, instances),
+		crests:      cloneInstances(original.crests, instances), retiredCrests: cloneInstances(original.retiredCrests, instances),
 		pp: original.pp, maxpp: original.maxpp, leaderLife: original.leaderLife, leaderMax: original.leaderMax,
 		ep: original.ep, sep: original.sep, combo: original.combo, shadows: original.shadows,
 		deck: cloneInstances(original.deck, instances), hand: cloneInstances(original.hand, instances),

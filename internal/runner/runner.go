@@ -38,6 +38,7 @@ type instance struct {
 	fusedThisTurn                                                                bool
 }
 type player struct {
+	retiredDeck                                               []*instance
 	crests, retiredCrests                                     []*instance
 	pp, maxpp, leaderLife, leaderMax, ep, sep, combo, shadows int
 	deck, hand, field, graveyard, banished                    []*instance
@@ -345,6 +346,8 @@ func (g *game) chargeQueryVisits(amount int) bool {
 func (g *game) addToZone(p *player, i *instance, z string) {
 	i.zone = z
 	switch z {
+	case "retired_deck":
+		p.retiredDeck = append(p.retiredDeck, i)
 	case "crests":
 		p.crests = append(p.crests, i)
 		g.triggerIndex.add(i)

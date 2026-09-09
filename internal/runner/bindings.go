@@ -22,7 +22,7 @@ func bindEntities(instances ...*instance) []ir.EventTarget {
 func (g *game) boundInstances(values []ir.EventTarget) []*instance {
 	var instances []*instance
 	for _, value := range values {
-		if value.Kind == "instance" && g.instances[value.InstanceID] != nil {
+		if value.Kind == "instance" && g.instances[value.InstanceID] != nil && g.instances[value.InstanceID].zone != "retired_deck" {
 			instances = append(instances, g.instances[value.InstanceID])
 		}
 	}

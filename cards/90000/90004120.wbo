@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 90004120 {
+    type follower;
+    cost 1;
+    stats 13/13;
+
+    effect {
+
+    }
+
+    meta {
+        pack 90000;
+        class neutral;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "深渊之主的仆从";
+        text """
+
+""";
+    }
+
+    locale eng {
+        name "Servant of Cocytus";
+        text """
+
+""";
+    }
+
+    locale jpn {
+        name "サタンズサーヴァント";
+        text """
+
+""";
+    }
+
+    locale kor {
+        name "사탄의 하수인";
+        text """
+
+""";
+    }
+
+    locale cht {
+        name "撒旦的從魔";
+        text """
+
+""";
+    }
+
+}

@@ -1,0 +1,100 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Ruler replaces the deck with ten Apocalypse cards" {
+    seed 4701;
+    state { player own { pp 10/10; hand { follower source = 10104120; } deck top { follower old = 10001120; } } }
+    action { play source; }
+    expect { legal; source.stats == 10/10; own.pp == 0/10; own.combo == 1; own.shadows == 0; own.deck count card 90004110 == 3; own.deck count card 90004120 == 3; own.deck count card 90004130 == 3; own.deck count card 90004310 == 1; own.deck count card 10001120 == 0; own.graveyard count card 10001120 == 0; own.banished count card 10001120 == 0; rng.consumed == 9; events excludes { destroy old; draw own 1; } }
+}
+
+scenario "Ruler replaces an empty deck without exhaustion" {
+    seed 4702;
+    state { player own { pp 10/10; hand { follower source = 10104120; } } }
+    action { play source; }
+    expect { legal; own.deck count card 90004310 == 1; own.deck count card 90004120 == 3; events excludes { game_end oppo; } }
+}
+
+scenario "Ruler normal evolution does not replace the deck" {
+    seed 4703;
+    state { turn own 5; player own { ep 1; field { follower source = 10104120; } deck top { follower old = 10001110; } } }
+    action { evolve source; }
+    expect { legal; source.stats == 12/12; old.zone == deck; own.deck count card 90004310 == 0; rng.consumed == 0; }
+}
+
+scenario "Ruler super evolution does not replace the deck" {
+    seed 4704;
+    state { turn own 7; player own { sep 1; field { follower source = 10104120; } deck top { follower old = 10001110; } } }
+    action { superevolve source; }
+    expect { legal; source.stats == 13/13; old.zone == deck; own.deck count card 90004310 == 0; rng.consumed == 0; }
+}
+
+scenario "Silent Rider enters with Storm and ten attack" {
+    seed 4705;
+    state { player own { pp 6/6; hand { follower source = 90004110; } } }
+    action { play source; }
+    expect { legal; source.stats == 10/10; source has storm; own.pp == 0/6; }
+}
+
+scenario "Servant is a one PP thirteen thirteen follower" {
+    seed 4706;
+    state { player own { pp 1/1; hand { follower source = 90004120; } } }
+    action { play source; }
+    expect { legal; source.stats == 13/13; own.pp == 0/1; }
+}
+
+scenario "Fiend damages two selected followers and the enemy leader" {
+    seed 4707;
+    state { player own { pp 5/5; hand { follower source = 90004130; } } player oppo { field { follower a = 10001110 { stats 2/7; } follower b = 10001110 { stats 3/8; } follower untouched = 10001110; } } }
+    action { play source; select a, b; }
+    expect { legal; source.stats == 9/6; a.stats == 2/1; b.stats == 3/2; untouched.stats == 2/2; oppo.leader.life == 14; events contains ordered { damage a 6; damage b 6; damage oppo.leader 6; } }
+}
+
+scenario "Fiend selects the only available enemy follower" {
+    seed 4708;
+    state { player own { pp 5/5; hand { follower source = 90004130; } } player oppo { field { follower enemy = 10001110; } } }
+    action { play source; select enemy; }
+    expect { legal; enemy.zone == graveyard; oppo.leader.life == 14; }
+}
+
+scenario "Fiend still damages the leader without enemy followers" {
+    seed 4709;
+    state { player own { pp 5/5; hand { follower source = 90004130; } } }
+    action { play source; }
+    expect { legal; source.stats == 9/6; oppo.leader.life == 14; }
+}
+
+scenario "Fiend respects Aura when selecting followers" {
+    seed 4710;
+    state { player own { pp 5/5; hand { follower source = 90004130; } } player oppo { field { follower enemy = 10001110 { aura; } } } }
+    action { play source; }
+    expect { legal; enemy.stats == 2/2; oppo.leader.life == 14; }
+}
+
+scenario "Fiend Barrier target consumes Barrier without damage" {
+    seed 4711;
+    state { player own { pp 5/5; hand { follower source = 90004130; } } player oppo { field { follower enemy = 10001110 { barrier; } } } }
+    action { play source; select enemy; }
+    expect { legal; enemy.stats == 2/2; enemy lacks barrier; oppo.leader.life == 14; }
+}
+
+scenario "Astaroth sets enemy maximum and current life to one" {
+    seed 4712;
+    state { player own { pp 10/10; hand { spell source = 90004310; } } }
+    action { play source; }
+    expect { legal; source.zone == graveyard; oppo.leader.life == 1; oppo.leader.maxlife == 1; own.leader.life == 20; own.pp == 0/10; events excludes { damage oppo.leader 19; heal oppo.leader 1; game_end own; } }
+}
+
+scenario "Astaroth clamps a wounded leader to the new maximum" {
+    seed 4713;
+    state { player own { pp 10/10; hand { spell source = 90004310; } } player oppo { leader 7/30; } }
+    action { play source; }
+    expect { legal; oppo.leader.life == 1; oppo.leader.maxlife == 1; events excludes { damage oppo.leader 6; } }
+}
+
+scenario "Astaroth leaves a leader already at one alive" {
+    seed 4714;
+    state { player own { pp 10/10; hand { spell source = 90004310; } } player oppo { leader 1/1; } }
+    action { play source; }
+    expect { legal; oppo.leader.life == 1; oppo.leader.maxlife == 1; events excludes { game_end own; } }
+}

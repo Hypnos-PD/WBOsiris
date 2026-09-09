@@ -44,7 +44,7 @@ func TestPublicCatalogMatchesConstructedDeckRules(t *testing.T) {
 		if card.Name != rule.Locales["chs"].Name || card.Text != rule.Locales["chs"].Text || card.Cost != rule.Cost || card.Class != rule.Meta.Class || card.DeckLegal != (runner.MatchCardUnavailableReason(rule) == "") {
 			t.Fatalf("catalog diverged from card %d", card.ID)
 		}
-		if card.ID == 10121120 && !card.DeckLegal || card.ID == 90021120 && card.DeckLegal || card.ID == 10104120 && card.DeckLegal {
+		if card.ID == 10121120 && !card.DeckLegal || card.ID == 90021120 && card.DeckLegal || card.ID == 10104120 && !card.DeckLegal {
 			t.Fatalf("incorrect availability for %d", card.ID)
 		}
 	}

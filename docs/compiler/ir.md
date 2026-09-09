@@ -763,6 +763,33 @@ HistorySummon = NodeBase & {
 普通入场事件会入队，入场曲不发动。暂停恢复按现有节点 ID、随机状态及实例绑定继续执行。
 本节点复用既有实例保存结构；续局要求当前 Continuation 版本与相同卡牌包哈希。
 
+牌组替换与主战者上限使用独立节点：
+
+```text
+DeckReplace = NodeBase & {
+  kind: "replace_deck",
+  owner: Side,
+  cards: [{ cardId: CardId, count: UInt16 }]
+}
+LeaderMaxLife = NodeBase & {
+  kind: "set_leader_max_life",
+  side: Side,
+  amount: UInt16
+}
+```
+
+配方不能为空，每项数量及合计为 1..65535，所有卡牌引用必须存在。允许重复 ID。
+按声明顺序展开配方，先整体检查查询与实例预算，再从末项向前执行 Fisher–Yates：
+在索引 `i` 处读取一次 `RNG.Index(i+1)` 并交换，N 张牌共 N−1 次决策。
+新实例使用原始卡面状态。旧牌组实体进入内部 `retired_deck` 区域，不产生区域移动、
+破坏、消失或舍弃事件；旧绑定保留身份但解析为空，不可重新移回可操作区域。
+既有破坏记录不变。公开事件 `deck_replaced` 仅含所属侧和 `Count=新数量`，
+不含任何牌组身份、顺序或目标。运行时没有输出绑定。
+
+主战者上限节点要求 `amount` 为 1..65535，更新上限并将当前生命取与新上限的最小值。
+它不产生伤害或回复，也不会通过提高上限回复生命。公开事件 `leader_max_life_set`
+使用 `Count=新上限`、`Actual=截断后的当前生命`，恢复时核验所属侧和数值范围。
+
 牌组召唤使用独立节点，移动已有实体：
 
 ```text
@@ -966,6 +993,8 @@ ability: Ability, labels?: map<LocaleId, string> }` 附加一个独立触发能�
 | `grant T { 能力 }` | `GrantAbility` |
 | `damage T N`、`heal T N` | `Damage`、`Heal` |
 | `set life T N` | `SetLife` |
+| `set maxlife own.leader N` | `LeaderMaxLife` |
+| `replace own.deck with shuffled N card C, ...` | `DeckReplace` |
 | `buff T +A/+L [where P] [until [own/oppo] turn ends]` | `BuffStats`，可带 `predicate` 和 `until` |
 | `destroy T`、`banish T`、`discard T` | `Destroy`、`Banish`、`Discard` |
 | `transform T into card C [preserving materials] [where P]` | `Transform`，筛选编译为 `FilterRef` |
@@ -986,7 +1015,7 @@ ability: Ability, labels?: map<LocaleId, string> }` 附加一个独立触发能�
 | `fanfare`、`lastwords`、`attack`、`clash`、`evolve`、`superevolve` | 对应 `Trigger` |
 | `engage N`、`enhance N`、`spellboost {}` | 对应专用 `Trigger` |
 | `when ...` | `EventTrigger(EventPattern)` |
-| `replace ...` | `ReplacementTrigger(MovePattern)` |
+| `replace self leaving field { ... }` | `ReplacementTrigger(MovePattern)` |
 
 ## replaces 与 extends 的编译期展开
 

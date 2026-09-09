@@ -435,6 +435,10 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 	case "set_attack_limit":
 		return ir.TargetEffect{NodeBase: base, Kind: "set_attack_limit", Target: valueRefIR(t, 1), Amount: intToken(t[2])}, nil
 	case "set":
+		if t[1].Value == "maxlife" {
+			e, _ := leaderMaxLifeIR(t, base)
+			return e, nil
+		}
 		end := valueRefEnd(t, 2)
 		amount, expr := numericIR(t, end)
 		return ir.TargetEffect{NodeBase: base, Kind: "set_life", Target: valueRefIR(t, 2), Amount: amount, AmountExpr: expr}, nil
@@ -444,6 +448,9 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		if t[end+1].Value == "deck" {
 			e.DeckInsertion = "uniform_random_position"
 		}
+		return e, nil
+	case "replace":
+		e, _ := deckReplaceIR(t, base)
 		return e, nil
 	case "evolve", "superevolve":
 		form := "evolved"

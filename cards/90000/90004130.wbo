@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 90004130 {
+    type follower;
+    cost 5;
+    stats 9/6;
+
+    effect {
+        fanfare {
+            choose targets from oppo.field.followers count 2;
+            damage targets 6;
+            damage oppo.leader 6;
+        }
+    }
+
+    meta {
+        pack 90000;
+        class neutral;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "边狱的邪祟";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的2个随从，对这些随从和对手的主战者造成6点伤害。
+""";
+    }
+
+    locale eng {
+        name "Demon of Purgatory";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select 2 enemy followers on the field and deal 6 damage to them and the enemy leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"へんごく\">辺獄</rub>の<rub=\"あっき\">悪鬼</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー2枚を選ぶ。それと相手のリーダーに6ダメージ。
+""";
+    }
+
+    locale kor {
+        name "변옥의 악귀";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 2장을 선택한다. 그 추종자와 상대방 리더에게 6 피해.
+""";
+    }
+
+    locale cht {
+        name "邊獄的惡鬼";
+        text """
+【<color=Keyword>入場曲</color>】指定2張敵方戰場上的從者卡。給予其與敵方的主戰者6點傷害。
+""";
+    }
+
+}

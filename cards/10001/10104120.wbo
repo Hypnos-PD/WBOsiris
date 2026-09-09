@@ -6,7 +6,9 @@ card 10104120 {
     stats 10/10;
 
     effect {
-        unplayable;
+        fanfare {
+            replace own.deck with shuffled 3 card 90004110, 3 card 90004120, 3 card 90004130, 1 card 90004310;
+        }
     }
 
     meta {

@@ -7,6 +7,15 @@ const state = (revision = 0, viewer = 'own') => ({ revision, viewer, own: player
 const catalog = { 1: { name: 'A' }, 2: { name: 'B' } };
 const fixture = () => ({ matchId: 'room', state: state(2), events: [{ Kind: 'turn_started', Side: 'own' }, { Kind: 'card_drawn', Side: 'own', Count: 1 }], frames: [{ revision: 0, eventCount: 0, state: state() }, { revision: 1, eventCount: 1, state: state(1) }, { revision: 2, eventCount: 2, state: state(2) }] });
 
+test('replacement counts and leader maximum changes use both seat perspectives', () => {
+  for (const viewer of ['own', 'oppo']) {
+    const side = viewer === 'own' ? '我方' : '对手';
+    const view = { state: state(1, viewer) };
+    assert.equal(eventLabel({ Kind: 'deck_replaced', Side: 'own', Count: 10 }, view, catalog), `${side}牌组替换为 10 张卡牌`);
+    assert.equal(eventLabel({ kind: 'leader_max_life_set', side: 'own', count: 1, actual: 1 }, view, catalog), `${side}主战者生命上限变为 1`);
+  }
+});
+
 test('amulet entry and engagement retain distinct replay labels', () => {
   const view = { state: state() };
   assert.equal(eventLabel({ Kind: 'amulet_summoned', CardID: 1, InstanceID: 'from-deck' }, view, catalog), 'A 入场');

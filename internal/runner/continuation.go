@@ -17,7 +17,7 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.31.0"
+const continuationVersion = "0.32.0"
 
 type ContinuationBindings struct {
 	ID     string                      `json:"id"`
@@ -79,6 +79,7 @@ type ContinuationAttack struct {
 }
 
 type ContinuationPlayer struct {
+	RetiredDeck      []string            `json:"retiredDeck"`
 	Crests           []string            `json:"crests"`
 	RetiredCrests    []string            `json:"retiredCrests"`
 	PP               int                 `json:"pp"`
@@ -478,7 +479,8 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 
 func snapshotContinuationPlayer(p player) ContinuationPlayer {
 	return ContinuationPlayer{
-		Crests: instanceIDs(p.crests), RetiredCrests: instanceIDs(p.retiredCrests),
+		RetiredDeck: instanceIDs(p.retiredDeck),
+		Crests:      instanceIDs(p.crests), RetiredCrests: instanceIDs(p.retiredCrests),
 		PP: p.pp, MaxPP: p.maxpp, LeaderLife: p.leaderLife, LeaderMax: p.leaderMax,
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, AttackedThisTurn: p.attackedThisTurn,
 		Deck: instanceIDs(p.deck), Hand: instanceIDs(p.hand), Field: instanceIDs(p.field), EvolvedThisTurn: p.evolvedThisTurn,
@@ -624,7 +626,7 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 	for _, side := range []struct {
 		name  string
 		zones [][]*instance
-	}{{"own", [][]*instance{g.own.deck, g.own.hand, g.own.field, g.own.graveyard, g.own.banished, g.own.resolving, g.own.crests, g.own.retiredCrests}}, {"oppo", [][]*instance{g.oppo.deck, g.oppo.hand, g.oppo.field, g.oppo.graveyard, g.oppo.banished, g.oppo.resolving, g.oppo.crests, g.oppo.retiredCrests}}} {
+	}{{"own", [][]*instance{g.own.deck, g.own.hand, g.own.field, g.own.graveyard, g.own.banished, g.own.resolving, g.own.crests, g.own.retiredCrests, g.own.retiredDeck}}, {"oppo", [][]*instance{g.oppo.deck, g.oppo.hand, g.oppo.field, g.oppo.graveyard, g.oppo.banished, g.oppo.resolving, g.oppo.crests, g.oppo.retiredCrests, g.oppo.retiredDeck}}} {
 		for _, zone := range side.zones {
 			for _, i := range zone {
 				if seen[i.id] {
@@ -754,6 +756,11 @@ func validateContinuationEvents(events []ir.RuntimeEvent, sequence, deathBatchSe
 	var lastBatch uint64
 	previousBatch := uint64(0)
 	for n, event := range events {
+		if event.Kind == "deck_replaced" || event.Kind == "leader_max_life_set" {
+			if event.Side != "own" && event.Side != "oppo" || event.PrivateTo != "" || event.Count < 1 || event.Count > 65535 || event.InstanceID != "" || event.CardID != 0 || event.Subject != nil || event.Target != nil || event.Attacker != nil || event.Defender != nil || event.From != "" || event.To != "" || event.Reason != "" || event.Actual < 0 || event.Actual > event.Count || event.Kind == "deck_replaced" && event.Actual != 0 {
+				return fmt.Errorf("invalid continuation deck or leader event")
+			}
+		}
 		if event.Kind == "crest_gained" || event.Kind == "crest_countdown" || event.Kind == "crest_destroyed" {
 			i := instances[event.InstanceID]
 			if i == nil || i.card.CardType != "crest" || i.card.ID != event.CardID || event.Side != "own" && event.Side != "oppo" || event.PrivateTo != "" || event.Count < 0 || event.Kind == "crest_destroyed" && i.zone != "retired_crest" {
@@ -825,7 +832,13 @@ func generatedInstanceSerial(instances []ContinuationEntity) int {
 
 func restorePlayer(saved ContinuationPlayer, instances map[string]*instance, cards map[int]*ir.Card) (player, error) {
 	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, attackedThisTurn: saved.AttackedThisTurn, evolvedThisTurn: saved.EvolvedThisTurn, extraPPEarly: saved.ExtraPPEarly, extraPPLate: saved.ExtraPPLate, extraPPActive: saved.ExtraPPActive}
+	if p.leaderMax < 1 || p.leaderMax > 65535 || p.leaderLife < 0 || p.leaderLife > p.leaderMax {
+		return player{}, fmt.Errorf("invalid continuation leader life")
+	}
 	var err error
+	if p.retiredDeck, err = restoreInstanceList(saved.RetiredDeck, instances, "retired_deck"); err != nil {
+		return player{}, err
+	}
 	if p.crests, err = restoreInstanceList(saved.Crests, instances, "crests"); err != nil {
 		return player{}, err
 	}
@@ -1270,7 +1283,7 @@ func cloneEventTarget(target *ir.EventTarget) *ir.EventTarget {
 }
 func validZone(zone string) bool {
 	switch zone {
-	case "deck", "hand", "field", "graveyard", "banished", "destroyed", "resolving", "attached", "crests", "retired_crest":
+	case "deck", "hand", "field", "graveyard", "banished", "destroyed", "resolving", "attached", "crests", "retired_crest", "retired_deck":
 		return true
 	}
 	return false
