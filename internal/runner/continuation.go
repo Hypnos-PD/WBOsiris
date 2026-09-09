@@ -17,7 +17,7 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.35.0"
+const continuationVersion = "0.36.0"
 
 type ContinuationBindings struct {
 	ID     string                      `json:"id"`

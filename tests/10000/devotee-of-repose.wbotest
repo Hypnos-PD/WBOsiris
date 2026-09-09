@@ -1,0 +1,71 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Repose fanfare grants a four-count crest" {
+    seed 5101;
+    state { player own { pp 2/2; hand { follower source = 10361110; } } }
+    action { play source; }
+    expect { legal; source.stats == 0/4; own.crests count card 10361110 == 1; own.pp == 0/2; source lacks ward; }
+}
+
+scenario "Repose does not duplicate its existing crest" {
+    seed 5102;
+    state { player own { pp 2/2; hand { follower source = 10361110; } crests { crest emblem = 10361110 { countdown 2; } } } }
+    action { play source; }
+    expect { legal; own.crests count card 10361110 == 1; emblem.countdown == 2; }
+}
+
+scenario "Repose crest grants Ward while attack remains zero" {
+    seed 5103;
+    state {
+        player own { field { follower source = 10361110; } crests { crest emblem = 10361110; } }
+        player oppo { deck top { follower nextcard = 10001110; } }
+    }
+    action { end_turn; }
+    expect { legal; source.stats == 0/4; source has ward; emblem.countdown == 4; rng.consumed == 1; }
+}
+
+scenario "Repose crest reduces a positive attack to zero" {
+    seed 5104;
+    state {
+        player own { field { follower ally = 10021110; } crests { crest emblem = 10361110; } }
+        player oppo { deck top { follower nextcard = 10001110; } }
+    }
+    action { end_turn; }
+    expect { legal; ally.stats == 0/1; ally has ward; rng.consumed == 1; }
+}
+
+scenario "Repose crest ignores an opposing turn end" {
+    seed 5105;
+    state {
+        player oppo { field { follower source = 10361110; } crests { crest emblem = 10361110; } deck top { follower nextcard = 10001110; } }
+    }
+    action { end_turn; }
+    expect { legal; source.stats == 0/4; source lacks ward; emblem.countdown == 3; rng.consumed == 0; }
+}
+
+scenario "Repose crest with no followers consumes no randomness" {
+    seed 5106;
+    state {
+        player own { field { amulet shrine = 10162210; } crests { crest emblem = 10361110; } }
+        player oppo { deck top { follower nextcard = 10001110; } }
+    }
+    action { end_turn; }
+    expect { legal; shrine lacks ward; emblem.countdown == 4; rng.consumed == 0; }
+}
+
+scenario "Repose crest expires at its owners fourth turn start" {
+    seed 5107;
+    state {
+        player oppo { field { follower source = 10361110; } crests { crest emblem = 10361110 { countdown 1; } } deck top { follower nextcard = 10001110; } }
+    }
+    action { end_turn; }
+    expect { legal; oppo.crests count card 10361110 == 0; source lacks ward; oppo.shadows == 0; oppo.destroyed count card 10361110 == 0; nextcard.zone == hand; }
+}
+
+scenario "Repose has a legal zero-damage attack" {
+    seed 5108;
+    state { player own { field { follower source = 10361110; } } }
+    action { attack source into oppo.leader; }
+    expect { legal; source.stats == 0/4; oppo.leader.life == 20; events contains ordered { damage oppo.leader 0; } }
+}

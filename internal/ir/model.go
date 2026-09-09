@@ -327,6 +327,14 @@ type OrPredicate struct {
 func (p OrPredicate) predicateKind() string { return p.Kind }
 
 type Condition interface{ conditionKind() string }
+type AttackHistoryCondition struct {
+	Kind     string `json:"kind"`
+	Side     string `json:"side"`
+	Attacked bool   `json:"attacked"`
+}
+
+func (c AttackHistoryCondition) conditionKind() string { return c.Kind }
+
 type OverflowCondition struct {
 	Kind string `json:"kind"`
 	Side string `json:"side"`

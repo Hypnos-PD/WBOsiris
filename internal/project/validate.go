@@ -874,7 +874,7 @@ func checkBindingAt(t []syntax.Token, start, end int, b map[string]bool, ds *[]s
 }
 
 func validateCondition(t []syntax.Token, ds *[]syntax.Diagnostic) {
-	if evolutionCondition(t) {
+	if evolutionCondition(t) || attackHistoryCondition(t) {
 		return
 	}
 	if len(t) == 1 && t[0].Value == "overflow" {

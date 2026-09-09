@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "cardPackHash": "sha256:7af148ef3abf4d6ef91eae46d70f6266d47ba97ef8da16287ae1c1cbaa6ec9bf",
+  "cardPackHash": "sha256:29ef357b2b95bf4e9e0b28f2a7a5788bc5ca36081a46a0ff2be3a23d53ed7c3c",
   "recipe": {
     "format": "webp",
     "width": 636,
@@ -3834,6 +3834,28 @@
       "sourceSha256": "ffe2fdff643214e0b15e657a748575955603610a26991673c9db00595426d472",
       "file": "103441201-b88364c9fd2c3de4.webp",
       "sha256": "b88364c9fd2c3de42708e40f871a05747a99b289586fde5abbdbca08312eaa2f",
+      "width": 636,
+      "height": 768
+    },
+    {
+      "cardId": 10361110,
+      "form": "base",
+      "textureId": 103611100,
+      "source": "card-textures-resized/Main/103611100.png",
+      "sourceSha256": "536c5dc851300270f0977ed52946d01375782e4bb874f876d07fa00da3bc291f",
+      "file": "103611100-fb1c466137094b89.webp",
+      "sha256": "fb1c466137094b89373497f7d3b521963e9b3998f6b7ca8decd5d598b3907dbb",
+      "width": 636,
+      "height": 768
+    },
+    {
+      "cardId": 10361110,
+      "form": "evolved",
+      "textureId": 103611101,
+      "source": "card-textures-resized/Main/103611101.png",
+      "sourceSha256": "fa998b34fecec5af35b0039ccf9f791d045393eef0238780686445b6d0d140b8",
+      "file": "103611101-74c66b703862deb0.webp",
+      "sha256": "74c66b703862deb0f058421c67c8b1a68d9cf1c2861670c7133a6db110b5e27d",
       "width": 636,
       "height": 768
     },

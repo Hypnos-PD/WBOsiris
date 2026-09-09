@@ -2,6 +2,9 @@ package runner
 
 import "wbo/internal/ir"
 
+// Attack modifiers retain their signed total; rules read a nonnegative value.
+func (i *instance) currentAttack() int { return max(0, i.attack) }
+
 func (g *game) effectEndingSide(until, ownSide string) string {
 	switch until {
 	case "turn_end":

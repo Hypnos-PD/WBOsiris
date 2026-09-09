@@ -8,6 +8,9 @@ import (
 
 func (g *game) condition(c ir.Condition, self *instance) bool {
 	switch x := c.(type) {
+	case ir.AttackHistoryCondition:
+		p, side := g.playerForSide(self, x.Side)
+		return (side == g.turn.Active && p.attackedThisTurn) == x.Attacked
 	case ir.SelfFormCondition:
 		return self != nil && g.matches(self, ir.FieldPredicate{Kind: "has_form", Form: x.Form}, self)
 	case ir.EvolutionUnlockedCondition:
@@ -231,7 +234,7 @@ func (g *game) extremumCandidates(items []*instance, extremum *ir.SelectionExtre
 		value := max(0, item.cost)
 		switch extremum.Field {
 		case "attack":
-			value = item.attack
+			value = item.currentAttack()
 		case "life":
 			value = item.life
 		case "base_cost":

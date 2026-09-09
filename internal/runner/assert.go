@@ -85,7 +85,7 @@ func (g *game) assertCompare(a ir.CompareAssertion) string {
 		case "cost":
 			got = i.cost
 		case "stats":
-			got = [2]int{i.attack, i.life}
+			got = [2]int{i.currentAttack(), i.life}
 		case "evolved":
 			got = i.evolved
 		case "super_evolved":

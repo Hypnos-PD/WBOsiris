@@ -13,7 +13,7 @@ func (g *game) numericValue(expr ir.NumericExpr, self *instance, bindings frame)
 			if e.Field == "cost" {
 				total += max(0, i.cost)
 			} else if e.Field == "attack" && i.card.Stats != nil {
-				total += i.attack
+				total += i.currentAttack()
 			} else if e.Field == "life" && i.card.Stats != nil {
 				total += i.life
 			} else if e.Field == "base_cost" {
@@ -47,7 +47,7 @@ func (g *game) numericValue(expr ir.NumericExpr, self *instance, bindings frame)
 			}
 			switch e.Field {
 			case "attack":
-				return self.attack
+				return self.currentAttack()
 			case "life":
 				return self.life
 			case "cost":

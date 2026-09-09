@@ -612,6 +612,13 @@ func conditionIR(t []syntax.Token) ir.Condition {
 			break
 		}
 	}
+	if attackHistoryCondition(t) {
+		attacked := t[0].Value != "not"
+		if !attacked {
+			t = t[1:]
+		}
+		return ir.AttackHistoryCondition{Kind: "attack_history", Side: t[0].Value, Attacked: attacked}
+	}
 	if len(t) == 1 {
 		return ir.OverflowCondition{Kind: "overflow", Side: "own"}
 	}

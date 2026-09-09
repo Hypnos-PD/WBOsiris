@@ -1,0 +1,105 @@
+wbo 0.1.0;
+
+card 10361110 {
+    type follower;
+    cost 2;
+    stats 0/4;
+
+    effect {
+        fanfare {
+            gain own crest 10361110;
+        }
+    }
+
+    crest {
+        countdown 4;
+        when own turn ends if not own.attacked_this_turn {
+            random target from own.field.followers;
+            buff target -2/-0;
+            add ward to target;
+        }
+
+        locale chs {
+            name "纹章：安息的肯定者";
+            text """
+【<color=Keyword>吟唱</color>_4】
+自己的回合结束时，若本回合中自己的随从没有进行过攻击，则使自己的战场上的随机1个随从-2/-0且获得【<color=Keyword>守护</color>】。
+""";
+        }
+
+        locale eng {
+            name "Crest: Devotee of Repose";
+            text """
+<b><color=Keyword>Countdown</color> (4)</b>
+At the end of your turn, if allied followers didn't attack this turn, give a random allied follower on the field -2/-0 and <b><color=Keyword>Ward</color></b>.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"あんそく\">安息</rub>の<rub=\"こうていしゃ\">肯定者</rub>";
+            text """
+【<color=Keyword>カウントダウン</color>_4】
+自分のターン終了時、このターン中に自分のフォロワーが攻撃していないなら、自分の場のフォロワーからランダム1枚は-2/-0して【<color=Keyword>守護</color>】を持つ。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 안식의 긍정자";
+            text """
+[<color=Keyword>카운트다운</color> 4]
+내 턴 종료시 이번 턴에 내 추종자가 공격하지 않았다면, 내 전장의 추종자 중 무작위로 1장은 -2/-0 및 [<color=Keyword>수호</color>]를 갖는다.
+""";
+        }
+
+        locale cht {
+            name "紋章：安息的肯定者";
+            text """
+【<color=Keyword>倒數</color>_4】
+自己的回合結束時，如果本回合中自己的從者卡未進行攻擊，則會隨機使1張自己戰場上的從者卡-2/-0並獲得【<color=Keyword>守護</color>】。
+""";
+        }
+
+    }
+
+    meta {
+        pack 10003;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "安息的肯定者";
+        text """
+【<color=Keyword>入场曲</color>】使自己获得『纹章：安息的肯定者』。
+""";
+    }
+
+    locale eng {
+        name "Devotee of Repose";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Gain <b><i>Crest: Devotee of Repose</i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あんそく\">安息</rub>の<rub=\"こうていしゃ\">肯定者</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分は『クレスト：安息の肯定者』を持つ。
+""";
+    }
+
+    locale kor {
+        name "안식의 긍정자";
+        text """
+[<color=Keyword>출격</color>] 나는 「크레스트: 안식의 긍정자」를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "安息的肯定者";
+        text """
+【<color=Keyword>入場曲</color>】使自己獲得『紋章：安息的肯定者』。
+""";
+    }
+
+}

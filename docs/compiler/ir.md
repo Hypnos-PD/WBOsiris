@@ -291,6 +291,7 @@ BoolExpr =
 | Overflow    { kind: "overflow", side: Side }
 | SelfForm    { kind: "self_form", form: "unevolved" | "evolved" | "super_evolved" }
 | EvolutionUnlocked { kind: "evolution_unlocked", side: Side, form: "evolved" | "super_evolved" }
+| AttackHistory { kind: "attack_history", side: Side, attacked: Bool }
 ```
 
 当前 `where type follower and class swordcraft` 编译为两个谓词的 `And`；
@@ -298,6 +299,9 @@ BoolExpr =
 编译为组，再以 `Or` 连接各组；每个逻辑节点至少包含两个子项。
 `where life <= 3` 编译为 `Compare`；`if combo >= 3` 默认读取 `own.combo`；
 `if overflow` 编译为 `Overflow(own)`。IR 不保留这些省略写法。
+`if own.attacked_this_turn` 与 `if not own.attacked_this_turn` 编译为 `AttackHistory`，
+`attacked` 分别为 `true`、`false`；该字段必须显式存在。它读取当前回合的攻击声明记录，
+不检查目前仍在场的随从，也不把上一位玩家回合的攻击计入当前回合。
 `if self form super_evolved` 编译为 `SelfForm`，不建立候选集合；它读取能力来源当前的
 随从形态，`evolved` 包含超进化，非随从不匹配。`if own.superevolve_unlocked`
 编译为 `EvolutionUnlocked(own, super_evolved)`；`evolve_unlocked` 使用 `evolved`。

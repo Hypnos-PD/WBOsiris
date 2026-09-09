@@ -726,7 +726,7 @@ func (g *game) advanceAttack() {
 		state.stage = "combat"
 	}
 	if state.defender == "" {
-		actual := g.damageLeader(g.player(opponentSide), opponentSide, attacker.attack)
+		actual := g.damageLeader(g.player(opponentSide), opponentSide, attacker.currentAttack())
 		if attacker.abilities["drain"] && actual > 0 {
 			g.healLeader(g.owner(attacker), state.actor, actual)
 		}
@@ -741,7 +741,7 @@ func (g *game) advanceAttack() {
 		g.attack = nil
 		return
 	}
-	state.attackerAttack, state.defenderAttack = attacker.attack, defender.attack
+	state.attackerAttack, state.defenderAttack = attacker.currentAttack(), defender.currentAttack()
 	defenderDamage := g.damageInstanceFrom(attacker, defender, state.attackerAttack, "combat")
 	g.damageInstanceFrom(defender, attacker, state.defenderAttack, "combat")
 	if attacker.abilities["drain"] && defenderDamage > 0 {

@@ -263,7 +263,7 @@ damage oppo.field.followers 1;
 choose cheapest from own.hand lowest cost;
 ```
 
-`highest` 与 `lowest` 均支持 `attack`、`life`、`cost`，读取实例当前数值；费用以零
+`highest` 与 `lowest` 均支持 `attack`、`life`、`cost`，读取实例当前数值；费用和攻击力以零
 为下限，攻击力和生命值只对随从有意义，其他卡牌不参加这两类比较。先应用 `other`
 和 `where`；玩家选择还会先移除不能被选择的目标，再求极值。随机效果不受潜行、
 灵气的目标选择限制。极值查询本身不消费随机数；后续 `random` 只在极值候选中抽取。
@@ -554,9 +554,28 @@ damage target self.attack;
 而改变同一次操作的生命值增量，或使后面的目标读取到已修改值。统计查询超出预算时，
 整个操作不修改目标。选择操作暂停并恢复后，在数值操作实际开始时读取状态。
 
-攻击力内部允许保留负值，增益计算保留该负值；伤害和回复量的下限为零。
+攻击力内部允许保留负值，后续增减、进化和临时效果到期都在该值上计算。
+例如内部攻击力为 -2 时，获得 +1/+1 后内部攻击力为 -1，显示仍为 0。
+`self.attack`、`sum(..., attack)`、攻击力极值选择、战斗伤害和网页显示均以零为下限；
+求和先对每个随从取不小于零的攻击力，负值不会抵消其他随从的贡献。复制和续局保留内部值。
+伤害和回复量的下限同样为零。
 负攻击力参与后续增益计算的说明见 [官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#2mrx5ewte1)。
 当前不支持计数嵌套、一般算术、绑定对象的数值字段，或将动态数值用于抽牌数量等其他操作。
+
+`own.attacked_this_turn` 和 `oppo.attacked_this_turn` 可直接作为 `if` 条件，
+在前面加 `not` 表示本回合尚未有对应玩家的随从宣告攻击。这里的 `own` 始终指能力控制者。
+
+```wbo
+when own turn ends if not own.attacked_this_turn {
+    random target from own.field.followers;
+    buff target -2/-0;
+    add ward to target;
+}
+```
+
+合法攻击一经声明即计入，包括攻击力为零、攻击主战者以及攻击者随后离场的情况。
+被拒绝的攻击不计入；不沿用上一位玩家回合的记录，玩家下次回合开始时重置。
+该条件也可放在效果块的 `if ... { ... } else { ... }` 中。
 
 分配伤害在数值后写 `distributed`：
 

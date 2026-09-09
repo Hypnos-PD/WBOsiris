@@ -330,7 +330,7 @@ func filterContains(t []syntax.Token, field string) bool {
 	return false
 }
 func strictCondition(t []syntax.Token, fusion bool) bool {
-	if evolutionCondition(t) {
+	if evolutionCondition(t) || attackHistoryCondition(t) {
 		return true
 	}
 	if len(t) == 1 {
@@ -344,6 +344,13 @@ func strictCondition(t []syntax.Token, fusion bool) bool {
 		return t[0].Value == "combo" && op(t[1].Value) && isUnsigned(t[2])
 	}
 	return len(t) == 5 && (set("own", "oppo")[t[0].Value] && t[1].Value == "." && ir.ValidPlayerScalar(t[2].Value) || fusion && t[0].Value == "fused" && t[1].Value == "." && set("cost", "distinct")[t[2].Value]) && op(t[3].Value) && isUnsigned(t[4])
+}
+
+func attackHistoryCondition(t []syntax.Token) bool {
+	if len(t) == 4 && t[0].Value == "not" {
+		t = t[1:]
+	}
+	return len(t) == 3 && set("own", "oppo")[t[0].Value] && t[1].Value == "." && t[2].Value == "attacked_this_turn"
 }
 
 func evolutionCondition(t []syntax.Token) bool {
