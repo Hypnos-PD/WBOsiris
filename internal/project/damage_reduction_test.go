@@ -37,3 +37,10 @@ func TestCompileSetDamageReduction(t *testing.T) {
 		t.Fatalf("compiled effect = %#v", e)
 	}
 }
+
+func TestRejectNegativeDamageReduction(t *testing.T) {
+	f, ds := syntax.Parse("12345678.wbo", []byte(validCard("fanfare { set_damage_reduction self -1; }")))
+	if len(ds) == 0 && !hasErrors(ValidateFile(f)) {
+		t.Fatal("accepted negative damage reduction")
+	}
+}
