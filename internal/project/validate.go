@@ -539,6 +539,9 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 	case "set_damage_reduction":
 		end, good := parseValueRef(t, 1)
 		checkBindingAt(t, 1, end, bindings, ds)
+		if good && (end == 4 && t[3].Value == "leader" || end == 4 && values(t[1:4]) == "all . leaders" || end == 2 && t[1].Value == "leaders") {
+			good = false
+		}
 		ok = good && end+1 == len(t) && isUnsigned(t[end])
 	case "draw":
 		ok = len(t) == 2 && (isUnsigned(t[1]) || t[1].Value == "all")

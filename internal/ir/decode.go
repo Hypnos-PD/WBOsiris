@@ -1036,7 +1036,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if err != nil {
 			return nil, err
 		}
-		if (v.Kind == "discard" || v.Kind == "set_life") && (r.refKind() == "leader" || r.refKind() == "leaders") {
+		if (v.Kind == "discard" || v.Kind == "set_life" || v.Kind == "set_damage_reduction") && (r.refKind() == "leader" || r.refKind() == "leaders") {
 			return nil, fmt.Errorf("%s requires card instances", v.Kind)
 		}
 		var p Predicate
@@ -1119,7 +1119,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 				return nil, fmt.Errorf("invalid attack limit shape")
 			}
 		case "set_damage_reduction":
-			if v.Amount < 0 || v.DamageType != "" || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
+			if len(v.AmountValue) == 0 || v.Amount < 0 || v.Amount > 65535 || v.DamageType != "" || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
 				return nil, fmt.Errorf("invalid damage reduction shape")
 			}
 		case "set_life":

@@ -435,7 +435,8 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 	case "set_attack_limit":
 		return ir.TargetEffect{NodeBase: base, Kind: "set_attack_limit", Target: valueRefIR(t, 1), Amount: intToken(t[2])}, nil
 	case "set_damage_reduction":
-		return ir.TargetEffect{NodeBase: base, Kind: "set_damage_reduction", Target: valueRefIR(t, 1), Amount: intToken(t[2])}, nil
+		end := valueRefEnd(t, 1)
+		return ir.TargetEffect{NodeBase: base, Kind: "set_damage_reduction", Target: valueRefIR(t, 1), Amount: intToken(t[end])}, nil
 	case "set":
 		if t[1].Value == "maxlife" {
 			e, _ := leaderMaxLifeIR(t, base)
