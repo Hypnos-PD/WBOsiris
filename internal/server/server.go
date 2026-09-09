@@ -172,7 +172,7 @@ func (s *Server) matchesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	s.matches[id] = room
 	s.mu.Unlock()
-	writeMatch(w, id, token, joinCode, "own", room, nil)
+	writeMatch(w, id, token, "own", room, nil)
 }
 
 func validateDeck(cards *ir.CardPack, deck []int) error {
@@ -296,7 +296,7 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		token := randomID(24)
 		room.players[token], room.joined = "oppo", true
-		writeMatch(w, parts[0], token, "", "oppo", room, nil)
+		writeMatch(w, parts[0], token, "oppo", room, nil)
 		return
 	}
 	if len(parts) == 2 && parts[1] == "mulligan" && r.Method == http.MethodPost {
@@ -318,7 +318,7 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 		view, _ := room.session.View(side)
 		if input.ExpectedRevision != nil && *input.ExpectedRevision != view.Revision {
 			result := runner.StepResult{Status: runner.StatusRejected, ErrorCode: "stale_state"}
-			writeMatch(w, parts[0], "", "", side, room, &result)
+			writeMatch(w, parts[0], "", side, room, &result)
 			return
 		}
 		if err := room.session.ValidateMulligan(side, input.SelectedInstanceIDs); err != nil {
@@ -340,7 +340,7 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 			room.session.StartMatch()
 			recordReplay(room)
 		}
-		writeMatch(w, parts[0], "", "", side, room, nil)
+		writeMatch(w, parts[0], "", side, room, nil)
 		return
 	}
 	if len(parts) != 1 {
@@ -354,7 +354,7 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.Method == http.MethodGet {
-		writeMatch(w, parts[0], "", "", side, room, nil)
+		writeMatch(w, parts[0], "", side, room, nil)
 		return
 	}
 	if r.Method != http.MethodPost {
@@ -378,7 +378,7 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 	view, _ := room.session.View(side)
 	if input.ExpectedRevision != nil && *input.ExpectedRevision != view.Revision {
 		result := runner.StepResult{Status: runner.StatusRejected, ErrorCode: "stale_state"}
-		writeMatch(w, parts[0], "", "", side, room, &result)
+		writeMatch(w, parts[0], "", side, room, &result)
 		return
 	}
 	if room.session.PendingChoice() != nil && view.PendingChoice == nil {
@@ -387,7 +387,7 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	result := submit(room.session, input)
 	recordReplay(room)
-	writeMatch(w, parts[0], "", "", side, room, &result)
+	writeMatch(w, parts[0], "", side, room, &result)
 }
 
 func recordReplay(room *match) {
@@ -407,7 +407,7 @@ func recordReplay(room *match) {
 	room.replay = append(room.replay, frame)
 }
 
-func writeMatch(w http.ResponseWriter, id, token, joinCode, side string, room *match, result *runner.StepResult) {
+func writeMatch(w http.ResponseWriter, id, token, side string, room *match, result *runner.StepResult) {
 	w.Header().Set("Cache-Control", "no-store")
 	state, err := room.session.View(side)
 	if err != nil {
@@ -426,6 +426,10 @@ func writeMatch(w http.ResponseWriter, id, token, joinCode, side string, room *m
 		visible := *result
 		visible.Choice = state.PendingChoice
 		result = &visible
+	}
+	joinCode := ""
+	if side == "own" && !room.joined {
+		joinCode = room.joinCode
 	}
 	writeJSON(w, response{MatchID: id, PlayerToken: token, JoinCode: joinCode, Side: side, Waiting: !room.joined, MatchPhase: phase, MulliganReady: room.mulligan[side], OpponentReady: room.mulligan[oppositeMatchSide(side)], Result: result, State: state, LegalActions: actions, Capabilities: runner.SupportedSimulatorCapabilities(), Events: room.session.EventsFor(side)})
 }

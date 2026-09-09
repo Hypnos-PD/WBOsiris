@@ -16,6 +16,7 @@
 
 - [命令行工具](tooling/cli.md)：`check`、`format`、`compile` 和 `test`。
 - [网页牌组库](tooling/deck-library.md)：命名构筑、导入导出、本地保存与网络对战选牌。
+- [网络房间与恢复](tooling/network-rooms.md)：邀请对手、恢复席位、连接状态与本地凭据。
 
 ## 规则
 

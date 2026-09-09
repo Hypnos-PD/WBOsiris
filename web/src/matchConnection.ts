@@ -1,7 +1,8 @@
 import type { Remote } from "./gameTypes.ts";
 
 export type MatchAuth = { id: string; token: string; side: string };
-export type ConnectionStatus = "connecting" | "connected" | "sending" | "reconnecting";
+export type ConnectionStatus = "connecting" | "connected" | "sending" | "reconnecting" | "unavailable";
+class MatchUnavailable extends Error {}
 type Options = {
   base: string;
   auth: MatchAuth;
@@ -13,7 +14,7 @@ type Options = {
   timeout?: number;
 };
 
-function decodeRemote(value: unknown, auth: MatchAuth): Remote {
+export function decodeRemote(value: unknown, auth: MatchAuth): Remote {
   const data = value as Remote;
   const state = data?.state;
   if (data?.matchId !== auth.id || data.side !== auth.side || state?.viewer !== auth.side ||
@@ -66,6 +67,7 @@ export class MatchConnection {
         headers: { Authorization: `Bearer ${this.options.auth.token}`, ...(body === undefined ? {} : { "Content-Type": "application/json" }) },
         ...(body === undefined ? {} : { body: JSON.stringify(body) }),
       });
+      if (response.status === 401 || response.status === 404) throw new MatchUnavailable(response.status === 404 ? "房间已不存在，服务重启后旧房间不会保留" : "房间凭据已失效");
       if (!response.ok) throw new Error(`对局请求失败 (${response.status})`);
       let value: unknown;
       try { value = await response.json(); }
@@ -98,9 +100,15 @@ export class MatchConnection {
         this.synchronized = true;
         this.options.onStatus("connected");
       }
-    } catch {
+    } catch (error) {
       if (this.stopped || epoch !== this.epoch) return;
       this.synchronized = false;
+      if (error instanceof MatchUnavailable) {
+        this.stop();
+        this.options.onError(error.message);
+        this.options.onStatus("unavailable");
+        return;
+      }
       this.options.onStatus("reconnecting");
     } finally {
       if (epoch === this.epoch) this.schedule();
@@ -129,6 +137,12 @@ export class MatchConnection {
       return true;
     } catch (error) {
       if (this.stopped || epoch !== this.epoch) return false;
+      if (error instanceof MatchUnavailable) {
+        this.stop();
+        this.options.onError(error.message);
+        this.options.onStatus("unavailable");
+        return false;
+      }
       this.options.onError(error instanceof Error && error.name !== "AbortError" && error.name !== "TypeError" ? error.message : "未收到操作结果，正在同步对局");
       this.options.onStatus("reconnecting");
       return false;

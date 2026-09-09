@@ -53,6 +53,18 @@ func TestMatchRoomCreateJoinProtocol(t *testing.T) {
 	if owner.MatchID == "" || owner.PlayerToken == "" || owner.JoinCode == "" || owner.Side != "own" || !owner.Waiting {
 		t.Fatalf("invalid owner match response: %#v", owner)
 	}
+	// Reloading with the host credential restores the invitation without exposing it publicly.
+	status, body = perform(t, handler, http.MethodGet, "/api/matches/"+owner.MatchID, owner.PlayerToken)
+	var restored response
+	if status != http.StatusOK || json.Unmarshal(body, &restored) != nil || restored.JoinCode != owner.JoinCode || restored.PlayerToken != "" {
+		t.Fatalf("host invitation was not restored: status=%d", status)
+	}
+	for _, token := range []string{"", "invalid-token"} {
+		status, body = perform(t, handler, http.MethodGet, "/api/matches/"+owner.MatchID, token)
+		if status != http.StatusUnauthorized || bytes.Contains(body, []byte(owner.JoinCode)) {
+			t.Fatalf("unauthorized invitation access: status=%d", status)
+		}
+	}
 	status, body = perform(t, handler, http.MethodGet, "/api/matches", "")
 	if status != http.StatusOK {
 		t.Fatalf("list status=%d", status)
@@ -67,6 +79,9 @@ func TestMatchRoomCreateJoinProtocol(t *testing.T) {
 	}
 	if len(rooms) != 1 || rooms[0].ID != owner.MatchID || !rooms[0].Waiting {
 		t.Fatalf("invalid room listing: %#v", rooms)
+	}
+	if bytes.Contains(body, []byte(owner.JoinCode)) || bytes.Contains(body, []byte(owner.PlayerToken)) {
+		t.Fatal("room listing contains invitation or player credential")
 	}
 
 	status, _ = perform(t, handler, http.MethodPost, "/api/matches/"+owner.MatchID+"/join?code=wrong", "")
@@ -84,6 +99,17 @@ func TestMatchRoomCreateJoinProtocol(t *testing.T) {
 	}
 	if opponent.MatchID != owner.MatchID || opponent.PlayerToken == "" || opponent.Side != "oppo" || opponent.Waiting {
 		t.Fatalf("invalid opponent match response: %#v", opponent)
+	}
+	if opponent.JoinCode != "" {
+		t.Fatal("guest received host invitation")
+	}
+	for _, token := range []string{owner.PlayerToken, opponent.PlayerToken} {
+		for _, suffix := range []string{"", "/replay"} {
+			status, body = perform(t, handler, http.MethodGet, "/api/matches/"+owner.MatchID+suffix, token)
+			if status != http.StatusOK || bytes.Contains(body, []byte(owner.JoinCode)) {
+				t.Fatalf("joined room or replay exposed invitation: status=%d", status)
+			}
+		}
 	}
 	status, body = perform(t, handler, http.MethodGet, "/api/matches", "")
 	if status != http.StatusOK {

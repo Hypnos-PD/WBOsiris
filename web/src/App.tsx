@@ -18,7 +18,9 @@ import { FusionDetails } from "./FusionDetails";
 import { CounterValues } from "./CounterValues";
 import { TriggerLimits } from "./TriggerLimits";
 import { CrestZone, crestName } from "./CrestZone";
-import { MatchConnection, type ConnectionStatus } from "./matchConnection";
+import { decodeRemote, MatchConnection, type ConnectionStatus } from "./matchConnection";
+import { matchKey, readMatchAuth, readSavedMatches, saveMatchAuth, type SavedMatch } from "./matchStorage";
+import { RoomInvitation } from "./RoomInvitation";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8080";
 const validPages = new Set(["home", "battle", "decks", "replays", "rooms"]);
@@ -174,6 +176,8 @@ export function App() {
     deckLibrary.commit((library) => ({ ...library, decks: library.decks.map((deck) => deck.id === library.activeId ? { ...deck, cards } : deck) }));
   };
   const [roomList, setRoomList] = useState<RoomSummary[]>([]);
+  const [savedRooms, setSavedRooms] = useState<SavedMatch[]>([]);
+  const [savedRoomsError, setSavedRoomsError] = useState("");
   const [joinRoomId, setJoinRoomId] = useState("");
   const [joinRoomCode, setJoinRoomCode] = useState("");
   const [demoPP, setDemoPP] = useState(5);
@@ -190,7 +194,6 @@ export function App() {
     token: string;
     side: string;
   } | null>(null);
-  const [joinCode, setJoinCode] = useState("");
   const started = useRef(false);
   const [handExpanded, setHandExpanded] = useState(false);
   const [leftPanel, setLeftPanel] = useState<"history" | "card" | null>(null);
@@ -235,11 +238,15 @@ export function App() {
     const auth = { id: data.matchId, token, side: data.side };
     connection.current?.stop();
     connection.current = null;
-    try { localStorage.setItem(`wbo-match-${auth.id}-${auth.side}`, JSON.stringify(auth)); }
+    try { saveMatchAuth(localStorage, auth); refreshSavedRooms(); }
     catch { setRequestError("无法保存房间凭据，刷新后将无法恢复对局"); }
-    setJoinCode(data.joinCode || "");
     setMatchAuth(auth);
     setRemote(data);
+    setChoiceSelection([]);
+    setChoiceOption(null);
+    setMulliganSelection([]);
+    setAttacker(null);
+    setSelected(null);
     sync(data);
   };
   const createMatch = async () => {
@@ -257,7 +264,7 @@ export function App() {
       if (!response.ok) throw new Error(await response.text());
       const data: Remote = await response.json();
       if (!data.matchId || !data.playerToken || data.side !== "own" || !data.state) throw new Error("房间响应无效");
-      history.replaceState(null, "", `?match=${data.matchId}`);
+      history.replaceState(null, "", `?match=${data.matchId}&seat=own`);
       acceptMatch(data);
       setActivePage("battle");
     } catch (error) { setRequestError(error instanceof Error ? error.message : "无法连接对局服务"); }
@@ -269,20 +276,28 @@ export function App() {
     const params = new URLSearchParams(location.search);
     const id = params.get("match");
     const code = params.get("join");
-    let saved: string | null = null;
-    try { saved = id ? localStorage.getItem(`wbo-match-${id}-own`) || localStorage.getItem(`wbo-match-${id}-oppo`) : null; }
+    let saved: SavedMatch | null = null;
+    try { saved = id ? readMatchAuth(localStorage, id, params.get("seat")) : null; }
     catch { setRequestError("无法读取本地房间凭据"); }
-    if (id && saved) {
-      try {
-        const auth = JSON.parse(saved);
-        if (auth.id === id && typeof auth.token === "string" && (auth.side === "own" || auth.side === "oppo")) { setMatchAuth(auth); return; }
-      } catch { setRequestError("本地房间凭据无效"); }
-    }
+    if (saved) { setMatchAuth(saved); return; }
     if (id && code) {
       setJoinRoomId(id);
       setJoinRoomCode(code);
       setActivePage("rooms");
+    } else if (id) {
+      setRequestError("此浏览器没有该席位的有效凭据，请使用邀请链接加入或选择已保存的席位");
+      setActivePage("rooms");
     }
+  }, []);
+  const refreshSavedRooms = () => {
+    try { setSavedRooms(readSavedMatches(localStorage)); setSavedRoomsError(""); }
+    catch { setSavedRoomsError("无法读取本地房间凭据，请恢复存储访问后重试"); }
+  };
+  useEffect(() => {
+    refreshSavedRooms();
+    const update = (event: StorageEvent) => { if (event.key === null || event.key.startsWith("wbo-match-")) refreshSavedRooms(); };
+    window.addEventListener("storage", update);
+    return () => window.removeEventListener("storage", update);
   }, []);
   useEffect(() => {
     if (!matchAuth) return;
@@ -621,10 +636,25 @@ export function App() {
       if (!response.ok) throw new Error(response.status === 401 ? "邀请码无效" : response.status === 409 ? "房间已满" : await response.text());
       const data: Remote = await response.json();
       if (!data.matchId || !data.playerToken || data.side !== "oppo" || !data.state) throw new Error("房间响应无效");
-      history.replaceState(null, "", `?match=${data.matchId}`);
+      history.replaceState(null, "", `?match=${data.matchId}&seat=oppo`);
       acceptMatch(data);
       setActivePage("battle");
     } catch (error) { setRequestError(error instanceof Error ? error.message : "无法加入房间"); }
+    finally { roomRequest.current = false; setRoomBusy(false); }
+  };
+  const resumeRoom = async (auth: SavedMatch) => {
+    if (roomRequest.current) return;
+    roomRequest.current = true;
+    setRoomBusy(true);
+    setRequestError("");
+    try {
+      const response = await fetch(`${API_BASE}/api/matches/${auth.id}`, { cache: "no-store", signal: AbortSignal.timeout(10000), headers: { Authorization: `Bearer ${auth.token}` } });
+      if (!response.ok) throw new Error(response.status === 404 ? "房间已不存在，服务重启后旧房间不会保留" : response.status === 401 ? "房间凭据已失效" : `无法恢复房间 (${response.status})`);
+      const data = decodeRemote(await response.json(), auth);
+      acceptMatch(data, auth.token);
+      history.replaceState(null, "", `?match=${auth.id}&seat=${auth.side}`);
+      setActivePage("battle");
+    } catch (error) { setRequestError(error instanceof Error && error.name !== "TimeoutError" ? error.message : "恢复房间超时，请重试"); }
     finally { roomRequest.current = false; setRoomBusy(false); }
   };
   const workspacePage = activePage === "home" ? (
@@ -653,9 +683,10 @@ export function App() {
     <section className="workspace-page">
       <div className="page-heading"><div><span className="eyebrow">NETWORK</span><h1>房间</h1></div><button className="primary-action" disabled={roomBusy || catalogLoading} onClick={createMatch}><Plus size={17}/>创建房间</button></div>
       <div className="room-deck-status">当前牌组：{deckLibrary.active.name} · {deckCards.length}/40 · {deckErrors.length ? deckErrors[0] : "可用于对战"}<button onClick={() => navigate("decks")}>选择或编辑牌组</button>{matchAuth && <p>更换牌组用于下一次建房或加入房间。</p>}</div>
-      <div className="room-panel">{matchAuth ? <><span className="status-dot"/>当前房间 <strong>{matchAuth.id}</strong><small>{remote?.waiting ? `等待对手加入 · 邀请码 ${joinCode}` : "对局进行中"}</small><button onClick={() => navigate("battle")}><DoorOpen size={15}/>进入牌桌</button></> : <p className="empty-state">暂无活动房间</p>}</div>
+      <div className="room-panel">{matchAuth ? <><span className="status-dot"/>当前房间 <strong>{matchAuth.id}</strong><small>{connectionStatus === "unavailable" ? "房间不可用" : remote?.waiting ? "等待对手加入" : remote?.state.gameOver ? "对局已结束" : "对局进行中"}</small>{connectionStatus !== "unavailable" && remote?.waiting && matchAuth.side === "own" && <RoomInvitation key={matchAuth.id} id={matchAuth.id} code={remote.joinCode}/>}<button onClick={() => navigate("battle")}><DoorOpen size={15}/>进入牌桌</button></> : <p className="empty-state">暂无活动房间</p>}</div>
       <div className="join-panel"><h2>加入房间</h2><input aria-label="房间 ID" value={joinRoomId} onChange={(e) => setJoinRoomId(e.target.value)} placeholder="房间 ID"/><input aria-label="邀请码" value={joinRoomCode} onChange={(e) => setJoinRoomCode(e.target.value)} placeholder="邀请码"/><button disabled={roomBusy || catalogLoading || !joinRoomId.trim() || !joinRoomCode.trim()} onClick={joinRoom}><DoorOpen size={15}/>{roomBusy ? "连接中" : "使用牌组加入"}</button></div>
       <div className="room-directory"><h2>公开房间</h2>{roomList.length ? roomList.map((room) => <div className="room-entry" key={room.id}><span>{room.id}</span><small>{room.waiting ? "等待加入" : "对局进行中"}</small></div>) : <p className="empty-state">暂无公开房间</p>}</div>
+      <div className="saved-rooms"><h2>本机保存的房间</h2><p>选择已保存的席位，恢复等待、换牌或进行中的对局。</p>{savedRoomsError && <p role="alert">{savedRoomsError}<button onClick={refreshSavedRooms}>重试</button></p>}{savedRooms.map((auth) => <div className="saved-room" key={matchKey(auth)}><div><strong>{auth.id}</strong><small>{auth.side === "own" ? "房主" : "客方"}{auth.updatedAt ? ` · ${new Date(auth.updatedAt).toLocaleString()}` : ""}</small></div><button disabled={roomBusy} onClick={() => resumeRoom(auth)}>恢复{auth.side === "own" ? "房主" : "客方"}席位</button></div>)}{!savedRooms.length && !savedRoomsError && <p>暂无本机房间记录</p>}</div>
     </section>
   ) : null;
 
@@ -674,7 +705,7 @@ export function App() {
       {requestError && <div className="network-notice" role="alert"><span>{requestError}</span><button aria-label="关闭提示" title="关闭" onClick={() => setRequestError("")}><X size={17}/></button></div>}
       {matchAuth && activePage === "battle" && connectionStatus !== "connected" && (
         <div className={`match-connection ${connectionStatus}`} role="status">
-          {connectionStatus === "sending" ? "正在提交" : connectionStatus === "connecting" ? "正在连接对局" : "连接中断，正在同步"}
+          {connectionStatus === "unavailable" ? <>房间不可用 <button onClick={() => navigate("rooms")}>返回房间页</button></> : connectionStatus === "sending" ? "正在提交" : connectionStatus === "connecting" ? "正在连接对局" : "连接中断，正在同步"}
         </div>
       )}
       <header className="battle-topbar">
@@ -986,24 +1017,14 @@ export function App() {
           <circle cx={dragGuide.x2} cy={dragGuide.y2} r="8" />
         </svg>
       )}
-      {remote?.waiting && matchAuth && (
+      {activePage === "battle" && connectionStatus !== "unavailable" && remote?.waiting && matchAuth && (
         <aside className="match-waiting">
-          <b>等待 2P 加入</b>
+          <b>等待对手加入</b>
           <span>房间号 {matchAuth.id}</span>
-          <small>2P 加入码 {joinCode}</small>
-          <button
-            disabled={!joinCode}
-            onClick={() =>
-              navigator.clipboard.writeText(
-                `${location.origin}${location.pathname}?match=${matchAuth.id}&join=${joinCode}`,
-              )
-            }
-          >
-            复制 2P 邀请链接
-          </button>
+          <RoomInvitation key={matchAuth.id} id={matchAuth.id} code={remote.joinCode}/>
         </aside>
       )}
-      {!remote?.waiting && remote?.matchPhase === "mulligan" && (
+      {activePage === "battle" && !remote?.waiting && remote?.matchPhase === "mulligan" && (
         <aside className="mulligan-panel">
           <b>重新抽牌</b>
           {remote.mulliganReady ? (
@@ -1019,7 +1040,7 @@ export function App() {
           <small>{remote.opponentReady ? "对手已确认" : "对手选择中"}</small>
         </aside>
       )}
-      {pending && (
+      {activePage === "battle" && pending && (
         <aside className={`choice-panel ${pending.kind === "mode" ? "mode-panel" : ""}`} aria-label={pending.kind === "mode" ? "选择模式" : "选择目标"}>
           <div className="choice-title">
             <b>

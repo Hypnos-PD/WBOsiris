@@ -14,3 +14,5 @@
   pointer-events: none;
 }
 .match-connection.reconnecting { background: #47282c; border-color: #bd8581; }
+.match-connection.unavailable { display: flex; align-items: center; gap: 10px; pointer-events: auto; background: #47282c; border-color: #bd8581; }
+.match-connection.unavailable button { padding: 5px 8px; border: 1px solid #bd8581; border-radius: 3px; background: #633e42; color: #fff0eb; font: inherit; }

@@ -56,6 +56,38 @@ test('equal revisions can advance room readiness without a card-state mutation',
   assert.deepEqual(f.frames[0].events, []);
 });
 
+test('restored host invitations follow room readiness at the same state revision', async t => {
+  const f = fixture(t);
+  f.calls[0].reply(state(0, { waiting: true, joinCode: 'invite' }));
+  await until(() => f.frames.length === 1);
+  assert.equal(f.frames[0].joinCode, 'invite');
+  await until(() => f.calls.length === 2);
+  f.calls[1].reply(state(0, { waiting: false }));
+  await until(() => f.frames.length === 2);
+  assert.equal(f.frames[1].joinCode, undefined);
+});
+
+test('missing rooms and invalid credentials stop polling and cannot submit more commands', async t => {
+  for (const status of [401, 404]) {
+    for (const duringCommand of [false, true]) {
+      const f = fixture(t);
+      if (duringCommand) {
+        f.calls[0].reply(state(1));
+        await until(() => f.frames.length === 1);
+        const submit = f.connection.submit({ kind: 'end_turn' });
+        f.calls[1].reply('unavailable', status);
+        assert.equal(await submit, false);
+      } else f.calls[0].reply('unavailable', status);
+      await until(() => f.statuses.at(-1) === 'unavailable');
+      assert.match(f.errors[0], status === 404 ? /房间已不存在/ : /凭据已失效/);
+      const calls = f.calls.length;
+      await new Promise(resolve => setTimeout(resolve, 35));
+      assert.equal(f.calls.length, calls);
+      assert.equal(await f.connection.submit({ kind: 'end_turn' }), false);
+    }
+  }
+});
+
 test('a lost command response blocks further commands until a fresh read and never retries the write', async t => {
   const f = fixture(t);
   f.calls[0].reply(state(1));
