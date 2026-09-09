@@ -124,6 +124,7 @@ func TestTaggedUnionEncodingPreservesRequiredZeroValues(t *testing.T) {
 		DrawEffect{NodeBase: base, Kind: "draw", Owner: "own", SourceZone: "deck", Count: 0, Output: "drawn"},
 		CardEffect{NodeBase: base, Kind: "add_card", Owner: "own", Count: 0, CardID: 12345678, Destination: "hand"},
 		TargetEffect{NodeBase: base, Kind: "damage", DamageType: "effect", Target: self, Amount: 0},
+		TargetEffect{NodeBase: base, Kind: "set_damage_reduction", Target: self, Amount: 0},
 		AdjustEffect{NodeBase: base, Kind: "adjust_entity_field", Field: "cost", Target: self, Delta: 0, Minimum: 0},
 	}
 	for _, effect := range effects {
