@@ -506,7 +506,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		return false
 	}
 	h := t[0].Value
-	known := set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "spellboost", "transform", "set_attack_limit", "set")
+	known := set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "spellboost", "transform", "set_attack_limit", "set_damage_reduction", "set")
 	if !known[h] {
 		return false
 	}
