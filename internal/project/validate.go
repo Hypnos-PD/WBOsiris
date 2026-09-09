@@ -542,7 +542,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		if good && (end == 4 && t[3].Value == "leader" || end == 4 && values(t[1:4]) == "all . leaders" || end == 2 && t[1].Value == "leaders") {
 			good = false
 		}
-		ok = good && end+1 == len(t) && isUnsigned(t[end])
+		ok = good && end+1 == len(t) && isU16(t[end])
 	case "draw":
 		ok = len(t) == 2 && (isUnsigned(t[1]) || t[1].Value == "all")
 		if len(t) > 2 && (isUnsigned(t[1]) || t[1].Value == "all") && len(t) >= 6 && t[2].Value == "from" && t[3].Value == "deck" {
@@ -868,8 +868,12 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 	return i, term
 }
 func isUnsigned(t syntax.Token) bool { _, ok := integer(t); return ok }
-func isCardID(t syntax.Token) bool   { return t.Kind == syntax.Integer && len(t.Value) == 8 }
-func isSign(t syntax.Token) bool     { return t.Value == "+" || t.Value == "-" }
+func isU16(t syntax.Token) bool {
+	n, ok := integer(t)
+	return ok && n <= 65535
+}
+func isCardID(t syntax.Token) bool { return t.Kind == syntax.Integer && len(t.Value) == 8 }
+func isSign(t syntax.Token) bool   { return t.Value == "+" || t.Value == "-" }
 func checkBindingAt(t []syntax.Token, start, end int, b map[string]bool, ds *[]syntax.Diagnostic) {
 	if start >= len(t) {
 		return
