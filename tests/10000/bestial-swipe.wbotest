@@ -1,0 +1,23 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Bestial Swipe damages a selected enemy follower" {
+    seed 5201;
+    state { player own { pp 2/2; hand { spell source = 10311310; } } player oppo { field { follower target = 10001110; } } }
+    action { play source; select target; }
+    expect { legal; target.zone == graveyard; source.zone == graveyard; }
+}
+
+scenario "Bestial Swipe combo draws after damage" {
+    seed 5202;
+    state { player own { pp 2/2; combo 3; hand { spell source = 10311310; } deck top { follower next = 10001110; } } player oppo { field { follower target = 10001110; } } }
+    action { play source; select target; }
+    expect { legal; target.zone == graveyard; next.zone == hand; }
+}
+
+scenario "Bestial Swipe cannot resolve without an enemy follower" {
+    seed 5203;
+    state { player own { pp 2/2; hand { spell source = 10311310; } } }
+    action { play source; }
+    expect { illegal target_required; unchanged; own.pp == 2/2; source.zone == hand; }
+}

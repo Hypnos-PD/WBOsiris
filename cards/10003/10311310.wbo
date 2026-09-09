@@ -1,0 +1,20 @@
+wbo 0.1.0;
+
+card 10311310 {
+    type spell;
+    cost 2;
+
+    effect {
+        require target from oppo.field.followers;
+        damage target 4;
+        if combo >= 3 { draw 1; }
+    }
+
+    meta { pack 10003; class forestcraft; rarity bronze; }
+
+    locale chs { name "野性的猛袭"; text """选择对手的战场上的1个随从，对其造成4点伤害。【<color=Keyword>连击</color>_3】抽取1张卡牌。"""; }
+    locale eng { name "Bestial Swipe"; text """Select an enemy follower on the field and deal it 4 damage. <b><color=Keyword>Combo</color> (3)</b> - Draw a card."""; }
+    locale jpn { name "<rub=\"やせい\">野生</rub>の<rub=\"もうしゅう\">猛襲</rub>"; text """相手の場のフォロワー1枚を選ぶ。それに4ダメージ。【<color=Keyword>コンボ</color>_3】自分のデッキから1枚を引く。"""; }
+    locale kor { name "야생의 맹습"; text """상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 4 피해. [<color=Keyword>콤보</color> 3] 내 덱에서 1장을 뽑는다."""; }
+    locale cht { name "野性的猛襲"; text """指定1張敵方戰場上的從者卡。給予其4點傷害。【<color=Keyword>連擊</color>_3】由自己的牌堆中抽取1張卡片。"""; }
+}

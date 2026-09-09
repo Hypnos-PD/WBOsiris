@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "cardPackHash": "sha256:29ef357b2b95bf4e9e0b28f2a7a5788bc5ca36081a46a0ff2be3a23d53ed7c3c",
+  "cardPackHash": "sha256:5a5c2ea152cde7da5e5782d938975be50a16c095403995d770c96ecef8364fab",
   "recipe": {
     "format": "webp",
     "width": 636,
@@ -3790,6 +3790,17 @@
       "sourceSha256": "b786d9ebb77fb09cb94a97fcefeda74bffc01ce40e159d51e19b447fdc320d52",
       "file": "101741301-2863f628d40f8b2a.webp",
       "sha256": "2863f628d40f8b2ae5cef0742d69d5fb34b480a470a50f3a8beab60f74e660c9",
+      "width": 636,
+      "height": 768
+    },
+    {
+      "cardId": 10311310,
+      "form": "base",
+      "textureId": 103113100,
+      "source": "card-textures-resized/Main/103113100.png",
+      "sourceSha256": "f084fada6843b33958c965376b08146f864510d913252d06eeb7afda4c70c2f5",
+      "file": "103113100-329ce1cd5e93e89b.webp",
+      "sha256": "329ce1cd5e93e89ba57d1b9fc0eb7acd5bbfd4d32f4bfa0c97b1c9bc36a11c21",
       "width": 636,
       "height": 768
     },
