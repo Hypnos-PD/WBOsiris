@@ -11,6 +11,8 @@ func TestDecodeEveryEventMatcherKind(t *testing.T) {
 		`{"kind":"destroyed","subject":{"kind":"instance","instanceId":"` + id + `"}}`,
 		`{"kind":"banished","subject":{"kind":"card","cardId":10001110}}`,
 		`{"kind":"follower_summoned","cardId":10001110,"count":1}`,
+		`{"kind":"card_summoned","cardId":10001210,"count":1}`,
+		`{"kind":"amulet_summoned","cardId":10001210,"count":1}`,
 		`{"kind":"zone_moved","instanceId":"` + id + `","to":"hand"}`,
 		`{"kind":"zone_moved","reason":"return","subject":{"kind":"instance","instanceId":"` + id + `"},"destination":"deck"}`,
 		`{"kind":"evolved","instanceId":"` + id + `"}`,

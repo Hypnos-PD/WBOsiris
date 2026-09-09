@@ -516,6 +516,8 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 		s.g.execCardEffect(e, self, bindings)
 	case ir.HistorySummonEffect:
 		bindings[e.Output] = bindEntities(s.g.summonFromHistory(e, self, bindings)...)
+	case ir.DeckSummonEffect:
+		bindings[e.Output] = bindEntities(s.g.summonFromDeck(e, self, bindings)...)
 	case ir.GrantEffect:
 		s.g.grantAbility(e, self, bindings)
 	case ir.TargetEffect:

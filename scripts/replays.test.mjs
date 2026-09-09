@@ -7,6 +7,12 @@ const state = (revision = 0, viewer = 'own') => ({ revision, viewer, own: player
 const catalog = { 1: { name: 'A' }, 2: { name: 'B' } };
 const fixture = () => ({ matchId: 'room', state: state(2), events: [{ Kind: 'turn_started', Side: 'own' }, { Kind: 'card_drawn', Side: 'own', Count: 1 }], frames: [{ revision: 0, eventCount: 0, state: state() }, { revision: 1, eventCount: 1, state: state(1) }, { revision: 2, eventCount: 2, state: state(2) }] });
 
+test('amulet entry and engagement retain distinct replay labels', () => {
+  const view = { state: state() };
+  assert.equal(eventLabel({ Kind: 'amulet_summoned', CardID: 1, InstanceID: 'from-deck' }, view, catalog), 'A 入场');
+  assert.equal(eventLabel({ kind: 'amulet_engaged', cardId: 1, instanceId: 'from-deck' }, view, catalog), 'A 启动');
+});
+
 test('crest events preserve independent names, countdown zero and opponent perspective', () => {
   const before = state(1, 'oppo'), after = state(2, 'oppo');
   before.oppo.crests = [{ instanceId: 'crest-1', cardId: 1, cardType: 'crest', crestLocales: { chs: { name: '纹章：A', text: 'Rules' } } }];

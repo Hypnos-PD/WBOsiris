@@ -350,8 +350,10 @@ add_operation     = "add" , integer , "card" , card_id , "to" , "hand" , ";"
 effect_duration   = "until" , [participant] , "turn" , "ends" ;
 
 summon_operation  = "summon" , integer , "card" , card_id , ";"
+                  | "summon" , "random" , integer , "from" , deck_summon_source , [where_clause] , ["distinct" , "names"] , ";"
                   | "summon" , "random" , integer , "from" , history_source , [where_clause] , [extremum_clause] , ";"
                   | "summon" , "copies" , "of" , value_ref , [where_clause] , ";" ;
+deck_summon_source = "own" , "." , "deck" , "." , ("followers" | "amulets") ;
 history_source    = participant , "." , "destroyed" , ["." , ("followers" | "amulets")] , ["this" , "turn"] ;
 numeric_operation = "damage" , value_ref , effect_amount , [damage_distribution] , [where_clause] , ";"
                   | "heal" , value_ref , effect_amount , [where_clause] , ";"
@@ -403,9 +405,14 @@ scalar_ref        = participant , "." , scalar_field ;
 场满、无候选或单一候选不消耗随机数；召唤不修改历史或原实例。
 `base.` 极值读取原始数值，省略则读取实例或历史快照的当前数值。
 
-`summon` 按数量依次创建实例并覆盖 `summoned`；`draw` 按本次抽取顺序移动实例并
+`summon N card C` 按数量依次创建实例并覆盖 `summoned`；`draw` 按本次抽取顺序移动实例并
 覆盖 `drawn`。`add card ... to hand` 创建实例但不视为抽牌。批量操作只把
 实际成功进入目标区域的实例写入输出绑定。
+牌组随机召唤移动已有实例，保留修改；数量上限取操作开始时的战场空位。
+`distinct names` 必须在筛选后，按实体副本等概率逐次抽选，每次选中后排除同名候选。
+没有该子句时只排除选中的实体。未选中的卡保留原牌组顺序，不公开身份。
+不支持对方牌组、法术、极值子句或回合窗口。单候选与空结果不消费随机数；
+输出 `summoned` 按成功入场顺序覆盖，入场监听在当前效果块后结算，不发动入场曲。
 `destroy` 覆盖 `destroyed`，只记录本条操作实际破坏的目标；空结果也覆盖。
 `count(destroyed)` 统计该结果，其他伤害或独立触发能力不会改写它。
 

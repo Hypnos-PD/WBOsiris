@@ -560,6 +560,9 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		ok = len(t) == 4 && isUnsigned(t[1]) && t[2].Value == "card" && isCardID(t[3])
 		if len(t) > 1 && t[1].Value == "random" {
 			_, ok = historySummonIR(t, ir.NodeBase{})
+			if !ok {
+				_, ok = deckSummonIR(t, ir.NodeBase{})
+			}
 		}
 		if len(t) >= 4 && t[1].Value == "copies" && t[2].Value == "of" {
 			end, good := parseValueRef(t, 3)

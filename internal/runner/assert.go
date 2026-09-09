@@ -169,7 +169,7 @@ func (g *game) assertZone(a ir.ZoneAssertion) string {
 }
 func (g *game) assertEvents(a ir.EventsAssertion) string {
 	matches := func(m ir.EventMatcher, e ir.RuntimeEvent) bool {
-		if m.Kind != e.Kind {
+		if m.Kind != e.Kind && !(m.Kind == "card_summoned" && (e.Kind == "follower_summoned" || e.Kind == "amulet_summoned")) {
 			return false
 		}
 		if m.Side != "" && m.Side != e.Side {

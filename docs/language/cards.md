@@ -382,6 +382,35 @@ buff summoned +1/+1;
 选择条件中的 `cost` 是当前费用：费用增加到 6 的创造物不满足 `cost <= 5`，
 参见[当前费用筛选的官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#bxi2b429pl7)。
 
+`summon random N from own.deck.followers|amulets [where ...] [distinct names]`
+从自己的牌组召唤已有卡牌。`where` 读取当前属性，`distinct names` 要求本次召唤
+各不相同的卡名；省略时允许同名的多张卡。
+
+```wbo
+fanfare {
+    choose target from own.hand;
+    discard target;
+    summon random 3 from own.deck.amulets where cost <= 3 distinct names;
+}
+```
+
+每张实体卡起初等概率参与抽选。选中一个名字后，`distinct names` 才从后续候选中
+排除该名字的其他副本；这些未选副本仍留在牌组。若有 A 三张、B 两张、C 一张，
+首次选中 A 的概率为 3/6；选中 A 后，下一次选中 B 的概率为 2/3。
+这是[官方关于随机不同种类的 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#9jbr88t6fy6j)
+给出的抽选方式。
+
+操作开始时按战场空位限制数量，固定候选并完成抽选后，按抽选顺序将实体移到战场。
+保留实例身份、费用和身材修正、附加能力及吟唱；剩余牌组顺序不变。随从重新进入
+入场等待。它不支付费用、不增加连击、不算抽牌，也不发动入场曲；候选不足不导致
+牌组耗尽败北。公开事件只显示成功入场的卡牌，不透露剩余牌组身份。
+`summoned` 绑定成功入场的有序实例，空结果也覆盖旧绑定。只有候选数大于一时才消费
+随机数，满场不抽选。入场监听在当前效果块完成后结算。
+
+随从和护符分别产生自己的入场事件：`when own follower summoned` 不响应护符，
+`when own amulet summoned` 响应使用、创建、复制、历史召唤和牌组召唤的护符。
+护符启动是独立的 `engaged` 事件。
+
 `summon random N from 破坏历史 [where ...] [highest|lowest 属性]` 从历史中抽取记录，
 按对应卡牌定义召唤同名的新卡。新卡使用原始费用、身材、吟唱和固有能力，
 不继承伤害、费用修正、额外关键词、计数器、进化或附加能力，也不获得亡者类型。

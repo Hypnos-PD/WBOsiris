@@ -341,7 +341,10 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		}
 	case "summon":
 		if t[1].Value == "random" {
-			e, _ := historySummonIR(t, base)
+			if e, ok := historySummonIR(t, base); ok {
+				return e, nil
+			}
+			e, _ := deckSummonIR(t, base)
 			return e, nil
 		}
 		if t[1].Value == "copies" {
@@ -642,6 +645,9 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 			m.SubjectType = ""
 		}
 		m.Event = map[string]string{"summoned": "follower_summoned", "leaves": "follower_left", "destroyed": "destroyed", "healed": "healed", "fused": "card_fused", "engaged": "amulet_engaged", "discarded": "card_discarded"}[t[3].Value]
+		if m.Event == "follower_summoned" && m.SubjectType == "amulet" {
+			m.Event = "amulet_summoned"
+		}
 	}
 	baseEnd, _, _ := parseBaseEventPattern(t)
 	end, _, _ := parseEventPattern(t)
@@ -917,6 +923,9 @@ func eventMatcherIR(s *syntax.Statement, a map[string]string) ir.EventMatcher {
 	t := s.Tokens()
 	h := t[0].Value
 	m := ir.EventMatcher{Kind: map[string]string{"damage": "damaged", "heal": "healed", "draw": "card_drawn", "destroy": "destroyed", "banish": "banished", "summon": "follower_summoned", "move": "zone_moved", "evolve": "evolved", "superevolve": "super_evolved", "engage": "amulet_engaged", "attack": "attacked", "turn_start": "turn_started", "turn_end": "turn_ended", "game_end": "game_ended", "gain": "resource_changed", "spend": "resource_changed", "return": "zone_moved"}[h]}
+	if h == "summon" {
+		m.Kind = "card_summoned"
+	}
 	if h == "discard" {
 		m.Kind = "card_discarded"
 	}

@@ -1,0 +1,72 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Rodeo discards before summoning three differently named deck amulets" {
+    seed 4601;
+    state { player own { pp 7/7; hand { follower source = 10164110; follower held = 10001110; } deck top { amulet a = 10001210; amulet b = 10002210; amulet c = 10062210; follower untouched = 10001110; } } }
+    action { play source; select held; }
+    expect { legal; source.stats == 5/5; held.zone == graveyard; a.zone == field; b.zone == field; c.zone == field; untouched.zone == deck; own.pp == 0/7; own.combo == 1; own.shadows == 1; events contains ordered { discard held; summon card 10001210 count 1; } events excludes { draw own 1; } }
+}
+
+scenario "Rodeo summons with no other hand card to discard" {
+    seed 4602;
+    state { player own { pp 7/7; hand { follower source = 10164110; } deck top { amulet a = 10001210; } } }
+    action { play source; }
+    expect { legal; a.zone == field; own.shadows == 0; rng.consumed == 0; events contains ordered { summon a; } }
+}
+
+scenario "Rodeo leaves duplicate names in the deck" {
+    seed 4603;
+    state { player own { pp 7/7; hand { follower source = 10164110; } deck top { amulet a = 10001210; amulet b = 10001210; amulet c = 10002210; } } }
+    action { play source; }
+    expect { legal; own.field count card 10001210 == 1; own.deck count card 10001210 == 1; c.zone == field; }
+}
+
+scenario "Rodeo filters modified current costs" {
+    seed 4604;
+    state { player own { pp 7/7; hand { follower source = 10164110; } deck top { amulet reduced = 10061210 { cost 0; } amulet raised = 10062210 { cost 4; } } } }
+    action { play source; }
+    expect { legal; reduced.zone == field; reduced.cost == 0; raised.zone == deck; rng.consumed == 0; }
+}
+
+scenario "Rodeo discards even when its entry fills the field" {
+    seed 4605;
+    state { player own { pp 7/7; hand { follower source = 10164110; follower held = 10001110; } field { follower a = 10001110; follower b = 10001110; follower c = 10001110; follower d = 10001110; } deck top { amulet untouched = 10001210; } } }
+    action { play source; select held; }
+    expect { legal; held.zone == graveyard; untouched.zone == deck; own.field count card 10164110 == 1; rng.consumed == 0; }
+}
+
+scenario "Rodeo does not draw ineligible deck cards" {
+    seed 4606;
+    state { player own { pp 7/7; hand { follower source = 10164110; } deck top { amulet expensive = 10061210; follower followercard = 10001110; spell spellcard = 10031310; } } }
+    action { play source; }
+    expect { legal; expensive.zone == deck; followercard.zone == deck; spellcard.zone == deck; rng.consumed == 0; events excludes { draw own 1; } }
+}
+
+scenario "Rodeo empty deck does not cause deck exhaustion" {
+    seed 4607;
+    state { player own { pp 7/7; hand { follower source = 10164110; } } }
+    action { play source; }
+    expect { legal; source.zone == field; events excludes { game_end oppo; } }
+}
+
+scenario "Rodeo normal evolution does not remove enemies" {
+    seed 4608;
+    state { turn own 5; player own { ep 1; field { follower source = 10164110; } } player oppo { field { follower enemy = 10001110; } } }
+    action { evolve source; }
+    expect { legal; source.stats == 7/7; enemy.stats == 2/2; enemy.zone == field; }
+}
+
+scenario "Rodeo super evolution destroys highest current attack before area damage" {
+    seed 4609;
+    state { turn own 7; player own { sep 1; field { follower source = 10164110; } } player oppo { field { follower high = 10001110 { stats 9/5; } follower low = 10144110 { stats 1/7; } } } }
+    action { superevolve source; }
+    expect { legal; source.stats == 8/8; high.zone == graveyard; low.stats == 1/6; events contains ordered { destroy high; damage low 1; } }
+}
+
+scenario "Rodeo super evolution without enemies is legal" {
+    seed 4610;
+    state { turn own 7; player own { sep 1; field { follower source = 10164110; } } }
+    action { superevolve source; }
+    expect { legal; source.stats == 8/8; rng.consumed == 0; }
+}

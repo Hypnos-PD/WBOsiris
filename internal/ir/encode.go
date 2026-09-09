@@ -51,7 +51,7 @@ func (m EventMatcher) MarshalJSON() ([]byte, error) {
 		object["subject"] = m.Subject
 	case "card_drawn":
 		object["side"], object["count"] = m.Side, m.Count
-	case "follower_summoned":
+	case "follower_summoned", "amulet_summoned", "card_summoned":
 		if m.InstanceID != "" {
 			object["instanceId"] = m.InstanceID
 		} else {

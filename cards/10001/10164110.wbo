@@ -7,7 +7,16 @@ card 10164110 {
     trait anathema;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from own.hand;
+            discard target;
+            summon random 3 from own.deck.amulets where cost <= 3 distinct names;
+        }
+        superevolve {
+            random target from oppo.field.followers highest attack;
+            destroy target;
+            damage oppo.field.followers 1;
+        }
     }
 
     meta {

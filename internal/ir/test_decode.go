@@ -569,7 +569,7 @@ func decodeMatcher(data []byte) (EventMatcher, error) {
 			return EventMatcher{}, fmt.Errorf("malformed draw matcher")
 		}
 		return EventMatcher{Kind: v.Kind, Side: v.Side, Count: *v.Count}, nil
-	case "follower_summoned":
+	case "follower_summoned", "amulet_summoned", "card_summoned":
 		var v struct {
 			Kind       string `json:"kind"`
 			Side       string `json:"side,omitempty"`

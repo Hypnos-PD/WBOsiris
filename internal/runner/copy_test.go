@@ -231,7 +231,7 @@ func TestCopyAmuletStateAndIgnoreUnsupportedZones(t *testing.T) {
 	f := frame{"sources": bindEntities(source, s.g.own.hand[0], s.g.own.graveyard[0], s.g.own.deck[0])}
 	e := ir.CardEffect{Kind: "summon_copies", Owner: "own", Target: ir.BindingRef{Kind: "binding", Name: "sources"}, Output: "summoned"}
 	s.g.execCardEffect(e, source, f)
-	if len(f["summoned"]) != 1 || s.g.instances[f["summoned"][0].InstanceID].engaged || s.g.instances[f["summoned"][0].InstanceID].countdown != 2 || len(s.g.events) != 0 {
+	if len(f["summoned"]) != 1 || s.g.instances[f["summoned"][0].InstanceID].engaged || s.g.instances[f["summoned"][0].InstanceID].countdown != 2 || len(s.g.events) != 1 || s.g.events[0].Kind != "amulet_summoned" || s.g.events[0].InstanceID != f["summoned"][0].InstanceID {
 		t.Fatal("amulet copy lost countdown, retained engage, or copied invalid sources")
 	}
 	f["sources"] = nil

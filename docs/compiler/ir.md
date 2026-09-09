@@ -452,7 +452,7 @@ EventPattern = {
   predicate: BoolExpr?
 }
 
-EventKind = "follower_summoned" | "card_drawn" | "amulet_engaged" |
+EventKind = "follower_summoned" | "amulet_summoned" | "card_drawn" | "amulet_engaged" |
             "turn_started" | "turn_ended" | "attacked" | "damaged" |
             "healed" | "destroyed" | "banished" | "zone_moved" |
             "evolved" | "super_evolved" | "resource_changed" |
@@ -471,6 +471,10 @@ MovePattern = {
 `side=own`、`subjectType=follower` 与 `HasTrait`。`when own turn ends` 对应
 `turn_ended`。`replace self leaving field` 对应 `subject=self`、`from=field`、`to`
 为空；空 `to` 表示任意离场目的地。
+`when own amulet summoned` 对应 `amulet_summoned` 与 `subjectType=amulet`，
+预置 `summoned` 绑定；它不触发随从入场监听。护符的使用、创建、复制、历史召唤及
+牌组召唤均发出该公开事件，启动仍发出 `amulet_engaged`。解码器拒绝两个入场事件
+与错误的对象类型搭配，护符事件不支持 `selfOnly`。
 
 `while self in hand` 编译为 `EventTrigger.sourceZone=hand`；省略时默认为 `field`。
 索引覆盖这两个来源区域，按回合玩家优先、战场在手牌之前、区域内顺序与声明顺序派发。
@@ -757,8 +761,30 @@ HistorySummon = NodeBase & {
 无放回抽选记录，按抽选顺序创建原始状态的新实例，达到场地上限即停止。
 仅剩一条候选不读取随机数，空结果仍覆盖输出绑定。原记录与原实例均不改变。
 普通入场事件会入队，入场曲不发动。暂停恢复按现有节点 ID、随机状态及实例绑定继续执行。
-本节点不改变 Continuation 的保存结构与既有节点语义，版本仍为 `0.30.0`；
-续局仍要求相同的卡牌包哈希。
+本节点复用既有实例保存结构；续局要求当前 Continuation 版本与相同卡牌包哈希。
+
+牌组召唤使用独立节点，移动已有实体：
+
+```text
+DeckSummon = NodeBase & {
+  kind: "summon_from_deck",
+  source: ZoneSet(side: "own", zone: "deck", member: "follower" | "amulet")
+        | FilterSet(the same zone source),
+  count: UInt16, // 1..65535
+  distinctNames?: bool,
+  output: "summoned"
+}
+```
+
+只允许单层筛选，拒绝对方牌组、法术、未指定类型的牌组和任意绑定。
+先取初始战场空位与数量的最小值，再查询候选。每张实体占一个等概率候选，逐次抽选
+不放回；`distinctNames=true` 每次同时排除与选中卡牌 ID 相同的候选。
+仅剩一张候选不读取随机数。查询和候选预算检查、全部抽选均先于牌组修改；失败不
+部分移动牌组，但已经消费的随机决策不回滚。剩余牌组的相对顺序保持不变。
+所有选中实体先离开牌组，再依次入场，保留身份和修改，重置攻击次数、入场等待和
+启动状态，处理土之印合并并排队对应入场事件。初始空位上限不会因合并而追加抽选。
+不创建新实例、不抽牌、不发动入场曲；公开事件不包含未选牌组身份。
+`summoned` 按实际入场顺序覆盖，包括空结果。双方席位按能力控制者解释 `own`。
 
 ```text
 HistorySet = { kind: "history", side: "own" | "oppo", window: "this_turn",
@@ -1351,7 +1377,7 @@ EventMatcher =
 | DrawMatcher    { kind: "card_drawn", side: Side, count: u16? }
 | DestroyMatcher { kind: "destroyed", subject: TestEventSubject }
 | BanishMatcher  { kind: "banished", subject: TestEventSubject }
-| SummonMatcher  { kind: "follower_summoned", side: Side?,
+| SummonMatcher  { kind: "card_summoned" | "follower_summoned" | "amulet_summoned", side: Side?,
                     instanceId: InstanceId?, cardId: CardId?, count: u16? }
 | MoveMatcher    { kind: "zone_moved", instanceId: InstanceId?, from: Zone?, to: Zone? }
 | ReturnMatcher  { kind: "zone_moved", reason: "return",
@@ -1373,6 +1399,10 @@ TestEventTarget =
 | InstanceTarget { kind: "instance", instanceId: InstanceId }
 | CardTarget     { kind: "card", cardId: CardId }
 ```
+
+源语言 `summon` 事实编译为 `card_summoned` 匹配器，同时匹配随从与护符入场；
+运行时仍分别记录两个事件。显式 `follower_summoned` 匹配器保持只匹配随从，
+`amulet_summoned` 只匹配护符，两者都不匹配启动。
 
 `Unchanged` 比较动作前后的完整可序列化状态，包括 RNG、事实序号、实例计数器和队列。
 非法动作不得生成事件或选择请求。`own.pp == 3/10` 编译为 `PlayerPpPairRef` 与

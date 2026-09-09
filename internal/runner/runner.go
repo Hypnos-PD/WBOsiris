@@ -974,7 +974,7 @@ func (g *game) applyPlaySetup(i *instance, emit bool) {
 		g.addToZone(actor, i, "field")
 		i.summoningSick = i.card.CardType == "follower"
 		g.mergeEarthSigil(i)
-		if emit && i.card.CardType == "follower" {
+		if emit {
 			g.triggerSummoned(i)
 		}
 	}

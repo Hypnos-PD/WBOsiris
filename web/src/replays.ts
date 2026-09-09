@@ -47,7 +47,8 @@ export function eventLabel(event: RuntimeEvent, remote: { state: GameState }, ca
   if (kind === "attacked") return `${nameFor(event.attacker || event.Attacker)} 攻击 ${nameFor(event.defender || event.Defender)}`;
   if (kind === "damaged") return `${name} 受到 ${actual ?? 0} 点伤害`;
   if (kind === "healed") return `${name} 回复 ${actual ?? 0} 点生命`;
-  if (kind === "follower_summoned" || kind === "amulet_engaged") return `${name} 入场`;
+  if (kind === "follower_summoned" || kind === "amulet_summoned") return `${name} 入场`;
+  if (kind === "amulet_engaged") return `${name} 启动`;
   if (kind === "follower_left") return `${name} 离场`;
   if (kind === "evolved") return `${name} 完成进化`;
   if (kind === "super_evolved") return `${name} 完成超进化`;

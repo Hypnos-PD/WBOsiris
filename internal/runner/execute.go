@@ -678,10 +678,13 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 	}
 }
 func (g *game) triggerSummoned(s *instance) {
-	if s.card.CardType != "follower" {
+	if s.card.CardType != "follower" && s.card.CardType != "amulet" {
 		return
 	}
 	event := ir.RuntimeEvent{Kind: "follower_summoned", Side: g.sideOf(s), InstanceID: s.id, CardID: s.card.ID, Count: 1}
+	if s.card.CardType == "amulet" {
+		event.Kind = "amulet_summoned"
+	}
 	if !g.emit(event) {
 		return
 	}
