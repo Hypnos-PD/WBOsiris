@@ -222,7 +222,7 @@ func (g *game) extremumCandidates(items []*instance, extremum *ir.SelectionExtre
 		if !g.chargeQueryVisits(1) {
 			return nil
 		}
-		if item == nil || extremum.Field != "cost" && item.card.CardType != "follower" {
+		if item == nil || extremum.Field != "cost" && extremum.Field != "base_cost" && item.card.CardType != "follower" {
 			continue
 		}
 		value := max(0, item.cost)
@@ -231,6 +231,12 @@ func (g *game) extremumCandidates(items []*instance, extremum *ir.SelectionExtre
 			value = item.attack
 		case "life":
 			value = item.life
+		case "base_cost":
+			value = item.card.Cost
+		case "base_attack":
+			value = item.card.Stats.Attack
+		case "base_life":
+			value = item.card.Stats.Life
 		}
 		if len(out) == 0 || extremum.Direction == "highest" && value > best || extremum.Direction == "lowest" && value < best {
 			best, out = value, out[:0]

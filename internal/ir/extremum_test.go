@@ -9,7 +9,7 @@ import (
 
 func TestExtremumSelectionRoundTrip(t *testing.T) {
 	for _, direction := range []string{"highest", "lowest"} {
-		for _, field := range []string{"attack", "life", "cost"} {
+		for _, field := range []string{"attack", "life", "cost", "base_attack", "base_life", "base_cost"} {
 			e := SelectionEffect{NodeBase: NodeBase{ID: strings.Repeat("a", 32), Origin: testOrigin()}, Kind: "random_choose", Policy: "random", Binding: "target", Source: ZoneRef{Kind: "zone", Side: "oppo", Zone: "field", Member: "follower"}, Extremum: &SelectionExtremum{Direction: direction, Field: field}}
 			data, err := json.Marshal(e)
 			if err != nil {

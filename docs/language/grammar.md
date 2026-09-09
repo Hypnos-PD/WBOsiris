@@ -205,7 +205,7 @@ selection_statement = selection_kind , binding_name , "from" , target_set ,
 character_set       = "own.field.followers" , "or" , "own.leader"
                     | "oppo.field.followers" , "or" , "oppo.leader" ;
 selection_kind      = "choose" | "require" | "random" ;
-extremum_clause     = ("highest" | "lowest") , ("attack" | "life" | "cost") ;
+extremum_clause     = ("highest" | "lowest") , ["base" , "."] , ("attack" | "life" | "cost") ;
 binding_name        = identifier ;
 
 target_set          = "field" , ["." , card_type_plural]
@@ -238,7 +238,7 @@ comparison_operator = "==" | "!=" | "<" | "<=" | ">" | ">=" ;
 能力来源，而非候选对象、抽牌接收者或当前回合玩家。测试断言中按测试席位解释。
 右侧在筛选发生时读取，支持与常量比较相同的六种运算符，不支持省略玩家、算术或嵌套聚合。
 `destroyed` 是随从与护符的破坏历史，不是区域，在集合语法中按只读历史集合处理。
-每次破坏保存独立记录；同一实例被多次破坏时不去重。历史集合可用于 `count` 和 `sum`，
+每次破坏保存独立记录；同一实例被多次破坏时不去重。历史集合可用于 `count`、`sum` 与历史召唤，
 不能作为选择或修改操作的目标。其筛选读取破坏时的卡牌身份与属性。
 `this turn` 仅允许跟在破坏历史集合后、`where` 前，限制为当前行动方的当前回合；
 无论是己方还是对手回合，`own.destroyed` 的 `own` 始终表示能力控制者。
@@ -350,7 +350,9 @@ add_operation     = "add" , integer , "card" , card_id , "to" , "hand" , ";"
 effect_duration   = "until" , [participant] , "turn" , "ends" ;
 
 summon_operation  = "summon" , integer , "card" , card_id , ";"
+                  | "summon" , "random" , integer , "from" , history_source , [where_clause] , [extremum_clause] , ";"
                   | "summon" , "copies" , "of" , value_ref , [where_clause] , ";" ;
+history_source    = participant , "." , "destroyed" , ["." , ("followers" | "amulets")] , ["this" , "turn"] ;
 numeric_operation = "damage" , value_ref , effect_amount , [damage_distribution] , [where_clause] , ";"
                   | "heal" , value_ref , effect_amount , [where_clause] , ";"
                   | "set" , "life" , value_ref , effect_amount , ";"
@@ -396,6 +398,11 @@ scalar_ref        = participant , "." , scalar_field ;
 决策（包括只剩一个候选时），并按抽中顺序进入手牌；未抽中的牌保持相对顺序。
 `draw all` 按牌组顺序取全部匹配实例，不消费随机决策。匹配不足时只抽取现有候选，
 不会因筛选失败触发牌组耗尽败北。
+历史召唤的数量为 1..65535，来源必须是破坏历史；不接受手牌、牌组、墓场或绑定。
+先筛选再求极值，按历史记录无放回抽选，召唤对应身份的原始状态卡牌。
+场满、无候选或单一候选不消耗随机数；召唤不修改历史或原实例。
+`base.` 极值读取原始数值，省略则读取实例或历史快照的当前数值。
+
 `summon` 按数量依次创建实例并覆盖 `summoned`；`draw` 按本次抽取顺序移动实例并
 覆盖 `drawn`。`add card ... to hand` 创建实例但不视为抽牌。批量操作只把
 实际成功进入目标区域的实例写入输出绑定。

@@ -270,6 +270,8 @@ choose cheapest from own.hand lowest cost;
 灵气的目标选择限制。极值查询本身不消费随机数；后续 `random` 只在极值候选中抽取。
 `highest attack count 2` 最多取两个并列最高者，不会补选攻击力次高者。
 暂停时保存极值候选，恢复会重新核对候选合法性；查询预算不足不会使用部分结果。
+`base.attack`、`base.life`、`base.cost` 则比较卡牌定义的原始数值，例如
+`highest base.cost` 忽略费用修正；历史来源使用破坏时的卡牌身份，不受原实例后来变身影响。
 
 ## 效果操作
 
@@ -379,6 +381,23 @@ buff summoned +1/+1;
 超进化形态继承也符合[官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#2e2l68z79011)。
 选择条件中的 `cost` 是当前费用：费用增加到 6 的创造物不满足 `cost <= 5`，
 参见[当前费用筛选的官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#bxi2b429pl7)。
+
+`summon random N from 破坏历史 [where ...] [highest|lowest 属性]` 从历史中抽取记录，
+按对应卡牌定义召唤同名的新卡。新卡使用原始费用、身材、吟唱和固有能力，
+不继承伤害、费用修正、额外关键词、计数器、进化或附加能力，也不获得亡者类型。
+原实例和破坏记录保留。支持双方的随从与护符历史，以及可选的 `this turn` 回合窗口。
+
+```wbo
+lastwords {
+    summon random 1 from own.destroyed.amulets highest base.cost;
+}
+```
+
+每条破坏记录各占一个候选，同一实例被多次破坏也分别计入。同一条操作先固定筛选和
+极值候选，再无放回地逐次抽选、召唤，`summoned` 按实际召唤顺序绑定。
+记录不足或战场已满时停止，不补选低于极值的记录；空结果也会清空 `summoned`。
+没有候选、仅剩一个候选或战场已满时不消耗随机数。它不发动入场曲，会产生正常入场事件，
+监听能力在当前效果块完成后结算。历史不能作为普通选择或修改操作的目标。
 
 `life` 与 `cost` 的比较右侧还可读取 `own`/`oppo` 的 `combo`、`pp`、`maxpp`、
 `life`、`ep`、`sep`、`shadows`。必须显式写出玩家，且不支持算术或聚合表达式。

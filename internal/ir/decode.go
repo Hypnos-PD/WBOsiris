@@ -680,7 +680,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if v.Policy != wantPolicy || v.Binding == "" {
 			return nil, fmt.Errorf("invalid selection effect")
 		}
-		if v.Extremum != nil && (!oneOf(v.Extremum.Direction, "highest", "lowest") || !oneOf(v.Extremum.Field, "attack", "life", "cost")) {
+		if !ValidSelectionExtremum(v.Extremum) {
 			return nil, fmt.Errorf("invalid selection extremum")
 		}
 		if _, mixed := s.(CharacterSetRef); mixed && v.Extremum != nil {
@@ -855,6 +855,30 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			return nil, fmt.Errorf("invalid granted ability")
 		}
 		return GrantEffect{NodeBase: v.NodeBase, Kind: v.Kind, Target: target, Ability: ability, Labels: v.Labels}, nil
+	case "summon_from_history":
+		var v struct {
+			NodeBase
+			Kind     string             `json:"kind"`
+			Owner    string             `json:"owner"`
+			Source   json.RawMessage    `json:"source"`
+			Count    int                `json:"count"`
+			Extremum *SelectionExtremum `json:"extremum,omitempty"`
+			Output   string             `json:"output"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
+			return nil, err
+		}
+		source, err := decodeRef(v.Source)
+		if err != nil {
+			return nil, err
+		}
+		if !validSide(v.Owner) || !ValidHistorySummonSource(source) || v.Count < 1 || v.Count > 65535 || !ValidSelectionExtremum(v.Extremum) || v.Output != "summoned" {
+			return nil, fmt.Errorf("invalid summon_from_history shape")
+		}
+		return HistorySummonEffect{NodeBase: v.NodeBase, Kind: v.Kind, Owner: v.Owner, Source: source, Count: v.Count, Extremum: v.Extremum, Output: v.Output}, nil
 	case "summon_copies":
 		var v struct {
 			NodeBase

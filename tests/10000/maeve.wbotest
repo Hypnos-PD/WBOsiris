@@ -1,0 +1,58 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Maeve can be played as a seven PP Ward follower" {
+    seed 4501;
+    state { player own { pp 7/7; hand { follower source = 10162130; } } }
+    action { play source; }
+    expect { legal; source.stats == 5/7; source has ward; own.pp == 0/7; }
+}
+
+scenario "Maeve normal evolution retains Ward" {
+    seed 4502;
+    state { turn own 5; player own { ep 1; field { follower source = 10162130; } } }
+    action { evolve source; }
+    expect { legal; source.stats == 7/9; source has ward; }
+}
+
+scenario "Maeve super evolution retains Ward" {
+    seed 4503;
+    state { turn own 7; player own { sep 1; field { follower source = 10162130; } } }
+    action { superevolve source; }
+    expect { legal; source.stats == 8/10; source has ward; }
+}
+
+scenario "Maeve lastwords summons the highest base cost allied destroyed amulet" {
+    seed 4504;
+    state { player own { field { follower source = 10162130; } destroyed { amulet high = 10061210 { cost 0; } amulet low = 10062210 { cost 10; } } } player oppo { field { follower enemy = 10144110; } destroyed { amulet other = 10163220; } } }
+    action { attack source into enemy; }
+    expect { legal; source.zone == graveyard; own.field count card 10061210 == 1; own.field count card 10062210 == 0; own.field count card 10163220 == 0; own.destroyed count card 10061210 == 1; rng.consumed == 0; }
+}
+
+scenario "Maeve lastwords ignores destroyed followers" {
+    seed 4505;
+    state { player own { field { follower source = 10162130; } destroyed { follower old = 10144110; amulet low = 10062210; } } player oppo { field { follower enemy = 10144110; } } }
+    action { attack source into enemy; }
+    expect { legal; source.zone == graveyard; own.field count card 10062210 == 1; own.field count card 10144110 == 0; }
+}
+
+scenario "Maeve finishes without a destroyed amulet" {
+    seed 4506;
+    state { player own { field { follower source = 10162130; } } player oppo { field { follower enemy = 10144110; } } }
+    action { attack source into enemy; }
+    expect { legal; source.zone == graveyard; own.field count card 10162130 == 0; rng.consumed == 0; }
+}
+
+scenario "Maeve summon does not execute an amulet fanfare" {
+    seed 4507;
+    state { player own { field { follower source = 10162130; } destroyed { amulet old = 10002210; } deck top { follower untouched = 10001110; } } player oppo { field { follower enemy = 10144110; } } }
+    action { attack source into enemy; }
+    expect { legal; own.field count card 10002210 == 1; untouched.zone == deck; events excludes { draw own 1; } }
+}
+
+scenario "Banishing Maeve does not summon an amulet" {
+    seed 4508;
+    state { turn own 5; player own { ep 1; field { follower removal = 10062110; } } player oppo { field { follower source = 10162130 { stats 5/3; } } destroyed { amulet old = 10061210; } } }
+    action { evolve removal; select source; }
+    expect { legal; source.zone == banished; oppo.field count card 10061210 == 0; oppo.destroyed count card 10162130 == 0; }
+}

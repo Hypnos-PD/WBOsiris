@@ -6,7 +6,10 @@ card 10162130 {
     stats 5/7;
 
     effect {
-        unplayable;
+        ward;
+        lastwords {
+            summon random 1 from own.destroyed.amulets highest base.cost;
+        }
     }
 
     meta {

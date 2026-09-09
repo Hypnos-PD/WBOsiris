@@ -551,7 +551,8 @@ RandomChoose = NodeBase & {
   extremum?: SelectionExtremum
 }
 
-SelectionExtremum = { direction: "highest" | "lowest", field: "attack" | "life" | "cost" }
+SelectionExtremum = { direction: "highest" | "lowest",
+                     field: "attack" | "life" | "cost" | "base_attack" | "base_life" | "base_cost" }
 
 If = NodeBase & {
   kind: "if",
@@ -585,8 +586,9 @@ PayResource = NodeBase & {
 `require` 在动作预检阶段求候选集合，候选不足 `count` 使整个动作非法且状态、事件序号
 和 RNG 均不改变；足够时产生数量为 `count` 的必选请求。
 `extremum` 在来源集合筛选以及玩家目标限制之后计算；随机选择不应用玩家目标限制。
-只保留当前数值等于极值的候选，维持原候选顺序；`attack`、`life` 排除非随从，
-`cost` 使用不小于零的当前费用。它不表示取前 N 名，`count` 仅作用于极值并列集合。
+只保留指定数值等于极值的候选，维持原候选顺序；`attack`、`life` 排除非随从，
+`cost` 使用不小于零的当前费用。`base_*` 读取原始定义，原始身材同样排除非随从。
+它不表示取前 N 名，`count` 仅作用于极值并列集合。
 候选查询预算不足时不返回部分结果；续局恢复用同一节点重新验证保存的候选。
 
 `random_choose` 从当前候选不放回抽样，每个选中实例消费一次随机决策，最多选取
@@ -735,6 +737,28 @@ AttachedMaterial = {
 计数。变身重置来源实例的卡牌状态，但不能清空、复制或重新创建材料。
 
 ### 数值、能力与状态操作
+
+历史召唤使用独立的执行节点：
+
+```text
+HistorySummon = NodeBase & {
+  kind: "summon_from_history",
+  owner: Side,
+  source: HistorySet | ZoneSet(zone: "destroyed") | FilterSet(history source),
+  count: UInt16, // 1..65535
+  extremum?: SelectionExtremum,
+  output: "summoned"
+}
+```
+
+解码器只接受单层筛选的破坏历史来源，拒绝法术历史、可变区域、绑定和主战者。
+每条记录独立参与候选；当前属性来自记录，`base_*` 来自记录对应身份的卡牌定义。
+查询和极值计算完成后收费候选预算；预算耗尽不使用部分候选抽选或召唤。
+无放回抽选记录，按抽选顺序创建原始状态的新实例，达到场地上限即停止。
+仅剩一条候选不读取随机数，空结果仍覆盖输出绑定。原记录与原实例均不改变。
+普通入场事件会入队，入场曲不发动。暂停恢复按现有节点 ID、随机状态及实例绑定继续执行。
+本节点不改变 Continuation 的保存结构与既有节点语义，版本仍为 `0.30.0`；
+续局仍要求相同的卡牌包哈希。
 
 ```text
 HistorySet = { kind: "history", side: "own" | "oppo", window: "this_turn",

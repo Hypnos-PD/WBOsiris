@@ -269,11 +269,7 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			src = ir.FilterRef{Kind: "filter", Source: src, Predicate: pred}
 			end = next
 		}
-		var extremum *ir.SelectionExtremum
-		if end < len(t) && (t[end].Value == "highest" || t[end].Value == "lowest") {
-			extremum = &ir.SelectionExtremum{Direction: t[end].Value, Field: t[end+1].Value}
-			end += 2
-		}
+		extremum, end, _ := parseExtremum(t, end)
 		count := 0
 		if end < len(t) && t[end].Value == "count" {
 			count = intToken(t[end+1])
@@ -344,6 +340,10 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			return keywordEffectIR(base, "add_keyword", t), nil
 		}
 	case "summon":
+		if t[1].Value == "random" {
+			e, _ := historySummonIR(t, base)
+			return e, nil
+		}
 		if t[1].Value == "copies" {
 			target := valueRefIR(t, 3)
 			if end := valueRefEnd(t, 3); end < len(t) {

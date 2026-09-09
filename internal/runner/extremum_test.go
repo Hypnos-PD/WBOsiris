@@ -45,6 +45,22 @@ func TestExtremumUsesCurrentFieldsAndKeepsAllTies(t *testing.T) {
 	}
 }
 
+func TestBaseExtremaIgnoreModifiedStatsAndCost(t *testing.T) {
+	a := &instance{card: &ir.Card{CardType: "follower", Cost: 1, Stats: &ir.Stats{Attack: 1, Life: 2}}, cost: 10, attack: 10, life: 10}
+	b := &instance{card: &ir.Card{CardType: "follower", Cost: 8, Stats: &ir.Stats{Attack: 7, Life: 9}}, cost: 0, attack: 0, life: 1}
+	c := &instance{card: &ir.Card{CardType: "amulet", Cost: 9}, cost: 0}
+	g := &game{}
+	for _, tc := range []struct {
+		field string
+		want  *instance
+	}{{"base_cost", c}, {"base_attack", b}, {"base_life", b}, {"cost", a}, {"attack", a}, {"life", a}} {
+		got := g.extremumCandidates([]*instance{a, b, c}, &ir.SelectionExtremum{Direction: "highest", Field: tc.field})
+		if len(got) != 1 || got[0] != tc.want {
+			t.Fatal("wrong base/current extremum", tc.field)
+		}
+	}
+}
+
 func TestExtremumChoiceRestoresAndRejectsLowerCandidate(t *testing.T) {
 	pack := repeatCardPack(t)
 	pack.Cards = append(pack.Cards, ir.Card{ID: 77774003, CardType: "spell", PlayEffects: []ir.Effect{
