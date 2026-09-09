@@ -10,7 +10,7 @@ import (
 )
 
 func TestCompileSetDamageReduction(t *testing.T) {
-	f, ds := syntax.Parse("12345678.wbo", []byte(validCard("fanfare { set_damage_reduction self 3; }")))
+	f, ds := syntax.Parse("12345678.wbo", []byte(validCard("fanfare { choose target from own.field.followers; set_damage_reduction target 3; }")))
 	if len(ds) != 0 || hasErrors(ValidateFile(f)) {
 		t.Fatalf("diagnostics: %v", append(ds, ValidateFile(f)...))
 	}
