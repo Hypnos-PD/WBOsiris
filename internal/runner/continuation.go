@@ -17,7 +17,7 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.34.0"
+const continuationVersion = "0.35.0"
 
 type ContinuationBindings struct {
 	ID     string                      `json:"id"`
@@ -921,6 +921,10 @@ func restoreHistory(records []DestructionRecord, instances map[string]*instance,
 }
 
 func validateDestructionRecords(g *game) error {
+	first := g.firstPlayer
+	if first == "" {
+		first = "own"
+	}
 	recorded := map[uint64]bool{}
 	for _, side := range []string{"own", "oppo"} {
 		for _, record := range g.player(side).destroyed {
@@ -931,7 +935,7 @@ func validateDestructionRecords(g *game) error {
 				continue
 			}
 			if record.TurnSide != "own" && record.TurnSide != "oppo" || record.TurnNumber < 0 || record.TurnNumber > g.turn.Number ||
-				record.TurnNumber == g.turn.Number && record.TurnSide == "oppo" && g.turn.Active == "own" {
+				record.TurnNumber == g.turn.Number && record.TurnSide != first && g.turn.Active == first {
 				return fmt.Errorf("invalid destruction record turn")
 			}
 			if record.EventSequence > uint64(len(g.events)) || recorded[record.EventSequence] {

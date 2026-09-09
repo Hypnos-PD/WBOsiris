@@ -1141,7 +1141,11 @@ func (g *game) preflightPlan(i *instance, plan *ir.ActionPlan) string {
 
 func (g *game) advanceTurn() {
 	if g.turnTransition == "ending" {
-		if g.turn.Active == "oppo" {
+		first := g.firstPlayer
+		if first == "" {
+			first = "own"
+		}
+		if g.turn.Active != first {
 			g.turn.Number++
 		}
 		g.turn.Active = oppositeSide(g.turn.Active)

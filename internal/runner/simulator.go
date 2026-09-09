@@ -125,6 +125,7 @@ type LegalAction struct {
 }
 
 type StateView struct {
+	FirstPlayer   string         `json:"firstPlayer,omitempty"`
 	Turn          TurnView       `json:"turn"`
 	Phase         string         `json:"phase"`
 	Revision      uint64         `json:"revision"`
@@ -333,9 +334,13 @@ func (s *Session) View(viewer string) (StateView, error) {
 	}
 	own, oppo := &s.g.own, &s.g.oppo
 	active := s.g.turn.Active
+	first := s.g.firstPlayer
 	winner := s.g.winner
 	if viewer == "oppo" {
 		own, oppo = oppo, own
+		if first != "" {
+			first = oppositeSide(first)
+		}
 		if active == "own" {
 			active = "oppo"
 		} else {
@@ -348,7 +353,8 @@ func (s *Session) View(viewer string) (StateView, error) {
 		}
 	}
 	return StateView{
-		Turn: TurnView{Active: active, Number: s.g.turn.Number}, Phase: s.g.phase,
+		FirstPlayer: first,
+		Turn:        TurnView{Active: active, Number: s.g.turn.Number}, Phase: s.g.phase,
 		Revision: s.g.revision, Viewer: viewer,
 		GameOver: s.g.gameOver, Winner: winner,
 		Own: playerView(own, true, s.g.turn.Number, viewer, s.g.firstPlayer, s.g.cards), Oppo: playerView(oppo, false, s.g.turn.Number, oppositeSide(viewer), s.g.firstPlayer, s.g.cards), PendingChoice: s.pendingChoiceFor(viewer),

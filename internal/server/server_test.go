@@ -150,7 +150,7 @@ func TestMatchCreateValidatesAndUsesSubmittedDeck(t *testing.T) {
 	if err := json.NewDecoder(res.Body).Decode(&created); err != nil {
 		t.Fatal(err)
 	}
-	if created.State.Own.HandCount != 4 || created.State.Own.DeckCount != 36 {
+	if created.State.Own.HandCount != 0 || created.State.Own.DeckCount != 40 || s.matches[created.MatchID].session != nil {
 		t.Fatalf("submitted deck was not installed: %#v", created.State.Own)
 	}
 	for name, bad := range map[string][]int{
@@ -288,7 +288,7 @@ func TestMatchReplayRequiresTokenAndReturnsEventLog(t *testing.T) {
 	if err := json.Unmarshal(res.Body.Bytes(), &replay); err != nil {
 		t.Fatal(err)
 	}
-	if replay.MatchID != created.MatchID || replay.State.Own.HandCount != 4 || len(replay.Frames) != 1 || replay.Frames[0].State.Own.HandCount != 4 {
+	if replay.MatchID != created.MatchID || replay.State.Own.HandCount != 0 || len(replay.Frames) != 0 || len(replay.Events) != 0 {
 		t.Fatalf("invalid replay response: %#v", replay)
 	}
 }

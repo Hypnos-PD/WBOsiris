@@ -56,7 +56,7 @@ func TestPublicCatalogMatchesConstructedDeckRules(t *testing.T) {
 	}
 }
 
-func TestJoinInstallsGuestDeckWithoutChangingHostOpeningHand(t *testing.T) {
+func TestJoinDealsBothSubmittedDecksAfterValidation(t *testing.T) {
 	root := serverRoot(t)
 	s, err := New(root, []string{filepath.Join(root, "cards")})
 	if err != nil {
@@ -95,9 +95,8 @@ func TestJoinInstallsGuestDeckWithoutChangingHostOpeningHand(t *testing.T) {
 		return res
 	}
 	previousSession := room.session
-	previousView, err := previousSession.View("own")
-	if err != nil {
-		t.Fatal(err)
+	if previousSession != nil || len(owner.State.Own.Hand) != 0 {
+		t.Fatal("waiting room exposed an opening hand")
 	}
 	for _, invalid := range [][]int{{}, guestDeck[:39]} {
 		res := post(joinPath, map[string]any{"deck": invalid})
@@ -125,8 +124,8 @@ func TestJoinInstallsGuestDeckWithoutChangingHostOpeningHand(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(view.Own, previousView.Own) {
-		t.Fatal("joining changed host state")
+	if len(view.Own.Hand) != 4 || view.Own.DeckCount != 36 {
+		t.Fatal("joining did not deal the host deck")
 	}
 	if guest.State.Own.HandCount != 4 || guest.State.Own.DeckCount != 36 {
 		t.Fatalf("guest hand=%d deck=%d", guest.State.Own.HandCount, guest.State.Own.DeckCount)

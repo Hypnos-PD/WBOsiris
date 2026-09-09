@@ -17,6 +17,7 @@ import (
 )
 
 type Server struct {
+	matchSetup  func() (uint64, string, error)
 	cards       *ir.CardPack
 	tests       *ir.TestPack
 	sessions    map[string]*runner.Session
@@ -158,14 +159,8 @@ func (s *Server) matchesHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		deck = input.Deck
 	}
-	session, err := runner.NewMatchSession(s.cards, deck, practiceDeck(), 1)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	id, token, joinCode := randomID(6), randomID(24), randomID(8)
-	room := &match{session: session, ownDeck: append([]int(nil), deck...), players: map[string]string{token: "own"}, joinCode: joinCode, mulligan: map[string]bool{}, mulliganSelection: map[string][]string{}}
-	recordReplay(room)
+	room := &match{ownDeck: append([]int(nil), deck...), players: map[string]string{token: "own"}, joinCode: joinCode, mulligan: map[string]bool{}, mulliganSelection: map[string][]string{}}
 	s.mu.Lock()
 	for s.matches[id] != nil {
 		id = randomID(6)
@@ -248,7 +243,7 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "unauthorized", http.StatusUnauthorized)
 			return
 		}
-		state, err := room.session.View(side)
+		state, err := matchState(room, side)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -281,19 +276,30 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}
-		if input.Deck != nil {
-			if err := validateDeck(s.cards, input.Deck); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			session, err := runner.NewMatchSession(s.cards, room.ownDeck, input.Deck, 1)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			room.session = session
-			recordReplay(room)
+		deck := input.Deck
+		if deck == nil {
+			deck = practiceDeck()
 		}
+		if err := validateDeck(s.cards, deck); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		setup := s.matchSetup
+		if setup == nil {
+			setup = randomMatchSetup
+		}
+		seed, first, err := setup()
+		if err != nil {
+			http.Error(w, "could not initialize match randomness", http.StatusInternalServerError)
+			return
+		}
+		session, err := runner.NewMatchSessionWithFirstPlayer(s.cards, room.ownDeck, deck, seed, first)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		room.session = session
+		recordReplay(room)
 		token := randomID(24)
 		room.players[token], room.joined = "oppo", true
 		writeMatch(w, parts[0], token, "oppo", room, nil)
@@ -399,6 +405,9 @@ func recordReplay(room *match) {
 	if ownErr != nil || oppoErr != nil {
 		return
 	}
+	if !room.started {
+		own.Phase, oppo.Phase = "mulligan", "mulligan"
+	}
 	frame := replayFrame{Revision: own.Revision, EventCount: len(room.session.Events()), Own: own, Oppo: oppo}
 	if n := len(room.replay); n > 0 && room.replay[n-1].Revision == own.Revision {
 		room.replay[n-1] = frame
@@ -409,15 +418,19 @@ func recordReplay(room *match) {
 
 func writeMatch(w http.ResponseWriter, id, token, side string, room *match, result *runner.StepResult) {
 	w.Header().Set("Cache-Control", "no-store")
-	state, err := room.session.View(side)
+	state, err := matchState(room, side)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	phase := "mulligan"
+	if !room.joined {
+		phase = "waiting"
+	}
 	if room.started {
 		phase = "main"
 	}
+	state.Phase = phase
 	actions := []runner.LegalAction{}
 	if room.started {
 		actions = room.session.LegalActionsFor(side)

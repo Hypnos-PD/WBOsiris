@@ -1,10 +1,24 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { MatchConnection } from '../web/src/matchConnection.ts';
+import { MatchConnection, decodeRemote } from '../web/src/matchConnection.ts';
 
 const player = () => ({ pp: 1, maxpp: 1, leaderLife: 20, field: [], hand: [] });
 const state = (revision = 0, extra = {}) => ({ matchId: 'room', side: 'own', state: { revision, viewer: 'own', own: player(), oppo: player(), turn: { active: 'own', number: 1 } }, legalActions: [], events: [], ...extra });
 const tick = () => new Promise(resolve => setTimeout(resolve, 2));
+
+test('opening order is preserved in each viewer perspective and invalid values are rejected', () => {
+  const auth = { id: 'room', token: 'token', side: 'own' };
+  for (const firstPlayer of ['own', 'oppo', undefined]) {
+    const value = state();
+    value.state.firstPlayer = firstPlayer;
+    assert.equal(decodeRemote(value, auth).state.firstPlayer, firstPlayer);
+  }
+  for (const firstPlayer of ['host', 'guest', '', null, 1]) {
+    const value = state();
+    value.state.firstPlayer = firstPlayer;
+    assert.throws(() => decodeRemote(value, auth), /对局响应无效/);
+  }
+});
 async function until(predicate) {
   for (let n = 0; n < 500; n++) { if (predicate()) return; await tick(); }
   assert.fail('condition did not settle');

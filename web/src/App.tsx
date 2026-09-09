@@ -893,7 +893,7 @@ export function App() {
             disabled={!legal("end_turn")}
             onClick={endTurn}
           >
-            <small>第 {remote?.state.turn.number ?? 1} 回合</small>
+            <small>{remote?.waiting ? "等待对手" : `${remote?.state.firstPlayer ? remote.state.firstPlayer === "own" ? "先手 · " : "后手 · " : ""}第 ${remote?.state.turn.number ?? 1} 回合`}</small>
             <span>
               {remote?.state.turn.active === "own" ? "结束回合" : "对手回合"}
             </span>
@@ -1022,6 +1022,7 @@ export function App() {
       {activePage === "battle" && connectionStatus !== "unavailable" && remote?.waiting && matchAuth && (
         <aside className="match-waiting">
           <b>等待对手加入</b>
+          <small>双方入场后随机分配先后手并发牌</small>
           <span>房间号 {matchAuth.id}</span>
           <RoomInvitation key={matchAuth.id} id={matchAuth.id} code={remote.joinCode}/>
         </aside>
@@ -1029,6 +1030,7 @@ export function App() {
       {activePage === "battle" && !remote?.waiting && remote?.matchPhase === "mulligan" && (
         <aside className="mulligan-panel">
           <b>重新抽牌</b>
+          {remote.state.firstPlayer && <strong>{remote.state.firstPlayer === "own" ? "你是先手" : "你是后手"}</strong>}
           {remote.mulliganReady ? (
             <span>已确认，等待对手</span>
           ) : (

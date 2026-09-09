@@ -19,6 +19,7 @@ export function decodeRemote(value: unknown, auth: MatchAuth): Remote {
   const state = data?.state;
   if (data?.matchId !== auth.id || data.side !== auth.side || state?.viewer !== auth.side ||
       !Number.isSafeInteger(state?.revision) || state!.revision! < 0 ||
+      state?.firstPlayer !== undefined && !["own", "oppo"].includes(state.firstPlayer) ||
       !["own", "oppo"].includes(state?.turn?.active) || !Number.isSafeInteger(state?.turn?.number) ||
       !Array.isArray(data.legalActions) || data.events != null && !Array.isArray(data.events)) {
     throw new Error("对局响应无效");

@@ -78,6 +78,7 @@ export type PlayerView = {
   shadows: number;
 };
 export type GameState = {
+  firstPlayer?: "own" | "oppo";
   revision?: number;
   viewer?: string;
   phase?: string;

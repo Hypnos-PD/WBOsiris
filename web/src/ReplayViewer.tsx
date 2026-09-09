@@ -83,7 +83,7 @@ export function ReplayViewer({ record, catalog, onClose }: { record: ReplayRecor
           <CrestZone crests={state.oppo.crests} label="对手" onInspect={inspect}/>
           <div className="rp-hidden-hand" aria-label={`对手手牌 ${state.oppo.handCount || 0} 张`}><div>{Array.from({ length: Math.min(9, state.oppo.handCount || 0) }, (_, i) => <img src="/assets/card-back.webp" alt="隐藏手牌" key={i}/>)}</div><span>手牌 {state.oppo.handCount || 0}</span></div>
           {field(state.oppo, "对手")}
-          <div className="rp-turn"><strong>第 {state.turn.number} 回合</strong><span>{state.gameOver ? state.winner === "draw" ? "平局" : state.winner === "own" ? "我方胜利" : "对手胜利" : state.pendingChoice ? "等待选择" : state.phase === "mulligan" ? "起手换牌" : state.turn.active === "own" ? "我方行动" : "对手行动"}</span></div>
+          <div className="rp-turn"><strong>{state.firstPlayer ? state.firstPlayer === "own" ? "我方先手 · " : "我方后手 · " : ""}第 {state.turn.number} 回合</strong><span>{state.gameOver ? state.winner === "draw" ? "平局" : state.winner === "own" ? "我方胜利" : "对手胜利" : state.pendingChoice ? "等待选择" : state.phase === "waiting" ? "等待对手" : state.phase === "mulligan" ? "起手换牌" : state.turn.active === "own" ? "我方行动" : "对手行动"}</span></div>
           {field(state.own, "我方")}
           {resources(state.own, "我方", state.turn.active === "own")}
           <CrestZone crests={state.own.crests} label="我方" onInspect={inspect}/>

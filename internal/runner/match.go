@@ -61,9 +61,17 @@ func MatchCardUnavailableReason(card *ir.Card) string {
 	}
 }
 
-// NewMatchSession fixes own as the first seat and deals both opening hands.
-// The same RNG continues through mulligans and subsequent card effects.
+// NewMatchSession provides a deterministic match with own playing first.
 func NewMatchSession(cards *ir.CardPack, ownDeck, oppoDeck []int, seed uint64) (*Session, error) {
+	return NewMatchSessionWithFirstPlayer(cards, ownDeck, oppoDeck, seed, "own")
+}
+
+// NewMatchSessionWithFirstPlayer deals both opening hands with an explicit first player.
+// The same RNG continues through mulligans and subsequent card effects.
+func NewMatchSessionWithFirstPlayer(cards *ir.CardPack, ownDeck, oppoDeck []int, seed uint64, firstPlayer string) (*Session, error) {
+	if firstPlayer != "own" && firstPlayer != "oppo" {
+		return nil, fmt.Errorf("first player must be own or oppo")
+	}
 	for _, deck := range [][]int{ownDeck, oppoDeck} {
 		if err := ValidateMatchDeck(cards, deck); err != nil {
 			return nil, err
@@ -73,11 +81,11 @@ func NewMatchSession(cards *ir.CardPack, ownDeck, oppoDeck []int, seed uint64) (
 	for n := range cards.Cards {
 		index[cards.Cards[n].ID] = &cards.Cards[n]
 	}
-	state := ir.State{Turn: ir.Turn{Active: "own", Number: 1}, Phase: "main", FirstPlayer: "own", Players: map[string]ir.PlayerState{}}
+	state := ir.State{Turn: ir.Turn{Active: firstPlayer, Number: 1}, Phase: "main", FirstPlayer: firstPlayer, Players: map[string]ir.PlayerState{}}
 	for seat, deck := range [][]int{ownDeck, oppoDeck} {
 		side := []string{"own", "oppo"}[seat]
 		player := ir.PlayerState{Leader: ir.Leader{Life: 20, MaxLife: 20}, EP: 2, SEP: 2, Zones: map[string][]ir.TestInstance{}}
-		if seat == 0 {
+		if side == firstPlayer {
 			player.PP, player.MaxPP = 1, 1
 		} else {
 			player.ExtraPPEarly, player.ExtraPPLate = true, true
