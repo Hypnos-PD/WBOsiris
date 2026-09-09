@@ -10,7 +10,13 @@ func (g *game) numericValue(expr ir.NumericExpr, self *instance, bindings frame)
 			if !g.chargeQueryVisits(1) {
 				return 0
 			}
-			if e.Field == "base_cost" {
+			if e.Field == "cost" {
+				total += max(0, i.cost)
+			} else if e.Field == "attack" && i.card.Stats != nil {
+				total += i.attack
+			} else if e.Field == "life" && i.card.Stats != nil {
+				total += i.life
+			} else if e.Field == "base_cost" {
 				total += i.card.Cost
 			} else if i.card.Stats != nil {
 				if e.Field == "base_attack" {

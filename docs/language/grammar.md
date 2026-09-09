@@ -287,6 +287,7 @@ option_label      = "label" , locale_id , string , ";" ;
 ```ebnf
 event_block       = "when" , event_pattern , [source_zone] , [turn_limit] , [where_clause] , ["if" , condition] , effect_block ;
 event_pattern     = participant , event_subject , event_verb
+                  | participant , "leader" , "healed"
                   | participant , "follower" , "leaves" , "field"
                   | participant , "turn" , turn_boundary
                   | "self" , ("evolved" | "super_evolved" | "discarded" | "summoned") ;
@@ -313,6 +314,8 @@ leaving field` 在原区域移动前执行并取消原移动，同一替换块�
 `card fused` 匹配成功融合的来源卡，每次操作只触发一次。`follower leaves field` 绑定 `left`。
 `destroyed` 只用于 `follower` 或 `amulet` 事件，绑定实际被破坏的实例；自身破坏使用
 `lastwords`。`where keyword K` 读取实例当前关键词；历史集合读取破坏时的关键词快照。
+`leader healed` 仅响应主战者的实际正数回复，包括虹吸，绑定 `healed` 主战者；
+不接受 `where` 或自身专用模式。回复为零或已满生命不产生事件、不消耗限次。
 `source_zone` 只用于玩家侧事件，不用于 `when self ...` 或 `grant` 内的附加能力；
 省略时来源位于战场。区域条件约束来源，`where` 则约束事件对象。
 `turn_limit` 同样只用于玩家侧事件，不用于 `when self ...` 或 `grant`。
@@ -357,7 +360,7 @@ numeric_operation = "damage" , value_ref , effect_amount , [damage_distribution]
                   | "restore" , participant , "." , "pp" , ";" ;
 
 effect_amount     = integer | counter_ref | "count" , "(" , count_source , [where_clause] , ")"
-                  | "sum" , "(" , count_source , [where_clause] , "," , "base" , "." , ("attack" | "life" | "cost") , ")"
+                  | "sum" , "(" , count_source , [where_clause] , "," , ["base" , "."] , ("attack" | "life" | "cost") , ")"
                   | player_scalar
                   | "self" , "." , ("cost" | "attack" | "life") ;
 signed_amount     = ("+" | "-") , effect_amount ;

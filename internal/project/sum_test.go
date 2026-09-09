@@ -17,6 +17,9 @@ func TestCompileSumAndCurrentTurnHistory(t *testing.T) {
     damage oppo.leader count(oppo.destroyed this turn);
     choose held from own.hand;
     heal own.leader sum(held, base.cost);
+    damage oppo.leader sum(held, cost);
+    heal own.leader sum(own.field.followers, life);
+    damage oppo.leader sum(own.destroyed this turn, attack);
 }`)
 	file, ds := syntax.Parse("12345678.wbo", []byte(source))
 	if len(ds) != 0 {
@@ -62,11 +65,16 @@ func TestCompileSumAndCurrentTurnHistory(t *testing.T) {
 	if !reflect.DeepEqual(a.Body[3].(ir.TargetEffect).AmountExpr.(*ir.SumExpr).Source, ir.BindingRef{Kind: "binding", Name: "held"}) {
 		t.Fatal("sum lost its binding")
 	}
+	for n, field := range []string{"cost", "life", "attack"} {
+		if got := a.Body[n+4].(ir.TargetEffect).AmountExpr.(*ir.SumExpr).Field; got != field {
+			t.Fatal("current projection lost", got, field)
+		}
+	}
 }
 
 func TestRejectMalformedSumAndHistoryWindows(t *testing.T) {
 	for _, amount := range []string{
-		"sum()", "sum(own.destroyed)", "sum(own.destroyed, attack)", "sum(own.destroyed, self.attack)",
+		"sum()", "sum(own.destroyed)", "sum(own.destroyed, missing)", "sum(own.destroyed, self.attack)",
 		"sum(own.destroyed, base.missing)", "sum(own.destroyed, base.attack, base.life)",
 		"sum(missing, base.attack)", "sum(own.hand this turn, base.attack)",
 		"sum(own.destroyed this turn this turn, base.attack)", "sum(own.destroyed where trait shikigami this turn, base.attack)",

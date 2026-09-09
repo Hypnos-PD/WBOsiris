@@ -113,6 +113,9 @@ func (g *game) queueEventTriggersIn(event ir.RuntimeEvent, subject *instance, bi
 				if trigger.SelfOnly && subject != source {
 					continue
 				}
+				if trigger.SubjectType == "leader" && (event.Target == nil || event.Target.Kind != "leader" || event.Actual <= 0) {
+					continue
+				}
 				if !eventSideMatches(trigger.Side, side.name, event.Side) || subject != nil && !g.matches(subject, trigger.Predicate, source) || subject != nil && trigger.SubjectType != "" && subject.card.CardType != trigger.SubjectType {
 					continue
 				}
@@ -125,6 +128,8 @@ func (g *game) queueEventTriggersIn(event ir.RuntimeEvent, subject *instance, bi
 				bindings := frame{}
 				if binding != "" && subject != nil {
 					bindings[binding] = bindEntities(subject)
+				} else if binding == "healed" && event.Target != nil && event.Target.Kind == "leader" {
+					bindings[binding] = []ir.EventTarget{*event.Target}
 				}
 				if !g.queueTrigger(triggerInvocation{body: ability.Body, blockID: ability.blockID, self: source, bindings: bindings}) {
 					return false

@@ -33,7 +33,7 @@ func validNumericExpr(expr NumericExpr, signed bool) bool {
 	case *CountExpr:
 		return e != nil && e.Kind == "count" && validCountSource(e.Source)
 	case *SumExpr:
-		return e != nil && e.Kind == "sum" && validCountSource(e.Source) && oneOf(e.Field, "base_attack", "base_life", "base_cost")
+		return e != nil && e.Kind == "sum" && validCountSource(e.Source) && oneOf(e.Field, "base_attack", "base_life", "base_cost", "attack", "life", "cost")
 	case *Scalar:
 		return e != nil && (e.Kind == "scalar" && validSide(e.Side) && ValidPlayerScalar(e.Field) ||
 			e.Kind == "self_scalar" && e.Side == "" && oneOf(e.Field, "attack", "life", "cost") ||

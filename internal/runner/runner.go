@@ -841,7 +841,7 @@ func (g *game) healLeader(target *player, side string, amount int) {
 	event := ir.RuntimeEvent{Kind: "healed", Side: side, Actual: actual, Target: &t}
 	if actual > 0 && g.emit(event) {
 		target.leaderLife = life
-		g.queueEventTriggers(event, nil, "")
+		g.queueEventTriggers(event, nil, "healed")
 	}
 }
 

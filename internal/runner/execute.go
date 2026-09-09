@@ -559,16 +559,7 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 		}
 	case "heal":
 		for _, side := range leaders {
-			target := g.player(side)
-			life := target.leaderLife + e.Amount
-			if target.leaderMax > 0 && life > target.leaderMax {
-				life = target.leaderMax
-			}
-			actual := life - target.leaderLife
-			t := ir.EventTarget{Kind: "leader", Side: side}
-			if g.emit(ir.RuntimeEvent{Kind: "healed", Actual: actual, Target: &t}) {
-				target.leaderLife = life
-			}
+			g.healLeader(g.player(side), side, e.Amount)
 		}
 	case "buff_stats":
 		endingSide := g.effectEndingSide(e.Until, ownSide)

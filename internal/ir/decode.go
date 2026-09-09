@@ -598,8 +598,11 @@ func decodeTrigger(data []byte) (Trigger, error) {
 				return nil, fmt.Errorf("event conditions cannot access fusion materials")
 			}
 		}
-		if !validSide(v.Side) || !oneOf(v.Event, "follower_summoned", "follower_left", "destroyed", "card_fused", "amulet_engaged", "card_discarded", "turn_started", "turn_ended", "evolved", "super_evolved") || v.SubjectType != "" && !oneOf(v.SubjectType, "follower", "amulet") || v.SourceZone != "" && !oneOf(v.SourceZone, "hand", "field") || v.Event == "destroyed" && v.SubjectType == "" {
+		if !validSide(v.Side) || !oneOf(v.Event, "follower_summoned", "follower_left", "destroyed", "healed", "card_fused", "amulet_engaged", "card_discarded", "turn_started", "turn_ended", "evolved", "super_evolved") || v.SubjectType != "" && !oneOf(v.SubjectType, "follower", "amulet", "leader") || v.SourceZone != "" && !oneOf(v.SourceZone, "hand", "field") || v.Event == "destroyed" && v.SubjectType == "" {
 			return nil, fmt.Errorf("invalid event trigger")
+		}
+		if v.Event == "healed" && (v.SubjectType != "leader" || p != nil) || v.SubjectType == "leader" && v.Event != "healed" {
+			return nil, fmt.Errorf("healed listeners require a leader without a card predicate")
 		}
 		if v.OncePerTurn != "" && !oneOf(v.OncePerTurn, "any", "own", "oppo") {
 			return nil, fmt.Errorf("invalid trigger turn limit")

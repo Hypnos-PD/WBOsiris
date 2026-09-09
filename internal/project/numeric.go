@@ -21,7 +21,11 @@ func numericIR(t []syntax.Token, i int) (int, ir.NumericExpr) {
 			source = ir.FilterRef{Kind: "filter", Source: source, Predicate: predicate}
 		}
 		if t[i].Value == "sum" {
-			return 0, &ir.SumExpr{Kind: "sum", Source: source, Field: "base_" + t[next+3].Value}
+			field := t[next+1].Value
+			if field == "base" {
+				field = "base_" + t[next+3].Value
+			}
+			return 0, &ir.SumExpr{Kind: "sum", Source: source, Field: field}
 		}
 		return 0, &ir.CountExpr{Kind: "count", Source: source}
 	}

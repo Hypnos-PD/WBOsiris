@@ -1,0 +1,65 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Burnite discards a modified cost card before damaging all enemy followers" {
+    seed 4401;
+    state { player own { pp 7/7; hand { follower source = 10144110; follower held = 10142110 { cost 2; } } } player oppo { field { follower first = 10001110 { stats 1/5; } follower second = 10001110 { stats 1/6; } } } }
+    action { play source; select held; }
+    expect { legal; held.zone == graveyard; first.stats == 1/3; second.stats == 1/4; source.stats == 8/7; own.pp == 0/7; own.shadows == 1; events contains ordered { discard held; damage first 2; damage second 2; } }
+}
+
+scenario "Burnite zero cost discard deals no damage" {
+    seed 4402;
+    state { player own { pp 7/7; hand { follower source = 10144110; spell held = 10031310 { cost 0; } } } player oppo { field { follower enemy = 10001110; } } }
+    action { play source; select held; }
+    expect { legal; held.zone == graveyard; enemy.stats == 2/2; }
+}
+
+scenario "Burnite empty hand fanfare finishes without a choice" {
+    seed 4403;
+    state { player own { pp 7/7; hand { follower source = 10144110; } } player oppo { field { follower enemy = 10001110; } } }
+    action { play source; }
+    expect { legal; source.stats == 7/7; enemy.stats == 2/2; own.shadows == 0; }
+}
+
+scenario "Burnite normal evolution grants no crest" {
+    seed 4404;
+    state { turn own 7; player own { ep 1; field { follower source = 10144110; } } }
+    action { evolve source; }
+    expect { legal; source.stats == 9/9; own.crests count card 10144110 == 0; oppo.crests count card 10144110 == 0; }
+}
+
+scenario "Burnite super evolution grants its opponent a permanent crest" {
+    seed 4405;
+    state { turn own 7; player own { sep 1; field { follower source = 10144110; } } }
+    action { superevolve source; }
+    expect { legal; source.stats == 10/10; own.crests count card 10144110 == 0; oppo.crests count card 10144110 == 1; }
+}
+
+scenario "Burnite crest damages its owner before the turn draw" {
+    seed 4406;
+    state { player oppo { crests { crest burnite = 10144110; } deck top { follower topcard = 10001110; } } }
+    action { end_turn; }
+    expect { legal; oppo.leader.life == 19; own.leader.life == 20; topcard.zone == hand; events contains ordered { damage oppo.leader 1; draw oppo 1; } }
+}
+
+scenario "Burnite lethal crest ends the game before drawing" {
+    seed 4407;
+    state { player oppo { leader 1/20; crests { crest burnite = 10144110; } deck top { follower topcard = 10001110; } } }
+    action { end_turn; }
+    expect { legal; oppo.leader.life == 0; topcard.zone == deck; events contains ordered { damage oppo.leader 1; game_end own; } events excludes { draw oppo 1; } }
+}
+
+scenario "Salefa heals its leader and triggers Burnite once" {
+    seed 4408;
+    state { player own { leader 10/20; pp 5/5; hand { follower source = 10164130; } crests { crest burnite = 10144110; } } }
+    action { play source; }
+    expect { legal; own.leader.life == 12; source.stats == 3/3; events contains ordered { heal own.leader 3; damage own.leader 1; } }
+}
+
+scenario "Salefa full health healing does not trigger Burnite" {
+    seed 4409;
+    state { player own { pp 5/5; hand { follower source = 10164130; } crests { crest burnite = 10144110; } } }
+    action { play source; }
+    expect { legal; own.leader.life == 20; events excludes { damage own.leader 1; } }
+}

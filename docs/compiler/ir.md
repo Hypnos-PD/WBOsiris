@@ -263,7 +263,9 @@ MemberKind = "card" | "follower" | "spell" | "amulet"
 整数，不使用 `literal` 包装。`Damage.amount`、`Heal.amount`、`BuffStats.attackDelta`
 和 `BuffStats.lifeDelta` 支持下方 `NumericExpr`。集合计数与求和来源支持区域集合、
 当前回合破坏履历、集合绑定，以及对这些来源的一层筛选；区域省略 `side` 时只允许
-`field`。求和字段限于卡牌定义中的原始攻击力、生命值和费用，筛选条件仍读取实例或
+`field`。`base_attack`、`base_life`、`base_cost` 对卡牌定义中的原始属性求和；
+`attack`、`life`、`cost` 读取执行时实例的当前属性，历史来源则读取破坏时快照。
+当前费用最低按零计算，无身材卡牌对攻击力与生命值的贡献为零。筛选条件读取实例或
 破坏履历快照。增益还支持单层 `negate`，不能嵌套取负或包装整数。
 其他操作的数值字段仍只接受整数；尚未实现通用 `IntValue` 或一般算术求值。
 
@@ -445,7 +447,7 @@ EventPattern = {
   side: Side?,
   sourceZone: ("field" | "hand")?,
   oncePerTurn: ("own" | "oppo" | "any")?,
-  subjectType: CardType?,
+  subjectType: (CardType | "leader")?,
   zone: Zone?,
   predicate: BoolExpr?
 }
@@ -488,6 +490,13 @@ MovePattern = {
 连续产生事件时重复占用次数。换回合时先清空记录，再处理倒数与回合开始触发。
 状态沙箱和 Continuation 复制记录；新卡牌副本不继承发动历史，进化保留记录，区域重置和变身清空。
 解码器拒绝未知范围、自身专用触发及附加能力上的限次字段。
+
+`when own leader healed` 编译为 `event=healed`、`side=own`、`subjectType=leader`。
+解码器要求回复监听显式使用主战者类型且不带卡牌谓词，其他事件不能使用该类型。
+运行器在普通回复和虹吸实际恢复生命值后派发，事件的 `side` 和 `target.side`
+均为接受回复的绝对玩家；`actual` 为受生命上限截断后的正数。零回复不派发。
+监听器的 `healed` 绑定保存 `EventTarget{kind: leader, side: ...}`，不依赖卡牌实例。
+它与其他事件一样在入队时判断条件和占用每回合次数，当前能力完成后才执行。
 
 事件头部的 `if` 编译为可选的 `EventTrigger.condition`，使用与效果体相同的
 `Condition` 节点。它在事件筛选通过后、消耗限次次数和入队之前求值；条件为假则不入队。
@@ -732,7 +741,7 @@ HistorySet = { kind: "history", side: "own" | "oppo", window: "this_turn",
                member?: "card" | "follower" | "amulet" }
 NumericExpr = Count { kind: "count", source: ZoneSet | HistorySet | BindingRef | FilterSet }
             | Sum { kind: "sum", source: ZoneSet | HistorySet | BindingRef | FilterSet,
-                    field: "base_attack" | "base_life" | "base_cost" }
+                    field: "base_attack" | "base_life" | "base_cost" | "attack" | "life" | "cost" }
             | PlayerScalar { kind: "scalar", side: "own" | "oppo",
                              field: "combo" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" | "hand_count" | "earthsigils" }
             | SelfScalar { kind: "self_scalar", field: "attack" | "life" | "cost" }

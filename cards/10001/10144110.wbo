@@ -7,7 +7,63 @@ card 10144110 {
     trait anathema;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from own.hand;
+            discard target;
+            damage oppo.field.followers sum(target, cost);
+        }
+        superevolve {
+            gain oppo crest 10144110;
+        }
+    }
+
+    crest {
+        when own turn starts {
+            damage own.leader 1;
+        }
+        when own leader healed once per own turn {
+            damage own.leader 1;
+        }
+
+        locale chs {
+            name "纹章：灼热的安纳提玛·班德奈特";
+            text """
+自己的回合开始时，对自己的主战者造成1点伤害。
+自己的主战者回复时，自己的每回合中可触发1次，对自己的主战者造成1点伤害。
+""";
+        }
+
+        locale eng {
+            name "Crest: Burnite, Anathema of Flame";
+            text """
+At the start of your turn, deal 1 damage to your leader.
+Once on each of your turns, when your leader's defense is restored, deal 1 damage to it.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"しゃくねつ\">灼熱</rub>のアナテマ・バーンドナイト";
+            text """
+自分のターン開始時、自分のリーダーに1ダメージ。
+自分のリーダーが回復したとき、自分のターンごとに1回、自分のリーダーに1ダメージ。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 작열의 아나테마 번드나이트";
+            text """
+내 턴 시작시, 내 리더에게 1 피해.
+내 리더가 회복했을 때, 내 턴마다 1회에 한해 내 리더에게 1 피해.
+""";
+        }
+
+        locale cht {
+            name "紋章：灼熱的弒滅者‧珀德奈特";
+            text """
+自己的回合開始時，給予自己的主戰者1點傷害。
+當自己的主戰者回復生命值時，每個自己的回合僅限發動1次，給予自己的主戰者1點傷害。
+""";
+        }
     }
 
     meta {

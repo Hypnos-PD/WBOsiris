@@ -8,7 +8,7 @@ card 10164130 {
     effect {
         ward;
         fanfare {
-            heal self 3;
+            heal own.leader 3;
         }
         evolve {
             damage oppo.field.followers 3;

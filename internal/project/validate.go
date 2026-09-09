@@ -221,6 +221,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 	if event == "destroyed" {
 		bindings["destroyed"] = true
 	}
+	if event == "healed" {
+		bindings["healed"] = true
+	}
 	if event == "leaves" {
 		bindings["left"] = true
 	}
@@ -705,8 +708,12 @@ func parseEffectAmount(t []syntax.Token, i int) (int, bool) {
 		end, ok = parseWhere(t, end)
 	}
 	if ok && t[i].Value == "sum" {
-		ok = end+3 < len(t) && t[end].Value == "," && t[end+1].Value == "base" && t[end+2].Value == "." && set("attack", "life", "cost")[t[end+3].Value]
-		end += 4
+		if end+1 < len(t) && t[end].Value == "," && set("attack", "life", "cost")[t[end+1].Value] {
+			end += 2
+		} else {
+			ok = end+3 < len(t) && t[end].Value == "," && t[end+1].Value == "base" && t[end+2].Value == "." && set("attack", "life", "cost")[t[end+3].Value]
+			end += 4
+		}
 	}
 	if !ok || end >= len(t) || t[end].Value != ")" {
 		return end, false
