@@ -257,6 +257,7 @@ TRANSFORM          target, card, preserveFlags
 DAMAGE             target, amount, damageType
 HEAL               target, amount
 BUFF_STATS         target, attackDelta, lifeDelta
+SET_DAMAGE_REDUCTION target, amount
 ADD_KEYWORD        target, keyword
 REMOVE_KEYWORD     target, keyword
 SPELLBOOST         target, times
