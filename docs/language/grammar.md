@@ -502,6 +502,7 @@ instance_decl     = card_type , alias , "=" , card_id ,
 alias             = identifier ;
 instance_override_block = "{" , {instance_override} , "}" ;
 instance_override = "stats" , stat_pair , ";"
+                  | "damage_taken" , integer , ";"
                   | "counter" , counter_name , integer , ";"
                   | "cost" , integer , ";"
                   | "evolved" , ";"

@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 10411110 {
+    type follower;
+    cost 7;
+    stats 8/6;
+
+    effect {
+        attack_limit 2;
+        attack {
+            heal own.field.followers 3;
+            heal own.leader 3;
+        }
+    }
+
+    meta {
+        pack 10004;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "爱恨舞者·晧&曜";
+        text """
+1回合可以攻击2次。
+【<color=Keyword>攻击时</color>】回复自己的战场上的所有随从和自己的主战者3点生命值。
+""";
+    }
+
+    locale eng {
+        name "Kou & You, Love and Hatred";
+        text """
+Can attack 2 times per turn.
+<b><color=Keyword>Strike</color></b>: Restore 3 defense to all allies.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あいぞう\">愛憎</rub>の<rub=\"まいて\">舞手</rub>・コウ＆ヨウ";
+        text """
+1ターンに2回攻撃できる。
+【<color=Keyword>攻撃時</color>】自分の場のフォロワーすべてと自分のリーダーを3回復。
+""";
+    }
+
+    locale kor {
+        name "애증의 무용수 코우&요우";
+        text """
+1턴에 2회 공격 가능.
+[<color=Keyword>공격시</color>] 내 전장의 추종자 모두와 내 리더를 3 회복.
+""";
+    }
+
+    locale cht {
+        name "愛憎的舞者‧剛＆容";
+        text """
+1回合中可進行2次攻擊。
+【<color=Keyword>攻擊時</color>】回復自己戰場上全部的從者卡與自己的主戰者3點生命值。
+""";
+    }
+
+}

@@ -815,6 +815,9 @@ func compilePlayerState(s *syntax.Statement, p *ir.PlayerState, a map[string]str
 							over.Cost = &v
 						case "stats":
 							over.Stats = &ir.Stats{Attack: intToken(ot[1]), Life: intToken(ot[3])}
+						case "damage_taken":
+							v := intToken(ot[1])
+							over.DamageTaken = &v
 						case "evolved":
 							v := true
 							over.Evolved = &v

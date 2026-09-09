@@ -65,7 +65,7 @@ func TestMixedTargetSelectionRejectsAmbiguousSources(t *testing.T) {
 
 func TestMixedTargetBindingRejectsCardOnlyOperations(t *testing.T) {
 	for _, operation := range []string{
-		"destroy target;", "heal target 5;", "buff target 1/1;", "set life target 2;",
+		"destroy target;", "heal target 5 where cost >= 1;", "buff target 1/1;", "set life target 2;",
 		"damage target 5 where cost >= 1;", "summon copies of target;",
 		"add ward to target;", "remove ward from target;", "reduce cost target 1 minimum 0;",
 		"reduce countdown target 1;", "repeat 2 { destroy target; }",
@@ -76,6 +76,7 @@ func TestMixedTargetBindingRejectsCardOnlyOperations(t *testing.T) {
 		}
 	}
 	for _, operation := range []string{
+		"heal target 5;", "heal target count(target);",
 		"damage target count(target);", "repeat count(target) { damage target 1; }",
 		"choose target from oppo.field.followers; destroy target;",
 		"repeat 1 { choose target from oppo.field.followers; destroy target; } damage target 5;",

@@ -112,6 +112,10 @@ func decodePlayer(data []byte, instances map[string]bool) (PlayerState, error) {
 		if !ok && zone != "crests" {
 			return PlayerState{}, fmt.Errorf("missing zone %s", zone)
 		}
+		if !ok {
+			continue
+		}
+		p.Zones[zone] = []TestInstance{}
 		for _, x := range items {
 			i, err := decodeInstance(x)
 			if err != nil {
@@ -131,6 +135,7 @@ func decodePlayer(data []byte, instances map[string]bool) (PlayerState, error) {
 }
 func decodeInstance(data []byte) (TestInstance, error) {
 	type overrides struct {
+		DamageTaken     *int           `json:"damage_taken,omitempty"`
 		Counters        map[string]int `json:"counters,omitempty"`
 		Cost            *int           `json:"cost,omitempty"`
 		Stats           *Stats         `json:"stats,omitempty"`
@@ -160,6 +165,12 @@ func decodeInstance(data []byte) (TestInstance, error) {
 		return TestInstance{}, fmt.Errorf("invalid instance cost override")
 	}
 	o := InstanceOverrides{Cost: v.Overrides.Cost, Stats: v.Overrides.Stats, Evolved: v.Overrides.Evolved, SuperEvolved: v.Overrides.SuperEvolved, Engaged: v.Overrides.Engaged, Keywords: v.Overrides.Keywords, Countdown: v.Overrides.Countdown, Earthsigil: v.Overrides.Earthsigil, DamageReduction: v.Overrides.DamageReduction}
+	if damage := v.Overrides.DamageTaken; damage != nil {
+		if v.DeclaredType != "follower" || *damage < 0 || *damage > 65535 || o.Stats != nil && *damage >= o.Stats.Life {
+			return TestInstance{}, fmt.Errorf("invalid initial follower damage")
+		}
+		o.DamageTaken = damage
+	}
 	if !ValidCounters(v.Overrides.Counters) {
 		return TestInstance{}, fmt.Errorf("invalid instance counter override")
 	}
@@ -801,6 +812,15 @@ func ValidateRuntimePacks(cards *CardPack, tests *TestPack) error {
 					}
 					if c.CardType != i.DeclaredType && !(i.DeclaredType == "crest" && c.Crest != nil) {
 						return fmt.Errorf("scenario %q card %d type mismatch", s.Name, i.CardID)
+					}
+					if damage := i.Overrides.DamageTaken; damage != nil {
+						stats := c.Stats
+						if i.Overrides.Stats != nil {
+							stats = i.Overrides.Stats
+						}
+						if c.CardType != "follower" || stats == nil || *damage < 0 || *damage > 65535 || *damage >= stats.Life {
+							return fmt.Errorf("scenario %q invalid initial follower damage", s.Name)
+						}
 					}
 					if i.DeclaredType == "crest" && !ValidCrestOverrides(i.Overrides, c.Crest.Countdown) {
 						return fmt.Errorf("scenario %q invalid crest overrides", s.Name)

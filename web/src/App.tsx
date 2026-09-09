@@ -42,6 +42,7 @@ type Card = {
   cost: number;
   attack?: number;
   life?: number;
+  maxLife?: number;
   text: string;
   art: string | undefined;
   keywords?: string[];
@@ -127,6 +128,7 @@ const displayCardFor = (entity: Entity, catalog = fallbackCatalog): Card => {
     cost: entity.cost ?? base.cost,
     attack: entity.cardType === "follower" ? (entity.attack ?? base.attack) : undefined,
     life: entity.cardType === "follower" ? (entity.life ?? base.life) : undefined,
+    maxLife: entity.cardType === "follower" ? entity.maxLife : undefined,
     keywords: entity.keywords ?? base.keywords,
     evolved: entity.evolved,
     superEvolved: entity.superEvolved,
@@ -1154,6 +1156,7 @@ export function App() {
                 </b>
                 <b>
                   {selected.life}
+                  {selected.maxLife !== undefined && ` / ${selected.maxLife}`}
                   <small>生命</small>
                 </b>
               </div>

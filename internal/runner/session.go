@@ -636,6 +636,7 @@ func deriveRuntimeID(parts ...string) string {
 }
 
 type instanceSnapshot struct {
+	DamageTaken                         int
 	Crest                               bool
 	UsedTriggers                        map[string]bool
 	Grants                              []string
@@ -709,7 +710,7 @@ func (g *game) snapshot() gameSnapshot {
 					UsedTriggers:      maps.Clone(i.usedTriggers),
 					TemporaryKeywords: maps.Clone(i.temporaryKeywords),
 					TemporaryStats:    maps.Clone(i.temporaryStats),
-					ID:                i.id, Zone: i.zone, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life,
+					ID:                i.id, Zone: i.zone, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life, DamageTaken: i.damageTaken,
 					Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed,
 					Engaged: i.engaged, SummoningSick: i.summoningSick, Evolved: i.evolved,
 					SuperEvolved: i.superEvolved, Departed: i.departed, FusedThisTurn: i.fusedThisTurn, Abilities: abilities,

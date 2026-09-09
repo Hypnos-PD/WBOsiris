@@ -28,6 +28,7 @@ type instance struct {
 	card                                                                         *ir.Card
 	attack, life, cost, earthsigil, countdown, damageReduction, attackLimitValue int
 	attacksUsed                                                                  int
+	damageTaken                                                                  int
 	engaged, summoningSick                                                       bool
 	evolved, superEvolved                                                        bool
 	departed                                                                     bool
@@ -257,6 +258,13 @@ func (g *game) loadState(s ir.State) error {
 				}
 				if o.Stats != nil {
 					i.attack, i.life = o.Stats.Attack, o.Stats.Life
+				}
+				if o.DamageTaken != nil {
+					if c.CardType != "follower" || *o.DamageTaken < 0 || *o.DamageTaken > 65535 || *o.DamageTaken >= i.life {
+						return fmt.Errorf("invalid initial follower damage")
+					}
+					i.damageTaken = *o.DamageTaken
+					i.life -= i.damageTaken
 				}
 				if o.Earthsigil != nil {
 					i.earthsigil = *o.Earthsigil
@@ -858,6 +866,7 @@ func (g *game) damageInstanceFrom(source, target *instance, amount int, damageTy
 	}
 	actual := g.modifyDamage(damageContext{source: source, target: target, amount: amount, damageType: damageType})
 	target.life -= actual
+	target.damageTaken += actual
 	if damageType == "effect" {
 		removeStealthAfterEffectDamage(source, actual)
 	}

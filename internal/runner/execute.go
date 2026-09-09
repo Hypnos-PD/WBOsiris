@@ -543,6 +543,7 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 		for _, item := range targets {
 			if item != nil && item.card.CardType == "follower" {
 				item.life = e.Amount
+				item.damageTaken = 0
 				item.clearTemporaryLife()
 			}
 		}
@@ -567,6 +568,9 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 			g.returnCard(i, e.Destination)
 		}
 	case "heal":
+		for _, target := range targets {
+			g.healFollower(target, e.Amount)
+		}
 		for _, side := range leaders {
 			g.healLeader(g.player(side), side, e.Amount)
 		}

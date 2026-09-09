@@ -598,6 +598,7 @@ type TestInstance struct {
 	Overrides    InstanceOverrides `json:"overrides"`
 }
 type InstanceOverrides struct {
+	DamageTaken     *int           `json:"damage_taken,omitempty"`
 	Counters        map[string]int `json:"counters,omitempty"`
 	Cost            *int           `json:"cost,omitempty"`
 	Stats           *Stats         `json:"stats,omitempty"`

@@ -107,7 +107,7 @@ export function ReplayViewer({ record, catalog, onClose }: { record: ReplayRecor
       {selected && <div className="rp-detail-content"><button className="rp-detail-close" autoFocus aria-label="关闭卡牌详情" title="关闭" onClick={() => setSelected(null)}><X size={20}/></button>
         <div className="rp-detail-art"><CardArt src={cardArt(selected.cardId, selected.evolved || selected.superEvolved)} alt={nameFor(selected)}/></div>
         <div><h2>{nameFor(selected)}</h2><p>{typeNames[selected.cardType]}{selected.cardType === "crest" ? selected.countdown ? ` · 吟唱 ${selected.countdown}` : "" : ` · ${selected.cost ?? card?.cost ?? 0} PP`}{selected.superEvolved ? " · 超进化" : selected.evolved ? " · 进化" : ""}</p>
-          {selected.cardType === "follower" && <p>攻击 {selected.attack ?? 0} · 生命 {selected.life ?? 0}</p>}
+          {selected.cardType === "follower" && <p>攻击 {selected.attack ?? 0} · 生命 {selected.life ?? 0}{selected.maxLife !== undefined && ` / ${selected.maxLife}`}</p>}
           <p className="rp-rules">{selected.cardType === "crest" ? cardText(selected.crestLocales?.chs?.text || "") : card?.text || "无能力"}</p>
           {selected.cardType !== "crest" && !!selected.keywords?.length && <p>{selected.keywords.join(" · ")}</p>}
           <FusionDetails fusion={selected.fusion} catalog={catalog}/>

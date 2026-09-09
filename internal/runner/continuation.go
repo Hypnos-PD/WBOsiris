@@ -17,7 +17,7 @@ import (
 	"wbo/internal/ruleset"
 )
 
-const continuationVersion = "0.33.0"
+const continuationVersion = "0.34.0"
 
 type ContinuationBindings struct {
 	ID     string                      `json:"id"`
@@ -117,6 +117,7 @@ type ContinuationEntity struct {
 	Cost              int                      `json:"cost"`
 	Attack            int                      `json:"attack"`
 	Life              int                      `json:"life"`
+	DamageTaken       int                      `json:"damageTaken"`
 	Earthsigil        int                      `json:"earthsigil"`
 	DamageReduction   int                      `json:"damageReduction"`
 	Countdown         int                      `json:"countdown"`
@@ -465,7 +466,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 			UsedTriggers:      maps.Clone(i.usedTriggers),
 			TemporaryKeywords: maps.Clone(i.temporaryKeywords),
 			TemporaryStats:    maps.Clone(i.temporaryStats),
-			ID:                i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life,
+			ID:                i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life, DamageTaken: i.damageTaken,
 			Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i),
 			Engaged: i.engaged, SummoningSick: i.summoningSick, Evolved: i.evolved,
 			SuperEvolved: i.superEvolved, Departed: i.departed, FusedThisTurn: i.fusedThisTurn, DamageReduction: i.damageReduction, Abilities: abilities, Materials: instanceIDs(i.materials), Grants: grantIDs(i),
@@ -522,6 +523,9 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 		if entity.ID == "" || card == nil || g.instances[entity.ID] != nil || !validZone(entity.Zone) {
 			return nil, fmt.Errorf("invalid continuation entity %q", entity.ID)
 		}
+		if entity.DamageTaken < 0 || entity.DamageTaken != 0 && card.CardType != "follower" {
+			return nil, fmt.Errorf("invalid continuation follower damage")
+		}
 		if entity.Crest != (entity.Zone == "crests" || entity.Zone == "retired_crest") || entity.Crest &&
 			(entity.Cost != 0 || entity.Attack != 0 || entity.Life != 0 || entity.Evolved || entity.SuperEvolved || entity.Engaged || entity.FusedThisTurn || entity.Earthsigil != 0 || entity.DamageReduction != 0 || len(entity.Materials) > 0 || len(entity.Abilities) > 0 || len(entity.TemporaryStats) > 0 || entity.Countdown < 0 || entity.Countdown > cards[entity.CardID].Crest.Countdown || entity.Zone == "crests" && cards[entity.CardID].Crest.Countdown > 0 && entity.Countdown == 0) {
 			return nil, fmt.Errorf("invalid continuation crest state")
@@ -543,7 +547,7 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 			counters:     maps.Clone(entity.Counters),
 			usedTriggers: maps.Clone(entity.UsedTriggers),
 			id:           entity.ID, alias: entity.Alias, zone: entity.Zone, card: card,
-			attack: entity.Attack, life: entity.Life, cost: entity.Cost, earthsigil: entity.Earthsigil, countdown: entity.Countdown,
+			attack: entity.Attack, life: entity.Life, damageTaken: entity.DamageTaken, cost: entity.Cost, earthsigil: entity.Earthsigil, countdown: entity.Countdown,
 			attacksUsed: entity.AttacksUsed, attackLimitValue: limit, engaged: entity.Engaged, summoningSick: entity.SummoningSick,
 			evolved: entity.Evolved, superEvolved: entity.SuperEvolved, departed: entity.Departed, fusedThisTurn: entity.FusedThisTurn, damageReduction: entity.DamageReduction, abilities: map[string]bool{},
 		}

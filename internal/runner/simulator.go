@@ -196,6 +196,7 @@ type EntityView struct {
 	CardType         string               `json:"cardType"`
 	Attack           int                  `json:"attack"`
 	Life             int                  `json:"life,omitempty"`
+	MaxLife          int                  `json:"maxLife,omitempty"`
 	Countdown        int                  `json:"countdown,omitempty"`
 	Earthsigil       int                  `json:"earthsigil,omitempty"`
 	DamageReduction  int                  `json:"damageReduction,omitempty"`
@@ -415,7 +416,7 @@ func entityViews(instances []*instance, revealMaterials bool) []EntityView {
 			TriggerLimits:    triggerLimitViews(i),
 			Fusion:           fusionView(i, revealMaterials),
 			InstanceID:       i.id, Alias: i.alias, CardID: i.card.ID, CardType: i.card.CardType, Cost: i.cost,
-			Attack: i.attack, Life: i.life, Countdown: i.countdown, Earthsigil: i.earthsigil, DamageReduction: i.damageReduction,
+			Attack: i.attack, Life: i.life, MaxLife: i.maxLife(), Countdown: i.countdown, Earthsigil: i.earthsigil, DamageReduction: i.damageReduction,
 			Engaged: i.engaged, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i), SummoningSick: i.summoningSick,
 			Evolved: i.evolved, SuperEvolved: i.superEvolved, Keywords: keywords, Traits: traits,
 		})

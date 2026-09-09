@@ -73,6 +73,6 @@ func decodeCrest(data []byte, abilityIDs, nodeIDs map[string]bool) (*CrestDefini
 }
 
 func ValidCrestOverrides(o InstanceOverrides, countdown int) bool {
-	return o.Cost == nil && o.Stats == nil && o.Earthsigil == nil && o.DamageReduction == nil && o.Engaged == nil && o.Evolved == nil && o.SuperEvolved == nil && len(o.Keywords) == 0 &&
+	return o.Cost == nil && o.Stats == nil && o.DamageTaken == nil && o.Earthsigil == nil && o.DamageReduction == nil && o.Engaged == nil && o.Evolved == nil && o.SuperEvolved == nil && len(o.Keywords) == 0 &&
 		(o.Countdown == nil || *o.Countdown > 0 && *o.Countdown <= countdown)
 }

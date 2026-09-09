@@ -40,8 +40,8 @@ func validateMixedBindings(body []*syntax.Statement, inherited map[string]bool, 
 		}
 		if (isPlainOperation(s) || h == "grant") && index < len(t) && mixed[t[index].Value] {
 			end, valid := parseEffectAmount(t, index+1)
-			if h != "damage" || !valid || end != len(t) {
-				diag(ds, "WBO-E008-TYPE-MISMATCH", "错误", "随从或主战者的混合目标仅支持不带筛选的 damage；count 可统计绑定数量", s.Span)
+			if h != "damage" && h != "heal" || !valid || end != len(t) {
+				diag(ds, "WBO-E008-TYPE-MISMATCH", "错误", "随从或主战者的混合目标仅支持不带筛选的 damage 或 heal；count 可统计绑定数量", s.Span)
 			}
 		}
 		branchMixed := map[string]bool{}

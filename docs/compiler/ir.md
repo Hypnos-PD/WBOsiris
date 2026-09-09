@@ -1331,6 +1331,7 @@ InstanceOverrides = {
   counters?: { CounterName: nonnegative_i32 },
   cost: u16?,
   stats: Stats?, evolved: bool?, superEvolved: bool?,
+  damage_taken: u16?,
   keywords: [Keyword]?, countdown: u16?, engaged: bool?, earthsigil: u16?
 }
 ```

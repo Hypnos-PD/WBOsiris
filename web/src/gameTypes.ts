@@ -9,6 +9,7 @@ export type Entity = {
   cost?: number;
   attack?: number;
   life?: number;
+  maxLife?: number;
   cardType: string;
   keywords?: string[];
   evolved?: boolean;

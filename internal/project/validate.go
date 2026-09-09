@@ -1099,12 +1099,29 @@ func checkDeclaredTypes(s *syntax.Statement, ids map[string]*Card, ds *[]syntax.
 				diag(ds, "WBT-E003-CARD-TYPE", "错误", "实例声明类型与卡牌定义不一致: "+t[1].Value, t[0].Span)
 			}
 			if len(s.Blocks()) == 1 {
+				initialLife := 0
+				if c.Stats != nil {
+					initialLife = c.Stats[1]
+				}
+				for _, o := range s.Blocks()[0] {
+					if o.Word(0) == "stats" && len(o.Tokens()) == 4 {
+						initialLife, _ = integer(o.Tokens()[3])
+					}
+				}
+				seenDamage := false
 				for _, o := range s.Blocks()[0] {
 					h := o.Word(0)
+					if h == "damage_taken" && len(o.Tokens()) == 2 {
+						amount, ok := integer(o.Tokens()[1])
+						if seenDamage || !ok || amount < 0 || amount >= initialLife {
+							diag(ds, "WBT-E004-INVALID-OVERRIDE", "错误", "damage_taken 必须小于初始生命值，且不能重复声明", o.Span)
+						}
+						seenDamage = true
+					}
 					if c.Type == "crest" && !set("counter", "countdown")[h] {
 						diag(ds, "WBT-E004-INVALID-OVERRIDE", "错误", "纹章仅允许覆盖计数器和吟唱", o.Span)
 					}
-					if (set("stats", "evolved", "super_evolved")[h] || abilities[h]) && c.Type != "follower" {
+					if (set("stats", "damage_taken", "evolved", "super_evolved")[h] || abilities[h]) && c.Type != "follower" {
 						diag(ds, "WBT-E004-INVALID-OVERRIDE", "错误", h+" override 只适用于随从", o.Span)
 					}
 					if set("earthsigil", "countdown", "engaged")[h] && c.Type != "amulet" && !(h == "countdown" && c.Type == "crest") {

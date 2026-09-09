@@ -1,0 +1,58 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "Kou and You heal allies and leader before combat damage" {
+    seed 5001;
+    state {
+        player own { leader 10/20; field { follower source = 10411110 { damage_taken 4; } follower ally = 10001110 { damage_taken 1; } } }
+        player oppo { field { follower defender = 10001110; follower untouched = 10144110 { damage_taken 3; } } }
+    }
+    action { attack source into defender; }
+    expect { legal; source.stats == 8/3; ally.stats == 2/2; untouched.stats == 7/4; defender.zone == graveyard; own.leader.life == 13; events contains ordered { heal source 3; heal ally 1; heal own.leader 3; damage source 2; } }
+}
+
+scenario "Kou and You cannot overheal full allies" {
+    seed 5002;
+    state { player own { field { follower source = 10411110; follower ally = 10001110; } } }
+    action { attack source into oppo.leader; }
+    expect { legal; source.stats == 8/6; ally.stats == 2/2; own.leader.life == 20; oppo.leader.life == 12; events excludes { heal source 3; heal ally 3; heal own.leader 3; } }
+}
+
+scenario "Kou and You respect a modified life cap" {
+    seed 5003;
+    state { player own { field { follower source = 10411110 { stats 10/10; damage_taken 2; } follower ally = 10001110 { stats 2/1; } } } }
+    action { attack source into oppo.leader; }
+    expect { legal; source.stats == 10/10; ally.stats == 2/1; events contains ordered { heal source 2; } events excludes { heal ally 3; } }
+}
+
+scenario "Kou and You normal evolution preserves existing wounds" {
+    seed 5004;
+    state { turn own 5; player own { ep 1; field { follower source = 10411110 { damage_taken 4; } } } }
+    action { evolve source; }
+    expect { legal; source.stats == 10/4; events excludes { heal source 3; } }
+}
+
+scenario "Kou and You super evolved strike heals before protected combat" {
+    seed 5005;
+    state {
+        turn own 7;
+        player own { field { follower source = 10411110 { stats 11/9; damage_taken 5; super_evolved; } } }
+        player oppo { field { follower defender = 10001110; } }
+    }
+    action { attack source into defender; }
+    expect { legal; source.stats == 11/7; defender.zone == graveyard; events contains ordered { heal source 3; damage source 0; } }
+}
+
+scenario "Follower healing does not activate a leader healing crest" {
+    seed 5006;
+    state { player own { field { follower source = 10411110 { damage_taken 4; } } crests { crest burnite = 10144110; } } }
+    action { attack source into oppo.leader; }
+    expect { legal; source.stats == 8/5; own.leader.life == 20; events contains ordered { heal source 3; } events excludes { damage own.leader 1; } }
+}
+
+scenario "Kou and You leader healing activates Burnite after follower healing" {
+    seed 5007;
+    state { player own { leader 10/20; field { follower source = 10411110 { damage_taken 4; } } crests { crest burnite = 10144110; } } }
+    action { attack source into oppo.leader; }
+    expect { legal; source.stats == 8/5; own.leader.life == 12; oppo.leader.life == 12; events contains ordered { heal source 3; heal own.leader 3; damage own.leader 1; damage oppo.leader 8; } }
+}
