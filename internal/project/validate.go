@@ -536,6 +536,8 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		ok = t[1].Value == "life" && good && end == len(t)
 	case "set_attack_limit":
 		ok = len(t) == 3 && t[1].Value == "self" && isUnsigned(t[2])
+	case "set_damage_reduction":
+		ok = len(t) == 3 && t[1].Value == "self" && isUnsigned(t[2])
 	case "draw":
 		ok = len(t) == 2 && (isUnsigned(t[1]) || t[1].Value == "all")
 		if len(t) > 2 && (isUnsigned(t[1]) || t[1].Value == "all") && len(t) >= 6 && t[2].Value == "from" && t[3].Value == "deck" {

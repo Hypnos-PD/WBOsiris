@@ -555,6 +555,10 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 		for _, i := range targets {
 			i.attackLimitValue = e.Amount
 		}
+	case "set_damage_reduction":
+		for _, i := range targets {
+			i.damageReduction = e.Amount
+		}
 	case "destroy":
 		destroyed := g.destroyByEffect(targets)
 		if e.Output != "" {

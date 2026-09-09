@@ -998,7 +998,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			}
 		}
 		return CardEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.Destination, v.Output, v.Count, v.CardID, v.MaxCost, v.TieBreak, v.PreserveInstanceID, v.PreserveMaterials, r}, err
-	case "damage", "heal", "buff_stats", "destroy", "banish", "discard", "return", "add_keyword", "remove_keyword", "silent_evolve", "set_attack_limit", "set_life":
+	case "damage", "heal", "buff_stats", "destroy", "banish", "discard", "return", "add_keyword", "remove_keyword", "silent_evolve", "set_attack_limit", "set_damage_reduction", "set_life":
 		type raw struct {
 			Output                                                      string `json:"output,omitempty"`
 			ID                                                          string `json:"id"`
@@ -1117,6 +1117,10 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		case "set_attack_limit":
 			if v.Amount < 1 || v.DamageType != "" || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
 				return nil, fmt.Errorf("invalid attack limit shape")
+			}
+		case "set_damage_reduction":
+			if v.Amount < 0 || v.DamageType != "" || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
+				return nil, fmt.Errorf("invalid damage reduction shape")
 			}
 		case "set_life":
 			if len(v.AmountValue) == 0 || v.Amount < 0 || v.DamageType != "" || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {

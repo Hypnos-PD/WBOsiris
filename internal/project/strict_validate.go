@@ -255,7 +255,7 @@ func isPlainOperation(s *syntax.Statement) bool {
 	if s.Word(0) == "replace" && len(s.Blocks()) == 0 {
 		return true
 	}
-	return len(s.Blocks()) == 0 && set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "spellboost", "transform", "set_attack_limit", "set")[s.Word(0)]
+	return len(s.Blocks()) == 0 && set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "spellboost", "transform", "set_attack_limit", "set_damage_reduction", "set")[s.Word(0)]
 }
 func parseEventPattern(t []syntax.Token) (int, string, bool) {
 	end, subject, ok := parseBaseEventPattern(t)

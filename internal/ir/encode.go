@@ -233,7 +233,7 @@ func (e TargetEffect) MarshalJSON() ([]byte, error) {
 		if e.Predicate != nil {
 			object["predicate"] = e.Predicate
 		}
-	case "set_attack_limit", "set_life":
+	case "set_attack_limit", "set_damage_reduction", "set_life":
 		object["amount"] = e.Amount
 		if e.Kind == "set_life" {
 			object["amount"] = amount
