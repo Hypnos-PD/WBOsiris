@@ -247,6 +247,8 @@ func (s *Session) SubmitAs(actionID, actor string, command SimulatorCommand) Ste
 			return StepResult{Status: StatusRejected, ErrorCode: "game_over"}
 		}
 		s.g.finishGameReason(oppositeSide(actor), "concede")
+		s.pending, s.stack, s.g.triggers = nil, nil, nil
+		s.actionID, s.g.turnTransition = "", ""
 		return StepResult{Status: StatusCompleted}
 	case "play", "engage", "evolve", "superevolve", "fusion", "end_turn", "use_extra_pp":
 		if command.Kind == "fusion" {

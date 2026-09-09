@@ -190,3 +190,29 @@ func TestConcurrentJoinsGenerateOnlyOneOpening(t *testing.T) {
 		t.Fatal("concurrent joins generated multiple openings")
 	}
 }
+
+func TestMatchConcedeClearsPendingChoiceAndRejectsOtherCredential(t *testing.T) {
+	s := setupServer(t)
+	s.matchSetup = func() (uint64, string, error) { return 77, "own", nil }
+	h := s.Handler()
+	host := setupResponse(t, setupPost(t, h, "/api/matches", "", createRequest{}))
+	path := "/api/matches/" + host.MatchID
+	guest := setupResponse(t, setupPost(t, h, path+"/join?code="+host.JoinCode, "", createRequest{}))
+	for _, seat := range []struct{ token, side string }{{host.PlayerToken, "own"}, {guest.PlayerToken, "oppo"}} {
+		setupResponse(t, setupPost(t, h, path+"/mulligan", seat.token, command{}))
+	}
+	// The active player can concede; the other credential cannot impersonate it.
+	res := setupPost(t, h, path, host.PlayerToken, command{Kind: "concede", ActionID: fmt.Sprintf("%032x", 1)})
+	out := setupResponse(t, res)
+	if out.Result == nil || out.Result.Status != runner.StatusCompleted || !out.State.GameOver || out.State.Winner != "oppo" || out.State.PendingChoice != nil {
+		t.Fatal("concession did not end and clear the match", out)
+	}
+	if res := setupPost(t, h, path, guest.PlayerToken, command{Kind: "concede", ActionID: fmt.Sprintf("%032x", 2)}); res.Code != http.StatusOK {
+		t.Fatal("losing player could not read terminal state", res.Code)
+	}
+	var replay replayResponse
+	_, data := perform(t, h, http.MethodGet, path+"/replay", guest.PlayerToken)
+	if json.Unmarshal(data, &replay) != nil || len(replay.Events) == 0 || replay.Events[len(replay.Events)-1].Reason != "concede" {
+		t.Fatal("replay lost concession reason")
+	}
+}
