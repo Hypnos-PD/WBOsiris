@@ -29,5 +29,7 @@ web/        React/TypeScript 可操作牌桌客户端
 
 当前 `web/` 是本地牌桌 GUI，默认连接 `wbo serve` 提供的规则会话服务。
 GUI 使用项目内置的牌框、职业图标、卡背和卡牌素材，素材位于 `web/public/assets/`。
+卡组页提供本地命名牌组库、导入导出和构筑校验；主页与房间页显示当前选中的牌组。
+使用方式和文件格式见 [网页牌组库](docs/tooling/deck-library.md)。
 
 文档入口见 [docs/README.md](docs/README.md)。

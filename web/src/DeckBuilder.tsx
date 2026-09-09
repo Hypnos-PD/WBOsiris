@@ -4,8 +4,11 @@ import { cardArt, hasEvolvedArt, classNames, deckProblems, typeNames, type Catal
 import { CardArt } from "./CardArt";
 import { CounterValues } from "./CounterValues";
 import "./decks.css";
+import { DeckLibraryBar } from "./DeckLibraryBar";
+import type { useDeckLibrary } from "./useDeckLibrary";
 
 type Props = {
+  library: ReturnType<typeof useDeckLibrary>;
   cards: CatalogCard[];
   deck: string[];
   onChange: (deck: string[]) => void;
@@ -17,7 +20,7 @@ type Props = {
   onRetry: () => void;
 };
 
-export function DeckBuilder({ cards, deck, onChange, onPractice, onBattle, loading, busy, error, onRetry }: Props) {
+export function DeckBuilder({ library, cards, deck, onChange, onPractice, onBattle, loading, busy, error, onRetry }: Props) {
   const [query, setQuery] = useState("");
   const [classFilter, setClassFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
@@ -56,8 +59,9 @@ export function DeckBuilder({ cards, deck, onChange, onPractice, onBattle, loadi
 
   return <section className="workspace-page deck-workspace">
     <div className="deck-heading"><div><span className="eyebrow">COLLECTION</span><h1>卡组构筑</h1></div>
-      <button className="primary-action" onClick={onPractice} disabled={loading || !cards.length}><Layers size={17}/>练习牌组</button>
+      <button className="primary-action" onClick={onPractice} disabled={library.blocked || loading || !cards.length}><Layers size={17}/>练习牌组</button>
     </div>
+    <DeckLibraryBar store={library}/>
     {error && <div className="deck-load-error" role="alert">{error}<button onClick={onRetry}>重试</button></div>}
     <div className="deck-layout">
       <div className="collection-pane">
@@ -81,7 +85,7 @@ export function DeckBuilder({ cards, deck, onChange, onPractice, onBattle, loadi
         {!loading && !filtered.length && !error && <p className="collection-empty">没有匹配的卡牌</p>}
       </div>
       <aside className="deck-summary" aria-label="当前牌组">
-        <div className="deck-summary-title"><div><h2>我的牌组</h2><span>{classNames[deckClass || "neutral"]} · 平均 {deck.length ? (totalCost / deck.length).toFixed(1) : "0.0"} 费</span></div><strong className={deck.length !== 40 ? "incomplete" : ""}>{deck.length}<small>/40</small></strong><button className="deck-icon-button" title="清空牌组" aria-label="清空牌组" onClick={() => onChange([])} disabled={!deck.length}><Trash2 size={17}/></button></div>
+        <div className="deck-summary-title"><div><h2 title={library.active.name}>{library.active.name}</h2><span>{classNames[deckClass || "neutral"]} · 平均 {deck.length ? (totalCost / deck.length).toFixed(1) : "0.0"} 费</span></div><strong className={deck.length !== 40 ? "incomplete" : ""}>{deck.length}<small>/40</small></strong><button className="deck-icon-button" title="清空牌组" aria-label="清空牌组" onClick={() => onChange([])} disabled={!deck.length}><Trash2 size={17}/></button></div>
         <div className="deck-curve" aria-label="费用分布">{curve.map((count, cost) => <div key={cost} title={`${cost === 10 ? "10+" : cost} 费：${count} 张`}><span>{count || ""}</span><i style={{ height: `${count / Math.max(1, ...curve) * 36}px` }}/><small>{cost === 10 ? "10+" : cost}</small></div>)}</div>
         <div className="deck-validation" aria-live="polite">{problems.length ? problems.map((problem) => <p key={problem}>{problem}</p>) : cards.length ? <span><Check size={15}/>可以对战</span> : <span>卡池尚未就绪</span>}</div>
         <button className="deck-battle-button" onClick={onBattle} disabled={busy || loading || !cards.length || !!problems.length}><Swords size={17}/>{busy ? "正在创建房间" : "使用牌组创建房间"}</button>

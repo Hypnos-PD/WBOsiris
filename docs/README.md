@@ -15,6 +15,7 @@
 ## 工具
 
 - [命令行工具](tooling/cli.md)：`check`、`format`、`compile` 和 `test`。
+- [网页牌组库](tooling/deck-library.md)：命名构筑、导入导出、本地保存与网络对战选牌。
 
 ## 规则
 

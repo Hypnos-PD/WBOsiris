@@ -33,13 +33,6 @@ export function cardText(markup: string): string {
   return document.body.textContent?.trim() || "";
 }
 
-export function readDeck(): string[] {
-  try {
-    const value: unknown = JSON.parse(localStorage.getItem("wbo-deck-cards") || "[]");
-    return Array.isArray(value) ? value.filter((id) => typeof id === "string" || typeof id === "number").map(String) : [];
-  } catch { return []; }
-}
-
 export function deckProblems(deck: string[], cards: CatalogCard[]): string[] {
   const byId = new Map(cards.map((card) => [String(card.id), card]));
   const counts = new Map<string, number>();

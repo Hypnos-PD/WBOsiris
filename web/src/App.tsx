@@ -8,7 +8,8 @@ import {
 import { CircleHelp, History, Menu, Shield, Sparkles, X, Home, Swords, Layers, Film, DoorOpen, Plus, Play, Combine, Zap, ChevronUp, ChevronDown } from "lucide-react";
 import { StatusEffects, type StatusEffect } from "./StatusEffects";
 import { DeckBuilder } from "./DeckBuilder";
-import { cardArt, cardText, classNames, deckProblems, readDeck, typeNames, type CatalogCard } from "./decks";
+import { cardArt, cardText, classNames, deckProblems, typeNames, type CatalogCard } from "./decks";
+import { useDeckLibrary } from "./useDeckLibrary";
 import { CardArt } from "./CardArt";
 import type { Entity, ChoiceCandidate, Remote } from "./gameTypes";
 import { eventLabel, readReplays, mergeReplay, persistReplays, type ReplayResponse } from "./replays";
@@ -165,14 +166,12 @@ export function App() {
   const [replayStorageError, setReplayStorageError] = useState(false);
   const [replayRetry, setReplayRetry] = useState(0);
   const [replaySelection, setReplaySelection] = useState<string | null>(null);
-  const [deckCards, setDeckCards] = useState<string[]>(readDeck);
-  const deckInitialized = useRef(false);
+  const deckLibrary = useDeckLibrary();
+  const deckCards = deckLibrary.active.cards;
   const deckErrors = catalogCards.length ? deckProblems(deckCards, catalogCards) : ["卡池尚未就绪"];
   const deckClass = catalogCards.find((card) => card.class !== "neutral" && deckCards.includes(String(card.id)))?.class || "neutral";
   const changeDeck = (cards: string[]) => {
-    setDeckCards(cards);
-    try { localStorage.setItem("wbo-deck-cards", JSON.stringify(cards)); }
-    catch { setRequestError("无法保存牌组到本地存储"); }
+    deckLibrary.commit((library) => ({ ...library, decks: library.decks.map((deck) => deck.id === library.activeId ? { ...deck, cards } : deck) }));
   };
   const [roomList, setRoomList] = useState<RoomSummary[]>([]);
   const [joinRoomId, setJoinRoomId] = useState("");
@@ -205,7 +204,7 @@ export function App() {
   } | null>(null);
   const [mulliganSelection, setMulliganSelection] = useState<string[]>([]);
   const fillPracticeDeck = () => {
-    if (practiceCards.length) changeDeck(practiceCards);
+    if (practiceCards.length) deckLibrary.practice(practiceCards);
   };
 
   useEffect(() => {
@@ -223,11 +222,7 @@ export function App() {
         setHand((hand) => hand.map((card) => next[card.id] ? { ...card, name: next[card.id].name, text: next[card.id].text, art: next[card.id].art, type: next[card.id].type } : card));
         const practice = data.practiceDeck.map(String);
         setPracticeCards(practice);
-        if (!deckInitialized.current) {
-          deckInitialized.current = true;
-          try { if (localStorage.getItem("wbo-deck-cards") === null) changeDeck(practice); }
-          catch { setRequestError("无法读取本地牌组"); }
-        }
+        deckLibrary.initialize(practice);
       })
       .catch((error) => { if (error.name !== "AbortError") setCatalogError("无法加载卡池，请确认规则服务已连接"); })
       .finally(() => { if (!controller.signal.aborted) setCatalogLoading(false); });
@@ -635,10 +630,10 @@ export function App() {
   const workspacePage = activePage === "home" ? (
     <section className="workspace-page home-page">
       <div className="workspace-hero"><span className="eyebrow">WBO OSIRIS</span><h1>战术牌桌，随时开战</h1><p>构筑卡组，加入房间，记录每一次精彩对局。</p><button className="primary-action" onClick={() => navigate("battle")}><Play size={17}/>快速开始</button></div>
-      <div className="workspace-grid"><article><small>当前房间</small><strong>{matchAuth ? matchAuth.id : "尚未加入"}</strong><button onClick={() => navigate("rooms")}>管理房间</button></article><article><small>最近对局</small><strong>{events[0] ?? "暂无记录"}</strong><button onClick={() => navigate("replays")}>查看录像</button></article><article><small>当前牌组</small><strong>{classNames[deckClass]} · {deckCards.length}/40</strong><button onClick={() => navigate("decks")}>打开卡组</button></article></div>
+      <div className="workspace-grid"><article><small>当前房间</small><strong>{matchAuth ? matchAuth.id : "尚未加入"}</strong><button onClick={() => navigate("rooms")}>管理房间</button></article><article><small>最近对局</small><strong>{events[0] ?? "暂无记录"}</strong><button onClick={() => navigate("replays")}>查看录像</button></article><article><small>当前牌组</small><strong>{deckLibrary.active.name}</strong><span>{classNames[deckClass]} · {deckCards.length}/40</span><button onClick={() => navigate("decks")}>打开卡组</button></article></div>
     </section>
   ) : activePage === "decks" ? (
-    <DeckBuilder cards={catalogCards} deck={deckCards} onChange={changeDeck} onPractice={fillPracticeDeck} onBattle={createMatch} loading={catalogLoading} busy={roomBusy} error={catalogError} onRetry={() => setCatalogVersion((version) => version + 1)}/>
+    <DeckBuilder library={deckLibrary} cards={catalogCards} deck={deckCards} onChange={changeDeck} onPractice={fillPracticeDeck} onBattle={createMatch} loading={catalogLoading} busy={roomBusy} error={catalogError} onRetry={() => setCatalogVersion((version) => version + 1)}/>
   ) : activePage === "replays" ? (
     <section className="workspace-page replay-page">
       <div className="page-heading"><div><span className="eyebrow">MATCH LOG</span><h1>录像</h1></div></div>
@@ -655,7 +650,13 @@ export function App() {
       </article>) : <p className="empty-state">暂无录像</p>}</div>}
     </section>
   ) : activePage === "rooms" ? (
-    <section className="workspace-page"><div className="page-heading"><div><span className="eyebrow">NETWORK</span><h1>房间</h1></div><button className="primary-action" disabled={roomBusy || catalogLoading} onClick={createMatch}><Plus size={17}/>创建房间</button></div><div className="room-deck-status">当前牌组：{deckCards.length}/40 · {deckErrors.length ? deckErrors[0] : "可用于对战"}<button onClick={() => navigate("decks")}>编辑牌组</button></div><div className="room-panel">{matchAuth ? <><span className="status-dot"/>当前房间 <strong>{matchAuth.id}</strong><small>{remote?.waiting ? `等待对手加入 · 邀请码 ${joinCode}` : "对局进行中"}</small><button onClick={() => navigate("battle")}><DoorOpen size={15}/>进入牌桌</button></> : <p className="empty-state">暂无活动房间</p>}</div><div className="join-panel"><h2>加入房间</h2><input aria-label="房间 ID" value={joinRoomId} onChange={(e) => setJoinRoomId(e.target.value)} placeholder="房间 ID"/><input aria-label="邀请码" value={joinRoomCode} onChange={(e) => setJoinRoomCode(e.target.value)} placeholder="邀请码"/><button disabled={roomBusy || catalogLoading || !joinRoomId.trim() || !joinRoomCode.trim()} onClick={joinRoom}><DoorOpen size={15}/>{roomBusy ? "连接中" : "使用牌组加入"}</button></div><div className="room-directory"><h2>公开房间</h2>{roomList.length ? roomList.map((room) => <div className="room-entry" key={room.id}><span>{room.id}</span><small>{room.waiting ? "等待加入" : "对局进行中"}</small></div>) : <p className="empty-state">暂无公开房间</p>}</div></section>
+    <section className="workspace-page">
+      <div className="page-heading"><div><span className="eyebrow">NETWORK</span><h1>房间</h1></div><button className="primary-action" disabled={roomBusy || catalogLoading} onClick={createMatch}><Plus size={17}/>创建房间</button></div>
+      <div className="room-deck-status">当前牌组：{deckLibrary.active.name} · {deckCards.length}/40 · {deckErrors.length ? deckErrors[0] : "可用于对战"}<button onClick={() => navigate("decks")}>选择或编辑牌组</button>{matchAuth && <p>更换牌组用于下一次建房或加入房间。</p>}</div>
+      <div className="room-panel">{matchAuth ? <><span className="status-dot"/>当前房间 <strong>{matchAuth.id}</strong><small>{remote?.waiting ? `等待对手加入 · 邀请码 ${joinCode}` : "对局进行中"}</small><button onClick={() => navigate("battle")}><DoorOpen size={15}/>进入牌桌</button></> : <p className="empty-state">暂无活动房间</p>}</div>
+      <div className="join-panel"><h2>加入房间</h2><input aria-label="房间 ID" value={joinRoomId} onChange={(e) => setJoinRoomId(e.target.value)} placeholder="房间 ID"/><input aria-label="邀请码" value={joinRoomCode} onChange={(e) => setJoinRoomCode(e.target.value)} placeholder="邀请码"/><button disabled={roomBusy || catalogLoading || !joinRoomId.trim() || !joinRoomCode.trim()} onClick={joinRoom}><DoorOpen size={15}/>{roomBusy ? "连接中" : "使用牌组加入"}</button></div>
+      <div className="room-directory"><h2>公开房间</h2>{roomList.length ? roomList.map((room) => <div className="room-entry" key={room.id}><span>{room.id}</span><small>{room.waiting ? "等待加入" : "对局进行中"}</small></div>) : <p className="empty-state">暂无公开房间</p>}</div>
+    </section>
   ) : null;
 
   const arc = dragGuide
