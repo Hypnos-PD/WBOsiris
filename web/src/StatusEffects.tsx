@@ -154,7 +154,7 @@ export function StatusEffects({ statuses }: { statuses: StatusEffect[] }) {
         />
       )}
       {statuses.includes("damageReduction") && (
-        <span className="status-damage-reduction" />
+        <span className="status-damage-reduction" title="受到的伤害减少" aria-label="受到的伤害减少" />
       )}
       {statuses.includes("intimidate") && <IntimidateEffect />}
       {statuses.includes("stealth") && <span className="status-stealth" />}
