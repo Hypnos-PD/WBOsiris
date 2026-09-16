@@ -572,6 +572,12 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 		for _, i := range targets {
 			i.attackLimitValue = e.Amount
 		}
+	case "set_cost":
+		for _, i := range targets {
+			if i != nil {
+				i.cost = max(e.Amount, 0)
+			}
+		}
 	case "set_damage_reduction":
 		for _, i := range targets {
 			i.damageReduction = e.Amount

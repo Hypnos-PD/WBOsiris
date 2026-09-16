@@ -206,6 +206,8 @@ type EventTrigger struct {
 	SourceZone  string    `json:"sourceZone,omitempty"`
 	SubjectType string    `json:"subjectType,omitempty"`
 	SelfOnly    bool      `json:"selfOnly,omitempty"`
+	// ExcludeSelf 对应事件模式里的 other：监听器不响应来源实例自身的该事件。
+	ExcludeSelf bool      `json:"excludeSelf,omitempty"`
 	Predicate   Predicate `json:"predicate,omitempty"`
 }
 

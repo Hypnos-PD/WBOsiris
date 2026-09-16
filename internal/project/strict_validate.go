@@ -269,6 +269,13 @@ func isPlainOperation(s *syntax.Statement) bool {
 func parseEventPattern(t []syntax.Token) (int, string, bool) {
 	end, subject, ok := parseBaseEventPattern(t)
 	survivesDamage := ok && subject == "follower" && t[end-1].Value == "damage"
+	// `other` 排除来源实例自身：自己的其他随从进化、入场、被破坏时……
+	if ok && end < len(t) && t[end].Value == "other" {
+		if t[1].Value == "self" || subject == "" {
+			return 0, "", false
+		}
+		end++
+	}
 	if ok && end < len(t) && t[end].Value == "during" {
 		if !survivesDamage || len(t) < end+3 || !set("own", "oppo")[t[end+1].Value] || t[end+2].Value != "turn" {
 			return 0, "", false
@@ -318,6 +325,9 @@ func parseBaseEventPattern(t []syntax.Token) (int, string, bool) {
 	}
 	if set("follower", "amulet")[t[2].Value] && set("summoned", "engaged", "destroyed")[t[3].Value] {
 		return 4, t[2].Value, true
+	}
+	if t[2].Value == "follower" && set("evolved", "super_evolved")[t[3].Value] {
+		return 4, "follower", true
 	}
 	if t[2].Value == "card" && set("discarded", "fused")[t[3].Value] {
 		return 4, "card", true

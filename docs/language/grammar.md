@@ -294,6 +294,7 @@ event_pattern     = participant , event_subject , event_verb
                   | participant , "leader" , "healed"
                   | participant , "follower" , "leaves" , "field"
                   | participant , "follower" , "survives" , "damage"
+                  | participant , "follower" , ("evolved" | "super_evolved") , ["other"]
                   | participant , "turn" , turn_boundary
                   | "self" , ("evolved" | "super_evolved" | "discarded" | "summoned")
                   | "self" , "survives" , "damage" ;
@@ -308,7 +309,9 @@ replace_block     = "replace" , "self" , "leaving" , "field" , effect_block ;
 ```
 
 事件模式中的筛选器作用于事件产生的对象。`summoned`、`engaged`、`discarded`、`destroyed` 分别绑定该事件
-的对象；回合边界事件不建立对象绑定。监听器默认包含 Token。`replace self
+的对象；`evolved` 与 `super_evolved` 绑定本次进化的随从（`when self …` 用 `self` 即可）；
+回合边界事件不建立对象绑定。事件模式末尾的 `other` 只排除来源实例自身的该事件，
+例如「自己的其他随从超进化时」。监听器默认包含 Token。`replace self
 leaving field` 在原区域移动前执行并取消原移动，同一替换块不会因自己产生的区域
 移动再次触发。
 
@@ -374,6 +377,7 @@ history_source    = participant , "." , "destroyed" , ["." , ("followers" | "amu
 numeric_operation = "damage" , value_ref , effect_amount , [damage_distribution] , [where_clause] , ";"
                   | "heal" , value_ref , effect_amount , [where_clause] , ";"
                   | "set" , "life" , value_ref , effect_amount , ";"
+                  | "set" , "cost" , value_ref , effect_amount , ";"
                   | "set" , "maxlife" , participant , "." , "leader" , integer , ";"
                   | "buff" , value_ref , ["other"] , signed_amount , "/" , signed_amount , [where_clause] , [effect_duration] , ";"
                   | "gain" , scalar_ref , integer , ";"

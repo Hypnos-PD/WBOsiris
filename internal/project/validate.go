@@ -230,6 +230,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 	if event == "leaves" {
 		bindings["left"] = true
 	}
+	if event == "evolved" || event == "super_evolved" {
+		bindings["evolved"] = true
+	}
 	if event == "attack" || event == "clash" {
 		bindings["opponent"] = true
 	}
@@ -535,7 +538,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		if good {
 			end, good = parseEffectAmount(t, end)
 		}
-		ok = t[1].Value == "life" && good && end == len(t)
+		ok = set("life", "cost")[t[1].Value] && good && end == len(t)
 	case "set_attack_limit":
 		ok = len(t) == 3 && t[1].Value == "self" && isU16(t[2])
 		if ok {

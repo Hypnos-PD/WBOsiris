@@ -6,7 +6,12 @@ card 10212120 {
     stats 2/2;
 
     effect {
-        unplayable;
+        when own follower super_evolved while self in hand {
+            set cost self 1;
+        }
+        fanfare {
+            add 1 card 90011110 to hand;
+        }
     }
 
     meta {

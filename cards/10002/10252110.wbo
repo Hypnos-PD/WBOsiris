@@ -6,7 +6,11 @@ card 10252110 {
     stats 2/4;
 
     effect {
-        unplayable;
+        rush;
+        when own follower super_evolved other {
+            buff evolved +2/+0;
+            buff self +2/+0;
+        }
     }
 
     meta {

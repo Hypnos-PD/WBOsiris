@@ -113,6 +113,9 @@ func (g *game) queueEventTriggersIn(event ir.RuntimeEvent, subject *instance, bi
 				if trigger.SelfOnly && subject != source {
 					continue
 				}
+				if trigger.ExcludeSelf && subject == source {
+					continue
+				}
 				if trigger.Event == "damaged" && (subject == nil || subject.life <= 0 || subject.zone != "field") {
 					continue
 				}

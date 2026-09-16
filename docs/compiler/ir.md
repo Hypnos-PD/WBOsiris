@@ -455,6 +455,7 @@ EventPattern = {
   duringTurn: ("own" | "oppo")?,
   subjectType: (CardType | "leader")?,
   zone: Zone?,
+  excludeSelf: bool?,
   predicate: BoolExpr?
 }
 
@@ -906,6 +907,12 @@ SetLife = NodeBase & {
   amount: EffectAmount
 }
 
+SetCost = NodeBase & {
+  kind: "set_cost",
+  target: ValueRef | SetExpr,
+  amount: EffectAmount
+}
+
 SilentEvolve = NodeBase & {
   kind: "silent_evolve",
   target: ValueRef | SetExpr,
@@ -956,6 +963,8 @@ Spellboost = NodeBase & {
 
 `Damage.distribution` 省略时，对每个目标造成完整的 `amount` 伤害。
 `SetLife` 对随从直接设置当前生命值，不使用伤害管线、不消费屏障、不产生伤害或回复事件。
+`SetCost` 用同一数值管线把目标的当前费用设为给定值（允许 0），也可用于手牌与牌组中的实例；
+它不改变原始费用，因此离开战场或重新创建实例后会回到卡牌定义的费用。
 数值在修改任何目标前确定；零生命值的战场随从随后统一进入死亡批次。
 此节点拒绝主战者引用，不携带伤害类型、过滤器、增益量或输出绑定；非随从实例不受影响。
 `AddKeyword` 与 `RemoveKeyword` 的 `predicate` 在修改任何目标前应用；`other` 编译为

@@ -6,7 +6,12 @@ card 10241110 {
     stats 4/4;
 
     effect {
-        unplayable;
+        when own follower super_evolved while self in hand {
+            reduce cost self 3 minimum 0;
+        }
+        fanfare {
+            summon 1 card 90041120;
+        }
     }
 
     meta {

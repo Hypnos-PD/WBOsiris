@@ -1113,12 +1113,12 @@ func (g *game) applyEvolution(i *instance, super bool) {
 	target := &ir.EventTarget{Kind: "instance", InstanceID: i.id, CardID: i.card.ID, Side: g.sideOf(i)}
 	event := ir.RuntimeEvent{Kind: "evolved", Side: g.sideOf(i), InstanceID: i.id, CardID: i.card.ID, Subject: target}
 	if g.emit(event) {
-		g.queueEventTriggers(event, i, "")
+		g.queueEventTriggers(event, i, "evolved")
 	}
 	if super {
 		event.Kind = "super_evolved"
 		if g.emit(event) {
-			g.queueEventTriggers(event, i, "")
+			g.queueEventTriggers(event, i, "evolved")
 		}
 	}
 }

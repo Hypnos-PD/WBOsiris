@@ -1,0 +1,94 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "庇护的智龙在己方随从超进化时降费三" {
+    seed 14001;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower evolved = 10001110; }
+            hand { follower source = 10241110; }
+        }
+    }
+    action { superevolve evolved; }
+    expect { legal; source.zone == hand; source.cost == 7; evolved.super_evolved == true; }
+}
+
+scenario "庇护的智龙不因普通进化降费" {
+    seed 14002;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower evolved = 10001110; }
+            hand { follower source = 10241110; }
+        }
+    }
+    action { evolve evolved; }
+    expect { legal; source.cost == 10; }
+}
+
+scenario "妖精击剑士在自己随从超进化时费用变为一" {
+    seed 14003;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower evolved = 10001110; }
+            hand { follower source = 10212120; }
+        }
+    }
+    action { superevolve evolved; }
+    expect { legal; source.zone == hand; source.cost == 1; }
+}
+
+scenario "妖精击剑士的入场曲加入妖精" {
+    seed 14004;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10212120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90011110 == 1; own.pp == 0/2; }
+}
+
+scenario "爆破之翼在这次超进化时同时强化双方" {
+    seed 14005;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field {
+                follower enforcer = 10252110;
+                follower evolved = 10001110;
+            }
+        }
+    }
+    action { superevolve evolved; }
+    // 超进化 +3/+3：10001110 变为 5/5，再吃本能力的 +2/+0；10252110 只吃 +2/+0。
+    expect {
+        legal;
+        evolved.stats == 7/5;
+        enforcer.stats == 4/4;
+    }
+}
+
+scenario "爆破之翼不响应自己超进化" {
+    seed 14006;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field {
+                follower enforcer = 10252110;
+                follower other = 10001110;
+            }
+        }
+    }
+    action { superevolve enforcer; }
+    // 只算超进化本身：2/4 +3/+3 = 5/7；若监听器把自己的事件也算进去会变成 7/7。
+    expect { legal; enforcer.stats == 5/7; other.stats == 2/2; enforcer has rush; }
+}

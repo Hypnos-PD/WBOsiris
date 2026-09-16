@@ -574,6 +574,7 @@ func decodeTrigger(data []byte) (Trigger, error) {
 			OncePerTurn string          `json:"oncePerTurn,omitempty"`
 			DuringTurn  string          `json:"duringTurn,omitempty"`
 			SelfOnly    bool            `json:"selfOnly,omitempty"`
+			ExcludeSelf bool            `json:"excludeSelf,omitempty"`
 			Predicate   json.RawMessage `json:"predicate,omitempty"`
 			Condition   json.RawMessage `json:"condition,omitempty"`
 		}
@@ -617,7 +618,10 @@ func decodeTrigger(data []byte) (Trigger, error) {
 		if v.SelfOnly && (v.Event != "damaged" && (condition != nil || v.OncePerTurn != "") || v.SourceZone != "" || v.Side != "own" || !(v.SubjectType == "follower" && oneOf(v.Event, "evolved", "super_evolved", "follower_summoned", "damaged") || v.SubjectType == "" && v.Event == "card_discarded") || p != nil) {
 			return nil, fmt.Errorf("invalid self event trigger")
 		}
-		return EventTrigger{Kind: v.Kind, Event: v.Event, Side: v.Side, SourceZone: v.SourceZone, SubjectType: v.SubjectType, SelfOnly: v.SelfOnly, Predicate: p, OncePerTurn: v.OncePerTurn, DuringTurn: v.DuringTurn, Condition: condition}, nil
+		if v.ExcludeSelf && (v.SelfOnly || v.SubjectType == "" || v.Event == "damaged") {
+			return nil, fmt.Errorf("invalid other subject trigger")
+		}
+		return EventTrigger{Kind: v.Kind, Event: v.Event, Side: v.Side, SourceZone: v.SourceZone, SubjectType: v.SubjectType, SelfOnly: v.SelfOnly, ExcludeSelf: v.ExcludeSelf, Predicate: p, OncePerTurn: v.OncePerTurn, DuringTurn: v.DuringTurn, Condition: condition}, nil
 	case "replacement":
 		type raw struct {
 			Kind    string          `json:"kind"`
@@ -998,7 +1002,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			}
 		}
 		return CardEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.Destination, v.Output, v.Count, v.CardID, v.MaxCost, v.TieBreak, v.PreserveInstanceID, v.PreserveMaterials, r}, err
-	case "damage", "heal", "buff_stats", "destroy", "banish", "discard", "return", "add_keyword", "remove_keyword", "remove_ability", "silent_evolve", "set_attack_limit", "set_damage_reduction", "set_life":
+	case "damage", "heal", "buff_stats", "destroy", "banish", "discard", "return", "add_keyword", "remove_keyword", "remove_ability", "silent_evolve", "set_attack_limit", "set_damage_reduction", "set_life", "set_cost":
 		type raw struct {
 			Output                                                      string `json:"output,omitempty"`
 			ID                                                          string `json:"id"`
@@ -1129,6 +1133,10 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		case "set_life":
 			if len(v.AmountValue) == 0 || v.Amount < 0 || v.DamageType != "" || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
 				return nil, fmt.Errorf("invalid set life shape")
+			}
+		case "set_cost":
+			if len(v.AmountValue) == 0 || v.Amount < 0 || v.Amount > 65535 || v.DamageType != "" || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
+				return nil, fmt.Errorf("invalid set cost shape")
 			}
 		}
 		return TargetEffect{

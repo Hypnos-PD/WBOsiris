@@ -457,7 +457,11 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		}
 		end := valueRefEnd(t, 2)
 		amount, expr := numericIR(t, end)
-		return ir.TargetEffect{NodeBase: base, Kind: "set_life", Target: valueRefIR(t, 2), Amount: amount, AmountExpr: expr}, nil
+		kind := "set_life"
+		if t[1].Value == "cost" {
+			kind = "set_cost"
+		}
+		return ir.TargetEffect{NodeBase: base, Kind: kind, Target: valueRefIR(t, 2), Amount: amount, AmountExpr: expr}, nil
 	case "return":
 		end := valueRefEnd(t, 1)
 		e := ir.TargetEffect{NodeBase: base, Kind: "return", Target: valueRefIR(t, 1), Destination: t[end+1].Value}
@@ -693,12 +697,16 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 		if m.SubjectType == "card" {
 			m.SubjectType = ""
 		}
-		m.Event = map[string]string{"summoned": "follower_summoned", "leaves": "follower_left", "survives": "damaged", "destroyed": "destroyed", "healed": "healed", "fused": "card_fused", "engaged": "amulet_engaged", "discarded": "card_discarded"}[t[3].Value]
+		m.Event = map[string]string{"summoned": "follower_summoned", "leaves": "follower_left", "survives": "damaged", "destroyed": "destroyed", "healed": "healed", "fused": "card_fused", "engaged": "amulet_engaged", "discarded": "card_discarded", "evolved": "evolved", "super_evolved": "super_evolved"}[t[3].Value]
 		if m.Event == "follower_summoned" && m.SubjectType == "amulet" {
 			m.Event = "amulet_summoned"
 		}
 	}
 	baseEnd, _, _ := parseBaseEventPattern(t)
+	if baseEnd < len(t) && t[baseEnd].Value == "other" {
+		m.ExcludeSelf = true
+		baseEnd++
+	}
 	end, _, _ := parseEventPattern(t)
 	if baseEnd < len(t) && t[baseEnd].Value == "during" {
 		m.DuringTurn = t[baseEnd+1].Value
