@@ -6,7 +6,13 @@ card 10274120 {
     stats 5/4;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from own.hand.followers where trait artifact and cost <= 5;
+            summon copies of target;
+        }
+        superevolve {
+            set_attack_limit self 2;
+        }
     }
 
     meta {

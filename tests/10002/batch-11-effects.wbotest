@@ -1,0 +1,267 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "花园的指引未融合时只抽一张" {
+    seed 11001;
+    state {
+        player own {
+            pp 2/2;
+            hand { spell source = 10213310; }
+            deck top {
+                follower first = 10001110;
+                follower second = 10001110;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        own.hand count card 10001110 == 1;
+        own.deck count card 10001110 == 1;
+        rng.consumed == 0;
+    }
+}
+
+scenario "花园的指引可以融合精灵卡牌" {
+    seed 11002;
+    state {
+        player own {
+            hand {
+                spell source = 10213310;
+                follower material = 10111110;
+            }
+        }
+    }
+    action { fuse source; select material; }
+    expect {
+        legal;
+        source.zone == hand;
+        own.hand count card 10111110 == 0;
+        own.shadows == 0;
+    }
+}
+
+scenario "没有可融合的精灵卡牌时融合指令非法" {
+    seed 11003;
+    state {
+        player own {
+            hand {
+                spell source = 10213310;
+                follower neutral = 10001110;
+            }
+        }
+    }
+    action { fuse source; }
+    expect { illegal fusion_material_required; unchanged; }
+}
+
+scenario "暴食的安纳提玛超进化破坏两个随从并保留灵气" {
+    seed 11010;
+    state {
+        turn own 9;
+        player own {
+            sep 1;
+            field { follower source = 10234110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110;
+                follower second = 10001110;
+                follower spared = 10001110;
+            }
+        }
+    }
+    action { superevolve source; select first, second; }
+    expect {
+        legal;
+        source has aura;
+        first.zone == graveyard;
+        second.zone == graveyard;
+        spared.zone == field;
+        own.sep == 0;
+    }
+}
+
+scenario "暴食的安纳提玛的谢幕曲支付土之秘术召唤自身" {
+    seed 11011;
+    state {
+        player own {
+            field {
+                follower source = 10234110;
+                amulet sigil = 90031210 { earthsigil 2; }
+            }
+        }
+        player oppo { field { follower big = 90004110; } }
+    }
+    action { attack source into big; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        sigil.zone == graveyard;
+        own.field count card 10234110 == 1;
+        // 被破坏的随从与被土之秘术消耗的护符各计一点墓场资源。
+        own.shadows == 2;
+    }
+}
+
+scenario "土之印不足时谢幕曲不召唤" {
+    seed 11012;
+    state {
+        player own {
+            field {
+                follower source = 10234110;
+                amulet sigil = 90031210 { earthsigil 1; }
+            }
+        }
+        player oppo { field { follower big = 90004110; } }
+    }
+    action { attack source into big; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        sigil.zone == field;
+        sigil.earthsigil == 1;
+        own.field count card 10234110 == 0;
+    }
+}
+
+scenario "银色子弹进化破坏两个随从并对自己的主战者造成两点伤害" {
+    seed 11020;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10251110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110;
+                follower second = 10001110;
+                follower spared = 10001110;
+            }
+        }
+    }
+    action { evolve source; select first, second; }
+    expect {
+        legal;
+        source has bane;
+        source.stats == 5/6;
+        own.leader.life == 18;
+        first.zone == graveyard;
+        second.zone == graveyard;
+        spared.zone == field;
+        own.ep == 0;
+    }
+}
+
+scenario "只有一名敌方随从时银色子弹只破坏一名" {
+    seed 11021;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10251110; }
+        }
+        player oppo { field { follower only = 10001110; } }
+    }
+    action { evolve source; select only; }
+    expect { legal; only.zone == graveyard; own.leader.life == 18; }
+}
+
+scenario "引擎剑士的入场曲召唤攻击创造物并加入过往核心" {
+    seed 11030;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10271110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == field;
+        own.field count card 90072110 == 1;
+        own.hand count card 90071220 == 1;
+        own.pp == 0/6;
+    }
+}
+
+scenario "引擎剑士的进化时发动与入场曲相同的能力" {
+    seed 11031;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10271110; }
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        source.stats == 6/7;
+        own.field count card 90072110 == 1;
+        own.hand count card 90071220 == 1;
+        own.ep == 0;
+    }
+}
+
+scenario "精神武艺的入场曲复制手牌的创造物随从" {
+    seed 11040;
+    state {
+        player own {
+            pp 5/5;
+            hand {
+                follower source = 10274120;
+                follower target = 90072110;
+            }
+        }
+    }
+    action { play source; select target; }
+    expect {
+        legal;
+        target.zone == hand;
+        own.field count card 10274120 == 1;
+        own.field count card 90072110 == 1;
+        own.pp == 0/5;
+    }
+}
+
+scenario "没有合法创造物随从时不复制" {
+    seed 11041;
+    state {
+        player own {
+            pp 5/5;
+            hand {
+                follower source = 10274120;
+                amulet core = 90071220;
+                follower expensive = 90072110 { cost 6; }
+                follower neutral = 10001110;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        expensive.zone == hand;
+        own.field count card 90072110 == 0;
+    }
+}
+
+scenario "精神武艺超进化后每回合可以攻击两次" {
+    seed 11042;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10274120; }
+        }
+    }
+    action { superevolve source; }
+    expect {
+        legal;
+        source.attack_limit == 2;
+        source.stats == 8/7;
+        own.sep == 0;
+    }
+}

@@ -1060,14 +1060,25 @@ func validateAssertion(s *syntax.Statement, a map[string]bool, ds *[]syntax.Diag
 	if !set("legal", "illegal", "unchanged", "own", "oppo", "rng", "all", "events")[h] && !a[h] {
 		diag(ds, "WBT-E007-INVALID-ASSERTION", "错误", "未知断言或实例别名: "+h, s.Span)
 	}
+	t := s.Tokens()
+	// 实例字段写错会静默退化成"永远不相等"，在这里直接拦住。
+	if len(t) >= 3 && a[t[0].Value] && t[1].Value == "." && t[2].Value != "counter" && !instanceFields[t[2].Value] {
+		diag(ds, "WBT-E007-INVALID-ASSERTION", "错误", "未知实例字段: "+t[2].Value, s.Span)
+	}
 	if h == "events" {
-		t := tokenValues(s)
-		valid := words(t) == "events contains ordered" || words(t) == "events excludes" || words(t) == "events exact"
+		v := tokenValues(s)
+		valid := words(v) == "events contains ordered" || words(v) == "events excludes" || words(v) == "events exact"
 		if !valid || len(s.Blocks()) != 1 {
 			shapeError(ds, s, "events contains ordered|excludes|exact { ... }")
 		}
 	}
 }
+
+// instanceFields 与 internal/runner 的字段求值保持一致。
+var instanceFields = set(
+	"zone", "cost", "stats", "evolved", "super_evolved",
+	"earthsigil", "countdown", "engaged", "attack_limit", "damage_reduction",
+)
 
 func validateCollection(l *Loaded, strict bool) {
 	ids := map[string]*Card{}

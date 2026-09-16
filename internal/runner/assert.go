@@ -96,6 +96,10 @@ func (g *game) assertCompare(a ir.CompareAssertion) string {
 			got = i.countdown
 		case "engaged":
 			got = i.engaged
+		case "attack_limit":
+			got = attackLimit(i)
+		case "damage_reduction":
+			got = i.damageReduction
 		}
 	case "rng_consumed":
 		got = int(g.rng.Consumed())

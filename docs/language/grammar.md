@@ -282,7 +282,9 @@ option_label      = "label" , locale_id , string , ";" ;
 成功支付后不因后续失败退还。`mode` 至少有两个选项，选项编号是回放协议的一部分。
 `overflow` 的具体阈值属于规则引擎；`combo` 在入场曲结算前已经包含当前打出的卡。
 `fused.cost` 是来源实例全部已附着材料的原始费用合计，`fused.distinct` 是这些材料按
-卡牌 ID 计算的种类数；二者只允许在 `fusion_block` 内使用。
+卡牌 ID 计算的种类数。二者在声明了 `fusion` 的卡牌的任意效果块里都可读：融合块内
+读到的是本次附着的材料，其余的结算时点（例如法术 `effect` 最外层、`fanfare`）
+读到的是来源实例当时已附着的全部材料。没有声明 `fusion` 的卡牌读到 `fused` 是错误。
 
 ### 2.6 事件与替换
 
@@ -572,7 +574,8 @@ assertion_ref     = scalar_ref
                   | alias , "." , "counter" , "." , counter_name
                   | "rng" , "." , "consumed" ;
 instance_field    = "zone" | "stats" | "evolved" | "super_evolved"
-                  | "earthsigil" | "countdown" | "engaged" ;
+                  | "earthsigil" | "countdown" | "engaged"
+                  | "cost" | "attack_limit" | "damage_reduction" ;
 assertion_value   = integer | stat_pair | boolean | zone_value ;
 zone_value        = "deck" | "hand" | "field" | "graveyard" | "banished" ;
 

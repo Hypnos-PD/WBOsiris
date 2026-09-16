@@ -18,11 +18,11 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 296 · 未实现(骨架) 77 · 未导入 531
+总计 904 · 已完成 301 · 未实现(骨架) 72 · 未导入 531
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
-10002        77      49      28       0
+10002        77      54      23       0
 10003        77       4       0      73
 10004        76       1       0      75
 10005        76       0       0      76
@@ -31,7 +31,7 @@
 10008        78       0       0      78
 10009        76       0       0      76
 90000        93      44      49       0
-未完成卡按文本复杂度：中(41–100字) 366 · 短(≤40字) 238 · 长(>100字) 20 · 白板 2
+未完成卡按文本复杂度：中(41–100字) 347 · 短(≤40字) 234 · 长(>100字) 20 · 白板 2
 ```
 
 ## 工作流
@@ -71,69 +71,91 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-12 | 纹章块内的集合条件 / 按目标自身数值成倍 | 10204120 格里姆尼尔（"若自己的战场上有超进化后的随从"）、10233310 帕梅拉的舞蹈（"使所有随从的攻击力/生命值变为 2 倍"） | 前者是 S-04 的同一缺口出现在纹章里；后者需要"每个目标按自身当前数值翻倍"，现有 `buff` 的数值引用只有来源自身与 `count(...)` |
 | S-13 | `add card … to hand` 不产生绑定 | 10271120（"将1张『悬丝傀儡』加入手牌，使其+3/+0"） | 生成的实例没有任何绑定可以引用，所以无法只强化"这一张"。用 `buff own.hand.followers where card X` 会连带强化手里的同名旧卡，不符合文本。同类还影响"加入手牌后立即修改"的一批卡。 |
 | S-11 | `.wbotest` 无法声明先手 | 影响"抽牌耗尽判负"这类与先手有关的规则验证 | 规则本身已实现（`execute.go` 在无法满足抽牌时让对方获胜），但触发条件是 `firstPlayer != ""`，而场景测试不提供先手信息，这条路径只能由 Go 侧测试覆盖，场景测试写不出来。 |
-+
-+## 已完成的语言扩展
-+
-+| 编号 | 扩展 | 改动 | 验证 |
-+| --- | --- | --- | --- |
-+| S-04 | `if count(集合 [where …]) 比较 整数` —— 集合计数条件 | `internal/ir/model.go`（新增 `CountCondition`）、`internal/project/typed_ir.go`（解析，含集合与筛选）、`internal/project/validate.go` 与 `strict_validate.go`（形状校验，复用 `parseEffectAmount` 处理括号）、`internal/runner/execute.go`（求值并比较）、`internal/ir/decode.go`（容器解码）、文档 | Go 单测 `internal/project/count_condition_test.go`（带筛选/不带筛选、拒绝缺比较符与多余 token）；7 张卡共 10 个场景 |
+
+## 已完成的语言扩展
+
+| 编号 | 扩展 | 改动 | 验证 |
+| --- | --- | --- | --- |
+| S-04 | `if count(集合 [where …]) 比较 整数` —— 集合计数条件 | `internal/ir/model.go`（新增 `CountCondition`）、`internal/project/typed_ir.go`（解析，含集合与筛选）、`internal/project/validate.go` 与 `strict_validate.go`（形状校验，复用 `parseEffectAmount` 处理括号）、`internal/runner/execute.go`（求值并比较）、`internal/ir/decode.go`（容器解码）、文档 | Go 单测 `internal/project/count_condition_test.go`（带筛选/不带筛选、拒绝缺比较符与多余 token）；7 张卡共 10 个场景 |
 | S-05 | `enhance N replaces { ... }` —— 爆能强化的"改为"档 | `internal/project/validate.go`（允许 `replaces`）、`internal/project/typed_ir.go`（写入 `Ability.Relation`）、`internal/runner/runner.go`（`commitPlay` 在支付该档时跳过基础效果与入场曲）、`docs/language/cards.md`/`grammar.md` | Go 单测 `internal/project/enhance_replaces_test.go`（关系被保留、fanfare 不受影响、拒绝 `extends`/缺档位等错误形状）；卡片 10222310 + 2 个场景（普通档只打 1 个，爆能档恰好打 3 个且没有多出一次基础伤害） |
 | S-02 | `draw N for own\|oppo` —— 让对方抽牌 | `internal/project/validate.go`（接受可选 `for` 子句）、`internal/project/typed_ir.go`（写入 `DrawEffect.Owner`）、`docs/language/cards.md`、`docs/language/grammar.md` | Go 单测 `internal/project/draw_owner_test.go`（默认仍是自己、`for oppo` 生效、保留过滤器、拒绝 `for self`/重复 `for`/`draw all for oppo` 无过滤器、格式稳定）；卡片 10221310 + 2 个场景 |
-+
-+`DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
-+
-+## 批次记录
+| S-14 | `fused.cost` / `fused.distinct` 的作用域 | 原实现只允许在 `fusion` 块内读，但"若已与本卡牌融合，则改为抽取 2 张"这类文本的判断点在打出/入场结算时。`internal/project/strict_validate.go` 新增 `effectContext.materials`：卡牌只要声明了 `fusion`，其任意效果块（含 `when … if …`）都可读 `fused`；没声明融合的卡牌读它仍然报错。文档同步 `cards.md` / `grammar.md` | Go 单测 `internal/project/fused_scalar_scope_test.go`（法术 `effect` 内可读且条件被完整保留、无融合声明时拒绝）；卡片 10213310 + 2 个场景，并由 `internal/runner/fused_play_effect_test.go` 用真实卡表端到端覆盖"融合后抽 2 / 未融合抽 1" |
+| S-15 | 测试 DSL 的实例字段断言 | 新增 `alias.attack_limit`（取 `attackLimit()`，"1 回合可以攻击 N 次"）与 `alias.damage_reduction`；`internal/project/validate.go`、`strict_validate.go`、`internal/ir/test_decode.go`、`internal/runner/assert.go` 四处白名单同步，写错字段名从"静默不相等"改成检查期报错 | 卡片 10274120 场景直接断言 `source.attack_limit == 2`；全量 444 个场景回归 |
+
+`DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
+
+## 批次记录
+
+### 批次 11（语言扩展 + 卡包 10002）
+
+- **语言扩展 S-14 完成**：`fused.cost` / `fused.distinct` 不再限于 `fusion` 块。判断点在
+  "打出时 / 入场时"的卡现在能直接写 `if fused.distinct >= 1 { … } else { … }`。
+- **语言扩展 S-15 完成**：测试 DSL 增加 `attack_limit`、`damage_reduction` 两个实例字段断言，
+  并把写错字段名从静默不相等改成检查期报错（四处白名单同步）。
+- 完成 5 张卡：10213310 花园的指引（融合后改抽 2 张）、10234110 暴食的安纳提玛·拉拉安瑟姆
+  （灵气 + 土之秘术谢幕曲 + 超进化破坏 2 个）、10251110 银色子弹·雷文（毁灭 + 进化时
+  破坏 2 个并自伤 2）、10271110 引擎剑士（入场曲与进化时各召唤 1 个攻击创造物并把过往核心
+  加入手牌）、10274120 精神武艺·迦尔拉（入场曲复制手牌里的创造物随从 + 超进化后可攻击 2 次）。
+- 新增 13 个场景（`tests/10002/batch-11-effects.wbotest`）。融合的两个分支被拆开：
+  场景测试覆盖"未融合抽 1"与"融合指令合法 / 无合法材料时非法"，"融合后抽 2"由
+  `internal/runner/fused_play_effect_test.go` 端到端覆盖
+  （`.wbotest` 一个 `action` 只能有一个主动作，`fuse` 与 `play` 无法连写）。
+- 两个新踩到的坑记在场景注释里：`own.shadows` 按规则把**被破坏的护符**也算一点
+  （见 `docs/rules/turn-combat.md`）；没有合法材料时 `fuse` 直接是
+  `illegal fusion_material_required`，不会再产生一次选择请求。
+- 顺手清理：本文档此前有一批行首残留的 `+`（补丁前缀被当成正文写进文件），已去掉。
+- 全量回归：`check` 0 错 0 警；`test` 444 全绿；语料快照更新为 444 个场景。
 
 ### 批次 09–10（语言扩展 + 卡包 10002）
-+
-+- **语言扩展 S-04 完成**：`if count(集合 [where …]) 比较 整数`。条件不再只接受标量，
-+  可以直接比较"集合里有多少个满足筛选的对象"；`sum(...)` 同样可用。
-+- 完成 6 张卡：10242110 鲸鱼骑兵、10201110、10222110、10231110、10262110，
-+  加上批次 08 的 10222310 共 7 张受益于本次扩展。
-+- 新增 10 个场景（`tests/10002/batch-09-count-conditions.wbotest`、
-+  `batch-10-count-cards.wbotest`），每张卡都覆盖条件成立与不成立两侧。
-+- 挂起 1 张（S-13）：10271120，原因是"加入手牌的那张牌"没有绑定可以引用。
-+- 又一次踩到身材假设：`{ super_evolved; }` 只设形态不加身材，断言必须从卡表算。
-+- 全量回归：`go test ./...` 全绿（一次空条件导致 panic 已修，语料快照更新为 431 场景）；
-+  `check` 0 错 0 警；`test` 431 全绿。
+
+- **语言扩展 S-04 完成**：`if count(集合 [where …]) 比较 整数`。条件不再只接受标量，
+  可以直接比较"集合里有多少个满足筛选的对象"；`sum(...)` 同样可用。
+- 完成 6 张卡：10242110 鲸鱼骑兵、10201110、10222110、10231110、10262110，
+  加上批次 08 的 10222310 共 7 张受益于本次扩展。
+- 新增 10 个场景（`tests/10002/batch-09-count-conditions.wbotest`、
+  `batch-10-count-cards.wbotest`），每张卡都覆盖条件成立与不成立两侧。
+- 挂起 1 张（S-13）：10271120，原因是"加入手牌的那张牌"没有绑定可以引用。
+- 又一次踩到身材假设：`{ super_evolved; }` 只设形态不加身材，断言必须从卡表算。
+- 全量回归：`go test ./...` 全绿（一次空条件导致 panic 已修，语料快照更新为 431 场景）；
+  `check` 0 错 0 警；`test` 431 全绿。
 
 ### 批次 08（语言扩展 + 卡包 10002）
-+
-+- **语言扩展 S-05 完成**：新增 `enhance N replaces { … }`。爆能强化默认是"追加"，
-+  文本写"改为"的卡现在能表达成替换：支付该档时跳过基础效果与入场曲。
-+- 完成 1 张：10222310 焰火占卜（普通档随机 1 个随从 4 点；爆能 4 改为随机 3 个）。
-+- 新增 2 个场景（`tests/10002/batch-08-enhance-replaces.wbotest`）。第二个场景能证明替换生效：
-+  三个 0/8 的随从结算后都是 0/4，说明没有额外多打一次基础效果（否则会有一个被打到 0）。
-+- 术语更正：`alt_modes.type_key` 的中文对应是 **crest=纹章、faith=信仰、crystallize=结晶、
-+  accelerate=激奏**（我此前把 accelerate 写成"加速"，已改）。
-+- 全量回归：`go test ./...` 全绿（语料快照更新为 421 场景）；`check` 0 错 0 警；`test` 421 全绿。
+
+- **语言扩展 S-05 完成**：新增 `enhance N replaces { … }`。爆能强化默认是"追加"，
+  文本写"改为"的卡现在能表达成替换：支付该档时跳过基础效果与入场曲。
+- 完成 1 张：10222310 焰火占卜（普通档随机 1 个随从 4 点；爆能 4 改为随机 3 个）。
+- 新增 2 个场景（`tests/10002/batch-08-enhance-replaces.wbotest`）。第二个场景能证明替换生效：
+  三个 0/8 的随从结算后都是 0/4，说明没有额外多打一次基础效果（否则会有一个被打到 0）。
+- 术语更正：`alt_modes.type_key` 的中文对应是 **crest=纹章、faith=信仰、crystallize=结晶、
+  accelerate=激奏**（我此前把 accelerate 写成"加速"，已改）。
+- 全量回归：`go test ./...` 全绿（语料快照更新为 421 场景）；`check` 0 错 0 警；`test` 421 全绿。
 
 ### 批次 07（纹章卡，卡包 10002）
-+
-+- 纠正：**纹章文本一直在卡表的 `alt_modes` 里**（63 条纹章、5 条 faith、5 条 crystallize、
-+  5 条 accelerate，都带五语言文本）。我此前只查了 `skill_texts`，误报成数据缺失，S-10 已关闭。
-+- 完成 6 张纹章卡：10214110 翅翼女王·提泰妮娅、10232110 否定的咏唱·芭赛特、
-+  10243110 苍海的制裁·尼普顿、10264120 呜咽的圣骑士·维尔伯特、10263310 疯狂的恩宠、
-+  10254120 流动堕落的冥河·凯伦。纹章块的 `name` / `text` 直接取自 `alt_modes`（含各语言
-+  的冒号形式与 ruby 标记），只手工写 DSL 效果行。
-+- 新增 8 个场景（`tests/10002/batch-07-crests.wbotest`）。
-+- **测试模式发现**：纹章的"回合开始 / 吟唱递减 / 谢幕曲"用 `action { end_turn; }` 验证，
-+  把纹章放在 `oppo` 上（自己结束回合 → 对手回合开始触发）；`advance turn_start own`
-+  不会让吟唱递减。纹章的"随从进入战场时"类监听可以直接用初始状态的纹章 + 自己出牌验证。
-+- 挂起 2 张（S-12）：10204120、10233310。
-+- 全量回归：`go test ./...` 全绿；`check` 0 错 0 警；`test` 419 个场景全部通过。
+
+- 纠正：**纹章文本一直在卡表的 `alt_modes` 里**（63 条纹章、5 条 faith、5 条 crystallize、
+  5 条 accelerate，都带五语言文本）。我此前只查了 `skill_texts`，误报成数据缺失，S-10 已关闭。
+- 完成 6 张纹章卡：10214110 翅翼女王·提泰妮娅、10232110 否定的咏唱·芭赛特、
+  10243110 苍海的制裁·尼普顿、10264120 呜咽的圣骑士·维尔伯特、10263310 疯狂的恩宠、
+  10254120 流动堕落的冥河·凯伦。纹章块的 `name` / `text` 直接取自 `alt_modes`（含各语言
+  的冒号形式与 ruby 标记），只手工写 DSL 效果行。
+- 新增 8 个场景（`tests/10002/batch-07-crests.wbotest`）。
+- **测试模式发现**：纹章的"回合开始 / 吟唱递减 / 谢幕曲"用 `action { end_turn; }` 验证，
+  把纹章放在 `oppo` 上（自己结束回合 → 对手回合开始触发）；`advance turn_start own`
+  不会让吟唱递减。纹章的"随从进入战场时"类监听可以直接用初始状态的纹章 + 自己出牌验证。
+- 挂起 2 张（S-12）：10204120、10233310。
+- 全量回归：`go test ./...` 全绿；`check` 0 错 0 警；`test` 419 个场景全部通过。
 
 ### 批次 06（语言扩展 + 卡包 10002）
-+
-+- **语言扩展 S-02 完成**：新增 `draw N for own|oppo`，解锁"让对方抽牌"。
-+- 完成 1 张：10221310 商谈成立（自己抽 2 张、对方抽 1 张）。
-+- 新增 2 个场景（`tests/10002/batch-06-draw-owner.wbotest`），其中一个断言**对方手牌**
+
+- **语言扩展 S-02 完成**：新增 `draw N for own|oppo`，解锁"让对方抽牌"。
+- 完成 1 张：10221310 商谈成立（自己抽 2 张、对方抽 1 张）。
+- 新增 2 个场景（`tests/10002/batch-06-draw-owner.wbotest`），其中一个断言**对方手牌**
   确实增加了 1 张（用 `oppo.hand count card …` 验证，而不是只验证自己）。
-+- 语料快照测试（`internal/ir/decode_test.go`、`internal/project/integration_test.go`）
+- 语料快照测试（`internal/ir/decode_test.go`、`internal/project/integration_test.go`）
   里的卡数与场景数需要随批次更新：253 → 379、354 → 411。已在注释里写明这是全卡覆盖
   工作的固定维护项。
-+- 新登记 S-11：`.wbotest` 不能声明先手，所以"抽牌耗尽判负"只能由 Go 测试覆盖。
-+- 全量回归：`go test ./...` 全绿；`check` 379 张卡 0 错 0 警；`test` 411 个场景全部通过。
+- 新登记 S-11：`.wbotest` 不能声明先手，所以"抽牌耗尽判负"只能由 Go 测试覆盖。
+- 全量回归：`go test ./...` 全绿；`check` 379 张卡 0 错 0 警；`test` 411 个场景全部通过。
 
 ### 批次 01（卡包 10002 + 90000 衍生卡）
 

@@ -5,7 +5,13 @@ card 10213310 {
     cost 2;
 
     effect {
-        unplayable;
+        fusion material from own.hand where class forestcraft {
+        }
+        if fused.distinct >= 1 {
+            draw 2;
+        } else {
+            draw 1;
+        }
     }
 
     meta {

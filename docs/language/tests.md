@@ -234,8 +234,12 @@ expect {
     own.leader.life == 14;
     own.pp == 0/10;
     source.zone == graveyard;
+    source.cost == 5;
     source.evolved == true;
     source.super_evolved == true;
+    // attack_limit 是当前有效上限（含固有能力与 set_attack_limit 的动态设置）。
+    source.attack_limit == 2;
+    source.damage_reduction == 3;
     source has ward;
     source lacks storm;
 
@@ -244,6 +248,10 @@ expect {
     all own.field where card 90051130 have drain;
 }
 ```
+
+实例字段只接受 `zone`、`stats`、`cost`、`evolved`、`super_evolved`、`earthsigil`、
+`countdown`、`engaged`、`attack_limit`、`damage_reduction`，以及
+`alias.counter.<名字>`；写错字段名会在检查阶段报错，而不是静默变成不相等。
 
 牌组顺序断言：
 

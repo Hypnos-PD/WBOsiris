@@ -7,7 +7,16 @@ card 10234110 {
     trait anathema;
 
     effect {
-        unplayable;
+        aura;
+        lastwords {
+            earthrite 2 {
+                summon 1 card 10234110;
+            }
+        }
+        superevolve {
+            choose targets from oppo.field.followers count 2;
+            destroy targets;
+        }
     }
 
     meta {

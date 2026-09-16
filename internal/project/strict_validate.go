@@ -12,6 +12,7 @@ type effectContext struct {
 	cardType   string
 	top        bool
 	fusion     bool
+	materials  bool
 	spellboost bool
 }
 
@@ -42,7 +43,15 @@ func strictValidateCard(c *Card, ds *[]syntax.Diagnostic) {
 	if relations > 0 && evolves != 1 {
 		diag(ds, "WBO-E011-INVALID-RELATION", "错误", "superevolve relation 必须对应唯一普通 evolve", c.Decl.Span)
 	}
-	strictEffectBlock(c.Effect, effectContext{cardType: c.Type, top: true}, ds)
+	// 声明了融合的卡牌可以在任何效果块里读取已附着材料（fused.cost / fused.distinct），
+	// 例如"若已与本卡牌融合，则改为抽取 2 张"这种结算时判断。
+	materials := false
+	for _, s := range c.Effect {
+		if s.Word(0) == "fusion" {
+			materials = true
+		}
+	}
+	strictEffectBlock(c.Effect, effectContext{cardType: c.Type, top: true, materials: materials}, ds)
 }
 
 func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax.Diagnostic) {
@@ -125,7 +134,7 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 			if !ok || end != len(t) || len(b) != 1 || s.Terminated {
 				shapeError(ds, s, "fusion material from own.hand [where 完整筛选] { ... }")
 			} else {
-				strictEffectBlock(b[0], effectContext{cardType: ctx.cardType, fusion: true}, ds)
+				strictEffectBlock(b[0], effectContext{cardType: ctx.cardType, fusion: true, materials: true}, ds)
 			}
 			continue
 		case "when":
@@ -140,7 +149,7 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 				ok = filterOK && whereOK
 			}
 			if ok && end < len(t) && t[end].Value == "if" {
-				ok = strictCondition(t[end+1:], false)
+				ok = strictCondition(t[end+1:], ctx.materials)
 				end = len(t)
 			}
 			if !ok || end != len(t) || len(b) != 1 || s.Terminated {
@@ -162,11 +171,11 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 					break
 				}
 			}
-			if !strictCondition(cond, ctx.fusion) || len(b) < 1 || len(b) > 2 || hasElse != (len(b) == 2) {
+			if !strictCondition(cond, ctx.materials) || len(b) < 1 || len(b) > 2 || hasElse != (len(b) == 2) {
 				shapeError(ds, s, "if 合法条件 { ... } [else { ... }]")
 			}
 			for _, bb := range b {
-				strictEffectBlock(bb, effectContext{cardType: ctx.cardType, fusion: ctx.fusion, spellboost: ctx.spellboost}, ds)
+				strictEffectBlock(bb, effectContext{cardType: ctx.cardType, fusion: ctx.fusion, materials: ctx.materials, spellboost: ctx.spellboost}, ds)
 			}
 			continue
 		case "mode":
@@ -192,7 +201,7 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 				if err != nil {
 					shapeError(ds, o, err.Error())
 				} else {
-					strictEffectBlock(body, effectContext{cardType: ctx.cardType, fusion: ctx.fusion, spellboost: ctx.spellboost}, ds)
+					strictEffectBlock(body, effectContext{cardType: ctx.cardType, fusion: ctx.fusion, materials: ctx.materials, spellboost: ctx.spellboost}, ds)
 				}
 			}
 			continue
@@ -225,7 +234,7 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 			}
 		}
 		for _, bb := range b {
-			strictEffectBlock(bb, effectContext{cardType: ctx.cardType, fusion: ctx.fusion, spellboost: ctx.spellboost || h == "spellboost"}, ds)
+			strictEffectBlock(bb, effectContext{cardType: ctx.cardType, fusion: ctx.fusion, materials: ctx.materials, spellboost: ctx.spellboost || h == "spellboost"}, ds)
 		}
 	}
 }
@@ -651,7 +660,7 @@ func assertionRef(t []syntax.Token, a map[string]string, ds *[]syntax.Diagnostic
 	if len(t) == 5 && set("own", "oppo")[t[0].Value] && values(t[1:4]) == ". leader ." && set("life", "maxlife")[t[4].Value] {
 		return true
 	}
-	if len(t) == 3 && a[t[0].Value] != "" && t[1].Value == "." && set("zone", "stats", "cost", "evolved", "super_evolved", "earthsigil", "countdown", "engaged")[t[2].Value] {
+	if len(t) == 3 && a[t[0].Value] != "" && t[1].Value == "." && instanceFields[t[2].Value] {
 		return true
 	}
 	if len(t) == 5 && a[t[0].Value] != "" && t[1].Value == "." && t[2].Value == "counter" && t[3].Value == "." && t[4].Kind == syntax.Identifier && ir.ValidCounterName(t[4].Value) {

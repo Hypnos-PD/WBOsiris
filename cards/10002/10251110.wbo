@@ -6,7 +6,12 @@ card 10251110 {
     stats 3/4;
 
     effect {
-        unplayable;
+        bane;
+        evolve {
+            choose targets from oppo.field.followers count 2;
+            destroy targets;
+            damage own.leader 2;
+        }
     }
 
     meta {

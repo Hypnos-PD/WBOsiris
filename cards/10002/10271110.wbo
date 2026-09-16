@@ -6,7 +6,14 @@ card 10271110 {
     stats 4/5;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90072110;
+            add 1 card 90071220 to hand;
+        }
+        evolve {
+            summon 1 card 90072110;
+            add 1 card 90071220 to hand;
+        }
     }
 
     meta {

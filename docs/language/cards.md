@@ -990,6 +990,25 @@ card C preserving materials` 将来源实例的卡牌定义改为 `C`，保留�
 `fused.distinct`：前者为全部已附着材料的原始费用合计，后者为按卡牌 ID 计算的
 材料种类数。变身保留材料，因此这两个值跨变身连续累积。
 
+声明了 `fusion` 的卡牌在其它效果块里也能读这两个值。例如法术的正文写在
+`effect` 最外层，与融合块分开：
+
+```wbo
+effect {
+    fusion material from own.hand where class forestcraft {
+    }
+    if fused.distinct >= 1 {
+        draw 2;
+    } else {
+        draw 1;
+    }
+}
+```
+
+融合块本身留空是允许的：材料选择由融合指令完成，正文在打出时按当时已附着的
+材料数分支。`fused` 读到的是来源实例的已有材料，因此同一条判断也可以出现在
+`fanfare` 等结算时点；没有声明 `fusion` 的卡牌读到 `fused` 会被检查器拒绝。
+
 ## 条件与资源
 
 `restore own.pp;` 将自己的能量回复至执行时的上限；`restore oppo.pp;` 作用于对手。
