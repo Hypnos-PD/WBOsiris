@@ -6,7 +6,9 @@ card 10311120 {
     stats 1/3;
 
     effect {
-        unplayable;
+        when own follower summoned where trait pixie {
+            buff self +1/+0;
+        }
     }
 
     meta {

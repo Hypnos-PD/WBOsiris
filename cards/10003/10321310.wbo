@@ -5,7 +5,10 @@ card 10321310 {
     cost 2;
 
     effect {
-        unplayable;
+        choose target from own.field.followers;
+        add ward to target;
+        random victim from oppo.field.followers;
+        damage victim 4;
     }
 
     meta {

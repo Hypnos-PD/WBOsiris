@@ -6,7 +6,12 @@ card 10313110 {
     stats 4/6;
 
     effect {
-        unplayable;
+        rush;
+        ward;
+        when self summoned {
+            summon copies of self;
+            buff summoned +0/-1;
+        }
     }
 
     meta {

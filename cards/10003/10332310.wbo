@@ -5,7 +5,8 @@ card 10332310 {
     cost 4;
 
     effect {
-        unplayable;
+        summon 1 card 90031120;
+        summon 1 card 90031110;
     }
 
     meta {

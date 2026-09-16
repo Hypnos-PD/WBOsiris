@@ -6,7 +6,13 @@ card 10371120 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90073130;
+        }
+        evolve {
+            choose target from own.field.followers where trait artifact;
+            buff target +3/+3;
+        }
     }
 
     meta {

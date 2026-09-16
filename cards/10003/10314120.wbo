@@ -6,7 +6,13 @@ card 10314120 {
     stats 6/6;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from oppo.field.followers;
+            buff target +0/-6;
+        }
+        evolve {
+            add 1 card 90014320 to hand;
+        }
     }
 
     meta {

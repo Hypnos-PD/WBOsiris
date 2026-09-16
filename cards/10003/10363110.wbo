@@ -6,7 +6,61 @@ card 10363110 {
     stats 2/4;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from oppo.field.followers;
+            destroy target;
+        }
+        evolve {
+            gain own crest 10363110;
+        }
+    }
+
+    crest {
+        countdown 4;
+
+        when own turn ends if not own.attacked_this_turn {
+            draw 1 from deck where type follower and life == 4;
+        }
+
+        locale chs {
+            name "纹章：安息的团结者";
+            text """
+【<color=Keyword>吟唱</color>_4】
+自己的回合结束时，若本回合中自己的随从没有进行过攻击，则抽取1张生命值为4的随从。
+""";
+        }
+
+        locale eng {
+            name "Crest: Reposing Solidarity";
+            text """
+<b><color=Keyword>Countdown</color> (4)</b>
+At the end of your turn, if allied followers didn't attack this turn, draw a follower with 4 defense.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：不殺の連帯者";
+            text """
+【<color=Keyword>カウントダウン</color>_4】
+自分のターン終了時、このターン中に自分のフォロワーが攻撃していないなら、自分のデッキから体力4のフォロワー1枚を引く。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 불살의 연대자";
+            text """
+[<color=Keyword>카운트다운</color> 4]
+내 턴 종료시 이번 턴에 내 추종자가 공격하지 않았다면, 내 덱에서 체력이 4인 추종자 1장을 뽑는다.
+""";
+        }
+
+        locale cht {
+            name "紋章：安息的團結者";
+            text """
+【<color=Keyword>倒數</color>_4】
+自己的回合結束時，如果本回合中自己的從者卡未進行攻擊，則會由自己的牌堆中抽取1張生命值為4的從者卡。
+""";
+        }
     }
 
     meta {

@@ -6,7 +6,13 @@ card 10374120 {
     stats 2/4;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 90074310 to hand;
+        }
+        ability_destruction_guard;
+        evolve {
+            summon 1 card 90074210;
+        }
     }
 
     meta {

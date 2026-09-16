@@ -6,7 +6,12 @@ card 10322110 {
     stats 1/2;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 90021340 to hand;
+        }
+        lastwords {
+            add 1 card 90021310 to hand;
+        }
     }
 
     meta {

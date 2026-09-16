@@ -5,7 +5,11 @@ card 10361310 {
     cost 4;
 
     effect {
-        unplayable;
+        damage oppo.field.followers 3;
+        enhance 8 {
+            draw 3;
+            heal own.leader 3;
+        }
     }
 
     meta {

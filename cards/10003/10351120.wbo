@@ -6,7 +6,12 @@ card 10351120 {
     stats 4/6;
 
     effect {
-        unplayable;
+        storm;
+        fanfare {
+            choose targets from oppo.field.followers count 2;
+            destroy targets;
+            damage own.leader 4;
+        }
     }
 
     meta {

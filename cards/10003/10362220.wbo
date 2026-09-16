@@ -5,7 +5,14 @@ card 10362220 {
     cost 3;
 
     effect {
-        unplayable;
+        countdown 3;
+        engage 1 {
+            reduce countdown self 1;
+        }
+        lastwords {
+            summon 1 card 90061110;
+            summon 1 card 90061120;
+        }
     }
 
     meta {

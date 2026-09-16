@@ -1,0 +1,359 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "双重创造召唤守护者巨像与泥尘巨像" {
+    seed 28001;
+    state {
+        player own {
+            pp 4/4;
+            hand { spell source = 10332310; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90031120 == 1;
+        own.field count card 90031110 == 1;
+        own.pp == 0/4;
+    }
+}
+
+scenario "妖精随从入场时妖精剑的后继者获得加攻" {
+    seed 28002;
+    state {
+        player own {
+            pp 1/1;
+            field { follower successor = 10311120; }
+            hand { follower fairy = 90011110; follower neutral = 10001110; }
+        }
+    }
+    action { play fairy; }
+    expect {
+        legal;
+        successor.stats == 2/3;
+        own.pp == 0/1;
+    }
+}
+
+scenario "非妖精随从入场时不加攻" {
+    seed 28003;
+    state {
+        player own {
+            pp 2/2;
+            field { follower successor = 10311120; }
+            hand { follower neutral = 10001110; }
+        }
+    }
+    action { play neutral; }
+    expect { legal; successor.stats == 1/3; }
+}
+
+scenario "不弑的团结者入场时召唤一个少一点生命的复制" {
+    seed 28004;
+    state {
+        player own {
+            pp 9/9;
+            hand { follower source = 10313110; }
+        }
+    }
+    action { play source; }
+    // 官方 QA：复制的入场能力会反复发动直到战场上限，因此最终是 5 个（4/6、4/5、4/4、4/3、4/2）。
+    expect {
+        legal;
+        source.stats == 4/6;
+        source has rush;
+        source has ward;
+        own.field count card 10313110 == 5;
+        all own.field where card 10313110 have rush;
+    }
+}
+
+scenario "不弑的祈祷者让敌方全体各减三点生命" {
+    seed 28005;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10312110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/8; }
+                follower second = 10001110 { stats 2/5; }
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        first.stats == 2/5;
+        second.stats == 2/2;
+    }
+}
+
+scenario "护盾强袭给己方随从守护并造成四点伤害" {
+    seed 28006;
+    state {
+        player own {
+            pp 2/2;
+            field { follower ally = 10001110; }
+            hand { spell source = 10321310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; select ally; }
+    expect {
+        legal;
+        ally has ward;
+        enemy.stats == 2/4;
+    }
+}
+
+scenario "泡沫鬼姬破坏两个敌方随从并自伤四点" {
+    seed 28007;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10351120; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/8; }
+                follower second = 10001110 { stats 2/8; }
+                follower spared = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { play source; select first, second; }
+    expect {
+        legal;
+        source has storm;
+        first.zone == graveyard;
+        second.zone == graveyard;
+        spared.zone == field;
+        own.leader.life == 16;
+    }
+}
+
+scenario "不弑的肯定者的入场曲与进化时各减一点生命" {
+    seed 28008;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10311110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.stats == 2/7; }
+}
+
+scenario "不弑的肯定者的进化时再减一点生命" {
+    seed 28009;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10311110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { evolve source; select enemy; }
+    expect { legal; enemy.stats == 2/7; source.stats == 4/4; }
+}
+
+scenario "绝命的显现减六点生命并在进化时加入痛击" {
+    seed 28010;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10314120; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; select enemy; }
+    expect {
+        legal;
+        enemy.stats == 2/2;
+        source.zone == field;
+        own.pp == 0/8;
+    }
+}
+
+scenario "绝命的显现的进化时把绝命的痛击加入手牌" {
+    seed 28021;
+    state {
+        turn own 8;
+        player own {
+            ep 1;
+            field { follower source = 10314120; }
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        own.hand count card 90014320 == 1;
+        source.stats == 8/8;
+    }
+}
+
+scenario "圣辉闪烁对敌方全体造成三点伤害" {
+    seed 28011;
+    state {
+        player own {
+            pp 4/4;
+            hand { spell source = 10361310; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/8; }
+                follower second = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; first.stats == 2/5; second.stats == 2/5; own.pp == 0/4; }
+}
+
+scenario "爆能强化八的圣辉闪烁额外抽三张并回复" {
+    seed 28012;
+    state {
+        player own {
+            leader 15/20;
+            pp 8/8;
+            hand { spell source = 10361310; }
+            deck top {
+                follower first = 10001110;
+                follower second = 10001110;
+                follower third = 10001110;
+            }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect {
+        legal;
+        enemy.stats == 2/5;
+        own.hand count card 10001110 == 3;
+        own.leader.life == 18;
+        own.pp == 0/8;
+    }
+}
+
+scenario "羽翼狮子像的启动减少倒计数" {
+    seed 28013;
+    state {
+        turn own 4;
+        player own {
+            pp 1/1;
+            field { amulet lion = 10362220 { countdown 3; } }
+        }
+    }
+    action { engage lion; }
+    expect { legal; lion.countdown == 2; own.pp == 0/1; }
+}
+
+scenario "羽翼狮子像的谢幕曲召唤神圣猎鹰与圣炎猛虎" {
+    seed 28014;
+    state {
+        player own { }
+        player oppo { field { amulet lion = 10362220 { countdown 1; } } }
+    }
+    action { end_turn; }
+    expect {
+        legal;
+        lion.zone == graveyard;
+        oppo.field count card 90061110 == 1;
+        oppo.field count card 90061120 == 1;
+    }
+}
+
+scenario "音速飞行兵的入场曲召唤毁灭创造物γ" {
+    seed 28015;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10371120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90073130 == 1; own.pp == 0/7; }
+}
+
+scenario "音速飞行兵的进化时给创造物随从加身材" {
+    seed 28016;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field {
+                follower source = 10371120;
+                follower artifact = 90072110;
+                follower plain = 10001110;
+            }
+        }
+    }
+    action { evolve source; select artifact; }
+    expect {
+        legal;
+        artifact.stats == 8/4;
+        plain.stats == 2/2;
+        source.stats == 5/5;
+    }
+}
+
+scenario "奏绝的显现不会被能力破坏并在进化时召唤新约白之章" {
+    seed 28017;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10374120; }
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        source has ability_destruction_guard;
+        own.field count card 90074210 == 1;
+        own.hand count card 90074310 == 0;
+    }
+}
+
+scenario "篡夺的肯定者的入场曲与谢幕曲各加入一张黄金卡" {
+    seed 28018;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10321110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90021330 == 1; }
+}
+
+scenario "篡夺的祈祷者的入场曲加入黄金项链" {
+    seed 28019;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10322110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90021340 == 1; }
+}
+
+scenario "安息的团结者的纹章在未攻击的回合结束时抽一张四点生命随从" {
+    seed 28020;
+    state {
+        player own {
+            crests { crest solidarity = 10363110; }
+            deck top {
+                follower valid = 10111130;
+                follower invalid = 10001110;
+            }
+        }
+    }
+    action { end_turn; }
+    expect { legal; own.hand count card 10111130 == 1; own.hand count card 10001110 == 0; }
+}

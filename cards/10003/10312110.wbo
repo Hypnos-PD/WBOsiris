@@ -6,7 +6,12 @@ card 10312110 {
     stats 5/6;
 
     effect {
-        unplayable;
+        fanfare {
+            buff oppo.field.followers +0/-3;
+        }
+        superevolve {
+            buff oppo.field.followers +0/-3;
+        }
     }
 
     meta {
