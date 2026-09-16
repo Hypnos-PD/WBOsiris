@@ -5,7 +5,11 @@ card 10232310 {
     cost 3;
 
     effect {
-        unplayable;
+        counter x 0;
+        spellboost {
+            add 1 counter x;
+        }
+        damage oppo.field.followers self.counter.x distributed;
     }
 
     meta {

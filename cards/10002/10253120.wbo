@@ -6,7 +6,15 @@ card 10253120 {
     stats 1/3;
 
     effect {
-        unplayable;
+        storm;
+        fanfare {
+            // X 是"其他随从"张数；count() 不接受 other，先按含自身的张数加，再减 1。
+            repeat count(own.field.followers) {
+                buff self +1/+0;
+            }
+            buff self -1/+0;
+            damage own.leader 2;
+        }
     }
 
     meta {

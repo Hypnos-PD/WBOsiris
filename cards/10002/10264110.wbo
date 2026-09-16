@@ -6,7 +6,14 @@ card 10264110 {
     stats 2/4;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            summon random 3 from own.deck.followers where cost <= 3 distinct names;
+        }
+        superevolve {
+            buff own.field.followers other +0/+2;
+            add aura to own.field.followers other;
+        }
     }
 
     meta {

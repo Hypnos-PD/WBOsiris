@@ -6,7 +6,15 @@ card 10274110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90074130;
+        }
+        when own follower summoned where trait puppetry {
+            add ward to summoned;
+        }
+        evolve {
+            summon 1 card 90071120;
+        }
     }
 
     meta {

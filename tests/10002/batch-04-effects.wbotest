@@ -1,0 +1,98 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "狐火连击者按其他随从数量获得攻击力并自伤" {
+    seed 4401;
+    state {
+        player own {
+            pp 4/4;
+            field { follower friend = 10001110; follower friend2 = 10001110; }
+            hand { follower source = 10253120; }
+        }
+    }
+    action { play source; }
+    // 基础 1/3：两个其他随从 → +2/+0；随后对自己主战者造成 2 点伤害。
+    expect { legal; source.stats == 3/3; own.leader.life == 18; source has storm; }
+}
+
+scenario "没有其他随从时不加攻击力" {
+    seed 4402;
+    state { player own { pp 4/4; hand { follower source = 10253120; } } }
+    action { play source; }
+    expect { legal; source.stats == 1/3; own.leader.life == 18; }
+}
+
+scenario "魔力增幅累积的伤害按 X 分配" {
+    seed 4403;
+    state {
+        player own {
+            pp 3/3;
+            // 计数器覆盖等价于已经通过两次魔力增幅把 X 提到 2。
+            hand { spell source = 10232310 { counter x 2; } }
+        }
+        player oppo { field { follower a = 10001110 { stats 0/8; } } }
+    }
+    action { play source; }
+    // X=2 会随机分配给敌方随从；只剩一个候选时必定全部落在它身上。
+    expect { legal; a.stats == 0/6; }
+}
+
+scenario "人偶大师的入场曲召唤维多利亚" {
+    seed 4404;
+    state {
+        player own { pp 5/5; hand { follower source = 10274110; } }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90074130 == 1; }
+}
+
+scenario "人偶随从进入战场时获得守护" {
+    seed 4408;
+    state {
+        player own {
+            pp 0/1;
+            field { follower master = 10274110; }
+            hand { follower doll = 90071110; }
+        }
+    }
+    action { play doll; }
+    expect { legal; doll has ward; }
+}
+
+scenario "人偶大师的进化时召唤改良型悬丝傀儡" {
+    seed 4405;
+    state { turn own 7; player own { ep 1; field { follower source = 10274110; } } }
+    action { evolve source; }
+    expect { legal; own.field count card 90071120 == 1; }
+}
+
+scenario "圣殿骑士从牌组随机召唤三张低费随从" {
+    seed 4406;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10264110; }
+            deck top {
+                follower a = 10001110;
+                follower b = 10112130;
+                follower c = 90041130;
+                follower d = 90004110;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; source has ward; own.field count card 10001110 == 1; own.field count card 10112130 == 1; own.field count card 90041130 == 1; }
+}
+
+scenario "圣殿骑士超进化时为其他随从加生命并获得灵气" {
+    seed 4407;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10264110; follower other = 10001110; }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; other.stats == 2/4; other has aura; }
+}
