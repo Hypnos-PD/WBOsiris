@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10221120 {
+    type follower;
+    cost 5;
+    stats 4/5;
+
+    effect {
+        stealth;
+    }
+
+    meta {
+        pack 10002;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "暗斗的忍者大师";
+        text """
+【<color=Keyword>潜行</color>】
+""";
+    }
+
+    locale eng {
+        name "Nightshadow Ninja Master";
+        text """
+<b><color=Keyword>Ambush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あんとう\">暗闘</rub>のニンジャマスター";
+        text """
+【<color=Keyword>潜伏</color>】
+""";
+    }
+
+    locale kor {
+        name "암투의 닌자 마스터";
+        text """
+[<color=Keyword>잠복</color>]
+""";
+    }
+
+    locale cht {
+        name "暗鬥的忍者大師";
+        text """
+【<color=Keyword>潛行</color>】
+""";
+    }
+
+}

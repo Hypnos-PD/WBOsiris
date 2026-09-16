@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 90074140 {
+    type follower;
+    cost 2;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class portalcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "伊鞠的小鬼";
+        text """
+【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Imari's Little Buddies";
+        text """
+<b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "イマリの<rub=\"こおに\">小鬼</rub>";
+        text """
+【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "이마리의 꼬마 깨비";
+        text """
+[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "伊萬里的小鬼";
+        text """
+【<color=Keyword>突進</color>】
+""";
+    }
+
+}

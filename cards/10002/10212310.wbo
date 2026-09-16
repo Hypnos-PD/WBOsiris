@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10212310 {
+    type spell;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "来自树上的偷袭";
+        text """
+发动1次「对对手的战场上的随机1个随从造成2点伤害」。【<color=Keyword>连击</color>_3】改为发动2次。
+""";
+    }
+
+    locale eng {
+        name "Ambush from Above";
+        text """
+Do this 1 time: \"Deal 2 damage to a random enemy follower.\" <b><color=Keyword>Combo</color> (3)</b> - Do it 2 times instead.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"じゅじょう\">樹上</rub>からの<rub=\"きゅうしゅう\">急襲</rub>";
+        text """
+「相手の場のフォロワーからランダム1枚に2ダメージ。」を1回行う。【<color=Keyword>コンボ</color>_3】1回ではなく2回。
+""";
+    }
+
+    locale kor {
+        name "나무 위의 급습";
+        text """
+「상대방 전장의 추종자 중 무작위로 1장에게 2 피해」를 1회 발동. [<color=Keyword>콤보</color> 3] 1회 대신 2회.
+""";
+    }
+
+    locale cht {
+        name "來自樹上的突襲";
+        text """
+發動1次「隨機給予1張敵方戰場上的從者卡2點傷害」。【<color=Keyword>連擊</color>_3】由原本的1次轉變為2次。
+""";
+    }
+
+}

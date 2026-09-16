@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10273110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class portalcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "暗狱的余晖·贾丝珀";
+        text """
+【<color=Keyword>入场曲</color>】将1张『<color=Keyword>过往核心</color>』加入手牌。
+<hr><ev>【<color=Keyword>进化时</color>】选择自己的手牌中的1张创造物·随从，使其获得【<color=Keyword>守护</color>】和「不会被能力破坏」。</ev>
+""";
+    }
+
+    locale eng {
+        name "Carnelia, Ember of Darkness";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add a <b><i><color=Keyword>Gear of Remembrance</color></i></b> to your hand.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select an Artifact follower in your hand and give it <b><color=Keyword>Ward</color></b> and \"Can't be destroyed by abilities.\"</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あんごく\">暗獄</rub>の<rub=\"ざんこう\">残光</rub>・ジャスパー";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>パスト・コア</color>』1枚を自分の手札に加える。
+<hr><ev>【<color=Keyword>進化時</color>】自分の手札のアーティファクト・フォロワー1枚を選ぶ。それは【<color=Keyword>守護</color>】と「能力によって破壊できない。」を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "암옥의 잔광 재스퍼";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>패스트 코어</color> 1장을 내 패에 넣는다.
+<hr><ev>[<color=Keyword>진화시</color>] 내 패에서 아티팩트 추종자 1장을 선택한다. 그 추종자는 [<color=Keyword>수호</color>], 「능력에 의해 파괴되지 않는다」를 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "暗獄殘光‧賈絲珀";
+        text """
+【<color=Keyword>入場曲</color>】增加1張『<color=Keyword>過往之核</color>』到自己的手牌中。
+<hr><ev>【<color=Keyword>進化時</color>】指定1張自己手牌中的創造物‧從者卡。使其獲得【<color=Keyword>守護</color>】與「無法被能力破壞」。</ev>
+""";
+    }
+
+}

@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10204110 {
+    type follower;
+    cost 7;
+    stats 4/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class neutral;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "命运黄昏·奥丁";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的1张卡牌，使其消失。
+<hr>【<color=Keyword>疾驰</color>】
+""";
+    }
+
+    locale eng {
+        name "Odin, Twilit Fate";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select an enemy card on the field and banish it.
+<hr><b><color=Keyword>Storm</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"うんめい\">運命</rub>の<rub=\"たそがれ\">黄昏</rub>・オーディン";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のカード1枚を選ぶ。それを消滅。
+<hr>【<color=Keyword>疾走</color>】
+""";
+    }
+
+    locale kor {
+        name "운명의 황혼 오딘";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 카드 1장을 선택한다. 그 카드를 소멸.
+<hr>[<color=Keyword>질주</color>]
+""";
+    }
+
+    locale cht {
+        name "命運的黃昏‧奧丁";
+        text """
+【<color=Keyword>入場曲</color>】指定1張敵方戰場上的卡片。使其消失。
+<hr>【<color=Keyword>疾馳</color>】
+""";
+    }
+
+}

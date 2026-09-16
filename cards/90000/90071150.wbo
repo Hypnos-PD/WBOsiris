@@ -1,0 +1,54 @@
+wbo 0.1.0;
+
+card 90071150 {
+    type follower;
+    cost 3;
+    stats 4/5;
+    trait artifact;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "神秘的创造物";
+        text """
+【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Mystic Artifact";
+        text """
+<b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "ミスティックアーティファクト";
+        text """
+【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "신비의 아티팩트";
+        text """
+[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "神祕的創造物";
+        text """
+【<color=Keyword>守護</color>】
+""";
+    }
+
+}

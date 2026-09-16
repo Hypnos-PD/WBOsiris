@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10263310 {
+    type spell;
+    cost 4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class havencraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "疯狂的恩宠";
+        text """
+回复自己的主战者10点生命值。使自己获得『纹章：疯狂的恩宠』。
+""";
+    }
+
+    locale eng {
+        name "Maddening Benison";
+        text """
+Restore 10 defense to your leader. Gain <b><i>Crest: Maddening Benison</i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"くる\">狂</rub>おしき<rub=\"おんちょう\">恩寵</rub>";
+        text """
+自分のリーダーを10回復。自分は『クレスト：狂おしき恩寵』を持つ。
+""";
+    }
+
+    locale kor {
+        name "광기의 은총";
+        text """
+내 리더를 10 회복. 나는 「크레스트: 광기의 은총」을 갖는다.
+""";
+    }
+
+    locale cht {
+        name "癲狂之恩寵";
+        text """
+回復自己的主戰者10點生命值。使自己獲得『紋章：癲狂之恩寵』。
+""";
+    }
+
+}

@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 90064210 {
+    type amulet;
+    cost 8;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "月影指环";
+        text """
+【<color=Keyword>吟唱</color>_1】
+【<color=Keyword>灵气</color>】
+自己的回合结束时，若自己的战场上的护符的张数为3张或以上，则对对手的战场上的所有随从和对手的主战者造成3点伤害。
+""";
+    }
+
+    locale eng {
+        name "Rings of Moonlight";
+        text """
+<b><color=Keyword>Countdown</color> (1)</b>
+<b><color=Keyword>Aura</color></b>
+At the end of your turn, if there are at least 3 allied amulets on the field, deal 3 damage to all enemies.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"げつえい\">月影</rub>の<rub=\"ゆびわ\">指輪</rub>";
+        text """
+【<color=Keyword>カウントダウン</color>_1】
+【<color=Keyword>オーラ</color>】
+自分のターン終了時、自分の場のアミュレットの枚数が3以上なら、相手の場のフォロワーすべてと相手のリーダーに3ダメージ。
+""";
+    }
+
+    locale kor {
+        name "월영의 반지";
+        text """
+[<color=Keyword>카운트다운</color> 1]
+[<color=Keyword>오라</color>]
+내 턴 종료시 내 전장의 마법진 수가 3 이상이라면, 상대방 전장의 추종자 모두와 상대방 리더에게 3 피해.
+""";
+    }
+
+    locale cht {
+        name "月影指環";
+        text """
+【<color=Keyword>倒數</color>_1】
+【<color=Keyword>光紋</color>】
+自己的回合結束時，如果自己戰場上的護符卡張數為3以上，則會給予敵方戰場上全部的從者卡與敵方的主戰者3點傷害。
+""";
+    }
+
+}

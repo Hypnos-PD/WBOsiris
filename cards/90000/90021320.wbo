@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 90021320 {
+    type spell;
+    cost 1;
+    trait loot;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "黄金之杯";
+        text """
+回复自己的主战者2点生命值。
+""";
+    }
+
+    locale eng {
+        name "Gilded Goblet";
+        text """
+Restore 2 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"おうごん\">黄金</rub>の<rub=\"さかずき\">杯</rub>";
+        text """
+自分のリーダーを2回復。
+""";
+    }
+
+    locale kor {
+        name "황금 잔";
+        text """
+내 리더를 2 회복.
+""";
+    }
+
+    locale cht {
+        name "黃金之杯";
+        text """
+回復自己的主戰者2點生命值。
+""";
+    }
+
+}

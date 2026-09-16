@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 90014320 {
+    type spell;
+    cost 6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "绝命的痛击";
+        text """
+在手牌中发动。自己的回合结束时，使本卡牌的费用-1。
+<hr>对对手的主战者造成6点伤害。若自己的战场上有『<color=Keyword>绝命的显现·艾斯迪亚</color>』，则改为20点伤害。
+""";
+    }
+
+    locale eng {
+        name "Annihilating Onslaught";
+        text """
+Activates in hand. At the end of your turn, reduce the cost of this card by 1.
+<hr>Deal 6 damage to the enemy leader. If there's an allied <b><i><color=Keyword>Izudia, Annihilation Manifest</color></i></b> on the field, deal 20 damage instead.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぜつめい\">絶命</rub>の<rub=\"つうげき\">痛撃</rub>";
+        text """
+手札で働く。自分のターン終了時、これのコストを-1する。
+<hr>相手のリーダーに6ダメージ。自分の場に『<color=Keyword>絶命の顕現・エズディア</color>』があるなら、6ダメージではなく20ダメージ。
+""";
+    }
+
+    locale kor {
+        name "절명의 통격";
+        text """
+패에서 발동. 내 턴 종료시, 이 주문의 비용을 -1.
+<hr>상대방 리더에게 6 피해. 내 전장에 <color=Keyword>절명의 현현 에즈디아</color>가 있다면, 6 피해 대신 20 피해.
+""";
+    }
+
+    locale cht {
+        name "絕命的痛擊";
+        text """
+於手牌中發動。自己的回合結束時，使這張卡片的消費-1。
+<hr>給予敵方的主戰者6點傷害。如果自己戰場上有『<color=Keyword>絕命的顯現‧艾茲迪亞</color>』，則會由原本的6點傷害轉變為20點傷害。
+""";
+    }
+
+}

@@ -1,0 +1,145 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "狂野女孩带有突进" {
+    seed 4101;
+    state { player own { pp 3/3; hand { follower source = 10211110; } } }
+    action { play source; }
+    expect { legal; source.zone == field; source has rush; }
+}
+
+scenario "暗斗的忍者大师带有潜行" {
+    seed 4102;
+    state { player own { pp 5/5; hand { follower source = 10221120; } } }
+    action { play source; }
+    expect { legal; source.zone == field; source has stealth; }
+}
+
+scenario "使唤蝙蝠召唤两个蝙蝠" {
+    seed 4103;
+    state { player own { pp 2/2; hand { spell source = 10252310; } } }
+    action { play source; }
+    expect { legal; own.field count card 90051120 == 2; source.zone == graveyard; }
+}
+
+scenario "森林的游行召唤三个温厚的树精" {
+    seed 4104;
+    state { player own { pp 7/7; hand { spell source = 10211310; } } }
+    action { play source; }
+    expect { legal; own.field count card 10011130 == 3; }
+}
+
+scenario "怨恨的栽培者的谢幕曲把怨灵加入手牌" {
+    seed 4105;
+    state {
+        player own { field { follower source = 10251120; } }
+        player oppo { field { follower big = 90004110; } }
+    }
+    action { attack source into big; }
+    expect { legal; source.zone == graveyard; own.hand count card 90051130 == 1; }
+}
+
+scenario "心有灵犀的共斗召唤洛伊德与维多利亚" {
+    seed 4106;
+    state { player own { pp 6/6; hand { spell source = 10273310; } } }
+    action { play source; }
+    expect { legal; own.field count card 90074120 == 1; own.field count card 90074130 == 1; }
+}
+
+scenario "莱昂内尔的入场曲召唤两个年幼宝石兽并带有守护" {
+    seed 4107;
+    state { player own { pp 6/6; hand { follower source = 10212110; } } }
+    action { play source; }
+    expect { legal; source has ward; own.field count card 10112130 == 2; }
+}
+
+scenario "银白幼龙未觉醒时不抽牌" {
+    seed 4108;
+    state {
+        player own { pp 1/1; deck top { follower first = 10001110; } hand { follower source = 10241120; } }
+    }
+    action { play source; }
+    expect { legal; source has rush; own.hand count card 10001110 == 0; }
+}
+
+scenario "银白幼龙觉醒时抽一张" {
+    seed 4109;
+    state {
+        player own { pp 7/7; deck top { follower first = 10001110; } hand { follower source = 10241120; } }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10001110 == 1; }
+}
+
+scenario "有洁癖的审判者使敌方随从消失" {
+    seed 4110;
+    state {
+        player own { pp 5/5; hand { follower source = 10262120; } }
+        player oppo { field { follower target = 10001110; } }
+    }
+    action { play source; select target; }
+    expect { legal; target.zone == banished; source.zone == field; }
+}
+
+scenario "流光香炉启动后破坏自己并回复主战者" {
+    seed 4111;
+    state {
+        player own {
+            leader 10/20;
+            pp 2/2;
+            field { amulet source = 10261210 { engaged false; } }
+        }
+    }
+    action { engage source; }
+    expect { legal; source.zone == graveyard; own.leader.life == 14; own.pp == 1/2; }
+}
+
+scenario "拉奇尔的入场曲只抽法术" {
+    seed 4112;
+    state {
+        player own { pp 4/4; deck top { spell first = 10031310; follower second = 10001110; } hand { follower source = 10222120; } }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10031310 == 1; own.hand count card 10001110 == 0; }
+}
+
+scenario "拉奇尔进化时回复两点能量" {
+    seed 4113;
+    state { turn own 7; player own { ep 1; pp 2/4; field { follower source = 10222120; } } }
+    action { evolve source; }
+    expect { legal; own.pp == 4/4; own.ep == 0; }
+}
+
+scenario "虎鲸的呼声召唤大海虎鲸" {
+    seed 4114;
+    state { player own { pp 2/2; hand { spell source = 10241310; } } }
+    action { play source; }
+    expect { legal; own.field count card 90041130 == 1; }
+}
+
+scenario "虎鲸的呼声在觉醒时抽一张自己" {
+    seed 4115;
+    state {
+        player own { pp 7/7; deck top { spell copy = 10241310; follower body = 10001110; } hand { spell source = 10241310; } }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10241310 == 1; own.field count card 90041130 == 1; }
+}
+
+scenario "维多利亚攻击随从时对交战对手造成等于攻击力的伤害" {
+    seed 4116;
+    state {
+        player own { field { follower source = 90074130; } }
+        player oppo { field { follower target = 10001110 { stats 1/20; } } }
+    }
+    action { attack source into target; }
+    // 攻击时效果造成 6 点，随后战斗伤害再造成 6 点，合计 12 点。
+    expect { legal; target.stats == 1/8; source.zone == graveyard; }
+}
+
+scenario "维多利亚攻击主战者时不再对主战者追加伤害" {
+    seed 4117;
+    state { player own { field { follower source = 90074130; } } }
+    action { attack source into oppo.leader; }
+    expect { legal; oppo.leader.life == 14; }
+}

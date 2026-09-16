@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10241120 {
+    type follower;
+    cost 1;
+    stats 1/1;
+
+    effect {
+        rush;
+        fanfare {
+            if overflow {
+                draw 1;
+            }
+        }
+    }
+
+    meta {
+        pack 10002;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "飞跃的银白幼龙";
+        text """
+【<color=Keyword>入场曲</color>】若为【<color=Keyword>觉醒</color>】，则抽取1张卡牌。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Soaring Ivory Dragon";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If you're in <b><color=Keyword>Overflow</color></b>, draw a card.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ひやく\">飛躍</rub>のアイボリードラゴン";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>覚醒</color>】なら、自分のデッキから1枚を引く。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "비약의 아이보리 드래곤";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>각성</color>]이라면, 내 덱에서 1장을 뽑는다.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "飛躍的銀白幼龍";
+        text """
+【<color=Keyword>入場曲</color>】如果【<color=Keyword>覺醒</color>】已發動，則會由自己的牌堆中抽取1張卡片。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

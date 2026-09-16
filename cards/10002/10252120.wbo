@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10252120 {
+    type follower;
+    cost 6;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class abysscraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "尸兵";
+        text """
+【<color=Keyword>入场曲</color>】召唤2个『<color=Keyword>腐臭的僵尸</color>』。
+""";
+    }
+
+    locale eng {
+        name "Undead Soldier";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon 2 copies of <b><i><color=Keyword>Rotting Zombie</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "コープスソルジャー";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>腐臭のゾンビ</color>』2枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "콥스 솔저";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>부취 좀비</color> 2장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "屍骸士兵";
+        text """
+【<color=Keyword>入場曲</color>】召喚2張『<color=Keyword>腐臭的殭屍</color>』到自己的戰場上。
+""";
+    }
+
+}

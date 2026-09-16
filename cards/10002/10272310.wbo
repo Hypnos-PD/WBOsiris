@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10272310 {
+    type spell;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "伊卡洛斯的飞翔";
+        text """
+选择自己的手牌中的1张创造物·随从，使其获得【<color=Keyword>突进</color>】和「【<color=Keyword>谢幕曲</color>】抽取1张卡牌」。
+""";
+    }
+
+    locale eng {
+        name "Flight of Icarus";
+        text """
+Select an Artifact follower in your hand and give it <b><color=Keyword>Rush</color></b> and \"<b><color=Keyword>Last Words</color></b>: Draw a card.\"
+""";
+    }
+
+    locale jpn {
+        name "イカロスの<rub=\"ひしょう\">飛翔</rub>";
+        text """
+自分の手札のアーティファクト・フォロワー1枚を選ぶ。それは【<color=Keyword>突進</color>】と「【<color=Keyword>ラストワード</color>】自分のデッキから1枚を引く。」を持つ。
+""";
+    }
+
+    locale kor {
+        name "이카로스의 비상";
+        text """
+내 패에서 아티팩트 추종자 1장을 선택한다. 그 추종자는 [<color=Keyword>돌진</color>], 「[<color=Keyword>유언</color>] 내 덱에서 1장을 뽑는다」를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "伊卡洛斯的飛翔";
+        text """
+指定1張自己手牌中的創造物‧從者卡。使其獲得【<color=Keyword>突進</color>】與「【<color=Keyword>謝幕曲</color>】由自己的牌堆中抽取1張卡片」。
+""";
+    }
+
+}

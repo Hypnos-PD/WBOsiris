@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10252110 {
+    type follower;
+    cost 3;
+    stats 2/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class abysscraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "爆破之翼·圮尤拉";
+        text """
+【<color=Keyword>突进</color>】
+自己的其他随从超进化时，使该随从和本随从+2/+0。
+""";
+    }
+
+    locale eng {
+        name "Vuella, the Blastwing";
+        text """
+<b><color=Keyword>Rush</color></b>
+Whenever another allied follower super-evolves, give it and this follower +2/+0.
+""";
+    }
+
+    locale jpn {
+        name "ブラストウィング・ピユラ";
+        text """
+【<color=Keyword>突進</color>】
+自分の他のフォロワーが超進化したとき、それとこれは+2/+0する。
+""";
+    }
+
+    locale kor {
+        name "블라스트 윙 피유라";
+        text """
+[<color=Keyword>돌진</color>]
+내 다른 추종자가 초진화했을 때, 그 추종자와 이 추종자는 +2/+0.
+""";
+    }
+
+    locale cht {
+        name "狂風之翼‧圮尤菈";
+        text """
+【<color=Keyword>突進</color>】
+當自己的其他從者卡超進化時，使其與這張卡片+2/+0。
+""";
+    }
+
+}

@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10242120 {
+    type follower;
+    cost 5;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "身经百战的鱼人";
+        text """
+【<color=Keyword>入场曲</color>】召唤2个『<color=Keyword>大海虎鲸</color>』。
+<hr><ev>【<color=Keyword>进化时</color>】召唤1个『<color=Keyword>大海虎鲸</color>』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Seasoned Merman";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon 2 copies of <b><i><color=Keyword>Majestic Megalorca</color></i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Summon a <b><i><color=Keyword>Majestic Megalorca</color></i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"れきせん\">歴戦</rub>のマーマン";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>大海のオルカ</color>』2枚を自分の場に出す。
+<hr><ev>【<color=Keyword>進化時</color>】『<color=Keyword>大海のオルカ</color>』1枚を自分の場に出す。</ev>
+""";
+    }
+
+    locale kor {
+        name "역전의 머맨";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>대해의 오르카</color> 2장을 내 전장에 소환.
+<hr><ev>[<color=Keyword>진화시</color>] <color=Keyword>대해의 오르카</color> 1장을 내 전장에 소환.</ev>
+""";
+    }
+
+    locale cht {
+        name "身經百戰的魚人";
+        text """
+【<color=Keyword>入場曲</color>】召喚2張『<color=Keyword>滄海虎鯨</color>』到自己的戰場上。
+<hr><ev>【<color=Keyword>進化時</color>】召喚1張『<color=Keyword>滄海虎鯨</color>』到自己的戰場上。</ev>
+""";
+    }
+
+}

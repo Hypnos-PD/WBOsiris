@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 90054320 {
+    type spell;
+    cost 0;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class abysscraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "爱绝的飞翔";
+        text """
+选择自己的战场上的1个『<color=Keyword>绝叫与爱绝的显现·鲁鲁纳伊&巴娜蕾卡</color>』，使其获得【<color=Keyword>疾驰</color>】。
+""";
+    }
+
+    locale eng {
+        name "Wings of Desire";
+        text """
+Select an allied <b><i><color=Keyword>Rulenye & Valnareik</color></i></b> on the field and give it <b><color=Keyword>Storm</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あいぜつ\">愛絶</rub>の<rub=\"ひしょう\">飛翔</rub>";
+        text """
+自分の場の『<color=Keyword>絶叫と愛絶の顕現・ルルナイ＆ヴァーナレク</color>』1枚を選ぶ。それは【<color=Keyword>疾走</color>】を持つ。
+""";
+    }
+
+    locale kor {
+        name "절연의 비상";
+        text """
+내 전장에서 <color=Keyword>절규와 절연의 현현 루르나이&바나레이크</color> 1장을 선택한다. 그 추종자는 [<color=Keyword>질주</color>]를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "愛絕的飛翔";
+        text """
+指定1張自己戰場上的『<color=Keyword>絕叫與愛絕的顯現‧魯魯納伊＆瓦娜蕾格</color>』。使其獲得【<color=Keyword>疾馳</color>】。
+""";
+    }
+
+}

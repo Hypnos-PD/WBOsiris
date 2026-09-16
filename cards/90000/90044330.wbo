@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 90044330 {
+    type spell;
+    cost 2;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "天刀深渊";
+        text """
+本卡牌被舍弃时，对对手的主战者造成1点伤害。回复自己的主战者1点生命值。
+<hr>对对手的主战者造成1点伤害。回复自己的主战者1点生命值。
+""";
+    }
+
+    locale eng {
+        name "Depths of the Eld Blades";
+        text """
+When this card is discarded, deal 1 damage to the enemy leader and restore 1 defense to your leader.
+<hr>Deal 1 damage to the enemy leader. Restore 1 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんとう\">天刀</rub>の<rub=\"しんえん\">深淵</rub>";
+        text """
+これが捨てられたとき、相手のリーダーに1ダメージ。自分のリーダーを1回復。
+<hr>相手のリーダーに1ダメージ。自分のリーダーを1回復。
+""";
+    }
+
+    locale kor {
+        name "천도의 심연";
+        text """
+이 주문이 버려졌을 때, 상대방 리더에게 1 피해. 내 리더를 1 회복.
+<hr>상대방 리더에게 1 피해. 내 리더를 1 회복.
+""";
+    }
+
+    locale cht {
+        name "天刀的深淵";
+        text """
+當這張卡片被捨棄時，給予敵方的主戰者1點傷害。回復自己的主戰者1點生命值。
+<hr>給予敵方的主戰者1點傷害。回復自己的主戰者1點生命值。
+""";
+    }
+
+}

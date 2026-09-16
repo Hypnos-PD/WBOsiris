@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10271110 {
+    type follower;
+    cost 6;
+    stats 4/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "引擎剑士";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>攻击创造物</color>』。将1张『<color=Keyword>过往核心</color>』加入手牌。
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Engineblade Maven";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Striker Artifact</color></i></b>. Add a <b><i><color=Keyword>Gear of Remembrance</color></i></b> to your hand.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "エンジンブレイダー";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>アタックアーティファクト</color>』1枚を自分の場に出す。『<color=Keyword>パスト・コア</color>』1枚を自分の手札に加える。
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "엔진 블레이더";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>어택 아티팩트</color> 1장을 내 전장에 소환. <color=Keyword>패스트 코어</color> 1장을 내 패에 넣는다.
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "機刃劍士";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>進攻的創造物</color>』到自己的戰場上。增加1張『<color=Keyword>過往之核</color>』到自己的手牌中。
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

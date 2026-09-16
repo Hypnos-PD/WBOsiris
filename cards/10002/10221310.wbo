@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10221310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "商谈成立";
+        text """
+抽取2张卡牌。对手抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Lucrative Deal";
+        text """
+Draw 2 cards. Your opponent draws a card.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しょうだんせいりつ\">商談成立</rub>";
+        text """
+自分のデッキから2枚を引く。相手は自身のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "거래 성립";
+        text """
+내 덱에서 2장을 뽑는다. 상대방은 자신의 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "達成協議";
+        text """
+由自己的牌堆中抽取2張卡片。使敵方由其牌堆中抽取1張卡片。
+""";
+    }
+
+}

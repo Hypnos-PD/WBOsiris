@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10223120 {
+    type follower;
+    cost 2;
+    stats 1/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class swordcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "假日中的王女·普莉姆";
+        text """
+【<color=Keyword>入场曲</color>】将1张『<color=Keyword>安静的女仆·诺嘉</color>』加入手牌。
+<hr>【<color=Keyword>潜行</color>】
+<hr><sev>【<color=Keyword>超进化时</color>】使自己的战场上的其他所有随从+1/+1。</sev>
+""";
+    }
+
+    locale eng {
+        name "Prim, Princess's Picnic";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add a <b><i><color=Keyword>Nonja, Silent Maid</color></i></b> to your hand.
+<hr><b><color=Keyword>Ambush</color></b>
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Give all other allied followers on the field +1/+1.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きゅうじつ\">休日</rub>の<rub=\"おうじょ\">王女</rub>・プリム";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>静かなるメイド・ノーニャ</color>』1枚を自分の手札に加える。
+<hr>【<color=Keyword>潜伏</color>】
+<hr><sev>【<color=Keyword>超進化時</color>】自分の場の他のフォロワーすべては+1/+1する。</sev>
+""";
+    }
+
+    locale kor {
+        name "휴일의 왕녀 프림";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>정숙한 메이드 노냐</color> 1장을 내 패에 넣는다.
+<hr>[<color=Keyword>잠복</color>]
+<hr><sev>[<color=Keyword>초진화시</color>] 내 전장의 다른 추종자 모두는 +1/+1.</sev>
+""";
+    }
+
+    locale cht {
+        name "休憩的王女‧普莉姆";
+        text """
+【<color=Keyword>入場曲</color>】增加1張『<color=Keyword>沉穩的女僕‧諾嘉</color>』到自己的手牌中。
+<hr>【<color=Keyword>潛行</color>】
+<hr><sev>【<color=Keyword>超進化時</color>】使自己戰場上全部的其他從者卡+1/+1。</sev>
+""";
+    }
+
+}

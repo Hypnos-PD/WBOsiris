@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 90024310 {
+    type spell;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class swordcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "空绝的残光";
+        text """
+对对手的战场上的所有随从和对手的主战者分配4点伤害。
+""";
+    }
+
+    locale eng {
+        name "Remnant of Hollowness";
+        text """
+Deal 4 damage split between all enemies.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"くうぜつ\">空絶</rub>の<rub=\"ざんこう\">残光</rub>";
+        text """
+相手の場のフォロワーすべてと相手のリーダーに4ダメージを割りふる。
+""";
+    }
+
+    locale kor {
+        name "공허의 잔광";
+        text """
+상대방 전장의 추종자 모두와 상대방 리더에게 4 피해를 분배한다.
+""";
+    }
+
+    locale cht {
+        name "空絕的殘光";
+        text """
+對敵方戰場上全部的從者卡與敵方的主戰者分配4點傷害。
+""";
+    }
+
+}

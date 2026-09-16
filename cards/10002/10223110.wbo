@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10223110 {
+    type follower;
+    cost 3;
+    stats 3/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class swordcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "剑士公主·萝泽";
+        text """
+【<color=Keyword>爆能强化</color>_5】抽取1张费用为2或以下的皇家护卫·随从，使其费用变为0。
+<hr>【<color=Keyword>突进</color>】
+【<color=Keyword>攻击时</color>】若攻击受伤的随从，则破坏交战对手。
+""";
+    }
+
+    locale eng {
+        name "Rosé, Princess Knight";
+        text """
+<b><color=Keyword>Enhance</color> (5)</b>: Draw a Swordcraft follower that costs 2 or less and set its cost to 0.
+<hr><b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Follower</color></b> <b><color=Keyword>Strike</color></b>: If the opposing follower is damaged, destroy it.
+""";
+    }
+
+    locale jpn {
+        name "ソードプリンセス・ロゼ";
+        text """
+【<color=Keyword>エンハンス</color>_5】自分のデッキからコスト2以下のロイヤル・フォロワー1枚を引く。それのコストを0にする。
+<hr>【<color=Keyword>突進</color>】
+【<color=Keyword>攻撃時</color>】ダメージを受けているフォロワーへの攻撃なら、交戦相手を破壊。
+""";
+    }
+
+    locale kor {
+        name "소드 프린세스 로제";
+        text """
+[<color=Keyword>증강</color> 5] 내 덱에서 비용이 2 이하인 로얄 추종자 1장을 뽑는다. 그 추종자의 비용을 0으로 만든다.
+<hr>[<color=Keyword>돌진</color>]
+[<color=Keyword>공격시</color>] 피해를 받은 상태인 추종자를 공격한다면, 교전 상대를 파괴.
+""";
+    }
+
+    locale cht {
+        name "瑰劍公主‧蘿婕";
+        text """
+【<color=Keyword>爆能強化</color>_5】由自己的牌堆中抽取1張消費為2以下的皇家護衛‧從者卡。使其消費轉變為0。
+<hr>【<color=Keyword>突進</color>】
+【<color=Keyword>攻擊時</color>】如果對已受到傷害的從者卡進行攻擊，則會破壞交戰對象。
+""";
+    }
+
+}

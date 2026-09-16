@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10203110 {
+    type follower;
+    cost 7;
+    stats 5/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class neutral;
+        rarity gold;
+    }
+
+    locale chs {
+        name "联结的天使·蕾娜";
+        text """
+<ev>【<color=Keyword>进化时</color>】使自己的战场上的所有进化前的随从进化。</ev>
+""";
+    }
+
+    locale eng {
+        name "Reina, Angelic Partner";
+        text """
+<ev><b><color=Keyword>Evolve</color></b>: Evolve all unevolved allied followers on the field.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きずな\">絆</rub>の<rub=\"てんし\">天使</rub>・レイナ";
+        text """
+<ev>【<color=Keyword>進化時</color>】自分の場の進化前のフォロワーすべては進化する。</ev>
+""";
+    }
+
+    locale kor {
+        name "유대의 천사 레이나";
+        text """
+<ev>[<color=Keyword>진화시</color>] 내 전장의 진화전인 추종자 모두는 진화한다.</ev>
+""";
+    }
+
+    locale cht {
+        name "情誼天使‧蕾娜";
+        text """
+<ev>【<color=Keyword>進化時</color>】使自己戰場上全部進化前的從者卡進化。</ev>
+""";
+    }
+
+}

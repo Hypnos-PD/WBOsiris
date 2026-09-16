@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10233310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class runecraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "帕梅拉的舞蹈";
+        text """
+使自己的战场上的土之印+1。使自己获得『纹章：帕梅拉的舞蹈』。
+""";
+    }
+
+    locale eng {
+        name "Pascale's Dance";
+        text """
+Gain an earth sigil. Gain <b><i>Crest: Pascale's Dance</i></b>.
+""";
+    }
+
+    locale jpn {
+        name "パメラの<rub=\"ぶとう\">舞踏</rub>";
+        text """
+自分の場の土の印を+1する。自分は『クレスト：パメラの舞踏』を持つ。
+""";
+    }
+
+    locale kor {
+        name "파멜라의 무도";
+        text """
+내 전장의 대지의 인장을 +1. 나는 「크레스트: 파멜라의 무도」를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "帕梅拉的舞蹈";
+        text """
+使自己戰場上的土之印+1。使自己獲得『紋章：帕梅拉的舞蹈』。
+""";
+    }
+
+}

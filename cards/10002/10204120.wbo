@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10204120 {
+    type follower;
+    cost 3;
+    stats 2/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class neutral;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "飓风天业·格里姆尼尔";
+        text """
+【<color=Keyword>入场曲</color>】使自己获得『纹章：飓风天业·格里姆尼尔』。
+<hr>【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Grimnir, Heavenly Gale";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Gain <b><i>Crest: Grimnir, Heavenly Gale</i></b>.
+<hr><b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぐふう\">颶風</rub>の<rub=\"てんごう\">天業</rub>・グリームニル";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分は『クレスト：颶風の天業・グリームニル』を持つ。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "폭풍의 천업 그림니르";
+        text """
+[<color=Keyword>출격</color>] 나는 「크레스트: 폭풍의 천업 그림니르」를 갖는다.
+<hr>[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "颶風天技‧格里姆尼爾";
+        text """
+【<color=Keyword>入場曲</color>】使自己獲得『紋章：颶風天技‧格里姆尼爾』。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+}

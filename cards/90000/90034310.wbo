@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 90034310 {
+    type spell;
+    cost 4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "绝尽的伪证";
+        text """
+使自己的手牌中的所有随从的费用+1。破坏对手的战场上的所有随从。
+""";
+    }
+
+    locale eng {
+        name "Ersatz Elimination";
+        text """
+Increase the cost of all followers in your hand by 1. Destroy all enemy followers.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぜつじん\">絶尽</rub>の<rub=\"ぎしょう\">偽証</rub>";
+        text """
+自分の手札のフォロワーすべてのコストを+1する。相手の場のフォロワーすべてを破壊。
+""";
+    }
+
+    locale kor {
+        name "허위의 위증";
+        text """
+내 패의 추종자 모두의 비용을 +1. 상대방 전장의 추종자 모두를 파괴.
+""";
+    }
+
+    locale cht {
+        name "絕盡的偽證";
+        text """
+使自己手牌中全部的從者卡消費+1。破壞敵方戰場上全部的從者卡。
+""";
+    }
+
+}

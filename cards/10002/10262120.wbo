@@ -1,0 +1,56 @@
+wbo 0.1.0;
+
+card 10262120 {
+    type follower;
+    cost 5;
+    stats 4/4;
+
+    effect {
+        fanfare {
+            choose target from oppo.field.followers;
+            banish target;
+        }
+    }
+
+    meta {
+        pack 10002;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "有洁癖的审判者";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的1个随从，使其消失。
+""";
+    }
+
+    locale eng {
+        name "Immaculate Adjudicator";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select an enemy follower on the field and banish it.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"けっぺき\">潔癖</rub>の<rub=\"しんぱんしゃ\">審判者</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー1枚を選ぶ。それを消滅。
+""";
+    }
+
+    locale kor {
+        name "결벽의 심판자";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 소멸.
+""";
+    }
+
+    locale cht {
+        name "潔癖的審判者";
+        text """
+【<color=Keyword>入場曲</color>】指定1張敵方戰場上的從者卡。使其消失。
+""";
+    }
+
+}

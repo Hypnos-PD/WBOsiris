@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10251310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "诅咒派对";
+        text """
+将1张『<color=Keyword>怨灵</color>』和1张『<color=Keyword>骸骨士兵</color>』和1张『<color=Keyword>腐臭的僵尸</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Ghastly Soiree";
+        text """
+Add a <b><i><color=Keyword>Ghost</color></i></b>, <b><i><color=Keyword>Skeleton</color></i></b>, and <b><i><color=Keyword>Rotting Zombie</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "カースパーティー";
+        text """
+『<color=Keyword>ゴースト</color>』1枚と『<color=Keyword>スケルトン</color>』1枚と『<color=Keyword>腐臭のゾンビ</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "커스 파티";
+        text """
+<color=Keyword>유령</color> 1장, <color=Keyword>스켈레톤</color> 1장, <color=Keyword>부취 좀비</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "詛咒派對";
+        text """
+增加1張『<color=Keyword>怨靈</color>』與1張『<color=Keyword>骷髏士兵</color>』與1張『<color=Keyword>腐臭的殭屍</color>』到自己的手牌中。
+""";
+    }
+
+}

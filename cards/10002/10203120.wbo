@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10203120 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class neutral;
+        rarity gold;
+    }
+
+    locale chs {
+        name "雷火双神·福尼加尔&亚文哈尔";
+        text """
+【<color=Keyword>爆能强化</color>_5】本随从进化。
+<hr>【<color=Keyword>谢幕曲</color>】若本随从为进化后，则对对手的战场上的随机1个随从造成4点伤害。
+""";
+    }
+
+    locale eng {
+        name "Hnikar & Jafnhar, Firestorm Duo";
+        text """
+<b><color=Keyword>Enhance</color> (5)</b>: Evolve this follower.
+<hr><b><color=Keyword>Last Words</color></b>: If this follower is evolved, deal 4 damage to a random enemy follower.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"らいか\">雷火</rub>の<rub=\"そうしん\">双神</rub>・フニカル＆ヤヴンハール";
+        text """
+【<color=Keyword>エンハンス</color>_5】これは進化する。
+<hr>【<color=Keyword>ラストワード</color>】これが進化後なら、相手の場のフォロワーからランダム1枚に4ダメージ。
+""";
+    }
+
+    locale kor {
+        name "뇌화의 군신 흐니카르&야픈하르";
+        text """
+[<color=Keyword>증강</color> 5] 이 추종자는 진화한다.
+<hr>[<color=Keyword>유언</color>] 이 추종자가 진화후라면, 상대방 전장의 추종자 중 무작위로 1장에게 4 피해.
+""";
+    }
+
+    locale cht {
+        name "雷火雙神‧福尼加爾＆亞文哈爾";
+        text """
+【<color=Keyword>爆能強化</color>_5】使這張卡片進化。
+<hr>【<color=Keyword>謝幕曲</color>】如果這張卡片已進化，則會隨機給予1張敵方戰場上的從者卡4點傷害。
+""";
+    }
+
+}

@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 90074150 {
+    type follower;
+    cost 3;
+    stats 3/3;
+    trait artifact;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class portalcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "击针看守";
+        text """
+【<color=Keyword>守护</color>】
+【<color=Keyword>谢幕曲</color>】回复自己的主战者2点生命值。
+""";
+    }
+
+    locale eng {
+        name "Warden of the Trigger";
+        text """
+<b><color=Keyword>Ward</color></b>
+<b><color=Keyword>Last Words</color></b>: Restore 2 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"げきしん\">撃針</rub>の<rub=\"かんしゅ\">看守</rub>";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>ラストワード</color>】自分のリーダーを2回復。
+""";
+    }
+
+    locale kor {
+        name "격침의 간수";
+        text """
+[<color=Keyword>수호</color>]
+[<color=Keyword>유언</color>] 내 리더를 2 회복.
+""";
+    }
+
+    locale cht {
+        name "擊針看守";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>謝幕曲</color>】回復自己的主戰者2點生命值。
+""";
+    }
+
+}

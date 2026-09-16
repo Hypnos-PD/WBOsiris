@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10213110 {
+    type follower;
+    cost 4;
+    stats 4/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class forestcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "森林骑士道·辛西亚";
+        text """
+【<color=Keyword>入场曲</color>】召唤2个『<color=Keyword>妖精</color>』。
+<hr><ev>【<color=Keyword>进化时</color>】使自己的战场上的所有妖精·随从+1/+0。</ev>
+""";
+    }
+
+    locale eng {
+        name "Cynthia, Chivalrous Elf";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon 2 copies of <b><i><color=Keyword>Fairy</color></i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Give all allied Pixie followers on the field +1/+0.</ev>
+""";
+    }
+
+    locale jpn {
+        name "フォレストシバルリー・シンシア";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>フェアリー</color>』2枚を自分の場に出す。
+<hr><ev>【<color=Keyword>進化時</color>】自分の場の妖精・フォロワーすべては+1/+0する。</ev>
+""";
+    }
+
+    locale kor {
+        name "숲의 기사도 신시아";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>요정</color> 2장을 내 전장에 소환.
+<hr><ev>[<color=Keyword>진화시</color>] 내 전장의 요정 추종자 모두는 +1/+0.</ev>
+""";
+    }
+
+    locale cht {
+        name "森林的騎士精神‧辛西亞";
+        text """
+【<color=Keyword>入場曲</color>】召喚2張『<color=Keyword>妖精</color>』到自己的戰場上。
+<hr><ev>【<color=Keyword>進化時</color>】使自己戰場上全部的妖精‧從者卡+1/+0。</ev>
+""";
+    }
+
+}

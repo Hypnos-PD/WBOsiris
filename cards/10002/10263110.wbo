@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10263110 {
+    type follower;
+    cost 5;
+    stats 3/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class havencraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "速断之刃·阿尼耶丝";
+        text """
+【<color=Keyword>疾驰</color>】
+【<color=Keyword>攻击时</color>】若自己的战场上的护符的张数为2张或以上，则破坏对手的战场上的随机1个非交战对手的随从。
+""";
+    }
+
+    locale eng {
+        name "Agnes, the Swiftblade";
+        text """
+<b><color=Keyword>Storm</color></b>
+<b><color=Keyword>Strike</color></b>: If there are at least 2 allied amulets on the field, destroy a random enemy follower other than the attack target.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"そくだん\">速断</rub>の<rub=\"やいば\">刃</rub>・アニエス";
+        text """
+【<color=Keyword>疾走</color>】
+【<color=Keyword>攻撃時</color>】自分の場のアミュレットの枚数が2以上なら、相手の場の交戦相手でないフォロワーからランダム1枚を破壊。
+""";
+    }
+
+    locale kor {
+        name "속단의 서슬 아니에스";
+        text """
+[<color=Keyword>질주</color>]
+[<color=Keyword>공격시</color>] 내 전장의 마법진 수가 2 이상이라면, 교전 상대가 아닌 상대방 전장의 추종자 중 무작위로 1장을 파괴.
+""";
+    }
+
+    locale cht {
+        name "速斷之刃‧阿尼耶絲";
+        text """
+【<color=Keyword>疾馳</color>】
+【<color=Keyword>攻擊時</color>】如果自己戰場上的護符卡張數為2以上，則會隨機破壞1張敵方戰場上非交戰對象的從者卡。
+""";
+    }
+
+}

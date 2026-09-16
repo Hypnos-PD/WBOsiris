@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 90014110 {
+    type follower;
+    cost 3;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "冰晶剑士·伊芙";
+        text """
+【<color=Keyword>疾驰</color>】
+【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Eve, Blade of Crystalia";
+        text """
+<b><color=Keyword>Storm</color></b>
+<b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "ソードクリスタリア・イヴ";
+        text """
+【<color=Keyword>疾走</color>】
+【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "빙정검 얼음수정족 이브";
+        text """
+[<color=Keyword>질주</color>]
+[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "凍劍冰晶‧伊芙";
+        text """
+【<color=Keyword>疾馳</color>】
+【<color=Keyword>守護</color>】
+""";
+    }
+
+}

@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 90021310 {
+    type spell;
+    cost 1;
+    trait loot;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "黄金短剑";
+        text """
+选择对手的战场上的1个随从或对手的主战者，对其造成1点伤害。
+""";
+    }
+
+    locale eng {
+        name "Gilded Blade";
+        text """
+Select an enemy follower on the field or the enemy leader and deal it 1 damage.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"おうごん\">黄金</rub>の<rub=\"しょうけん\">小剣</rub>";
+        text """
+相手の場のフォロワー1枚か相手のリーダーを選ぶ。それに1ダメージ。
+""";
+    }
+
+    locale kor {
+        name "황금 단검";
+        text """
+상대방 리더나 상대방 전장에서 추종자 1장을 선택한다. 그 대상에게 1 피해.
+""";
+    }
+
+    locale cht {
+        name "黃金短劍";
+        text """
+指定1張敵方戰場上的從者卡或敵方的主戰者。給予其1點傷害。
+""";
+    }
+
+}

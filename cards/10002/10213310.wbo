@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10213310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class forestcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "花园的指引";
+        text """
+【<color=Keyword>融合</color>】精灵·卡牌
+<hr>抽取1张卡牌。若已与本卡牌【<color=Keyword>融合</color>】，则改为抽取2张。
+""";
+    }
+
+    locale eng {
+        name "Garden's Allure";
+        text """
+<b><color=Keyword>Fuse</color></b>: Forestcraft cards
+<hr>Draw a card. If you've <b><color=Keyword>Fuse</color><color=Keyword>d</color></b> to this card, draw 2 instead.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はなぞの\">花園</rub>の<rub=\"みちび\">導</rub>き";
+        text """
+【<color=Keyword>融合</color>】エルフ・カード
+<hr>自分のデッキから1枚を引く。これに【<color=Keyword>融合</color>】していたなら、1枚ではなく2枚。
+""";
+    }
+
+    locale kor {
+        name "화원의 인도";
+        text """
+[<color=Keyword>융합</color>] 엘프 카드
+<hr>내 덱에서 1장을 뽑는다. 이 주문에 [<color=Keyword>융합</color>]된 카드가 있다면, 1장 대신 2장.
+""";
+    }
+
+    locale cht {
+        name "花園的導引";
+        text """
+【<color=Keyword>融合</color>】精靈‧卡片
+<hr>由自己的牌堆中抽取1張卡片。如果已有卡片與這張卡片進行【<color=Keyword>融合</color>】，則會由原本的1張轉變為2張。
+""";
+    }
+
+}

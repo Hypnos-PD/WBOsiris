@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 90054330 {
+    type spell;
+    cost 1;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class abysscraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "天眼深渊";
+        text """
+抽取2张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Depths of the Eld Sight";
+        text """
+Draw 2 cards.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんがん\">天眼</rub>の<rub=\"しんえん\">深淵</rub>";
+        text """
+自分のデッキから2枚を引く。
+""";
+    }
+
+    locale kor {
+        name "천안의 심연";
+        text """
+내 덱에서 2장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "天眼的深淵";
+        text """
+由自己的牌堆中抽取2張卡片。
+""";
+    }
+
+}

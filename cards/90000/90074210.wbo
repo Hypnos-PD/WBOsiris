@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 90074210 {
+    type amulet;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class portalcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "新约·白之章";
+        text """
+【<color=Keyword>吟唱</color>_1】
+【<color=Keyword>谢幕曲</color>】回复自己的主战者1点生命值。召唤1张『<color=Keyword>新约·黑之章</color>』。
+""";
+    }
+
+    locale eng {
+        name "White Psalm, New Revelation";
+        text """
+<b><color=Keyword>Countdown</color> (1)</b>
+<b><color=Keyword>Last Words</color></b>: Restore 1 defense to your leader. Summon a <b><i><color=Keyword>Black Psalm, New Revelation</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しんやく\">新約</rub>・<rub=\"しろ\">白</rub>の<rub=\"しょう\">章</rub>";
+        text """
+【<color=Keyword>カウントダウン</color>_1】
+【<color=Keyword>ラストワード</color>】自分のリーダーを1回復。『<color=Keyword>新約・黒の章</color>』1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "신약 백의 노래";
+        text """
+[<color=Keyword>카운트다운</color> 1]
+[<color=Keyword>유언</color>] 내 리더를 1 회복. <color=Keyword>신약 흑의 노래</color> 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "新約‧白之章";
+        text """
+【<color=Keyword>倒數</color>_1】
+【<color=Keyword>謝幕曲</color>】回復自己的主戰者1點生命值。召喚1張『<color=Keyword>新約‧黑之章</color>』到自己的戰場上。
+""";
+    }
+
+}

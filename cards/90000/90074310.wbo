@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 90074310 {
+    type spell;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class portalcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "奏绝的独唱";
+        text """
+选择自己的战场上的1张卡牌，破坏该卡牌。对对手的战场上的随机1个随从造成4点伤害。
+""";
+    }
+
+    locale eng {
+        name "Melodious Monody";
+        text """
+Select an allied card on the field and destroy it. Deal 4 damage to a random enemy follower.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"そうぜつ\">奏絶</rub>の<rub=\"どくしょう\">独唱</rub>";
+        text """
+自分の場のカード1枚を選ぶ。それを破壊。相手の場のフォロワーからランダム1枚に4ダメージ。
+""";
+    }
+
+    locale kor {
+        name "종연의 독창";
+        text """
+내 전장에서 카드 1장을 선택한다. 그 카드를 파괴. 상대방 전장의 추종자 중 무작위로 1장에게 4 피해.
+""";
+    }
+
+    locale cht {
+        name "奏絕的獨唱";
+        text """
+指定1張自己戰場上的卡片。將其破壞。隨機給予1張敵方戰場上的從者卡4點傷害。
+""";
+    }
+
+}

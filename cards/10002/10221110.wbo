@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10221110 {
+    type follower;
+    cost 2;
+    stats 2/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "扳机女仆·赛莉亚";
+        text """
+【<color=Keyword>入场曲</color>】对对手的战场上的随机2个随从造成1点伤害。
+""";
+    }
+
+    locale eng {
+        name "Seria, Gunslinger Maid";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Deal 1 damage to 2 random enemy followers.
+""";
+    }
+
+    locale jpn {
+        name "トリガーメイド・セリエ";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワーからランダム2枚に1ダメージ。
+""";
+    }
+
+    locale kor {
+        name "총을 든 메이드 세리에";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장의 추종자 중 무작위로 2장에게 1 피해.
+""";
+    }
+
+    locale cht {
+        name "扳機女僕‧賽莉亞";
+        text """
+【<color=Keyword>入場曲</color>】隨機給予2張敵方戰場上的從者卡1點傷害。
+""";
+    }
+
+}

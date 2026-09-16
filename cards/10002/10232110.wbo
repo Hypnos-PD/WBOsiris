@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10232110 {
+    type follower;
+    cost 5;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "否定的咏唱·芭赛特";
+        text """
+【<color=Keyword>入场曲</color>】召唤2个『<color=Keyword>洋葱军团兵</color>』。
+<hr><ev>【<color=Keyword>进化时</color>】使自己获得『纹章：否定的咏唱·芭赛特』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Bergent, Rejected Artes";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon 2 copies of <b><i><color=Keyword>Onion Patch</color></i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Gain <b><i>Crest: Bergent, Rejected Artes</i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ひてい\">否定</rub>の<rub=\"えいしょう\">詠唱</rub>・バーゼント";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>オニオン軍団</color>』2枚を自分の場に出す。
+<hr><ev>【<color=Keyword>進化時</color>】自分は『クレスト：否定の詠唱・バーゼント』を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "부정의 영창 바젠트";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>양파 군단</color> 2장을 내 전장에 소환.
+<hr><ev>[<color=Keyword>진화시</color>] 나는 「크레스트: 부정의 영창 바젠트」를 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "否定的詠唱‧芭賽特";
+        text """
+【<color=Keyword>入場曲</color>】召喚2張『<color=Keyword>洋蔥軍團</color>』到自己的戰場上。
+<hr><ev>【<color=Keyword>進化時</color>】使自己獲得『紋章：否定的詠唱‧芭賽特』。</ev>
+""";
+    }
+
+}

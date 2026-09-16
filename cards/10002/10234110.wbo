@@ -1,0 +1,64 @@
+wbo 0.1.0;
+
+card 10234110 {
+    type follower;
+    cost 8;
+    stats 5/5;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "暴食的安纳提玛·拉拉安瑟姆";
+        text """
+【<color=Keyword>灵气</color>】
+【<color=Keyword>谢幕曲</color>】【<color=Keyword>土之秘术</color>_2】召唤1个『<color=Keyword>暴食的安纳提玛·拉拉安瑟姆</color>』。
+<hr><sev>【<color=Keyword>超进化时</color>】选择对手的战场上的2个随从，破坏这些随从。</sev>
+""";
+    }
+
+    locale eng {
+        name "Lilanthim, Anathema of Edacity";
+        text """
+<b><color=Keyword>Aura</color></b>
+<b><color=Keyword>Last Words</color></b>: <b><color=Keyword>Earth Rite</color> (2)</b> - Summon a <b><i><color=Keyword>Lilanthim, Anathema of Edacity</color></i></b>.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Select 2 enemy followers on the field and destroy them.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぼうしょく\">暴食</rub>のアナテマ・ララアンセム";
+        text """
+【<color=Keyword>オーラ</color>】
+【<color=Keyword>ラストワード</color>】【<color=Keyword>土の秘術</color>_2】『<color=Keyword>暴食のアナテマ・ララアンセム</color>』1枚を自分の場に出す。
+<hr><sev>【<color=Keyword>超進化時</color>】相手の場のフォロワー2枚を選ぶ。それを破壊。</sev>
+""";
+    }
+
+    locale kor {
+        name "폭식의 아나테마 라라안셈";
+        text """
+[<color=Keyword>오라</color>]
+[<color=Keyword>유언</color>] [<color=Keyword>대지의 비술</color> 2] <color=Keyword>폭식의 아나테마 라라안셈</color> 1장을 내 전장에 소환.
+<hr><sev>[<color=Keyword>초진화시</color>] 상대방 전장에서 추종자 2장을 선택한다. 그 추종자를 파괴.</sev>
+""";
+    }
+
+    locale cht {
+        name "暴食的弒滅者‧菈菈安瑟姆";
+        text """
+【<color=Keyword>光紋</color>】
+【<color=Keyword>謝幕曲</color>】【<color=Keyword>土之秘術</color>_2】召喚1張『<color=Keyword>暴食的弒滅者‧菈菈安瑟姆</color>』到自己的戰場上。
+<hr><sev>【<color=Keyword>超進化時</color>】指定2張敵方戰場上的從者卡。將其破壞。</sev>
+""";
+    }
+
+}

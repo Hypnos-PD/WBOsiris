@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10214110 {
+    type follower;
+    cost 4;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "翅翼女王·提泰妮娅";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>妖精</color>』。使自己获得『纹章：翅翼女王·提泰妮娅』。
+<hr><ev>【<color=Keyword>进化时</color>】选择对手的战场上的1个随从，使其变身为『<color=Keyword>妖精</color>』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Titania, Queen of Fairies";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Fairy</color></i></b>. Gain <b><i>Crest: Titania, Queen of Fairies</i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select an enemy follower on the field and transform it into a <b><i><color=Keyword>Fairy</color></i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はね\">翅</rub>の<rub=\"じょおう\">女王</rub>・ティターニア";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>フェアリー</color>』1枚を自分の場に出す。自分は『クレスト：翅の女王・ティターニア』を持つ。
+<hr><ev>【<color=Keyword>進化時</color>】相手の場のフォロワー1枚を選ぶ。それは『<color=Keyword>フェアリー</color>』に変身する。</ev>
+""";
+    }
+
+    locale kor {
+        name "날개들의 여왕 티타니아";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>요정</color> 1장을 내 전장에 소환. 나는 「크레스트: 날개들의 여왕 티타니아」를 갖는다.
+<hr><ev>[<color=Keyword>진화시</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자는 <color=Keyword>요정</color>으로 변신한다.</ev>
+""";
+    }
+
+    locale cht {
+        name "羽翅女王‧提泰妮婭";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>妖精</color>』到自己的戰場上。使自己獲得『紋章：羽翅女王‧提泰妮婭』。
+<hr><ev>【<color=Keyword>進化時</color>】指定1張敵方戰場上的從者卡。使其變身為『<color=Keyword>妖精</color>』。</ev>
+""";
+    }
+
+}

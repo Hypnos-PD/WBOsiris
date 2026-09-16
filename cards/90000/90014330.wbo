@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 90014330 {
+    type spell;
+    cost 1;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "天枪深渊";
+        text """
+选择自己的战场上的1个进化前的随从，使其进化。
+""";
+    }
+
+    locale eng {
+        name "Depths of the Eld Lance";
+        text """
+Select an unevolved allied follower on the field and evolve it.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんそう\">天槍</rub>の<rub=\"しんえん\">深淵</rub>";
+        text """
+自分の場の進化前のフォロワー1枚を選ぶ。それは進化する。
+""";
+    }
+
+    locale kor {
+        name "천창의 심연";
+        text """
+내 전장에서 진화전인 추종자 1장을 선택한다. 그 추종자는 진화한다.
+""";
+    }
+
+    locale cht {
+        name "天槍的深淵";
+        text """
+指定1張自己戰場上進化前的從者卡。使其進化。
+""";
+    }
+
+}

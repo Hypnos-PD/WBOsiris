@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10241110 {
+    type follower;
+    cost 10;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "庇护的智龙";
+        text """
+在手牌中发动。自己的随从超进化时，使本卡牌的费用-3。
+<hr>【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>巨翼飞龙</color>』。
+""";
+    }
+
+    locale eng {
+        name "Wise Guardian Dragon";
+        text """
+Activates in hand. Whenever an allied follower super-evolves, reduce the cost of this card by 3.
+<hr><b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Vastwing Dragon</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ひご\">庇護</rub>の<rub=\"ちりゅう\">知竜</rub>";
+        text """
+手札で働く。自分のフォロワーが超進化したとき、これのコストを-3する。
+<hr>【<color=Keyword>ファンファーレ</color>】『<color=Keyword>大翼のドラゴン</color>』1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "비호의 현룡";
+        text """
+패에서 발동. 내 추종자가 초진화했을 때, 이 추종자의 비용을 -3.
+<hr>[<color=Keyword>출격</color>] <color=Keyword>대익룡</color> 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "呵護的智龍";
+        text """
+於手牌中發動。當自己的從者卡超進化時，使這張卡片的消費-3。
+<hr>【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>巨翼飛龍</color>』到自己的戰場上。
+""";
+    }
+
+}

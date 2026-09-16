@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10242110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "宿愿的龙人公主";
+        text """
+【<color=Keyword>入场曲</color>】若自己的战场上有超进化后的随从，则抽取2张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Intent Dragonewt Princess";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If there's a super-evolved allied follower on the field, draw 2 cards.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しゅくがん\">宿願</rub>のドラゴニュートプリンセス";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の場に超進化後のフォロワーがあるなら、自分のデッキから2枚を引く。
+""";
+    }
+
+    locale kor {
+        name "숙원의 드래고뉴트 프린세스";
+        text """
+[<color=Keyword>출격</color>] 내 전장에 초진화후인 추종자가 있다면, 내 덱에서 2장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "背負宿願的龍人公主";
+        text """
+【<color=Keyword>入場曲</color>】如果自己戰場上有已超進化的從者卡，則會由自己的牌堆中抽取2張卡片。
+""";
+    }
+
+}

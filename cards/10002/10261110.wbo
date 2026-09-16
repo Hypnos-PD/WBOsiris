@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10261110 {
+    type follower;
+    cost 3;
+    stats 2/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "粉碎的圣职者";
+        text """
+【<color=Keyword>守护</color>】
+<hr><ev>【<color=Keyword>进化时</color>】选择对手的战场上的1个超进化后的随从，破坏该随从。</ev>
+""";
+    }
+
+    locale eng {
+        name "Cleric of Crushing";
+        text """
+<b><color=Keyword>Ward</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select a super-evolved enemy follower on the field and destroy it.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ふんさい\">粉砕</rub>の<rub=\"せいしょくしゃ\">聖職者</rub>";
+        text """
+【<color=Keyword>守護</color>】
+<hr><ev>【<color=Keyword>進化時</color>】相手の場の超進化後のフォロワー1枚を選ぶ。それを破壊。</ev>
+""";
+    }
+
+    locale kor {
+        name "분쇄의 성직자";
+        text """
+[<color=Keyword>수호</color>]
+<hr><ev>[<color=Keyword>진화시</color>] 상대방 전장에서 초진화후인 추종자 1장을 선택한다. 그 추종자를 파괴.</ev>
+""";
+    }
+
+    locale cht {
+        name "猛碎的聖職者";
+        text """
+【<color=Keyword>守護</color>】
+<hr><ev>【<color=Keyword>進化時</color>】指定1張敵方戰場上已超進化的從者卡。將其破壞。</ev>
+""";
+    }
+
+}

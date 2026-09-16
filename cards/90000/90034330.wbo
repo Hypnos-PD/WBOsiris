@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 90034330 {
+    type spell;
+    cost 6;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "天晶深渊";
+        text """
+召唤1个『<color=Keyword>天晶魔手</color>』，使其+X/+X。回复自己的主战者Y点生命值。对对手的主战者造成Z点伤害。X/Y/Z的数值随机决定，合计为信仰值。
+""";
+    }
+
+    locale eng {
+        name "Depths of the Eld Crystals";
+        text """
+Summon a <b><i><color=Keyword>Crystalspawn</color></i></b> and give it +X/+X. Restore Y defense to your leader. Deal Z damage to the enemy leader. X, Y, and Z are determined randomly and add up to your faith's value.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんしょう\">天晶</rub>の<rub=\"しんえん\">深淵</rub>";
+        text """
+『<color=Keyword>天晶の魔手</color>』1枚を自分の場に出す。それは+X/+Xする。自分のリーダーをY回復。相手のリーダーにZダメージ。X/Y/Zは合計が信仰値になるようにランダムに決まる。
+""";
+    }
+
+    locale kor {
+        name "천정의 심연";
+        text """
+<color=Keyword>천정의 마수</color> 1장을 내 전장에 소환. 그 추종자는 +X/+X. 내 리더를 Y 회복. 상대방 리더에게 Z 피해. X/Y/Z는 합계가 신앙 수치가 되도록 무작위로 정해진다.
+""";
+    }
+
+    locale cht {
+        name "天晶的深淵";
+        text """
+召喚1張『<color=Keyword>天晶的魔手</color>』到自己的戰場上。使其+X/+X。回復自己的主戰者Y點生命值。給予敵方的主戰者Z點傷害。X/Y/Z為隨機決定，三者的合計等同於信仰值。
+""";
+    }
+
+}

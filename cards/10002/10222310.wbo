@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10222310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "三将姬的乱击";
+        text """
+对对手的战场上的随机1个随从造成4点伤害。
+【<color=Keyword>爆能强化</color>_4】改为对对手的战场上的随机3个随从造成4点伤害。
+""";
+    }
+
+    locale eng {
+        name "Band of Battle Princesses";
+        text """
+Deal 4 damage to a random enemy follower.
+<b><color=Keyword>Enhance</color> (4)</b>: Deal damage to 3 random enemy followers instead.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"さんしょうき\">三将姫</rub>の<rub=\"らんげき\">乱撃</rub>";
+        text """
+相手の場のフォロワーからランダム1枚に4ダメージ。
+【<color=Keyword>エンハンス</color>_4】1枚ではなく3枚。
+""";
+    }
+
+    locale kor {
+        name "삼장희의 난격";
+        text """
+상대방 전장의 추종자 중 무작위로 1장에게 4 피해.
+[<color=Keyword>증강</color> 4] 1장 대신 3장.
+""";
+    }
+
+    locale cht {
+        name "三將姬的亂擊";
+        text """
+隨機給予1張敵方戰場上的從者卡4點傷害。
+【<color=Keyword>爆能強化</color>_4】由原本的1張轉變為3張。
+""";
+    }
+
+}

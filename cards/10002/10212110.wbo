@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10212110 {
+    type follower;
+    cost 6;
+    stats 6/6;
+
+    effect {
+        ward;
+        fanfare {
+            summon 2 card 10112130;
+        }
+    }
+
+    meta {
+        pack 10002;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "热情的精灵·莱昂内尔";
+        text """
+【<color=Keyword>入场曲</color>】召唤2个『<color=Keyword>年幼宝石兽</color>』。
+<hr>【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Lionel, Ardent Elf";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon 2 copies of <b><i><color=Keyword>Baby Carbuncle</color></i></b>.
+<hr><b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "アーデントエルフ・レオネル";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>ベビーカーバンクル</color>』2枚を自分の場に出す。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "정열의 엘프 레오넬";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>아가 카벙클</color> 2장을 내 전장에 소환.
+<hr>[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "狂熱精靈‧萊昂內爾";
+        text """
+【<color=Keyword>入場曲</color>】召喚2張『<color=Keyword>幼年寶石獸</color>』到自己的戰場上。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+}

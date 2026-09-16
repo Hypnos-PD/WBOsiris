@@ -1,0 +1,54 @@
+wbo 0.1.0;
+
+card 90071140 {
+    type follower;
+    cost 1;
+    stats 3/1;
+    trait artifact;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "古老的创造物";
+        text """
+【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Ancient Artifact";
+        text """
+<b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "エンシェントアーティファクト";
+        text """
+【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "고대의 아티팩트";
+        text """
+[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "古老的創造物";
+        text """
+【<color=Keyword>突進</color>】
+""";
+    }
+
+}

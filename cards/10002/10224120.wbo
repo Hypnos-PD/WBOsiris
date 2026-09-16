@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10224120 {
+    type follower;
+    cost 8;
+    stats 5/7;
+    trait levin;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class swordcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "雷维翁超越者·尤里乌斯";
+        text """
+【<color=Keyword>入场曲</color>】在对手的战场上召唤2个『<color=Keyword>骑士</color>』。
+<hr>对手的随从进入战场时，对手的回合结束前，使其获得「无法攻击随从或主战者」。对对手的主战者造成1点伤害。回复自己的主战者1点生命值。
+""";
+    }
+
+    locale eng {
+        name "Yurius, Levin Authority";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon 2 enemy copies of <b><i><color=Keyword>Knight</color></i></b>.
+<hr>Whenever an enemy follower enters the field, give it \"Can't attack followers or leaders\" until the end of your opponent's turn, deal 1 damage to the enemy leader, and restore 1 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "レヴィオンの<rub=\"ちょうえつしゃ\">超越者</rub>・ユリウス";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>ナイト</color>』2枚を相手の場に出す。
+<hr>相手のフォロワーが場に出たとき、相手のターン終了まで、それは「フォロワーやリーダーを攻撃できない。」を持つ。相手のリーダーに1ダメージ。自分のリーダーを1回復。
+""";
+    }
+
+    locale kor {
+        name "레비온의 초월자 율리우스";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>기사</color> 2장을 상대방 전장에 소환.
+<hr>상대방 추종자가 전장에 소환되었을 때, 상대방 턴 종료까지 그 추종자는 「추종자나 리더 공격 불가」를 갖는다. 상대방 리더에게 1 피해. 내 리더를 1 회복.
+""";
+    }
+
+    locale cht {
+        name "雷維翁超凡者‧尤里烏斯";
+        text """
+【<color=Keyword>入場曲</color>】召喚2張『<color=Keyword>騎士</color>』到敵方的戰場上。
+<hr>當敵方的從者卡進入戰場時，到敵方的回合結束為止，使其獲得「無法攻擊從者或主戰者」。給予敵方的主戰者1點傷害。回復自己的主戰者1點生命值。
+""";
+    }
+
+}

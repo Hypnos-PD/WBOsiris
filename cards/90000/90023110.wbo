@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 90023110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+    trait officer;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class swordcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "安静的女仆·诺嘉";
+        text """
+【<color=Keyword>入场曲</color>】若自己的战场上有『<color=Keyword>假日中的王女·普莉姆</color>』，则本随从+1/+1且获得【<color=Keyword>毁灭</color>】。
+<hr>【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Nonja, Silent Maid";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If there's an allied <b><i><color=Keyword>Prim, Princess's Picnic</color></i></b> on the field, give this follower +1/+1 and <b><color=Keyword>Bane</color></b>.
+<hr><b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しず\">静</rub>かなるメイド・ノーニャ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の場に『<color=Keyword>休日の王女・プリム</color>』があるなら、これは+1/+1して【<color=Keyword>必殺</color>】を持つ。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "정숙한 메이드 노냐";
+        text """
+[<color=Keyword>출격</color>] 내 전장에 <color=Keyword>휴일의 왕녀 프림</color>이 있다면, 이 추종자는 +1/+1 및 [<color=Keyword>필살</color>]을 갖는다.
+<hr>[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "沉穩的女僕‧諾嘉";
+        text """
+【<color=Keyword>入場曲</color>】如果自己戰場上有『<color=Keyword>休憩的王女‧普莉姆</color>』，則會使這張卡片+1/+1並獲得【<color=Keyword>必殺</color>】。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+}

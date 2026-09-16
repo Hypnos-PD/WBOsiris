@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10212120 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "妖精击剑士";
+        text """
+在手牌中发动。自己的随从超进化时，使本卡牌的费用变为1。
+<hr>【<color=Keyword>入场曲</color>】将1张『<color=Keyword>妖精</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Fairy Fencer";
+        text """
+Activates in hand. Whenever an allied follower super-evolves, set the cost of this card to 1.
+<hr><b><color=Keyword>Fanfare</color></b>: Add a <b><i><color=Keyword>Fairy</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "フェアリーフェンサー";
+        text """
+手札で働く。自分のフォロワーが超進化したとき、これのコストを1にする。
+<hr>【<color=Keyword>ファンファーレ</color>】『<color=Keyword>フェアリー</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "페어리 펜서";
+        text """
+패에서 발동. 내 추종자가 초진화했을 때, 이 추종자의 비용을 1로 만든다.
+<hr>[<color=Keyword>출격</color>] <color=Keyword>요정</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "妖精劍客";
+        text """
+於手牌中發動。當自己的從者卡超進化時，使這張卡片的消費轉變為1。
+<hr>【<color=Keyword>入場曲</color>】增加1張『<color=Keyword>妖精</color>』到自己的手牌中。
+""";
+    }
+
+}

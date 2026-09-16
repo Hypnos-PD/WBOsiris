@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 90064110 {
+    type follower;
+    cost 1;
+    stats 1/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "圣骑兵";
+        text """
+【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Holy Cavalier";
+        text """
+<b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"せいきへい\">聖騎兵</rub>";
+        text """
+【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "신의 기병";
+        text """
+[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "聖騎兵";
+        text """
+【<color=Keyword>守護</color>】
+""";
+    }
+
+}

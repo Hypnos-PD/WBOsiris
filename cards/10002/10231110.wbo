@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10231110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "憧憬的魔女·梅薇";
+        text """
+【<color=Keyword>入场曲</color>】将1张『<color=Keyword>魔女的炼金炉</color>』加入手牌。若自己的战场上有超进化后的随从，则使自己的战场上的土之印+2。
+""";
+    }
+
+    locale eng {
+        name "Melvie, Adoring Witch";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add a <b><i><color=Keyword>Witch's New Brew</color></i></b> to your hand. If there's a super-evolved allied follower on the field, gain 2 earth sigils.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しょうけい\">憧憬</rub>の<rub=\"まじょ\">魔女</rub>・メルヴィ";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>魔女の錬金釜</color>』1枚を自分の手札に加える。自分の場に超進化後のフォロワーがあるなら、自分の場の土の印を+2する。
+""";
+    }
+
+    locale kor {
+        name "동경의 마녀 메르비";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>마녀의 연금솥</color> 1장을 내 패에 넣는다. 내 전장에 초진화후인 추종자가 있다면, 내 전장의 대지의 인장을 +2.
+""";
+    }
+
+    locale cht {
+        name "憧憬的魔女‧梅薇";
+        text """
+【<color=Keyword>入場曲</color>】增加1張『<color=Keyword>魔女的鍊金釜</color>』到自己的手牌中。如果自己戰場上有已超進化的從者卡，則會使自己戰場上的土之印+2。
+""";
+    }
+
+}

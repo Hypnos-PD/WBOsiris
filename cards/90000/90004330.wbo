@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 90004330 {
+    type spell;
+    cost 5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class neutral;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "涸绝的甘露";
+        text """
+对对手的战场上的随机1个随从和对手的主战者造成5点伤害。
+""";
+    }
+
+    locale eng {
+        name "Sweetness of Voracity";
+        text """
+Deal 5 damage to a random enemy follower and the enemy leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"かんぜつ\">干絶</rub>の<rub=\"かんろ\">甘露</rub>";
+        text """
+相手の場のフォロワーからランダム1枚と相手のリーダーに5ダメージ。
+""";
+    }
+
+    locale kor {
+        name "갈증의 감로";
+        text """
+상대방 전장의 추종자 중 무작위로 1장과 상대방 리더에게 5 피해.
+""";
+    }
+
+    locale cht {
+        name "涸絕的甘露";
+        text """
+給予隨機1張敵方戰場上的從者卡與敵方的主戰者各5點傷害。
+""";
+    }
+
+}

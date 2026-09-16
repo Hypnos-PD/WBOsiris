@@ -1,0 +1,54 @@
+wbo 0.1.0;
+
+card 90071130 {
+    type follower;
+    cost 1;
+    stats 1/1;
+    trait artifact;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "解析的创造物";
+        text """
+本随从进入战场时，抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Analyzing Artifact";
+        text """
+When this card enters the field, draw a card.
+""";
+    }
+
+    locale jpn {
+        name "アナライズアーティファクト";
+        text """
+これが場に出たとき、自分のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "분석의 아티팩트";
+        text """
+이 추종자가 전장에 소환되었을 때, 내 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "解析的創造物";
+        text """
+當這張卡片進入戰場時，由自己的牌堆中抽取1張卡片。
+""";
+    }
+
+}

@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 90021350 {
+    type spell;
+    cost 0;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "闪耀的金币";
+        text """
+【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）抽取1张卡牌。</ridx>
+<ridx=1>（2）对对手的战场上的随机1个随从造成2点伤害。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Glittering Gold";
+        text """
+Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Draw a card.</ridx>
+<ridx=1>2. Deal 2 damage to a random enemy follower.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"かがや\">輝</rub>く<rub=\"きんか\">金貨</rub>";
+        text """
+【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）自分のデッキから1枚を引く。</ridx>
+<ridx=1>（2）相手の場のフォロワーからランダム1枚に2ダメージ。</ridx>
+""";
+    }
+
+    locale kor {
+        name "찬란한 금화";
+        text """
+[<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 내 덱에서 1장을 뽑는다.</ridx>
+<ridx=1>(2) 상대방 전장의 추종자 중 무작위로 1장에게 2 피해.</ridx>
+""";
+    }
+
+    locale cht {
+        name "閃耀的金幣";
+        text """
+指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）由自己的牌堆中抽取1張卡片。</ridx>
+<ridx=1>（2）隨機給予1張敵方戰場上的從者卡2點傷害。</ridx>
+""";
+    }
+
+}

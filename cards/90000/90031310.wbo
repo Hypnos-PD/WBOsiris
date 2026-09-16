@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 90031310 {
+    type spell;
+    cost 1;
+    trait mysteria;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "玛纳利亚魔弹";
+        text """
+对对手的战场上的随机1个随从造成3点伤害。
+""";
+    }
+
+    locale eng {
+        name "Mysterian Missile";
+        text """
+Deal 3 damage to a random enemy follower.
+""";
+    }
+
+    locale jpn {
+        name "マナリアの<rub=\"まだん\">魔弾</rub>";
+        text """
+相手の場のフォロワーからランダム1枚に3ダメージ。
+""";
+    }
+
+    locale kor {
+        name "마나리아 마법탄";
+        text """
+상대방 전장의 추종자 중 무작위로 1장에게 3 피해.
+""";
+    }
+
+    locale cht {
+        name "馬納歷亞魔彈";
+        text """
+隨機給予1張敵方戰場上的從者卡3點傷害。
+""";
+    }
+
+}

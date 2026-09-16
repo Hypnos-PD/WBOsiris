@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10253120 {
+    type follower;
+    cost 4;
+    stats 1/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class abysscraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "夜曲将军·艾瑟拉";
+        text """
+【<color=Keyword>入场曲</color>】本随从+X/+0。X为自己的战场上的其他随从的张数。对自己的主战者造成2点伤害。
+<hr>【<color=Keyword>疾驰</color>】
+""";
+    }
+
+    locale eng {
+        name "Exella, Nocturnal General";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Give this follower +X/+0. X is the number of other allied followers on the field. Deal 2 damage to your leader.
+<hr><b><color=Keyword>Storm</color></b>
+""";
+    }
+
+    locale jpn {
+        name "ノクターンジェネラル・エクセラ";
+        text """
+【<color=Keyword>ファンファーレ</color>】これは+X/+0する。Xは自分の場の他のフォロワーの枚数である。自分のリーダーに2ダメージ。
+<hr>【<color=Keyword>疾走</color>】
+""";
+    }
+
+    locale kor {
+        name "녹턴 제너럴 엑셀라";
+        text """
+[<color=Keyword>출격</color>] 이 추종자는 +X/+0. X는 내 전장의 다른 추종자 수. 내 리더에게 2 피해.
+<hr>[<color=Keyword>질주</color>]
+""";
+    }
+
+    locale cht {
+        name "暮夜魔將‧艾瑟菈";
+        text """
+【<color=Keyword>入場曲</color>】使這張卡片+X/+0。X為「自己戰場上的其他從者卡張數」。給予自己的主戰者2點傷害。
+<hr>【<color=Keyword>疾馳</color>】
+""";
+    }
+
+}

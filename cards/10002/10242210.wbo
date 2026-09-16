@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10242210 {
+    type amulet;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "炎龙之剑";
+        text """
+费用1【<color=Keyword>启动</color>】破坏本卡牌。选择自己的战场上的1个随从，使其+1/+1且获得「【<color=Keyword>谢幕曲</color>】召唤1张『<color=Keyword>炎龙之剑</color>』」。
+""";
+    }
+
+    locale eng {
+        name "Pyrewyrm Blade";
+        text """
+<b><color=Keyword>Engage</color> (1)</b>: Destroy this card. Select an allied follower on the field and give it +1/+1 and \"<b><color=Keyword>Last Words</color></b>: Summon a <b><i><color=Keyword>Pyrewyrm Blade</color></i></b>.\"
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"えんりゅう\">炎竜</rub>の<rub=\"けん\">剣</rub>";
+        text """
+コスト1【<color=Keyword>アクト</color>】これを破壊。自分の場のフォロワー1枚を選ぶ。それは+1/+1して「【<color=Keyword>ラストワード</color>】『<color=Keyword>炎竜の剣</color>』1枚を自分の場に出す。」を持つ。
+""";
+    }
+
+    locale kor {
+        name "염룡의 검";
+        text """
+비용 1 [<color=Keyword>활성화</color>] 이 마법진을 파괴. 내 전장에서 추종자 1장을 선택한다. 그 추종자는 +1/+1 및 「[<color=Keyword>유언</color>] <color=Keyword>염룡의 검</color> 1장을 내 전장에 소환」을 갖는다.
+""";
+    }
+
+    locale cht {
+        name "炎龍之劍";
+        text """
+消費1【<color=Keyword>策動</color>】破壞這張卡片。指定1張自己戰場上的從者卡。使其+1/+1並獲得「【<color=Keyword>謝幕曲</color>】召喚1張『<color=Keyword>炎龍之劍</color>』到自己的戰場上」。
+""";
+    }
+
+}

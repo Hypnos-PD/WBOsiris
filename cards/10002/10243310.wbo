@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10243310 {
+    type spell;
+    cost 6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class dragoncraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "龙骑突击";
+        text """
+选择自己的1张手牌，使其费用-2。对对手的战场上的所有随从造成3点伤害。
+""";
+    }
+
+    locale eng {
+        name "Draconic Strike";
+        text """
+Select a card in your hand and reduce its cost by 2. Deal 3 damage to all enemy followers.
+""";
+    }
+
+    locale jpn {
+        name "ドラゴニックストライク";
+        text """
+自分の手札1枚を選ぶ。それのコストを-2する。相手の場のフォロワーすべてに3ダメージ。
+""";
+    }
+
+    locale kor {
+        name "드래고닉 스트라이크";
+        text """
+내 패에서 1장을 선택한다. 그 카드의 비용을 -2. 상대방 전장의 추종자 모두에게 3 피해.
+""";
+    }
+
+    locale cht {
+        name "龍魂合擊";
+        text """
+指定1張自己手牌中的卡片。使其消費-2。給予敵方戰場上全部的從者卡3點傷害。
+""";
+    }
+
+}

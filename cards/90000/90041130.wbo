@@ -1,0 +1,54 @@
+wbo 0.1.0;
+
+card 90041130 {
+    type follower;
+    cost 2;
+    stats 2/2;
+    trait marine;
+
+    effect {
+        rush;
+    }
+
+    meta {
+        pack 90000;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "大海虎鲸";
+        text """
+【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Majestic Megalorca";
+        text """
+<b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"たいかい\">大海</rub>のオルカ";
+        text """
+【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "대해의 오르카";
+        text """
+[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "滄海虎鯨";
+        text """
+【<color=Keyword>突進</color>】
+""";
+    }
+
+}

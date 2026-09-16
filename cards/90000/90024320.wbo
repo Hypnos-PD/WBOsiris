@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 90024320 {
+    type spell;
+    cost 0;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class swordcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "天剑深渊";
+        text """
+选择对手的战场上的1个随从，对其造成1点伤害。
+【<color=Keyword>爆能强化</color>_1】改为3点伤害。
+""";
+    }
+
+    locale eng {
+        name "Depths of the Eld Sword";
+        text """
+Select an enemy follower on the field and deal it 1 damage.
+<b><color=Keyword>Enhance</color> (1)</b>: Deal 3 damage instead.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんけん\">天剣</rub>の<rub=\"しんえん\">深淵</rub>";
+        text """
+相手の場のフォロワー1枚を選ぶ。それに1ダメージ。
+【<color=Keyword>エンハンス</color>_1】1ダメージではなく3ダメージ。
+""";
+    }
+
+    locale kor {
+        name "천검의 심연";
+        text """
+상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 1 피해.
+[<color=Keyword>증강</color> 1] 1 피해 대신 3 피해.
+""";
+    }
+
+    locale cht {
+        name "天劍的深淵";
+        text """
+指定1張敵方戰場上的從者卡。給予其1點傷害。
+【<color=Keyword>爆能強化</color>_1】由原本的1點傷害轉變為3點傷害。
+""";
+    }
+
+}

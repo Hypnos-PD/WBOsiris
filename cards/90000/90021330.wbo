@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 90021330 {
+    type spell;
+    cost 1;
+    trait loot;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "黄金之靴";
+        text """
+选择自己的战场上的1个随从，使其+1/+0且获得【<color=Keyword>突进</color>】。
+""";
+    }
+
+    locale eng {
+        name "Gilded Boots";
+        text """
+Select an allied follower on the field and give it +1/+0 and <b><color=Keyword>Rush</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"おうごん\">黄金</rub>の<rub=\"くつ\">靴</rub>";
+        text """
+自分の場のフォロワー1枚を選ぶ。それは+1/+0して【<color=Keyword>突進</color>】を持つ。
+""";
+    }
+
+    locale kor {
+        name "황금 신발";
+        text """
+내 전장에서 추종자 1장을 선택한다. 그 추종자는 +1/+0 및 [<color=Keyword>돌진</color>]을 갖는다.
+""";
+    }
+
+    locale cht {
+        name "黃金之靴";
+        text """
+指定1張自己戰場上的從者卡。使其+1/+0並獲得【<color=Keyword>突進</color>】。
+""";
+    }
+
+}

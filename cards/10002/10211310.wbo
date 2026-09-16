@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10211310 {
+    type spell;
+    cost 7;
+
+    effect {
+        summon 3 card 10011130;
+    }
+
+    meta {
+        pack 10002;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "森林的游行";
+        text """
+召唤3个『<color=Keyword>温厚的树精</color>』。
+""";
+    }
+
+    locale eng {
+        name "Woodwalkers";
+        text """
+Summon 3 copies of <b><i><color=Keyword>Gentle Treant</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"もり\">森</rub>の<rub=\"こうしん\">行進</rub>";
+        text """
+『<color=Keyword>温厚なるトレント</color>』3枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "숲의 행진";
+        text """
+<color=Keyword>온화한 트렌트</color> 3장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "森林的行進";
+        text """
+召喚3張『<color=Keyword>溫厚的樹精</color>』到自己的戰場上。
+""";
+    }
+
+}

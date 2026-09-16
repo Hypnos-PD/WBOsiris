@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 90034320 {
+    type spell;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "伟大之术";
+        text """
+选择对手的战场上的1个随从或对手的主战者，对其造成2点伤害。回复自己的主战者1点生命值。
+""";
+    }
+
+    locale eng {
+        name "Ars Magna";
+        text """
+Select an enemy and deal it 2 damage. Restore 1 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "アルス・マグナ";
+        text """
+相手の場のフォロワー1枚か相手のリーダーを選ぶ。それに2ダメージ。自分のリーダーを1回復。
+""";
+    }
+
+    locale kor {
+        name "아르스 마그나";
+        text """
+상대방 리더나 상대방 전장에서 추종자 1장을 선택한다. 그 대상에게 2 피해. 내 리더를 1 회복.
+""";
+    }
+
+    locale cht {
+        name "魔創鍊金";
+        text """
+指定1張敵方戰場上的從者卡或敵方的主戰者。給予其2點傷害。回復自己的主戰者1點生命值。
+""";
+    }
+
+}

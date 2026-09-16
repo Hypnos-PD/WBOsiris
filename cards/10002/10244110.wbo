@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10244110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "银冰龙少女·菲琳";
+        text """
+【<color=Keyword>入场曲</color>】若为【<color=Keyword>觉醒</color>】，则将1张『<color=Keyword>银冰吐息</color>』加入手牌。
+<hr>【<color=Keyword>毁灭</color>】
+<hr><ev>【<color=Keyword>进化时</color>】对对手的战场上的所有随从造成1点伤害。</ev>
+""";
+    }
+
+    locale eng {
+        name "Filene, Whitefrost Bloom";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If you're in <b><color=Keyword>Overflow</color></b>, add a <b><i><color=Keyword>Whitefrost Whisper</color></i></b> to your hand.
+<hr><b><color=Keyword>Bane</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Deal 1 damage to all enemy followers.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぎんひょう\">銀氷</rub>の<rub=\"りゅうしょうじょ\">竜少女</rub>・フィルレイン";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>覚醒</color>】なら、『<color=Keyword>銀氷の吐息</color>』1枚を自分の手札に加える。
+<hr>【<color=Keyword>必殺</color>】
+<hr><ev>【<color=Keyword>進化時</color>】相手の場のフォロワーすべてに1ダメージ。</ev>
+""";
+    }
+
+    locale kor {
+        name "은빛얼음의 용소녀 필레인";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>각성</color>]이라면, <color=Keyword>은빛얼음의 숨결</color> 1장을 내 패에 넣는다.
+<hr>[<color=Keyword>필살</color>]
+<hr><ev>[<color=Keyword>진화시</color>] 상대방 전장의 추종자 모두에게 1 피해.</ev>
+""";
+    }
+
+    locale cht {
+        name "銀冰龍少女‧菲琳";
+        text """
+【<color=Keyword>入場曲</color>】如果【<color=Keyword>覺醒</color>】已發動，則會增加1張『<color=Keyword>銀冰吐息</color>』到自己的手牌中。
+<hr>【<color=Keyword>必殺</color>】
+<hr><ev>【<color=Keyword>進化時</color>】給予敵方戰場上全部的從者卡1點傷害。</ev>
+""";
+    }
+
+}

@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 90064320 {
+    type spell;
+    cost 1;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "天书深渊";
+        text """
+选择战场上的1张卡牌，破坏该卡牌。若选择了自己的护符，则对对手的主战者造成2点伤害。将1张『<color=Keyword>天书深渊</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Depths of the Eld Tome";
+        text """
+Select a card on the field and destroy it. If you selected an allied amulet, deal 2 damage to the enemy leader and add a <b><i><color=Keyword>Depths of the Eld Tome</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんしょ\">天書</rub>の<rub=\"しんえん\">深淵</rub>";
+        text """
+場のカード1枚を選ぶ。それを破壊。自分のアミュレットを選んだなら、相手のリーダーに2ダメージ。『<color=Keyword>天書の深淵</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "천서의 심연";
+        text """
+전장에서 카드 1장을 선택한다. 그 카드를 파괴. 내 마법진을 선택했다면, 상대방 리더에게 2 피해. <color=Keyword>천서의 심연</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "天書的深淵";
+        text """
+指定1張戰場上的卡片。將其破壞。如果指定的是自己的護符卡，則會給予敵方的主戰者2點傷害。增加1張『<color=Keyword>天書的深淵</color>』到自己的手牌中。
+""";
+    }
+
+}

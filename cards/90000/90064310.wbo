@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 90064310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "绝望的奔流";
+        text """
+使对手的战场上的随机1个随从消失。使自己的所有纹章的倒计数+1。
+""";
+    }
+
+    locale eng {
+        name "Torrent of Despair";
+        text """
+Banish a random enemy follower from the field. Delay the counts of all your crests by 1.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぜつぼう\">絶望</rub>の<rub=\"ほんりゅう\">奔流</rub>";
+        text """
+相手の場のフォロワーからランダム1枚を消滅。自分のクレストすべてのカウントを+1する。
+""";
+    }
+
+    locale kor {
+        name "절망의 격류";
+        text """
+상대방 전장의 추종자 중 무작위로 1장을 소멸. 내 크레스트 모두의 카운트를 +1.
+""";
+    }
+
+    locale cht {
+        name "絕望的奔流";
+        text """
+隨機使1張敵方戰場上的從者卡消失。使自己全部紋章的倒數回合數+1。
+""";
+    }
+
+}

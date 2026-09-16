@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 90004320 {
+    type spell;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class neutral;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "绝大的证明";
+        text """
+选择对手的战场上的1个随从，破坏该随从。
+""";
+    }
+
+    locale eng {
+        name "Great Testimony";
+        text """
+Select an enemy follower on the field and destroy it.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぜつだい\">絶大</rub>の<rub=\"しょうめい\">証明</rub>";
+        text """
+相手の場のフォロワー1枚を選ぶ。それを破壊。
+""";
+    }
+
+    locale kor {
+        name "위대의 증명";
+        text """
+상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴.
+""";
+    }
+
+    locale cht {
+        name "絕大的證明";
+        text """
+指定1張敵方戰場上的從者卡。將其破壞。
+""";
+    }
+
+}

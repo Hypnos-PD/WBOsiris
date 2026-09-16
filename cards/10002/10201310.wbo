@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10201310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "逆向变化";
+        text """
+选择战场上的1个随从，使其+2/-2。
+""";
+    }
+
+    locale eng {
+        name "Dark Side";
+        text """
+Select a follower on the field and give it +2/-2.
+""";
+    }
+
+    locale jpn {
+        name "リバースチェンジ";
+        text """
+場のフォロワー1枚を選ぶ。それは+2/-2する。
+""";
+    }
+
+    locale kor {
+        name "리버스 체인지";
+        text """
+전장에서 추종자 1장을 선택한다. 그 추종자는 +2/-2.
+""";
+    }
+
+    locale cht {
+        name "反轉互換";
+        text """
+指定1張戰場上的從者卡。使其+2/-2。
+""";
+    }
+
+}

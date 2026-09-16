@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10222120 {
+    type follower;
+    cost 4;
+    stats 3/3;
+
+    effect {
+        fanfare {
+            draw 1 from deck where type spell;
+        }
+        evolve {
+            gain own.pp 2;
+        }
+    }
+
+    meta {
+        pack 10002;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "平凡骑士·拉奇尔";
+        text """
+【<color=Keyword>入场曲</color>】抽取1张法术。
+<hr><ev>【<color=Keyword>进化时</color>】回复自己2点能量点。</ev>
+""";
+    }
+
+    locale eng {
+        name "Rackhir, Ordinary Knight";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Draw a spell.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Recover 2 play points.</ev>
+""";
+    }
+
+    locale jpn {
+        name "オーディナリーナイト・ラキル";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキからスペル1枚を引く。
+<hr><ev>【<color=Keyword>進化時</color>】自分のPPを2回復。</ev>
+""";
+    }
+
+    locale kor {
+        name "평범한 기사 라킬";
+        text """
+[<color=Keyword>출격</color>] 내 덱에서 주문 1장을 뽑는다.
+<hr><ev>[<color=Keyword>진화시</color>] 내 PP를 2 회복.</ev>
+""";
+    }
+
+    locale cht {
+        name "平庸騎士‧拉奇爾";
+        text """
+【<color=Keyword>入場曲</color>】由自己的牌堆中抽取1張法術卡。
+<hr><ev>【<color=Keyword>進化時</color>】回復自己的PP 2點。</ev>
+""";
+    }
+
+}

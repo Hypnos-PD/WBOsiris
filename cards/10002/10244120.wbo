@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10244120 {
+    type follower;
+    cost 8;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "绚丽凤凰·小凤";
+        text """
+【<color=Keyword>入场曲</color>】使自己的牌组中的所有卡牌的费用变为一半。
+""";
+    }
+
+    locale eng {
+        name "Fennie, Prismatic Phoenix";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Halve the cost of all cards in your deck.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"けんらん\">絢爛</rub>なる<rub=\"ほうおう\">鳳凰</rub>・ほーちゃん";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキすべてのコストを半分にする。
+""";
+    }
+
+    locale kor {
+        name "현란한 봉황 호짱";
+        text """
+[<color=Keyword>출격</color>] 내 덱 모두의 비용을 절반으로 줄인다.
+""";
+    }
+
+    locale cht {
+        name "絢爛鳳凰‧小鳳";
+        text """
+【<color=Keyword>入場曲</color>】使自己牌堆中全部的卡片消費減半。
+""";
+    }
+
+}

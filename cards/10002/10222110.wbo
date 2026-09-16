@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10222110 {
+    type follower;
+    cost 3;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "无畏的副团长·格尔德";
+        text """
+【<color=Keyword>守护</color>】
+自己的回合结束时，若自己的战场上有超进化后的随从，则使自己的战场上的所有随从+1/+1。
+""";
+    }
+
+    locale eng {
+        name "Gelt, Intrepid Vice-Captain";
+        text """
+<b><color=Keyword>Ward</color></b>
+At the end of your turn, if there's a super-evolved allied follower on the field, give all allied followers on the field +1/+1.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ごうたん\">豪胆</rub>なる<rub=\"ふくだんちょう\">副団長</rub>・ゲルト";
+        text """
+【<color=Keyword>守護</color>】
+自分のターン終了時、自分の場に超進化後のフォロワーがあるなら、自分の場のフォロワーすべては+1/+1する。
+""";
+    }
+
+    locale kor {
+        name "대담한 부단장 게르트";
+        text """
+[<color=Keyword>수호</color>]
+내 턴 종료시 내 전장에 초진화후인 추종자가 있다면, 내 전장의 추종자 모두는 +1/+1.
+""";
+    }
+
+    locale cht {
+        name "果敢的副團長‧格爾德";
+        text """
+【<color=Keyword>守護</color>】
+自己的回合結束時，如果自己戰場上有已超進化的從者卡，則會使自己戰場上全部的從者卡+1/+1。
+""";
+    }
+
+}

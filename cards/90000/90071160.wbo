@@ -1,0 +1,54 @@
+wbo 0.1.0;
+
+card 90071160 {
+    type follower;
+    cost 3;
+    stats 2/2;
+    trait artifact;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "绚烂的创造物";
+        text """
+【<color=Keyword>疾驰</color>】
+""";
+    }
+
+    locale eng {
+        name "Radiant Artifact";
+        text """
+<b><color=Keyword>Storm</color></b>
+""";
+    }
+
+    locale jpn {
+        name "レディアントアーティファクト";
+        text """
+【<color=Keyword>疾走</color>】
+""";
+    }
+
+    locale kor {
+        name "빛의 아티팩트";
+        text """
+[<color=Keyword>질주</color>]
+""";
+    }
+
+    locale cht {
+        name "絢爛的創造物";
+        text """
+【<color=Keyword>疾馳</color>】
+""";
+    }
+
+}

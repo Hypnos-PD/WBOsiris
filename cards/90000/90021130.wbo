@@ -1,0 +1,54 @@
+wbo 0.1.0;
+
+card 90021130 {
+    type follower;
+    cost 3;
+    stats 4/4;
+    trait officer;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "娜哈特的私兵";
+        text """
+
+""";
+    }
+
+    locale eng {
+        name "Naht's Henchman";
+        text """
+
+""";
+    }
+
+    locale jpn {
+        name "ナハトの<rub=\"しへい\">私兵</rub>";
+        text """
+
+""";
+    }
+
+    locale kor {
+        name "나흐트의 사병";
+        text """
+
+""";
+    }
+
+    locale cht {
+        name "娜哈特的私兵";
+        text """
+
+""";
+    }
+
+}

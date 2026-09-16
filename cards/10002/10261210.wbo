@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10261210 {
+    type amulet;
+    cost 2;
+
+    effect {
+        engage 1 {
+            destroy self;
+            heal own.leader 4;
+        }
+    }
+
+    meta {
+        pack 10002;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "流光香炉";
+        text """
+费用1【<color=Keyword>启动</color>】破坏本卡牌。回复自己的主战者4点生命值。
+""";
+    }
+
+    locale eng {
+        name "Luminous Censer";
+        text """
+<b><color=Keyword>Engage</color> (1)</b>: Destroy this card. Restore 4 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ひかり\">光</rub>の<rub=\"こうろ\">香炉</rub>";
+        text """
+コスト1【<color=Keyword>アクト</color>】これを破壊。自分のリーダーを4回復。
+""";
+    }
+
+    locale kor {
+        name "빛의 향로";
+        text """
+비용 1 [<color=Keyword>활성화</color>] 이 마법진을 파괴. 내 리더를 4 회복.
+""";
+    }
+
+    locale cht {
+        name "輝光香爐";
+        text """
+消費1【<color=Keyword>策動</color>】破壞這張卡片。回復自己的主戰者4點生命值。
+""";
+    }
+
+}

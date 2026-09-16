@@ -1,0 +1,64 @@
+wbo 0.1.0;
+
+card 10233110 {
+    type follower;
+    cost 3;
+    stats 3/3;
+    trait mysteria;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class runecraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "玛纳利亚剑士·欧文";
+        text """
+【<color=Keyword>守护</color>】
+【<color=Keyword>交战时</color>】使自己的所有手牌发动1次魔力增幅。
+<hr><ev>【<color=Keyword>进化时</color>】抽取2张随从。</ev>
+""";
+    }
+
+    locale eng {
+        name "Owen, Mysterian Swordsman";
+        text """
+<b><color=Keyword>Ward</color></b>
+<b><color=Keyword>Clash</color></b>: Spellboost your hand.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Draw 2 followers.</ev>
+""";
+    }
+
+    locale jpn {
+        name "マナリアの<rub=\"けんし\">剣士</rub>・オーウェン";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>交戦時</color>】自分の手札すべては1回スペルブーストする。
+<hr><ev>【<color=Keyword>進化時</color>】自分のデッキからフォロワー2枚を引く。</ev>
+""";
+    }
+
+    locale kor {
+        name "마나리아 검사 오웬";
+        text """
+[<color=Keyword>수호</color>]
+[<color=Keyword>교전시</color>] 내 패 모두를 1회 주문증폭.
+<hr><ev>[<color=Keyword>진화시</color>] 내 덱에서 추종자 2장을 뽑는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "馬納歷亞劍士‧歐文";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>交戰時</color>】使自己手牌中全部的卡片發動1次魔力增幅。
+<hr><ev>【<color=Keyword>進化時</color>】由自己的牌堆中抽取2張從者卡。</ev>
+""";
+    }
+
+}

@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10264120 {
+    type follower;
+    cost 6;
+    stats 4/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "呜咽的圣骑士·维尔伯特";
+        text """
+【<color=Keyword>守护</color>】
+【<color=Keyword>谢幕曲</color>】召唤2个『<color=Keyword>圣骑兵</color>』。
+<hr><ev>【<color=Keyword>进化时</color>】使自己获得『纹章：呜咽的圣骑士·维尔伯特』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Wilbert, Desolate Paladin";
+        text """
+<b><color=Keyword>Ward</color></b>
+<b><color=Keyword>Last Words</color></b>: Summon 2 copies of <b><i><color=Keyword>Holy Cavalier</color></i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Gain <b><i>Crest: Wilbert, Desolate Paladin</i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"おえつ\">嗚咽</rub>の<rub=\"せいきし\">聖騎士</rub>・ウィルバート";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>ラストワード</color>】『<color=Keyword>聖騎兵</color>』2枚を自分の場に出す。
+<hr><ev>【<color=Keyword>進化時</color>】自分は『クレスト：嗚咽の聖騎士・ウィルバート』を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "통곡의 성기사 윌버트";
+        text """
+[<color=Keyword>수호</color>]
+[<color=Keyword>유언</color>] <color=Keyword>신의 기병</color> 2장을 내 전장에 소환.
+<hr><ev>[<color=Keyword>진화시</color>] 나는 「크레스트: 통곡의 성기사 윌버트」를 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "哀泣的聖騎士‧維爾伯特";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>謝幕曲</color>】召喚2張『<color=Keyword>聖騎兵</color>』到自己的戰場上。
+<hr><ev>【<color=Keyword>進化時</color>】使自己獲得『紋章：哀泣的聖騎士‧維爾伯特』。</ev>
+""";
+    }
+
+}

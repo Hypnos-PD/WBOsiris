@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 90032110 {
+    type follower;
+    cost 1;
+    stats 1/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "洋葱军团兵";
+        text """
+【<color=Keyword>突进</color>】
+【<color=Keyword>攻击时</color>】使自己的所有手牌发动1次魔力增幅。
+""";
+    }
+
+    locale eng {
+        name "Onion Patch";
+        text """
+<b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Strike</color></b>: Spellboost your hand.
+""";
+    }
+
+    locale jpn {
+        name "オニオン<rub=\"ぐんだん\">軍団</rub>";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>攻撃時</color>】自分の手札すべては1回スペルブーストする。
+""";
+    }
+
+    locale kor {
+        name "양파 군단";
+        text """
+[<color=Keyword>돌진</color>]
+[<color=Keyword>공격시</color>] 내 패 모두를 1회 주문증폭.
+""";
+    }
+
+    locale cht {
+        name "洋蔥軍團";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>攻擊時</color>】使自己手牌中全部的卡片發動1次魔力增幅。
+""";
+    }
+
+}

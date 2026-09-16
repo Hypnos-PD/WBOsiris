@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10261120 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "恶意的神谕·达姆斯";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的1个随从，使其获得「自己的回合结束时，破坏本卡牌」。
+""";
+    }
+
+    locale eng {
+        name "Damus, Oracle of Malice";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select an enemy follower on the field and give it \"At the end of your turn, destroy this card.\"
+""";
+    }
+
+    locale jpn {
+        name "マリスオラクル・ダムス";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー1枚を選ぶ。それは「自分のターン終了時、これを破壊。」を持つ。
+""";
+    }
+
+    locale kor {
+        name "악의의 신탁 다무즈";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자는 「내 턴 종료시, 이 추종자를 파괴」를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "惡意的神諭‧達姆斯";
+        text """
+【<color=Keyword>入場曲</color>】指定1張敵方戰場上的從者卡。使其獲得「自己的回合結束時，破壞這張卡片」。
+""";
+    }
+
+}

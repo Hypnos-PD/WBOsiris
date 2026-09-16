@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10273310 {
+    type spell;
+    cost 6;
+
+    effect {
+        summon 1 card 90074120;
+        summon 1 card 90074130;
+    }
+
+    meta {
+        pack 10002;
+        class portalcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "心有灵犀的共斗";
+        text """
+召唤1个『<color=Keyword>洛伊德</color>』和1个『<color=Keyword>维多利亚</color>』。
+""";
+    }
+
+    locale eng {
+        name "Synchronous Hearts";
+        text """
+Summon a <b><i><color=Keyword>Lloyd</color></i></b> and <b><i><color=Keyword>Victoria</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"こころあ\">心有</rub>る<rub=\"きょうとう\">共闘</rub>";
+        text """
+『<color=Keyword>ロイド</color>』1枚と『<color=Keyword>ヴィクトリア</color>』1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "마음 있는 협공";
+        text """
+<color=Keyword>로이드</color> 1장, <color=Keyword>빅토리아</color> 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "擁心共鬥";
+        text """
+召喚1張『<color=Keyword>洛伊德</color>』與1張『<color=Keyword>維多利亞</color>』到自己的戰場上。
+""";
+    }
+
+}

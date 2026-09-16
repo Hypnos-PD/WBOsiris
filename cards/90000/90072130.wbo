@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 90072130 {
+    type follower;
+    cost 1;
+    stats 1/1;
+    trait puppetry;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "屠戮人偶";
+        text """
+【<color=Keyword>潜行</color>】
+【<color=Keyword>谢幕曲</color>】召唤1个『<color=Keyword>心灵屠戮者·菲亚</color>』。
+""";
+    }
+
+    locale eng {
+        name "Doll Slayer";
+        text """
+<b><color=Keyword>Ambush</color></b>
+<b><color=Keyword>Last Words</color></b>: Summon a <b><i><color=Keyword>Vier, Heart Slayer</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "ドールスローター";
+        text """
+【<color=Keyword>潜伏</color>】
+【<color=Keyword>ラストワード</color>】『<color=Keyword>ハートスローター・フィア</color>』1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "인형 학살자";
+        text """
+[<color=Keyword>잠복</color>]
+[<color=Keyword>유언</color>] <color=Keyword>마음 학살자 피아</color> 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "虐殺人偶";
+        text """
+【<color=Keyword>潛行</color>】
+【<color=Keyword>謝幕曲</color>】召喚1張『<color=Keyword>無心虐殺者‧菲亞</color>』到自己的戰場上。
+""";
+    }
+
+}

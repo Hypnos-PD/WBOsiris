@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 90022110 {
+    type follower;
+    cost 2;
+    stats 4/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "异形";
+        text """
+【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Wretch";
+        text """
+<b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"いぎょう\">異形</rub>";
+        text """
+【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "이형";
+        text """
+[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "異形";
+        text """
+【<color=Keyword>突進</color>】
+""";
+    }
+
+}

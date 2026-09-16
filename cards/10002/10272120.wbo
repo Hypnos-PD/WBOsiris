@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10272120 {
+    type follower;
+    cost 5;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "绝望之王·阿基姆";
+        text """
+<ev>【<color=Keyword>进化时</color>】选择对手的战场上的1个攻击力为4或以下的随从，使其消失，召唤对应数量的复制随从。</ev>
+""";
+    }
+
+    locale eng {
+        name "Achim, Lord of Despair";
+        text """
+<ev><b><color=Keyword>Evolve</color></b>: Select an enemy follower on the field with 4 attack or less, banish it, and summon an exact copy of it.</ev>
+""";
+    }
+
+    locale jpn {
+        name "ディスペアロード・アキム";
+        text """
+<ev>【<color=Keyword>進化時</color>】相手の場の攻撃力4以下のフォロワー1枚を選ぶ。それを消滅して、コピー1枚を自分の場に出す。</ev>
+""";
+    }
+
+    locale kor {
+        name "절망의 군주 아킴";
+        text """
+<ev>[<color=Keyword>진화시</color>] 상대방 전장에서 공격력이 4 이하인 추종자 1장을 선택한다. 그 추종자를 소멸시키고 복사본 1장을 내 전장에 소환.</ev>
+""";
+    }
+
+    locale cht {
+        name "絕望君主‧阿紀摩";
+        text """
+<ev>【<color=Keyword>進化時</color>】指定1張敵方戰場上攻擊力為4以下的從者卡。使其消失，並將其複製1張後召喚到自己的戰場上。</ev>
+""";
+    }
+
+}

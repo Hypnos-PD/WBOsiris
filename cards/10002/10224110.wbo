@@ -1,0 +1,64 @@
+wbo 0.1.0;
+
+card 10224110 {
+    type follower;
+    cost 6;
+    stats 4/4;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class swordcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "静寂的安纳提玛·吉尔达利娅";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>协作</color>_20】本随从超进化。
+<hr>自己的其他随从进入战场时，对对手的战场上的所有随从造成1点伤害。
+<hr><ev>本随从进化时，召唤2个『<color=Keyword>铁甲骑士</color>』，使其获得【<color=Keyword>突进</color>】。</ev>
+""";
+    }
+
+    locale eng {
+        name "Gildaria, Anathema of Peace";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Rally</color> (20)</b> - Super-evolve this follower.
+<hr>Whenever another allied follower enters the field, deal 1 damage to all enemy followers.
+<hr><ev>When this follower evolves, summon 2 copies of <b><i><color=Keyword>Steelclad Knight</color></i></b> and give them <b><color=Keyword>Rush</color></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"せいじゃく\">静寂</rub>のアナテマ・ギルダリア";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>連携</color>_20】これは超進化する。
+<hr>自分の他のフォロワーが場に出たとき、相手の場のフォロワーすべてに1ダメージ。
+<hr><ev>これが進化したとき、『<color=Keyword>スティールナイト</color>』2枚を自分の場に出す。それは【<color=Keyword>突進</color>】を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "정적의 아나테마 기르다리아";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>연계</color> 20] 이 추종자는 초진화한다.
+<hr>내 다른 추종자가 전장에 소환되었을 때, 상대방 전장의 추종자 모두에게 1 피해.
+<hr><ev>이 추종자가 진화했을 때, <color=Keyword>철갑 기사</color> 2장을 내 전장에 소환. 그 추종자는 [<color=Keyword>돌진</color>]을 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "靜寂的弒滅者‧吉露塔利亞";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>協作</color>_20】使這張卡片超進化。
+<hr>當自己的其他從者卡進入戰場時，給予敵方戰場上全部的從者卡1點傷害。
+<hr><ev>當這張卡片進化時，召喚2張『<color=Keyword>鐵甲騎士</color>』到自己的戰場上。使其獲得【<color=Keyword>突進</color>】。</ev>
+""";
+    }
+
+}

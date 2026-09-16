@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 10232310 {
+    type spell;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10002;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "混沌赤焰";
+        text """
+X起始为0。
+【<color=Keyword>魔力增幅时</color>】使本卡牌的X+1。
+<hr>对对手的战场上的所有随从分配X点伤害。
+""";
+    }
+
+    locale eng {
+        name "Flames of Chaos";
+        text """
+X starts at 0.
+<b><color=Keyword>On Spellboost</color></b>: Increase X by 1.
+<hr>Deal X damage split between all enemy followers.
+""";
+    }
+
+    locale jpn {
+        name "カオスフレイム";
+        text """
+Xは0から始まる。
+【<color=Keyword>スペルブースト時</color>】これのXを+1する。
+<hr>相手の場のフォロワーすべてにXダメージを割りふる。
+""";
+    }
+
+    locale kor {
+        name "카오스 플레임";
+        text """
+X는 0부터 시작.
+[<color=Keyword>주문증폭시</color>] 이 주문의 X를 +1.
+<hr>상대방 전장의 추종자 모두에게 X 피해를 분배한다.
+""";
+    }
+
+    locale cht {
+        name "混沌暴炎";
+        text """
+X由0開始。
+【<color=Keyword>魔力增幅時</color>】使這張卡片的X+1。
+<hr>對敵方戰場上全部的從者卡分配X點傷害。
+""";
+    }
+
+}

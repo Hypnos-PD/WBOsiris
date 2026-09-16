@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10241310 {
+    type spell;
+    cost 2;
+
+    effect {
+        summon 1 card 90041130;
+        if overflow {
+            draw 1 from deck where card 10241310;
+        }
+    }
+
+    meta {
+        pack 10002;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "虎鲸的呼声";
+        text """
+召唤1个『<color=Keyword>大海虎鲸</color>』。若为【<color=Keyword>觉醒</color>】，则抽取1张『<color=Keyword>虎鲸的呼声</color>』。
+""";
+    }
+
+    locale eng {
+        name "Call of the Megalorca";
+        text """
+Summon a <b><i><color=Keyword>Majestic Megalorca</color></i></b>. If you're in <b><color=Keyword>Overflow</color></b>, draw a <b><i><color=Keyword>Call of the Megalorca</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "オルカの<rub=\"よ\">呼</rub>び<rub=\"ごえ\">声</rub>";
+        text """
+『<color=Keyword>大海のオルカ</color>』1枚を自分の場に出す。【<color=Keyword>覚醒</color>】なら、自分のデッキから『<color=Keyword>オルカの呼び声</color>』1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "오르카의 울음소리";
+        text """
+<color=Keyword>대해의 오르카</color> 1장을 내 전장에 소환. [<color=Keyword>각성</color>]이라면, 내 덱에서 <color=Keyword>오르카의 울음소리</color> 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "虎鯨的呼喚";
+        text """
+召喚1張『<color=Keyword>滄海虎鯨</color>』到自己的戰場上。如果【<color=Keyword>覺醒</color>】已發動，則會由自己的牌堆中抽取1張『<color=Keyword>虎鯨的呼喚</color>』。
+""";
+    }
+
+}

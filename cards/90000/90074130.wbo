@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 90074130 {
+    type follower;
+    cost 3;
+    stats 6/1;
+    trait puppetry;
+
+    effect {
+        rush;
+        attack {
+            damage opponent self.attack;
+        }
+    }
+
+    meta {
+        pack 90000;
+        class portalcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "维多利亚";
+        text """
+【<color=Keyword>突进</color>】
+【<color=Keyword>攻击时</color>】若攻击随从，则对交战对手造成X点伤害。X为本随从的攻击力。
+""";
+    }
+
+    locale eng {
+        name "Victoria";
+        text """
+<b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Follower</color></b> <b><color=Keyword>Strike</color></b>: Deal X damage to the opposing follower. X is this follower's attack.
+""";
+    }
+
+    locale jpn {
+        name "ヴィクトリア";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>攻撃時</color>】フォロワーへの攻撃なら、交戦相手にXダメージ。Xはこれの攻撃力である。
+""";
+    }
+
+    locale kor {
+        name "빅토리아";
+        text """
+[<color=Keyword>돌진</color>]
+[<color=Keyword>공격시</color>] 추종자를 공격한다면, 교전 상대에게 X 피해. X는 이 추종자의 공격력.
+""";
+    }
+
+    locale cht {
+        name "維多利亞";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>攻擊時</color>】如果對從者卡進行攻擊，則會給予交戰對象X點傷害。X為「這張卡片的攻擊力」。
+""";
+    }
+
+}

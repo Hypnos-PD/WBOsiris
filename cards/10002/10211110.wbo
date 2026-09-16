@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10211110 {
+    type follower;
+    cost 3;
+    stats 3/3;
+
+    effect {
+        rush;
+    }
+
+    meta {
+        pack 10002;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "狂野女孩";
+        text """
+【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Wildheart";
+        text """
+<b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "ワイルドガール";
+        text """
+【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "와일드 걸";
+        text """
+[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "野性少女";
+        text """
+【<color=Keyword>突進</color>】
+""";
+    }
+
+}

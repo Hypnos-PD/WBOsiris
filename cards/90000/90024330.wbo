@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 90024330 {
+    type spell;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class swordcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "亡命者的枪击";
+        text """
+发动2次「对对手的战场上的随机1个随从造成4点伤害」。
+""";
+    }
+
+    locale eng {
+        name "Desperados' Shot";
+        text """
+Do this 2 times: \"Deal 4 damage to a random enemy follower.\"
+""";
+    }
+
+    locale jpn {
+        name "デスペラードショット";
+        text """
+「相手の場のフォロワーからランダム1枚に4ダメージ。」を2回行う。
+""";
+    }
+
+    locale kor {
+        name "데스페라도 샷";
+        text """
+「상대방 전장의 추종자 중 무작위로 1장에게 4 피해」를 2회 발동.
+""";
+    }
+
+    locale cht {
+        name "亡命者的槍擊";
+        text """
+發動2次「隨機給予1張敵方戰場上的從者卡4點傷害」。
+""";
+    }
+
+}

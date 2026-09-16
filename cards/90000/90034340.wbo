@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 90034340 {
+    type spell;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 90000;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "苍奏之四";
+        text """
+对对手的战场上的所有随从造成5点伤害。
+""";
+    }
+
+    locale eng {
+        name "Delta Cannon";
+        text """
+Deal 5 damage to all enemy followers.
+""";
+    }
+
+    locale jpn {
+        name "ソニック・フォー";
+        text """
+相手の場のフォロワーすべてに5ダメージ。
+""";
+    }
+
+    locale kor {
+        name "소닉 포";
+        text """
+상대방 전장의 추종자 모두에게 5 피해.
+""";
+    }
+
+    locale cht {
+        name "蒼奏之四";
+        text """
+給予敵方戰場上全部的從者卡5點傷害。
+""";
+    }
+
+}
