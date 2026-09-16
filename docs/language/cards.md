@@ -399,6 +399,10 @@ summon copies of targets;
 buff summoned +1/+1;
 ```
 
+`summon N card X for own|oppo;` 在指定一方的战场上召唤（省略 `for` 时是 `own`）。
+"在对手的战场上召唤2个『骑士』"写作 `summon 2 card 90021110 for oppo;`；
+召唤出的随从属于那一方，入场事件、战场容量与 `summoned` 绑定都按该方结算。
+
 复制继承当前费用、攻击力和生命值（包括已受伤害）、进化形态、关键词、计数器、
 附加效果及其原有到期回合、融合材料记录；副本的可变状态与原卡相互独立。
 本回合攻击次数和启动记录清零，随从重新受到入场当回合的攻击限制。
@@ -555,7 +559,7 @@ when self summoned {
 其他随从入场以及战场上的变身都不会触发。两项增量在本条强化操作开始时分别读取，
 暂停恢复保留破坏记录的回合归属。测试初始历史不计入本回合。
 计数不消耗随机决策；查询预算耗尽时不使用部分结果执行效果。
-数值也可直接读取 `own`/`oppo` 的 `combo`、`pp`、`maxpp`、`life`、`ep`、`sep`、`shadows`、`hand_count`、`earthsigils`，
+数值也可直接读取 `own`/`oppo` 的 `combo`、`rally`、`pp`、`maxpp`、`life`、`ep`、`sep`、`shadows`、`hand_count`、`earthsigils`，
 或者读取 `self.cost`；随从还可读取 `self.attack` 和 `self.life`。
 `own` 始终相对能力控制者，`self` 为发动能力的卡牌实例。费用支付和使用卡牌的连击计数
 在入场曲之前发生，因此入场曲中的 `own.pp` 已扣除费用，`own.combo` 包含本卡牌。
@@ -590,6 +594,11 @@ damage target self.attack;
 
 `own.attacked_this_turn` 和 `oppo.attacked_this_turn` 可直接作为 `if` 条件，
 在前面加 `not` 表示本回合尚未有对应玩家的随从宣告攻击。这里的 `own` 始终指能力控制者。
+
+`rally >= N` 是【协作】条件：`rally` 统计本场对战中进入过自己战场的随从数量，
+法术与护符不计入，能力召唤的随从立即计入。打出的随从在本次结算**之后**才计入，
+因此"协作 19 时打出吉尔达利娅不发动【协作_20】"——官方 QA 明确要求先达到 20 再打出。
+数值读取用 `own.rally` / `oppo.rally`。
 
 ```wbo
 when own turn ends if not own.attacked_this_turn {

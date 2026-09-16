@@ -1,0 +1,62 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "协作未满二十时吉尔达利娅不超进化" {
+    seed 23001;
+    state {
+        player own {
+            pp 6/6;
+            rally 19;
+            hand { follower source = 10224110; }
+        }
+    }
+    action { play source; }
+    // 官方 FAQ：协作必须在打出之前达到 20，本次入场不计入。
+    expect {
+        legal;
+        source.super_evolved == false;
+        own.field count card 90021120 == 0;
+        own.rally == 20;
+    }
+}
+
+scenario "协作二十时吉尔达利娅超进化并召唤两个铁甲骑士" {
+    seed 23002;
+    state {
+        player own {
+            pp 6/6;
+            rally 20;
+            hand { follower source = 10224110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.super_evolved == true;
+        source.stats == 7/7;
+        own.field count card 90021120 == 2;
+        all own.field where card 90021120 have rush;
+        enemy.stats == 2/6;
+        own.rally == 23;
+    }
+}
+
+scenario "吉尔达利娅手动进化时同样召唤两个铁甲骑士" {
+    seed 23003;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            rally 5;
+            field { follower source = 10224110; }
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        source.stats == 6/6;
+        own.field count card 90021120 == 2;
+        own.ep == 0;
+    }
+}

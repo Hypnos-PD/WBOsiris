@@ -97,6 +97,7 @@ func decodePlayer(data []byte, instances map[string]bool) (PlayerState, error) {
 		SEP     int                          `json:"sep"`
 		Combo   int                          `json:"combo"`
 		Shadows int                          `json:"shadows"`
+		Rally   int                          `json:"rally"`
 		Zones   map[string][]json.RawMessage `json:"zones"`
 	}
 	var v raw
@@ -106,7 +107,7 @@ func decodePlayer(data []byte, instances map[string]bool) (PlayerState, error) {
 	if len(v.Zones) != 6 && !(len(v.Zones) == 7 && v.Zones["crests"] != nil) {
 		return PlayerState{}, fmt.Errorf("malformed zones")
 	}
-	p := PlayerState{Leader: v.Leader, PP: v.PP, MaxPP: v.MaxPP, EP: v.EP, SEP: v.SEP, Combo: v.Combo, Shadows: v.Shadows, Zones: map[string][]TestInstance{}}
+	p := PlayerState{Leader: v.Leader, PP: v.PP, MaxPP: v.MaxPP, EP: v.EP, SEP: v.SEP, Combo: v.Combo, Shadows: v.Shadows, Rally: v.Rally, Zones: map[string][]TestInstance{}}
 	for _, zone := range []string{"deck", "hand", "field", "graveyard", "banished", "destroyed", "crests"} {
 		items, ok := v.Zones[zone]
 		if !ok && zone != "crests" {
@@ -448,7 +449,7 @@ func decodeTestRef(data []byte) (TestRef, error) {
 		if err := strict(data, &v); err != nil {
 			return TestRef{}, err
 		}
-		if !validSide(v.Side) || v.Kind == "player_pp_pair" && v.Field != "" || v.Kind == "player_field" && !oneOf(v.Field, "leader.life", "leader.maxlife", "pp", "maxpp", "ep", "sep", "combo", "shadows") {
+		if !validSide(v.Side) || v.Kind == "player_pp_pair" && v.Field != "" || v.Kind == "player_field" && !oneOf(v.Field, "leader.life", "leader.maxlife", "pp", "maxpp", "ep", "sep", "combo", "shadows", "rally") {
 			return TestRef{}, fmt.Errorf("malformed player reference")
 		}
 		return TestRef{Kind: v.Kind, Side: v.Side, Field: v.Field}, nil
@@ -677,7 +678,7 @@ func decodeMatcher(data []byte) (EventMatcher, error) {
 		if err := strict(data, &v); err != nil {
 			return EventMatcher{}, err
 		}
-		if !validSide(v.Side) || !oneOf(v.Resource, "life", "pp", "maxpp", "ep", "sep", "combo", "shadows") || !oneOf(v.Direction, "gain", "spend") || v.Amount == nil || *v.Amount < 0 {
+		if !validSide(v.Side) || !oneOf(v.Resource, "life", "pp", "maxpp", "ep", "sep", "combo", "shadows", "rally") || !oneOf(v.Direction, "gain", "spend") || v.Amount == nil || *v.Amount < 0 {
 			return EventMatcher{}, fmt.Errorf("malformed resource matcher")
 		}
 		return EventMatcher{Kind: v.Kind, Side: v.Side, Resource: v.Resource, Direction: v.Direction, Amount: *v.Amount}, nil

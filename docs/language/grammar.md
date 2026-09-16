@@ -227,7 +227,7 @@ filter_term         = "card" , card_id
                     | "trait" , identifier
                     | "form" , ("unevolved" | "evolved" | "super_evolved")
                     | ("life" | "cost" | "attack") , comparison_operator , (integer | player_scalar) ;
-player_scalar       = participant , "." , ("combo" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" | "hand_count" | "earthsigils") ;
+player_scalar       = participant , "." , ("combo" | "rally" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" | "hand_count" | "earthsigils") ;
 comparison_operator = "==" | "!=" | "<" | "<=" | ">" | ">=" ;
 ```
 
@@ -266,7 +266,7 @@ condition         = "overflow"
                   | ("count" | "sum") , effect_amount_tail , comparison_operator , integer ;
 follower_form     = "unevolved" | "evolved" | "super_evolved" ;
 evolution_unlock  = "evolve_unlocked" | "superevolve_unlocked" ;
-scalar_value      = "combo" | player_scalar
+scalar_value      = "combo" | "rally" | player_scalar
                   | counter_ref
                   | "fused" , "." , fusion_scalar_field ;
 scalar_field      = "life" | "pp" | "maxpp" | "ep" | "sep" | "combo"
@@ -373,7 +373,7 @@ add_operation     = "add" , integer , "card" , card_id , "to" , "hand" , ";"
                   | "add" , ability , "to" , value_ref , ["other" , [binding_name]] , [where_clause] , [effect_duration] , ";" ;
 effect_duration   = "until" , [participant] , "turn" , "ends" ;
 
-summon_operation  = "summon" , integer , "card" , card_id , ";"
+summon_operation  = "summon" , integer , "card" , card_id , ["for" , participant] , ";"
                   | "summon" , "random" , integer , "from" , deck_summon_source , [where_clause] , ["distinct" , "names"] , ";"
                   | "summon" , "random" , integer , "from" , history_source , [where_clause] , [extremum_clause] , ";"
                   | "summon" , "copies" , "of" , value_ref , [where_clause] , ";" ;

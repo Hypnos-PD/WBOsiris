@@ -603,6 +603,10 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		}
 	case "summon":
 		ok = len(t) == 4 && isUnsigned(t[1]) && t[2].Value == "card" && isCardID(t[3])
+		if len(t) == 6 && isUnsigned(t[1]) && t[2].Value == "card" && isCardID(t[3]) && t[4].Value == "for" && set("own", "oppo")[t[5].Value] {
+			// summon N card X for own|oppo：在指定一方的战场上召唤。
+			ok = true
+		}
 		if len(t) > 1 && t[1].Value == "random" {
 			_, ok = historySummonIR(t, ir.NodeBase{})
 			if !ok {
@@ -658,7 +662,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		}
 		checkBindingAt(t, 1, end, bindings, ds)
 	case "gain":
-		ok = len(t) == 5 && (t[1].Value == "own" || t[1].Value == "oppo") && t[2].Value == "." && set("life", "pp", "maxpp", "ep", "sep", "combo", "shadows")[t[3].Value] && isUnsigned(t[4])
+		ok = len(t) == 5 && (t[1].Value == "own" || t[1].Value == "oppo") && t[2].Value == "." && set("life", "pp", "maxpp", "ep", "sep", "combo", "shadows", "rally")[t[3].Value] && isUnsigned(t[4])
 		ok = ok || len(t) == 4 && set("own", "oppo")[t[1].Value] && t[2].Value == "crest" && isCardID(t[3])
 	case "restore":
 		ok = len(t) == 4 && set("own", "oppo")[t[1].Value] && t[2].Value == "." && t[3].Value == "pp"

@@ -170,6 +170,7 @@ type PlayerView struct {
 	SEP              int          `json:"sep"`
 	Combo            int          `json:"combo"`
 	Shadows          int          `json:"shadows"`
+	Rally            int          `json:"rally"`
 	ExtraPPAvailable bool         `json:"extraPPAvailable"`
 	ExtraPPUses      int          `json:"extraPPUses"`
 	ExtraPPActive    bool         `json:"extraPPActive"`
@@ -385,7 +386,7 @@ func playerView(p *player, revealHand bool, turn int, side, firstPlayer string, 
 	view := PlayerView{
 		Crests:     entityViews(p.crests, false),
 		LeaderLife: p.leaderLife, LeaderMax: p.leaderMax, PP: p.pp, MaxPP: p.maxpp,
-		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, AttackedThisTurn: p.attackedThisTurn,
+		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, Rally: p.rally, AttackedThisTurn: p.attackedThisTurn,
 		DeckCount: len(p.deck), HandCount: len(p.hand), Field: entityViews(p.field, revealHand),
 		Graveyard: entityViews(p.graveyard, revealHand), Banished: entityViews(p.banished, revealHand), Destroyed: entityViews(historyInstances(p.destroyed, cards), false),
 		Resolving: entityViews(p.resolving, revealHand),

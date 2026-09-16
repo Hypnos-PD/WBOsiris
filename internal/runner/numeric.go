@@ -81,6 +81,8 @@ func (g *game) numericValue(expr ir.NumericExpr, self *instance, bindings frame)
 			return p.sep
 		case "shadows":
 			return p.shadows
+		case "rally":
+			return p.rally
 		}
 	}
 	return 0

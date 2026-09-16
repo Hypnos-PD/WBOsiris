@@ -764,6 +764,9 @@ func (g *game) triggerSummoned(s *instance) {
 	if s.card.CardType != "follower" && s.card.CardType != "amulet" {
 		return
 	}
+	if s.card.CardType == "follower" {
+		g.countRally(s)
+	}
 	event := ir.RuntimeEvent{Kind: "follower_summoned", Side: g.sideOf(s), InstanceID: s.id, CardID: s.card.ID, Count: 1}
 	if s.card.CardType == "amulet" {
 		event.Kind = "amulet_summoned"
@@ -772,6 +775,32 @@ func (g *game) triggerSummoned(s *instance) {
 		return
 	}
 	g.queueEventTriggers(event, s, "summoned")
+}
+
+// countRally 记录随从进入战场：打出的随从先挂起，其它召唤立即计入。
+func (g *game) countRally(s *instance) {
+	owner := g.owner(s)
+	if owner == nil {
+		return
+	}
+	if s.rallyPending {
+		owner.pendingRally = append(owner.pendingRally, s)
+		return
+	}
+	owner.rally++
+}
+
+// creditRally 在本次结算的效果执行完之后、触发队列结算之前，把打出的随从计入协作。
+func (g *game) creditRally() {
+	for _, p := range []*player{&g.own, &g.oppo} {
+		for _, i := range p.pendingRally {
+			if i != nil {
+				p.rally++
+				i.rallyPending = false
+			}
+		}
+		p.pendingRally = nil
+	}
 }
 
 func (g *game) triggerEngaged(engaged *instance) {

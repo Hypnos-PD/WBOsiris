@@ -1,0 +1,48 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "尤里乌斯在对手战场召唤两个骑士并各触发一次" {
+    seed 24001;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10224120; }
+        }
+        player oppo { }
+    }
+    action { play source; }
+    // 两个骑士进入敌方战场的两次监听各造成 1 点伤害、回复 1 点生命。
+    expect {
+        legal;
+        oppo.field count card 90021110 == 2;
+        all oppo.field where card 90021110 have cannot_attack;
+        oppo.leader.life == 18;
+        own.leader.life == 20;
+        own.field count card 90021110 == 0;
+        own.pp == 0/8;
+    }
+}
+
+scenario "只有一名骑士能被召唤时尤里乌斯只发动一次" {
+    seed 24002;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10224120; }
+        }
+        player oppo {
+            field {
+                follower a = 10001110;
+                follower b = 10001110;
+                follower c = 10001110;
+                follower d = 10001110;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        oppo.field count card 90021110 == 1;
+        oppo.leader.life == 19;
+    }
+}

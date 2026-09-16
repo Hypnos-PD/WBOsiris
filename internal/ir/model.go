@@ -616,6 +616,7 @@ type PlayerState struct {
 	SEP          int                       `json:"sep"`
 	Combo        int                       `json:"combo"`
 	Shadows      int                       `json:"shadows"`
+	Rally        int                       `json:"rally"`
 	ExtraPPEarly bool                      `json:"extraPPEarly,omitempty"`
 	ExtraPPLate  bool                      `json:"extraPPLate,omitempty"`
 	Zones        map[string][]TestInstance `json:"zones"`

@@ -63,6 +63,8 @@ func (g *game) assertCompare(a ir.CompareAssertion) string {
 			got = p.combo
 		case "shadows":
 			got = p.shadows
+		case "rally":
+			got = p.rally
 		}
 	case "instance_counter":
 		i := g.instances[a.Left.InstanceID]

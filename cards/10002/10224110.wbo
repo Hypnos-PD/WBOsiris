@@ -7,7 +7,21 @@ card 10224110 {
     trait anathema;
 
     effect {
-        unplayable;
+        fanfare {
+            // 官方 FAQ：协作必须在打出本卡牌之前就达到 20，本次入场不计入。
+            if rally >= 20 {
+                superevolve self silent;
+            }
+        }
+
+        when self evolved {
+            summon 2 card 90021120;
+            add rush to summoned;
+        }
+
+        when own follower summoned other {
+            damage oppo.field.followers 1;
+        }
     }
 
     meta {

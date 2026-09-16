@@ -7,7 +7,15 @@ card 10224120 {
     trait levin;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 2 card 90021110 for oppo;
+        }
+
+        when oppo follower summoned {
+            add cannot_attack to summoned until oppo turn ends;
+            damage oppo.leader 1;
+            heal own.leader 1;
+        }
     }
 
     meta {

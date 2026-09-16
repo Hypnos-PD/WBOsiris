@@ -364,7 +364,11 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			}
 			return ir.CardEffect{NodeBase: base, Kind: "summon_copies", Owner: "own", Target: target, Output: "summoned"}, nil
 		}
-		return ir.CardEffect{NodeBase: base, Kind: "summon", Owner: "own", Count: intAt(s, 1), CardID: intToken(t[3]), Output: "summoned"}, nil
+		owner := "own"
+		if len(t) >= 6 && t[4].Value == "for" {
+			owner = t[5].Value
+		}
+		return ir.CardEffect{NodeBase: base, Kind: "summon", Owner: owner, Count: intAt(s, 1), CardID: intToken(t[3]), Output: "summoned"}, nil
 	case "grant":
 		target := valueRefIR(t, 1)
 		if end := valueRefEnd(t, 1); end < len(t) {
@@ -683,7 +687,8 @@ func conditionIR(t []syntax.Token) ir.Condition {
 			}
 			return ir.EvolutionUnlockedCondition{Kind: "evolution_unlocked", Side: t[0].Value, Form: form}
 		}
-		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "scalar", Side: "own", Field: "combo"}, Op: compareOp(t[1].Value), Right: intToken(t[2])}
+		// `combo >= 3` 与 `rally >= 20` 都是"本方计数器 比较 整数"。
+		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "scalar", Side: "own", Field: t[0].Value}, Op: compareOp(t[1].Value), Right: intToken(t[2])}
 	}
 	if t[0].Value == "fused" {
 		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "fusion_material_scalar", Field: t[2].Value}, Op: compareOp(t[3].Value), Right: intToken(t[4])}
@@ -853,6 +858,8 @@ func compilePlayerState(s *syntax.Statement, p *ir.PlayerState, a map[string]str
 			p.Combo = intToken(t[1])
 		case "shadows":
 			p.Shadows = intToken(t[1])
+		case "rally":
+			p.Rally = intToken(t[1])
 		default:
 			zone := x.Word(0)
 			items := []ir.TestInstance{}

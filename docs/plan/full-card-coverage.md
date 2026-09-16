@@ -18,11 +18,11 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 323 · 未实现(骨架) 50 · 未导入 531
+总计 904 · 已完成 325 · 未实现(骨架) 48 · 未导入 531
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
-10002        77      75       2       0
+10002        77      77       0       0
 10003        77       4       0      73
 10004        76       1       0      75
 10005        76       0       0      76
@@ -95,10 +95,29 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-03 | 复查：`field.followers` 选择双方战场随从 | 无需改代码，只补文档与测试：`internal/project/cross_side_selection_test.go`（`field.followers other` 保持 `Side=""` 且排除自身、`own.field.followers` 不变） | 卡片 10201310 + 2 个场景（指定对手随从并降到 0 生命、指定自己的随从）。`grammar.md` 早已写明 `field` 是双方战场合并集合，我此前误判为缺口 |
 | S-12 | `double stats 集合;` —— 按目标自身数值翻倍 | `internal/project/validate.go`（`double` 语句形状）、`typed_ir.go`（`double_stats`）、`internal/ir/encode.go`/`decode.go`、`internal/runner/execute.go`（攻击力、当前生命、已受伤害各 ×2）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/double_stats_test.go`、`internal/runner/double_stats_test.go`（3/6 且已受 4 点伤害 → 6/4、伤害 8；护符不受影响）；卡片 10233310 + 3 个场景（土之印 +1 与获得纹章、土之秘术 10 足够时翻倍并抽牌、不足时只抽牌） |
 | S-20 | `other 绑定名` —— 从集合里排除一个绑定 | 原 `other` 只能排除来源自身；`internal/project/keyword_effect.go`/`validate.go` 新增 `otherExclusion`/`otherExclusionEnd`，`choose/require/random` 与 `add/remove/buff` 的目标集合都接受可选绑定名。运行时不需要改动：`ExcludeRef` 早就按任意 Ref 求值 | Go 单测 `internal/project/other_binding_test.go`（`other opponent` 指向绑定、裸 `other` 仍排除自身）；卡片 10263110 + 2 个场景（破坏非交战对手、护符不足时不破坏） |
+| S-21 | `rally`（协作）计数器与 `rally >= N` 条件 | `internal/runner/runner.go`（`player.rally`、`pendingRally`、打出随从先挂起）、`internal/runner/execute.go`（`countRally`/`creditRally`）、`internal/runner/session.go`（结算结束、触发队列之前入账）、`internal/runner/numeric.go`/`assert.go`/`simulator.go`/`continuation.go`、`internal/ir/model.go`/`amount.go`/`test_decode.go`、测试状态 `rally N;`；文档 `cards.md`/`grammar.md`/`tests.md`/`compiler/ir.md` | Go 单测 `internal/project/rally_test.go` 与 `internal/runner/rally_test.go`（法术不计入、打出在结算后入账、能力召唤立即计入）；卡片 10224110 + 3 个场景（协作 19 不发动、协作 20 发动并召唤两个骑士、手动进化同样召唤） |
+| S-22 | `summon N card X for own\|oppo;` —— 在指定一方战场召唤 | `internal/project/validate.go`（`summon` 接受 `for` 子句）、`typed_ir.go`（写入 `CardEffect.Owner`）；运行时本来就按 `Owner` 处理 | `internal/project/rally_test.go` 覆盖目标归属；卡片 10224120 + 2 个场景（在对手战场召唤 2 个骑士并各触发一次监听、对手满场时只召唤 1 个） |
 
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 23–24（语言扩展 S-21/S-22 + 卡包 10002 收尾）
+
+- **语言扩展 S-21 完成**：`rally`（协作）计数器与 `rally >= N` 条件。协作统计本场对战中
+  进入过自己战场的随从数量；法术与护符不计入，能力召唤的随从立即计入，打出的随从在
+  本次结算结束后才计入。最后一条来自官方 QA："协作 19 时打出吉尔达利娅不发动【协作_20】，
+  必须先达到 20 再打出"——`../SWB-RL` 的规则在这里与 QA 冲突（它算上自身入场），按项目
+  的权威顺序以 QA 为准。
+- **语言扩展 S-22 完成**：`summon N card X for own|oppo;`，在指定一方的战场上召唤。
+- 完成 2 张卡：10224110 静寂的安纳提玛·吉尔达利娅（协作 20 时入场曲自身超进化；
+  己方其他随从入场时对敌方全体造成 1 点伤害；本随从进化时召唤 2 个带突进的铁甲骑士）、
+  10224120 雷维翁超越者·尤里乌斯（入场曲在对手战场召唤 2 个骑士；敌方随从入场时
+  给它"到对手回合结束为止无法攻击"，并对敌方主战者造成 1 点、回复自己 1 点）。
+- **卡包 10002 全部 77 张完成**，接下来开始导入 10003 并继续铺开。
+- 新增 5 个场景（`tests/10002/batch-23-rally.wbotest`、`batch-24-enemy-summon.wbotest`）
+  + 2 组 Go 测试（`internal/project/rally_test.go`、`internal/runner/rally_test.go`）。
+- 全量回归：`check` 0 错 0 警；`test` 492 全绿；语料快照更新为 492 个场景。
 
 ### 批次 22（卡包 10002）
 

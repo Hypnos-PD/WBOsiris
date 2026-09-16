@@ -34,6 +34,7 @@ type instance struct {
 	evolved, superEvolved                                                        bool
 	departed                                                                     bool
 	suppressAll                                                                  bool
+	rallyPending                                                                 bool
 	abilities                                                                    map[string]bool
 	temporaryKeywords                                                            map[string]KeywordExpiry
 	temporaryStats                                                               map[string]ir.Stats
@@ -44,6 +45,10 @@ type player struct {
 	retiredDeck                                               []*instance
 	crests, retiredCrests                                     []*instance
 	pp, maxpp, leaderLife, leaderMax, ep, sep, combo, shadows int
+	// rally（协作）统计本场对战中进入过自己战场的随从数量。
+	// 手牌打出的随从在本次结算结束后才计入，见 creditRally。
+	rally                                                     int
+	pendingRally                                              []*instance
 	deck, hand, field, graveyard, banished                    []*instance
 	destroyed                                                 []DestructionRecord
 	resolving                                                 []*instance
@@ -212,6 +217,7 @@ func (g *game) loadState(s ir.State) error {
 		}
 		p.leaderLife, p.leaderMax = src.Leader.Life, src.Leader.MaxLife
 		p.pp, p.maxpp, p.ep, p.sep, p.combo, p.shadows = src.PP, src.MaxPP, src.EP, src.SEP, src.Combo, src.Shadows
+		p.rally = src.Rally
 		p.extraPPEarly, p.extraPPLate = src.ExtraPPEarly, src.ExtraPPLate
 		for _, zone := range []string{"deck", "hand", "field", "graveyard", "banished", "destroyed", "crests"} {
 			for _, decl := range src.Zones[zone] {
@@ -1020,6 +1026,10 @@ func (g *game) applyPlaySetup(i *instance, emit bool) {
 	} else {
 		g.addToZone(actor, i, "field")
 		i.summoningSick = i.card.CardType == "follower"
+		if i.card.CardType == "follower" {
+			// 打出的随从等本次结算结束再计入协作（官方 FAQ：协作 19 时打出吉尔达利娅不发动）。
+			i.rallyPending = true
+		}
 		g.mergeEarthSigil(i)
 		if emit {
 			g.triggerSummoned(i)

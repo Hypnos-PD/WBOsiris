@@ -11,7 +11,7 @@
 
 事件断言可使用 `discard alias;`，匹配该实例的 `card_discarded` 事实。
 事件中的卡牌身份快照不影响只指定实例的断言；显式指定的身份仍须精确匹配。
-舍弃用 `alias.zone == graveyard;`、`own.shadows == N;` 及已破坏历史检查结果。
+舍弃用 `alias.zone == graveyard;`、`own.shadows == N;`、`own.rally == N;` 及已破坏历史检查结果。
 
 纹章使用独立初始区域，ID 指向声明了 `crest` 的卡牌：
 
@@ -73,6 +73,7 @@ player own {
     sep 1;
     combo 2;
     shadows 4;
+    rally 20;
 
     deck top {
         follower first = 10001110;

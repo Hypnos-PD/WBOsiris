@@ -387,6 +387,8 @@ func (s *Session) run() StepResult {
 		if len(s.stack) == 0 {
 			// A spell enters the graveyard before its queued triggers resolve.
 			s.g.finishSpell()
+			// 打出的随从在自身效果结算完之后才计入协作，触发队列仍按事件顺序结算。
+			s.g.creditRally()
 		}
 		if s.drainingTrigger && len(s.stack) <= s.triggerBase {
 			s.drainingTrigger = false

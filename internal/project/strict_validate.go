@@ -363,7 +363,7 @@ func strictCondition(t []syntax.Token, fusion bool) bool {
 		return op(t[5].Value) && isUnsigned(t[6])
 	}
 	if len(t) == 3 {
-		return t[0].Value == "combo" && op(t[1].Value) && isUnsigned(t[2])
+		return set("combo", "rally")[t[0].Value] && op(t[1].Value) && isUnsigned(t[2])
 	}
 	// count(集合 [where …]) 比较 整数：集合与筛选的合法性由 parseEffectAmount 负责。
 	if len(t) > 0 && (t[0].Value == "count" || t[0].Value == "sum") {
@@ -475,7 +475,7 @@ func strictPlayer(s *syntax.Statement, a map[string]string, ds *[]syntax.Diagnos
 				checkI16orU16(tt[1], h == "leader", ds)
 				checkI16orU16(tt[3], h == "leader", ds)
 			}
-		case "ep", "sep", "combo", "shadows":
+		case "ep", "sep", "combo", "shadows", "rally":
 			if len(tt) != 2 || !x.Terminated {
 				shapeError(ds, x, h+" 整数;")
 			} else {
@@ -672,7 +672,7 @@ func strictAssertion(s *syntax.Statement, a map[string]string, ds *[]syntax.Diag
 	return assertionRef(t[:eq], a, ds) && assertionValue(t[eq+1:])
 }
 func assertionRef(t []syntax.Token, a map[string]string, ds *[]syntax.Diagnostic) bool {
-	if len(t) == 3 && set("own", "oppo")[t[0].Value] && t[1].Value == "." && set("life", "pp", "maxpp", "ep", "sep", "combo", "shadows")[t[2].Value] {
+	if len(t) == 3 && set("own", "oppo")[t[0].Value] && t[1].Value == "." && set("life", "pp", "maxpp", "ep", "sep", "combo", "shadows", "rally")[t[2].Value] {
 		return true
 	}
 	if len(t) == 5 && set("own", "oppo")[t[0].Value] && values(t[1:4]) == ". leader ." && set("life", "maxlife")[t[4].Value] {
@@ -740,7 +740,7 @@ func strictEventFact(s *syntax.Statement, a map[string]string, ds *[]syntax.Diag
 	case "move":
 		return len(t) == 4 && aliasKnown(t[1], a, ds) && t[2].Value == "to" && set("deck", "hand", "field", "graveyard", "banished")[t[3].Value]
 	case "gain", "spend":
-		return len(t) == 5 && set("own", "oppo")[t[1].Value] && t[2].Value == "." && set("life", "pp", "maxpp", "ep", "sep", "combo", "shadows")[t[3].Value] && isUnsigned(t[4])
+		return len(t) == 5 && set("own", "oppo")[t[1].Value] && t[2].Value == "." && set("life", "pp", "maxpp", "ep", "sep", "combo", "shadows", "rally")[t[3].Value] && isUnsigned(t[4])
 	}
 	return false
 }

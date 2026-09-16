@@ -90,6 +90,7 @@ type ContinuationPlayer struct {
 	SEP              int                 `json:"sep"`
 	Combo            int                 `json:"combo"`
 	Shadows          int                 `json:"shadows"`
+	Rally            int                 `json:"rally"`
 	AttackedThisTurn bool                `json:"attackedThisTurn"`
 	EvolvedThisTurn  bool                `json:"evolvedThisTurn"`
 	ExtraPPEarly     bool                `json:"extraPPEarly"`
@@ -486,7 +487,7 @@ func snapshotContinuationPlayer(p player) ContinuationPlayer {
 		RetiredDeck: instanceIDs(p.retiredDeck),
 		Crests:      instanceIDs(p.crests), RetiredCrests: instanceIDs(p.retiredCrests),
 		PP: p.pp, MaxPP: p.maxpp, LeaderLife: p.leaderLife, LeaderMax: p.leaderMax,
-		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, AttackedThisTurn: p.attackedThisTurn,
+		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, Rally: p.rally, AttackedThisTurn: p.attackedThisTurn,
 		Deck: instanceIDs(p.deck), Hand: instanceIDs(p.hand), Field: instanceIDs(p.field), EvolvedThisTurn: p.evolvedThisTurn,
 		Graveyard: instanceIDs(p.graveyard), Banished: instanceIDs(p.banished), Destroyed: cloneDestructionHistory(p.destroyed),
 		Resolving:    instanceIDs(p.resolving),
@@ -850,7 +851,7 @@ func generatedInstanceSerial(instances []ContinuationEntity) int {
 }
 
 func restorePlayer(saved ContinuationPlayer, instances map[string]*instance, cards map[int]*ir.Card) (player, error) {
-	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, attackedThisTurn: saved.AttackedThisTurn, evolvedThisTurn: saved.EvolvedThisTurn, extraPPEarly: saved.ExtraPPEarly, extraPPLate: saved.ExtraPPLate, extraPPActive: saved.ExtraPPActive}
+	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, rally: saved.Rally, attackedThisTurn: saved.AttackedThisTurn, evolvedThisTurn: saved.EvolvedThisTurn, extraPPEarly: saved.ExtraPPEarly, extraPPLate: saved.ExtraPPLate, extraPPActive: saved.ExtraPPActive}
 	if p.leaderMax < 1 || p.leaderMax > 65535 || p.leaderLife < 0 || p.leaderLife > p.leaderMax {
 		return player{}, fmt.Errorf("invalid continuation leader life")
 	}

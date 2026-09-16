@@ -320,7 +320,7 @@ BoolExpr =
 筛选器的 `compare` 节点支持 `field: "life" | "cost" | "attack"`；`cost` 读取实例当前费用，
 `attack` 读取当前攻击力（含增益）。`is_damaged` 匹配生命值已有损伤的随从。
 其 `value` 保留整数编码，并支持 `{kind:"scalar", side:"own"|"oppo", field:...}`，
-字段限于 `combo`、`pp`、`maxpp`、`life`、`ep`、`sep`、`shadows`、`hand_count`、`earthsigils`。玩家引用相对于
+字段限于 `combo`、`rally`、`pp`、`maxpp`、`life`、`ep`、`sep`、`shadows`、`hand_count`、`earthsigils`。玩家引用相对于
 能力来源求值，不能使用候选拥有者或抽牌接收者替代；测试断言中对应测试席位。
 缺失值、`null`、自身字段、算术和聚合表达式均拒绝解码。筛选时读取玩家值；效果在
 任何目标修改之前完成集合筛选，事件触发器在事件入队时完成筛选。暂停续局只保存既有
@@ -838,7 +838,7 @@ NumericExpr = Count { kind: "count", source: ZoneSet | HistorySet | BindingRef |
             | Sum { kind: "sum", source: ZoneSet | HistorySet | BindingRef | FilterSet,
                     field: "base_attack" | "base_life" | "base_cost" | "attack" | "life" | "cost" }
             | PlayerScalar { kind: "scalar", side: "own" | "oppo",
-                             field: "combo" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" | "hand_count" | "earthsigils" }
+                             field: "combo" | "rally" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" | "hand_count" | "earthsigils" }
             | SelfScalar { kind: "self_scalar", field: "attack" | "life" | "cost" }
             | SelfCounter { kind: "self_counter", field: CounterName }
 EffectAmount = nonnegative_integer | NumericExpr
@@ -926,7 +926,7 @@ SilentEvolve = NodeBase & {
 AdjustResource = NodeBase & {
   kind: "adjust_resource",
   owner: Side,
-  resource: "combo" | "maxpp" | "shadows",
+  resource: "combo" | "maxpp" | "shadows" | "rally",
   delta: i32,
   clamp: { minimum: i32?, maximum: i32? }
 }
@@ -1361,6 +1361,7 @@ TestPlayer = {
   sep: u16,
   combo: u16,
   shadows: u16,
+  rally: u16,
   zones: Map<Zone, [TestInstance]>
 }
 
