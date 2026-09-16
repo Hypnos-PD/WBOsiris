@@ -506,7 +506,12 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		return ir.CardEffect{NodeBase: base, Kind: "reanimate", Owner: "own", MaxCost: intAt(s, 1), TieBreak: "random", Output: "summoned"}, nil
 	case "reduce":
 		end := valueRefEnd(t, 2)
-		e := ir.AdjustEffect{NodeBase: base, Kind: "adjust_entity_field", Field: t[1].Value, Target: valueRefIR(t, 2), Delta: -intToken(t[end])}
+		amount, expr := numericIR(t, end)
+		e := ir.AdjustEffect{NodeBase: base, Kind: "adjust_entity_field", Field: t[1].Value, Target: valueRefIR(t, 2), Delta: -amount}
+		if expr != nil {
+			e.Delta = 0
+			e.DeltaExpr = &ir.NegateExpr{Kind: "negate", Value: expr}
+		}
 		if t[1].Value == "cost" {
 			e.Minimum = intToken(t[end+2])
 		}

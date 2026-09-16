@@ -736,9 +736,12 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 	case "reduce":
 		if len(t) >= 4 && (t[1].Value == "countdown" || t[1].Value == "cost") {
 			end, good := parseValueRef(t, 2)
-			if good && end < len(t) && isUnsigned(t[end]) {
-				end++
-				ok = t[1].Value == "countdown" && end == len(t) || t[1].Value == "cost" && end+2 == len(t) && t[end].Value == "minimum" && isUnsigned(t[end+1])
+			if good {
+				// 增量可以是常量或数值引用：`reduce countdown self own.crests`。
+				if next, amountOK := parseEffectAmount(t, end); amountOK {
+					end = next
+					ok = t[1].Value == "countdown" && end == len(t) || t[1].Value == "cost" && end+2 == len(t) && t[end].Value == "minimum" && isUnsigned(t[end+1])
+				}
 			}
 			checkBindingAt(t, 2, end, bindings, ds)
 		}

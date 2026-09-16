@@ -1162,6 +1162,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			Kind, Owner, Resource, Field string
 			Target                       json.RawMessage `json:"target,omitempty"`
 			Delta, Minimum, Times        int
+			DeltaValue                   json.RawMessage `json:"deltaValue,omitempty"`
 			Origin                       Origin `json:"origin"`
 		}
 		var v raw
@@ -1197,6 +1198,9 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			if v.Owner != "" || v.Resource != "" || !oneOf(v.Field, "cost", "countdown") || r == nil || v.Times != 0 {
 				return nil, fmt.Errorf("invalid entity adjustment")
 			}
+			if len(v.DeltaValue) > 0 && (v.Delta != 0 || v.Minimum != 0) {
+				return nil, fmt.Errorf("invalid dynamic entity adjustment")
+			}
 		case "spellboost":
 			if v.Owner != "" || v.Resource != "" || v.Field != "" || r == nil || v.Delta != 0 || v.Minimum != 0 || v.Times < 0 {
 				return nil, fmt.Errorf("invalid spellboost")
@@ -1210,7 +1214,17 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 				return nil, fmt.Errorf("invalid stat doubling")
 			}
 		}
-		return AdjustEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.Resource, v.Field, r, v.Delta, v.Minimum, v.Times}, err
+		var deltaExpr NumericExpr
+		if len(v.DeltaValue) > 0 {
+			if _, expr, err := decodeNumericValue(v.DeltaValue, true); err != nil {
+				return nil, err
+			} else if expr == nil || !validNumericExpr(expr, true) {
+				return nil, fmt.Errorf("invalid dynamic delta")
+			} else {
+				deltaExpr = expr
+			}
+		}
+		return AdjustEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.Resource, v.Field, r, v.Delta, deltaExpr, v.Minimum, v.Times}, err
 	default:
 		return nil, fmt.Errorf("unknown executable effect kind %q", k.Kind)
 	}

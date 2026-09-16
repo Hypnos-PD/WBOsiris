@@ -91,6 +91,7 @@ type ContinuationPlayer struct {
 	Combo            int                 `json:"combo"`
 	Shadows          int                 `json:"shadows"`
 	Rally            int                 `json:"rally"`
+	LeaderAbilities  []string            `json:"leaderAbilities,omitempty"`
 	AttackedThisTurn bool                `json:"attackedThisTurn"`
 	EvolvedThisTurn  bool                `json:"evolvedThisTurn"`
 	ExtraPPEarly     bool                `json:"extraPPEarly"`
@@ -482,12 +483,41 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 	return snapshot
 }
 
+// leaderAbilityNames 按稳定顺序导出主战者关键词，供连击快照保存。
+func leaderAbilityNames(p player) []string {
+	if len(p.leaderAbilities) == 0 {
+		return nil
+	}
+	names := make([]string, 0, len(p.leaderAbilities))
+	for name, on := range p.leaderAbilities {
+		if on {
+			names = append(names, name)
+		}
+	}
+	sort.Strings(names)
+	return names
+}
+
+func leaderAbilitySet(names []string) map[string]bool {
+	if len(names) == 0 {
+		return nil
+	}
+	out := map[string]bool{}
+	for _, name := range names {
+		if !ir.ValidKeyword(name) {
+			continue
+		}
+		out[name] = true
+	}
+	return out
+}
+
 func snapshotContinuationPlayer(p player) ContinuationPlayer {
 	return ContinuationPlayer{
 		RetiredDeck: instanceIDs(p.retiredDeck),
 		Crests:      instanceIDs(p.crests), RetiredCrests: instanceIDs(p.retiredCrests),
 		PP: p.pp, MaxPP: p.maxpp, LeaderLife: p.leaderLife, LeaderMax: p.leaderMax,
-		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, Rally: p.rally, AttackedThisTurn: p.attackedThisTurn,
+		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, Rally: p.rally, LeaderAbilities: leaderAbilityNames(p), AttackedThisTurn: p.attackedThisTurn,
 		Deck: instanceIDs(p.deck), Hand: instanceIDs(p.hand), Field: instanceIDs(p.field), EvolvedThisTurn: p.evolvedThisTurn,
 		Graveyard: instanceIDs(p.graveyard), Banished: instanceIDs(p.banished), Destroyed: cloneDestructionHistory(p.destroyed),
 		Resolving:    instanceIDs(p.resolving),
@@ -851,7 +881,7 @@ func generatedInstanceSerial(instances []ContinuationEntity) int {
 }
 
 func restorePlayer(saved ContinuationPlayer, instances map[string]*instance, cards map[int]*ir.Card) (player, error) {
-	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, rally: saved.Rally, attackedThisTurn: saved.AttackedThisTurn, evolvedThisTurn: saved.EvolvedThisTurn, extraPPEarly: saved.ExtraPPEarly, extraPPLate: saved.ExtraPPLate, extraPPActive: saved.ExtraPPActive}
+	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, rally: saved.Rally, leaderAbilities: leaderAbilitySet(saved.LeaderAbilities), attackedThisTurn: saved.AttackedThisTurn, evolvedThisTurn: saved.EvolvedThisTurn, extraPPEarly: saved.ExtraPPEarly, extraPPLate: saved.ExtraPPLate, extraPPActive: saved.ExtraPPActive}
 	if p.leaderMax < 1 || p.leaderMax > 65535 || p.leaderLife < 0 || p.leaderLife > p.leaderMax {
 		return player{}, fmt.Errorf("invalid continuation leader life")
 	}

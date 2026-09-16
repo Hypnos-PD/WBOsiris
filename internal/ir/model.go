@@ -567,6 +567,8 @@ type AdjustEffect struct {
 	Field    string `json:"field,omitempty"`
 	Target   Ref    `json:"target,omitempty"`
 	Delta    int    `json:"delta,omitempty"`
+	// DeltaExpr 支持动态增量（例如"倒计数 -X"，X 为纹章数）。
+	DeltaExpr NumericExpr `json:"-"`
 	Minimum  int    `json:"minimum,omitempty"`
 	Times    int    `json:"times,omitempty"`
 }

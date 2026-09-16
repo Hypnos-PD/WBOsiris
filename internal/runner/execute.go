@@ -649,10 +649,12 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 		for _, i := range targets {
 			i.addKeyword(e.Keyword, endingSide)
 		}
+		g.setLeaderKeyword(leaders, e.Keyword, true)
 	case "remove_keyword":
 		for _, i := range targets {
 			i.removeKeyword(e.Keyword)
 		}
+		g.setLeaderKeyword(leaders, e.Keyword, false)
 	case "remove_ability":
 		for _, i := range targets {
 			g.removeAbility(i, e.Keyword)
@@ -720,11 +722,16 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 			return
 		}
 		var expired []*instance
+		delta := e.Delta
+		if e.DeltaExpr != nil {
+			// 动态增量（例如"倒计数 -X"，X 为纹章数）在结算到该语句时求值。
+			delta = g.numericValue(e.DeltaExpr, self, f)
+		}
 		for _, i := range targets {
 			if e.Field == "cost" {
-				i.cost = max(e.Minimum, i.cost+e.Delta)
+				i.cost = max(e.Minimum, i.cost+delta)
 			} else if e.Field == "countdown" {
-				i.countdown += e.Delta
+				i.countdown += delta
 				if i.countdown <= 0 {
 					if i.card.CardType == "crest" {
 						g.expireCrest(g.owner(i), i)
@@ -841,6 +848,24 @@ func (g *game) triggerPlayed(played *instance) {
 		return
 	}
 	g.queueEventTriggers(event, played, "played")
+}
+
+// setLeaderKeyword 给主战者加上/移除关键词（目前只有【屏障】这类主战者级状态）。
+func (g *game) setLeaderKeyword(sides []string, keyword string, enabled bool) {
+	for _, side := range sides {
+		p := g.player(side)
+		if p == nil {
+			continue
+		}
+		if enabled {
+			if p.leaderAbilities == nil {
+				p.leaderAbilities = map[string]bool{}
+			}
+			p.leaderAbilities[keyword] = true
+		} else if p.leaderAbilities != nil {
+			delete(p.leaderAbilities, keyword)
+		}
+	}
 }
 
 func (g *game) summon(count, id int) []*instance {

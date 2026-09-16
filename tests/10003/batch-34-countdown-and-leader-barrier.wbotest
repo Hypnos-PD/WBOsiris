@@ -1,0 +1,63 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "安息的神殿的启动按纹章数推进吟唱" {
+    seed 34001;
+    state {
+        turn own 4;
+        player own {
+            field { amulet temple = 10362210 { countdown 4; } }
+            crests {
+                crest marwynn = 10364120;
+                crest repose = 10362110;
+            }
+        }
+    }
+    action { engage temple; }
+    expect { legal; temple.countdown == 2; }
+}
+
+scenario "没有纹章时安息的神殿的启动不推进吟唱" {
+    seed 34002;
+    state {
+        turn own 4;
+        player own { field { amulet temple = 10362210 { countdown 4; } } }
+    }
+    action { engage temple; }
+    expect { legal; temple.countdown == 4; }
+}
+
+scenario "安息的神殿退场时回复主战者并使其获得屏障" {
+    seed 34003;
+    state {
+        player own { }
+        player oppo {
+            leader 15/20;
+            field { amulet temple = 10362210 { countdown 1; } }
+        }
+    }
+    action { end_turn; }
+    // 对手回合开始时它的吟唱归零：退场并回复自己主战者 2 点、使其获得【屏障】。
+    expect { legal; temple.zone == graveyard; oppo.leader.life == 17; }
+}
+
+scenario "闪耀的失意的谢幕曲分配四点伤害并回复主战者" {
+    seed 34004;
+    state {
+        player own {
+            field { follower enemy = 10001110 { stats 2/8; } }
+        }
+        player oppo {
+            leader 15/20;
+            field { amulet gleam = 10363210 { countdown 1; } }
+        }
+    }
+    action { end_turn; }
+    expect {
+        legal;
+        gleam.zone == graveyard;
+        enemy.stats == 2/4;
+        own.leader.life == 20;
+        oppo.leader.life == 19;
+    }
+}

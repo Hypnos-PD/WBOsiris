@@ -45,6 +45,8 @@ type player struct {
 	retiredDeck                                               []*instance
 	crests, retiredCrests                                     []*instance
 	pp, maxpp, leaderLife, leaderMax, ep, sep, combo, shadows int
+	// leaderAbilities 记录主战者级别的关键词（例如"使自己的主战者获得【屏障】"）。
+	leaderAbilities map[string]bool
 	// rally（协作）统计本场对战中进入过自己战场的随从数量。
 	// 手牌打出的随从在本次结算结束后才计入，见 creditRally。
 	rally                                                     int
@@ -804,6 +806,11 @@ func (g *game) damageLeaderFrom(source *instance, target *player, side string, a
 	if amount < 0 {
 		amount = 0
 	}
+	if target.leaderAbilities["barrier"] && amount > 0 {
+		// 主战者的【屏障】把下一次伤害降为 0（官方 QA：与"受到伤害+1"同时存在时也是 0）。
+		delete(target.leaderAbilities, "barrier")
+		amount = 0
+	}
 	actual := min(amount, target.leaderLife)
 	t := ir.EventTarget{Kind: "leader", Side: side}
 	event := ir.RuntimeEvent{Kind: "damaged", Side: side, Actual: actual, Target: &t}
@@ -829,7 +836,12 @@ func (g *game) damageLeaders(source *instance, amount int) {
 		{&g.own, "own"},
 		{&g.oppo, "oppo"},
 	} {
-		actual := min(amount, max(target.player.leaderLife, 0))
+		damage := amount
+		if target.player.leaderAbilities["barrier"] && damage > 0 {
+			delete(target.player.leaderAbilities, "barrier")
+			damage = 0
+		}
+		actual := min(damage, max(target.player.leaderLife, 0))
 		eventTarget := &ir.EventTarget{Kind: "leader", Side: target.side}
 		event := ir.RuntimeEvent{Kind: "damaged", Side: target.side, Actual: actual, Target: eventTarget}
 		if g.emit(event) {

@@ -33,6 +33,8 @@ effect {
 附加的「回合结束时破坏本卡牌」等）会跳过该随从。战斗规则造成的破坏不受影响——
 生命归零与【毁灭】照样让它离场。能力可通过
 `add ability_destruction_guard to T` 与 `remove ability_destruction_guard from T` 修改。
+主战者也可以获得关键词：`add barrier to own.leader;` 让本方主战者获得【屏障】——
+下一次受到的伤害降为 0 并消耗掉（官方 QA 明确：与"受到的伤害 +1"同时存在时也是 0）。
 
 `ability_target_guard` 表达洛伊德的“对手能力只能选择本卡牌”。拥有该能力的随从在场时，
 敌方能力对该玩家战场的主动选择只能选择仍满足原筛选条件的此类随从；多个来源均可成为
@@ -892,6 +894,8 @@ fanfare {
 
 `raise cost T N;` 给目标的当前费用加 N（没有上限，卡牌文本没有写上限时按字面处理）；
 只做减费时继续用 `reduce cost T N minimum M`。
+`reduce countdown T X` 的增量也可以是数值引用，例如"本护符的倒计数 -X，X 为自己的纹章数"
+写作 `reduce countdown self own.crests;`。
 
 `set cost T N;` 把目标卡牌的当前费用设为 N（N 为 0..65535，可用数值表达式），
 可以指向手牌或牌组里的实例。需要"费用变为 1"这类精确表述时用它；只做相对调整时
