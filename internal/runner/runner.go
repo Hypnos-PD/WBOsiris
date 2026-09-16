@@ -1057,6 +1057,10 @@ func (g *game) applyPlaySetup(i *instance, emit bool) {
 			g.triggerSummoned(i)
 		}
 	}
+	if emit {
+		// 「自己使用卡牌时」监听在打出后入队，按事件顺序在本次效果结算后发动。
+		g.triggerPlayed(i)
+	}
 }
 
 func (g *game) finishSpell() {

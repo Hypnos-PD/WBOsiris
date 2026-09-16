@@ -6,7 +6,9 @@ card 90021330 {
     trait loot;
 
     effect {
-        unplayable;
+        choose target from own.field.followers;
+        buff target +1/+0;
+        add rush to target;
     }
 
     meta {

@@ -742,7 +742,7 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 		if m.SubjectType == "card" {
 			m.SubjectType = ""
 		}
-		m.Event = map[string]string{"summoned": "follower_summoned", "leaves": "follower_left", "survives": "damaged", "destroyed": "destroyed", "healed": "healed", "fused": "card_fused", "engaged": "amulet_engaged", "discarded": "card_discarded", "evolved": "evolved", "super_evolved": "super_evolved"}[t[3].Value]
+		m.Event = map[string]string{"summoned": "follower_summoned", "leaves": "follower_left", "survives": "damaged", "destroyed": "destroyed", "healed": "healed", "fused": "card_fused", "engaged": "amulet_engaged", "discarded": "card_discarded", "played": "card_played", "evolved": "evolved", "super_evolved": "super_evolved"}[t[3].Value]
 		if m.Event == "follower_summoned" && m.SubjectType == "amulet" {
 			m.Event = "amulet_summoned"
 		}

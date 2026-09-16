@@ -978,7 +978,9 @@ when self discarded {
 ```
 
 此能力只在该实例实际被舍弃时入队，结算时自身位于墓场；不会在其他卡牌被舍弃时发动。
-`when own card discarded` 和 `when oppo card discarded` 则由战场上的来源监听，
+`when own card played` / `when oppo card played` 监听卡牌被打出，监听对象绑定成 `played`，
+可用 `where` 筛选（类型、trait、费用…），末尾的 `other` 排除本卡牌自身。它在打出后入队，
+按事件顺序在本次效果结算之后发动。`when own card discarded` 和 `when oppo card discarded` 则由战场上的来源监听，
 可用 `where type spell` 等筛选。事件块内的 `discarded` 绑定指向本次被舍弃的实例。
 全部新触发能力等待当前能力结束后执行，选择暂停与存档不会重复舍弃或丢失等待能力。
 选择前手牌保持隐藏，舍弃后该卡牌及事件身份向双方公开，录像保存同样的可见性。

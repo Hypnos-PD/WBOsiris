@@ -6,7 +6,73 @@ card 10324120 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            gain own crest 10324120;
+        }
+        evolve {
+            add 1 card 90021310 to hand;
+            add 1 card 90021340 to hand;
+        }
+    }
+
+    crest {
+        countdown 8;
+
+        when own card played where trait loot {
+            reduce countdown self 1;
+        }
+        when own card fused where trait loot {
+            reduce countdown self 1;
+        }
+
+        lastwords {
+            add 1 card 90024310 to hand;
+        }
+
+        locale chs {
+            name "纹章：空绝的显现·奥克托丽丝";
+            text """
+【<color=Keyword>吟唱</color>_8】
+自己使用财宝·卡牌时，或者自己【<color=Keyword>融合</color>】财宝·卡牌时，本纹章的倒计数-1。
+【<color=Keyword>谢幕曲</color>】将1张『<color=Keyword>空绝的残光</color>』加入手牌。
+""";
+        }
+
+        locale eng {
+            name "Crest: Octrice, Hollow Manifest";
+            text """
+<b><color=Keyword>Countdown</color> (8)</b>
+Whenever you play or <b><color=Keyword>Fuse</color></b> a Loot card, advance this crest's count by 1.
+<b><color=Keyword>Last Words</color></b>: Add a <b><i><color=Keyword>Remnant of Hollowness</color></i></b> to your hand.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：空絶の顕現・オクトリス";
+            text """
+【<color=Keyword>カウントダウン</color>_8】
+自分が財宝・カードをプレイしたとき、または、自分が財宝・カードを【<color=Keyword>融合</color>】したとき、これのカウントを-1する。
+【<color=Keyword>ラストワード</color>】『<color=Keyword>空絶の残光</color>』1枚を自分の手札に加える。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 공허의 현현 오크트리스";
+            text """
+[<color=Keyword>카운트다운</color> 8]
+내가 보물 카드를 사용했을 때 또는 내가 보물 카드를 [<color=Keyword>융합</color>]했을 때, 이 크레스트의 카운트를 -1.
+[<color=Keyword>유언</color>] <color=Keyword>공허의 잔광</color> 1장을 내 패에 넣는다.
+""";
+        }
+
+        locale cht {
+            name "紋章：空絕的顯現‧奧克托莉絲";
+            text """
+【<color=Keyword>倒數</color>_8】
+當自己使用財寶‧卡片時，或當自己將財寶‧卡片進行【<color=Keyword>融合</color>】時，使這個紋章的倒數回合數-1。
+【<color=Keyword>謝幕曲</color>】增加1張『<color=Keyword>空絕的殘光</color>』到自己的手牌中。
+""";
+        }
     }
 
     meta {

@@ -6,7 +6,8 @@ card 90021310 {
     trait loot;
 
     effect {
-        unplayable;
+        choose target from oppo.field.followers or oppo.leader;
+        damage target 1;
     }
 
     meta {

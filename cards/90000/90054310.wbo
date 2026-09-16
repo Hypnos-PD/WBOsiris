@@ -5,7 +5,8 @@ card 90054310 {
     cost 0;
 
     effect {
-        unplayable;
+        summon 2 card 10354120;
+        add rush to summoned;
     }
 
     meta {

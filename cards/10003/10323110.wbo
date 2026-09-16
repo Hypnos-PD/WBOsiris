@@ -6,7 +6,21 @@ card 10323110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 90021320 to hand;
+            add 1 card 90021330 to hand;
+        }
+        when own card played where trait loot {
+            random victim from oppo.field.followers;
+            damage victim 3;
+        }
+        when own card fused where trait loot {
+            random victim from oppo.field.followers;
+            damage victim 3;
+        }
+        evolve {
+            gain own.pp 1;
+        }
     }
 
     meta {

@@ -222,7 +222,8 @@ func TestContinuationRoundTripPreservesDeathBatch(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if continuation.Game.EventSequence != 2 || continuation.Game.DeathBatchSerial != 1 || len(continuation.Game.Events) != 2 || continuation.Game.Events[0].Kind != "follower_left" || continuation.Game.Events[1].BatchID != 1 {
+	// 打出法术本身会先发一条 card_played（S-38 的"自己使用卡牌时"事件），随后才是死亡批次。
+	if continuation.Game.EventSequence != 3 || continuation.Game.DeathBatchSerial != 1 || len(continuation.Game.Events) != 3 || continuation.Game.Events[0].Kind != "card_played" || continuation.Game.Events[1].Kind != "follower_left" || continuation.Game.Events[2].BatchID != 1 {
 		t.Fatalf("continuation lost death batch state: %#v", continuation.Game)
 	}
 	restored, err := RestoreSession(pack, continuation)
@@ -230,7 +231,7 @@ func TestContinuationRoundTripPreservesDeathBatch(t *testing.T) {
 		t.Fatal(err)
 	}
 	result := restored.Resume(ChoiceResponse{RequestID: step.Choice.RequestID, ActionID: step.Choice.ActionID, StateRevision: step.Choice.StateRevision, SelectedOptionID: 1})
-	if result.Status != StatusCompleted || restored.g.eventSequence != 2 || restored.g.deathBatchSerial != 1 || len(restored.g.oppo.destroyed) != 1 {
+	if result.Status != StatusCompleted || restored.g.eventSequence != 3 || restored.g.deathBatchSerial != 1 || len(restored.g.oppo.destroyed) != 1 {
 		t.Fatalf("restored death batch diverged: result=%#v events=%d batches=%d", result, restored.g.eventSequence, restored.g.deathBatchSerial)
 	}
 }

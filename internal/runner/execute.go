@@ -710,6 +710,12 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 		}
 	case "adjust_entity_field":
 		targets := g.effectTargets(e.Target, self, f)
+		if len(targets) == 0 && self != nil && self.card != nil && self.card.CardType == "crest" {
+			// 纹章用自己的 `reduce countdown self 1` 推进吟唱：纹章不在战场上，需要显式纳入。
+			if _, ok := e.Target.(ir.SelfRef); ok {
+				targets = []*instance{self}
+			}
+		}
 		if g.budget != nil && g.budget.exceeded {
 			return
 		}
@@ -720,6 +726,10 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 			} else if e.Field == "countdown" {
 				i.countdown += e.Delta
 				if i.countdown <= 0 {
+					if i.card.CardType == "crest" {
+						g.expireCrest(g.owner(i), i)
+						continue
+					}
 					expired = append(expired, i)
 				}
 			}
@@ -822,6 +832,15 @@ func (g *game) triggerEngaged(engaged *instance) {
 		return
 	}
 	g.queueEventTriggers(event, engaged, "engaged")
+}
+
+// triggerPlayed 在卡牌被打出后发出 card_played 事件，监听者用 `when own card played` 声明。
+func (g *game) triggerPlayed(played *instance) {
+	event := ir.RuntimeEvent{Kind: "card_played", Side: g.sideOf(played), InstanceID: played.id, CardID: played.card.ID, Count: 1}
+	if !g.emit(event) {
+		return
+	}
+	g.queueEventTriggers(event, played, "played")
 }
 
 func (g *game) summon(count, id int) []*instance {

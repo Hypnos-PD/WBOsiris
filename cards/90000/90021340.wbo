@@ -6,7 +6,9 @@ card 90021340 {
     trait loot;
 
     effect {
-        unplayable;
+        choose target from own.field.followers;
+        buff target +0/+1;
+        add ward to target;
     }
 
     meta {

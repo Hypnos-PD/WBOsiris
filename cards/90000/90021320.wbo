@@ -6,7 +6,7 @@ card 90021320 {
     trait loot;
 
     effect {
-        unplayable;
+        heal own.leader 2;
     }
 
     meta {

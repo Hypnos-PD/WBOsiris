@@ -40,14 +40,19 @@ func (g *game) tickCrests(p *player) {
 			return
 		}
 		if crest.countdown == 0 {
-			owner := g.sideOf(crest)
-			g.detachEventSource(crest)
-			g.remove(&p.crests, crest)
-			g.addToZone(p, crest, "retired_crest")
-			if !g.emit(ir.RuntimeEvent{Kind: "crest_destroyed", Side: owner, InstanceID: crest.id, CardID: crest.card.ID}) {
-				return
-			}
-			g.queueSimpleTriggers(crest, "lastwords")
+			g.expireCrest(p, crest)
 		}
 	}
+}
+
+// expireCrest 让吟唱归零的纹章退场并触发谢幕曲。
+func (g *game) expireCrest(p *player, crest *instance) {
+	owner := g.sideOf(crest)
+	g.detachEventSource(crest)
+	g.remove(&p.crests, crest)
+	g.addToZone(p, crest, "retired_crest")
+	if !g.emit(ir.RuntimeEvent{Kind: "crest_destroyed", Side: owner, InstanceID: crest.id, CardID: crest.card.ID}) {
+		return
+	}
+	g.queueSimpleTriggers(crest, "lastwords")
 }

@@ -5,7 +5,8 @@ card 90054320 {
     cost 0;
 
     effect {
-        unplayable;
+        choose target from own.field.followers where card 10354120;
+        add storm to target;
     }
 
     meta {

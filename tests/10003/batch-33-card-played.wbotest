@@ -1,0 +1,115 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "篡夺的团结者的入场曲加入两张黄金卡" {
+    seed 33001;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10323110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.hand count card 90021320 == 1;
+        own.hand count card 90021330 == 1;
+        own.pp == 0/4;
+    }
+}
+
+scenario "使用财宝卡牌时篡夺的团结者造成三点伤害" {
+    seed 33002;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10323110; }
+            hand { spell loot = 90021310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play loot; select enemy; }
+    expect {
+        legal;
+        // 黄金短剑自己造成 1 点，篡夺的团结者再造成 3 点。
+        enemy.stats == 2/4;
+        own.pp == 0/1;
+    }
+}
+
+scenario "使用非财宝卡牌时不触发篡夺的团结者" {
+    seed 33003;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10323110; }
+            hand { spell plain = 10031310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play plain; }
+    expect { legal; enemy.stats == 2/8; }
+}
+
+scenario "篡夺的团结者的进化时回复一点能量点" {
+    seed 33004;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            pp 1/5;
+            field { follower source = 10323110; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.pp == 2/5; source.stats == 5/5; }
+}
+
+scenario "空绝的显现获得纹章并在使用财宝卡牌时推进吟唱" {
+    seed 33005;
+    state {
+        player own {
+            pp 1/1;
+            crests { crest octrice = 10324120; }
+            hand { spell loot = 90021310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play loot; select enemy; }
+    expect {
+        legal;
+        octrice.countdown == 7;
+        own.crests count card 10324120 == 1;
+        enemy.stats == 2/7;
+    }
+}
+
+scenario "吟唱归零时空绝的显现的纹章退场并加入残光" {
+    seed 33006;
+    state {
+        player own {
+            pp 1/1;
+            crests { crest octrice = 10324120 { countdown 1; } }
+            hand { spell loot = 90021310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play loot; select enemy; }
+    expect {
+        legal;
+        own.crests count card 10324120 == 0;
+        own.hand count card 90024310 == 1;
+    }
+}
+
+scenario "空绝的显现的入场曲获得纹章" {
+    seed 33007;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10324120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.crests count card 10324120 == 1; own.pp == 0/3; }
+}

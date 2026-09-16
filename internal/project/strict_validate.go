@@ -329,7 +329,7 @@ func parseBaseEventPattern(t []syntax.Token) (int, string, bool) {
 	if t[2].Value == "follower" && set("evolved", "super_evolved")[t[3].Value] {
 		return 4, "follower", true
 	}
-	if t[2].Value == "card" && set("discarded", "fused")[t[3].Value] {
+	if t[2].Value == "card" && set("discarded", "fused", "played")[t[3].Value] {
 		return 4, "card", true
 	}
 	if len(t) >= 5 && values(t[2:5]) == "follower leaves field" {

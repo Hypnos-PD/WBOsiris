@@ -303,7 +303,7 @@ event_pattern     = participant , event_subject , event_verb
                   | "self" , ("evolved" | "super_evolved" | "discarded" | "summoned")
                   | "self" , "survives" , "damage" ;
 event_subject     = "follower" | "amulet" | "card" ;
-event_verb        = "summoned" | "engaged" | "discarded" | "fused" | "destroyed" ;
+event_verb        = "summoned" | "engaged" | "discarded" | "fused" | "played" | "destroyed" ;
 source_zone       = "while" , "self" , "in" , ("hand" | "field") ;
 turn_limit        = "once" , "per" , [participant] , "turn" ;
 during_turn       = "during" , participant , "turn" ;
