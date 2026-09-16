@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10341310 {
+    type spell;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "雷霆之怒";
+        text """
+对战场上的生命值最大的所有随从造成5点伤害。若为【<color=Keyword>觉醒</color>】，则对生命值最大的所有主战者造成3点伤害。
+""";
+    }
+
+    locale eng {
+        name "Raging Lightning";
+        text """
+Deal 5 damage to all followers with the highest defense. If you're in <b><color=Keyword>Overflow</color></b>, deal 3 damage to all leaders with the highest defense.
+""";
+    }
+
+    locale jpn {
+        name "サンダーレイジ";
+        text """
+場の体力最大のフォロワーすべてに5ダメージ。【<color=Keyword>覚醒</color>】なら、体力最大のリーダーすべてに3ダメージ。
+""";
+    }
+
+    locale kor {
+        name "썬더 레이지";
+        text """
+체력이 가장 높은 전장의 추종자 모두에게 5 피해. [<color=Keyword>각성</color>]이라면, 체력이 가장 높은 리더 모두에게 3 피해.
+""";
+    }
+
+    locale cht {
+        name "疾雷之怒";
+        text """
+給予戰場上生命值最高的全部從者卡5點傷害。如果【<color=Keyword>覺醒</color>】已發動，則會給予生命值最高的全部主戰者3點傷害。
+""";
+    }
+
+}

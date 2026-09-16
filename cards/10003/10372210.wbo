@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10372210 {
+    type amulet;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "破坏的荒野";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的战场上的1张其他卡牌，若成功选择，则破坏该卡牌。抽取2张卡牌。
+<hr>【<color=Keyword>谢幕曲</color>】抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Wasteland of Destruction";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select another allied card on the field. If you selected one, destroy it and draw 2 cards.
+<hr><b><color=Keyword>Last Words</color></b>: Draw a card.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はかい\">破壊</rub>の<rub=\"こうや\">荒野</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の場の他のカード1枚を選ぶ。選んだなら、それを破壊。自分のデッキから2枚を引く。
+<hr>【<color=Keyword>ラストワード</color>】自分のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "파괴의 황야";
+        text """
+[<color=Keyword>출격</color>] 내 전장에서 다른 카드 1장을 선택한다. 선택했다면, 그 카드를 파괴. 내 덱에서 2장을 뽑는다.
+<hr>[<color=Keyword>유언</color>] 내 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "破壞的荒野";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己戰場上的其他卡片。如果完成指定，則會將其破壞。由自己的牌堆中抽取2張卡片。
+<hr>【<color=Keyword>謝幕曲</color>】由自己的牌堆中抽取1張卡片。
+""";
+    }
+
+}

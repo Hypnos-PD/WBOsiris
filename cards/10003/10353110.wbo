@@ -1,0 +1,73 @@
+wbo 0.1.0;
+
+card 10353110 {
+    type follower;
+    cost 5;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class abysscraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "混融的团结者";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）召唤1个『<color=Keyword>混融的团结者</color>』，使该随从和本随从获得【<color=Keyword>突进</color>】。</ridx>
+<ridx=1>（2）召唤1个『<color=Keyword>混融的团结者</color>』，使该随从和本随从获得【<color=Keyword>守护</color>】。</ridx>
+<ridx=2>（3）使自己的战场上的所有『<color=Keyword>混融的团结者</color>』+2/+2。</ridx>
+<hr><sev>【<color=Keyword>超进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</sev>
+""";
+    }
+
+    locale eng {
+        name "Congregant of Entwining";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Summon a <b><i><color=Keyword>Congregant of Entwining</color></i></b> and give it and this follower <b><color=Keyword>Rush</color></b>.</ridx>
+<ridx=1>2. Summon a <b><i><color=Keyword>Congregant of Entwining</color></i></b> and give it and this follower <b><color=Keyword>Ward</color></b>.</ridx>
+<ridx=2>3. Give all allied copies of <b><i><color=Keyword>Congregant of Entwining</color></i></b> on the field +2/+2.</ridx>
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"こんゆう\">混融</rub>の<rub=\"だんけつしゃ\">団結者</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）『<color=Keyword>混融の団結者</color>』1枚を自分の場に出す。それとこれは【<color=Keyword>突進</color>】を持つ。</ridx>
+<ridx=1>（2）『<color=Keyword>混融の団結者</color>』1枚を自分の場に出す。それとこれは【<color=Keyword>守護</color>】を持つ。</ridx>
+<ridx=2>（3）自分の場の『<color=Keyword>混融の団結者</color>』すべては+2/+2する。</ridx>
+<hr><sev>【<color=Keyword>超進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</sev>
+""";
+    }
+
+    locale kor {
+        name "혼융의 단결자";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) <color=Keyword>혼융의 단결자</color> 1장을 내 전장에 소환. 그 추종자와 이 추종자는 [<color=Keyword>돌진</color>]을 갖는다.</ridx>
+<ridx=1>(2) <color=Keyword>혼융의 단결자</color> 1장을 내 전장에 소환. 그 추종자와 이 추종자는 [<color=Keyword>수호</color>]를 갖는다.</ridx>
+<ridx=2>(3) 내 전장의 <color=Keyword>혼융의 단결자</color> 모두는 +2/+2.</ridx>
+<hr><sev>[<color=Keyword>초진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</sev>
+""";
+    }
+
+    locale cht {
+        name "混融的團結者";
+        text """
+【<color=Keyword>入場曲</color>】指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）召喚1張『<color=Keyword>混融的團結者</color>』到自己的戰場上。使其與這張卡片獲得【<color=Keyword>突進</color>】。</ridx>
+<ridx=1>（2）召喚1張『<color=Keyword>混融的團結者</color>』到自己的戰場上。使其與這張卡片獲得【<color=Keyword>守護</color>】。</ridx>
+<ridx=2>（3）使自己戰場上全部的『<color=Keyword>混融的團結者</color>』+2/+2。</ridx>
+<hr><sev>【<color=Keyword>超進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</sev>
+""";
+    }
+
+}

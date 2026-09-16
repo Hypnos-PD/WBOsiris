@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10343110 {
+    type follower;
+    cost 6;
+    stats 5/7;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class dragoncraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "侮蔑的团结者";
+        text """
+【<color=Keyword>入场曲</color>】对战场上的所有随从造成3点伤害。
+<hr>自己的回合结束时，若本随从的生命值为3或以下，则使自己的手牌中的所有龙族·随从+1/+1。
+""";
+    }
+
+    locale eng {
+        name "Congregant of Disdain";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Deal 3 damage to all followers.
+<hr>At the end of your turn, if this follower's defense is 3 or less, give all Dragoncraft followers in your hand +1/+1.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぶべつ\">侮蔑</rub>の<rub=\"だんけつしゃ\">団結者</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】場のフォロワーすべてに3ダメージ。
+<hr>自分のターン終了時、これの体力が3以下なら、自分の手札のドラゴン・フォロワーすべては+1/+1する。
+""";
+    }
+
+    locale kor {
+        name "모멸의 단결자";
+        text """
+[<color=Keyword>출격</color>] 전장의 추종자 모두에게 3 피해.
+<hr>내 턴 종료시 이 추종자의 체력이 3 이하라면, 내 패의 드래곤 추종자 모두는 +1/+1.
+""";
+    }
+
+    locale cht {
+        name "侮蔑的團結者";
+        text """
+【<color=Keyword>入場曲</color>】給予戰場上全部的從者卡3點傷害。
+<hr>自己的回合結束時，如果這張卡片的生命值為3以下，則會使自己手牌中全部的龍族‧從者卡+1/+1。
+""";
+    }
+
+}

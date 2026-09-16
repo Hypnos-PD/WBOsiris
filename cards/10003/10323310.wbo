@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10323310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class swordcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "奉还的剑闪";
+        text """
+【<color=Keyword>融合</color>】财宝·卡牌
+<hr>对对手的战场上的随机1个随从造成2点伤害。将1张『<color=Keyword>黄金短剑</color>』加入手牌。若已与本卡牌【<color=Keyword>融合</color>】，则抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Returning Slash";
+        text """
+<b><color=Keyword>Fuse</color></b>: Loot cards
+<hr>Deal 2 damage to a random enemy follower. Add a <b><i><color=Keyword>Gilded Blade</color></i></b> to your hand. If you've <b><color=Keyword>Fuse</color><color=Keyword>d</color></b> to this card, draw a card.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"へんかん\">返還</rub>の<rub=\"けんせん\">剣閃</rub>";
+        text """
+【<color=Keyword>融合</color>】財宝・カード
+<hr>相手の場のフォロワーからランダム1枚に2ダメージ。『<color=Keyword>黄金の小剣</color>』1枚を自分の手札に加える。これに【<color=Keyword>融合</color>】していたなら、自分のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "반환의 검섬";
+        text """
+[<color=Keyword>융합</color>] 보물 카드
+<hr>상대방 전장의 추종자 중 무작위로 1장에게 2 피해. <color=Keyword>황금 단검</color> 1장을 내 패에 넣는다. 이 주문에 [<color=Keyword>융합</color>]된 카드가 있다면, 내 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "奉還的劍閃";
+        text """
+【<color=Keyword>融合</color>】財寶‧卡片
+<hr>隨機給予1張敵方戰場上的從者卡2點傷害。增加1張『<color=Keyword>黃金短劍</color>』到自己的手牌中。如果已有卡片與這張卡片進行【<color=Keyword>融合</color>】，則會由自己的牌堆中抽取1張卡片。
+""";
+    }
+
+}

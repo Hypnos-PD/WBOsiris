@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10324110 {
+    type follower;
+    cost 6;
+    stats 5/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class swordcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "篡夺的继承者·辛瑟莱兹";
+        text """
+【<color=Keyword>融合</color>】财宝·卡牌
+<hr>【<color=Keyword>入场曲</color>】对对手的战场上的所有随从和对手的主战者造成X点伤害。X为与本卡牌【<color=Keyword>融合</color>】的种类。
+<hr><sev>【<color=Keyword>超进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</sev>
+""";
+    }
+
+    locale eng {
+        name "Sinciro, Heir to Usurpation";
+        text """
+<b><color=Keyword>Fuse</color></b>: Loot cards
+<hr><b><color=Keyword>Fanfare</color></b>: Deal X damage to all enemies. X is the number of differently named cards <b><color=Keyword>Fuse</color><color=Keyword>d</color></b> to this card.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"さんだつ\">簒奪</rub>の<rub=\"けいしょうしゃ\">継承者</rub>・シンセライズ";
+        text """
+【<color=Keyword>融合</color>】財宝・カード
+<hr>【<color=Keyword>ファンファーレ</color>】相手の場のフォロワーすべてと相手のリーダーにXダメージ。Xはこれに【<color=Keyword>融合</color>】した種類である。
+<hr><sev>【<color=Keyword>超進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</sev>
+""";
+    }
+
+    locale kor {
+        name "약탈의 계승자 신세라이즈";
+        text """
+[<color=Keyword>융합</color>] 보물 카드
+<hr>[<color=Keyword>출격</color>] 상대방 전장의 추종자 모두와 상대방 리더에게 X 피해. X는 이 추종자에 [<color=Keyword>융합</color>]된 카드의 종류 수.
+<hr><sev>[<color=Keyword>초진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</sev>
+""";
+    }
+
+    locale cht {
+        name "篡奪的繼承者‧辛士萊茲";
+        text """
+【<color=Keyword>融合</color>】財寶‧卡片
+<hr>【<color=Keyword>入場曲</color>】給予敵方戰場上全部的從者卡與敵方的主戰者X點傷害。X為「與這張卡片【<color=Keyword>融合</color>】的種類數」。
+<hr><sev>【<color=Keyword>超進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</sev>
+""";
+    }
+
+}

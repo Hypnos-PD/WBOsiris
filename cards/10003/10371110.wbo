@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10371110 {
+    type follower;
+    cost 4;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "破坏的肯定者";
+        text """
+【<color=Keyword>入场曲</color>】本随从+X/+X。X为自己的战场上的其他卡牌张数。破坏自己的战场上的其他所有卡牌。
+<hr>【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Devotee of Destruction";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Give this follower +X/+X. X is the number of other allied cards on the field. Destroy all other allied cards on the field.
+<hr><b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はかい\">破壊</rub>の<rub=\"こうていしゃ\">肯定者</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】これは+X/+Xする。Xは自分の場の他のカードの枚数である。自分の場の他のカードすべてを破壊。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "파괴의 긍정자";
+        text """
+[<color=Keyword>출격</color>] 이 추종자는 +X/+X. X는 내 전장의 다른 카드 수. 내 전장의 다른 카드 모두를 파괴.
+<hr>[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "破壞的肯定者";
+        text """
+【<color=Keyword>入場曲</color>】使這張卡片+X/+X。X為「自己戰場上其他卡片的張數」。破壞自己戰場上全部的其他卡片。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+}

@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10351120 {
+    type follower;
+    cost 8;
+    stats 4/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "泡沫鬼姬";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的2个随从，破坏这些随从。对自己的主战者造成4点伤害。
+<hr>【<color=Keyword>疾驰</color>】
+""";
+    }
+
+    locale eng {
+        name "Ephemeral Demon Princess";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select 2 enemy followers on the field and destroy them. Deal 4 damage to your leader.
+<hr><b><color=Keyword>Storm</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ほうまつ\">泡沫</rub>の<rub=\"おにひめ\">鬼姫</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー2枚を選ぶ。それを破壊。自分のリーダーに4ダメージ。
+<hr>【<color=Keyword>疾走</color>】
+""";
+    }
+
+    locale kor {
+        name "포말의 오니히메";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 2장을 선택한다. 그 추종자를 파괴. 내 리더에게 4 피해.
+<hr>[<color=Keyword>질주</color>]
+""";
+    }
+
+    locale cht {
+        name "泡沫的鬼姬";
+        text """
+【<color=Keyword>入場曲</color>】指定2張敵方戰場上的從者卡。將其破壞。給予自己的主戰者4點傷害。
+<hr>【<color=Keyword>疾馳</color>】
+""";
+    }
+
+}

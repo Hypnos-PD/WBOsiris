@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10351110 {
+    type follower;
+    cost 3;
+    stats 1/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "混融的肯定者";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）对对手的战场上的所有随从造成1点伤害。</ridx>
+<ridx=1>（2）本随从+2/+2。</ridx>
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Devotee of Entwining";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Deal 1 damage to all enemy followers.</ridx>
+<ridx=1>2. Give this follower +2/+2.</ridx>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"こんゆう\">混融</rub>の<rub=\"こうていしゃ\">肯定者</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）相手の場のフォロワーすべてに1ダメージ。</ridx>
+<ridx=1>（2）これは+2/+2する。</ridx>
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "혼융의 긍정자";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 상대방 전장의 추종자 모두에게 1 피해.</ridx>
+<ridx=1>(2) 이 추종자는 +2/+2.</ridx>
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "混融的肯定者";
+        text """
+【<color=Keyword>入場曲</color>】指定1個【<color=Keyword>模式</color>】並發動該能力。 
+<ridx=0>（1）給予敵方戰場上全部的從者卡1點傷害。</ridx>
+<ridx=1>（2）使這張卡片+2/+2。</ridx>
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

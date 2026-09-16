@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10314110 {
+    type follower;
+    cost 4;
+    stats 1/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "不弑的继承者·库露露";
+        text """
+【<color=Keyword>入场曲</color>】使对手的战场上的所有随从-0/-2。
+<hr>【<color=Keyword>潜行</color>】
+对手的随从的生命值在战场上被减少时，自己的每回合中可触发1次，回复自己的主战者1点生命值。
+<hr><sev>【<color=Keyword>超进化时</color>】使对手获得『纹章：不弑的继承者·库露露』。</sev>
+""";
+    }
+
+    locale eng {
+        name "Krulle, Heir to Unkilling";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Give all enemy followers on the field -0/-2.
+<hr><b><color=Keyword>Ambush</color></b>
+Once on each of your turns, when an enemy follower is given - defense on the field, restore 1 defense to your leader.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Give your opponent <b><i>Crest: Krulle, Heir to Unkilling</i></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ふさつ\">不殺</rub>の<rub=\"けいしょうしゃ\">継承者</rub>・クルル";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワーすべては-0/-2する。
+<hr>【<color=Keyword>潜伏</color>】
+相手のフォロワーの体力が場で-されたとき、自分のターンごとに1回、自分のリーダーを1回復。
+<hr><sev>【<color=Keyword>超進化時</color>】相手は『クレスト：不殺の継承者・クルル』を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "불살의 계승자 쿠루루";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장의 추종자 모두는 -0/-2.
+<hr>[<color=Keyword>잠복</color>]
+상대방 추종자의 체력이 전장에서 감소했을 때, 내 턴마다 1회에 한해 내 리더를 1 회복.
+<hr><sev>[<color=Keyword>초진화시</color>] 상대방은 「크레스트: 불살의 계승자 쿠루루」를 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "不弒的繼承者‧庫璐璐";
+        text """
+【<color=Keyword>入場曲</color>】使敵方戰場上全部的從者卡-0/-2。
+<hr>【<color=Keyword>潛行</color>】
+當敵方從者卡的生命值在戰場上因「-」而減少時，每個自己的回合僅限發動1次，回復自己的主戰者1點生命值。
+<hr><sev>【<color=Keyword>超進化時</color>】使敵方獲得『紋章：不弒的繼承者‧庫璐璐』。</sev>
+""";
+    }
+
+}

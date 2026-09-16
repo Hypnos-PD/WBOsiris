@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10371120 {
+    type follower;
+    cost 7;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "音速飞行兵";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>毁灭创造物γ</color>』。
+<hr><ev>【<color=Keyword>进化时</color>】选择自己的战场上的1个创造物·随从，使其+3/+3。</ev>
+""";
+    }
+
+    locale eng {
+        name "Supersonic Fighter";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon an <b><i><color=Keyword>Ominous Artifact γ</color></i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select an allied Artifact follower on the field and give it +3/+3.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"おんそく\">音速</rub>の<rub=\"ひこうへい\">飛行兵</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>デストロイアーティファクトγ</color>』1枚を自分の場に出す。
+<hr><ev>【<color=Keyword>進化時</color>】自分の場のアーティファクト・フォロワー1枚を選ぶ。それは+3/+3する。</ev>
+""";
+    }
+
+    locale kor {
+        name "음속의 비행병";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>디스트로이 아티팩트 감마</color> 1장을 내 전장에 소환.
+<hr><ev>[<color=Keyword>진화시</color>] 내 전장에서 아티팩트 추종자 1장을 선택한다. 그 추종자는 +3/+3.</ev>
+""";
+    }
+
+    locale cht {
+        name "音速的飛行兵";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>破滅的創造物γ</color>』到自己的戰場上。
+<hr><ev>【<color=Keyword>進化時</color>】指定1張自己戰場上的創造物‧從者卡。使其+3/+3。</ev>
+""";
+    }
+
+}

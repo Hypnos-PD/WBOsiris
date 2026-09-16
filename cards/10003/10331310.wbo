@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10331310 {
+    type spell;
+    cost 4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "水晶的指引";
+        text """
+使自己获得『纹章：水晶的指引』。
+""";
+    }
+
+    locale eng {
+        name "Crystal Gazing";
+        text """
+Gain <b><i>Crest: Crystal Gazing</i></b>.
+""";
+    }
+
+    locale jpn {
+        name "クリスタルゲイジング";
+        text """
+自分は『クレスト：クリスタルゲイジング』を持つ。
+""";
+    }
+
+    locale kor {
+        name "크리스탈 게이징";
+        text """
+나는 「크레스트: 크리스탈 게이징」을 갖는다.
+""";
+    }
+
+    locale cht {
+        name "水晶的預視";
+        text """
+使自己獲得『紋章：水晶的預視』。
+""";
+    }
+
+}

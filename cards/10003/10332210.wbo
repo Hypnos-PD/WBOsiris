@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 10332210 {
+    type amulet;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "真理的研究设施";
+        text """
+【<color=Keyword>吟唱</color>_5】
+自己使用费用发生变化的随从时，抽取1张卡牌。本护符的倒计数-1。
+<hr>【<color=Keyword>启动</color>】选择自己的手牌中的1张随从，使其费用+1，使其+1/+1。
+""";
+    }
+
+    locale eng {
+        name "Institute of Truth";
+        text """
+<b><color=Keyword>Countdown</color> (5)</b>
+Whenever you play a follower whose cost has been changed, draw a card and advance this amulet's count by 1.
+<hr><b><color=Keyword>Engage</color></b>: Select a follower in your hand, increase its cost by 1, and give it +1/+1.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しんじつ\">真実</rub>の<rub=\"けんきゅうしせつ\">研究施設</rub>";
+        text """
+【<color=Keyword>カウントダウン</color>_5】
+自分がコストが変化しているフォロワーをプレイしたとき、自分のデッキから1枚を引く。これのカウントを-1する。
+<hr>【<color=Keyword>アクト</color>】自分の手札のフォロワー1枚を選ぶ。それのコストを+1する。それは+1/+1する。
+""";
+    }
+
+    locale kor {
+        name "진실의 연구시설";
+        text """
+[<color=Keyword>카운트다운</color> 5]
+내가 비용이 변화한 추종자를 사용했을 때, 내 덱에서 1장을 뽑는다. 이 마법진의 카운트를 -1.
+<hr>[<color=Keyword>활성화</color>] 내 패에서 추종자 1장을 선택한다. 그 추종자의 비용을 +1. 그 추종자는 +1/+1.
+""";
+    }
+
+    locale cht {
+        name "真實的研究設施";
+        text """
+【<color=Keyword>倒數</color>_5】
+當自己使用消費有所變化的從者卡時，由自己的牌堆中抽取1張卡片。使這張卡片的倒數回合數-1。
+<hr>【<color=Keyword>策動</color>】指定1張自己手牌中的從者卡。使其消費+1。使其+1/+1。
+""";
+    }
+
+}

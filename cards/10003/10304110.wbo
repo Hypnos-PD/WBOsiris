@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10304110 {
+    type follower;
+    cost 4;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class neutral;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "绝大的显现·麦哲佩恩";
+        text """
+【<color=Keyword>入场曲</color>】将1张『<color=Keyword>绝大的证明</color>』加入手牌。
+<hr><ev>【<color=Keyword>进化时</color>】使自己获得『纹章：绝大的显现·麦哲佩恩』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Mjerrabaine, Great Manifest";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add a <b><i><color=Keyword>Great Testimony</color></i></b> to your hand.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Gain <b><i>Crest: Mjerrabaine, Great Manifest</i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぜつだい\">絶大</rub>の<rub=\"けんげん\">顕現</rub>・マゼルベイン";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>絶大の証明</color>』1枚を自分の手札に加える。
+<hr><ev>【<color=Keyword>進化時</color>】自分は『クレスト：絶大の顕現・マゼルベイン』を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "위대의 현현 마젤베인";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>위대의 증명</color> 1장을 내 패에 넣는다.
+<hr><ev>[<color=Keyword>진화시</color>] 나는 「크레스트: 위대의 현현 마젤베인」을 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "絕大的顯現‧馬塞班恩";
+        text """
+【<color=Keyword>入場曲</color>】增加1張『<color=Keyword>絕大的證明</color>』到自己的手牌中。
+<hr><ev>【<color=Keyword>進化時</color>】使自己獲得『紋章：絕大的顯現‧馬塞班恩』。</ev>
+""";
+    }
+
+}

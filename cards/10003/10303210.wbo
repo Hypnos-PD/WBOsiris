@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10303210 {
+    type amulet;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class neutral;
+        rarity gold;
+    }
+
+    locale chs {
+        name "试炼的石板";
+        text """
+【<color=Keyword>入场曲</color>】使自己的牌组中的重复卡牌消失并只保留1张。
+<hr>费用1【<color=Keyword>启动</color>】抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Tablet of Tribulations";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Banish all duplicates from your deck.
+<hr><b><color=Keyword>Engage</color> (1)</b>: Draw a card.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しれん\">試練</rub>の<rub=\"せきばん\">石板</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキの重複するカードをそれぞれ1枚になるように消滅。
+<hr>コスト1【<color=Keyword>アクト</color>】自分のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "시련의 석판";
+        text """
+[<color=Keyword>출격</color>] 내 덱에 중복되는 카드를 각각 1장이 되도록 소멸.
+<hr>비용 1 [<color=Keyword>활성화</color>] 내 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "試煉的石板";
+        text """
+【<color=Keyword>入場曲</color>】使自己牌堆中重複的卡片消失，並各自保留1張。
+<hr>消費1【<color=Keyword>策動</color>】由自己的牌堆中抽取1張卡片。
+""";
+    }
+
+}

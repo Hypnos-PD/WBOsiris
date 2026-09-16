@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10313310 {
+    type spell;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class forestcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "驱逐的死矢";
+        text """
+发动X次「使对手的战场上的随机1个随从-0/-1」。X为自己的【<color=Keyword>连击</color>】。
+""";
+    }
+
+    locale eng {
+        name "Eradicating Arrow";
+        text """
+Do this X times: \"Give a random enemy follower on the field -0/-1.\" X is your <b><color=Keyword>Combo</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"くちく\">駆逐</rub>の<rub=\"しや\">死矢</rub>";
+        text """
+「相手の場のフォロワーからランダム1枚は-0/-1する。」をX回行う。Xは自分の【<color=Keyword>コンボ</color>】である。
+""";
+    }
+
+    locale kor {
+        name "구축의 화살";
+        text """
+「상대방 전장의 추종자 중 무작위로 1장은 -0/-1」을 X회 발동. X는 내 [<color=Keyword>콤보</color>].
+""";
+    }
+
+    locale cht {
+        name "驅逐的死箭";
+        text """
+發動X次「隨機使1張敵方戰場上的從者卡-0/-1」。X為「自己的【<color=Keyword>連擊</color>】數」。
+""";
+    }
+
+}

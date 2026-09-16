@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 10322210 {
+    type amulet;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "篡夺的据点";
+        text """
+【<color=Keyword>启动</color>】破坏本卡牌。【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）将1张『<color=Keyword>黄金短剑</color>』和1张『<color=Keyword>黄金项链</color>』加入手牌。</ridx>
+<ridx=1>（2）将1张『<color=Keyword>黄金之杯</color>』和1张『<color=Keyword>黄金之靴</color>』加入手牌。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Lair of Usurpation";
+        text """
+<b><color=Keyword>Engage</color></b>: Destroy this card. Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Add a <b><i><color=Keyword>Gilded Blade</color></i></b> and <b><i><color=Keyword>Gilded Necklace</color></i></b> to your hand.</ridx>
+<ridx=1>2. Add a <b><i><color=Keyword>Gilded Goblet</color></i></b> and <b><i><color=Keyword>Gilded Boots</color></i></b> to your hand.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"さんだつ\">簒奪</rub>のアジト";
+        text """
+【<color=Keyword>アクト</color>】これを破壊。【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）『<color=Keyword>黄金の小剣</color>』1枚と『<color=Keyword>黄金の首飾り</color>』1枚を自分の手札に加える。</ridx>
+<ridx=1>（2）『<color=Keyword>黄金の杯</color>』1枚と『<color=Keyword>黄金の靴</color>』1枚を自分の手札に加える。</ridx>
+""";
+    }
+
+    locale kor {
+        name "약탈의 아지트";
+        text """
+[<color=Keyword>활성화</color>] 이 마법진을 파괴. [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) <color=Keyword>황금 단검</color> 1장, <color=Keyword>황금 목걸이</color> 1장을 내 패에 넣는다.</ridx>
+<ridx=1>(2) <color=Keyword>황금 잔</color> 1장, <color=Keyword>황금 신발</color> 1장을 내 패에 넣는다.</ridx>
+""";
+    }
+
+    locale cht {
+        name "篡奪的據點";
+        text """
+【<color=Keyword>策動</color>】破壞這張卡片。指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）增加1張『<color=Keyword>黃金短劍</color>』與1張『<color=Keyword>黃金首飾</color>』到自己的手牌中。</ridx>
+<ridx=1>（2）增加1張『<color=Keyword>黃金之杯</color>』與1張『<color=Keyword>黃金之靴</color>』到自己的手牌中。</ridx>
+""";
+    }
+
+}

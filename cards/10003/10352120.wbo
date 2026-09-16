@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10352120 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class abysscraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "新来的守墓人";
+        text """
+【<color=Keyword>爆能强化</color>_7】发动【<color=Keyword>亡者召还</color>_5】和【<color=Keyword>亡者召还</color>_3】。
+""";
+    }
+
+    locale eng {
+        name "Spirited Gravekeeper";
+        text """
+<b><color=Keyword>Enhance</color> (7)</b>: <b><color=Keyword>Reanimate</color> (5)</b> and <b><color=Keyword>Reanimate</color> (3)</b>.
+""";
+    }
+
+    locale jpn {
+        name "フレッシュグレイブキーパー";
+        text """
+【<color=Keyword>エンハンス</color>_7】【<color=Keyword>リアニメイト</color>_5】と【<color=Keyword>リアニメイト</color>_3】を行う。
+""";
+    }
+
+    locale kor {
+        name "풋풋한 묘지기";
+        text """
+[<color=Keyword>증강</color> 7] [<color=Keyword>소생</color> 5], [<color=Keyword>소생</color> 3]을 발동.
+""";
+    }
+
+    locale cht {
+        name "新任護墓者";
+        text """
+【<color=Keyword>爆能強化</color>_7】發動【<color=Keyword>亡者召還</color>_5】與【<color=Keyword>亡者召還</color>_3】。
+""";
+    }
+
+}

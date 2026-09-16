@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10342110 {
+    type follower;
+    cost 5;
+    stats 3/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "侮蔑的祈祷者";
+        text """
+【<color=Keyword>突进</color>】
+【<color=Keyword>守护</color>】
+自己的回合结束时，本随从回复至上限。回复自己的主战者X点生命值。X为因本能力回复的数值。
+""";
+    }
+
+    locale eng {
+        name "Supplicant of Disdain";
+        text """
+<b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Ward</color></b>
+At the end of your turn, fully restore the defense of this follower and restore the same amount to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぶべつ\">侮蔑</rub>の<rub=\"きとうしゃ\">祈祷者</rub>";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>守護</color>】
+自分のターン終了時、これを上限まで回復。自分のリーダーをX回復。Xはこれで回復した値である。
+""";
+    }
+
+    locale kor {
+        name "모멸의 기도자";
+        text """
+[<color=Keyword>돌진</color>]
+[<color=Keyword>수호</color>]
+내 턴 종료시, 이 추종자를 최대치까지 회복. 내 리더를 X 회복. X는 이 능력으로 회복한 수치.
+""";
+    }
+
+    locale cht {
+        name "侮蔑的祈禱者";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>守護</color>】
+自己的回合結束時，使這張卡片的生命值回復至上限。回復自己的主戰者X點生命值。X為「這張卡片所回復的生命值」。
+""";
+    }
+
+}

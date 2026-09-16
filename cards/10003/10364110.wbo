@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10364110 {
+    type follower;
+    cost 6;
+    stats 0/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "安息的继承者·妃花";
+        text """
+【<color=Keyword>入场曲</color>】使自己获得『纹章：安息的继承者·妃花』。
+<hr><sev>【<color=Keyword>超进化时</color>】使对手的战场上的所有随从的攻击力变为4。</sev>
+""";
+    }
+
+    locale eng {
+        name "Himeka, Heir to Repose";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Gain <b><i>Crest: Himeka, Heir to Repose</i></b>.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Set the attack of all enemy followers on the field to 4.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あんそく\">安息</rub>の<rub=\"けいしょうしゃ\">継承者</rub>・ヒメカ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分は『クレスト：安息の継承者・ヒメカ』を持つ。
+<hr><sev>【<color=Keyword>超進化時</color>】相手の場のフォロワーすべては攻撃力4になる。</sev>
+""";
+    }
+
+    locale kor {
+        name "안식의 계승자 히메카";
+        text """
+[<color=Keyword>출격</color>] 나는 「크레스트: 안식의 계승자 히메카」를 갖는다.
+<hr><sev>[<color=Keyword>초진화시</color>] 상대방 전장의 추종자 모두는 공격력이 4가 된다.</sev>
+""";
+    }
+
+    locale cht {
+        name "安息的繼承者‧希彌佳";
+        text """
+【<color=Keyword>入場曲</color>】使自己獲得『紋章：安息的繼承者‧希彌佳』。
+<hr><sev>【<color=Keyword>超進化時</color>】使敵方戰場上全部的從者卡攻擊力轉變為4。</sev>
+""";
+    }
+
+}

@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10342210 {
+    type amulet;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "侮蔑之国";
+        text """
+【<color=Keyword>吟唱</color>_4】
+<hr>费用1【<color=Keyword>启动</color>】对战场上的所有随从造成1点伤害。
+""";
+    }
+
+    locale eng {
+        name "Nation of Disdain";
+        text """
+<b><color=Keyword>Countdown</color> (4)</b>
+<hr><b><color=Keyword>Engage</color> (1)</b>: Deal 1 damage to all followers.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぶべつ\">侮蔑</rub>の<rub=\"くに\">国</rub>";
+        text """
+【<color=Keyword>カウントダウン</color>_4】
+<hr>コスト1【<color=Keyword>アクト</color>】場のフォロワーすべてに1ダメージ。
+""";
+    }
+
+    locale kor {
+        name "모멸의 나라";
+        text """
+[<color=Keyword>카운트다운</color> 4]
+<hr>비용 1 [<color=Keyword>활성화</color>] 전장의 추종자 모두에게 1 피해.
+""";
+    }
+
+    locale cht {
+        name "侮蔑之國";
+        text """
+【<color=Keyword>倒數</color>_4】
+<hr>消費1【<color=Keyword>策動</color>】給予戰場上全部的從者卡1點傷害。
+""";
+    }
+
+}

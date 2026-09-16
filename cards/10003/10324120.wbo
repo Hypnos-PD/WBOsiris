@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10324120 {
+    type follower;
+    cost 3;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class swordcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "空绝的显现·奥克托丽丝";
+        text """
+【<color=Keyword>入场曲</color>】使自己获得『纹章：空绝的显现·奥克托丽丝』。
+<hr><ev>【<color=Keyword>进化时</color>】将1张『<color=Keyword>黄金短剑</color>』和1张『<color=Keyword>黄金项链</color>』加入手牌。</ev>
+""";
+    }
+
+    locale eng {
+        name "Octrice, Hollowness Manifest";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Gain <b><i>Crest: Octrice, Hollowness Manifest</i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Add a <b><i><color=Keyword>Gilded Blade</color></i></b> and <b><i><color=Keyword>Gilded Necklace</color></i></b> to your hand.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"くうぜつ\">空絶</rub>の<rub=\"けんげん\">顕現</rub>・オクトリス";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分は『クレスト：空絶の顕現・オクトリス』を持つ。
+<hr><ev>【<color=Keyword>進化時</color>】『<color=Keyword>黄金の小剣</color>』1枚と『<color=Keyword>黄金の首飾り</color>』1枚を自分の手札に加える。</ev>
+""";
+    }
+
+    locale kor {
+        name "공허의 현현 옥토리스";
+        text """
+[<color=Keyword>출격</color>] 나는 「크레스트: 공허의 현현 옥토리스」를 갖는다.
+<hr><ev>[<color=Keyword>진화시</color>] <color=Keyword>황금 단검</color> 1장, <color=Keyword>황금 목걸이</color> 1장을 내 패에 넣는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "空絕的顯現‧歐克托莉斯";
+        text """
+【<color=Keyword>入場曲</color>】使自己獲得『紋章：空絕的顯現‧歐克托莉斯』。
+<hr><ev>【<color=Keyword>進化時</color>】增加1張『<color=Keyword>黃金短劍</color>』與1張『<color=Keyword>黃金首飾</color>』到自己的手牌中。</ev>
+""";
+    }
+
+}

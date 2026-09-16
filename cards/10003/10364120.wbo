@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10364120 {
+    type follower;
+    cost 4;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "绝望的显现·玛温";
+        text """
+【<color=Keyword>入场曲</color>】将1张『<color=Keyword>绝望的奔流</color>』加入手牌。
+<hr><ev>【<color=Keyword>进化时</color>】使自己获得『纹章：绝望的显现·玛温』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Marwynn, Despair Manifest";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add a <b><i><color=Keyword>Torrent of Despair</color></i></b> to your hand.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Gain <b><i>Crest: Marwynn, Despair Manifest</i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぜつぼう\">絶望</rub>の<rub=\"けんげん\">顕現</rub>・マーウィン";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>絶望の奔流</color>』1枚を自分の手札に加える。
+<hr><ev>【<color=Keyword>進化時</color>】自分は『クレスト：絶望の顕現・マーウィン』を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "절망의 현현 마윈";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>절망의 격류</color> 1장을 내 패에 넣는다.
+<hr><ev>[<color=Keyword>진화시</color>] 나는 「크레스트: 절망의 현현 마윈」을 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "絕望的顯現‧瑪文";
+        text """
+【<color=Keyword>入場曲</color>】增加1張『<color=Keyword>絕望的奔流</color>』到自己的手牌中。
+<hr><ev>【<color=Keyword>進化時</color>】使自己獲得『紋章：絕望的顯現‧瑪文』。</ev>
+""";
+    }
+
+}

@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 10362210 {
+    type amulet;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "安息的神殿";
+        text """
+【<color=Keyword>吟唱</color>_4】
+【<color=Keyword>谢幕曲</color>】回复自己的主战者2点生命值。使自己的主战者获得【<color=Keyword>屏障</color>】。
+<hr>【<color=Keyword>启动</color>】本护符的倒计数-X。X为自己的纹章数。
+""";
+    }
+
+    locale eng {
+        name "Temple of Repose";
+        text """
+<b><color=Keyword>Countdown</color> (4)</b>
+<b><color=Keyword>Last Words</color></b>: Restore 2 defense to your leader. Give your leader <b><color=Keyword>Barrier</color></b>.
+<hr><b><color=Keyword>Engage</color></b>: Advance this amulet's count by X. X is the number of crests you have.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あんそく\">安息</rub>の<rub=\"しんでん\">神殿</rub>";
+        text """
+【<color=Keyword>カウントダウン</color>_4】
+【<color=Keyword>ラストワード</color>】自分のリーダーを2回復。自分のリーダーは【<color=Keyword>バリア</color>】を持つ。
+<hr>【<color=Keyword>アクト</color>】これのカウントを-Xする。Xは自分のクレストの数である。
+""";
+    }
+
+    locale kor {
+        name "안식의 신전";
+        text """
+[<color=Keyword>카운트다운</color> 4]
+[<color=Keyword>유언</color>] 내 리더를 2 회복. 내 리더는 [<color=Keyword>배리어</color>]를 갖는다.
+<hr>[<color=Keyword>활성화</color>] 이 마법진의 카운트를 -X. X는 내 크레스트 수.
+""";
+    }
+
+    locale cht {
+        name "安息的神殿";
+        text """
+【<color=Keyword>倒數</color>_4】
+【<color=Keyword>謝幕曲</color>】回復自己的主戰者2點生命值。使自己的主戰者獲得【<color=Keyword>障壁</color>】。
+<hr>【<color=Keyword>策動</color>】使這張卡片的倒數回合數-X。X為「自己的紋章數」。
+""";
+    }
+
+}

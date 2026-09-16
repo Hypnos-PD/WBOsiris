@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10334110 {
+    type follower;
+    cost 2;
+    stats 1/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "真理的继承者·蓓哈丽雅";
+        text """
+【<color=Keyword>入场曲</color>】抽取1张卡牌。
+<hr><ev>【<color=Keyword>进化时</color>】选择对手的战场上的1个随从，使其消失。</ev>
+<sev>【<color=Keyword>超进化时</color>】使对手的战场上的所有与其同名的随从消失。</sev>
+""";
+    }
+
+    locale eng {
+        name "Velharia, Heir to Truth";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Draw a card.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select an enemy follower on the field and banish it.</ev>
+<sev><b><color=Keyword>Super-Evolve</color></b>: Banish all enemy copies of it from the field.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しんじつ\">真実</rub>の<rub=\"けいしょうしゃ\">継承者</rub>・ヴェハリヤー";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキから1枚を引く。
+<hr><ev>【<color=Keyword>進化時</color>】相手の場のフォロワー1枚を選ぶ。それを消滅。</ev>
+<sev>【<color=Keyword>超進化時</color>】相手の場のそれと同名のフォロワーすべてを消滅。</sev>
+""";
+    }
+
+    locale kor {
+        name "진실의 계승자 베하리야";
+        text """
+[<color=Keyword>출격</color>] 내 덱에서 1장을 뽑는다.
+<hr><ev>[<color=Keyword>진화시</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 소멸.</ev>
+<sev>[<color=Keyword>초진화시</color>] 그 추종자와 동명인 상대방 전장의 추종자 모두를 소멸.</sev>
+""";
+    }
+
+    locale cht {
+        name "真實的繼承者‧薇赫里雅";
+        text """
+【<color=Keyword>入場曲</color>】由自己的牌堆中抽取1張卡片。
+<hr><ev>【<color=Keyword>進化時</color>】指定1張敵方戰場上的從者卡。使其消失。</ev>
+<sev>【<color=Keyword>超進化時</color>】使敵方戰場上與其同名的全部從者卡消失。</sev>
+""";
+    }
+
+}

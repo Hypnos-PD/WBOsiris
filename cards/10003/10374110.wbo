@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10374110 {
+    type follower;
+    cost 3;
+    stats 2/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class portalcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "破坏的继承者·阿克西娅";
+        text """
+【<color=Keyword>守护</color>】
+不会被能力破坏。
+<hr><sev>【<color=Keyword>超进化时</color>】对对手的主战者造成X点伤害。X为自己的战场上的其他卡牌张数。破坏自己的战场上的其他所有卡牌。</sev>
+""";
+    }
+
+    locale eng {
+        name "Axia, Heir to Destruction";
+        text """
+<b><color=Keyword>Ward</color></b>
+Can't be destroyed by abilities.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Deal X damage to the enemy leader. X is the number of other allied cards on the field. Destroy all other allied cards on the field.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はかい\">破壊</rub>の<rub=\"けいしょうしゃ\">継承者</rub>・アクシア";
+        text """
+【<color=Keyword>守護</color>】
+能力によって破壊できない。
+<hr><sev>【<color=Keyword>超進化時</color>】相手のリーダーにXダメージ。Xは自分の場の他のカードの枚数である。自分の場の他のカードすべてを破壊。</sev>
+""";
+    }
+
+    locale kor {
+        name "파괴의 계승자 액시아";
+        text """
+[<color=Keyword>수호</color>]
+능력에 의해 파괴되지 않는다.
+<hr><sev>[<color=Keyword>초진화시</color>] 상대방 리더에게 X 피해. X는 내 전장의 다른 카드 수. 내 전장의 다른 카드 모두를 파괴.</sev>
+""";
+    }
+
+    locale cht {
+        name "破壞的繼承者‧阿克西雅";
+        text """
+【<color=Keyword>守護</color>】
+無法被能力破壞。
+<hr><sev>【<color=Keyword>超進化時</color>】給予敵方的主戰者X點傷害。X為「自己戰場上其他卡片的張數」。破壞自己戰場上全部的其他卡片。</sev>
+""";
+    }
+
+}

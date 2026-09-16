@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10311120 {
+    type follower;
+    cost 2;
+    stats 1/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "妖精剑的后继者";
+        text """
+自己的妖精·随从进入战场时，本随从+1/+0。
+""";
+    }
+
+    locale eng {
+        name "Bearer of the Fairy Blade";
+        text """
+Whenever an allied Pixie follower enters the field, give this follower +1/+0.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ようせいけん\">妖精剣</rub>の<rub=\"にな\">担</rub>い<rub=\"て\">手</rub>";
+        text """
+自分の妖精・フォロワーが場に出たとき、これは+1/+0する。
+""";
+    }
+
+    locale kor {
+        name "요정검을 짊어진 자";
+        text """
+내 요정 추종자가 전장에 소환되었을 때, 이 추종자는 +1/+0.
+""";
+    }
+
+    locale cht {
+        name "妖精劍的承襲者";
+        text """
+當自己的妖精‧從者卡進入戰場時，使這張卡片+1/+0。
+""";
+    }
+
+}

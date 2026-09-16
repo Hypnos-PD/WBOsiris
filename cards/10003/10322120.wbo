@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10322120 {
+    type follower;
+    cost 5;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "活泼的斥候";
+        text """
+【<color=Keyword>入场曲</color>】召唤随机1个自己的牌组中费用为3或以下的皇家护卫·随从。
+<hr><ev>【<color=Keyword>进化时</color>】选择自己的战场上的1个其他随从，使其+2/+2。</ev>
+""";
+    }
+
+    locale eng {
+        name "Peppy Scout";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a random Swordcraft follower that costs 3 or less from your deck.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select another allied follower on the field and give it +2/+2.</ev>
+""";
+    }
+
+    locale jpn {
+        name "スナッピースカウト";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキのコスト3以下のロイヤル・フォロワーからランダム1枚を自分の場に出す。
+<hr><ev>【<color=Keyword>進化時</color>】自分の場の他のフォロワー1枚を選ぶ。それは+2/+2する。</ev>
+""";
+    }
+
+    locale kor {
+        name "쾌활한 척후병";
+        text """
+[<color=Keyword>출격</color>] 비용이 3 이하인 내 덱의 로얄 추종자 중 무작위로 1장을 내 전장에 소환.
+<hr><ev>[<color=Keyword>진화시</color>] 내 전장에서 다른 추종자 1장을 선택한다. 그 추종자는 +2/+2.</ev>
+""";
+    }
+
+    locale cht {
+        name "開朗的偵察兵";
+        text """
+【<color=Keyword>入場曲</color>】隨機將1張「自己牌堆中消費為3以下的皇家護衛‧從者卡」召喚到自己的戰場上。
+<hr><ev>【<color=Keyword>進化時</color>】指定1張自己戰場上的其他從者卡。使其+2/+2。</ev>
+""";
+    }
+
+}

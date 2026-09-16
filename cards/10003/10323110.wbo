@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10323110 {
+    type follower;
+    cost 4;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class swordcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "篡夺的团结者";
+        text """
+【<color=Keyword>入场曲</color>】将1张『<color=Keyword>黄金之杯</color>』和1张『<color=Keyword>黄金之靴</color>』加入手牌。
+<hr>自己使用财宝·卡牌时，或者自己【<color=Keyword>融合</color>】财宝·卡牌时，对对手的战场上的随机1个随从造成3点伤害。
+<hr><ev>【<color=Keyword>进化时</color>】回复自己1点能量点。</ev>
+""";
+    }
+
+    locale eng {
+        name "Congregant of Usurpation";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add a <b><i><color=Keyword>Gilded Goblet</color></i></b> and <b><i><color=Keyword>Gilded Boots</color></i></b> to your hand.
+<hr>Whenever you play or <b><color=Keyword>Fuse</color></b> a Loot card, deal 3 damage to a random enemy follower.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Recover 1 play point.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"さんだつ\">簒奪</rub>の<rub=\"だんけつしゃ\">団結者</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>黄金の杯</color>』1枚と『<color=Keyword>黄金の靴</color>』1枚を自分の手札に加える。
+<hr>自分が財宝・カードをプレイしたとき、または、自分が財宝・カードを【<color=Keyword>融合</color>】したとき、相手の場のフォロワーからランダム1枚に3ダメージ。
+<hr><ev>【<color=Keyword>進化時</color>】自分のPPを1回復。</ev>
+""";
+    }
+
+    locale kor {
+        name "약탈의 단결자";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>황금 잔</color> 1장, <color=Keyword>황금 신발</color> 1장을 내 패에 넣는다.
+<hr>내가 보물 카드를 사용했을 때 또는 내가 보물 카드를 [<color=Keyword>융합</color>]했을 때, 상대방 전장의 추종자 중 무작위로 1장에게 3 피해.
+<hr><ev>[<color=Keyword>진화시</color>] 내 PP를 1 회복.</ev>
+""";
+    }
+
+    locale cht {
+        name "篡奪的團結者";
+        text """
+【<color=Keyword>入場曲</color>】增加1張『<color=Keyword>黃金之杯</color>』與1張『<color=Keyword>黃金之靴</color>』到自己的手牌中。
+<hr>當自己使用財寶‧卡片時，或當自己將財寶‧卡片進行【<color=Keyword>融合</color>】時，隨機給予1張敵方戰場上的從者卡3點傷害。
+<hr><ev>【<color=Keyword>進化時</color>】回復自己的PP 1點。</ev>
+""";
+    }
+
+}

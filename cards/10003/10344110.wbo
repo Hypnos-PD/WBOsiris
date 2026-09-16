@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10344110 {
+    type follower;
+    cost 9;
+    stats 5/7;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "侮蔑的继承者·安吉拉弗利特";
+        text """
+【<color=Keyword>入场曲</color>】发动3次「对战场上的所有随从造成2点伤害」。
+<hr>【<color=Keyword>守护</color>】
+本随从受到伤害且没被破坏时，若为自己的回合，则对对手的主战者造成1点伤害。
+<hr><sev>【<color=Keyword>超进化时</color>】本随从回复至上限。发动3次「对战场上的所有随从造成2点伤害」。</sev>
+""";
+    }
+
+    locale eng {
+        name "Azurifrit, Heir to Disdain";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Do this 3 times: \"Deal 2 damage to all followers.\"
+<hr><b><color=Keyword>Ward</color></b>
+During your turn, whenever this follower takes damage but isn't destroyed, deal 1 damage to the enemy leader.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Fully restore the defense of this follower. Do this 3 times: \"Deal 2 damage to all followers.\"</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぶべつ\">侮蔑</rub>の<rub=\"けいしょうしゃ\">継承者</rub>・アジュラフリート";
+        text """
+【<color=Keyword>ファンファーレ</color>】「場のフォロワーすべてに2ダメージ。」を3回行う。
+<hr>【<color=Keyword>守護</color>】
+これがダメージを受けて破壊されなかったとき、自分のターンなら、相手のリーダーに1ダメージ。
+<hr><sev>【<color=Keyword>超進化時</color>】これを上限まで回復。「場のフォロワーすべてに2ダメージ。」を3回行う。</sev>
+""";
+    }
+
+    locale kor {
+        name "모멸의 계승자 아쥬라프리트";
+        text """
+[<color=Keyword>출격</color>] 「전장의 추종자 모두에게 2 피해」를 3회 발동.
+<hr>[<color=Keyword>수호</color>]
+이 추종자가 피해를 받고도 파괴되지 않았을 때 내 턴이라면, 상대방 리더에게 1 피해.
+<hr><sev>[<color=Keyword>초진화시</color>] 이 추종자를 최대치까지 회복. 「전장의 추종자 모두에게 2 피해」를 3회 발동.</sev>
+""";
+    }
+
+    locale cht {
+        name "侮蔑的繼承者‧亞喬拉斐特";
+        text """
+【<color=Keyword>入場曲</color>】發動3次「給予戰場上全部的從者卡2點傷害」。
+<hr>【<color=Keyword>守護</color>】
+當這張卡片受到傷害而未被破壞時，如果是自己的回合，則會給予敵方的主戰者1點傷害。
+<hr><sev>【<color=Keyword>超進化時</color>】使這張卡片的生命值回復至上限。發動3次「給予戰場上全部的從者卡2點傷害」。</sev>
+""";
+    }
+
+}

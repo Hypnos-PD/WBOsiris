@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10354110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class abysscraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "混融的继承者·莎木·纳克雅";
+        text """
+【<color=Keyword>入场曲</color>】信仰值-10，使自己的信仰获得「自己选择的【<color=Keyword>模式</color>】数+1」。
+<hr><sev>【<color=Keyword>超进化时</color>】选择对手的战场上的1个随从，破坏该随从，将1张同名的卡牌加入自己的手牌。</sev>
+""";
+    }
+
+    locale eng {
+        name "Sham-Nacha, Heir to Entwining";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Reduce your faith's value by 10 to give it \"Increase the number of <b><color=Keyword>Mode</color><color=Keyword>s</color></b> you can select by 1.\"
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Select an enemy follower on the field, destroy it, and add a copy of it to your hand.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"こんゆう\">混融</rub>の<rub=\"けいしょうしゃ\">継承者</rub>・シャム＝ナクア";
+        text """
+【<color=Keyword>ファンファーレ</color>】信仰値を-10して、自分の信仰は「自分が選ぶ【<color=Keyword>モード</color>】の数を+1する。」を持つ。
+<hr><sev>【<color=Keyword>超進化時</color>】相手の場のフォロワー1枚を選ぶ。それを破壊して、同名のカード1枚を自分の手札に加える。</sev>
+""";
+    }
+
+    locale kor {
+        name "혼융의 계승자 샴 나쿠아";
+        text """
+[<color=Keyword>출격</color>] 신앙 수치를 -10 하고 내 신앙은 「내가 선택하는 [<color=Keyword>모드</color>] 수를 +1」을 갖는다.
+<hr><sev>[<color=Keyword>초진화시</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴하고 동명의 추종자 1장을 내 패에 넣는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "混融的繼承者‧夏姆‧娜可亞";
+        text """
+【<color=Keyword>入場曲</color>】使信仰值-10，並使自己的信仰獲得「自己可指定的【<color=Keyword>模式</color>】數+1」。
+<hr><sev>【<color=Keyword>超進化時</color>】指定1張敵方戰場上的從者卡。將其破壞，並增加1張與其同名的卡片到自己的手牌中。</sev>
+""";
+    }
+
+}

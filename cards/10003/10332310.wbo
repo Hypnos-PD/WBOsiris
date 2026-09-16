@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10332310 {
+    type spell;
+    cost 4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "双重创造";
+        text """
+召唤1个『<color=Keyword>守护者巨像</color>』和1个『<color=Keyword>泥尘巨像</color>』。
+""";
+    }
+
+    locale eng {
+        name "Risky Amalgamation";
+        text """
+Summon a <b><i><color=Keyword>Guardian Golem</color></i></b> and <b><i><color=Keyword>Clay Golem</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "デュアルクリエイト";
+        text """
+『<color=Keyword>ガーディアンゴーレム</color>』1枚と『<color=Keyword>クレイゴーレム</color>』1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "듀얼 크리에이트";
+        text """
+<color=Keyword>수호 골렘</color> 1장, <color=Keyword>진흙 골렘</color> 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "雙重創造";
+        text """
+召喚1張『<color=Keyword>守護者巨像</color>』與1張『<color=Keyword>泥塵巨像</color>』到自己的戰場上。
+""";
+    }
+
+}

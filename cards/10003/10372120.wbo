@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10372120 {
+    type follower;
+    cost 5;
+    stats 3/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "现场工程师";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的1张手牌，舍弃该手牌。抽取3张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Field Scientist";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a card in your hand and discard it. Draw 3 cards.
+""";
+    }
+
+    locale jpn {
+        name "フィールドエンジニア";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札1枚を選ぶ。それを捨てる。自分のデッキから3枚を引く。
+""";
+    }
+
+    locale kor {
+        name "필드 엔지니어";
+        text """
+[<color=Keyword>출격</color>] 내 패에서 1장을 선택한다. 그 카드를 버린다. 내 덱에서 3장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "實地考察的技師";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己手牌中的卡片。將其捨棄。由自己的牌堆中抽取3張卡片。
+""";
+    }
+
+}

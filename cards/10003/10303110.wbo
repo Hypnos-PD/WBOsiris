@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10303110 {
+    type follower;
+    cost 3;
+    stats 3/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class neutral;
+        rarity gold;
+    }
+
+    locale chs {
+        name "充满勇气之人";
+        text """
+在手牌中发动。对手的随从超进化时，本随从获得【<color=Keyword>疾驰</color>】。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Dogged One";
+        text """
+Activates in hand. When an enemy follower super-evolves, give this follower <b><color=Keyword>Storm</color></b>.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ゆうき\">勇気</rub>に<rub=\"み\">満</rub>ちし<rub=\"もの\">者</rub>";
+        text """
+手札で働く。相手のフォロワーが超進化したとき、これは【<color=Keyword>疾走</color>】を持つ。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "용기로 가득한 자";
+        text """
+패에서 발동. 상대방 추종자가 초진화했을 때, 이 추종자는 [<color=Keyword>질주</color>]를 갖는다.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "滿懷勇氣的少女";
+        text """
+於手牌中發動。當敵方的從者卡超進化時，使這張卡片獲得【<color=Keyword>疾馳</color>】。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

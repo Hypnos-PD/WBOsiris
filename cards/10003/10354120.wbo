@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10354120 {
+    type follower;
+    cost 7;
+    stats 5/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class abysscraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "绝叫与爱绝的显现·鲁鲁纳伊&巴娜蕾卡";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）将1张『<color=Keyword>绝叫的扩散</color>』加入手牌。</ridx>
+<ridx=1>（2）将1张『<color=Keyword>爱绝的飞翔</color>』加入手牌。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Rulenye & Valnareik";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Add a <b><i><color=Keyword>Scream Diffusion</color></i></b> to your hand.</ridx>
+<ridx=1>2. Add a <b><i><color=Keyword>Wings of Desire</color></i></b> to your hand.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぜっきょう\">絶叫</rub>と<rub=\"あいぜつ\">愛絶</rub>の<rub=\"けんげん\">顕現</rub>・ルルナイ＆ヴァーナレク";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）『<color=Keyword>絶叫の拡散</color>』1枚を自分の手札に加える。</ridx>
+<ridx=1>（2）『<color=Keyword>愛絶の飛翔</color>』1枚を自分の手札に加える。</ridx>
+""";
+    }
+
+    locale kor {
+        name "절규와 절연의 현현 루르나이&바나레이크";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) <color=Keyword>절규의 확산</color> 1장을 내 패에 넣는다.</ridx>
+<ridx=1>(2) <color=Keyword>절연의 비상</color> 1장을 내 패에 넣는다.</ridx>
+""";
+    }
+
+    locale cht {
+        name "絕叫與愛絕的顯現‧魯魯納伊＆瓦娜蕾格";
+        text """
+【<color=Keyword>入場曲</color>】指定1個【<color=Keyword>模式</color>】並發動該能力。 
+<ridx=0>（1）增加1張『<color=Keyword>絕叫的擴散</color>』到自己的手牌中。</ridx>
+<ridx=1>（2）增加1張『<color=Keyword>愛絕的飛翔</color>』到自己的手牌中。</ridx>
+""";
+    }
+
+}

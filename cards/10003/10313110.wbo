@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10313110 {
+    type follower;
+    cost 9;
+    stats 4/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class forestcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "不弑的团结者";
+        text """
+本随从进入战场时，召唤1个本随从的复制随从，使其-0/-1。
+<hr>【<color=Keyword>突进</color>】
+【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Congregant of Unkilling";
+        text """
+When this card enters the field, summon an exact copy of it and give the exact copy -0/-1.
+<hr><b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ふさつ\">不殺</rub>の<rub=\"だんけつしゃ\">団結者</rub>";
+        text """
+これが場に出たとき、これのコピー1枚を自分の場に出す。それは-0/-1する。
+<hr>【<color=Keyword>突進</color>】
+【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "불살의 단결자";
+        text """
+이 추종자가 전장에 소환되었을 때, 이 추종자의 복사본 1장을 내 전장에 소환. 그 추종자는 -0/-1.
+<hr>[<color=Keyword>돌진</color>]
+[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "不弒的團結者";
+        text """
+當這張卡片進入戰場時，將這張卡片複製1張並召喚到自己的戰場上。使其-0/-1。
+<hr>【<color=Keyword>突進</color>】
+【<color=Keyword>守護</color>】
+""";
+    }
+
+}

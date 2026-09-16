@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10334120 {
+    type follower;
+    cost 9;
+    stats 9/9;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "绝尽的显现·莱奥";
+        text """
+【<color=Keyword>入场曲</color>】使自己的牌组中的所有随从的费用-3。使自己的手牌中的随机1张法术变身为『<color=Keyword>绝尽的伪证</color>』。回合结束前，使其费用变为0。
+""";
+    }
+
+    locale eng {
+        name "Raio, Elimination Manifest";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Reduce the cost of all followers in your deck by 3. Transform a random spell in your hand into an <b><i><color=Keyword>Ersatz Elimination</color></i></b>. It costs 0 until the end of the turn.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぜつじん\">絶尽</rub>の<rub=\"けんげん\">顕現</rub>・ライオ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキのフォロワーすべてのコストを-3する。自分の手札のスペルからランダム1枚は『<color=Keyword>絶尽の偽証</color>』に変身する。ターン終了まで、それのコストを0にする。
+""";
+    }
+
+    locale kor {
+        name "허위의 현현 라이오";
+        text """
+[<color=Keyword>출격</color>] 내 덱의 추종자 모두의 비용을 -3. 내 패의 주문 중 무작위로 1장은 <color=Keyword>허위의 위증</color>으로 변신한다. 턴 종료까지 그 주문의 비용을 0으로 만든다.
+""";
+    }
+
+    locale cht {
+        name "絕盡的顯現‧萊歐";
+        text """
+【<color=Keyword>入場曲</color>】使自己牌堆中全部的從者卡消費-3。隨機使1張自己手牌中的法術卡變身為『<color=Keyword>絕盡的偽證</color>』。到回合結束為止，使其消費轉變為0。
+""";
+    }
+
+}

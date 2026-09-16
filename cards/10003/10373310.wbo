@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10373310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class portalcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "歼灭的歌声";
+        text """
+选择自己的战场上的1张卡牌，破坏该卡牌。召唤1张『<color=Keyword>新约·白之章</color>』。
+""";
+    }
+
+    locale eng {
+        name "Devastating Soprano";
+        text """
+Select an allied card on the field and destroy it. Summon a <b><i><color=Keyword>White Psalm, New Revelation</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"せんめつ\">殲滅</rub>の<rub=\"うたごえ\">歌声</rub>";
+        text """
+自分の場のカード1枚を選ぶ。それを破壊。『<color=Keyword>新約・白の章</color>』1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "섬멸의 노래";
+        text """
+내 전장에서 카드 1장을 선택한다. 그 카드를 파괴. <color=Keyword>신약 백의 노래</color> 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "殲滅的歌聲";
+        text """
+指定1張自己戰場上的卡片。將其破壞。召喚1張『<color=Keyword>新約‧白之章</color>』到自己的戰場上。
+""";
+    }
+
+}

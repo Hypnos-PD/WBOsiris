@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10361310 {
+    type spell;
+    cost 4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "圣辉闪烁";
+        text """
+对对手的战场上的所有随从造成3点伤害。
+【<color=Keyword>爆能强化</color>_8】抽取3张卡牌。回复自己的主战者3点生命值。
+""";
+    }
+
+    locale eng {
+        name "Blinding Faith";
+        text """
+Deal 3 damage to all enemy followers.
+<b><color=Keyword>Enhance</color> (8)</b>: Draw 3 cards. Restore 3 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "セイントフラッシュ";
+        text """
+相手の場のフォロワーすべてに3ダメージ。
+【<color=Keyword>エンハンス</color>_8】自分のデッキから3枚を引く。自分のリーダーを3回復。
+""";
+    }
+
+    locale kor {
+        name "세인트 플래시";
+        text """
+상대방 전장의 추종자 모두에게 3 피해.
+[<color=Keyword>증강</color> 8] 내 덱에서 3장을 뽑는다. 내 리더를 3 회복.
+""";
+    }
+
+    locale cht {
+        name "聖潔閃光";
+        text """
+給予敵方戰場上全部的從者卡3點傷害。
+【<color=Keyword>爆能強化</color>_8】由自己的牌堆中抽取3張卡片。回復自己的主戰者3點生命值。
+""";
+    }
+
+}

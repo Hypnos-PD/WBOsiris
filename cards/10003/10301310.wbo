@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10301310 {
+    type spell;
+    cost 4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10003;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "至高的凌驾";
+        text """
+抽取3张卡牌。若自己的牌组中没有重复卡牌，则回复自己3点能量点。
+""";
+    }
+
+    locale eng {
+        name "Greatness Ascended";
+        text """
+Draw 3 cards. If there are no duplicates in your deck, recover 3 play points.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しこう\">至高</rub>の<rub=\"りょうが\">凌駕</rub>";
+        text """
+自分のデッキから3枚を引く。自分のデッキに重複するカードがないなら、自分のPPを3回復。
+""";
+    }
+
+    locale kor {
+        name "지고의 능가";
+        text """
+내 덱에서 3장을 뽑는다. 내 덱에 중복되는 카드가 없다면, 내 PP를 3 회복.
+""";
+    }
+
+    locale cht {
+        name "至高的凌駕";
+        text """
+由自己的牌堆中抽取3張卡片。如果自己的牌堆中沒有重複的卡片，則會回復自己的PP 3點。
+""";
+    }
+
+}
