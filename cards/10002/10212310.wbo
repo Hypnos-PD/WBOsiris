@@ -5,7 +5,17 @@ card 10212310 {
     cost 1;
 
     effect {
-        unplayable;
+        if combo >= 3 {
+            repeat 2 {
+                random target from oppo.field.followers;
+                damage target 2;
+            }
+        } else {
+            repeat 1 {
+                random target from oppo.field.followers;
+                damage target 2;
+            }
+        }
     }
 
     meta {

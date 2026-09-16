@@ -5,7 +5,11 @@ card 10231310 {
     cost 4;
 
     effect {
-        unplayable;
+        require target from oppo.field.followers;
+        destroy target;
+        earthrite 1 {
+            damage oppo.leader 2;
+        }
     }
 
     meta {

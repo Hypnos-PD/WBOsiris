@@ -6,7 +6,11 @@ card 10204110 {
     stats 4/2;
 
     effect {
-        unplayable;
+        storm;
+        fanfare {
+            choose target from oppo.field;
+            banish target;
+        }
     }
 
     meta {

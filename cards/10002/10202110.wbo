@@ -6,7 +6,12 @@ card 10202110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            if own.superevolve_unlocked {
+                buff self +0/+3;
+            }
+        }
     }
 
     meta {

@@ -5,7 +5,9 @@ card 10243310 {
     cost 6;
 
     effect {
-        unplayable;
+        choose target from own.hand;
+        reduce cost target 2 minimum 0;
+        damage oppo.field.followers 3;
     }
 
     meta {

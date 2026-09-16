@@ -6,7 +6,10 @@ card 10221110 {
     stats 2/1;
 
     effect {
-        unplayable;
+        fanfare {
+            random targets from oppo.field.followers count 2;
+            damage targets 1;
+        }
     }
 
     meta {

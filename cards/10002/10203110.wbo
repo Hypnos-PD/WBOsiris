@@ -6,7 +6,9 @@ card 10203110 {
     stats 5/5;
 
     effect {
-        unplayable;
+        evolve {
+            evolve own.field.followers silent;
+        }
     }
 
     meta {

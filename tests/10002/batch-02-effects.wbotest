@@ -1,0 +1,159 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "哥布林小队对随机两个敌方随从各造成一点伤害" {
+    seed 4201;
+    state {
+        player own { pp 2/2; hand { follower source = 10221110; } }
+        player oppo { field { follower a = 10001110 { stats 0/5; } follower b = 10001110 { stats 0/5; } } }
+    }
+    action { play source; }
+    expect { legal; a.stats == 0/4; b.stats == 0/4; }
+}
+
+scenario "疾驰的审判者可以消失敌方护符" {
+    seed 4202;
+    state {
+        player own { pp 7/7; hand { follower source = 10204110; } }
+        player oppo { field { amulet target = 10261210; } }
+    }
+    action { play source; select target; }
+    expect { legal; source has storm; target.zone == banished; }
+}
+
+scenario "图书管理员把手牌返回牌组后抽一张法术" {
+    seed 4203;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10231120; follower extra = 10001110; }
+            deck top { spell first = 10031310; follower second = 10001110; }
+        }
+    }
+    action { play source; select extra; }
+    expect {
+        legal;
+        extra.zone == deck;
+        own.hand count card 10031310 == 1;
+        own.hand count card 10001110 == 0;
+    }
+}
+
+scenario "鲸鱼骑兵的入场曲召唤两个大海虎鲸" {
+    seed 4204;
+    state { player own { pp 5/5; hand { follower source = 10242120; } } }
+    action { play source; }
+    expect { legal; own.field count card 90041130 == 2; }
+}
+
+scenario "鲸鱼骑兵的进化时再召唤一个大海虎鲸" {
+    seed 4205;
+    state { turn own 7; player own { ep 1; field { follower source = 10242120; } } }
+    action { evolve source; }
+    expect { legal; own.field count card 90041130 == 1; }
+}
+
+scenario "洁癖审判者的进化破坏超进化敌方随从" {
+    seed 4206;
+    state {
+        turn own 7;
+        player own { ep 1; field { follower source = 10261110; } }
+        player oppo { field { follower target = 10001110 { super_evolved; } } }
+    }
+    action { evolve source; select target; }
+    expect { legal; target.zone == graveyard; source has ward; }
+}
+
+scenario "洁癖审判者面对普通随从时仍可进化且不破坏" {
+    seed 4207;
+    state {
+        turn own 7;
+        player own { ep 1; field { follower source = 10261110; } }
+        player oppo { field { follower target = 10001110; } }
+    }
+    action { evolve source; }
+    expect { legal; target.zone == field; own.ep == 0; }
+}
+
+scenario "饥饿的诅咒没有目标时不能使用" {
+    seed 4208;
+    state { player own { pp 4/4; hand { spell source = 10231310; } } }
+    action { play source; }
+    expect { illegal target_required; unchanged; own.pp == 4/4; source.zone == hand; }
+}
+
+scenario "饥饿的诅咒破坏随从并用土之秘术追加主战者伤害" {
+    seed 4209;
+    state {
+        player own {
+            pp 4/4;
+            field { amulet sigil = 90031210 { earthsigil 1; } }
+            hand { spell source = 10231310; }
+        }
+        player oppo { field { follower target = 10001110; } }
+    }
+    action { play source; select target; }
+    expect { legal; target.zone == graveyard; oppo.leader.life == 18; own.pp == 0/4; }
+}
+
+scenario "连击不足时只发动一次随机伤害" {
+    seed 4210;
+    state {
+        player own { pp 1/1; hand { spell source = 10212310; } }
+        player oppo { field { follower target = 10001110 { stats 0/5; } } }
+    }
+    action { play source; }
+    expect { legal; target.stats == 0/3; }
+}
+
+scenario "连击三点以上时改为发动两次" {
+    seed 4211;
+    state {
+        player own { pp 1/1; combo 2; hand { spell source = 10212310; } }
+        player oppo { field { follower target = 10001110 { stats 0/5; } } }
+    }
+    action { play source; }
+    expect { legal; target.stats == 0/1; }
+}
+
+scenario "分歧之刃降低手牌费用并扫掉敌方随从" {
+    seed 4212;
+    state {
+        player own { pp 6/6; hand { spell source = 10243310; follower extra = 10001110; } }
+        player oppo { field { follower a = 10001110 { stats 0/5; } follower b = 10001110 { stats 0/5; } } }
+    }
+    action { play source; select extra; }
+    expect { legal; extra.cost == 0; a.stats == 0/2; b.stats == 0/2; }
+}
+
+scenario "超进化解禁回合的守护随从获得三点生命" {
+    seed 4213;
+    state { turn own 7; player own { pp 2/2; hand { follower source = 10202110; } } }
+    action { play source; }
+    expect { legal; source.stats == 2/5; source has ward; }
+}
+
+scenario "未到超进化解禁回合时只有基础身材" {
+    seed 4214;
+    state { turn own 3; player own { pp 2/2; hand { follower source = 10202110; } } }
+    action { play source; }
+    expect { legal; source.stats == 2/2; }
+}
+
+scenario "进化时使全部未进化随从进化" {
+    seed 4215;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field {
+                follower source = 10203110;
+                follower plain = 10001110;
+                follower already = 10001110 { evolved; }
+            }
+        }
+    }
+    action { evolve source; }
+    // 10001110 基础 2/2：未进化的 plain 进化后 4/4；已经进化的 already 不变。
+    expect { legal; source.stats == 7/7; plain.stats == 4/4; already.stats == 2/2; }
+}

@@ -6,7 +6,11 @@ card 10231120 {
     stats 2/2;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from own.hand;
+            return target to deck;
+            draw 1 from deck where type spell;
+        }
     }
 
     meta {

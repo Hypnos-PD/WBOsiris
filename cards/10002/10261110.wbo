@@ -6,7 +6,11 @@ card 10261110 {
     stats 2/4;
 
     effect {
-        unplayable;
+        ward;
+        evolve {
+            choose target from oppo.field.followers where form super_evolved;
+            destroy target;
+        }
     }
 
     meta {
