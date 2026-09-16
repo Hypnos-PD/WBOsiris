@@ -997,6 +997,10 @@ func (g *game) emitDamage(amount int, target *ir.EventTarget, subject *instance)
 	}(), Actual: amount, Target: target}
 	if g.emit(event) {
 		g.queueEventTriggers(event, subject, "")
+		if amount > 0 {
+			// 伤害同样是"生命值在战场上被减少"，让 life_decreased 监听一并入队（不额外发事件）。
+			g.queueEventTriggersFor("life_decreased", event, subject, "", "")
+		}
 	}
 }
 
@@ -1251,7 +1255,7 @@ func (g *game) advanceTurn() {
 		}
 		g.turnTransition = "starting_crests"
 		g.tickCrests(active)
-		g.queueEventTriggersIn(ir.RuntimeEvent{Kind: "turn_started", Side: g.turn.Active}, nil, "", "crests")
+		g.queueEventTriggersFor("turn_started", ir.RuntimeEvent{Kind: "turn_started", Side: g.turn.Active}, nil, "", "crests")
 		return
 	}
 	if g.turnTransition == "starting_crests" {
@@ -1270,7 +1274,7 @@ func (g *game) advanceTurn() {
 	}
 	if g.turnTransition == "starting_triggers" {
 		g.turnTransition = "starting_draw"
-		g.queueEventTriggersIn(ir.RuntimeEvent{Kind: "turn_started", Side: g.turn.Active}, nil, "", "cards")
+		g.queueEventTriggersFor("turn_started", ir.RuntimeEvent{Kind: "turn_started", Side: g.turn.Active}, nil, "", "cards")
 		return
 	}
 	g.turnTransition = ""

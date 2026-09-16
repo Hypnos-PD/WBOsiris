@@ -95,17 +95,19 @@ func (g *game) rebuildTriggerIndex() {
 }
 
 func (g *game) queueEventTriggers(event ir.RuntimeEvent, subject *instance, binding string) bool {
-	return g.queueEventTriggersIn(event, subject, binding, "")
+	return g.queueEventTriggersFor(event.Kind, event, subject, binding, "")
 }
 
-func (g *game) queueEventTriggersIn(event ir.RuntimeEvent, subject *instance, binding, area string) bool {
+// queueEventTriggersFor 允许用另一个触发种类去匹配同一个事件：
+// "生命值减少"既是独立的减益事件，也由伤害事件（damaged）一并触发。
+func (g *game) queueEventTriggersFor(kind string, event ir.RuntimeEvent, subject *instance, binding, area string) bool {
 	for _, side := range g.orderedSides() {
 		p := g.player(side.name)
 		for _, source := range append(append(append([]*instance{}, p.crests...), side.field...), p.hand...) {
 			if area == "crests" && source.zone != "crests" || area == "cards" && source.zone == "crests" {
 				continue
 			}
-			for _, ability := range g.triggerIndex.abilities(event.Kind, source) {
+			for _, ability := range g.triggerIndex.abilities(kind, source) {
 				if !g.chargeQueryVisits(1) {
 					return false
 				}

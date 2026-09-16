@@ -643,6 +643,15 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 		for _, i := range targets {
 			i.buffStats(e.AttackDelta, e.LifeDelta, endingSide)
 		}
+		// 「在战场上获得攻击力或生命值增加时」「生命值在战场上被减少时」按本次增减入队。
+		for _, i := range targets {
+			if e.AttackDelta > 0 || e.LifeDelta > 0 {
+				g.triggerStatsIncreased(i)
+			}
+			if e.LifeDelta < 0 {
+				g.triggerLifeDecreased(i)
+			}
+		}
 		g.resolveDeathBatch(nil)
 	case "add_keyword":
 		endingSide := g.effectEndingSide(e.Until, ownSide)
@@ -839,6 +848,28 @@ func (g *game) triggerEngaged(engaged *instance) {
 		return
 	}
 	g.queueEventTriggers(event, engaged, "engaged")
+}
+
+// triggerStatsIncreased 在随从于战场上获得攻击力或生命值增加时发出事件。
+func (g *game) triggerStatsIncreased(target *instance) {
+	if target == nil || target.card == nil || target.zone != "field" || target.card.CardType != "follower" {
+		return
+	}
+	event := ir.RuntimeEvent{Kind: "stats_increased", Side: g.sideOf(target), InstanceID: target.id, CardID: target.card.ID, Count: 1}
+	if g.emit(event) {
+		g.queueEventTriggers(event, target, "")
+	}
+}
+
+// triggerLifeDecreased 在随从于战场上生命值被减少时发出事件（伤害、减益、设置更低生命）。
+func (g *game) triggerLifeDecreased(target *instance) {
+	if target == nil || target.card == nil || target.zone != "field" || target.card.CardType != "follower" {
+		return
+	}
+	event := ir.RuntimeEvent{Kind: "life_decreased", Side: g.sideOf(target), InstanceID: target.id, CardID: target.card.ID, Count: 1}
+	if g.emit(event) {
+		g.queueEventTriggers(event, target, "")
+	}
 }
 
 // triggerPlayed 在卡牌被打出后发出 card_played 事件，监听者用 `when own card played` 声明。

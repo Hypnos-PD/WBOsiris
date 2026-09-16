@@ -6,7 +6,10 @@ card 10361120 {
     stats 2/2;
 
     effect {
-        unplayable;
+        ward;
+        when self stats increased {
+            heal own.leader 1;
+        }
     }
 
     meta {

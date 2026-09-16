@@ -600,7 +600,7 @@ func decodeTrigger(data []byte) (Trigger, error) {
 				return nil, fmt.Errorf("event conditions cannot access fusion materials")
 			}
 		}
-		if !validSide(v.Side) || !oneOf(v.Event, "follower_summoned", "amulet_summoned", "follower_left", "destroyed", "healed", "damaged", "card_fused", "amulet_engaged", "card_discarded", "card_played", "turn_started", "turn_ended", "evolved", "super_evolved") || v.SubjectType != "" && !oneOf(v.SubjectType, "follower", "amulet", "leader") || v.SourceZone != "" && !oneOf(v.SourceZone, "hand", "field") || v.Event == "destroyed" && v.SubjectType == "" {
+		if !validSide(v.Side) || !oneOf(v.Event, "follower_summoned", "amulet_summoned", "follower_left", "destroyed", "healed", "damaged", "card_fused", "amulet_engaged", "card_discarded", "card_played", "stats_increased", "life_decreased", "turn_started", "turn_ended", "evolved", "super_evolved") || v.SubjectType != "" && !oneOf(v.SubjectType, "follower", "amulet", "leader") || v.SourceZone != "" && !oneOf(v.SourceZone, "hand", "field") || v.Event == "destroyed" && v.SubjectType == "" {
 			return nil, fmt.Errorf("invalid event trigger")
 		}
 		if v.Event == "amulet_summoned" && (v.SubjectType != "amulet" || v.SelfOnly) || v.Event == "follower_summoned" && v.SubjectType == "amulet" {
@@ -615,7 +615,7 @@ func decodeTrigger(data []byte) (Trigger, error) {
 		if v.DuringTurn != "" && (v.Event != "damaged" || !validSide(v.DuringTurn)) || v.Event == "damaged" && v.SubjectType != "follower" {
 			return nil, fmt.Errorf("damage survival listeners require a follower and a valid turn scope")
 		}
-		if v.SelfOnly && (v.Event != "damaged" && (condition != nil || v.OncePerTurn != "") || v.SourceZone != "" || v.Side != "own" || !(v.SubjectType == "follower" && oneOf(v.Event, "evolved", "super_evolved", "follower_summoned", "damaged") || v.SubjectType == "" && v.Event == "card_discarded") || p != nil) {
+		if v.SelfOnly && (v.Event != "damaged" && (condition != nil || v.OncePerTurn != "") || v.SourceZone != "" || v.Side != "own" || !(v.SubjectType == "follower" && oneOf(v.Event, "evolved", "super_evolved", "follower_summoned", "damaged", "stats_increased", "life_decreased") || v.SubjectType == "" && v.Event == "card_discarded") || p != nil) {
 			return nil, fmt.Errorf("invalid self event trigger")
 		}
 		cardEvent := oneOf(v.Event, "card_played", "card_discarded", "card_fused")

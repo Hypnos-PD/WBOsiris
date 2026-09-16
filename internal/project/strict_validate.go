@@ -314,6 +314,14 @@ func parseBaseEventPattern(t []syntax.Token) (int, string, bool) {
 	if len(t) == 3 && t[0].Value == "when" && t[1].Value == "self" && set("evolved", "super_evolved", "summoned")[t[2].Value] {
 		return 3, "follower", true
 	}
+	// `when self stats increased` / `when self life decreased`：本实例在战场上的身材增减。
+	if len(t) >= 4 && t[0].Value == "when" && t[1].Value == "self" && (values(t[2:4]) == "stats increased" || values(t[2:4]) == "life decreased") {
+		return 4, "follower", true
+	}
+	// `when own|oppo follower stats increased` / `… life decreased`。
+	if len(t) >= 5 && set("own", "oppo")[t[1].Value] && t[2].Value == "follower" && (values(t[3:5]) == "stats increased" || values(t[3:5]) == "life decreased") {
+		return 5, "follower", true
+	}
 	if len(t) < 4 || t[0].Value != "when" || !set("own", "oppo")[t[1].Value] {
 		return 0, "", false
 	}

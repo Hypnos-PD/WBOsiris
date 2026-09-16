@@ -742,6 +742,9 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 		if t[2].Value == "summoned" {
 			return ir.EventTrigger{Kind: "event", Event: "follower_summoned", Side: "own", SubjectType: "follower", SelfOnly: true}
 		}
+		if t[2].Value == "stats" || t[2].Value == "life" {
+			return ir.EventTrigger{Kind: "event", Event: map[string]string{"stats": "stats_increased", "life": "life_decreased"}[t[2].Value], Side: "own", SubjectType: "follower", SelfOnly: true}
+		}
 		return ir.EventTrigger{Kind: "event", Event: t[2].Value, Side: "own", SubjectType: "follower", SelfOnly: true}
 	}
 	m := ir.EventTrigger{Kind: "event", Side: t[1].Value}
@@ -754,7 +757,11 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 		if m.SubjectType == "card" {
 			m.SubjectType = ""
 		}
-		m.Event = map[string]string{"summoned": "follower_summoned", "leaves": "follower_left", "survives": "damaged", "destroyed": "destroyed", "healed": "healed", "fused": "card_fused", "engaged": "amulet_engaged", "discarded": "card_discarded", "played": "card_played", "evolved": "evolved", "super_evolved": "super_evolved"}[t[3].Value]
+		if len(t) >= 5 && m.SubjectType == "follower" && (values(t[3:5]) == "stats increased" || values(t[3:5]) == "life decreased") {
+			m.Event = map[string]string{"stats increased": "stats_increased", "life decreased": "life_decreased"}[values(t[3:5])]
+		} else {
+			m.Event = map[string]string{"summoned": "follower_summoned", "leaves": "follower_left", "survives": "damaged", "destroyed": "destroyed", "healed": "healed", "fused": "card_fused", "engaged": "amulet_engaged", "discarded": "card_discarded", "played": "card_played", "evolved": "evolved", "super_evolved": "super_evolved", "increased": "stats_increased", "decreased": "life_decreased"}[t[3].Value]
+		}
 		if m.Event == "follower_summoned" && m.SubjectType == "amulet" {
 			m.Event = "amulet_summoned"
 		}

@@ -985,6 +985,11 @@ when self discarded {
 ```
 
 此能力只在该实例实际被舍弃时入队，结算时自身位于墓场；不会在其他卡牌被舍弃时发动。
+`when self stats increased` 在**本实例**于战场上获得攻击力/生命值增加时发动；
+`when own|oppo follower life decreased` 在战场上的随从生命值减少时发动：减益发独立事件，
+伤害则由 `damaged` 事件一并匹配（事件流里只保留原来的伤害事实，`set life` 的设置不算减少）。
+两者都支持 `once per own turn` 限制次数。
+
 `when own card played` / `when oppo card played` 监听卡牌被打出，监听对象绑定成 `played`，
 可用 `where` 筛选（类型、trait、费用…），末尾的 `other` 排除本卡牌自身。它在打出后入队，
 按事件顺序在本次效果结算之后发动。`when own card discarded` 和 `when oppo card discarded` 则由战场上的来源监听，

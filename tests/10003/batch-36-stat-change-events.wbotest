@@ -1,0 +1,105 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "圣骑士团员获得身材增加时回复主战者" {
+    seed 36001;
+    state {
+        player own {
+            leader 15/20;
+            field {
+                follower paladin = 10361120;
+                follower evolved = 10001110 { super_evolved; }
+                follower whale = 10222110;
+            }
+        }
+    }
+    action { end_turn; }
+    // 鲸鱼骑兵在回合结束时给全体 +1/+1，圣骑士团员因此获得身材增加。
+    expect { legal; paladin.stats == 3/3; own.leader.life == 16; }
+}
+
+scenario "圣骑士团员没有获得身材增加时不回复" {
+    seed 36002;
+    state {
+        player own {
+            leader 15/20;
+            field {
+                follower paladin = 10361120;
+                follower plain = 10001110;
+                follower whale = 10222110;
+            }
+        }
+    }
+    action { end_turn; }
+    // 没有超进化随从，鲸鱼骑兵不加身材，圣骑士团员也就不回复。
+    expect { legal; paladin.stats == 2/2; own.leader.life == 15; }
+}
+
+scenario "不弑的继承者的入场曲让敌方全体减两点生命" {
+    seed 36003;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10314110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect {
+        legal;
+        enemy.stats == 2/6;
+        source has stealth;
+    }
+}
+
+scenario "敌方随从生命值减少时不弑的继承者回复主战者" {
+    seed 36004;
+    state {
+        player own {
+            pp 4/4;
+            leader 15/20;
+            field { follower source = 10314110; }
+            hand { spell shine = 10361310; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/8; }
+                follower second = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { play shine; }
+    // 两个敌方随从同时掉血，但"自己的每回合中可触发1次"只回复 1 点。
+    expect {
+        legal;
+        first.stats == 2/5;
+        second.stats == 2/5;
+        own.leader.life == 16;
+    }
+}
+
+scenario "不弑的继承者的超进化让对手获得纹章" {
+    seed 36005;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10314110; }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; oppo.crests count card 10314110 == 1; }
+}
+
+scenario "不弑的继承者的纹章在持有者随从入场时使其减一点身材" {
+    seed 36006;
+    state {
+        player own {
+            crests { crest kururu = 10314110; }
+            pp 2/2;
+            hand { follower recruit = 10001110; }
+        }
+    }
+    action { play recruit; }
+    expect { legal; recruit.stats == 1/1; }
+}
