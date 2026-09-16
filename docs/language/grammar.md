@@ -353,6 +353,7 @@ operation         = draw_operation
                   | evolve_operation
                   | reanimate_operation
                   | reduce_operation
+                  | halve_operation
                   | spellboost_operation
                   | set_attack_limit_operation
                   | set_damage_reduction_operation
@@ -407,6 +408,7 @@ reanimate_operation = "reanimate" , integer , ";" ;
 
 reduce_operation  = "reduce" , "countdown" , value_ref , integer , ";"
                   | "reduce" , "cost" , value_ref , integer , "minimum" , integer , ";" ;
+halve_operation   = "halve" , "cost" , value_ref , ";" ;
 spellboost_operation = "spellboost" , value_ref , integer , ";" ;
 set_attack_limit_operation = "set_attack_limit" , "self" , positive_integer , ";" ;
 set_damage_reduction_operation = "set_damage_reduction" , value_ref , nonnegative_integer , ";" ;

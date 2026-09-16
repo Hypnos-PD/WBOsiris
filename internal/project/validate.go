@@ -514,7 +514,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		return false
 	}
 	h := t[0].Value
-	known := set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "spellboost", "transform", "set_attack_limit", "set_damage_reduction", "set")
+	known := set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "halve", "spellboost", "transform", "set_attack_limit", "set_damage_reduction", "set")
 	if !known[h] {
 		return false
 	}
@@ -722,6 +722,12 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 				end++
 				ok = t[1].Value == "countdown" && end == len(t) || t[1].Value == "cost" && end+2 == len(t) && t[end].Value == "minimum" && isUnsigned(t[end+1])
 			}
+			checkBindingAt(t, 2, end, bindings, ds)
+		}
+	case "halve":
+		if len(t) >= 3 && t[1].Value == "cost" {
+			end, good := parseValueRef(t, 2)
+			ok = good && end == len(t)
 			checkBindingAt(t, 2, end, bindings, ds)
 		}
 	case "spellboost":

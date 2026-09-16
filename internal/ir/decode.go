@@ -1145,7 +1145,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			Keyword: v.Keyword, Until: v.Until, Form: v.Form, Destination: v.Destination, DeckInsertion: v.DeckInsertion,
 			Target: r, Amount: v.Amount, AmountExpr: amountExpr, AttackDelta: v.AttackDelta, LifeDelta: v.LifeDelta, AttackExpr: attackExpr, LifeExpr: lifeExpr, Predicate: p,
 		}, err
-	case "adjust_resource", "restore_resource", "adjust_earthsigil", "adjust_entity_field", "spellboost", "adjust_counter":
+	case "adjust_resource", "restore_resource", "adjust_earthsigil", "adjust_entity_field", "spellboost", "adjust_counter", "halve_cost":
 		type raw struct {
 			ID                           string `json:"id"`
 			Kind, Owner, Resource, Field string
@@ -1189,6 +1189,10 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		case "spellboost":
 			if v.Owner != "" || v.Resource != "" || v.Field != "" || r == nil || v.Delta != 0 || v.Minimum != 0 || v.Times < 0 {
 				return nil, fmt.Errorf("invalid spellboost")
+			}
+		case "halve_cost":
+			if v.Owner != "" || v.Resource != "" || v.Field != "cost" || r == nil || v.Delta != 0 || v.Minimum != 0 || v.Times != 0 {
+				return nil, fmt.Errorf("invalid cost halving")
 			}
 		}
 		return AdjustEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.Resource, v.Field, r, v.Delta, v.Minimum, v.Times}, err

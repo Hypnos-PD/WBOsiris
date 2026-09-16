@@ -1,0 +1,48 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "小凤把牌组里所有卡牌的费用减半且奇数向上取整" {
+    seed 17001;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10244120; }
+            deck top {
+                follower even = 10011110;
+                follower odd = 10001110;
+                follower odd_five = 90041120;
+            }
+        }
+    }
+    action { play source; }
+    // 10011110 费用 2 → 1；10001110 费用 2 → 1；90041120 费用 5 → 3（奇数向上取整）。
+    expect {
+        legal;
+        source.zone == field;
+        even.cost == 1;
+        odd.cost == 1;
+        odd_five.cost == 3;
+        own.pp == 0/8;
+    }
+}
+
+scenario "小凤只影响发动时已经在牌组里的卡牌" {
+    seed 17002;
+    state {
+        player own {
+            pp 8/8;
+            hand {
+                follower source = 10244120;
+                follower held = 90041120;
+            }
+            deck top { follower even = 10011110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        even.cost == 1;
+        held.zone == hand;
+        held.cost == 5;
+    }
+}

@@ -5,7 +5,8 @@ card 10201310 {
     cost 2;
 
     effect {
-        unplayable;
+        choose target from field.followers;
+        buff target +2/-2;
     }
 
     meta {

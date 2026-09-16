@@ -1,0 +1,37 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "逆向变化可以指定对手的随从并把它降到零生命" {
+    seed 18001;
+    state {
+        player own {
+            pp 2/2;
+            hand { spell source = 10201310; }
+        }
+        player oppo { field { follower enemy = 10001110; } }
+    }
+    action { play source; select enemy; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        enemy.zone == graveyard;
+        own.pp == 0/2;
+    }
+}
+
+scenario "逆向变化也可以指定自己的随从" {
+    seed 18002;
+    state {
+        player own {
+            pp 2/2;
+            field { follower ally = 90004110; }
+            hand { spell source = 10201310; }
+        }
+    }
+    action { play source; select ally; }
+    expect {
+        legal;
+        ally.zone == field;
+        ally.stats == 12/8;
+    }
+}

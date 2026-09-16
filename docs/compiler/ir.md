@@ -952,6 +952,12 @@ AdjustEntityField = NodeBase & {
   maximum: i32?
 }
 
+HalveCost = NodeBase & {
+  kind: "halve_cost",
+  target: ValueRef | SetExpr,
+  field: "cost"
+}
+
 Spellboost = NodeBase & {
   kind: "spellboost",
   target: SetExpr,
@@ -1047,6 +1053,7 @@ ability: Ability, labels?: map<LocaleId, string> }` 附加一个独立触发能�
 | `restore own.pp` | `RestoreResource` |
 | `add N earthsigil` | `AdjustEarthSigil` |
 | `reduce countdown T N`、`reduce cost T N minimum M` | `AdjustEntityField` |
+| `halve cost T` | `HalveCost`（当前费用向上取整的一半，可作用于整副牌组） |
 | `spellboost S N` | `Spellboost` |
 | `ward`、`storm`、`rush`、`bane`、`drain`、`intimidate` | `Card.intrinsic` |
 | `unplayable` | `Card.restrictions` 中的 `Unplayable` |

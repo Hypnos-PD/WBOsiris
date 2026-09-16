@@ -712,6 +712,13 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 			}
 		}
 		g.resolveDeathBatch(expired)
+	case "halve_cost":
+		// 当前费用向上取整的一半；重复发动基于已经改变的费用（官方 FAQ：9 → 5）。
+		for _, i := range g.effectTargets(e.Target, self, f) {
+			if i != nil && i.cost > 0 {
+				i.cost = (i.cost + 1) / 2
+			}
+		}
 	case "adjust_earthsigil":
 		for _, i := range own.field {
 			if !g.chargeQueryVisits(1) {

@@ -18,11 +18,11 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 314 · 未实现(骨架) 59 · 未导入 531
+总计 904 · 已完成 316 · 未实现(骨架) 57 · 未导入 531
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
-10002        77      66      11       0
+10002        77      68       9       0
 10003        77       4       0      73
 10004        76       1       0      75
 10005        76       0       0      76
@@ -58,8 +58,8 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | 编号 | 缺少的原语 | 影响卡牌 | 草稿 / 说明 |
 | --- | --- | --- | --- |
 | S-01 | ~~移除能力（失去【谢幕曲】）~~ **已解决**：`remove lastwords from …` / `remove all abilities from …` | 已解锁 90051140 腐臭的僵尸、10251310 诅咒派对、10252120 尸兵；`../SWB-RL` 规则里另有 7 张同类卡（10321120、10433110、10474120、10861110、10862110、10871110…）等后续卡包补写时直接使用 | 实例级触发能力抑制：`suppressed`（按触发种类）与 `suppressAll`，索引与已排队触发同步剔除，随连击快照一起保存。详见 [已完成的语言扩展](#已完成的语言扩展) 的 S-01 行。 |
-| S-03 | 从双方战场中选择随从 | 10201310 逆向变化；`../SWB-RL` 里另有 10 张（10301110、10304120、10524110、10534120、10554110…） | 文本是"选择战场上的1个随从"（任意一方）。`character_set` 只允许同一方混合（`own.field.followers or own.leader` / `oppo...`），跨方选择未支持。 |
-| S-06 | 牌组内卡牌费用变更 | 10244120 绚丽的凤凰·小凤（本批挂起）；全卡文本里另有 11 张涉及"牌组中的卡牌费用"（10164110、10264110、10303210…） | `change own.deck cost half;` 被编译器拒绝（`未知效果语句: change`）。现有 `reduce cost T N minimum M` 只作用于单个实例，没有面向整副牌组的费用变更。 |
+| S-03 | ~~从双方战场中选择随从~~ **已解决**：`field.followers`（双方战场合并，可加 `other`） | 已解锁 10201310 逆向变化；10301110 涸绝的使徒、10304120、10534120、10554110 等"选择战场上的1个（其他）随从"直接可用 | 我此前把"跨方选择随从"和"随从与主战者混合的集合"混为一谈：前者一直支持（`field.followers` 的 `Side` 为空，运行时合并双方战场）。真正的缺口是后者，见 S-19。 |
+| S-06 | ~~牌组内卡牌费用变更~~ **已解决**：`halve cost 集合;`（并确认 `reduce cost 集合 N minimum M` 可按集合作用） | 已解锁 10244120 绚丽的凤凰·小凤；10334120（"使自己的牌组中的所有随从的费用 -3"）等后续卡包直接使用 `reduce cost own.deck.followers 3 minimum 0;` | 官方 FAQ：奇数费用向上取整（9 → 5），重复减半基于当前费用，且只影响发动时在牌组里的卡。`HalveCost` 单独成为一种 IR 节点，因为它不是固定增量。 |
 | S-07 | ~~"其他随从进化 / 超进化"事件~~ **已解决**：`when own\|oppo follower evolved\|super_evolved [other]` | 已解锁 10241110 庇护的智龙、10212120 妖精击剑士、10252110 爆破之翼·圮尤拉；全卡另有 2 张（10721110、10862120）后续直接使用 | 事件绑定改名的随从（`evolved`），`other` 排除来源实例自身。`when self evolved/super_evolved` 保持原样。 |
 | S-08 | ~~筛选器缺少"受伤状态 / 攻击力"~~ **已解决**：`where damaged`、`where attack 比较 整数` | 10272120 绝望之王·阿基姆已解锁（`where attack <= 4`）；全卡另有 3 张同类筛选（10341120、10462110、90044310）。10223110 仍未完成，缺的是"条件里判断交战对象是否受伤"，见 S-18 | 10223110 的【攻击时】需要读取 `opponent` 绑定的受伤状态，属于条件而不是筛选器；筛选器侧（`damaged`、`attack`）本条已补齐。 |
 | S-09 | `count(...)` 不接受 `other`（排除来源自身） | 10253120（"X 为自己的战场上的其他随从的张数"） | 编译器拒绝 `count(own.field.followers other)`。该卡已用"先按含自身的张数 `repeat` 加攻，再 `buff self -1/+0`"精确表达，并在文件里写了注释；登记此项是为了让语言侧知道有这条需求（`count` 支持 `where` 但不支持 `other`）。 |
@@ -72,6 +72,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-13 | ~~`add card … to hand` 不产生绑定~~ **已解决**：`added` 绑定 | 已解锁 10271120 猫偶；全卡另有约 7 张"加入手牌后立即修改"的卡（10641310、10643310、10844110、10922310 等），后续卡包直接使用 | `add 1 card X to hand` 现在把成功进入手牌的实例绑成 `added`（手牌满被丢弃的不计入），Go 测试同时验证只有新卡被强化、手里的同名旧卡不受影响。 |
 | S-11 | `.wbotest` 无法声明先手 | 影响"抽牌耗尽判负"这类与先手有关的规则验证 | 规则本身已实现（`execute.go` 在无法满足抽牌时让对方获胜），但触发条件是 `firstPlayer != ""`，而场景测试不提供先手信息，这条路径只能由 Go 侧测试覆盖，场景测试写不出来。 |
 | S-18 | ~~条件里判断绑定对象的受伤状态~~ **已解决**：`if <绑定> damaged { … }` | 已解锁 10223110 剑士公主·萝泽（`attack { if opponent damaged { destroy opponent; } }`） | `internal/ir` 新增 `IsDamagedCondition`，条件求值新增 `conditionIn(c, self, bindings)`（执行与预检两处都带当前帧），绑定缺失或对象不是随从时为假。 |
+| S-19 | 随从与主战者混合的随机集合 | 10524110 威猛的《战车》·奥辂昂（"随机对战场上的1个其他随从或自己的主战者或对手的主战者造成7点伤害"） | `character_set` 只允许 `own.field.followers or own.leader` / `oppo...` 这种同方混合，而且只用于 `choose/require`。跨方的"随从或双方主战者"混合随机目标尚未支持；需要把主战者纳入随机/选择集合。 |
 
 ## 已完成的语言扩展
 
@@ -90,10 +91,37 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-08 | `where damaged` / `where attack 比较 整数` —— 筛选器补两个词条 | `internal/project/validate.go`（`parseWhere` 接受 `damaged` 与 `attack`）、`typed_ir.go`（`filterIR` 生成 `is_damaged` / `compare field:"attack"`）、`internal/ir/decode.go`（谓词白名单）、`internal/runner/execute.go`（`matches` 求值：`damageTaken > 0`、`currentAttack()`）；文档 `grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/filter_and_added_test.go`；卡片 10272120 + 2 个场景（含"攻击力 5 以上不在范围内"的反向场景） |
 | S-13 | `add card … to hand` 产出 `added` 绑定 | `internal/project/typed_ir.go`（写入 `Output`）、`internal/project/validate.go`（`added` 可见性）、`internal/ir/encode.go`/`decode.go`（`add_card.output` 必填 `added`）、`internal/runner/execute.go`（把真正进入手牌的实例绑成 `added`）；文档 `cards.md`/`compiler/ir.md` | Go 单测 `internal/project/filter_and_added_test.go`（`added` 只在 `add` 之后可见）与 `internal/runner/added_binding_test.go`（只强化新加入的那张，手里同名旧卡保持 1/1）；卡片 10271120 + 2 个场景 |
 | S-18 | `if <绑定> damaged { … }` —— 条件读取绑定实例的受伤状态 | `internal/ir/model.go`（`IsDamagedCondition`）、`internal/ir/decode.go`（容器解码）、`internal/project/typed_ir.go`/`validate.go`/`strict_validate.go`（`<标识符> damaged` 形状）、`internal/runner/execute.go`（`conditionIn` 带帧求值）、`internal/runner/session.go` 与 `runner.go`（执行与预检改用 `conditionIn`）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/damaged_binding_condition_test.go`（条件形状被保留、拒绝多 token 与无绑定写法）；卡片 10223110 + 4 个场景（爆能/非爆能、攻击受伤/未受伤四个方面） |
+| S-06 | `halve cost 集合;` —— 牌组内卡牌费用减半 | `internal/project/validate.go`（`halve` 语句形状）、`typed_ir.go`（`halve_cost`）、`internal/ir/encode.go`/`decode.go`（新节点与形状校验）、`internal/runner/execute.go`（`ceil(cost/2)`，按集合逐个结算）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/halve_cost_test.go`（目标保留为牌组集合、拒绝 `halve cost`/`halve deck`/多余 token/`countdown`）与 `internal/runner/deck_cost_test.go`（5→3→2 的重复减半、`followers` 不碰法术、整副牌组 `reduce` 夹在 0）；卡片 10244120 + 2 个场景（奇数向上取整、只影响发动时在牌组里的卡） |
+| S-03 | 复查：`field.followers` 选择双方战场随从 | 无需改代码，只补文档与测试：`internal/project/cross_side_selection_test.go`（`field.followers other` 保持 `Side=""` 且排除自身、`own.field.followers` 不变） | 卡片 10201310 + 2 个场景（指定对手随从并降到 0 生命、指定自己的随从）。`grammar.md` 早已写明 `field` 是双方战场合并集合，我此前误判为缺口 |
 
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 18（复查 S-03 + 卡包 10002）
+
+- **S-03 复查结论：跨方选择随从一直可用**。`field.followers` 的 `Side` 为空，
+  运行时把双方战场合并；`other` 同样只排除来源自身。我此前把它和"随从与主战者
+  混合的集合"混为一谈，后者才是真缺口，已登记为 S-19（10524110 等）。
+- 完成 1 张卡：10201310 逆向变化（选择战场上的 1 个随从，使其 +2/-2）。
+- 新增 2 个场景（`tests/10002/batch-18-cross-side.wbotest`）：指定对手随从（降到 0 生命被破坏）
+  与指定自己的随从（10/10 → 12/8）。
+- 新增 `internal/project/cross_side_selection_test.go` 固定集合形状，
+  避免以后有人"顺手"给空 Side 加限制。
+- 全量回归：`check` 0 错 0 警；`test` 472 全绿；语料快照更新为 472 个场景。
+
+### 批次 17（语言扩展 S-06 + 卡包 10002）
+
+- **语言扩展 S-06 完成**：`halve cost 集合;`。取当前费用向上取整的一半，
+  可作用于 `own.deck` 这类整副牌组集合；同时确认既有的
+  `reduce cost 集合 N minimum M` 也是按集合逐个结算的（"牌组中所有随从 -3" 可直接写）。
+- 依据官方 FAQ（WBArts 卡页 QA）：奇数费用向上取整（9 → 5）、重复减半基于当前费用、
+  只影响发动瞬间在牌组里的卡——后者决定实现必须是"结算时遍历集合"，而不是给牌组挂持续效果。
+- 完成 1 张卡：10244120 绚丽凤凰·小凤（入场曲使牌组中所有卡牌费用减半）。
+- 新增 2 个场景（`tests/10002/batch-17-deck-costs.wbotest`）+ 2 组 Go 测试
+  （`internal/project/halve_cost_test.go`、`internal/runner/deck_cost_test.go`）。
+- 10002 只剩 10 张未实现，全部卡在已登记缺口（S-03 跨方选择、S-12 纹章内集合条件等）。
+- 全量回归：`check` 0 错 0 警；`test` 470 全绿；语料快照更新为 470 个场景。
 
 ### 批次 16（语言扩展 S-18 + 卡包 10002）
 

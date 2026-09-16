@@ -6,7 +6,10 @@ card 10244120 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fanfare {
+            // 官方 FAQ：奇数费用向上取整（9 → 5）；只作用于发动时牌组里的卡牌。
+            halve cost own.deck;
+        }
     }
 
     meta {
