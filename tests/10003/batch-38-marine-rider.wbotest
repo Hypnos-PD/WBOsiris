@@ -1,0 +1,34 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "海洋骑手未觉醒时只召唤一个大海虎鲸" {
+    seed 38001;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10342120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90041130 == 1;
+        all own.field where card 90041130 have ward;
+    }
+}
+
+scenario "觉醒时海洋骑手改为召唤两个大海虎鲸" {
+    seed 38002;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10342120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90041130 == 2;
+        all own.field where card 90041130 have ward;
+    }
+}
