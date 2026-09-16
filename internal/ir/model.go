@@ -552,6 +552,8 @@ type TargetEffect struct {
 	AttackDelta   int         `json:"attackDelta,omitempty"`
 	LifeDelta     int         `json:"lifeDelta,omitempty"`
 	Predicate     Predicate   `json:"predicate,omitempty"`
+	// Extremum 把目标集合收窄到 attack/life/cost 的极值（例如"生命值最大的所有随从"）。
+	Extremum *SelectionExtremum `json:"extremum,omitempty"`
 }
 
 func (e TargetEffect) effectKind() string   { return e.Kind }

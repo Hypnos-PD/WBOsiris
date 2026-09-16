@@ -1017,6 +1017,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			AttackValue                                                 json.RawMessage `json:"attackDelta"`
 			LifeValue                                                   json.RawMessage `json:"lifeDelta"`
 			Predicate                                                   json.RawMessage `json:"predicate,omitempty"`
+			Extremum                                                    *SelectionExtremum `json:"extremum,omitempty"`
 			Origin                                                      Origin          `json:"origin"`
 		}
 		var v raw
@@ -1139,11 +1140,16 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 				return nil, fmt.Errorf("invalid set cost shape")
 			}
 		}
+		if v.Extremum != nil {
+			if !oneOf(v.Kind, "damage", "heal") || v.Extremum.Direction != "highest" && v.Extremum.Direction != "lowest" || !oneOf(v.Extremum.Field, "attack", "life", "cost", "base_attack", "base_life", "base_cost") {
+				return nil, fmt.Errorf("invalid effect extremum")
+			}
+		}
 		return TargetEffect{
 			NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Output: v.Output, DamageType: v.DamageType,
 			Distribution: v.Distribution, Overflow: overflow,
 			Keyword: v.Keyword, Until: v.Until, Form: v.Form, Destination: v.Destination, DeckInsertion: v.DeckInsertion,
-			Target: r, Amount: v.Amount, AmountExpr: amountExpr, AttackDelta: v.AttackDelta, LifeDelta: v.LifeDelta, AttackExpr: attackExpr, LifeExpr: lifeExpr, Predicate: p,
+			Target: r, Amount: v.Amount, AmountExpr: amountExpr, AttackDelta: v.AttackDelta, LifeDelta: v.LifeDelta, AttackExpr: attackExpr, LifeExpr: lifeExpr, Predicate: p, Extremum: v.Extremum,
 		}, err
 	case "adjust_resource", "restore_resource", "adjust_earthsigil", "adjust_entity_field", "spellboost", "adjust_counter", "halve_cost", "double_stats":
 		type raw struct {

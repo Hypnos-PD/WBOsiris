@@ -227,7 +227,7 @@ filter_term         = "card" , card_id
                     | "trait" , identifier
                     | "form" , ("unevolved" | "evolved" | "super_evolved")
                     | ("life" | "cost" | "attack") , comparison_operator , (integer | player_scalar) ;
-player_scalar       = participant , "." , ("combo" | "rally" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" | "hand_count" | "earthsigils") ;
+player_scalar       = participant , "." , ("combo" | "rally" | "crests" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" | "hand_count" | "earthsigils") ;
 comparison_operator = "==" | "!=" | "<" | "<=" | ">" | ">=" ;
 ```
 
@@ -381,7 +381,7 @@ summon_operation  = "summon" , integer , "card" , card_id , ["for" , participant
                   | "summon" , "copies" , "of" , value_ref , [where_clause] , ";" ;
 deck_summon_source = "own" , "." , "deck" , "." , ("followers" | "amulets") ;
 history_source    = participant , "." , "destroyed" , ["." , ("followers" | "amulets")] , ["this" , "turn"] ;
-numeric_operation = "damage" , value_ref , ["other" , [binding_name]] , effect_amount , [damage_distribution] , [where_clause] , ";"
+numeric_operation = "damage" , value_ref , ["other" , [binding_name]] , effect_amount , [damage_distribution] , [extremum_clause] , [where_clause] , ";"
                   | "heal" , value_ref , ["other" , [binding_name]] , effect_amount , [where_clause] , ";"
                   | "set" , "life" , value_ref , effect_amount , ";"
                   | "set" , "cost" , value_ref , effect_amount , ";"

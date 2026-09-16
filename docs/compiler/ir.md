@@ -838,7 +838,7 @@ NumericExpr = Count { kind: "count", source: ZoneSet | HistorySet | BindingRef |
             | Sum { kind: "sum", source: ZoneSet | HistorySet | BindingRef | FilterSet,
                     field: "base_attack" | "base_life" | "base_cost" | "attack" | "life" | "cost" }
             | PlayerScalar { kind: "scalar", side: "own" | "oppo",
-                             field: "combo" | "rally" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" | "hand_count" | "earthsigils" }
+                             field: "combo" | "rally" | "crests" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" | "hand_count" | "earthsigils" }
             | SelfScalar { kind: "self_scalar", field: "attack" | "life" | "cost" }
             | SelfCounter { kind: "self_counter", field: CounterName }
 EffectAmount = nonnegative_integer | NumericExpr
@@ -978,6 +978,8 @@ Spellboost = NodeBase & {
 
 `Damage.distribution` 省略时，对每个目标造成完整的 `amount` 伤害。
 `SetLife` 对随从直接设置当前生命值，不使用伤害管线、不消费屏障、不产生伤害或回复事件。
+`TargetEffect` 的 `extremum` 只对 `damage`/`heal` 有效，把目标集合收窄到极值（并列全中）；
+`all.leaders` 配 `highest life` 时只打击生命值最大的主战者。
 `SetCost` 用同一数值管线把目标的当前费用设为给定值（允许 0），也可用于手牌与牌组中的实例；
 它不改变原始费用，因此离开战场或重新创建实例后会回到卡牌定义的费用。
 数值在修改任何目标前确定；零生命值的战场随从随后统一进入死亡批次。

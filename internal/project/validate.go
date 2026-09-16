@@ -638,6 +638,13 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 					end += 4
 				}
 			}
+			if good {
+				extremum, next, extremumOK := parseExtremum(t, end)
+				good = extremumOK
+				if extremum != nil {
+					end = next
+				}
+			}
 			if good && end < len(t) {
 				end, good = parseWhere(t, end)
 			}

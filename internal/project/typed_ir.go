@@ -400,6 +400,11 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 				end += 4
 			}
 		}
+		if extremum, next, ok := parseExtremum(t, end); ok && extremum != nil {
+			// `damage 集合 数值 highest life`：只作用于生命值最大的那些目标。
+			e.Extremum = extremum
+			end = next
+		}
 		if end < len(t) {
 			e.Predicate, _ = filterIR(t, end)
 		}

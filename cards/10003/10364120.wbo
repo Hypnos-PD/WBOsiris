@@ -6,7 +6,53 @@ card 10364120 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 90064310 to hand;
+        }
+        evolve {
+            gain own crest 10364120;
+        }
+    }
+
+    crest {
+        when own turn ends if not own.attacked_this_turn {
+            damage oppo.field.followers own.crests distributed overflow oppo.leader;
+        }
+
+        locale chs {
+            name "纹章：绝望的显现·玛温";
+            text """
+自己的回合结束时，若本回合中自己的随从没有进行过攻击，则对对手的战场上的所有随从和对手的主战者分配X点伤害。X为自己的纹章数。
+""";
+        }
+
+        locale eng {
+            name "Crest: Marwynn, Despair Manifest";
+            text """
+At the end of your turn, if allied followers didn't attack this turn, deal X damage split between all enemies. X is the number of crests you have.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：絶望の顕現・マーウィン";
+            text """
+自分のターン終了時、このターン中に自分のフォロワーが攻撃していないなら、相手の場のフォロワーすべてと相手のリーダーにXダメージを割りふる。Xは自分のクレストの数である。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 절망의 현현 마윈";
+            text """
+내 턴 종료시 이번 턴에 내 추종자가 공격하지 않았다면, 상대방 전장의 추종자 모두와 상대방 리더에게 X 피해를 분배한다. X는 내 크레스트 수.
+""";
+        }
+
+        locale cht {
+            name "紋章：絕望的顯現‧瑪文";
+            text """
+自己的回合結束時，如果本回合中自己的從者卡未進行攻擊，則會對敵方戰場上全部的從者卡與敵方的主戰者分配X點傷害。X為「自己的紋章數」。
+""";
+        }
     }
 
     meta {

@@ -559,7 +559,7 @@ when self summoned {
 其他随从入场以及战场上的变身都不会触发。两项增量在本条强化操作开始时分别读取，
 暂停恢复保留破坏记录的回合归属。测试初始历史不计入本回合。
 计数不消耗随机决策；查询预算耗尽时不使用部分结果执行效果。
-数值也可直接读取 `own`/`oppo` 的 `combo`、`rally`、`pp`、`maxpp`、`life`、`ep`、`sep`、`shadows`、`hand_count`、`earthsigils`，
+数值也可直接读取 `own`/`oppo` 的 `combo`、`rally`、`crests`、`pp`、`maxpp`、`life`、`ep`、`sep`、`shadows`、`hand_count`、`earthsigils`，
 或者读取 `self.cost`；随从还可读取 `self.attack` 和 `self.life`。
 `own` 始终相对能力控制者，`self` 为发动能力的卡牌实例。费用支付和使用卡牌的连击计数
 在入场曲之前发生，因此入场曲中的 `own.pp` 已扣除费用，`own.combo` 包含本卡牌。
@@ -594,6 +594,9 @@ damage target self.attack;
 
 `own.attacked_this_turn` 和 `oppo.attacked_this_turn` 可直接作为 `if` 条件，
 在前面加 `not` 表示本回合尚未有对应玩家的随从宣告攻击。这里的 `own` 始终指能力控制者。
+
+`damage` 可以在数值之后接极值筛选：`damage field.followers 5 highest life;` 只打击生命值最大的
+那些随从（并列全中），`damage all.leaders 3 highest life;` 打击生命值最大的主战者。
 
 `self.cost`、`self.attack`、`self.life` 也可以直接作为条件左侧，例如
 `if self.cost != 2 { heal own.leader 3; }` 或 `if self.life <= 3 { ... }`；

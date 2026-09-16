@@ -1,0 +1,115 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "雷霆之怒只对生命值最大的随从造成五点伤害" {
+    seed 30001;
+    state {
+        player own {
+            pp 3/3;
+            field {
+                follower tall = 10001110 { stats 2/8; }
+                follower short = 10001110 { stats 2/4; }
+            }
+            hand { spell source = 10341310; }
+        }
+        player oppo {
+            field {
+                follower tied = 10001110 { stats 2/8; }
+                follower small = 10001110 { stats 2/3; }
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        tall.stats == 2/3;
+        short.stats == 2/4;
+        tied.stats == 2/3;
+        small.stats == 2/3;
+        own.leader.life == 20;
+        oppo.leader.life == 20;
+    }
+}
+
+scenario "觉醒时雷霆之怒额外打击生命值最大的主战者" {
+    seed 30002;
+    state {
+        player own {
+            leader 18/20;
+            pp 7/7;
+            hand { spell source = 10341310; }
+        }
+        player oppo { leader 12/20; }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 15; oppo.leader.life == 12; }
+}
+
+scenario "生命值并列时雷霆之怒同时打击双方主战者" {
+    seed 30003;
+    state {
+        player own {
+            leader 10/20;
+            pp 7/7;
+            hand { spell source = 10341310; }
+        }
+        player oppo { leader 10/20; }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 7; oppo.leader.life == 7; }
+}
+
+scenario "绝望的显现的入场曲把绝望的奔流加入手牌" {
+    seed 30004;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10364120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90064310 == 1; own.pp == 0/4; }
+}
+
+scenario "绝望的显现的纹章按纹章数分配伤害" {
+    seed 30005;
+    state {
+        player own {
+            crests {
+                crest marwynn = 10364120;
+                crest repose = 10362110;
+            }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/8; }
+                follower second = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { end_turn; }
+    // 纹章数 2，先填满第一个随从的当前生命（2 点），其余不溢出。
+    expect { legal; first.stats == 2/6; second.stats == 2/8; oppo.leader.life == 20; }
+}
+
+scenario "分配点数超过第一个目标的生命时溢出给下一个目标" {
+    seed 30006;
+    state {
+        player own {
+            crests {
+                crest marwynn = 10364120;
+                crest repose = 10362110;
+                crest crystal = 10331310;
+            }
+        }
+        player oppo {
+            field {
+                follower frail = 10001110 { stats 2/1; }
+                follower sturdy = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { end_turn; }
+    // 纹章数 3：第一个随从只能吃 1 点，剩下 2 点给第二个，主战者没有溢出。
+    expect { legal; frail.zone == graveyard; sturdy.stats == 2/6; oppo.leader.life == 20; }
+}

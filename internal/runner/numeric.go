@@ -58,6 +58,8 @@ func (g *game) numericValue(expr ir.NumericExpr, self *instance, bindings frame)
 		switch e.Field {
 		case "hand_count":
 			return len(p.hand)
+		case "crests":
+			return len(p.crests)
 		case "earthsigils":
 			total := 0
 			for _, i := range p.field {

@@ -847,6 +847,28 @@ func (g *game) damageLeaders(source *instance, amount int) {
 	}
 }
 
+// damageExtremumLeaders 只对生命值处于极值的主战者造成伤害
+// （例如"对生命值最大的所有主战者造成 3 点伤害"）。
+func (g *game) damageExtremumLeaders(source *instance, amount int, extremum *ir.SelectionExtremum) {
+	if amount < 0 || extremum == nil || extremum.Field != "life" {
+		return
+	}
+	best := max(g.own.leaderLife, g.oppo.leaderLife)
+	for _, target := range []struct {
+		player *player
+		side   string
+	}{
+		{&g.own, "own"},
+		{&g.oppo, "oppo"},
+	} {
+		if extremum.Direction == "highest" && target.player.leaderLife < best ||
+			extremum.Direction != "highest" && target.player.leaderLife > best {
+			continue
+		}
+		g.damageLeaderFrom(source, target.player, target.side, amount)
+	}
+}
+
 func (g *game) healLeader(target *player, side string, amount int) {
 	if amount <= 0 {
 		return

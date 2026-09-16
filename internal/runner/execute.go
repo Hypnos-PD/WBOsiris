@@ -570,6 +570,9 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 		targets = g.filter(targets, "", e.Predicate, self)
 		leaders = nil
 	}
+	if e.Extremum != nil {
+		targets = g.extremumCandidates(targets, e.Extremum)
+	}
 	// Snapshot all numeric inputs before any target or resulting event changes them.
 	if e.AmountExpr != nil {
 		e.Amount = max(0, g.numericValue(e.AmountExpr, self, f))
@@ -658,7 +661,11 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 			return
 		}
 		if _, ok := e.Target.(ir.LeaderSetRef); ok {
-			g.damageLeaders(self, e.Amount)
+			if e.Extremum != nil {
+				g.damageExtremumLeaders(self, e.Amount, e.Extremum)
+			} else {
+				g.damageLeaders(self, e.Amount)
+			}
 			return
 		}
 		for _, i := range targets {

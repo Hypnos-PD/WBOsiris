@@ -5,7 +5,10 @@ card 10341310 {
     cost 3;
 
     effect {
-        unplayable;
+        damage field.followers 5 highest life;
+        if overflow {
+            damage all.leaders 3 highest life;
+        }
     }
 
     meta {
