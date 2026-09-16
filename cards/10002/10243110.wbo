@@ -6,7 +6,56 @@ card 10243110 {
     stats 5/5;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            gain own crest 10243110;
+            summon 2 card 90041130;
+        }
+        superevolve {
+            summon 2 card 90041130;
+        }
+    }
+
+    crest {
+        when own follower summoned where trait marine {
+            heal own.leader 1;
+        }
+
+        locale chs {
+            name "纹章：苍海的制裁·尼普顿";
+            text """
+自己的海洋·随从进入战场时，回复自己的主战者1点生命值。
+""";
+        }
+
+        locale eng {
+            name "Crest: Neptune, Arbiter of Tides";
+            text """
+Whenever an allied Marine follower enters the field, restore 1 defense to your leader.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"そうかい\">蒼海</rub>の<rub=\"さば\">裁</rub>き・ネプチューン";
+            text """
+自分の海洋・フォロワーが場に出たとき、自分のリーダーを1回復。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 창해의 심판 넵튠";
+            text """
+내 바다 추종자가 전장에 소환되었을 때, 내 리더를 1 회복.
+""";
+        }
+
+        locale cht {
+            name "紋章：蒼海的制裁‧尼普頓";
+            text """
+當自己的海洋‧從者卡進入戰場時，回復自己的主戰者1點生命值。
+""";
+        }
+
     }
 
     meta {

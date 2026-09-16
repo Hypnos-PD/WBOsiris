@@ -6,7 +6,64 @@ card 10254120 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fanfare {
+            reanimate 2;
+            reanimate 1;
+        }
+        when own follower summoned where trait departed {
+            add ward to summoned;
+        }
+        superevolve {
+            gain own crest 10254120;
+        }
+    }
+
+    crest {
+        countdown 2;
+        when own turn starts {
+            reanimate 3;
+        }
+
+        locale chs {
+            name "纹章：流动堕落的冥河·凯伦";
+            text """
+【<color=Keyword>吟唱</color>_2】
+自己的回合开始时，发动【<color=Keyword>亡者召还</color>_3】。
+""";
+        }
+
+        locale eng {
+            name "Crest: Charon, Stygian Oarswoman";
+            text """
+<b><color=Keyword>Countdown</color> (2)</b>
+At the start of your turn, <b><color=Keyword>Reanimate</color> (3)</b>.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"なが\">流</rub>れ<rub=\"お\">堕</rub>つ<rub=\"めいが\">冥河</rub>・カローン";
+            text """
+【<color=Keyword>カウントダウン</color>_2】
+自分のターン開始時、【<color=Keyword>リアニメイト</color>_3】を行う。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 명계로 이끄는 강 카론";
+            text """
+[<color=Keyword>카운트다운</color> 2]
+내 턴 시작시, [<color=Keyword>소생</color> 3]을 발동.
+""";
+        }
+
+        locale cht {
+            name "紋章：流墮的冥河‧凱倫";
+            text """
+【<color=Keyword>倒數</color>_2】
+自己的回合開始時，發動【<color=Keyword>亡者召還</color>_3】。
+""";
+        }
+
     }
 
     meta {

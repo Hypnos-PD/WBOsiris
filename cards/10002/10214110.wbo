@@ -6,7 +6,56 @@ card 10214110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90011110;
+            gain own crest 10214110;
+        }
+        evolve {
+            choose target from oppo.field.followers;
+            transform target into card 90011110;
+        }
+    }
+
+    crest {
+        when own turn starts {
+            add 1 card 90011110 to hand;
+        }
+
+        locale chs {
+            name "纹章：翅翼女王·提泰妮娅";
+            text """
+自己的回合开始时，将1张『<color=Keyword>妖精</color>』加入手牌。
+""";
+        }
+
+        locale eng {
+            name "Crest: Titania, Queen of Fairies";
+            text """
+At the start of your turn, add a <b><i><color=Keyword>Fairy</color></i></b> to your hand.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"はね\">翅</rub>の<rub=\"じょおう\">女王</rub>・ティターニア";
+            text """
+自分のターン開始時、『<color=Keyword>フェアリー</color>』1枚を自分の手札に加える。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 날개들의 여왕 티타니아";
+            text """
+내 턴 시작시, <color=Keyword>요정</color> 1장을 내 패에 넣는다.
+""";
+        }
+
+        locale cht {
+            name "紋章：羽翅女王‧提泰妮婭";
+            text """
+自己的回合開始時，增加1張『<color=Keyword>妖精</color>』到自己的手牌中。
+""";
+        }
+
     }
 
     meta {

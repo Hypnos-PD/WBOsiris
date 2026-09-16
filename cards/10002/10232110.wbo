@@ -6,7 +6,54 @@ card 10232110 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 2 card 90032110;
+        }
+        evolve {
+            gain own crest 10232110;
+        }
+    }
+
+    crest {
+        when own turn starts {
+            summon 1 card 90032110;
+        }
+
+        locale chs {
+            name "纹章：否定的咏唱·芭赛特";
+            text """
+自己的回合开始时，召唤1个『<color=Keyword>洋葱军团兵</color>』。
+""";
+        }
+
+        locale eng {
+            name "Crest: Bergent, Rejected Artes";
+            text """
+At the start of your turn, summon an <b><i><color=Keyword>Onion Patch</color></i></b>.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"ひてい\">否定</rub>の<rub=\"えいしょう\">詠唱</rub>・バーゼント";
+            text """
+自分のターン開始時、『<color=Keyword>オニオン軍団</color>』1枚を自分の場に出す。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 부정의 영창 바젠트";
+            text """
+내 턴 시작시, <color=Keyword>양파 군단</color> 1장을 내 전장에 소환.
+""";
+        }
+
+        locale cht {
+            name "紋章：否定的詠唱‧芭賽特";
+            text """
+自己的回合開始時，召喚1張『<color=Keyword>洋蔥軍團</color>』到自己的戰場上。
+""";
+        }
+
     }
 
     meta {

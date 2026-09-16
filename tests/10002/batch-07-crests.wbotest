@@ -1,0 +1,90 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "翅翼女王获得纹章并在下个回合开始拿到妖精" {
+    seed 4701;
+    state {
+        player own { pp 4/4; hand { follower source = 10214110; } }
+    }
+    action { play source; }
+    expect { legal; own.crests count card 10214110 == 1; own.field count card 90011110 == 1; }
+}
+
+scenario "翅翼女王的纹章在持有者回合开始时加入妖精" {
+    seed 4702;
+    state {
+        player oppo { crests { crest aria = 10214110; } deck top { follower theirs = 10001110; } }
+    }
+    action { end_turn; }
+    expect { legal; oppo.hand count card 90011110 == 1; }
+}
+
+scenario "翅翼女王进化时把敌方随从变成妖精" {
+    seed 4703;
+    state {
+        turn own 7;
+        player own { ep 1; field { follower source = 10214110; } }
+        player oppo { field { follower target = 10001110; } }
+    }
+    action { evolve source; select target; }
+    // 变成妖精后身材是 1/1（原卡 10001110 是 2/2）。
+    expect { legal; target.stats == 1/1; }
+}
+
+scenario "否定的咏唱的纹章在持有者回合开始时召唤洋葱军团兵" {
+    seed 4704;
+    state {
+        player oppo { crests { crest baset = 10232110; } deck top { follower theirs = 10001110; } }
+    }
+    action { end_turn; }
+    expect { legal; oppo.field count card 90032110 == 1; }
+}
+
+scenario "苍海的制裁的纹章在海洋随从入场时回复主战者" {
+    seed 4705;
+    state {
+        player own {
+            leader 10/20;
+            pp 2/2;
+            crests { crest neptune = 10243110; }
+            hand { follower whale = 90041130; }
+        }
+    }
+    action { play whale; }
+    expect { legal; own.leader.life == 11; }
+}
+
+scenario "维尔伯特的纹章让带守护的随从入场时加身材" {
+    seed 4706;
+    state {
+        player own {
+            pp 3/3;
+            crests { crest wilbert = 10264120; }
+            hand { follower guard = 90074120; }
+        }
+    }
+    action { play guard; }
+    expect { legal; guard.stats == 2/8; }
+}
+
+scenario "疯狂的恩宠的纹章在吟唱结束后对持有者主战者造成10点伤害" {
+    seed 4707;
+    state {
+        player oppo { leader 20/20; crests { crest favor = 10263310 { countdown 1; } } }
+    }
+    action { end_turn; }
+    expect { legal; own.crests count card 10263310 == 0; oppo.leader.life == 10; }
+}
+
+scenario "凯伦的纹章在持有者回合开始时发动亡者召还三" {
+    seed 4708;
+    state {
+        player oppo {
+            crests { crest karen = 10254120; }
+            destroyed { follower gone = 90041130; }
+            deck top { follower theirs = 10001110; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; oppo.field count card 90041130 == 1; }
+}

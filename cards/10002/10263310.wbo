@@ -5,7 +5,56 @@ card 10263310 {
     cost 4;
 
     effect {
-        unplayable;
+        heal own.leader 10;
+        gain own crest 10263310;
+    }
+
+    crest {
+        countdown 2;
+        lastwords {
+            damage own.leader 10;
+        }
+
+        locale chs {
+            name "纹章：疯狂的恩宠";
+            text """
+【<color=Keyword>吟唱</color>_2】
+【<color=Keyword>谢幕曲</color>】对自己的主战者造成10点伤害。
+""";
+        }
+
+        locale eng {
+            name "Crest: Maddening Benison";
+            text """
+<b><color=Keyword>Countdown</color> (2)</b>
+<b><color=Keyword>Last Words</color></b>: Deal 10 damage to your leader.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"くる\">狂</rub>おしき<rub=\"おんちょう\">恩寵</rub>";
+            text """
+【<color=Keyword>カウントダウン</color>_2】
+【<color=Keyword>ラストワード</color>】自分のリーダーに10ダメージ。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 광기의 은총";
+            text """
+[<color=Keyword>카운트다운</color> 2]
+[<color=Keyword>유언</color>] 내 리더에게 10 피해.
+""";
+        }
+
+        locale cht {
+            name "紋章：癲狂之恩寵";
+            text """
+【<color=Keyword>倒數</color>_2】
+【<color=Keyword>謝幕曲</color>】給予自己的主戰者10點傷害。
+""";
+        }
+
     }
 
     meta {
