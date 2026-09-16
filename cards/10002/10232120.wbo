@@ -6,7 +6,16 @@ card 10232120 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from oppo.field.followers;
+            damage target 3;
+            add 1 earthsigil;
+        }
+        evolve {
+            choose target from oppo.field.followers;
+            damage target 3;
+            add 1 earthsigil;
+        }
     }
 
     meta {

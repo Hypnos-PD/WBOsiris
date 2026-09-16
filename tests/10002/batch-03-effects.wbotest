@@ -1,0 +1,139 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "禁书库的守护者在交战时增幅手牌并在进化时抽随从" {
+    seed 4301;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10233110; }
+            hand { spell kept = 10134310; }
+        }
+        player oppo { field { follower target = 10001110 { stats 2/10; } } }
+    }
+    action { attack source into target; }
+    expect { legal; kept.cost == 17; }
+}
+
+scenario "森林的妖精使者召唤妖精并在进化时强化妖精" {
+    seed 4302;
+    state {
+        turn own 7;
+        player own { ep 1; pp 4/4; hand { follower source = 10213110; } }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90011110 == 2; }
+}
+
+scenario "森林的妖精使者进化时强化妖精随从" {
+    seed 4303;
+    state {
+        turn own 7;
+        player own { ep 1; field { follower source = 10213110; follower pixie = 90011110; } }
+    }
+    action { evolve source; }
+    expect { legal; pixie.stats == 2/1; }
+}
+
+scenario "爆能强化五点使随从进化并在谢幕曲时造成四点伤害" {
+    seed 4304;
+    state {
+        player own { pp 5/5; hand { follower source = 10203120; } }
+        player oppo { field { follower target = 10001110 { stats 0/8; } } }
+    }
+    action { play source; }
+    expect { legal; source.stats == 4/4; }
+}
+
+scenario "连击不足三点时由玩家选择单个目标" {
+    seed 4305;
+    state {
+        player own { pp 5/5; hand { follower source = 10211120; } }
+        player oppo { field { follower a = 10001110 { stats 0/8; } follower b = 10001110 { stats 0/8; } } }
+    }
+    action { play source; select a; }
+    expect { legal; a.stats == 0/4; b.stats == 0/8; }
+}
+
+scenario "连击三点以上时改为对敌方所有随从造成伤害" {
+    seed 4306;
+    state {
+        player own { pp 5/5; combo 2; hand { follower source = 10211120; } }
+        player oppo { field { follower a = 10001110 { stats 0/8; } follower b = 10001110 { stats 0/8; } } }
+    }
+    action { play source; }
+    expect { legal; a.stats == 0/4; b.stats == 0/4; }
+}
+
+scenario "安静的随从入手并带有潜行" {
+    seed 4307;
+    state { player own { pp 2/2; hand { follower source = 10223120; } } }
+    action { play source; }
+    expect { legal; source has stealth; own.hand count card 90023110 == 1; }
+}
+
+scenario "超进化时为其他随从加身材" {
+    seed 4308;
+    state {
+        turn own 7;
+        player own { sep 1; field { follower source = 10223120; follower other = 10001110; } }
+    }
+    action { superevolve source; }
+    expect { legal; other.stats == 3/3; }
+}
+
+scenario "未觉醒时不把银冰吐息加入手牌" {
+    seed 4309;
+    state { player own { pp 2/2; hand { follower source = 10244110; } } }
+    action { play source; }
+    expect { legal; source has bane; own.hand count card 90044310 == 0; }
+}
+
+scenario "觉醒时把银冰吐息加入手牌" {
+    seed 4310;
+    state { player own { pp 7/7; hand { follower source = 10244110; } } }
+    action { play source; }
+    expect { legal; own.hand count card 90044310 == 1; }
+}
+
+scenario "岩魔导士的入场曲造成伤害并增加土之印" {
+    seed 4311;
+    state {
+        player own {
+            pp 4/4;
+            field { amulet sigil = 90031210 { earthsigil 2; } }
+            hand { follower source = 10232120; }
+        }
+        player oppo { field { follower target = 10001110 { stats 0/8; } } }
+    }
+    action { play source; select target; }
+    expect { legal; target.stats == 0/5; sigil.earthsigil == 3; }
+}
+
+scenario "巨臂的魔像是入场曲赋予毁灭超进化赋予疾驰" {
+    seed 4312;
+    state {
+        turn own 7;
+        player own {
+            pp 3/3;
+            sep 1;
+            field { follower friend = 10001110; }
+            hand { follower source = 10253110; }
+        }
+    }
+    action { play source; select friend; }
+    expect { legal; friend has bane; }
+}
+
+scenario "人偶使者把人偶随从变成屠戮人偶" {
+    seed 4313;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10272110; follower doll = 90071110; }
+        }
+    }
+    action { play source; select doll; }
+    expect { legal; doll.zone == hand; doll.stats == 1/1; }
+}

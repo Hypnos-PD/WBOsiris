@@ -6,7 +6,14 @@ card 10253110 {
     stats 3/2;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from own.field.followers other;
+            add bane to target;
+        }
+        superevolve {
+            choose target from own.field.followers other;
+            add storm to target;
+        }
     }
 
     meta {

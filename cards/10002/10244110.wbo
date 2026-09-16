@@ -6,7 +6,15 @@ card 10244110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        bane;
+        fanfare {
+            if overflow {
+                add 1 card 90044310 to hand;
+            }
+        }
+        evolve {
+            damage oppo.field.followers 1;
+        }
     }
 
     meta {

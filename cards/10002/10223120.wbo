@@ -6,7 +6,13 @@ card 10223120 {
     stats 1/1;
 
     effect {
-        unplayable;
+        stealth;
+        fanfare {
+            add 1 card 90023110 to hand;
+        }
+        superevolve {
+            buff own.field.followers other +1/+1;
+        }
     }
 
     meta {

@@ -7,7 +7,13 @@ card 10233110 {
     trait mysteria;
 
     effect {
-        unplayable;
+        ward;
+        clash {
+            spellboost own.hand 1;
+        }
+        evolve {
+            draw 2 from deck where type follower;
+        }
     }
 
     meta {

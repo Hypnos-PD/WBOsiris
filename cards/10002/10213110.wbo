@@ -6,7 +6,12 @@ card 10213110 {
     stats 4/3;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 2 card 90011110;
+        }
+        evolve {
+            buff own.field.followers +1/+0 where trait pixie;
+        }
     }
 
     meta {
