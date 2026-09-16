@@ -6,7 +6,25 @@ card 10214120 {
     stats 7/7;
 
     effect {
-        unplayable;
+        fanfare {
+            choose targets from oppo.field.followers count 2;
+            add cannot_attack to targets until oppo turn ends;
+        }
+
+        superevolve {
+            choose targets from oppo.field.followers count 2;
+            grant targets {
+                label chs "回合结束时，对自己的主战者造成1点伤害，对本随从造成2点伤害。";
+                label eng "At the end of each turn, deal 1 damage to your leader and 2 damage to this follower.";
+                label jpn "ターン終了時、自分のリーダーに1ダメージ。これに2ダメージ。";
+                label kor "턴 종료시, 내 리더에게 1 피해. 이 추종자에게 2 피해.";
+                label cht "回合結束時，給予自己的主戰者1點傷害。給予這張卡片2點傷害。";
+                when own turn ends {
+                    damage own.leader 1;
+                    damage self 2;
+                }
+            }
+        }
     }
 
     meta {

@@ -129,6 +129,50 @@ func TestFlameDragonSwordGrantSummonsItself(t *testing.T) {
 	}
 }
 
+// 缠绕密林·丽梅格：超进化时给敌方随从附加"回合结束时对自己的主战者造成 1 点、
+// 对自己造成 2 点伤害"。这个触发只在它自己控制者的回合结束时发动，场景测试
+// 走不到对手的回合结束，所以由这里验证。
+func TestUntamedWildGrantPunishesItsOwnController(t *testing.T) {
+	pack := loadCardsForTest(t, "10002/10214120", "10000/10001110")
+	sourceID, enemyID := strings.Repeat("1", 32), strings.Repeat("2", 32)
+	state := testState()
+	state.Turn.Active, state.Turn.Number = "own", 7
+	own := state.Players["own"]
+	own.SEP = 1
+	own = withInstance(own, "field", ir.TestInstance{InstanceID: sourceID, CardID: 10214120, DeclaredType: "follower"})
+	state.Players["own"] = own
+	state.Players["oppo"] = withInstance(state.Players["oppo"], "field", ir.TestInstance{InstanceID: enemyID, CardID: 10001110, DeclaredType: "follower"})
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result := session.Begin(strings.Repeat("a", 32), ir.SourceAction{Kind: "superevolve", Actor: "own", Source: sourceID}); result.Status != StatusSuspended {
+		t.Fatalf("super-evolve did not ask for targets: %#v", result)
+	}
+	choice := session.PendingChoice()
+	if result := session.Resume(ChoiceResponse{RequestID: choice.RequestID, ActionID: choice.ActionID, StateRevision: choice.StateRevision, SelectedInstanceIDs: []string{enemyID}}); result.Status != StatusCompleted {
+		t.Fatalf("grant did not resolve: %#v", result)
+	}
+	if len(session.g.instances[enemyID].grants) != 1 {
+		t.Fatalf("enemy follower did not receive the granted ability: %#v", session.g.instances[enemyID].grants)
+	}
+	if result := session.Begin(strings.Repeat("b", 32), ir.SourceAction{Kind: "end_turn", Actor: "own"}); result.Status != StatusCompleted {
+		t.Fatalf("own turn did not end: %#v", result)
+	}
+	if session.g.oppo.leaderLife != 20 || session.g.instances[enemyID].life != 2 {
+		t.Fatal("granted ability fired before its controller's turn end")
+	}
+	if result := session.Begin(strings.Repeat("c", 32), ir.SourceAction{Kind: "end_turn", Actor: "oppo"}); result.Status != StatusCompleted {
+		t.Fatalf("opponent turn did not end: %#v", result)
+	}
+	if life := session.g.oppo.leaderLife; life != 19 {
+		t.Fatalf("opponent leader life = %d, want 19", life)
+	}
+	if stats := session.g.instances[enemyID]; stats.life != 0 || stats.zone != "graveyard" {
+		t.Fatalf("granted self damage did not destroy the follower: %d/%s", stats.life, stats.zone)
+	}
+}
+
 // 「不会被能力破坏」只挡能力造成的破坏：必杀这类战斗规则造成的破坏仍然生效。
 func TestAbilityDestructionGuardBlocksEffectDestructionOnly(t *testing.T) {
 	const guarded, plain = 70000001, 70000002

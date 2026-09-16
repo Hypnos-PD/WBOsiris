@@ -1,0 +1,41 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "缠绕密林让两个敌方随从到对手回合结束为止无法攻击" {
+    seed 22001;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10214120; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110;
+                follower second = 10001110;
+                follower spared = 10001110;
+            }
+        }
+    }
+    action { play source; select first, second; }
+    expect {
+        legal;
+        source.zone == field;
+        first has cannot_attack;
+        second has cannot_attack;
+        spared lacks cannot_attack;
+        own.pp == 0/7;
+    }
+}
+
+scenario "只有一名敌方随从时缠绕密林只影响它" {
+    seed 22002;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10214120; }
+        }
+        player oppo { field { follower only = 10001110; } }
+    }
+    action { play source; select only; }
+    expect { legal; only has cannot_attack; }
+}
