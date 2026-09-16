@@ -6,6 +6,19 @@ import (
 	"wbo/internal/ir"
 )
 
+// conditionIn 求值条件；带绑定名字的条件（例如 `opponent damaged`）需要当前帧。
+func (g *game) conditionIn(c ir.Condition, self *instance, bindings frame) bool {
+	if x, ok := c.(ir.IsDamagedCondition); ok {
+		for _, i := range g.boundInstances(bindings[x.Name]) {
+			if i != nil && i.card.CardType == "follower" && i.damageTaken > 0 {
+				return true
+			}
+		}
+		return false
+	}
+	return g.condition(c, self)
+}
+
 func (g *game) condition(c ir.Condition, self *instance) bool {
 	switch x := c.(type) {
 	case ir.AttackHistoryCondition:

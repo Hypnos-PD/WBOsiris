@@ -1271,7 +1271,7 @@ func (g *game) preflightRequirementSequence(body []ir.Effect, self *instance, bi
 				return false, "unsupported_preflight"
 			}
 			branch := e.Else
-			if g.condition(e.Condition, self) {
+			if g.conditionIn(e.Condition, self, bindings) {
 				branch = e.Then
 			}
 			var code string

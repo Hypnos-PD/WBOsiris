@@ -260,6 +260,7 @@ condition         = "overflow"
                   | "self" , "form" , follower_form
                   | participant , "." , evolution_unlock
                   | ["not"] , participant , "." , "attacked_this_turn"
+                  | binding_name , "damaged"
                   | scalar_value , comparison_operator , integer
                   | ("count" | "sum") , effect_amount_tail , comparison_operator , integer ;
 follower_form     = "unevolved" | "evolved" | "super_evolved" ;

@@ -18,11 +18,11 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 313 · 未实现(骨架) 60 · 未导入 531
+总计 904 · 已完成 314 · 未实现(骨架) 59 · 未导入 531
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
-10002        77      65      12       0
+10002        77      66      11       0
 10003        77       4       0      73
 10004        76       1       0      75
 10005        76       0       0      76
@@ -71,7 +71,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-12 | 纹章块内的集合条件 / 按目标自身数值成倍 | 10204120 格里姆尼尔（"若自己的战场上有超进化后的随从"）、10233310 帕梅拉的舞蹈（"使所有随从的攻击力/生命值变为 2 倍"） | 前者是 S-04 的同一缺口出现在纹章里；后者需要"每个目标按自身当前数值翻倍"，现有 `buff` 的数值引用只有来源自身与 `count(...)` |
 | S-13 | ~~`add card … to hand` 不产生绑定~~ **已解决**：`added` 绑定 | 已解锁 10271120 猫偶；全卡另有约 7 张"加入手牌后立即修改"的卡（10641310、10643310、10844110、10922310 等），后续卡包直接使用 | `add 1 card X to hand` 现在把成功进入手牌的实例绑成 `added`（手牌满被丢弃的不计入），Go 测试同时验证只有新卡被强化、手里的同名旧卡不受影响。 |
 | S-11 | `.wbotest` 无法声明先手 | 影响"抽牌耗尽判负"这类与先手有关的规则验证 | 规则本身已实现（`execute.go` 在无法满足抽牌时让对方获胜），但触发条件是 `firstPlayer != ""`，而场景测试不提供先手信息，这条路径只能由 Go 侧测试覆盖，场景测试写不出来。 |
-| S-18 | 条件里判断绑定对象的受伤状态 | 10223110 剑士公主·萝泽（"【攻击时】若攻击受伤的随从，则破坏交战对手"） | 【攻击时】把交战对象绑成 `opponent`，但条件语法只能读标量、计数器、`fused` 与 `count(...)`，不能写"`opponent` 已受伤"。草案：新增条件 `if opponent damaged { … }`（`Condition{Kind:"is_damaged", Target: BindingRef}`），求值复用筛选器的 `is_damaged`。同批挂起 10223110 的【爆能强化_5】部分已经可写（`draw 1 from deck where … ; set cost drawn 0;`）。 |
+| S-18 | ~~条件里判断绑定对象的受伤状态~~ **已解决**：`if <绑定> damaged { … }` | 已解锁 10223110 剑士公主·萝泽（`attack { if opponent damaged { destroy opponent; } }`） | `internal/ir` 新增 `IsDamagedCondition`，条件求值新增 `conditionIn(c, self, bindings)`（执行与预检两处都带当前帧），绑定缺失或对象不是随从时为假。 |
 
 ## 已完成的语言扩展
 
@@ -89,10 +89,22 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-17 | `set cost T N;` —— 把费用设为固定值 | `internal/project/validate.go`（`set` 接受 `cost`）、`typed_ir.go`（`set_cost`）、`internal/ir/encode.go`/`decode.go`、`internal/runner/execute.go`（写 `i.cost`）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/evolution_event_test.go` 覆盖 `set cost self 1;` 与错误形状；卡片 10212120 场景断言 `source.cost == 1`。"费用变为 N"的全卡需求还有 15 张，本项是通用原语 |
 | S-08 | `where damaged` / `where attack 比较 整数` —— 筛选器补两个词条 | `internal/project/validate.go`（`parseWhere` 接受 `damaged` 与 `attack`）、`typed_ir.go`（`filterIR` 生成 `is_damaged` / `compare field:"attack"`）、`internal/ir/decode.go`（谓词白名单）、`internal/runner/execute.go`（`matches` 求值：`damageTaken > 0`、`currentAttack()`）；文档 `grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/filter_and_added_test.go`；卡片 10272120 + 2 个场景（含"攻击力 5 以上不在范围内"的反向场景） |
 | S-13 | `add card … to hand` 产出 `added` 绑定 | `internal/project/typed_ir.go`（写入 `Output`）、`internal/project/validate.go`（`added` 可见性）、`internal/ir/encode.go`/`decode.go`（`add_card.output` 必填 `added`）、`internal/runner/execute.go`（把真正进入手牌的实例绑成 `added`）；文档 `cards.md`/`compiler/ir.md` | Go 单测 `internal/project/filter_and_added_test.go`（`added` 只在 `add` 之后可见）与 `internal/runner/added_binding_test.go`（只强化新加入的那张，手里同名旧卡保持 1/1）；卡片 10271120 + 2 个场景 |
+| S-18 | `if <绑定> damaged { … }` —— 条件读取绑定实例的受伤状态 | `internal/ir/model.go`（`IsDamagedCondition`）、`internal/ir/decode.go`（容器解码）、`internal/project/typed_ir.go`/`validate.go`/`strict_validate.go`（`<标识符> damaged` 形状）、`internal/runner/execute.go`（`conditionIn` 带帧求值）、`internal/runner/session.go` 与 `runner.go`（执行与预检改用 `conditionIn`）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/damaged_binding_condition_test.go`（条件形状被保留、拒绝多 token 与无绑定写法）；卡片 10223110 + 4 个场景（爆能/非爆能、攻击受伤/未受伤四个方面） |
 
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 16（语言扩展 S-18 + 卡包 10002）
+
+- **语言扩展 S-18 完成**：`if <绑定> damaged { … }`。条件求值新增带帧的
+  `conditionIn(c, self, bindings)`，执行与预检两处都使用它；绑定缺失或对象不是随从时为假。
+- 完成 1 张卡：10223110 剑士公主·萝泽（爆能强化 5 抽费用 ≤2 的皇家护卫随从并把它降到 0 费；
+  突进；攻击受伤的随从时破坏交战对手）。这是 10002 里最后一张有完整文本实现空间的卡，
+  其余 11 张都还卡在 S-03 / S-06 / S-12 等已登记缺口上。
+- 新增 4 个场景（`tests/10002/batch-16-strike-and-enhance.wbotest`）：爆能与非爆能两侧、
+  攻击受伤与未受伤两侧。未受伤那条同时证明它只吃战斗伤害（3/2 撞 10/10 后防守者剩 7）。
+- 全量回归：`check` 0 错 0 警；`test` 468 全绿；语料快照更新为 468 个场景。
 
 ### 批次 15（语言扩展 + 卡包 10002）
 

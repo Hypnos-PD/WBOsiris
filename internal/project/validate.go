@@ -927,6 +927,9 @@ func validateCondition(t []syntax.Token, ds *[]syntax.Diagnostic) {
 	if len(t) == 1 && t[0].Value == "overflow" {
 		return
 	}
+	if damagedBindingCondition(t) {
+		return
+	}
 	if len(t) > 0 && (t[0].Value == "count" || t[0].Value == "sum") {
 		next, ok := parseEffectAmount(t, 0)
 		if !ok || next+1 >= len(t) || !set("==", "!=", "<", "<=", ">", ">=")[t[next].Value] || !isUnsigned(t[next+1]) {

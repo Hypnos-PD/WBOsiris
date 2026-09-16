@@ -6,7 +6,16 @@ card 10223110 {
     stats 3/2;
 
     effect {
-        unplayable;
+        rush;
+        enhance 5 {
+            draw 1 from deck where type follower and class swordcraft and cost <= 2;
+            set cost drawn 0;
+        }
+        attack {
+            if opponent damaged {
+                destroy opponent;
+            }
+        }
     }
 
     meta {

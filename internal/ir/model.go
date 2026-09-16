@@ -379,6 +379,15 @@ type CompareCondition struct {
 
 func (c CompareCondition) conditionKind() string { return c.Kind }
 
+// IsDamagedCondition 判断某个绑定实例当前是否生命值受损。
+// 目前用于【攻击时】读取本次交战对象（`opponent`）。
+type IsDamagedCondition struct {
+	Kind string `json:"kind"`
+	Name string `json:"name"`
+}
+
+func (c IsDamagedCondition) conditionKind() string { return c.Kind }
+
 type Scalar struct {
 	Kind  string `json:"kind"`
 	Side  string `json:"side,omitempty"`

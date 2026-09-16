@@ -1526,6 +1526,19 @@ func decodeCondition(data []byte) (Condition, error) {
 		}
 		return CountCondition{Kind: v.Kind, Source: source, Op: v.Op, Right: v.Right}, nil
 	}
+	if k.Kind == "is_damaged" {
+		var v struct {
+			Kind string `json:"kind"`
+			Name string `json:"name"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if v.Name == "" {
+			return nil, fmt.Errorf("empty damaged binding name")
+		}
+		return IsDamagedCondition{Kind: v.Kind, Name: v.Name}, nil
+	}
 	if k.Kind != "compare" {
 		return nil, fmt.Errorf("unknown condition kind %q", k.Kind)
 	}

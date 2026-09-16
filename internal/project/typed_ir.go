@@ -630,6 +630,9 @@ func conditionIR(t []syntax.Token) ir.Condition {
 	if len(t) == 0 {
 		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "scalar", Side: "own", Field: "combo"}}
 	}
+	if damagedBindingCondition(t) {
+		return ir.IsDamagedCondition{Kind: "is_damaged", Name: t[0].Value}
+	}
 	if t[0].Value == "count" || t[0].Value == "sum" {
 		source := valueRefIR(t, 2)
 		next, _ := parseCountSource(t, 2)

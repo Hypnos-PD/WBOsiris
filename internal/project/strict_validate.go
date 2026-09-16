@@ -352,6 +352,9 @@ func strictCondition(t []syntax.Token, fusion bool) bool {
 	if evolutionCondition(t) || attackHistoryCondition(t) {
 		return true
 	}
+	if damagedBindingCondition(t) {
+		return true
+	}
 	if len(t) == 1 {
 		return t[0].Value == "overflow"
 	}
@@ -375,6 +378,11 @@ func attackHistoryCondition(t []syntax.Token) bool {
 		t = t[1:]
 	}
 	return len(t) == 3 && set("own", "oppo")[t[0].Value] && t[1].Value == "." && t[2].Value == "attacked_this_turn"
+}
+
+// damagedBindingCondition 匹配 `<绑定> damaged`，例如【攻击时】里的 `opponent damaged`。
+func damagedBindingCondition(t []syntax.Token) bool {
+	return len(t) == 2 && t[0].Kind == syntax.Identifier && t[1].Value == "damaged"
 }
 
 func evolutionCondition(t []syntax.Token) bool {

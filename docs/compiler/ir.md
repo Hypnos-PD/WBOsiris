@@ -292,6 +292,7 @@ BoolExpr =
 | HasKeyword  { kind: "has_keyword", keyword: Keyword }
 | Overflow    { kind: "overflow", side: Side }
 | SelfForm    { kind: "self_form", form: "unevolved" | "evolved" | "super_evolved" }
+| IsDamagedBinding { kind: "is_damaged", name: BindingName }
 | EvolutionUnlocked { kind: "evolution_unlocked", side: Side, form: "evolved" | "super_evolved" }
 | AttackHistory { kind: "attack_history", side: Side, attacked: Bool }
 ```

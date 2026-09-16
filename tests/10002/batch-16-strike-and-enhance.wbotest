@@ -1,0 +1,69 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "剑士公主爆能强化抽到低费皇家随从并降为零费" {
+    seed 16001;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10223110; }
+            deck top {
+                follower cheap = 10122110;
+                follower neutral = 10001110;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == field;
+        cheap.zone == hand;
+        cheap.cost == 0;
+        neutral.zone == deck;
+        own.pp == 0/5;
+    }
+}
+
+scenario "未爆能强化时不抽取也不降费" {
+    seed 16002;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10223110; }
+            deck top { follower cheap = 10122110; }
+        }
+    }
+    action { play source; }
+    expect { legal; cheap.zone == deck; cheap.cost == 1; own.pp == 0/3; }
+}
+
+scenario "剑士公主攻击受伤的随从时破坏它" {
+    seed 16003;
+    state {
+        player own { field { follower source = 10223110; } }
+        player oppo { field { follower hurt = 10001110 { stats 2/8; damage_taken 3; } } }
+    }
+    action { attack source into hurt; }
+    expect {
+        legal;
+        hurt.zone == graveyard;
+        source.zone == field;
+        source.stats == 3/2;
+    }
+}
+
+scenario "剑士公主攻击未受伤的随从时不破坏它" {
+    seed 16004;
+    state {
+        player own { field { follower source = 10223110; } }
+        player oppo { field { follower healthy = 90004110; } }
+    }
+    action { attack source into healthy; }
+    // 只有战斗伤害：3/2 的攻击者被破坏，10/10 的防守者剩 7 点生命。
+    expect {
+        legal;
+        source.zone == graveyard;
+        healthy.zone == field;
+        healthy.stats == 10/7;
+    }
+}

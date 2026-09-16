@@ -491,7 +491,7 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 	case ir.IfEffect:
 		body := e.Else
 		branch := "else"
-		if s.g.condition(e.Condition, self) {
+		if s.g.conditionIn(e.Condition, self, bindings) {
 			body = e.Then
 			branch = "then"
 		}
