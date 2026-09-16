@@ -388,6 +388,16 @@ type IsDamagedCondition struct {
 
 func (c IsDamagedCondition) conditionKind() string { return c.Kind }
 
+// DeckDuplicatesCondition 判断指定玩家的牌组里是否有重复的卡牌定义；
+// Unique 为真时表示"没有重复卡牌"。
+type DeckDuplicatesCondition struct {
+	Kind   string `json:"kind"`
+	Side   string `json:"side"`
+	Unique bool   `json:"unique"`
+}
+
+func (c DeckDuplicatesCondition) conditionKind() string { return c.Kind }
+
 type Scalar struct {
 	Kind  string `json:"kind"`
 	Side  string `json:"side,omitempty"`

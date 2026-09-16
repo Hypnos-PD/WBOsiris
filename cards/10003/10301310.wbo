@@ -5,7 +5,10 @@ card 10301310 {
     cost 4;
 
     effect {
-        unplayable;
+        draw 3;
+        if own.deck has no duplicates {
+            gain own.pp 3;
+        }
     }
 
     meta {

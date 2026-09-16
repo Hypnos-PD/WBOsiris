@@ -363,6 +363,9 @@ func strictCondition(t []syntax.Token, fusion bool) bool {
 	if damagedBindingCondition(t) {
 		return true
 	}
+	if deckDuplicatesCondition(t) {
+		return true
+	}
 	if len(t) == 1 {
 		return t[0].Value == "overflow"
 	}
@@ -388,6 +391,17 @@ func attackHistoryCondition(t []syntax.Token) bool {
 		t = t[1:]
 	}
 	return len(t) == 3 && set("own", "oppo")[t[0].Value] && t[1].Value == "." && t[2].Value == "attacked_this_turn"
+}
+
+// deckDuplicatesCondition 匹配 `own|oppo.deck has [no] duplicates`。
+func deckDuplicatesCondition(t []syntax.Token) bool {
+	if len(t) == 5 && set("own", "oppo")[t[0].Value] && t[1].Value == "." && t[2].Value == "deck" {
+		return values(t[3:5]) == "has duplicates"
+	}
+	if len(t) == 6 && set("own", "oppo")[t[0].Value] && t[1].Value == "." && t[2].Value == "deck" {
+		return values(t[3:6]) == "has no duplicates"
+	}
+	return false
 }
 
 // damagedBindingCondition 匹配 `<绑定> damaged`，例如【攻击时】里的 `opponent damaged`。

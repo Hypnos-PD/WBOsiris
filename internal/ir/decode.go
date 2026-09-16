@@ -969,7 +969,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			return nil, fmt.Errorf("invalid summon_copies shape")
 		}
 		return CardEffect{NodeBase: v.NodeBase, Kind: v.Kind, Owner: v.Owner, Target: target, Output: v.Output}, nil
-	case "add_card", "summon", "reanimate", "transform", "gain_crest":
+	case "add_card", "summon", "reanimate", "transform", "gain_crest", "banish_duplicates":
 		type raw struct {
 			ID                                         string `json:"id"`
 			Kind, Owner, Destination, Output, TieBreak string
@@ -995,6 +995,10 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		case "gain_crest":
 			if !validSide(v.Owner) || !validCardID(v.CardID) || v.Count != 0 || v.Output != "" || v.Destination != "" || v.TieBreak != "" || v.MaxCost != 0 || r != nil || v.PreserveInstanceID || v.PreserveMaterials {
 				return nil, fmt.Errorf("invalid gain_crest shape")
+			}
+		case "banish_duplicates":
+			if !validSide(v.Owner) || v.Destination != "deck" || v.Count != 0 || v.CardID != 0 || v.Output != "" || v.TieBreak != "" || v.MaxCost != 0 || r != nil || v.PreserveInstanceID || v.PreserveMaterials {
+				return nil, fmt.Errorf("invalid banish duplicates shape")
 			}
 		case "add_card":
 			if !validSide(v.Owner) || v.Destination != "hand" || v.Count < 0 || !validCardID(v.CardID) || v.Output != "added" || v.TieBreak != "" || v.MaxCost != 0 || r != nil || v.PreserveInstanceID || v.PreserveMaterials {
@@ -1569,6 +1573,20 @@ func decodeCondition(data []byte) (Condition, error) {
 			return nil, err
 		}
 		return CountCondition{Kind: v.Kind, Source: source, Op: v.Op, Right: v.Right}, nil
+	}
+	if k.Kind == "deck_duplicates" {
+		var v struct {
+			Kind   string `json:"kind"`
+			Side   string `json:"side"`
+			Unique bool   `json:"unique"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if !validSide(v.Side) {
+			return nil, fmt.Errorf("invalid deck duplicates condition")
+		}
+		return DeckDuplicatesCondition{Kind: v.Kind, Side: v.Side, Unique: v.Unique}, nil
 	}
 	if k.Kind == "is_damaged" {
 		var v struct {

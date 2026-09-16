@@ -186,6 +186,9 @@ heal own.leader 5;
 require target from own.field.followers;
 ```
 
+`own.deck has no duplicates` / `oppo.deck has duplicates` 判断牌组里是否有重复的卡牌定义；
+`banish duplicates in own.deck;` 让牌组中的重复卡牌消失，只保留每种的第一张。
+
 `count` 后面可以跟数值表达式（例如 `count own.crests`、`count(own.field other)`）：
 动态数量在结算到该语句时求值，为 0 时不选任何目标。
 

@@ -24,6 +24,19 @@ func (g *game) condition(c ir.Condition, self *instance) bool {
 	case ir.AttackHistoryCondition:
 		p, side := g.playerForSide(self, x.Side)
 		return (side == g.turn.Active && p.attackedThisTurn) == x.Attacked
+	case ir.DeckDuplicatesCondition:
+		p, _ := g.playerForSide(self, x.Side)
+		seen := map[int]bool{}
+		for _, card := range p.deck {
+			if !g.chargeQueryVisits(1) {
+				return false
+			}
+			if seen[card.card.ID] {
+				return !x.Unique
+			}
+			seen[card.card.ID] = true
+		}
+		return x.Unique
 	case ir.SelfFormCondition:
 		return self != nil && g.matches(self, ir.FieldPredicate{Kind: "has_form", Form: x.Form}, self)
 	case ir.EvolutionUnlockedCondition:
@@ -480,6 +493,19 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 	switch e.Kind {
 	case "gain_crest":
 		g.gainCrest(self, e.Owner, e.CardID)
+	case "banish_duplicates":
+		owner, _ := g.playerForSide(self, e.Owner)
+		seen := map[int]bool{}
+		for _, card := range append([]*instance(nil), owner.deck...) {
+			if !g.chargeQueryVisits(1) {
+				return
+			}
+			if seen[card.card.ID] {
+				g.move(card, "banished")
+				continue
+			}
+			seen[card.card.ID] = true
+		}
 	case "add_card":
 		added := []*instance{}
 		for n := 0; n < e.Count; n++ {

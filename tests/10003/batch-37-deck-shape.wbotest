@@ -1,0 +1,75 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "牌组没有重复卡牌时至高的凌驾回复三点能量点" {
+    seed 37001;
+    state {
+        player own {
+            pp 4/4;
+            hand { spell source = 10301310; }
+            deck top {
+                follower first = 10011110;
+                follower second = 10001110;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; own.pp == 3/4; own.hand count card 10011110 == 1; }
+}
+
+scenario "牌组有重复卡牌时至高的凌驾不回复能量点" {
+    seed 37002;
+    state {
+        player own {
+            pp 4/4;
+            hand { spell source = 10301310; }
+            deck top {
+                follower first = 10011110;
+                follower second = 10001110;
+                follower third = 10122110;
+                follower dup1 = 10222110;
+                follower dup2 = 10222110;
+            }
+        }
+    }
+    action { play source; }
+    // 抽 3 张之后牌组里还留着一对同名卡牌，因此条件不成立。
+    expect { legal; own.pp == 0/4; }
+}
+
+scenario "试炼的石板让牌组中的重复卡牌消失并只保留一张" {
+    seed 37003;
+    state {
+        player own {
+            pp 3/3;
+            hand { amulet tablet = 10303210; }
+            deck top {
+                follower first = 10011110;
+                follower duplicate = 10011110;
+                follower other = 10001110;
+            }
+        }
+    }
+    action { play tablet; }
+    expect {
+        legal;
+        first.zone == deck;
+        duplicate.zone == banished;
+        other.zone == deck;
+        own.deck count card 10011110 == 1;
+    }
+}
+
+scenario "试炼的石板的启动抽一张卡牌" {
+    seed 37004;
+    state {
+        turn own 4;
+        player own {
+            pp 1/1;
+            field { amulet tablet = 10303210; }
+            deck top { follower drawn = 10011110; }
+        }
+    }
+    action { engage tablet; }
+    expect { legal; drawn.zone == hand; own.pp == 0/1; }
+}

@@ -263,6 +263,7 @@ condition         = "overflow"
                   | participant , "." , evolution_unlock
                   | ["not"] , participant , "." , "attacked_this_turn"
                   | binding_name , "damaged"
+                  | participant , "." , "deck" , "has" , ["no"] , "duplicates"
                   | scalar_value , comparison_operator , integer
                   | ("count" | "sum") , effect_amount_tail , comparison_operator , integer ;
 follower_form     = "unevolved" | "evolved" | "super_evolved" ;
@@ -403,6 +404,7 @@ repeat_statement  = "repeat" , effect_amount , effect_block ;
 damage_distribution = "distributed" , ["overflow" , participant , "." , "leader"] ;
 
 object_operation  = ("destroy" | "banish" | "discard") , value_ref , [where_clause] , ";"
+                  | "banish" , "duplicates" , "in" , participant , "." , "deck" , ";"
                   | "destroy" , batch_target , "," , batch_target , {"," , batch_target} , ";" ;
 batch_target      = binding_name | "self" ;
 ability_operation = "remove" , ability , "from" , value_ref , ["other" , [binding_name]] , [where_clause] , ";"

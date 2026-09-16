@@ -444,6 +444,9 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 	case "restore":
 		return ir.AdjustEffect{NodeBase: base, Kind: "restore_resource", Owner: t[1].Value, Resource: "pp"}, nil
 	case "destroy", "banish", "discard":
+		if h == "banish" && len(t) == 6 && t[1].Value == "duplicates" && t[2].Value == "in" && set("own", "oppo")[t[3].Value] && t[4].Value == "." && t[5].Value == "deck" {
+			return ir.CardEffect{NodeBase: base, Kind: "banish_duplicates", Owner: t[3].Value, Destination: "deck"}, nil
+		}
 		e := ir.TargetEffect{NodeBase: base, Kind: h, Target: valueRefIR(t, 1)}
 		if h == "destroy" {
 			e.Output = "destroyed"
@@ -677,6 +680,9 @@ func conditionIR(t []syntax.Token) ir.Condition {
 	}
 	if damagedBindingCondition(t) {
 		return ir.IsDamagedCondition{Kind: "is_damaged", Name: t[0].Value}
+	}
+	if deckDuplicatesCondition(t) {
+		return ir.DeckDuplicatesCondition{Kind: "deck_duplicates", Side: t[0].Value, Unique: len(t) == 6}
 	}
 	if t[0].Value == "count" || t[0].Value == "sum" {
 		source := valueRefIR(t, 2)

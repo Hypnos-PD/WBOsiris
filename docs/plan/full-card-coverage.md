@@ -18,12 +18,12 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 397 · 未实现(骨架) 49 · 未导入 458
+总计 904 · 已完成 399 · 未实现(骨架) 47 · 未导入 458
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
 10002        77      77       0       0
-10003        77      68       9       0
+10003        77      70       7       0
 10004        76       1       0      75
 10005        76       0       0      76
 10006        76       0       0      76
@@ -31,7 +31,7 @@
 10008        78       0       0      78
 10009        76       0       0      76
 90000        93      53      40       0
-未完成卡按文本复杂度：中(41–100字) 285 · 短(≤40字) 186 · 长(>100字) 19 · 白板 2
+未完成卡按文本复杂度：中(41–100字) 283 · 短(≤40字) 186 · 长(>100字) 19 · 白板 2
 ```
 
 ## 工作流
@@ -99,9 +99,9 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-21 | `rally`（协作）计数器与 `rally >= N` 条件 | `internal/runner/runner.go`（`player.rally`、`pendingRally`、打出随从先挂起）、`internal/runner/execute.go`（`countRally`/`creditRally`）、`internal/runner/session.go`（结算结束、触发队列之前入账）、`internal/runner/numeric.go`/`assert.go`/`simulator.go`/`continuation.go`、`internal/ir/model.go`/`amount.go`/`test_decode.go`、测试状态 `rally N;`；文档 `cards.md`/`grammar.md`/`tests.md`/`compiler/ir.md` | Go 单测 `internal/project/rally_test.go` 与 `internal/runner/rally_test.go`（法术不计入、打出在结算后入账、能力召唤立即计入）；卡片 10224110 + 3 个场景（协作 19 不发动、协作 20 发动并召唤两个骑士、手动进化同样召唤） |
 | S-22 | `summon N card X for own\|oppo;` —— 在指定一方战场召唤 | `internal/project/validate.go`（`summon` 接受 `for` 子句）、`typed_ir.go`（写入 `CardEffect.Owner`）；运行时本来就按 `Owner` 处理 | `internal/project/rally_test.go` 覆盖目标归属；卡片 10224120 + 2 个场景（在对手战场召唤 2 个骑士并各触发一次监听、对手满场时只召唤 1 个） |
 | S-23 | ~~条件里读 `self.cost` / `self.attack` / `self.life`~~ **已解决**：`if self.cost != 2` | 已解锁 10331110 真理的肯定者、10332110 真理的祈祷者；后续"若本卡牌的费用/生命值…"直接可用 | 解析成 `Scalar{Kind:"self_scalar"}`。条件求值的 `CompareCondition` 分支原本只把 `self_counter`/`scalar` 交给 `numericValue`，漏了 `self_scalar`，于是它落进融合材料分支恒为 0——场景测试第一次跑就抓到了这个 bug。 |
-| S-24 | 牌组"没有重复卡牌"条件 | 10301310 至高的凌驾（"若自己的牌组中没有重复卡牌，则回复自己 3 点能量点"） | 需要按卡牌 ID 统计牌组重复并作为条件；现有集合计数看不出"重复"。 |
+| S-24 | ~~牌组"没有重复卡牌"条件~~ **已解决**：`own|oppo.deck has [no] duplicates` | 已解锁 10301310 至高的凌驾 | 新增 `DeckDuplicatesCondition`：按卡牌 ID 扫描该玩家牌组，第二次出现即判定有重复；带 `no` 的形式取反，空牌组视为没有重复。 |
 | S-25 | ~~费用增加（`+N`）~~ **已解决**：`raise cost T N;` | 已解锁 10333310 虚假的术式；90044310 等后续卡包直接可用 | 复用 `AdjustEntityField(delta=+N, minimum=0)`，没有新增 IR 节点。顺带给 `damage`/`heal` 补上 `other [绑定]`，写法与 `buff`/`add` 一致。 |
-| S-26 | 牌组去重 | 10303210 试炼的石板（"使自己的牌组中的重复卡牌消失并只保留 1 张"） | 需要一条按卡牌 ID 去重的牌组操作，涉及随机或稳定保留顺序的规则。 |
+| S-26 | ~~牌组去重~~ **已解决**：`banish duplicates in own|oppo.deck;` | 已解锁 10303210 试炼的石板 | 新效果种类 `banish_duplicates`：按牌组顺序保留每种卡牌的第一张，其余移入消失区（走普通区域移动，不是破坏）。 |
 | S-27 | ~~身材增减事件~~ **已解决**：`when self stats increased`、`when own\|oppo follower life decreased` | 已解锁 10361120 圣骑士团员、10314110 不弑的继承者·库露露；全卡另有 2 张身材增加监听（10812110、10814120） | 身材增加在 `buff_stats` 上发独立事件（临时增益到期不算增加）；生命值减少用两条来源——减益发独立事件，伤害则让原有 `damaged` 事件一并匹配 `life_decreased` 监听（不额外发事件，避免污染事件流）。`set life` 的设置不算减少。都支持 `once per own turn`。 |
 | S-28 | ~~按极值筛选的伤害~~ **已解决**：`damage 集合 数值 highest\|lowest [base.] attack\|life\|cost` | 已解锁 10341310 雷霆之怒；后续"生命值/攻击力最大"的伤害与回复直接可用 | `TargetEffect` 新增 `Extremum`，运行时在过滤前用 `extremumCandidates` 收窄目标；`damage all.leaders … highest life` 走 `damageExtremumLeaders`，并列时双方都挨打（场景测试覆盖并列）。 |
 | S-29 | ~~纹章数标量~~ **已解决**：`own.crests` / `oppo.crests` | 已解锁 10364120 绝望的显现·玛温 | 玩家标量新增 `crests`（本方纹章实例数）；"分配 X 点伤害"复用既有的 `distributed overflow <leader>` 语义（按战场顺序填满每个随从当前生命，余量溢出给主战者），场景测试覆盖了溢出与不溢出两种情况。 |
@@ -121,6 +121,18 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 37（语言扩展 S-24/S-26 + 卡包 10003）
+
+- **S-24 完成**：`own|oppo.deck has [no] duplicates` 条件（按卡牌 ID 扫描牌组，空牌组视为没有重复）。
+- **S-26 完成**：`banish duplicates in own|oppo.deck;`——按牌组顺序保留每种卡牌的第一张，
+  其余移入消失区（普通区域移动，不是破坏，因此不触发破坏类监听）。
+- 完成 2 张卡：10301310 至高的凌驾（抽 3 张，然后若牌组没有重复卡牌则回复 3 点能量点）、
+  10303210 试炼的石板（入场曲给牌组去重；启动 1 抽 1 张）。
+- 新增 4 个场景（`tests/10003/batch-37-deck-shape.wbotest`）+ 1 组 Go 测试。
+  踩坑：至高的凌驾的条件是在**抽牌之后**求值的，我第一版把两张同名牌放在牌组顶部，
+  抽 3 张后牌组空了（没有重复）反而满足条件——对照场景必须让抽牌之后仍留着一对同名牌。
+- 全量回归：`check` 0 错 0 警；`test` 599 全绿；语料快照更新为 599 个场景。
 
 ### 批次 36（语言扩展 S-27 + 卡包 10003）
 

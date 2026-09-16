@@ -681,6 +681,11 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 	case "restore":
 		ok = len(t) == 4 && set("own", "oppo")[t[1].Value] && t[2].Value == "." && t[3].Value == "pp"
 	case "destroy", "banish", "discard":
+		// `banish duplicates in own|oppo.deck`：牌组去重，只保留每种卡牌的第一张。
+		if h == "banish" && len(t) == 6 && t[1].Value == "duplicates" && t[2].Value == "in" && set("own", "oppo")[t[3].Value] && t[4].Value == "." && t[5].Value == "deck" {
+			ok = true
+			break
+		}
 		if targets, batch := destructionBatchTargets(t); batch {
 			for _, target := range targets {
 				if target.Value != "self" && (!bindings[target.Value] || set("own", "oppo", "field")[target.Value]) {
@@ -985,6 +990,9 @@ func validateCondition(t []syntax.Token, ds *[]syntax.Diagnostic) {
 		return
 	}
 	if damagedBindingCondition(t) {
+		return
+	}
+	if deckDuplicatesCondition(t) {
 		return
 	}
 	if len(t) > 0 && (t[0].Value == "count" || t[0].Value == "sum") {

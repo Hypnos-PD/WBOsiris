@@ -166,6 +166,8 @@ func (e CardEffect) MarshalJSON() ([]byte, error) {
 	switch e.Kind {
 	case "gain_crest":
 		object["owner"], object["cardId"] = e.Owner, e.CardID
+	case "banish_duplicates":
+		object["owner"], object["destination"] = e.Owner, e.Destination
 	case "add_card":
 		object["owner"], object["count"], object["cardId"], object["destination"], object["output"] = e.Owner, e.Count, e.CardID, e.Destination, e.Output
 	case "summon":
