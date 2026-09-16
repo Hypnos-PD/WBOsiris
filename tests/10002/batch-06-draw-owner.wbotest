@@ -1,0 +1,31 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "商谈成立让自己抽两张并让对方抽一张" {
+    seed 4601;
+    state {
+        player own {
+            pp 2/2;
+            deck top { follower first = 10001110; follower second = 10112130; }
+            hand { spell source = 10221310; }
+        }
+        player oppo { deck top { follower theirs = 10001110; } }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.hand count card 10001110 == 1;
+        own.hand count card 10112130 == 1;
+        oppo.hand count card 10001110 == 1;
+        source.zone == graveyard;
+    }
+}
+
+scenario "对方牌组为空时只是不抽牌" {
+    seed 4602;
+    state {
+        player own { pp 2/2; deck top { follower first = 10001110; follower second = 10112130; } hand { spell source = 10221310; } }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 20; }
+}

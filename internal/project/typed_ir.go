@@ -318,12 +318,16 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		}
 		return ir.PayResourceEffect{NodeBase: base, Kind: "pay_resource", Resource: resource, Amount: intAt(s, 1), OnPaid: body}, nil
 	case "draw":
-		e := ir.DrawEffect{NodeBase: base, Kind: "draw", Owner: "own", SourceZone: "deck", All: t[1].Value == "all", Output: "drawn"}
+		owner, offset := "own", 2
+		if len(t) >= 4 && t[2].Value == "for" {
+			owner, offset = t[3].Value, 4
+		}
+		e := ir.DrawEffect{NodeBase: base, Kind: "draw", Owner: owner, SourceZone: "deck", All: t[1].Value == "all", Output: "drawn"}
 		if t[1].Value != "all" {
 			e.Count = intAt(s, 1)
 		}
-		if len(t) > 2 {
-			e.Predicate, _ = filterIR(t, 4)
+		if len(t) > offset {
+			e.Predicate, _ = filterIR(t, offset+2)
 		}
 		return e, nil
 	case "add":

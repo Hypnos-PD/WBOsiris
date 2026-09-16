@@ -343,6 +343,10 @@ draw 1;
 同名卡牌的每个副本均占一个抽选机会。手牌按抽中顺序排列，未抽中的牌保留相对顺序。
 每抽中一张消费一次随机决策，空集合不消费；`draw all` 按牌组顺序取全部匹配项，
 不消费随机决策。普通 `draw N` 仍从牌组顶部抽取。
+
+`draw N for oppo` 让对方抽 N 张，从对方的牌组顶部抽取并产生对方的抽牌事件；
+省略 `for` 时等价于 `for own`。"让对方抽牌"必须用这条语句表达：`add ... to hand`
+创建实例但不产生抽牌，两者的触发与牌组耗尽行为不同。
 筛选不足只抽取现有匹配项，不因未找到目标而败北。所有抽牌事件公开数量，隐藏手牌
 身份；超出手牌上限的卡牌进入墓场，但不加入供后续能力使用的 `drawn` 绑定。
 
@@ -350,6 +354,8 @@ draw 1;
 draw 2;
 draw all from deck where card 10022120;
 draw 1 from deck where type follower;
+draw 1 for oppo;
+draw 2 for oppo from deck where type spell;
 add 2 card 90011110 to hand;
 summon 1 card 90021110;
 damage oppo.leader 3;

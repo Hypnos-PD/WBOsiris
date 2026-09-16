@@ -5,7 +5,8 @@ card 10221310 {
     cost 2;
 
     effect {
-        unplayable;
+        draw 2;
+        draw 1 for oppo;
     }
 
     meta {

@@ -548,13 +548,23 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		}
 		ok = good && end+1 == len(t) && isU16(t[end])
 	case "draw":
-		ok = len(t) == 2 && (isUnsigned(t[1]) || t[1].Value == "all")
-		if len(t) > 2 && (isUnsigned(t[1]) || t[1].Value == "all") && len(t) >= 6 && t[2].Value == "from" && t[3].Value == "deck" {
-			end, good := parseWhere(t, 4)
-			ok = good && end == len(t)
+		// draw <amount> [for own|oppo] [from deck <where>]
+		offset := 2
+		ok = len(t) >= 2 && (isUnsigned(t[1]) || t[1].Value == "all")
+		if ok && len(t) >= 4 && t[2].Value == "for" && set("own", "oppo")[t[3].Value] {
+			offset = 4
 		}
-		if t[1].Value == "all" && len(t) == 2 {
-			ok = false
+		if ok && len(t) == offset {
+			// draw all 必须带过滤器。
+			ok = t[1].Value != "all"
+		}
+		if ok && len(t) > offset {
+			if len(t) >= offset+2 && t[offset].Value == "from" && t[offset+1].Value == "deck" {
+				end, good := parseWhere(t, offset+2)
+				ok = good && end == len(t)
+			} else {
+				ok = false
+			}
 		}
 	case "add":
 		if len(t) == 4 && isUnsigned(t[1]) && t[2].Value == "counter" && t[3].Kind == syntax.Identifier && ir.ValidCounterName(t[3].Value) {

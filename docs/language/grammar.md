@@ -350,7 +350,7 @@ operation         = draw_operation
                   | set_damage_reduction_operation
                   | transform_operation ;
 
-draw_operation    = "draw" , draw_amount , ["from" , "deck" , where_clause] , ";" ;
+draw_operation    = "draw" , draw_amount , ["for" , ("own" | "oppo")] , ["from" , "deck" , where_clause] , ";" ;
 deck_replace_operation = "replace" , participant , "." , "deck" , "with" , "shuffled" , deck_entry , {"," , deck_entry} , ";" ;
 deck_entry        = integer , "card" , card_id ;
 draw_amount       = integer | "all" ;
