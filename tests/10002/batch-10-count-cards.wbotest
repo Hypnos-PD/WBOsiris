@@ -1,0 +1,101 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "没有超进化随从时的幼龙不触发选择" {
+    seed 5001;
+    state {
+        player own { pp 1/1; hand { follower source = 10201110; } }
+        player oppo { field { follower target = 10001110 { stats 0/8; } } }
+    }
+    action { play source; }
+    expect { legal; target.stats == 0/8; }
+}
+
+scenario "有超进化随从时幼龙造成四点伤害" {
+    seed 5002;
+    state {
+        player own {
+            pp 1/1;
+            field { follower evolved = 10001110 { super_evolved; } }
+            hand { follower source = 10201110; }
+        }
+        player oppo { field { follower target = 10001110 { stats 0/8; } } }
+    }
+    action { play source; select target; }
+    expect { legal; target.stats == 0/4; }
+}
+
+scenario "回合结束时超进化随从带动全体加身材" {
+    seed 5003;
+    state {
+        player own {
+            field {
+                follower evolved = 10001110 { super_evolved; }
+                follower plain = 10222110;
+            }
+        }
+    }
+    action { end_turn; }
+    // 场景里的 super_evolved 只设形态不加身材：10001110 仍是 2/2 → 3/3；10222110 3/3 → 4/4。
+    expect { legal; evolved.stats == 3/3; plain.stats == 4/4; }
+}
+
+scenario "没有超进化随从时不加身材" {
+    seed 5004;
+    state { player own { field { follower plain = 10222110; } } }
+    action { end_turn; }
+    expect { legal; plain.stats == 3/3; }
+}
+
+scenario "土之印不因缺少超进化随从而增加" {
+    seed 5005;
+    state {
+        player own {
+            pp 2/2;
+            field { amulet sigil = 90031210 { earthsigil 2; } }
+            hand { follower source = 10231110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10031210 == 1; sigil.earthsigil == 2; }
+}
+
+scenario "有超进化随从时土之印增加两点" {
+    seed 5006;
+    state {
+        player own {
+            pp 2/2;
+            field {
+                follower evolved = 10001110 { super_evolved; }
+                amulet sigil = 90031210 { earthsigil 2; }
+            }
+            hand { follower source = 10231110; }
+        }
+    }
+    action { play source; }
+    expect { legal; sigil.earthsigil == 4; }
+}
+
+scenario "护符不足两张时只发动一次随机伤害" {
+    seed 5007;
+    state {
+        player own { pp 3/3; hand { follower source = 10262110; } }
+        player oppo { field { follower target = 10001110 { stats 0/8; } } }
+    }
+    action { play source; }
+    expect { legal; target.stats == 0/6; }
+}
+
+scenario "护符两张以上时改为发动两次" {
+    seed 5008;
+    state {
+        player own {
+            pp 3/3;
+            field { amulet a = 90031210; amulet b = 90031210; }
+            hand { follower source = 10262110; }
+        }
+        player oppo { field { follower target = 10001110 { stats 0/8; } } }
+    }
+    action { play source; }
+    expect { legal; target.stats == 0/4; }
+}

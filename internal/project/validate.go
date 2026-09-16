@@ -907,6 +907,13 @@ func validateCondition(t []syntax.Token, ds *[]syntax.Diagnostic) {
 	if len(t) == 1 && t[0].Value == "overflow" {
 		return
 	}
+	if len(t) > 0 && (t[0].Value == "count" || t[0].Value == "sum") {
+		next, ok := parseEffectAmount(t, 0)
+		if !ok || next+1 >= len(t) || !set("==", "!=", "<", "<=", ">", ">=")[t[next].Value] || !isUnsigned(t[next+1]) {
+			diag(ds, "WBO-E001-SYNTAX", "错误", "count 条件必须写成 count(集合) 比较 整数", t[0].Span)
+		}
+		return
+	}
 	found := false
 	for _, x := range t {
 		if set("==", "!=", "<", "<=", ">", ">=")[x.Value] {

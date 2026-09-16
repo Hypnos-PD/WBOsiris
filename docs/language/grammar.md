@@ -259,7 +259,8 @@ condition         = "overflow"
                   | "self" , "form" , follower_form
                   | participant , "." , evolution_unlock
                   | ["not"] , participant , "." , "attacked_this_turn"
-                  | scalar_value , comparison_operator , integer ;
+                  | scalar_value , comparison_operator , integer
+                  | ("count" | "sum") , effect_amount_tail , comparison_operator , integer ;
 follower_form     = "unevolved" | "evolved" | "super_evolved" ;
 evolution_unlock  = "evolve_unlocked" | "superevolve_unlocked" ;
 scalar_value      = "combo" | player_scalar

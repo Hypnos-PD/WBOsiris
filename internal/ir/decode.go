@@ -1487,6 +1487,25 @@ func decodeCondition(data []byte) (Condition, error) {
 		}
 		return OverflowCondition{v.Kind, v.Side}, nil
 	}
+	if k.Kind == "count_compare" {
+		var v struct {
+			Kind   string          `json:"kind"`
+			Source json.RawMessage `json:"source"`
+			Op     string          `json:"op"`
+			Right  int             `json:"right"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if !validOp(v.Op) {
+			return nil, fmt.Errorf("invalid count comparison operator")
+		}
+		source, err := decodeRef(v.Source)
+		if err != nil {
+			return nil, err
+		}
+		return CountCondition{Kind: v.Kind, Source: source, Op: v.Op, Right: v.Right}, nil
+	}
 	if k.Kind != "compare" {
 		return nil, fmt.Errorf("unknown condition kind %q", k.Kind)
 	}

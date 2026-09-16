@@ -357,6 +357,17 @@ type EvolutionUnlockedCondition struct {
 
 func (c EvolutionUnlockedCondition) conditionKind() string { return c.Kind }
 
+// CountCondition 让 `if` 直接比较"某个集合里有多少个满足筛选的对象"，
+// 例如 `if count(own.field.followers where form super_evolved) >= 1`。
+type CountCondition struct {
+	Kind   string `json:"kind"`
+	Source Ref    `json:"source"`
+	Op     string `json:"op"`
+	Right  int    `json:"right"`
+}
+
+func (c CountCondition) conditionKind() string { return c.Kind }
+
 type CompareCondition struct {
 	Kind  string `json:"kind"`
 	Op    string `json:"op"`

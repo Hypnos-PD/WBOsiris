@@ -6,7 +6,11 @@ card 10242110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        fanfare {
+            if count(own.field.followers where form super_evolved) >= 1 {
+                draw 2;
+            }
+        }
     }
 
     meta {

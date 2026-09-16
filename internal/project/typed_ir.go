@@ -613,6 +613,22 @@ func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 	return ir.OrPredicate{Kind: "or", Terms: groups}, end
 }
 func conditionIR(t []syntax.Token) ir.Condition {
+	if len(t) == 0 {
+		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "scalar", Side: "own", Field: "combo"}}
+	}
+	if t[0].Value == "count" || t[0].Value == "sum" {
+		source := valueRefIR(t, 2)
+		next, _ := parseCountSource(t, 2)
+		if next < len(t) && t[next].Value == "where" {
+			predicate, end := filterIR(t, next)
+			source = ir.FilterRef{Kind: "filter", Source: source, Predicate: predicate}
+			next = end
+		}
+		if next < len(t) && t[next].Value == ")" {
+			next++
+		}
+		return ir.CountCondition{Kind: "count_compare", Source: source, Op: compareOp(t[next].Value), Right: intToken(t[next+1])}
+	}
 	if counterRef(t, 0) {
 		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "self_counter", Field: t[4].Value}, Op: compareOp(t[5].Value), Right: intToken(t[6])}
 	}

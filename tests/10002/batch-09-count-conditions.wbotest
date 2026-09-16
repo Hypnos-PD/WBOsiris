@@ -1,0 +1,29 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "没有超进化随从时鲸鱼骑兵不抽牌" {
+    seed 4901;
+    state {
+        player own {
+            pp 2/2;
+            deck top { follower first = 10001110; follower second = 10001110; }
+            hand { follower source = 10242110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10001110 == 0; }
+}
+
+scenario "有超进化随从时鲸鱼骑兵抽两张" {
+    seed 4902;
+    state {
+        player own {
+            pp 2/2;
+            field { follower evolved = 10001110 { super_evolved; } }
+            deck top { follower first = 10001110; follower second = 10112130; }
+            hand { follower source = 10242110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10001110 == 1; own.hand count card 10112130 == 1; }
+}

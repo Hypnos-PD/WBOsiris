@@ -19,6 +19,23 @@ func (g *game) condition(c ir.Condition, self *instance) bool {
 	case ir.OverflowCondition:
 		p, _ := g.playerForSide(self, x.Side)
 		return p.maxpp >= 7
+	case ir.CountCondition:
+		n := g.numericValue(&ir.CountExpr{Kind: "count", Source: x.Source}, self, nil)
+		switch x.Op {
+		case "eq":
+			return n == x.Right
+		case "ne":
+			return n != x.Right
+		case "lt":
+			return n < x.Right
+		case "le":
+			return n <= x.Right
+		case "gt":
+			return n > x.Right
+		case "ge":
+			return n >= x.Right
+		}
+		return false
 	case ir.CompareCondition:
 		n := 0
 		if x.Left.Kind == "self_counter" || x.Left.Kind == "scalar" {

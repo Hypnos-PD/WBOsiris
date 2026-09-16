@@ -1016,6 +1016,17 @@ earthrite 1 { ... }
 necromancy 4 { ... }
 ```
 
+条件里的数值也可以直接统计集合，写法与伤害/回复的数量一致：
+
+```wbo
+if count(own.field.followers where form super_evolved) >= 1 { ... }
+if count(own.field.amulets) >= 2 { ... }
+if count(oppo.hand) <= 5 { ... }
+```
+
+支持 `where` 筛选（`form`、`type`、`class`、`trait`、`life`、`cost`、`keyword`、`card`），
+也支持 `sum(...)` 求和。判断发生在执行到该语句时，因此同一能力之前造成的变化会影响结果。
+
 卡牌在入场曲结算前已经计入连击。土之秘术和唤灵会在资源充足时自动支付，
 资源不足时跳过对应代码块。支付成功后，即使后续操作失败也不会退还资源。
 

@@ -6,7 +6,12 @@ card 10231110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 10031210 to hand;
+            if count(own.field.followers where form super_evolved) >= 1 {
+                add 2 earthsigil;
+            }
+        }
     }
 
     meta {

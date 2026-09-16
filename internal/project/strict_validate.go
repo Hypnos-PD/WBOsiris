@@ -343,6 +343,11 @@ func strictCondition(t []syntax.Token, fusion bool) bool {
 	if len(t) == 3 {
 		return t[0].Value == "combo" && op(t[1].Value) && isUnsigned(t[2])
 	}
+	// count(集合 [where …]) 比较 整数：集合与筛选的合法性由 parseEffectAmount 负责。
+	if len(t) > 0 && (t[0].Value == "count" || t[0].Value == "sum") {
+		next, ok := parseEffectAmount(t, 0)
+		return ok && next+1 < len(t) && op(t[next].Value) && isUnsigned(t[next+1]) && next+2 == len(t)
+	}
 	return len(t) == 5 && (set("own", "oppo")[t[0].Value] && t[1].Value == "." && ir.ValidPlayerScalar(t[2].Value) || fusion && t[0].Value == "fused" && t[1].Value == "." && set("cost", "distinct")[t[2].Value]) && op(t[3].Value) && isUnsigned(t[4])
 }
 

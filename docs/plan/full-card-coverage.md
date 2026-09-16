@@ -18,11 +18,11 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 291 · 未实现(骨架) 82 · 未导入 531
+总计 904 · 已完成 296 · 未实现(骨架) 77 · 未导入 531
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
-10002        77      44      33       0
+10002        77      49      28       0
 10003        77       4       0      73
 10004        76       1       0      75
 10005        76       0       0      76
@@ -59,7 +59,6 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | --- | --- | --- | --- |
 | S-01 | 移除能力（失去【谢幕曲】） | 90051140 腐臭的僵尸、10251310、10252120；`../SWB-RL` 规则里另有 7 张卡使用同类操作（10321120、10433110、10474120、10861110、10862110、10871110…） | `lastwords { summon 1 card 90051140; remove lastwords from summoned; }` 被编译器拒绝：`remove` 的能力白名单不含 `lastwords`。需要一条"让指定实例失去某个触发能力"的操作，否则衍生体会无限触发谢幕曲。 |
 | S-03 | 从双方战场中选择随从 | 10201310 逆向变化；`../SWB-RL` 里另有 10 张（10301110、10304120、10524110、10534120、10554110…） | 文本是"选择战场上的1个随从"（任意一方）。`character_set` 只允许同一方混合（`own.field.followers or own.leader` / `oppo...`），跨方选择未支持。 |
-| S-04 | 条件按集合计数 / 存在性判断 | 10242110 鲸鱼骑兵（"若自己的战场上有超进化后的随从，则抽 2 张"）；`../SWB-RL` 里另有 11 张同类条件（10012310、10153310、10201110、10231110…） | `if` 的条件只接受 `combo`、能力来源形态、解禁回合、`attacked_this_turn`、计数器与 `数值 比较 整数`；`count(...)` 只能作为伤害/回复/重复的**数量**，不能出现在条件里。`if count(own.field.followers where form super_evolved) >= 1` 与 `if own.field.followers has form super_evolved` 都被拒绝。 |
 | S-06 | 牌组内卡牌费用变更 | 10244120 绚丽的凤凰·小凤（本批挂起）；全卡文本里另有 11 张涉及"牌组中的卡牌费用"（10164110、10264110、10303210…） | `change own.deck cost half;` 被编译器拒绝（`未知效果语句: change`）。现有 `reduce cost T N minimum M` 只作用于单个实例，没有面向整副牌组的费用变更。 |
 | S-07 | "其他随从进化 / 超进化"事件 | 10241110（在手牌中降费 3）、10212120（在手牌中变为 1 费）、10252110（超进化时给两个随从 +2/+0）；全卡另有 2 张（10721110、10862120） | `event_pattern` 只支持 `self evolved/super_evolved`，没有"我方其他随从进化"这一事件；`while self in hand` 只是来源区域声明，不能替代事件。 |
 | S-08 | 筛选器缺少"受伤状态 / 攻击力" | 10223110（若攻击受伤的随从则破坏交战对手）、10272120（选择攻击力 ≤4 的敌方随从）；全卡另有 3 张（10341120、10462110、90044310） | `filter_term` 只有 `card / spellboost / keyword / type / class / trait / form / life / cost`：没有 `damaged`，也没有 `attack` 比较（只有 `life`、`cost`）。 |
@@ -70,18 +69,33 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 的卡都保持 `unplayable;`，避免生成行为错误的衍生体。
 
 | S-12 | 纹章块内的集合条件 / 按目标自身数值成倍 | 10204120 格里姆尼尔（"若自己的战场上有超进化后的随从"）、10233310 帕梅拉的舞蹈（"使所有随从的攻击力/生命值变为 2 倍"） | 前者是 S-04 的同一缺口出现在纹章里；后者需要"每个目标按自身当前数值翻倍"，现有 `buff` 的数值引用只有来源自身与 `count(...)` |
+| S-13 | `add card … to hand` 不产生绑定 | 10271120（"将1张『悬丝傀儡』加入手牌，使其+3/+0"） | 生成的实例没有任何绑定可以引用，所以无法只强化"这一张"。用 `buff own.hand.followers where card X` 会连带强化手里的同名旧卡，不符合文本。同类还影响"加入手牌后立即修改"的一批卡。 |
 | S-11 | `.wbotest` 无法声明先手 | 影响"抽牌耗尽判负"这类与先手有关的规则验证 | 规则本身已实现（`execute.go` 在无法满足抽牌时让对方获胜），但触发条件是 `firstPlayer != ""`，而场景测试不提供先手信息，这条路径只能由 Go 侧测试覆盖，场景测试写不出来。 |
 +
 +## 已完成的语言扩展
 +
 +| 编号 | 扩展 | 改动 | 验证 |
 +| --- | --- | --- | --- |
-+| S-05 | `enhance N replaces { ... }` —— 爆能强化的"改为"档 | `internal/project/validate.go`（允许 `replaces`）、`internal/project/typed_ir.go`（写入 `Ability.Relation`）、`internal/runner/runner.go`（`commitPlay` 在支付该档时跳过基础效果与入场曲）、`docs/language/cards.md`/`grammar.md` | Go 单测 `internal/project/enhance_replaces_test.go`（关系被保留、fanfare 不受影响、拒绝 `extends`/缺档位等错误形状）；卡片 10222310 + 2 个场景（普通档只打 1 个，爆能档恰好打 3 个且没有多出一次基础伤害） |
++| S-04 | `if count(集合 [where …]) 比较 整数` —— 集合计数条件 | `internal/ir/model.go`（新增 `CountCondition`）、`internal/project/typed_ir.go`（解析，含集合与筛选）、`internal/project/validate.go` 与 `strict_validate.go`（形状校验，复用 `parseEffectAmount` 处理括号）、`internal/runner/execute.go`（求值并比较）、`internal/ir/decode.go`（容器解码）、文档 | Go 单测 `internal/project/count_condition_test.go`（带筛选/不带筛选、拒绝缺比较符与多余 token）；7 张卡共 10 个场景 |
+| S-05 | `enhance N replaces { ... }` —— 爆能强化的"改为"档 | `internal/project/validate.go`（允许 `replaces`）、`internal/project/typed_ir.go`（写入 `Ability.Relation`）、`internal/runner/runner.go`（`commitPlay` 在支付该档时跳过基础效果与入场曲）、`docs/language/cards.md`/`grammar.md` | Go 单测 `internal/project/enhance_replaces_test.go`（关系被保留、fanfare 不受影响、拒绝 `extends`/缺档位等错误形状）；卡片 10222310 + 2 个场景（普通档只打 1 个，爆能档恰好打 3 个且没有多出一次基础伤害） |
 | S-02 | `draw N for own\|oppo` —— 让对方抽牌 | `internal/project/validate.go`（接受可选 `for` 子句）、`internal/project/typed_ir.go`（写入 `DrawEffect.Owner`）、`docs/language/cards.md`、`docs/language/grammar.md` | Go 单测 `internal/project/draw_owner_test.go`（默认仍是自己、`for oppo` 生效、保留过滤器、拒绝 `for self`/重复 `for`/`draw all for oppo` 无过滤器、格式稳定）；卡片 10221310 + 2 个场景 |
 +
 +`DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 +
 +## 批次记录
+
+### 批次 09–10（语言扩展 + 卡包 10002）
++
++- **语言扩展 S-04 完成**：`if count(集合 [where …]) 比较 整数`。条件不再只接受标量，
++  可以直接比较"集合里有多少个满足筛选的对象"；`sum(...)` 同样可用。
++- 完成 6 张卡：10242110 鲸鱼骑兵、10201110、10222110、10231110、10262110，
++  加上批次 08 的 10222310 共 7 张受益于本次扩展。
++- 新增 10 个场景（`tests/10002/batch-09-count-conditions.wbotest`、
++  `batch-10-count-cards.wbotest`），每张卡都覆盖条件成立与不成立两侧。
++- 挂起 1 张（S-13）：10271120，原因是"加入手牌的那张牌"没有绑定可以引用。
++- 又一次踩到身材假设：`{ super_evolved; }` 只设形态不加身材，断言必须从卡表算。
++- 全量回归：`go test ./...` 全绿（一次空条件导致 panic 已修，语料快照更新为 431 场景）；
++  `check` 0 错 0 警；`test` 431 全绿。
 
 ### 批次 08（语言扩展 + 卡包 10002）
 +

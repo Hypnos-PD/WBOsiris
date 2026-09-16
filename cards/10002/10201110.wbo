@@ -6,7 +6,12 @@ card 10201110 {
     stats 1/1;
 
     effect {
-        unplayable;
+        fanfare {
+            if count(own.field.followers where form super_evolved) >= 1 {
+                choose target from oppo.field.followers;
+                damage target 4;
+            }
+        }
     }
 
     meta {

@@ -6,7 +6,19 @@ card 10262110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        fanfare {
+            if count(own.field.amulets) >= 2 {
+                repeat 2 {
+                    random target from oppo.field.followers;
+                    damage target 2;
+                }
+            } else {
+                repeat 1 {
+                    random target from oppo.field.followers;
+                    damage target 2;
+                }
+            }
+        }
     }
 
     meta {

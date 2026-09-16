@@ -6,7 +6,12 @@ card 10222110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        ward;
+        when own turn ends {
+            if count(own.field.followers where form super_evolved) >= 1 {
+                buff own.field.followers +1/+1;
+            }
+        }
     }
 
     meta {
