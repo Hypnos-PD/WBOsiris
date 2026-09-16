@@ -750,10 +750,10 @@ func (g *game) advanceAttack() {
 		g.healLeader(g.owner(attacker), g.sideOf(attacker), defenderDamage)
 	}
 	if attacker.abilities["bane"] {
-		g.destroyByEffect([]*instance{defender})
+		g.destroyByCombat([]*instance{defender})
 	}
 	if defender.abilities["bane"] {
-		g.destroyByEffect([]*instance{attacker})
+		g.destroyByCombat([]*instance{attacker})
 	}
 	g.resolveDeathBatch(nil)
 	if attacker.superEvolved && state.defenderDestroyed {
@@ -900,10 +900,22 @@ func (g *game) modifyDamage(context damageContext) int {
 }
 
 func (g *game) destroyByEffect(targets []*instance) []*instance {
+	return g.destroyTargets(targets, true)
+}
+
+// destroyByCombat 处理必杀这类由战斗规则造成的破坏：它不受「不会被能力破坏」保护。
+func (g *game) destroyByCombat(targets []*instance) []*instance {
+	return g.destroyTargets(targets, false)
+}
+
+func (g *game) destroyTargets(targets []*instance, respectAbilityGuard bool) []*instance {
 	allowed := make([]*instance, 0, len(targets))
 	selected := map[*instance]bool{}
 	for _, target := range targets {
 		if target == nil || target.zone != "field" || target.earthsigil > 0 {
+			continue
+		}
+		if respectAbilityGuard && target.abilities["ability_destruction_guard"] {
 			continue
 		}
 		if target.superEvolved && g.sideOf(target) == g.turn.Active {

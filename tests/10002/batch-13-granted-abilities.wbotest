@@ -1,0 +1,133 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "伊卡洛斯的飞翔让手牌创造物获得突进" {
+    seed 13001;
+    state {
+        player own {
+            pp 1/1;
+            hand {
+                spell source = 10272310;
+                follower target = 90072110;
+                follower plain = 10001110;
+            }
+        }
+    }
+    action { play source; select target; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        target.zone == hand;
+        target has rush;
+        plain lacks rush;
+        own.hand count card 90072110 == 1;
+        own.pp == 0/1;
+    }
+}
+
+scenario "手牌没有创造物时伊卡洛斯的飞翔不选择目标" {
+    seed 13002;
+    state {
+        player own {
+            pp 1/1;
+            hand {
+                spell source = 10272310;
+                follower plain = 10001110;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; source.zone == graveyard; plain lacks rush; }
+}
+
+scenario "恶意的神谕给敌方随从附加回合结束自毁" {
+    seed 13003;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10261120; }
+        }
+        player oppo { field { follower enemy = 10001110; } }
+    }
+    action { play source; select enemy; }
+    // 附加能力在对手的回合结束时才发动，所以本次结算只看到随从仍在场。
+    expect {
+        legal;
+        source.zone == field;
+        enemy.zone == field;
+        own.pp == 0/2;
+    }
+}
+
+scenario "创造物弹射器的入场曲把两张核心加入手牌" {
+    seed 13004;
+    state {
+        player own {
+            pp 1/1;
+            hand { amulet source = 10271210; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == field;
+        own.hand count card 90071210 == 1;
+        own.hand count card 90071220 == 1;
+    }
+}
+
+scenario "创造物弹射器的启动破坏自身并复制手牌创造物" {
+    seed 13005;
+    state {
+        turn own 5;
+        player own {
+            pp 3/3;
+            field { amulet source = 10271210; }
+            hand { follower target = 90072110; }
+        }
+    }
+    action { engage source; select target; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        target.zone == hand;
+        own.field count card 90072110 == 1;
+        own.pp == 0/3;
+    }
+}
+
+scenario "暗狱的余晖的入场曲加入过往核心" {
+    seed 13006;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10273110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90071220 == 1; own.pp == 0/2; }
+}
+
+scenario "暗狱的余晖的进化时给手牌创造物守护" {
+    seed 13007;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10273110; }
+            hand {
+                follower target = 90072110;
+                follower plain = 10001110;
+            }
+        }
+    }
+    action { evolve source; select target; }
+    expect {
+        legal;
+        source.stats == 4/4;
+        target.zone == hand;
+        target has ward;
+        plain lacks ward;
+        own.ep == 0;
+    }
+}

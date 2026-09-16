@@ -18,11 +18,11 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 304 · 未实现(骨架) 69 · 未导入 531
+总计 904 · 已完成 308 · 未实现(骨架) 65 · 未导入 531
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
-10002        77      56      21       0
+10002        77      60      17       0
 10003        77       4       0      73
 10004        76       1       0      75
 10005        76       0       0      76
@@ -83,9 +83,29 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-15 | 测试 DSL 的实例字段断言 | 新增 `alias.attack_limit`（取 `attackLimit()`，"1 回合可以攻击 N 次"）与 `alias.damage_reduction`；`internal/project/validate.go`、`strict_validate.go`、`internal/ir/test_decode.go`、`internal/runner/assert.go` 四处白名单同步，写错字段名从"静默不相等"改成检查期报错 | 卡片 10274120 场景直接断言 `source.attack_limit == 2`；全量 444 个场景回归 |
 | S-01 | `remove lastwords from …` / `remove all abilities from …`（实例级失去能力） | `internal/project/validate.go`（`remove` 新增两种形状）、`typed_ir.go` + `keyword_effect.go`（解析成 `remove_ability`，`Keyword` 取 `lastwords`/`all`）、`internal/ir/encode.go`/`decode.go`（新效果种类）、`internal/runner/grant.go`（`suppressed`/`suppressAll`、剔除已排队触发、重新索引）、`internal/runner/execute.go`（派发）、`internal/runner/continuation.go`（连击快照保存抑制状态）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/ability_removal_test.go`（两种形状编成 `remove_ability`、拒绝 `remove fanfare`/漏 `from`/`add lastwords`/带 `until`）与 `internal/runner/ability_removal_test.go`（僵尸链在第二次死亡后停止、`remove all abilities` 同时清掉固有关键词与谢幕曲）；卡片 90051140、10252120、10251310 + 3 个场景 |
 
+| S-16 | `ability_destruction_guard`（不会被能力破坏） | 新固有关键词：`internal/ir/decode.go` 的 `validKeyword`、`internal/project/validate.go` 的 `abilities`、`strict_validate.go` 的固有能力形状表、`internal/runner/runner.go`（`destroyByEffect` 受保护，必杀改走新的 `destroyByCombat` 不受保护）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/granted_ability_flow_test.go`（能力破坏被挡下、战斗破坏照样生效）；卡片 10273110 + 2 个场景 |
+
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 13（语言扩展 + 卡包 10002）
+
+- **语言扩展 S-16 完成**：新固有关键词 `ability_destruction_guard`（「不会被能力破坏」）。
+  能力造成的破坏会跳过它，战斗规则造成的破坏（生命归零、必杀）不受影响；
+  必杀因此改走新的 `destroyByCombat`。
+- 完成 4 张卡：10272310 伊卡洛斯的飞翔（手牌创造物获得突进与谢幕曲抽 1）、
+  10261120 恶意的神谕·达姆斯（给敌方随从附加"自己的回合结束时破坏本卡牌"）、
+  10271210 创造物弹射器（入场曲加两张核心；启动 3 破坏自身并复制手牌创造物，
+  复制体获得"对手回合结束时破坏"）、10273110 暗狱的余晖·贾丝珀（入场曲加过往核心；
+  进化时给手牌创造物守护与不会被能力破坏）。
+- 新增 7 个场景（`tests/10002/batch-13-granted-abilities.wbotest`）+ 3 个 Go 测试
+  （`internal/runner/granted_ability_flow_test.go`）。场景能直接观察到的只有
+  "获得关键词 / 加入手牌 / 复制体入场"，附加能力的发动时点、谢幕曲抽牌与
+  "不会被能力破坏"必须由 Go 测试走完整流程：出牌 → 附加 → 回合结束 / 破坏。
+- 记录一个换算：文本里的"召唤对应数量的复制随从"是「そのコピー1枚」的简中误译，
+  一律按 1 张复制处理（先例：10173140、10274120）。
+- 全量回归：`check` 0 错 0 警；`test` 454 全绿；语料快照更新为 454 个场景。
 
 ### 批次 12（语言扩展 + 卡包 10002 / 90000）
 

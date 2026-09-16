@@ -519,7 +519,7 @@ func strictOverride(s *syntax.Statement, ds *[]syntax.Diagnostic) {
 		}
 	case "evolved", "super_evolved":
 		ok = ok && len(t) == 1
-	case "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "ability_target_guard", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader":
+	case "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "ability_target_guard", "ability_destruction_guard", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader":
 		ok = ok && len(t) == 1
 	case "cost", "earthsigil", "countdown", "damage_taken":
 		ok = ok && len(t) == 2

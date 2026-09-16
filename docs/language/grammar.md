@@ -157,7 +157,7 @@ intrinsic_statement = ability , ";"
 
 ability            = "ward" | "storm" | "rush" | "bane" | "drain"
                    | "intimidate" | "barrier" | "stealth" | "aura"
-                   | "ability_target_guard" | "cannot_attack"
+                   | "ability_target_guard" | "ability_destruction_guard" | "cannot_attack"
                    | "cannot_attack_follower" | "cannot_attack_leader" ;
 card_restriction   = "unplayable" ;
 

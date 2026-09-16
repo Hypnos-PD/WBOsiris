@@ -5,7 +5,18 @@ card 10272310 {
     cost 1;
 
     effect {
-        unplayable;
+        choose target from own.hand.followers where trait artifact;
+        add rush to target;
+        grant target {
+            label chs "【谢幕曲】抽取1张卡牌。";
+            label eng "Last Words: Draw a card.";
+            label jpn "【ラストワード】カードを1枚引く。";
+            label kor "[유언] 카드를 1장 뽑는다.";
+            label cht "【謝幕曲】抽取1張卡片。";
+            lastwords {
+                draw 1;
+            }
+        }
     }
 
     meta {

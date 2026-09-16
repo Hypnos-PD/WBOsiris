@@ -6,7 +6,14 @@ card 10273110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 90071220 to hand;
+        }
+        evolve {
+            choose target from own.hand.followers where trait artifact;
+            add ward to target;
+            add ability_destruction_guard to target;
+        }
     }
 
     meta {

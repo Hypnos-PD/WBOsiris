@@ -11,7 +11,7 @@ import (
 
 var (
 	cardTypes = set("follower", "spell", "amulet")
-	abilities = set("ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "ability_target_guard", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")
+	abilities = set("ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "ability_target_guard", "ability_destruction_guard", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")
 	classes   = set("neutral", "forestcraft", "swordcraft", "runecraft", "dragoncraft", "abysscraft", "havencraft", "portalcraft")
 	rarities  = set("bronze", "silver", "gold", "legendary")
 	locales   = []string{"chs", "eng", "jpn", "kor", "cht"}

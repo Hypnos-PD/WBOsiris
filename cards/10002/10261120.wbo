@@ -6,7 +6,19 @@ card 10261120 {
     stats 2/2;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from oppo.field.followers;
+            grant target {
+                label chs "自己的回合结束时，破坏本卡牌。";
+                label eng "At the end of your turn, destroy this card.";
+                label jpn "自分のターン終了時、これを破壊。";
+                label kor "내 턴 종료시, 이 추종자를 파괴.";
+                label cht "自己的回合結束時，破壞這張卡片。";
+                when own turn ends {
+                    destroy self;
+                }
+            }
+        }
     }
 
     meta {

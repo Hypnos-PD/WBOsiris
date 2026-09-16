@@ -29,6 +29,11 @@ effect {
 `cannot_attack` 使随从无法攻击；`cannot_attack_follower` 和 `cannot_attack_leader`
 分别只禁止攻击随从或主战者。攻击限制会从合法动作集合中移除对应动作，直接提交时也会被拒绝。
 
+`ability_destruction_guard` 表达「不会被能力破坏」：能力造成的破坏（`destroy` 操作、
+附加的「回合结束时破坏本卡牌」等）会跳过该随从。战斗规则造成的破坏不受影响——
+生命归零与【毁灭】照样让它离场。能力可通过
+`add ability_destruction_guard to T` 与 `remove ability_destruction_guard from T` 修改。
+
 `ability_target_guard` 表达洛伊德的“对手能力只能选择本卡牌”。拥有该能力的随从在场时，
 敌方能力对该玩家战场的主动选择只能选择仍满足原筛选条件的此类随从；多个来源均可成为
 候选。筛选不匹配或全部来源拥有潜行、灵气时，不会退回选择其他卡牌。能力来源即使无法
