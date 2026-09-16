@@ -22,6 +22,12 @@ func ValidGrantedTrigger(t Trigger) bool {
 	return false
 }
 
+// ValidSuppressedAbility 列出可以被"失去能力"操作移除的触发能力种类。
+// 目前只有谢幕曲需要（腐臭的僵尸等衍生体），"all" 由编译器单独映射。
+func ValidSuppressedAbility(kind string) bool {
+	return kind == "lastwords"
+}
+
 func validGrantedBody(body []Effect) bool {
 	for _, effect := range body {
 		switch e := effect.(type) {

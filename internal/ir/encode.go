@@ -233,6 +233,11 @@ func (e TargetEffect) MarshalJSON() ([]byte, error) {
 		if e.Predicate != nil {
 			object["predicate"] = e.Predicate
 		}
+	case "remove_ability":
+		object["keyword"] = e.Keyword
+		if e.Predicate != nil {
+			object["predicate"] = e.Predicate
+		}
 	case "set_damage_reduction":
 		if e.Amount > 65535 {
 			return nil, fmt.Errorf("damage reduction exceeds u16 range")

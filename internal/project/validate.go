@@ -676,8 +676,20 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		ok = good && end == len(t)
 		checkBindingAt(t, 1, end, bindings, ds)
 	case "remove":
-		if len(t) >= 4 && abilities[t[1].Value] && t[2].Value == "from" {
-			end, good := parseValueRef(t, 3)
+		// remove <固有关键词> from 集合
+		// remove lastwords from 集合
+		// remove all abilities from 集合
+		start := 0
+		switch {
+		case len(t) >= 4 && abilities[t[1].Value] && t[2].Value == "from":
+			start = 3
+		case len(t) >= 3 && t[1].Value == "lastwords" && t[2].Value == "from":
+			start = 3
+		case len(t) >= 4 && values(t[1:3]) == "all abilities" && t[3].Value == "from":
+			start = 4
+		}
+		if start > 0 {
+			end, good := parseValueRef(t, start)
 			if good && end < len(t) && t[end].Value == "other" {
 				end++
 			}
@@ -685,7 +697,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 				end, good = parseWhere(t, end)
 			}
 			ok = good && end == len(t)
-			checkBindingAt(t, 3, end, bindings, ds)
+			checkBindingAt(t, start, end, bindings, ds)
 		}
 	case "return":
 		end, good := parseValueRef(t, 1)

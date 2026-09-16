@@ -132,6 +132,8 @@ type ContinuationEntity struct {
 	TemporaryKeywords map[string]KeywordExpiry `json:"temporaryKeywords,omitempty"`
 	TemporaryStats    map[string]ir.Stats      `json:"temporaryStats,omitempty"`
 	Materials         []string                 `json:"materials,omitempty"`
+	Suppressed        []string                 `json:"suppressedAbilities,omitempty"`
+	SuppressAll       bool                     `json:"suppressAllAbilities,omitempty"`
 }
 
 type ContinuationEvent struct {
@@ -470,6 +472,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 			Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i),
 			Engaged: i.engaged, SummoningSick: i.summoningSick, Evolved: i.evolved,
 			SuperEvolved: i.superEvolved, Departed: i.departed, FusedThisTurn: i.fusedThisTurn, DamageReduction: i.damageReduction, Abilities: abilities, Materials: instanceIDs(i.materials), Grants: grantIDs(i),
+			Suppressed: suppressedAbilities(i), SuppressAll: i.suppressAll,
 		})
 	}
 	for _, event := range g.events {
@@ -563,6 +566,18 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 				return nil, fmt.Errorf("invalid continuation ability")
 			}
 			i.abilities[ability] = true
+		}
+		if entity.SuppressAll {
+			i.suppressAll = true
+		}
+		for _, ability := range entity.Suppressed {
+			if !ir.ValidSuppressedAbility(ability) || i.suppressed[ability] {
+				return nil, fmt.Errorf("invalid continuation suppressed ability")
+			}
+			if i.suppressed == nil {
+				i.suppressed = map[string]bool{}
+			}
+			i.suppressed[ability] = true
 		}
 		for keyword, expiry := range entity.TemporaryKeywords {
 			if !ir.ValidKeyword(keyword) || !i.abilities[keyword] || !expiry.OwnTurnEnd && !expiry.OppoTurnEnd {

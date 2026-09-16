@@ -998,7 +998,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			}
 		}
 		return CardEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.Destination, v.Output, v.Count, v.CardID, v.MaxCost, v.TieBreak, v.PreserveInstanceID, v.PreserveMaterials, r}, err
-	case "damage", "heal", "buff_stats", "destroy", "banish", "discard", "return", "add_keyword", "remove_keyword", "silent_evolve", "set_attack_limit", "set_damage_reduction", "set_life":
+	case "damage", "heal", "buff_stats", "destroy", "banish", "discard", "return", "add_keyword", "remove_keyword", "remove_ability", "silent_evolve", "set_attack_limit", "set_damage_reduction", "set_life":
 		type raw struct {
 			Output                                                      string `json:"output,omitempty"`
 			ID                                                          string `json:"id"`
@@ -1109,6 +1109,10 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		case "add_keyword", "remove_keyword":
 			if !validKeyword(v.Keyword) || v.DamageType != "" || v.Amount != 0 || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 {
 				return nil, fmt.Errorf("invalid keyword effect")
+			}
+		case "remove_ability":
+			if !oneOf(v.Keyword, "lastwords", "all") || v.DamageType != "" || v.Amount != 0 || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || v.Until != "" || v.Output != "" {
+				return nil, fmt.Errorf("invalid ability removal")
 			}
 		case "silent_evolve":
 			if !oneOf(v.Form, "evolved", "super_evolved") || v.DamageType != "" || v.Amount != 0 || v.Keyword != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {

@@ -880,6 +880,13 @@ RemoveKeyword = NodeBase & {
   predicate?: Predicate
 }
 
+RemoveAbility = NodeBase & {
+  kind: "remove_ability",
+  target: ValueRef | SetExpr,
+  keyword: "lastwords" | "all",
+  predicate?: Predicate
+}
+
 SetAttackLimit = NodeBase & {
   kind: "set_attack_limit",
   target: ValueRef,

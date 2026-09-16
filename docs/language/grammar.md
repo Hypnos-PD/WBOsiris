@@ -392,7 +392,9 @@ damage_distribution = "distributed" , ["overflow" , participant , "." , "leader"
 object_operation  = ("destroy" | "banish" | "discard") , value_ref , [where_clause] , ";"
                   | "destroy" , batch_target , "," , batch_target , {"," , batch_target} , ";" ;
 batch_target      = binding_name | "self" ;
-ability_operation = "remove" , ability , "from" , value_ref , ["other"] , [where_clause] , ";" ;
+ability_operation = "remove" , ability , "from" , value_ref , ["other"] , [where_clause] , ";"
+                  | "remove" , "lastwords" , "from" , value_ref , ["other"] , [where_clause] , ";"
+                  | "remove" , "all" , "abilities" , "from" , value_ref , ["other"] , [where_clause] , ";" ;
 return_operation  = "return" , value_ref , "to" , ("hand" | "deck") , ";" ;
 evolve_operation  = ("evolve" | "superevolve") , value_ref , "silent" , ";" ;
 reanimate_operation = "reanimate" , integer , ";" ;

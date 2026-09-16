@@ -29,6 +29,22 @@ func effectDurationIR(t []syntax.Token, start int) string {
 	return t[start+1].Value + "_turn_end"
 }
 
+// removeAbilityIR 解析 remove lastwords from … / remove all abilities from …：
+// 目标从 start 开始，可选择 other 与 where，不支持 until。
+func removeAbilityIR(base ir.NodeBase, ability string, t []syntax.Token, start int) ir.TargetEffect {
+	end := valueRefEnd(t, start)
+	target := valueRefIR(t, start)
+	if end < len(t) && t[end].Value == "other" {
+		target = ir.ExcludeRef{Kind: "exclude", Source: target, Value: ir.SelfRef{Kind: "self"}}
+		end++
+	}
+	e := ir.TargetEffect{NodeBase: base, Kind: "remove_ability", Keyword: ability, Target: target}
+	if end < len(t) && t[end].Value == "where" {
+		e.Predicate, end = filterIR(t, end)
+	}
+	return e
+}
+
 func parseEffectDuration(t []syntax.Token, start int) (int, bool) {
 	if start >= len(t) || t[start].Value != "until" {
 		return start, false

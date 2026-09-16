@@ -24,6 +24,7 @@ type instance struct {
 	usedTriggers                                                                 map[string]bool
 	grants                                                                       []ir.GrantEffect
 	counters                                                                     map[string]int
+	suppressed                                                                   map[string]bool
 	id, alias, zone                                                              string
 	card                                                                         *ir.Card
 	attack, life, cost, earthsigil, countdown, damageReduction, attackLimitValue int
@@ -32,6 +33,7 @@ type instance struct {
 	engaged, summoningSick                                                       bool
 	evolved, superEvolved                                                        bool
 	departed                                                                     bool
+	suppressAll                                                                  bool
 	abilities                                                                    map[string]bool
 	temporaryKeywords                                                            map[string]KeywordExpiry
 	temporaryStats                                                               map[string]ir.Stats

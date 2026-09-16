@@ -1,0 +1,54 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "尸兵的入场曲召唤两个腐臭的僵尸" {
+    seed 12001;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10252120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == field;
+        own.field count card 90051140 == 2;
+        own.pp == 0/6;
+    }
+}
+
+scenario "腐臭的僵尸被破坏后只留下一个后继" {
+    seed 12002;
+    state {
+        player own { field { follower source = 90051140; } }
+        player oppo { field { follower big = 90004110; } }
+    }
+    action { attack source into big; }
+    // 谢幕曲召唤的僵尸已经失去谢幕曲，所以场上是 1 个后继、墓场资源只有 1 点。
+    expect {
+        legal;
+        source.zone == graveyard;
+        own.field count card 90051140 == 1;
+        own.shadows == 1;
+    }
+}
+
+scenario "诅咒派对把三张衍生卡加入手牌" {
+    seed 12003;
+    state {
+        player own {
+            pp 2/2;
+            hand { spell source = 10251310; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        own.hand count card 90051130 == 1;
+        own.hand count card 90051110 == 1;
+        own.hand count card 90051140 == 1;
+        own.pp == 0/2;
+    }
+}

@@ -18,11 +18,11 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 301 · 未实现(骨架) 72 · 未导入 531
+总计 904 · 已完成 304 · 未实现(骨架) 69 · 未导入 531
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
-10002        77      54      23       0
+10002        77      56      21       0
 10003        77       4       0      73
 10004        76       1       0      75
 10005        76       0       0      76
@@ -30,7 +30,7 @@
 10007        77       0       0      77
 10008        78       0       0      78
 10009        76       0       0      76
-90000        93      44      49       0
+90000        93      45      48       0
 未完成卡按文本复杂度：中(41–100字) 347 · 短(≤40字) 234 · 长(>100字) 20 · 白板 2
 ```
 
@@ -57,7 +57,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 
 | 编号 | 缺少的原语 | 影响卡牌 | 草稿 / 说明 |
 | --- | --- | --- | --- |
-| S-01 | 移除能力（失去【谢幕曲】） | 90051140 腐臭的僵尸、10251310、10252120；`../SWB-RL` 规则里另有 7 张卡使用同类操作（10321120、10433110、10474120、10861110、10862110、10871110…） | `lastwords { summon 1 card 90051140; remove lastwords from summoned; }` 被编译器拒绝：`remove` 的能力白名单不含 `lastwords`。需要一条"让指定实例失去某个触发能力"的操作，否则衍生体会无限触发谢幕曲。 |
+| S-01 | ~~移除能力（失去【谢幕曲】）~~ **已解决**：`remove lastwords from …` / `remove all abilities from …` | 已解锁 90051140 腐臭的僵尸、10251310 诅咒派对、10252120 尸兵；`../SWB-RL` 规则里另有 7 张同类卡（10321120、10433110、10474120、10861110、10862110、10871110…）等后续卡包补写时直接使用 | 实例级触发能力抑制：`suppressed`（按触发种类）与 `suppressAll`，索引与已排队触发同步剔除，随连击快照一起保存。详见 [已完成的语言扩展](#已完成的语言扩展) 的 S-01 行。 |
 | S-03 | 从双方战场中选择随从 | 10201310 逆向变化；`../SWB-RL` 里另有 10 张（10301110、10304120、10524110、10534120、10554110…） | 文本是"选择战场上的1个随从"（任意一方）。`character_set` 只允许同一方混合（`own.field.followers or own.leader` / `oppo...`），跨方选择未支持。 |
 | S-06 | 牌组内卡牌费用变更 | 10244120 绚丽的凤凰·小凤（本批挂起）；全卡文本里另有 11 张涉及"牌组中的卡牌费用"（10164110、10264110、10303210…） | `change own.deck cost half;` 被编译器拒绝（`未知效果语句: change`）。现有 `reduce cost T N minimum M` 只作用于单个实例，没有面向整副牌组的费用变更。 |
 | S-07 | "其他随从进化 / 超进化"事件 | 10241110（在手牌中降费 3）、10212120（在手牌中变为 1 费）、10252110（超进化时给两个随从 +2/+0）；全卡另有 2 张（10721110、10862120） | `event_pattern` 只支持 `self evolved/super_evolved`，没有"我方其他随从进化"这一事件；`while self in hand` 只是来源区域声明，不能替代事件。 |
@@ -81,10 +81,24 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-02 | `draw N for own\|oppo` —— 让对方抽牌 | `internal/project/validate.go`（接受可选 `for` 子句）、`internal/project/typed_ir.go`（写入 `DrawEffect.Owner`）、`docs/language/cards.md`、`docs/language/grammar.md` | Go 单测 `internal/project/draw_owner_test.go`（默认仍是自己、`for oppo` 生效、保留过滤器、拒绝 `for self`/重复 `for`/`draw all for oppo` 无过滤器、格式稳定）；卡片 10221310 + 2 个场景 |
 | S-14 | `fused.cost` / `fused.distinct` 的作用域 | 原实现只允许在 `fusion` 块内读，但"若已与本卡牌融合，则改为抽取 2 张"这类文本的判断点在打出/入场结算时。`internal/project/strict_validate.go` 新增 `effectContext.materials`：卡牌只要声明了 `fusion`，其任意效果块（含 `when … if …`）都可读 `fused`；没声明融合的卡牌读它仍然报错。文档同步 `cards.md` / `grammar.md` | Go 单测 `internal/project/fused_scalar_scope_test.go`（法术 `effect` 内可读且条件被完整保留、无融合声明时拒绝）；卡片 10213310 + 2 个场景，并由 `internal/runner/fused_play_effect_test.go` 用真实卡表端到端覆盖"融合后抽 2 / 未融合抽 1" |
 | S-15 | 测试 DSL 的实例字段断言 | 新增 `alias.attack_limit`（取 `attackLimit()`，"1 回合可以攻击 N 次"）与 `alias.damage_reduction`；`internal/project/validate.go`、`strict_validate.go`、`internal/ir/test_decode.go`、`internal/runner/assert.go` 四处白名单同步，写错字段名从"静默不相等"改成检查期报错 | 卡片 10274120 场景直接断言 `source.attack_limit == 2`；全量 444 个场景回归 |
+| S-01 | `remove lastwords from …` / `remove all abilities from …`（实例级失去能力） | `internal/project/validate.go`（`remove` 新增两种形状）、`typed_ir.go` + `keyword_effect.go`（解析成 `remove_ability`，`Keyword` 取 `lastwords`/`all`）、`internal/ir/encode.go`/`decode.go`（新效果种类）、`internal/runner/grant.go`（`suppressed`/`suppressAll`、剔除已排队触发、重新索引）、`internal/runner/execute.go`（派发）、`internal/runner/continuation.go`（连击快照保存抑制状态）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/ability_removal_test.go`（两种形状编成 `remove_ability`、拒绝 `remove fanfare`/漏 `from`/`add lastwords`/带 `until`）与 `internal/runner/ability_removal_test.go`（僵尸链在第二次死亡后停止、`remove all abilities` 同时清掉固有关键词与谢幕曲）；卡片 90051140、10252120、10251310 + 3 个场景 |
 
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 12（语言扩展 + 卡包 10002 / 90000）
+
+- **语言扩展 S-01 完成**：`remove lastwords from 集合` 与 `remove all abilities from 集合`。
+  失去的能力记在实例上（不改变卡牌定义），同一个块里对 `summoned` 执行即可让衍生体
+  不再无限触发谢幕曲；已排队的同类触发会一起作废，连击快照里也会保存抑制状态。
+- 完成 3 张卡：90051140 腐臭的僵尸（谢幕曲召唤一个已失去谢幕曲的自己）、
+  10252120 尸兵（入场曲召唤 2 个腐臭的僵尸）、10251310 诅咒派对（把怨灵、骸骨士兵、
+  腐臭的僵尸各 1 张加入手牌）。90051140 之前因为 S-01 挂起，连带卡的这两张也一并解锁。
+- 新增 3 个场景（`tests/10002/batch-12-lastwords-removal.wbotest`）。场景只能观察
+  "死后场上剩下 1 个僵尸"，链是否真的停止由 `internal/runner/ability_removal_test.go`
+  连杀两次验证（第二次死亡不再产生新个体，墓场资源停在 2）。
+- 全量回归：`check` 0 错 0 警；`test` 447 全绿；语料快照更新为 447 个场景。
 
 ### 批次 11（语言扩展 + 卡包 10002）
 

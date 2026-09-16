@@ -613,6 +613,10 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 		for _, i := range targets {
 			i.removeKeyword(e.Keyword)
 		}
+	case "remove_ability":
+		for _, i := range targets {
+			g.removeAbility(i, e.Keyword)
+		}
 	case "silent_evolve":
 		for _, i := range targets {
 			g.applyEvolution(i, e.Form == "super_evolved")

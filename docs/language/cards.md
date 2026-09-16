@@ -368,7 +368,14 @@ return target to hand;
 return target to deck;
 add ward to target;
 remove ward from target;
+remove lastwords from summoned;
+remove all abilities from targets;
 ```
+
+`remove lastwords from 集合` 让选中的实例失去【谢幕曲】，`remove all abilities from 集合`
+让它同时失去固有关键词、附加能力与卡面声明的触发能力。失去的能力只属于该实例：
+同一个卡牌定义召唤出的其它实例不受影响，离场后也不复原。需要阻止衍生体无限触发
+谢幕曲时（例如腐臭的僵尸），在召唤同一个块里对它执行本条操作。
 
 `summon copies of 集合` 为手牌或战场中的每个随从、护符召唤一个独立副本，原卡保留。
 可用绑定、区域集合或 `self`，并可附加 `where` 筛选；法术和其他区域的对象不产生副本。

@@ -5,7 +5,9 @@ card 10251310 {
     cost 2;
 
     effect {
-        unplayable;
+        add 1 card 90051130 to hand;
+        add 1 card 90051110 to hand;
+        add 1 card 90051140 to hand;
     }
 
     meta {
