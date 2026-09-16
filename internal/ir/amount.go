@@ -37,7 +37,8 @@ func validNumericExpr(expr NumericExpr, signed bool) bool {
 	case *Scalar:
 		return e != nil && (e.Kind == "scalar" && validSide(e.Side) && ValidPlayerScalar(e.Field) ||
 			e.Kind == "self_scalar" && e.Side == "" && oneOf(e.Field, "attack", "life", "cost") ||
-			e.Kind == "self_counter" && e.Side == "" && ValidCounterName(e.Field))
+			e.Kind == "self_counter" && e.Side == "" && ValidCounterName(e.Field) ||
+			e.Kind == "fusion_material_scalar" && e.Side == "" && oneOf(e.Field, "cost", "distinct"))
 	case *NegateExpr:
 		return signed && e != nil && e.Kind == "negate" && validNumericExpr(e.Value, false)
 	default:
@@ -81,7 +82,7 @@ func decodeNumericValue(data json.RawMessage, signed bool) (int, NumericExpr, er
 		if raw.Kind == "sum" {
 			expr = &SumExpr{Kind: "sum", Source: source, Field: raw.Field}
 		}
-	case "scalar", "self_scalar", "self_counter":
+	case "scalar", "self_scalar", "self_counter", "fusion_material_scalar":
 		if len(raw.Source) > 0 || len(raw.Value) > 0 {
 			return 0, nil, fmt.Errorf("invalid scalar fields")
 		}

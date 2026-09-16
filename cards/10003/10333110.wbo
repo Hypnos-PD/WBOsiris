@@ -6,7 +6,17 @@ card 10333110 {
     stats 3/1;
 
     effect {
-        unplayable;
+        fanfare {
+            if self.cost != 3 {
+                repeat 2 {
+                    summon copies of self;
+                }
+            }
+        }
+        rush;
+        superevolve {
+            summon copies of self;
+        }
     }
 
     meta {

@@ -5,7 +5,14 @@ card 10372210 {
     cost 2;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from own.field other;
+            destroy target;
+            draw 2;
+        }
+        lastwords {
+            draw 1;
+        }
     }
 
     meta {

@@ -32,6 +32,10 @@ func numericIR(t []syntax.Token, i int) (int, ir.NumericExpr) {
 	if t[i].Value == "self" {
 		return 0, &ir.Scalar{Kind: "self_scalar", Field: t[i+2].Value}
 	}
+	if t[i].Value == "fused" {
+		// `fused.cost` / `fused.distinct` 也可以直接当数值用（例如造成 X 点伤害，X 为融合种类）。
+		return 0, &ir.Scalar{Kind: "fusion_material_scalar", Field: t[i+2].Value}
+	}
 	return 0, &ir.Scalar{Kind: "scalar", Side: t[i].Value, Field: t[i+2].Value}
 }
 

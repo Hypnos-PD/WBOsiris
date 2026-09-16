@@ -6,7 +6,38 @@ card 10353110 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fanfare {
+            mode {
+                option 1 {
+                    label chs "召唤1个『混融的团结者』，使该随从和本随从获得【突进】。";
+                    label eng "Summon a Mixing Solidarity and give it and this follower Rush.";
+                    label jpn "『混融の団結者』1枚を自分の場に出す。それとこれは【突進】を持つ。";
+                    label kor "'혼융의 연대자' 1장을 내 전장에 소환. 그 추종자와 이 추종자는 [돌진]을 갖는다.";
+                    label cht "召喚1張『混融的團結者』，使其與這張卡片獲得【突進】。";
+                    summon 1 card 10353110;
+                    add rush to summoned;
+                    add rush to self;
+                }
+                option 2 {
+                    label chs "召唤1个『混融的团结者』，使该随从和本随从获得【守护】。";
+                    label eng "Summon a Mixing Solidarity and give it and this follower Ward.";
+                    label jpn "『混融の団結者』1枚を自分の場に出す。それとこれは【守護】を持つ。";
+                    label kor "'혼융의 연대자' 1장을 내 전장에 소환. 그 추종자와 이 추종자는 [수호]를 갖는다.";
+                    label cht "召喚1張『混融的團結者』，使其與這張卡片獲得【守護】。";
+                    summon 1 card 10353110;
+                    add ward to summoned;
+                    add ward to self;
+                }
+                option 3 {
+                    label chs "使自己的战场上的所有『混融的团结者』+2/+2。";
+                    label eng "Give all allied Mixing Solidarity followers +2/+2.";
+                    label jpn "自分の場の『混融の団結者』すべては+2/+2する。";
+                    label kor "내 전장의 '혼융의 연대자' 모두는 +2/+2.";
+                    label cht "使自己的戰場上全部的『混融的團結者』+2/+2。";
+                    buff own.field.followers +2/+2 where card 10353110;
+                }
+            }
+        }
     }
 
     meta {

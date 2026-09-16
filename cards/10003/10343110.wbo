@@ -6,7 +6,14 @@ card 10343110 {
     stats 5/7;
 
     effect {
-        unplayable;
+        fanfare {
+            damage field.followers 3;
+        }
+        when own turn ends {
+            if self.life <= 3 {
+                buff own.hand.followers +1/+1 where class dragoncraft;
+            }
+        }
     }
 
     meta {

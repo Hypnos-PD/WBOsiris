@@ -18,12 +18,12 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 361 · 未实现(骨架) 85 · 未导入 458
+总计 904 · 已完成 374 · 未实现(骨架) 72 · 未导入 458
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
 10002        77      77       0       0
-10003        77      40      37       0
+10003        77      53      24       0
 10004        76       1       0      75
 10005        76       0       0      76
 10006        76       0       0      76
@@ -31,7 +31,7 @@
 10008        78       0       0      78
 10009        76       0       0      76
 90000        93      45      48       0
-未完成卡按文本复杂度：中(41–100字) 313 · 短(≤40字) 194 · 长(>100字) 19 · 白板 2
+未完成卡按文本复杂度：中(41–100字) 300 · 短(≤40字) 194 · 长(>100字) 19 · 白板 2
 ```
 
 ## 工作流
@@ -82,6 +82,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-05 | `enhance N replaces { ... }` —— 爆能强化的"改为"档 | `internal/project/validate.go`（允许 `replaces`）、`internal/project/typed_ir.go`（写入 `Ability.Relation`）、`internal/runner/runner.go`（`commitPlay` 在支付该档时跳过基础效果与入场曲）、`docs/language/cards.md`/`grammar.md` | Go 单测 `internal/project/enhance_replaces_test.go`（关系被保留、fanfare 不受影响、拒绝 `extends`/缺档位等错误形状）；卡片 10222310 + 2 个场景（普通档只打 1 个，爆能档恰好打 3 个且没有多出一次基础伤害） |
 | S-02 | `draw N for own\|oppo` —— 让对方抽牌 | `internal/project/validate.go`（接受可选 `for` 子句）、`internal/project/typed_ir.go`（写入 `DrawEffect.Owner`）、`docs/language/cards.md`、`docs/language/grammar.md` | Go 单测 `internal/project/draw_owner_test.go`（默认仍是自己、`for oppo` 生效、保留过滤器、拒绝 `for self`/重复 `for`/`draw all for oppo` 无过滤器、格式稳定）；卡片 10221310 + 2 个场景 |
 | S-14 | `fused.cost` / `fused.distinct` 的作用域 | 原实现只允许在 `fusion` 块内读，但"若已与本卡牌融合，则改为抽取 2 张"这类文本的判断点在打出/入场结算时。`internal/project/strict_validate.go` 新增 `effectContext.materials`：卡牌只要声明了 `fusion`，其任意效果块（含 `when … if …`）都可读 `fused`；没声明融合的卡牌读它仍然报错。文档同步 `cards.md` / `grammar.md` | Go 单测 `internal/project/fused_scalar_scope_test.go`（法术 `effect` 内可读且条件被完整保留、无融合声明时拒绝）；卡片 10213310 + 2 个场景，并由 `internal/runner/fused_play_effect_test.go` 用真实卡表端到端覆盖"融合后抽 2 / 未融合抽 1" |
+| S-14b | `fused.cost` / `fused.distinct` 作为数值 | S-14 只让它们在条件里可读；`damage oppo.field.followers fused.distinct;` 这类把融合数当伤害值的文本还需要数值入口。`internal/project/numeric.go`（`fused.` → `Scalar{Kind:"fusion_material_scalar"}`）、`internal/project/validate.go`（`parseEffectAmount` 接受 `fused.`）、`internal/ir/amount.go`（`validNumericExpr` 与容器解码）、`internal/runner/numeric.go`（按材料求值） | Go 单测 `internal/project/fused_amount_test.go`；卡片 10324110 篡夺的继承者·辛瑟莱兹按融合种类造成伤害 + 2 个场景 |
 | S-15 | 测试 DSL 的实例字段断言 | 新增 `alias.attack_limit`（取 `attackLimit()`，"1 回合可以攻击 N 次"）与 `alias.damage_reduction`；`internal/project/validate.go`、`strict_validate.go`、`internal/ir/test_decode.go`、`internal/runner/assert.go` 四处白名单同步，写错字段名从"静默不相等"改成检查期报错 | 卡片 10274120 场景直接断言 `source.attack_limit == 2`；全量 444 个场景回归 |
 | S-01 | `remove lastwords from …` / `remove all abilities from …`（实例级失去能力） | `internal/project/validate.go`（`remove` 新增两种形状）、`typed_ir.go` + `keyword_effect.go`（解析成 `remove_ability`，`Keyword` 取 `lastwords`/`all`）、`internal/ir/encode.go`/`decode.go`（新效果种类）、`internal/runner/grant.go`（`suppressed`/`suppressAll`、剔除已排队触发、重新索引）、`internal/runner/execute.go`（派发）、`internal/runner/continuation.go`（连击快照保存抑制状态）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/ability_removal_test.go`（两种形状编成 `remove_ability`、拒绝 `remove fanfare`/漏 `from`/`add lastwords`/带 `until`）与 `internal/runner/ability_removal_test.go`（僵尸链在第二次死亡后停止、`remove all abilities` 同时清掉固有关键词与谢幕曲）；卡片 90051140、10252120、10251310 + 3 个场景 |
 
@@ -109,6 +110,20 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 31（卡包 10003）
+
+- 完成 13 张卡：10333110 真理的团结者、10343110 侮蔑的团结者、10324110 篡夺的继承者·辛瑟莱兹、
+  10312210 不弑之乡、10322210 篡夺的据点、10343310 威猛炽焰、10323310 奉还的剑闪、
+  10352210 混融之城、10351110 混融的肯定者、10372110 破坏的祈祷者、10372210 破坏的荒野、
+  10352110 混融的祈祷者、10353110 混融的团结者。
+- **语言扩展 S-14b**：`fused.cost` / `fused.distinct` 现在也能当数值用
+  （`damage oppo.field.followers fused.distinct;`）。原来只有条件入口，
+  "X 为与本卡牌融合的种类"这类伤害文本写不出来。
+- 新增 22 个场景（`tests/10003/batch-31-fusion-and-modes.wbotest`）+ 1 组 Go 测试。
+  踩到两个测试侧的坑：① 演化动作需要先声明 `ep 1`；② `90031210`（大地之魔片）带土之印，
+  按规则不能被能力破坏，挑选"被破坏的自己卡牌"时要换一张普通护符。
+- 全量回归：`check` 0 错 0 警；`test` 562 全绿；语料快照更新为 562 个场景。
 
 ### 批次 30（语言扩展 S-28/S-29 + 卡包 10003）
 

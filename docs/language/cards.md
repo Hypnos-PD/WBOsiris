@@ -598,6 +598,9 @@ damage target self.attack;
 `damage` 可以在数值之后接极值筛选：`damage field.followers 5 highest life;` 只打击生命值最大的
 那些随从（并列全中），`damage all.leaders 3 highest life;` 打击生命值最大的主战者。
 
+`fused.cost` 与 `fused.distinct` 除了做条件，也能直接当数值用，例如
+`damage oppo.field.followers fused.distinct;`（X 为融合的材料种类数）。
+
 `self.cost`、`self.attack`、`self.life` 也可以直接作为条件左侧，例如
 `if self.cost != 2 { heal own.leader 3; }` 或 `if self.life <= 3 { ... }`；
 读取的是结算到该语句时来源实例的当前数值。
@@ -1070,7 +1073,8 @@ effect {
 }
 ```
 
-融合块本身留空是允许的：材料选择由融合指令完成，正文在打出时按当时已附着的
+融合读到的数值也可以用于伤害/回复的目标数量之外的效果块；`fused.cost` 是材料原始费用合计，
+`fused.distinct` 是按卡牌 ID 计算的种类数。融合块本身留空是允许的：材料选择由融合指令完成，正文在打出时按当时已附着的
 材料数分支。`fused` 读到的是来源实例的已有材料，因此同一条判断也可以出现在
 `fanfare` 等结算时点；没有声明 `fusion` 的卡牌读到 `fused` 会被检查器拒绝。
 

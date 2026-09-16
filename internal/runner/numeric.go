@@ -41,6 +41,22 @@ func (g *game) numericValue(expr ir.NumericExpr, self *instance, bindings frame)
 			}
 			return self.counters[e.Field]
 		}
+		if e.Kind == "fusion_material_scalar" {
+			// fused.cost 是材料原始费用合计，fused.distinct 是按卡牌 ID 计算的种类数。
+			if self == nil {
+				return 0
+			}
+			total := 0
+			seen := map[int]bool{}
+			for _, material := range self.materials {
+				total += material.card.Cost
+				seen[material.card.ID] = true
+			}
+			if e.Field == "distinct" {
+				return len(seen)
+			}
+			return total
+		}
 		if e.Kind == "self_scalar" {
 			if self == nil {
 				return 0

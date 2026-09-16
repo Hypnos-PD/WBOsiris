@@ -5,7 +5,13 @@ card 10343310 {
     cost 1;
 
     effect {
-        unplayable;
+        choose target from own.field.followers;
+        damage target 1;
+        random victim from oppo.field.followers;
+        damage victim 3;
+        if overflow {
+            draw 1 from deck where type follower and class dragoncraft;
+        }
     }
 
     meta {

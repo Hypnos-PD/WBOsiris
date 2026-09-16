@@ -790,7 +790,8 @@ func parseEffectAmount(t []syntax.Token, i int) (int, bool) {
 	}
 	if i+2 < len(t) && t[i+1].Value == "." {
 		if t[i].Value == "self" && set("attack", "life", "cost")[t[i+2].Value] ||
-			set("own", "oppo")[t[i].Value] && ir.ValidPlayerScalar(t[i+2].Value) {
+			set("own", "oppo")[t[i].Value] && ir.ValidPlayerScalar(t[i+2].Value) ||
+			t[i].Value == "fused" && set("cost", "distinct")[t[i+2].Value] {
 			return i + 3, true
 		}
 	}

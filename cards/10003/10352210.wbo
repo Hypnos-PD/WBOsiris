@@ -5,7 +5,49 @@ card 10352210 {
     cost 2;
 
     effect {
-        unplayable;
+        fanfare {
+            mode {
+                option 1 {
+                    label chs "抽取1张卡牌。";
+                    label eng "Draw a card.";
+                    label jpn "自分のデッキから1枚を引く。";
+                    label kor "내 덱에서 1장을 뽑는다.";
+                    label cht "抽取1張卡片。";
+                    draw 1;
+                }
+                option 2 {
+                    label chs "使自己的战场上的随机1个随从+1/+1。";
+                    label eng "Give a random allied follower +1/+1.";
+                    label jpn "自分の場のフォロワーからランダム1枚は+1/+1する。";
+                    label kor "내 전장의 추종자 하나를 무작위로 +1/+1.";
+                    label cht "使自己的戰場上的隨機1張從者卡+1/+1。";
+                    random ally from own.field.followers;
+                    buff ally +1/+1;
+                }
+            }
+        }
+        engage 1 {
+            destroy self;
+            mode {
+                option 1 {
+                    label chs "抽取1张卡牌。";
+                    label eng "Draw a card.";
+                    label jpn "自分のデッキから1枚を引く。";
+                    label kor "내 덱에서 1장을 뽑는다.";
+                    label cht "抽取1張卡片。";
+                    draw 1;
+                }
+                option 2 {
+                    label chs "使自己的战场上的随机1个随从+1/+1。";
+                    label eng "Give a random allied follower +1/+1.";
+                    label jpn "自分の場のフォロワーからランダム1枚は+1/+1する。";
+                    label kor "내 전장의 추종자 하나를 무작위로 +1/+1.";
+                    label cht "使自己的戰場上的隨機1張從者卡+1/+1。";
+                    random ally from own.field.followers;
+                    buff ally +1/+1;
+                }
+            }
+        }
     }
 
     meta {

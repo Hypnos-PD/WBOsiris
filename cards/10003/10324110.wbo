@@ -6,7 +6,16 @@ card 10324110 {
     stats 5/6;
 
     effect {
-        unplayable;
+        fusion material from own.hand where trait loot {
+        }
+        fanfare {
+            damage oppo.field.followers fused.distinct;
+            damage oppo.leader fused.distinct;
+        }
+        superevolve {
+            damage oppo.field.followers fused.distinct;
+            damage oppo.leader fused.distinct;
+        }
     }
 
     meta {

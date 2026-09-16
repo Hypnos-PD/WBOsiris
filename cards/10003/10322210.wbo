@@ -5,7 +5,29 @@ card 10322210 {
     cost 1;
 
     effect {
-        unplayable;
+        engage 0 {
+            destroy self;
+            mode {
+                option 1 {
+                    label chs "将1张『黄金短剑』和1张『黄金项链』加入手牌。";
+                    label eng "Add a Golden Dagger and a Golden Necklace to your hand.";
+                    label jpn "『黄金の小剣』1枚と『黄金の首飾り』1枚を自分の手札に加える。";
+                    label kor "'황금 단검' 1장과 '황금 목걸이' 1장을 내 패에 넣는다.";
+                    label cht "增加1張『黃金短劍』與1張『黃金項鍊』到自己的手牌中。";
+                    add 1 card 90021310 to hand;
+                    add 1 card 90021340 to hand;
+                }
+                option 2 {
+                    label chs "将1张『黄金之杯』和1张『黄金之靴』加入手牌。";
+                    label eng "Add a Golden Chalice and Golden Boots to your hand.";
+                    label jpn "『黄金の杯』1枚と『黄金の靴』1枚を自分の手札に加える。";
+                    label kor "'황금 잔' 1장과 '황금 장화' 1장을 내 패에 넣는다.";
+                    label cht "增加1張『黃金之杯』與1張『黃金靴』到自己的手牌中。";
+                    add 1 card 90021320 to hand;
+                    add 1 card 90021330 to hand;
+                }
+            }
+        }
     }
 
     meta {

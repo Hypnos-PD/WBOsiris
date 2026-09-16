@@ -6,7 +6,46 @@ card 10351110 {
     stats 1/1;
 
     effect {
-        unplayable;
+        fanfare {
+        mode {
+            option 1 {
+                label chs "对对手的战场上的所有随从造成1点伤害。";
+                label eng "Deal 1 damage to all enemy followers.";
+                label jpn "相手の場のフォロワーすべてに1ダメージ。";
+                label kor "상대방 전장의 추종자 모두에게 1 피해.";
+                label cht "給予敵方戰場上全部的從者卡1點傷害。";
+                damage oppo.field.followers 1;
+            }
+            option 2 {
+                label chs "本随从+2/+2。";
+                label eng "Give this follower +2/+2.";
+                label jpn "これは+2/+2する。";
+                label kor "이 추종자는 +2/+2.";
+                label cht "使這張卡片+2/+2。";
+                buff self +2/+2;
+            }
+        }
+        }
+        evolve {
+        mode {
+            option 1 {
+                label chs "对对手的战场上的所有随从造成1点伤害。";
+                label eng "Deal 1 damage to all enemy followers.";
+                label jpn "相手の場のフォロワーすべてに1ダメージ。";
+                label kor "상대방 전장의 추종자 모두에게 1 피해.";
+                label cht "給予敵方戰場上全部的從者卡1點傷害。";
+                damage oppo.field.followers 1;
+            }
+            option 2 {
+                label chs "本随从+2/+2。";
+                label eng "Give this follower +2/+2.";
+                label jpn "これは+2/+2する。";
+                label kor "이 추종자는 +2/+2.";
+                label cht "使這張卡片+2/+2。";
+                buff self +2/+2;
+            }
+        }
+        }
     }
 
     meta {

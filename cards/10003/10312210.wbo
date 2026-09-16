@@ -5,7 +5,16 @@ card 10312210 {
     cost 3;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from own.hand;
+            discard target;
+            draw 2;
+        }
+        engage 0 {
+            destroy self;
+            choose victim from oppo.field.followers;
+            buff victim +0/-2;
+        }
     }
 
     meta {

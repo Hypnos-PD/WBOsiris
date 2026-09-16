@@ -5,7 +5,14 @@ card 10323310 {
     cost 2;
 
     effect {
-        unplayable;
+        fusion material from own.hand where trait loot {
+        }
+        random victim from oppo.field.followers;
+        damage victim 2;
+        add 1 card 90021310 to hand;
+        if fused.distinct >= 1 {
+            draw 1;
+        }
     }
 
     meta {

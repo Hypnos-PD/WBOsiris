@@ -6,7 +6,48 @@ card 10352110 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fanfare {
+            mode {
+                option 1 {
+                    label chs "对对手的战场上的随机1个随从造成3点伤害。";
+                    label eng "Deal 3 damage to a random enemy follower.";
+                    label jpn "相手の場のフォロワーからランダム1枚に3ダメージ。";
+                    label kor "상대방 전장의 추종자 하나를 무작위로 3 피해.";
+                    label cht "給予敵方戰場上的隨機1張從者卡3點傷害。";
+                    random victim from oppo.field.followers;
+                    damage victim 3;
+                }
+                option 2 {
+                    label chs "回复自己的主战者2点生命值。";
+                    label eng "Restore 2 defense to your leader.";
+                    label jpn "自分のリーダーを2回復。";
+                    label kor "내 리더를 2 회복.";
+                    label cht "回復自己的主戰者2點生命值。";
+                    heal own.leader 2;
+                }
+            }
+        }
+        evolve {
+            mode {
+                option 1 {
+                    label chs "对对手的战场上的随机1个随从造成3点伤害。";
+                    label eng "Deal 3 damage to a random enemy follower.";
+                    label jpn "相手の場のフォロワーからランダム1枚に3ダメージ。";
+                    label kor "상대방 전장의 추종자 하나를 무작위로 3 피해.";
+                    label cht "給予敵方戰場上的隨機1張從者卡3點傷害。";
+                    random victim from oppo.field.followers;
+                    damage victim 3;
+                }
+                option 2 {
+                    label chs "回复自己的主战者2点生命值。";
+                    label eng "Restore 2 defense to your leader.";
+                    label jpn "自分のリーダーを2回復。";
+                    label kor "내 리더를 2 회복.";
+                    label cht "回復自己的主戰者2點生命值。";
+                    heal own.leader 2;
+                }
+            }
+        }
     }
 
     meta {
