@@ -1559,7 +1559,7 @@ func decodeCondition(data []byte) (Condition, error) {
 	if err := strict(data, &v); err != nil {
 		return nil, err
 	}
-	if !oneOf(v.Left.Kind, "scalar", "fusion_material_scalar", "self_counter") || !validOp(v.Op) {
+	if !oneOf(v.Left.Kind, "scalar", "fusion_material_scalar", "self_counter", "self_scalar") || !validOp(v.Op) {
 		return nil, fmt.Errorf("unknown scalar kind")
 	}
 	if v.Left.Kind == "scalar" && (!validSide(v.Left.Side) || !ValidPlayerScalar(v.Left.Field)) || v.Left.Kind == "fusion_material_scalar" && (v.Left.Side != "" || !oneOf(v.Left.Field, "cost", "distinct")) {
@@ -1567,6 +1567,9 @@ func decodeCondition(data []byte) (Condition, error) {
 	}
 	if v.Left.Kind == "self_counter" && (v.Left.Side != "" || !ValidCounterName(v.Left.Field)) {
 		return nil, fmt.Errorf("invalid counter condition")
+	}
+	if v.Left.Kind == "self_scalar" && (v.Left.Side != "" || !oneOf(v.Left.Field, "cost", "attack", "life")) {
+		return nil, fmt.Errorf("invalid self scalar condition")
 	}
 	return CompareCondition{v.Kind, v.Op, v.Left, v.Right}, nil
 }

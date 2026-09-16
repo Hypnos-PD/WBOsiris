@@ -5,7 +5,10 @@ card 10333310 {
     cost 2;
 
     effect {
-        unplayable;
+        choose target from own.hand.followers;
+        raise cost target 1;
+        random victim from oppo.field.followers;
+        destroy victim;
     }
 
     meta {

@@ -6,7 +6,11 @@ card 10331110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        fanfare {
+            if self.cost != 2 {
+                heal own.leader 3;
+            }
+        }
     }
 
     meta {

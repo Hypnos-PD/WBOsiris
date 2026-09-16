@@ -1,0 +1,87 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "真理的肯定者费用为二时不回复主战者" {
+    seed 29001;
+    state {
+        player own {
+            leader 15/20;
+            pp 2/2;
+            hand { follower source = 10331110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 15; own.pp == 0/2; }
+}
+
+scenario "真理的肯定者费用不为二时回复三点生命" {
+    seed 29002;
+    state {
+        player own {
+            leader 15/20;
+            pp 4/4;
+            hand { follower source = 10331110 { cost 4; } }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 18; }
+}
+
+scenario "真理的祈祷者对其他所有随从造成三点伤害" {
+    seed 29003;
+    state {
+        player own {
+            pp 5/5;
+            field { follower ally = 10001110 { stats 2/8; } }
+            hand { follower source = 10332110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    // 费用为 5，不触发抽牌；本体 3/2 不受自己的伤害。
+    expect {
+        legal;
+        ally.stats == 2/5;
+        enemy.stats == 2/5;
+        source.stats == 3/2;
+        own.hand count card 10001110 == 0;
+    }
+}
+
+scenario "真理的祈祷者费用不为五时抽两张" {
+    seed 29004;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10332110 { cost 4; } }
+            deck top {
+                follower first = 10011110;
+                follower second = 10011110;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10011110 == 2; own.leader.life == 20; }
+}
+
+scenario "虚假的术式给手牌随从加一点费用并破坏敌方随从" {
+    seed 29005;
+    state {
+        player own {
+            pp 2/2;
+            hand {
+                spell source = 10333310;
+                follower raised = 10001110 { cost 2; }
+            }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; select raised; }
+    expect {
+        legal;
+        raised.zone == hand;
+        raised.cost == 3;
+        enemy.zone == graveyard;
+        own.pp == 0/2;
+    }
+}

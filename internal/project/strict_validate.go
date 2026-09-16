@@ -264,7 +264,7 @@ func isPlainOperation(s *syntax.Statement) bool {
 	if s.Word(0) == "replace" && len(s.Blocks()) == 0 {
 		return true
 	}
-	return len(s.Blocks()) == 0 && set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "halve", "double", "spellboost", "transform", "set_attack_limit", "set_damage_reduction", "set")[s.Word(0)]
+	return len(s.Blocks()) == 0 && set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "raise", "halve", "double", "spellboost", "transform", "set_attack_limit", "set_damage_reduction", "set")[s.Word(0)]
 }
 func parseEventPattern(t []syntax.Token) (int, string, bool) {
 	end, subject, ok := parseBaseEventPattern(t)
@@ -370,7 +370,9 @@ func strictCondition(t []syntax.Token, fusion bool) bool {
 		next, ok := parseEffectAmount(t, 0)
 		return ok && next+1 < len(t) && op(t[next].Value) && isUnsigned(t[next+1]) && next+2 == len(t)
 	}
-	return len(t) == 5 && (set("own", "oppo")[t[0].Value] && t[1].Value == "." && ir.ValidPlayerScalar(t[2].Value) || fusion && t[0].Value == "fused" && t[1].Value == "." && set("cost", "distinct")[t[2].Value]) && op(t[3].Value) && isUnsigned(t[4])
+	return len(t) == 5 && (set("own", "oppo")[t[0].Value] && t[1].Value == "." && ir.ValidPlayerScalar(t[2].Value) ||
+		t[0].Value == "self" && t[1].Value == "." && set("cost", "attack", "life")[t[2].Value] ||
+		fusion && t[0].Value == "fused" && t[1].Value == "." && set("cost", "distinct")[t[2].Value]) && op(t[3].Value) && isUnsigned(t[4])
 }
 
 func attackHistoryCondition(t []syntax.Token) bool {

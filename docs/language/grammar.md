@@ -259,6 +259,7 @@ comparison_operator = "==" | "!=" | "<" | "<=" | ">" | ">=" ;
 if_statement      = "if" , condition , effect_block , ["else" , effect_block] ;
 condition         = "overflow"
                   | "self" , "form" , follower_form
+                  | "self" , "." , ("cost" | "attack" | "life") , comparison_operator , integer
                   | participant , "." , evolution_unlock
                   | ["not"] , participant , "." , "attacked_this_turn"
                   | binding_name , "damaged"
@@ -355,6 +356,7 @@ operation         = draw_operation
                   | reanimate_operation
                   | reduce_operation
                   | halve_operation
+                  | raise_operation
                   | double_operation
                   | spellboost_operation
                   | set_attack_limit_operation
@@ -379,8 +381,8 @@ summon_operation  = "summon" , integer , "card" , card_id , ["for" , participant
                   | "summon" , "copies" , "of" , value_ref , [where_clause] , ";" ;
 deck_summon_source = "own" , "." , "deck" , "." , ("followers" | "amulets") ;
 history_source    = participant , "." , "destroyed" , ["." , ("followers" | "amulets")] , ["this" , "turn"] ;
-numeric_operation = "damage" , value_ref , effect_amount , [damage_distribution] , [where_clause] , ";"
-                  | "heal" , value_ref , effect_amount , [where_clause] , ";"
+numeric_operation = "damage" , value_ref , ["other" , [binding_name]] , effect_amount , [damage_distribution] , [where_clause] , ";"
+                  | "heal" , value_ref , ["other" , [binding_name]] , effect_amount , [where_clause] , ";"
                   | "set" , "life" , value_ref , effect_amount , ";"
                   | "set" , "cost" , value_ref , effect_amount , ";"
                   | "set" , "maxlife" , participant , "." , "leader" , integer , ";"
@@ -411,6 +413,7 @@ reanimate_operation = "reanimate" , integer , ";" ;
 reduce_operation  = "reduce" , "countdown" , value_ref , integer , ";"
                   | "reduce" , "cost" , value_ref , integer , "minimum" , integer , ";" ;
 halve_operation   = "halve" , "cost" , value_ref , ";" ;
+raise_operation   = "raise" , "cost" , value_ref , integer , ";" ;
 double_operation  = "double" , "stats" , value_ref , ";" ;
 spellboost_operation = "spellboost" , value_ref , integer , ";" ;
 set_attack_limit_operation = "set_attack_limit" , "self" , positive_integer , ";" ;

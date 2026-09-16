@@ -514,7 +514,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		return false
 	}
 	h := t[0].Value
-	known := set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "halve", "double", "spellboost", "transform", "set_attack_limit", "set_damage_reduction", "set")
+	known := set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "raise", "halve", "double", "spellboost", "transform", "set_attack_limit", "set_damage_reduction", "set")
 	if !known[h] {
 		return false
 	}
@@ -625,6 +625,9 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		end, good := parseValueRef(t, 1)
 		if good {
 			checkBindingAt(t, 1, end, bindings, ds)
+			if end < len(t) && t[end].Value == "other" {
+				end = otherExclusionEnd(t, end)
+			}
 			targetEnd := end
 			end, good = parseEffectAmount(t, end)
 			if good && end < len(t) && t[end].Value == "distributed" {
@@ -732,6 +735,12 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		if len(t) >= 3 && t[1].Value == "cost" {
 			end, good := parseValueRef(t, 2)
 			ok = good && end == len(t)
+			checkBindingAt(t, 2, end, bindings, ds)
+		}
+	case "raise":
+		if len(t) >= 4 && t[1].Value == "cost" {
+			end, good := parseValueRef(t, 2)
+			ok = good && end+1 == len(t) && isUnsigned(t[end])
 			checkBindingAt(t, 2, end, bindings, ds)
 		}
 	case "double":

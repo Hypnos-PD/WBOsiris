@@ -51,7 +51,7 @@ func (g *game) condition(c ir.Condition, self *instance) bool {
 		return false
 	case ir.CompareCondition:
 		n := 0
-		if x.Left.Kind == "self_counter" || x.Left.Kind == "scalar" {
+		if x.Left.Kind == "self_counter" || x.Left.Kind == "scalar" || x.Left.Kind == "self_scalar" {
 			n = g.numericValue(&x.Left, self, nil)
 		} else {
 			switch x.Left.Field {

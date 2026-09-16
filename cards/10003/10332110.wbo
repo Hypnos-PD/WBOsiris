@@ -6,7 +6,12 @@ card 10332110 {
     stats 3/2;
 
     effect {
-        unplayable;
+        fanfare {
+            damage field.followers other 3;
+            if self.cost != 5 {
+                draw 2;
+            }
+        }
     }
 
     meta {

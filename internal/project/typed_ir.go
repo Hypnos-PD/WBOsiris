@@ -383,7 +383,13 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		return ir.GrantEffect{NodeBase: base, Kind: "grant_ability", Target: target, Ability: ability, Labels: labels}, err
 	case "damage", "heal":
 		end := valueRefEnd(t, 1)
-		e := ir.TargetEffect{NodeBase: base, Kind: h, Target: valueRefIR(t, 1)}
+		target := valueRefIR(t, 1)
+		if end < len(t) && t[end].Value == "other" {
+			value, next := otherExclusion(t, end)
+			target = ir.ExcludeRef{Kind: "exclude", Source: target, Value: value}
+			end = next
+		}
+		e := ir.TargetEffect{NodeBase: base, Kind: h, Target: target}
 		e.Amount, e.AmountExpr = numericIR(t, end)
 		end, _ = parseEffectAmount(t, end)
 		if end < len(t) && t[end].Value == "distributed" {
@@ -499,6 +505,10 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 	case "halve":
 		// halve cost <集合>：把目标的当前费用变为向上取整的一半（官方 FAQ：9 → 5）。
 		return ir.AdjustEffect{NodeBase: base, Kind: "halve_cost", Field: "cost", Target: valueRefIR(t, 2)}, nil
+	case "raise":
+		// raise cost <集合> N：给目标加费；没有上限，与 reduce cost 共用同一 IR 节点。
+		end := valueRefEnd(t, 2)
+		return ir.AdjustEffect{NodeBase: base, Kind: "adjust_entity_field", Field: "cost", Target: valueRefIR(t, 2), Delta: intToken(t[end])}, nil
 	case "double":
 		// double stats <集合>：按每个目标自己的当前数值翻倍（攻击力与生命值）。
 		return ir.AdjustEffect{NodeBase: base, Kind: "double_stats", Target: valueRefIR(t, 2)}, nil
@@ -692,6 +702,10 @@ func conditionIR(t []syntax.Token) ir.Condition {
 	}
 	if t[0].Value == "fused" {
 		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "fusion_material_scalar", Field: t[2].Value}, Op: compareOp(t[3].Value), Right: intToken(t[4])}
+	}
+	if t[0].Value == "self" && t[1].Value == "." {
+		// `self.cost != 2` 这类条件读来源实例自己的数值。
+		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "self_scalar", Field: t[2].Value}, Op: compareOp(t[3].Value), Right: intToken(t[4])}
 	}
 	return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "scalar", Side: t[0].Value, Field: t[2].Value}, Op: compareOp(t[3].Value), Right: intToken(t[4])}
 }
