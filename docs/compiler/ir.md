@@ -288,6 +288,7 @@ BoolExpr =
 | HasTrait    { kind: "has_trait", value: ValueRef, trait: TraitId }
 | HasForm     { kind: "has_form", form: "unevolved" | "evolved" | "super_evolved" }
 | HasSpellboost { kind: "has_spellboost" }
+| IsDamaged   { kind: "is_damaged" }
 | HasKeyword  { kind: "has_keyword", keyword: Keyword }
 | Overflow    { kind: "overflow", side: Side }
 | SelfForm    { kind: "self_form", form: "unevolved" | "evolved" | "super_evolved" }
@@ -315,7 +316,8 @@ BoolExpr =
 `HasForm` 使用当前候选随从的形态；`evolved` 包含超进化，非随从总是不匹配。
 `HasSpellboost` 检查候选当前卡牌定义是否声明 `spellboost` 触发能力，不读取卡牌文本，
 不检查职业或卡牌类型；没有额外字段。变身后按新的卡牌定义判断。
-筛选器的 `compare` 节点支持 `field: "life" | "cost"`；`cost` 读取实例当前费用。
+筛选器的 `compare` 节点支持 `field: "life" | "cost" | "attack"`；`cost` 读取实例当前费用，
+`attack` 读取当前攻击力（含增益）。`is_damaged` 匹配生命值已有损伤的随从。
 其 `value` 保留整数编码，并支持 `{kind:"scalar", side:"own"|"oppo", field:...}`，
 字段限于 `combo`、`pp`、`maxpp`、`life`、`ep`、`sep`、`shadows`、`hand_count`、`earthsigils`。玩家引用相对于
 能力来源求值，不能使用候选拥有者或抽牌接收者替代；测试断言中对应测试席位。
@@ -638,7 +640,8 @@ AddCard = NodeBase & {
   owner: Side,
   cardId: CardId,
   count: IntExpr,
-  destination: "hand"
+  destination: "hand",
+  output: "added"
 }
 
 Summon = NodeBase & {

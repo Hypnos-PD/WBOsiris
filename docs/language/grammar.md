@@ -220,12 +220,13 @@ filter_expression   = filter_conjunction , {"or" , filter_conjunction} ;
 filter_conjunction  = filter_term , {"and" , filter_term} ;
 filter_term         = "card" , card_id
                     | "spellboost"
+                    | "damaged"
                     | "keyword" , ability
                     | "type" , card_type
                     | "class" , identifier
                     | "trait" , identifier
                     | "form" , ("unevolved" | "evolved" | "super_evolved")
-                    | ("life" | "cost") , comparison_operator , (integer | player_scalar) ;
+                    | ("life" | "cost" | "attack") , comparison_operator , (integer | player_scalar) ;
 player_scalar       = participant , "." , ("combo" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" | "hand_count" | "earthsigils") ;
 comparison_operator = "==" | "!=" | "<" | "<=" | ">" | ">=" ;
 ```

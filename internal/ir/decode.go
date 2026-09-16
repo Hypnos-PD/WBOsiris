@@ -985,7 +985,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 				return nil, fmt.Errorf("invalid gain_crest shape")
 			}
 		case "add_card":
-			if !validSide(v.Owner) || v.Destination != "hand" || v.Count < 0 || !validCardID(v.CardID) || v.Output != "" || v.TieBreak != "" || v.MaxCost != 0 || r != nil || v.PreserveInstanceID || v.PreserveMaterials {
+			if !validSide(v.Owner) || v.Destination != "hand" || v.Count < 0 || !validCardID(v.CardID) || v.Output != "added" || v.TieBreak != "" || v.MaxCost != 0 || r != nil || v.PreserveInstanceID || v.PreserveMaterials {
 				return nil, fmt.Errorf("invalid add_card shape")
 			}
 		case "summon":
@@ -1419,6 +1419,14 @@ func decodePredicate(data []byte) (Predicate, error) {
 			return nil, fmt.Errorf("invalid predicate form")
 		}
 		return FieldPredicate{Kind: v.Kind, Form: v.Form}, nil
+	case "is_damaged":
+		var v struct {
+			Kind string `json:"kind"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		return FieldPredicate{Kind: v.Kind}, nil
 	case "compare":
 		var v struct {
 			Kind, Field, Op string
@@ -1427,7 +1435,7 @@ func decodePredicate(data []byte) (Predicate, error) {
 		if err := strict(data, &v); err != nil {
 			return nil, err
 		}
-		if !oneOf(v.Field, "life", "cost") || !validOp(v.Op) {
+		if !oneOf(v.Field, "life", "cost", "attack") || !validOp(v.Op) {
 			return nil, fmt.Errorf("invalid comparison predicate")
 		}
 		value, expr, err := decodeNumericValue(v.Value, true)

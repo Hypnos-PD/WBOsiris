@@ -320,6 +320,8 @@ func (g *game) matches(i *instance, p ir.Predicate, self *instance) bool {
 				}
 			}
 			return false
+		case "is_damaged":
+			return i.card.CardType == "follower" && i.damageTaken > 0
 		case "has_card":
 			return i.card.ID == x.CardID
 		case "has_type":
@@ -354,8 +356,11 @@ func (g *game) matches(i *instance, p ir.Predicate, self *instance) bool {
 				right = g.numericValue(x.ValueScalar, self, nil)
 			}
 			value := i.life
-			if x.Field == "cost" {
+			switch x.Field {
+			case "cost":
 				value = i.cost
+			case "attack":
+				value = i.currentAttack()
 			}
 			switch x.Op {
 			case "le":
@@ -463,6 +468,7 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 	case "gain_crest":
 		g.gainCrest(self, e.Owner, e.CardID)
 	case "add_card":
+		added := []*instance{}
 		for n := 0; n < e.Count; n++ {
 			c := g.cards[e.CardID]
 			if c == nil {
@@ -474,6 +480,12 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 			g.serial++
 			i := g.newInstance(c, fmt.Sprintf("added-%d", g.serial), fmt.Sprintf("@added%d", g.serial), "hand")
 			g.putInHandOrOverdraw(own, i)
+			if i.zone == "hand" {
+				added = append(added, i)
+			}
+		}
+		if e.Output != "" {
+			f[e.Output] = bindEntities(added...)
 		}
 	case "summon":
 		f[e.Output] = bindEntities(g.summonFor(self, e.Owner, e.Count, e.CardID, false)...)

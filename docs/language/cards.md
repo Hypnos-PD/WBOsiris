@@ -140,6 +140,8 @@ effect {
 - `oppo`：当前控制者的对手。
 - `target`：最近一次目标选择所绑定的值。
 - `summoned`、`drawn`：最近一次对应操作成功产生的有序集合。
+- `added`：最近一次 `add 1 card X to hand` 实际进入手牌的实例（手牌已满被丢弃的不计入），
+  用于"加入手牌后立即修改"的文本，例如 `add 1 card 90071110 to hand; buff added +3/+0;`。
 - `destroyed`：最近一次 `destroy` 操作实际破坏的目标集合。
 - `opponent`：`attack`、`clash` 能力中本次交战的另一随从；攻击主战者时为空。
 
@@ -384,6 +386,8 @@ remove all abilities from targets;
 
 `summon copies of 集合` 为手牌或战场中的每个随从、护符召唤一个独立副本，原卡保留。
 可用绑定、区域集合或 `self`，并可附加 `where` 筛选；法术和其他区域的对象不产生副本。
+复制只接受仍留在手牌或战场的目标，因此"使其消失，召唤对应数量的复制随从"要写成
+`summon copies of target; banish target;`（先复制再消失，净效果与文本一致）。
 多个对象按集合的稳定顺序处理，战场满后停止。`summoned` 只包含实际创建的副本，
 没有创建时也会清空，且可作为后续效果或下一次复制的输入。
 

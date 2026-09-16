@@ -1,0 +1,74 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "猫偶在有超进化随从时把悬丝傀儡加入手牌" {
+    seed 15001;
+    state {
+        player own {
+            pp 1/1;
+            field { follower evolved = 10001110 { super_evolved; } }
+            hand { follower source = 10271120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == field;
+        source has rush;
+        own.hand count card 90071110 == 1;
+        own.pp == 0/1;
+    }
+}
+
+scenario "没有超进化随从时猫偶不加入手牌" {
+    seed 15002;
+    state {
+        player own {
+            pp 1/1;
+            field { follower plain = 10001110; }
+            hand { follower source = 10271120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90071110 == 0; }
+}
+
+scenario "绝望之王进化时让攻击力四以下的随从消失并复制" {
+    seed 15003;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10272120; }
+        }
+        player oppo {
+            field {
+                follower weak = 10001110;
+                follower strong = 90004110;
+            }
+        }
+    }
+    action { evolve source; select weak; }
+    expect {
+        legal;
+        source.stats == 5/5;
+        weak.zone == banished;
+        own.field count card 10001110 == 1;
+        strong.zone == field;
+        own.ep == 0;
+    }
+}
+
+scenario "攻击力五以上的随从不在绝望之王的选择范围内" {
+    seed 15004;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10272120; }
+        }
+        player oppo { field { follower strong = 90004110; } }
+    }
+    action { evolve source; }
+    expect { legal; strong.zone == field; own.field count card 90004110 == 0; }
+}

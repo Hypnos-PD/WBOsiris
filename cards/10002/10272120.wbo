@@ -6,7 +6,12 @@ card 10272120 {
     stats 3/3;
 
     effect {
-        unplayable;
+        evolve {
+            choose target from oppo.field.followers where attack <= 4;
+            // 先复制再消失：复制操作只接受手牌或战场中的实例，两步净效果与文本一致。
+            summon copies of target;
+            banish target;
+        }
     }
 
     meta {

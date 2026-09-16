@@ -18,11 +18,11 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 311 · 未实现(骨架) 62 · 未导入 531
+总计 904 · 已完成 313 · 未实现(骨架) 60 · 未导入 531
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
-10002        77      63      14       0
+10002        77      65      12       0
 10003        77       4       0      73
 10004        76       1       0      75
 10005        76       0       0      76
@@ -61,7 +61,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-03 | 从双方战场中选择随从 | 10201310 逆向变化；`../SWB-RL` 里另有 10 张（10301110、10304120、10524110、10534120、10554110…） | 文本是"选择战场上的1个随从"（任意一方）。`character_set` 只允许同一方混合（`own.field.followers or own.leader` / `oppo...`），跨方选择未支持。 |
 | S-06 | 牌组内卡牌费用变更 | 10244120 绚丽的凤凰·小凤（本批挂起）；全卡文本里另有 11 张涉及"牌组中的卡牌费用"（10164110、10264110、10303210…） | `change own.deck cost half;` 被编译器拒绝（`未知效果语句: change`）。现有 `reduce cost T N minimum M` 只作用于单个实例，没有面向整副牌组的费用变更。 |
 | S-07 | ~~"其他随从进化 / 超进化"事件~~ **已解决**：`when own\|oppo follower evolved\|super_evolved [other]` | 已解锁 10241110 庇护的智龙、10212120 妖精击剑士、10252110 爆破之翼·圮尤拉；全卡另有 2 张（10721110、10862120）后续直接使用 | 事件绑定改名的随从（`evolved`），`other` 排除来源实例自身。`when self evolved/super_evolved` 保持原样。 |
-| S-08 | 筛选器缺少"受伤状态 / 攻击力" | 10223110（若攻击受伤的随从则破坏交战对手）、10272120（选择攻击力 ≤4 的敌方随从）；全卡另有 3 张（10341120、10462110、90044310） | `filter_term` 只有 `card / spellboost / keyword / type / class / trait / form / life / cost`：没有 `damaged`，也没有 `attack` 比较（只有 `life`、`cost`）。 |
+| S-08 | ~~筛选器缺少"受伤状态 / 攻击力"~~ **已解决**：`where damaged`、`where attack 比较 整数` | 10272120 绝望之王·阿基姆已解锁（`where attack <= 4`）；全卡另有 3 张同类筛选（10341120、10462110、90044310）。10223110 仍未完成，缺的是"条件里判断交战对象是否受伤"，见 S-18 | 10223110 的【攻击时】需要读取 `opponent` 绑定的受伤状态，属于条件而不是筛选器；筛选器侧（`damaged`、`attack`）本条已补齐。 |
 | S-09 | `count(...)` 不接受 `other`（排除来源自身） | 10253120（"X 为自己的战场上的其他随从的张数"） | 编译器拒绝 `count(own.field.followers other)`。该卡已用"先按含自身的张数 `repeat` 加攻，再 `buff self -1/+0`"精确表达，并在文件里写了注释；登记此项是为了让语言侧知道有这条需求（`count` 支持 `where` 但不支持 `other`）。 |
 | S-10 | ~~纹章效果文本来源~~ **已解决**：纹章文本在 `alt_modes` 里 | — | 我一开始只看了 `skill_texts`，误判成"数据缺失"。`../WBArts/data/cards.json` 的 `alt_modes` 数组带 `type_key` 与五语言 `text_*`（统计：crest 63 条、faith 5、crystallize 5、accelerate 5），现有 10000/10001 的纹章卡就是这么写的。教训：报"数据缺失"前先把卡表的所有字段翻一遍（含 `alt_modes`）。 |
 
@@ -69,8 +69,9 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 的卡都保持 `unplayable;`，避免生成行为错误的衍生体。
 
 | S-12 | 纹章块内的集合条件 / 按目标自身数值成倍 | 10204120 格里姆尼尔（"若自己的战场上有超进化后的随从"）、10233310 帕梅拉的舞蹈（"使所有随从的攻击力/生命值变为 2 倍"） | 前者是 S-04 的同一缺口出现在纹章里；后者需要"每个目标按自身当前数值翻倍"，现有 `buff` 的数值引用只有来源自身与 `count(...)` |
-| S-13 | `add card … to hand` 不产生绑定 | 10271120（"将1张『悬丝傀儡』加入手牌，使其+3/+0"） | 生成的实例没有任何绑定可以引用，所以无法只强化"这一张"。用 `buff own.hand.followers where card X` 会连带强化手里的同名旧卡，不符合文本。同类还影响"加入手牌后立即修改"的一批卡。 |
+| S-13 | ~~`add card … to hand` 不产生绑定~~ **已解决**：`added` 绑定 | 已解锁 10271120 猫偶；全卡另有约 7 张"加入手牌后立即修改"的卡（10641310、10643310、10844110、10922310 等），后续卡包直接使用 | `add 1 card X to hand` 现在把成功进入手牌的实例绑成 `added`（手牌满被丢弃的不计入），Go 测试同时验证只有新卡被强化、手里的同名旧卡不受影响。 |
 | S-11 | `.wbotest` 无法声明先手 | 影响"抽牌耗尽判负"这类与先手有关的规则验证 | 规则本身已实现（`execute.go` 在无法满足抽牌时让对方获胜），但触发条件是 `firstPlayer != ""`，而场景测试不提供先手信息，这条路径只能由 Go 侧测试覆盖，场景测试写不出来。 |
+| S-18 | 条件里判断绑定对象的受伤状态 | 10223110 剑士公主·萝泽（"【攻击时】若攻击受伤的随从，则破坏交战对手"） | 【攻击时】把交战对象绑成 `opponent`，但条件语法只能读标量、计数器、`fused` 与 `count(...)`，不能写"`opponent` 已受伤"。草案：新增条件 `if opponent damaged { … }`（`Condition{Kind:"is_damaged", Target: BindingRef}`），求值复用筛选器的 `is_damaged`。同批挂起 10223110 的【爆能强化_5】部分已经可写（`draw 1 from deck where … ; set cost drawn 0;`）。 |
 
 ## 已完成的语言扩展
 
@@ -86,10 +87,27 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-16 | `ability_destruction_guard`（不会被能力破坏） | 新固有关键词：`internal/ir/decode.go` 的 `validKeyword`、`internal/project/validate.go` 的 `abilities`、`strict_validate.go` 的固有能力形状表、`internal/runner/runner.go`（`destroyByEffect` 受保护，必杀改走新的 `destroyByCombat` 不受保护）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/granted_ability_flow_test.go`（能力破坏被挡下、战斗破坏照样生效）；卡片 10273110 + 2 个场景 |
 | S-07 | `when own\|oppo follower evolved\|super_evolved [other]` —— 其他随从的进化事件 | `internal/ir/model.go`（`EventTrigger.ExcludeSelf`）、`internal/ir/decode.go`（校验 `other` 只用于带对象的非受伤事件）、`internal/project/strict_validate.go`（基础事件模式接受进化动词与 `other`）、`internal/project/typed_ir.go`（事件名映射与 `ExcludeSelf`）、`internal/project/validate.go`（`evolved` 绑定）、`internal/runner/runner.go`（进化事件改为把改名随从绑成 `evolved`）、`internal/runner/trigger_index.go`（按实例排除自身）；文档 `grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/evolution_event_test.go`（`other`/绑定/来源区域、拒绝重复 `other` 与 `self … other`）；卡片 10241110、10212120、10252110 + 6 个场景（含"不因普通进化触发"与"不响应自己超进化"两个反向场景） |
 | S-17 | `set cost T N;` —— 把费用设为固定值 | `internal/project/validate.go`（`set` 接受 `cost`）、`typed_ir.go`（`set_cost`）、`internal/ir/encode.go`/`decode.go`、`internal/runner/execute.go`（写 `i.cost`）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/evolution_event_test.go` 覆盖 `set cost self 1;` 与错误形状；卡片 10212120 场景断言 `source.cost == 1`。"费用变为 N"的全卡需求还有 15 张，本项是通用原语 |
+| S-08 | `where damaged` / `where attack 比较 整数` —— 筛选器补两个词条 | `internal/project/validate.go`（`parseWhere` 接受 `damaged` 与 `attack`）、`typed_ir.go`（`filterIR` 生成 `is_damaged` / `compare field:"attack"`）、`internal/ir/decode.go`（谓词白名单）、`internal/runner/execute.go`（`matches` 求值：`damageTaken > 0`、`currentAttack()`）；文档 `grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/filter_and_added_test.go`；卡片 10272120 + 2 个场景（含"攻击力 5 以上不在范围内"的反向场景） |
+| S-13 | `add card … to hand` 产出 `added` 绑定 | `internal/project/typed_ir.go`（写入 `Output`）、`internal/project/validate.go`（`added` 可见性）、`internal/ir/encode.go`/`decode.go`（`add_card.output` 必填 `added`）、`internal/runner/execute.go`（把真正进入手牌的实例绑成 `added`）；文档 `cards.md`/`compiler/ir.md` | Go 单测 `internal/project/filter_and_added_test.go`（`added` 只在 `add` 之后可见）与 `internal/runner/added_binding_test.go`（只强化新加入的那张，手里同名旧卡保持 1/1）；卡片 10271120 + 2 个场景 |
 
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 15（语言扩展 + 卡包 10002）
+
+- **语言扩展 S-08 完成（筛选器部分）**：`where damaged` 与 `where attack 比较 整数`。
+  10223110 需要的"条件里判断交战对象受伤"仍缺（新登记 S-18）。
+- **语言扩展 S-13 完成**：`add 1 card X to hand` 产出 `added` 绑定，可以只强化刚加入的那张。
+- 记一条既有约定：`summon copies of` 只接受仍留在手牌或战场的目标，所以 10272120 写成
+  `summon copies of target; banish target;`（先复制再消失），而不是照抄文本语序。
+- 完成 2 张卡：10271120 猫偶（有超进化随从时把强化过的悬丝傀儡加入手牌）、
+  10272120 绝望之王·阿基姆（进化时让攻击力 ≤4 的随从消失并召唤复制）。
+- 新增 4 个场景（`tests/10002/batch-15-filters-and-added.wbotest`），
+  另有 `internal/project/filter_and_added_test.go` 与
+  `internal/runner/added_binding_test.go` 覆盖数值与绑定细节
+  （场景只能数手牌张数，强化数值必须在 Go 侧断言）。
+- 全量回归：`check` 0 错 0 警；`test` 464 全绿；语料快照更新为 464 个场景。
 
 ### 批次 14（语言扩展 + 卡包 10002）
 

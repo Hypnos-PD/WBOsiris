@@ -338,7 +338,8 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			return ir.AdjustEffect{NodeBase: base, Kind: "adjust_counter", Field: t[3].Value, Delta: intToken(t[1])}, nil
 		}
 		if t[1].Kind == syntax.Integer && t[2].Value == "card" {
-			return ir.CardEffect{NodeBase: base, Kind: "add_card", Owner: "own", Count: intAt(s, 1), CardID: intToken(t[3]), Destination: "hand"}, nil
+			// 加入手牌的成功实例绑定为 added，便于"加入后立即修改"的文本。
+			return ir.CardEffect{NodeBase: base, Kind: "add_card", Owner: "own", Count: intAt(s, 1), CardID: intToken(t[3]), Destination: "hand", Output: "added"}, nil
 		} else if t[1].Value == "combo" {
 			return ir.AdjustEffect{NodeBase: base, Kind: "adjust_resource", Owner: "own", Resource: "combo", Delta: intToken(t[2])}, nil
 		} else if t[2].Value == "earthsigil" {
@@ -580,6 +581,9 @@ func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 		case "spellboost":
 			terms = append(terms, ir.FieldPredicate{Kind: "has_spellboost"})
 			j++
+		case "damaged":
+			terms = append(terms, ir.FieldPredicate{Kind: "is_damaged"})
+			j++
 		case "keyword":
 			terms = append(terms, ir.FieldPredicate{Kind: "has_keyword", Keyword: t[j+1].Value})
 			j += 2
@@ -598,7 +602,7 @@ func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 		case "form":
 			terms = append(terms, ir.FieldPredicate{Kind: "has_form", Form: t[j+1].Value})
 			j += 2
-		case "life", "cost":
+		case "life", "cost", "attack":
 			predicate := ir.FieldPredicate{Kind: "compare", Field: t[j].Value, Op: compareOp(t[j+1].Value)}
 			if t[j+2].Kind == syntax.Integer {
 				predicate.Value = intToken(t[j+2])

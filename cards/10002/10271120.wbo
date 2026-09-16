@@ -6,7 +6,13 @@ card 10271120 {
     stats 1/1;
 
     effect {
-        unplayable;
+        rush;
+        fanfare {
+            if count(own.field.followers where form super_evolved) >= 1 {
+                add 1 card 90071110 to hand;
+                buff added +3/+0;
+            }
+        }
     }
 
     meta {

@@ -477,6 +477,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 		if h == "draw" {
 			bindings["drawn"] = true
 		}
+		if h == "add" {
+			bindings["added"] = true
+		}
 		if h == "destroy" {
 			bindings["destroyed"] = true
 		}
@@ -851,6 +854,8 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 		switch t[i].Value {
 		case "spellboost":
 			i++
+		case "damaged":
+			i++
 		case "keyword":
 			if i+1 < len(t) && ir.ValidKeyword(t[i+1].Value) {
 				i += 2
@@ -875,7 +880,7 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 			if i+1 < len(t) && set("unevolved", "evolved", "super_evolved")[t[i+1].Value] {
 				i += 2
 			}
-		case "life", "cost":
+		case "life", "cost", "attack":
 			if i+2 < len(t) && set("==", "!=", "<", "<=", ">", ">=")[t[i+1].Value] {
 				if isUnsigned(t[i+2]) {
 					i += 3

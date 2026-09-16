@@ -87,6 +87,7 @@ func (p FieldPredicate) MarshalJSON() ([]byte, error) {
 	object := map[string]any{"kind": p.Kind}
 	switch p.Kind {
 	case "has_spellboost":
+	case "is_damaged":
 	case "has_card":
 		object["cardId"] = p.CardID
 	case "has_type":
@@ -147,7 +148,7 @@ func (e CardEffect) MarshalJSON() ([]byte, error) {
 	case "gain_crest":
 		object["owner"], object["cardId"] = e.Owner, e.CardID
 	case "add_card":
-		object["owner"], object["count"], object["cardId"], object["destination"] = e.Owner, e.Count, e.CardID, e.Destination
+		object["owner"], object["count"], object["cardId"], object["destination"], object["output"] = e.Owner, e.Count, e.CardID, e.Destination, e.Output
 	case "summon":
 		object["owner"], object["count"], object["cardId"], object["output"] = e.Owner, e.Count, e.CardID, e.Output
 	case "summon_copies":
