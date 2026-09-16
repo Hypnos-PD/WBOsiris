@@ -1,0 +1,107 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "破坏的团结者按其他卡牌数量随机破坏敌方随从" {
+    seed 35001;
+    state {
+        player own {
+            pp 6/6;
+            field {
+                follower ally = 10001110;
+                amulet relic = 10001210;
+            }
+            hand { follower source = 10373110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/8; }
+                follower second = 10001110 { stats 2/8; }
+                follower third = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { play source; }
+    // 自己场上有 2 张其他卡牌 → 随机破坏 2 个敌方随从，然后破坏这 2 张自己的卡牌。
+    expect {
+        legal;
+        oppo.field count card 10001110 == 1;
+        own.field count card 10001110 == 0;
+        ally.zone == graveyard;
+        relic.zone == graveyard;
+        source.zone == field;
+    }
+}
+
+scenario "没有其他卡牌时破坏的团结者不破坏敌方随从" {
+    seed 35002;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10373110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect { legal; enemy.zone == field; source.zone == field; }
+}
+
+scenario "妃花的超进化使敌方所有随从攻击力变为四" {
+    seed 35003;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10364110; }
+        }
+        player oppo {
+            field {
+                follower big = 10001110 { stats 2/8; }
+                follower small = 10001110 { stats 1/3; }
+            }
+        }
+    }
+    action { superevolve source; }
+    expect {
+        legal;
+        big.stats == 4/8;
+        small.stats == 4/3;
+        source.stats == 3/7;
+    }
+}
+
+scenario "妃花的纹章按纹章数给敌方随从无法攻击与回合结束消失" {
+    seed 35004;
+    state {
+        player own {
+            crests { crest himeka = 10364110; }
+            field { follower himeka_unit = 10364110; }
+        }
+        player oppo { field { follower victim = 10001110 { stats 2/8; } } }
+    }
+    action { end_turn; }
+    // 纹章数 1 → 唯一的候选随从获得「无法攻击」和「自己的回合结束消失」。
+    expect { legal; victim has cannot_attack; }
+}
+
+scenario "攻击力五以上的随从不在妃花纹章的选择范围内" {
+    seed 35005;
+    state {
+        player own {
+            crests { crest himeka = 10364110; }
+            field { follower himeka_unit = 10364110; }
+        }
+        player oppo { field { follower strong = 10001110 { stats 5/8; } } }
+    }
+    action { end_turn; }
+    expect { legal; strong lacks cannot_attack; }
+}
+
+scenario "妃花不在场上时纹章不发动" {
+    seed 35006;
+    state {
+        player own { crests { crest himeka = 10364110; } }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { end_turn; }
+    expect { legal; enemy lacks cannot_attack; }
+}

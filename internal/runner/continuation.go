@@ -1096,7 +1096,11 @@ func validatePendingNode(s *Session, pending *pendingChoice) error {
 	switch node := effect.(type) {
 	case ir.SelectionEffect:
 		count := min(node.SelectionCount(), len(pending.request.Candidates))
-		if count < 1 || node.Kind == "require" && count != node.SelectionCount() || pending.request.Kind != "target" || node.Kind != "choose" && node.Kind != "require" || pending.binding != node.Binding || pending.request.MinSelections != count || pending.request.MaxSelections != count {
+		if node.CountExpr != nil {
+			// 动态数量的具体值保存在挂起请求里，恢复时不再重复求值。
+			count = pending.request.MinSelections
+		}
+		if count < 1 || node.Kind == "require" && node.CountExpr == nil && count != node.SelectionCount() || pending.request.Kind != "target" || node.Kind != "choose" && node.Kind != "require" || pending.binding != node.Binding || pending.request.MinSelections != count || pending.request.MaxSelections != count {
 			return fmt.Errorf("continuation target request does not match its IR node")
 		}
 		candidates := s.g.selectionValues(node, pending.self, pending.bindings)

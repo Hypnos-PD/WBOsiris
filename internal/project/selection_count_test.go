@@ -55,7 +55,8 @@ func TestCompileSelectionCountAndFilter(t *testing.T) {
 }
 
 func TestRejectInvalidSelectionCounts(t *testing.T) {
-	for _, suffix := range []string{"count", "count 0", "count -1", "count 65536", "count own.combo", "count 2 count 3", "count 2 where trait pixie"} {
+	// `count own.combo` 这类动态数量（S-39）现在是合法写法，不再是非法形状。
+	for _, suffix := range []string{"count", "count 0", "count -1", "count 65536", "count 2 count 3", "count 2 where trait pixie"} {
 		file, ds := syntax.Parse("12345678.wbo", []byte(validCard("fanfare { choose targets from own.field "+suffix+"; }")))
 		if len(ds) == 0 && !hasErrors(ValidateFile(file)) {
 			t.Fatalf("accepted %s", suffix)

@@ -130,6 +130,25 @@ func effectObject(base NodeBase, kind string) map[string]any {
 	return map[string]any{"id": base.ID, "kind": kind, "origin": base.Origin}
 }
 
+func (e SelectionEffect) MarshalJSON() ([]byte, error) {
+	object := effectObject(e.NodeBase, e.Kind)
+	object["policy"], object["binding"], object["source"] = e.Policy, e.Binding, e.Source
+	if e.CountExpr != nil {
+		// 动态数量直接写进 count 字段（解码端先试整数，失败后按数值表达式处理）。
+		value, err := numericValue(0, e.CountExpr, false)
+		if err != nil {
+			return nil, err
+		}
+		object["count"] = value
+	} else if e.Count != 0 {
+		object["count"] = e.Count
+	}
+	if e.Extremum != nil {
+		object["extremum"] = e.Extremum
+	}
+	return json.Marshal(object)
+}
+
 func (e DrawEffect) MarshalJSON() ([]byte, error) {
 	object := effectObject(e.NodeBase, e.Kind)
 	object["owner"], object["sourceZone"], object["all"], object["output"] = e.Owner, e.SourceZone, e.All, e.Output

@@ -6,7 +6,12 @@ card 10373110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            // X 为自己的战场上的其他卡牌张数；先按这个数量随机破坏，再破坏自己的其他卡牌。
+            random victims from oppo.field.followers count count(own.field other);
+            destroy victims;
+            destroy own.field other;
+        }
     }
 
     meta {

@@ -200,7 +200,7 @@ fusion_block       = "fusion" , "material" , "from" , target_set ,
 
 ```ebnf
 selection_statement = selection_kind , binding_name , "from" , target_set ,
-                      ["other" , [binding_name]] , [where_clause] , [extremum_clause] , ["count" , integer] , ";"
+                      ["other" , [binding_name]] , [where_clause] , [extremum_clause] , ["count" , effect_amount] , ";"
                     | selection_kind , binding_name , "from" , character_set , ["count" , integer] , ";" ;
 character_set       = "own.field.followers" , "or" , "own.leader"
                     | "oppo.field.followers" , "or" , "oppo.leader" ;

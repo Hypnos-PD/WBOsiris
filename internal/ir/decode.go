@@ -699,12 +699,23 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			return nil, fmt.Errorf("character sets do not have card extrema")
 		}
 		count := 0
+		var countExpr NumericExpr
 		if len(v.Count) != 0 {
-			if err := json.Unmarshal(v.Count, &count); err != nil || count < 1 || count > 65535 {
-				return nil, fmt.Errorf("invalid selection count")
+			if err := json.Unmarshal(v.Count, &count); err == nil {
+				if count < 1 || count > 65535 {
+					return nil, fmt.Errorf("invalid selection count")
+				}
+			} else {
+				// 动态数量：count 字段是数值表达式。
+				value, expr, valueErr := decodeNumericValue(v.Count, false)
+				if valueErr != nil || expr == nil || !validNumericExpr(expr, false) {
+					return nil, fmt.Errorf("invalid selection count")
+				}
+				count = value
+				countExpr = expr
 			}
 		}
-		return SelectionEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Policy: v.Policy, Binding: v.Binding, Source: s, Count: count, Extremum: v.Extremum}, err
+		return SelectionEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Policy: v.Policy, Binding: v.Binding, Source: s, Count: count, CountExpr: countExpr, Extremum: v.Extremum}, err
 	case "if":
 		type raw struct {
 			ID        string            `json:"id"`

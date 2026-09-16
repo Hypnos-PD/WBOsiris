@@ -1310,7 +1310,11 @@ func (g *game) preflightRequirementSequence(body []ir.Effect, self *instance, bi
 				if g.budget != nil && (g.budget.exceeded || !g.budget.chargeCandidates(uint64(len(candidates)))) {
 					return false, executionBudgetExceeded
 				}
-				if len(candidates) < e.SelectionCount() {
+				want := e.SelectionCount()
+				if e.CountExpr != nil {
+					want = max(0, g.numericValue(e.CountExpr, self, bindings))
+				}
+				if want > 0 && len(candidates) < want {
 					return false, "target_required"
 				}
 			}

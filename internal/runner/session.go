@@ -470,10 +470,15 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 			return nil
 		}
 		bindings[e.Binding] = nil
+		count := e.SelectionCount()
+		if e.CountExpr != nil {
+			// 动态数量：结算到该语句时求值，0 表示不选任何目标。
+			count = max(0, s.g.numericValue(e.CountExpr, self, bindings))
+		}
 		if e.Kind == "random_choose" {
 			remaining := append([]ir.EventTarget(nil), candidates...)
 			selected := map[ir.EventTarget]bool{}
-			for n := 0; n < e.SelectionCount() && len(remaining) > 0; n++ {
+			for n := 0; n < count && len(remaining) > 0; n++ {
 				index := s.g.rng.Index(len(remaining))
 				selected[remaining[index]] = true
 				remaining[index] = remaining[len(remaining)-1]
@@ -557,7 +562,14 @@ func (s *Session) targetRequest(e ir.SelectionEffect, candidates []ir.EventTarge
 	for _, candidate := range candidates {
 		items = append(items, candidateForValue(candidate))
 	}
-	count := min(e.SelectionCount(), len(candidates))
+	count := e.SelectionCount()
+	if e.CountExpr != nil {
+		count = max(0, s.g.numericValue(e.CountExpr, self, bindings))
+	}
+	count = min(count, len(candidates))
+	if count == 0 {
+		return nil
+	}
 	request := s.newRequest(e.ID, "target", count, count, items, s.g.sideOf(self))
 	return &pendingChoice{request: request, binding: e.Binding, bindings: bindings, self: self}
 }

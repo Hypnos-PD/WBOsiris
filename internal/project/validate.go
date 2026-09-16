@@ -416,9 +416,13 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			}
 			if setOK && end < len(t) && t[end].Value == "count" {
 				if end+1 < len(t) {
-					count, ok := integer(t[end+1])
-					setOK = ok && count > 0
-					end += 2
+					if count, ok := integer(t[end+1]); ok {
+						setOK = count > 0
+						end += 2
+					} else {
+						// 动态数量：`random target … count own.crests`。
+						end, setOK = parseEffectAmount(t, end+1)
+					}
 				} else {
 					setOK = false
 				}

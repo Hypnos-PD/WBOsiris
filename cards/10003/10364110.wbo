@@ -6,7 +6,73 @@ card 10364110 {
     stats 0/4;
 
     effect {
-        unplayable;
+        fanfare {
+            gain own crest 10364110;
+        }
+        superevolve {
+            set attack oppo.field.followers 4;
+        }
+    }
+
+    crest {
+        countdown 4;
+
+        when own turn ends {
+            if count(own.field.followers where card 10364110) >= 1 {
+                random victims from oppo.field.followers where attack <= 4 count own.crests;
+                add cannot_attack to victims;
+                grant victims {
+                    label chs "自己的回合结束时，使本随从消失。";
+                    label eng "At the end of your turn, banish this follower.";
+                    label jpn "自分のターン終了時、これを消滅。";
+                    label kor "내 턴 종료시, 이 추종자를 소멸.";
+                    label cht "自己的回合結束時，使這張卡片消失。";
+                    when own turn ends {
+                        banish self;
+                    }
+                }
+            }
+        }
+
+        locale chs {
+            name "纹章：安息的继承者·妃花";
+            text """
+【<color=Keyword>吟唱</color>_4】
+自己的回合结束时，若自己的战场上有『<color=Keyword>安息的继承者·妃花</color>』，则使对手的战场上的随机X个攻击力为4或以下的随从获得「无法攻击随从或主战者」和「自己的回合结束时，使本随从消失」。X为自己的纹章数。
+""";
+        }
+
+        locale eng {
+            name "Crest: Himeka, Heir to Repose";
+            text """
+<b><color=Keyword>Countdown</color> (4)</b>
+At the end of your turn, if there's an allied <b><i><color=Keyword>Himeka, Heir to Repose</color></i></b> on the field, give X random enemy followers with 4 attack or less \"Can't attack followers or leaders\" and \"At the end of your turn, banish this card.\" X is the number of crests you have.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：安息の継承者・ヒメカ";
+            text """
+【<color=Keyword>カウントダウン</color>_4】
+自分のターン終了時、自分の場に『<color=Keyword>安息の継承者・ヒメカ</color>』があるなら、相手の場の攻撃力4以下のフォロワーからランダムX枚は「フォロワーやリーダーを攻撃できない。」と「自分のターン終了時、これを消滅。」を持つ。Xは自分のクレストの数である。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 안식의 계승자 히메카";
+            text """
+[<color=Keyword>카운트다운</color> 4]
+내 턴 종료시 내 전장에 <color=Keyword>안식의 계승자 히메카</color>가 있다면, 공격력이 4 이하인 상대방 전장의 추종자 중 무작위로 X장은 「추종자나 리더 공격 불가」, 「내 턴 종료시, 이 추종자를 소멸」을 갖는다. X는 내 크레스트 수.
+""";
+        }
+
+        locale cht {
+            name "紋章：安息的繼承者‧希彌佳";
+            text """
+【<color=Keyword>倒數</color>_4】
+自己的回合結束時，如果自己戰場上有『<color=Keyword>安息的繼承者‧希彌佳</color>』，則會隨機使X張敵方戰場上攻擊力為4以下的從者卡獲得「無法攻擊從者或主戰者」與「自己的回合結束時，使這張卡片消失」。X為「自己的紋章數」。
+""";
+        }
     }
 
     meta {

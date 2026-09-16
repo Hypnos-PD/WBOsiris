@@ -409,7 +409,9 @@ type SelectionEffect struct {
 	Binding  string             `json:"binding"`
 	Source   Ref                `json:"source"`
 	Count    int                `json:"count,omitempty"`
-	Extremum *SelectionExtremum `json:"extremum,omitempty"`
+	// CountExpr 支持动态数量（例如"随机 X 个随从"，X 为纹章数）；求值在调用方进行。
+	CountExpr NumericExpr        `json:"-"`
+	Extremum  *SelectionExtremum `json:"extremum,omitempty"`
 }
 
 type SelectionExtremum struct {
@@ -426,6 +428,9 @@ func (e SelectionEffect) SelectionCount() int {
 	}
 	return e.Count
 }
+
+// CountIsDynamic 报告数量是否来自表达式；此时调用方必须先求值，0 表示不选任何目标。
+func (e SelectionEffect) CountIsDynamic() bool { return e.CountExpr != nil }
 
 type IfEffect struct {
 	NodeBase

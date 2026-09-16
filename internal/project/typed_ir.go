@@ -275,14 +275,21 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		}
 		extremum, end, _ := parseExtremum(t, end)
 		count := 0
+		var countExpr ir.NumericExpr
 		if end < len(t) && t[end].Value == "count" {
-			count = intToken(t[end+1])
+			value, expr := numericIR(t, end+1)
+			if expr == nil {
+				count = value
+			} else {
+				// `random target … count X`：X 可以是纹章数、集合计数等动态数值。
+				countExpr = expr
+			}
 		}
 		kind := h
 		if h == "random" {
 			kind = "random_choose"
 		}
-		return ir.SelectionEffect{NodeBase: base, Kind: kind, Policy: map[string]string{"choose": "optional", "require": "required", "random": "random"}[h], Binding: t[1].Value, Source: src, Count: count, Extremum: extremum}, nil
+		return ir.SelectionEffect{NodeBase: base, Kind: kind, Policy: map[string]string{"choose": "optional", "require": "required", "random": "random"}[h], Binding: t[1].Value, Source: src, Count: count, CountExpr: countExpr, Extremum: extremum}, nil
 	case "if":
 		blocks := s.Blocks()
 		then, err := compileEffectBlock(blocks[0], sid, id+"/then", ids)
