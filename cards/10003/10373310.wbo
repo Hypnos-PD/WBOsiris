@@ -5,7 +5,9 @@ card 10373310 {
     cost 2;
 
     effect {
-        unplayable;
+        choose target from own.field;
+        destroy target;
+        summon 1 card 90074210;
     }
 
     meta {

@@ -1,0 +1,119 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "歼灭的歌声破坏自己的卡牌并召唤新约白之章" {
+    seed 27001;
+    state {
+        player own {
+            pp 2/2;
+            field { follower victim = 10001110; }
+            hand { spell source = 10373310; }
+        }
+    }
+    action { play source; select victim; }
+    expect {
+        legal;
+        victim.zone == graveyard;
+        own.field count card 90074210 == 1;
+        own.pp == 0/2;
+    }
+}
+
+scenario "现场工程师舍弃一张手牌并抽三张" {
+    seed 27002;
+    state {
+        player own {
+            pp 5/5;
+            hand {
+                follower source = 10372120;
+                follower dropped = 10001110;
+            }
+            deck top {
+                follower first = 10001110;
+                follower second = 10001110;
+                follower third = 10001110;
+            }
+        }
+    }
+    action { play source; select dropped; }
+    expect {
+        legal;
+        dropped.zone == graveyard;
+        own.hand count card 10001110 == 3;
+        own.shadows == 1;
+        own.pp == 0/5;
+    }
+}
+
+scenario "侮蔑之国的启动对所有随从造成一点伤害" {
+    seed 27003;
+    state {
+        turn own 4;
+        player own {
+            pp 1/1;
+            field {
+                amulet nation = 10342210;
+                follower ally = 10001110 { stats 2/8; }
+            }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { engage nation; }
+    expect {
+        legal;
+        ally.stats == 2/7;
+        enemy.stats == 2/7;
+        own.pp == 0/1;
+    }
+}
+
+scenario "驱逐的死矢按本回合的连击次数各减一点生命" {
+    seed 27004;
+    state {
+        player own {
+            combo 3;
+            pp 1/1;
+            hand { spell source = 10313310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    // 打出法术本身也计入连击，因此 X = 4，同一个随从承受 4 次 -0/-1。
+    expect { legal; enemy.stats == 2/4; }
+}
+
+scenario "水晶的指引的纹章在吟唱结束后抽两张并造成四点伤害" {
+    seed 27005;
+    state {
+        player own {
+            field { follower ally = 10001110 { stats 2/8; } }
+        }
+        player oppo {
+            crests { crest crystal = 10331310 { countdown 1; } }
+            deck top {
+                follower first = 10001110;
+                follower second = 10001110;
+            }
+        }
+    }
+    action { end_turn; }
+    expect {
+        legal;
+        oppo.crests count card 10331310 == 0;
+        oppo.hand count card 10001110 == 2;
+        ally.stats == 2/4;
+    }
+}
+
+scenario "安息的祈祷者的纹章在未攻击的回合结束时回复主战者" {
+    seed 27006;
+    state {
+        player own {
+            leader 10/20;
+            crests { crest repose = 10362110; }
+            field { follower ally = 10001110; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; own.leader.life == 11; own.crests count card 10362110 == 1; }
+}

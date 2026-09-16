@@ -6,7 +6,10 @@ card 10352120 {
     stats 2/2;
 
     effect {
-        unplayable;
+        enhance 7 {
+            reanimate 5;
+            reanimate 3;
+        }
     }
 
     meta {

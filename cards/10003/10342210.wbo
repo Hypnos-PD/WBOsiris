@@ -5,7 +5,10 @@ card 10342210 {
     cost 2;
 
     effect {
-        unplayable;
+        countdown 4;
+        engage 1 {
+            damage field.followers 1;
+        }
     }
 
     meta {

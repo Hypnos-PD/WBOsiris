@@ -5,7 +5,10 @@ card 10313310 {
     cost 1;
 
     effect {
-        unplayable;
+        repeat own.combo {
+            random target from oppo.field.followers;
+            buff target +0/-1;
+        }
     }
 
     meta {

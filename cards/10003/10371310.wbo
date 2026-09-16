@@ -5,7 +5,9 @@ card 10371310 {
     cost 4;
 
     effect {
-        unplayable;
+        choose target from oppo.field.followers;
+        destroy target;
+        add 2 card 90071110 to hand;
     }
 
     meta {

@@ -5,7 +5,11 @@ card 10351310 {
     cost 4;
 
     effect {
-        unplayable;
+        repeat 2 {
+            random target from oppo.field.followers;
+            damage target 2;
+        }
+        damage oppo.leader 2;
     }
 
     meta {

@@ -6,7 +6,9 @@ card 10341120 {
     stats 6/6;
 
     effect {
-        unplayable;
+        fanfare {
+            destroy oppo.field.followers where damaged;
+        }
     }
 
     meta {

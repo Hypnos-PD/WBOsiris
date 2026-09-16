@@ -6,7 +6,11 @@ card 10372120 {
     stats 3/4;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from own.hand;
+            discard target;
+            draw 3;
+        }
     }
 
     meta {

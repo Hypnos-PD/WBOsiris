@@ -6,7 +6,10 @@ card 10301110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from field.followers other;
+            buff target +4/-4;
+        }
     }
 
     meta {

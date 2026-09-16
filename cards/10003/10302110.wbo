@@ -6,7 +6,10 @@ card 10302110 {
     stats 1/3;
 
     effect {
-        unplayable;
+        ward;
+        when oppo follower super_evolved while self in hand {
+            add bane to self;
+        }
     }
 
     meta {

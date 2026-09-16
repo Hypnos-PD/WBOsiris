@@ -6,7 +6,10 @@ card 10303110 {
     stats 3/1;
 
     effect {
-        unplayable;
+        rush;
+        when oppo follower super_evolved while self in hand {
+            add storm to self;
+        }
     }
 
     meta {

@@ -6,7 +6,10 @@ card 10321120 {
     stats 5/5;
 
     effect {
-        unplayable;
+        lastwords {
+            summon 1 card 10321120;
+            remove lastwords from summoned;
+        }
     }
 
     meta {

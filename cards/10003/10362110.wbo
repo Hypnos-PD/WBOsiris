@@ -6,7 +6,58 @@ card 10362110 {
     stats 1/4;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            gain own crest 10362110;
+        }
+    }
+
+    crest {
+        countdown 4;
+
+        when own turn ends if not own.attacked_this_turn {
+            heal own.leader 1;
+        }
+
+        locale chs {
+            name "纹章：安息的祈祷者";
+            text """
+【<color=Keyword>吟唱</color>_4】
+自己的回合结束时，若本回合中自己的随从没有进行过攻击，则回复自己的主战者1点生命值。
+""";
+        }
+
+        locale eng {
+            name "Crest: Prayer of Repose";
+            text """
+<b><color=Keyword>Countdown</color> (4)</b>
+At the end of your turn, if allied followers didn't attack this turn, restore 1 defense to your leader.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：安息の祈祷者";
+            text """
+【<color=Keyword>カウントダウン</color>_4】
+自分のターン終了時、このターン中に自分のフォロワーが攻撃していないなら、自分のリーダーを1回復。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 안식의 기도자";
+            text """
+[<color=Keyword>카운트다운</color> 4]
+내 턴 종료시 이번 턴에 내 추종자가 공격하지 않았다면, 내 리더를 1 회복.
+""";
+        }
+
+        locale cht {
+            name "紋章：安息的祈禱者";
+            text """
+【<color=Keyword>倒數</color>_4】
+自己的回合結束時，如果本回合中自己的從者卡未進行攻擊，則會回復自己的主戰者1點生命值。
+""";
+        }
     }
 
     meta {

@@ -1,0 +1,181 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "涸绝的使徒可以指定对手的随从并获得加攻减血" {
+    seed 26001;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10301110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.stats == 6/4; own.pp == 0/4; }
+}
+
+scenario "没有其他随从时涸绝的使徒不选择目标" {
+    seed 26002;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10301110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.zone == field; source.stats == 2/2; }
+}
+
+scenario "树海的战士的谢幕曲把森林的奥秘和妖精加入手牌" {
+    seed 26003;
+    state {
+        player own { field { follower source = 10312120; } }
+        player oppo { field { follower big = 90004110; } }
+    }
+    action { attack source into big; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        own.hand count card 90011310 == 1;
+        own.hand count card 90011110 == 1;
+    }
+}
+
+scenario "剑圣的同胞的谢幕曲召唤一个失去谢幕曲的自己" {
+    seed 26004;
+    state {
+        player own { field { follower source = 10321120; } }
+        player oppo { field { follower big = 90004110; } }
+    }
+    action { attack source into big; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        own.field count card 10321120 == 1;
+        own.shadows == 1;
+    }
+}
+
+scenario "风雪龙人破坏所有受伤的敌方随从" {
+    seed 26005;
+    state {
+        player own {
+            pp 6/6;
+            field { follower ally = 10001110 { stats 2/8; damage_taken 3; } }
+            hand { follower source = 10341120; }
+        }
+        player oppo {
+            field {
+                follower hurt = 10001110 { stats 2/8; damage_taken 3; }
+                follower fresh = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        hurt.zone == graveyard;
+        fresh.zone == field;
+        ally.zone == field;
+        ally.stats == 2/5;
+    }
+}
+
+scenario "前进的暴虐对两个随机随从和主战者各造成两点" {
+    seed 26006;
+    state {
+        player own {
+            pp 4/4;
+            hand { spell source = 10351310; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/8; }
+                follower second = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        first.stats == 2/6;
+        second.stats == 2/6;
+        oppo.leader.life == 18;
+    }
+}
+
+scenario "爆能强化七的新来的守墓人发动两次亡者召还" {
+    seed 26007;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10352120; }
+            destroyed {
+                follower big = 90041120;
+                follower mid = 90072110;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90041120 == 1;
+        own.field count card 90072110 == 1;
+        own.pp == 0/7;
+    }
+}
+
+scenario "未爆能强化时新来的守墓人不召还" {
+    seed 26008;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10352120; }
+            destroyed { follower big = 90041120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90041120 == 0; }
+}
+
+scenario "丝线突袭破坏敌方随从并把两张悬丝傀儡加入手牌" {
+    seed 26009;
+    state {
+        player own {
+            pp 4/4;
+            hand { spell source = 10371310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; select enemy; }
+    expect {
+        legal;
+        enemy.zone == graveyard;
+        own.hand count card 90071110 == 2;
+    }
+}
+
+scenario "五行修行者的入场曲与进化时各召唤一个式神" {
+    seed 26010;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10331120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90031130 == 1; own.pp == 0/4; }
+}
+
+scenario "五行修行者的进化时再召唤一个式神" {
+    seed 26011;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10331120; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.field count card 90031130 == 1; source.stats == 5/5; own.ep == 0; }
+}
