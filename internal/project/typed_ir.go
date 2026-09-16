@@ -264,8 +264,9 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			end += 4
 		}
 		if end < len(t) && t[end].Value == "other" {
-			src = ir.ExcludeRef{Kind: "exclude", Source: src, Value: ir.SelfRef{Kind: "self"}}
-			end++
+			value, next := otherExclusion(t, end)
+			src = ir.ExcludeRef{Kind: "exclude", Source: src, Value: value}
+			end = next
 		}
 		if end < len(t) && t[end].Value == "where" {
 			pred, next := filterIR(t, end)

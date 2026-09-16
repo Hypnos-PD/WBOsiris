@@ -6,7 +6,13 @@ card 10263110 {
     stats 3/4;
 
     effect {
-        unplayable;
+        storm;
+        attack {
+            if count(own.field.amulets) >= 2 {
+                random victim from oppo.field.followers other opponent;
+                destroy victim;
+            }
+        }
     }
 
     meta {

@@ -406,7 +406,7 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 				}
 			}
 			if setOK && end < len(t) && t[end].Value == "other" {
-				end++
+				end = otherExclusionEnd(t, end)
 			}
 			if setOK && end < len(t) && t[end].Value == "where" {
 				end, setOK = parseWhere(t, end)
@@ -590,7 +590,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		if len(t) >= 4 && abilities[t[1].Value] && t[2].Value == "to" {
 			end, good := parseValueRef(t, 3)
 			if good && end < len(t) && t[end].Value == "other" {
-				end++
+				end = otherExclusionEnd(t, end)
 			}
 			if good && end < len(t) && t[end].Value == "where" {
 				end, good = parseWhere(t, end)
@@ -639,7 +639,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 	case "buff":
 		end, good := parseValueRef(t, 1)
 		if good && end < len(t) && t[end].Value == "other" {
-			end++
+			end = otherExclusionEnd(t, end)
 		}
 		if good {
 			end, good = parseSignedAmount(t, end)
@@ -697,7 +697,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		if start > 0 {
 			end, good := parseValueRef(t, start)
 			if good && end < len(t) && t[end].Value == "other" {
-				end++
+				end = otherExclusionEnd(t, end)
 			}
 			if good && end < len(t) {
 				end, good = parseWhere(t, end)
@@ -855,6 +855,15 @@ func parseValueRef(t []syntax.Token, i int) (int, bool) {
 	end, ok := parseTargetSet(t, i)
 	return end, ok && !(i+2 < len(t) && t[i+2].Value == "destroyed")
 }
+// otherExclusionEnd 跳过 `other [绑定名]`，与 typed_ir.otherExclusion 保持一致。
+func otherExclusionEnd(t []syntax.Token, i int) int {
+	next := i + 1
+	if next < len(t) && t[next].Kind == syntax.Identifier && !otherFollowers[t[next].Value] {
+		return next + 1
+	}
+	return next
+}
+
 func parseWhere(t []syntax.Token, i int) (int, bool) {
 	if i >= len(t) || t[i].Value != "where" {
 		return i, false

@@ -200,7 +200,7 @@ fusion_block       = "fusion" , "material" , "from" , target_set ,
 
 ```ebnf
 selection_statement = selection_kind , binding_name , "from" , target_set ,
-                      ["other"] , [where_clause] , [extremum_clause] , ["count" , integer] , ";"
+                      ["other" , [binding_name]] , [where_clause] , [extremum_clause] , ["count" , integer] , ";"
                     | selection_kind , binding_name , "from" , character_set , ["count" , integer] , ";" ;
 character_set       = "own.field.followers" , "or" , "own.leader"
                     | "oppo.field.followers" , "or" , "oppo.leader" ;
@@ -232,8 +232,9 @@ comparison_operator = "==" | "!=" | "<" | "<=" | ">" | ">=" ;
 ```
 
 `field` 表示双方战场合并后的稳定有序集合；`own.field`、`oppo.field` 可包含随从
-和护符。复数类型后缀缩窄集合类型。`other` 只排除与 `self` 同一实例的对象，
-必须写在 `where` 前。`and` 的优先级高于 `or`；不支持括号过滤器。
+和护符。复数类型后缀缩窄集合类型。`other` 排除与 `self` 同一实例的对象，
+写成 `other 绑定名` 时改为排除该绑定指向的实例（例如【攻击时】的"非交战对手"写作
+`other opponent`）；两种写法都必须写在 `where` 前。`and` 的优先级高于 `or`；不支持括号过滤器。
 `cost` 比较实例的当前费用，包括加费或降费效果，不比较原始费用。
 比较右侧可使用显式玩家数值，例如 `cost == own.combo`；`own` 和 `oppo` 相对于
 能力来源，而非候选对象、抽牌接收者或当前回合玩家。测试断言中按测试席位解释。
@@ -369,7 +370,7 @@ add_operation     = "add" , integer , "card" , card_id , "to" , "hand" , ";"
                   | "add" , "combo" , integer , ";"
                   | "add" , integer , "earthsigil" , ";"
                   | "add" , integer , "counter" , counter_name , ";"
-                  | "add" , ability , "to" , value_ref , ["other"] , [where_clause] , [effect_duration] , ";" ;
+                  | "add" , ability , "to" , value_ref , ["other" , [binding_name]] , [where_clause] , [effect_duration] , ";" ;
 effect_duration   = "until" , [participant] , "turn" , "ends" ;
 
 summon_operation  = "summon" , integer , "card" , card_id , ";"
@@ -383,7 +384,7 @@ numeric_operation = "damage" , value_ref , effect_amount , [damage_distribution]
                   | "set" , "life" , value_ref , effect_amount , ";"
                   | "set" , "cost" , value_ref , effect_amount , ";"
                   | "set" , "maxlife" , participant , "." , "leader" , integer , ";"
-                  | "buff" , value_ref , ["other"] , signed_amount , "/" , signed_amount , [where_clause] , [effect_duration] , ";"
+                  | "buff" , value_ref , ["other" , [binding_name]] , signed_amount , "/" , signed_amount , [where_clause] , [effect_duration] , ";"
                   | "gain" , scalar_ref , integer , ";"
                   | "gain" , participant , "crest" , card_id , ";"
                   | "restore" , participant , "." , "pp" , ";" ;
@@ -400,9 +401,9 @@ damage_distribution = "distributed" , ["overflow" , participant , "." , "leader"
 object_operation  = ("destroy" | "banish" | "discard") , value_ref , [where_clause] , ";"
                   | "destroy" , batch_target , "," , batch_target , {"," , batch_target} , ";" ;
 batch_target      = binding_name | "self" ;
-ability_operation = "remove" , ability , "from" , value_ref , ["other"] , [where_clause] , ";"
-                  | "remove" , "lastwords" , "from" , value_ref , ["other"] , [where_clause] , ";"
-                  | "remove" , "all" , "abilities" , "from" , value_ref , ["other"] , [where_clause] , ";" ;
+ability_operation = "remove" , ability , "from" , value_ref , ["other" , [binding_name]] , [where_clause] , ";"
+                  | "remove" , "lastwords" , "from" , value_ref , ["other" , [binding_name]] , [where_clause] , ";"
+                  | "remove" , "all" , "abilities" , "from" , value_ref , ["other" , [binding_name]] , [where_clause] , ";" ;
 return_operation  = "return" , value_ref , "to" , ("hand" | "deck") , ";" ;
 evolve_operation  = ("evolve" | "superevolve") , value_ref , "silent" , ";" ;
 reanimate_operation = "reanimate" , integer , ";" ;

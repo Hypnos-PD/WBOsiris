@@ -18,11 +18,11 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 318 · 未实现(骨架) 55 · 未导入 531
+总计 904 · 已完成 322 · 未实现(骨架) 51 · 未导入 531
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
-10002        77      70       7       0
+10002        77      74       3       0
 10003        77       4       0      73
 10004        76       1       0      75
 10005        76       0       0      76
@@ -94,10 +94,27 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-06 | `halve cost 集合;` —— 牌组内卡牌费用减半 | `internal/project/validate.go`（`halve` 语句形状）、`typed_ir.go`（`halve_cost`）、`internal/ir/encode.go`/`decode.go`（新节点与形状校验）、`internal/runner/execute.go`（`ceil(cost/2)`，按集合逐个结算）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/halve_cost_test.go`（目标保留为牌组集合、拒绝 `halve cost`/`halve deck`/多余 token/`countdown`）与 `internal/runner/deck_cost_test.go`（5→3→2 的重复减半、`followers` 不碰法术、整副牌组 `reduce` 夹在 0）；卡片 10244120 + 2 个场景（奇数向上取整、只影响发动时在牌组里的卡） |
 | S-03 | 复查：`field.followers` 选择双方战场随从 | 无需改代码，只补文档与测试：`internal/project/cross_side_selection_test.go`（`field.followers other` 保持 `Side=""` 且排除自身、`own.field.followers` 不变） | 卡片 10201310 + 2 个场景（指定对手随从并降到 0 生命、指定自己的随从）。`grammar.md` 早已写明 `field` 是双方战场合并集合，我此前误判为缺口 |
 | S-12 | `double stats 集合;` —— 按目标自身数值翻倍 | `internal/project/validate.go`（`double` 语句形状）、`typed_ir.go`（`double_stats`）、`internal/ir/encode.go`/`decode.go`、`internal/runner/execute.go`（攻击力、当前生命、已受伤害各 ×2）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/double_stats_test.go`、`internal/runner/double_stats_test.go`（3/6 且已受 4 点伤害 → 6/4、伤害 8；护符不受影响）；卡片 10233310 + 3 个场景（土之印 +1 与获得纹章、土之秘术 10 足够时翻倍并抽牌、不足时只抽牌） |
+| S-20 | `other 绑定名` —— 从集合里排除一个绑定 | 原 `other` 只能排除来源自身；`internal/project/keyword_effect.go`/`validate.go` 新增 `otherExclusion`/`otherExclusionEnd`，`choose/require/random` 与 `add/remove/buff` 的目标集合都接受可选绑定名。运行时不需要改动：`ExcludeRef` 早就按任意 Ref 求值 | Go 单测 `internal/project/other_binding_test.go`（`other opponent` 指向绑定、裸 `other` 仍排除自身）；卡片 10263110 + 2 个场景（破坏非交战对手、护符不足时不破坏） |
 
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 21（语言扩展 S-20 + 卡包 10002）
+
+- **语言扩展 S-20 完成**：`other 绑定名`。原来 `other` 只能排除来源自身；
+  现在可以排除任意绑定，例如【攻击时】的"非交战对手"写作
+  `random victim from oppo.field.followers other opponent;`。运行时无需改动——
+  `ExcludeRef` 本来就按任意 Ref 求值。
+- 完成 4 张卡：10242210 炎龙之剑（启动 1 破坏自身，强化随从并附加"谢幕曲：召唤炎龙之剑"）、
+  10262310 神圣守护（守护随从 +0/+1，并按它的生命值对随机敌方随从造成等量伤害）、
+  10234120 精金炼金术师·诺曼（土之秘术 1 + 三选一模式，进化时再发动一次）、
+  10263110 速断之刃·阿尼耶丝（疾驰；护符 ≥2 时攻击破坏非交战对手）。
+- 新增 7 个场景（`tests/10002/batch-21-engage-and-modes.wbotest`）+ 2 组 Go 测试
+  （炎龙之剑的附加谢幕曲要真的召唤出护符；`other 绑定名` 的解析形状）。
+  顺带确认 `sum(target, life)` 可直接作为伤害数值："X 为选择的随从的生命值"无需新原语。
+- 10002 只剩 3 张：10224110（协作关键词）、10224120（在对手战场召唤）、10214120（长文本附加能力）。
+- 全量回归：`check` 0 错 0 警；`test` 485 全绿；语料快照更新为 485 个场景。
 
 ### 批次 19–20（S-12 收尾 + 卡包 10002）
 

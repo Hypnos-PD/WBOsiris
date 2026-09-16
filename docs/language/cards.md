@@ -184,7 +184,9 @@ heal own.leader 5;
 require target from own.field.followers;
 ```
 
-筛选条件写在目标集合之后，`other` 用于排除 `self`。
+筛选条件写在目标集合之后，`other` 用于排除 `self`；写成 `other 绑定名` 时改为排除
+该绑定指向的实例，例如【攻击时】里的"非交战对手的随从"写作
+`random victim from oppo.field.followers other opponent;`。
 
 ```wbo
 choose target from own.field.followers other where trait golem;

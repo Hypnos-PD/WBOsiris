@@ -5,7 +5,21 @@ card 10242210 {
     cost 1;
 
     effect {
-        unplayable;
+        engage 1 {
+            destroy self;
+            choose target from own.field.followers;
+            buff target +1/+1;
+            grant target {
+                label chs "【谢幕曲】召唤1张『炎龙之剑』。";
+                label eng "Last Words: Summon a Flame Dragon Sword.";
+                label jpn "【ラストワード】『炎竜の剣』1枚を自分の場に出す。";
+                label kor "[유언] '염룡의 검' 1장을 내 전장에 소환.";
+                label cht "【謝幕曲】召喚1張『炎龍之劍』。";
+                lastwords {
+                    summon 1 card 10242210;
+                }
+            }
+        }
     }
 
     meta {

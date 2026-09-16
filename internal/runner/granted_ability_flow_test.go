@@ -93,6 +93,42 @@ func TestMaliciousOracleDestroysTheEnemyFollowerAtItsOwnersTurnEnd(t *testing.T)
 	}
 }
 
+// 炎龙之剑：启动 1 破坏自身、强化并附加「谢幕曲：召唤1张炎龙之剑」。
+// 场景测试只能看到强化，谢幕曲是否真的召唤出护符由这里验证。
+func TestFlameDragonSwordGrantSummonsItself(t *testing.T) {
+	pack := loadCardsForTest(t, "10002/10242210", "10000/10001110")
+	swordID, unitID := strings.Repeat("1", 32), strings.Repeat("2", 32)
+	state := testState()
+	own := state.Players["own"]
+	own.PP, own.MaxPP = 1, 1
+	own = withInstance(own, "field", ir.TestInstance{InstanceID: swordID, CardID: 10242210, DeclaredType: "amulet"})
+	own = withInstance(own, "field", ir.TestInstance{InstanceID: unitID, CardID: 10001110, DeclaredType: "follower"})
+	state.Players["own"] = own
+	session, err := NewSession(pack, state, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result := session.Begin(strings.Repeat("a", 32), ir.SourceAction{Kind: "engage", Actor: "own", Source: swordID}); result.Status != StatusSuspended {
+		t.Fatalf("engage did not ask for a target: %#v", result)
+	}
+	choice := session.PendingChoice()
+	if result := session.Resume(ChoiceResponse{RequestID: choice.RequestID, ActionID: choice.ActionID, StateRevision: choice.StateRevision, SelectedInstanceIDs: []string{unitID}}); result.Status != StatusCompleted {
+		t.Fatalf("engage did not resolve: %#v", result)
+	}
+	unit := session.g.instances[unitID]
+	if session.g.instances[swordID].zone != "graveyard" || unit.attack != 3 || unit.life != 3 || len(unit.grants) != 1 {
+		t.Fatalf("engage did not buff and grant: sword=%s unit=%d/%d grants=%d", session.g.instances[swordID].zone, unit.attack, unit.life, len(unit.grants))
+	}
+	session.actionID = strings.Repeat("b", 32)
+	session.g.destroyByEffect([]*instance{unit})
+	if step := session.run(); step.Status != StatusCompleted {
+		t.Fatalf("granted last words did not resolve: %#v", step)
+	}
+	if count := fieldCardCount(session.g.own.field, 10242210); count != 1 {
+		t.Fatalf("flame dragon sword summoned %d copies, want 1", count)
+	}
+}
+
 // 「不会被能力破坏」只挡能力造成的破坏：必杀这类战斗规则造成的破坏仍然生效。
 func TestAbilityDestructionGuardBlocksEffectDestructionOnly(t *testing.T) {
 	const guarded, plain = 70000001, 70000002

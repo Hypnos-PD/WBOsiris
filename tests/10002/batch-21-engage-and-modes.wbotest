@@ -1,0 +1,145 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "炎龙之剑的启动破坏自身并强化随从" {
+    seed 21001;
+    state {
+        turn own 3;
+        player own {
+            pp 1/1;
+            field {
+                amulet sword = 10242210;
+                follower unit = 10001110;
+            }
+        }
+    }
+    action { engage sword; select unit; }
+    expect {
+        legal;
+        sword.zone == graveyard;
+        unit.stats == 3/3;
+        own.pp == 0/1;
+    }
+}
+
+scenario "神圣守护按守护随从的生命值造成等量伤害" {
+    seed 21002;
+    state {
+        player own {
+            pp 1/1;
+            field { follower guardian = 10001110 { ward; stats 2/7; } }
+            hand { spell source = 10262310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; select guardian; }
+    // 守护随从 2/7 → 2/8，X 为 8，敌方 2/8 被破坏。
+    expect {
+        legal;
+        guardian.stats == 2/8;
+        enemy.zone == graveyard;
+    }
+}
+
+scenario "精金炼金术师用土之秘术召唤带屏障的守护者巨像" {
+    seed 21003;
+    state {
+        player own {
+            pp 6/6;
+            field { amulet sigil = 90031210 { earthsigil 1; } }
+            hand { follower source = 10234120; }
+        }
+    }
+    action { play source; mode 1; }
+    expect {
+        legal;
+        sigil.zone == graveyard;
+        own.field count card 90031120 == 1;
+        all own.field where card 90031120 have barrier;
+    }
+}
+
+scenario "精金炼金术师的进化时再次发动土之秘术模式" {
+    seed 21004;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field {
+                follower source = 10234120;
+                amulet sigil = 90031210 { earthsigil 1; }
+            }
+            deck top {
+                follower first = 10001110;
+                follower second = 10001110;
+                follower third = 10001110;
+            }
+        }
+    }
+    action { evolve source; mode 2; }
+    expect {
+        legal;
+        sigil.zone == graveyard;
+        own.hand count card 10001110 == 3;
+        own.ep == 0;
+    }
+}
+
+scenario "没有土之印时精金炼金术师不发动任何模式" {
+    seed 21005;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10234120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.zone == field; own.leader.life == 20; }
+}
+
+scenario "速断之刃攻击时破坏非交战对手" {
+    seed 21006;
+    state {
+        player own {
+            field {
+                follower source = 10263110;
+                amulet first = 90031210;
+                amulet second = 90031210;
+            }
+        }
+        player oppo {
+            field {
+                follower defender = 10001110 { stats 2/8; }
+                follower bystander = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { attack source into defender; }
+    expect {
+        legal;
+        source has storm;
+        defender.zone == field;
+        defender.stats == 2/5;
+        bystander.zone == graveyard;
+    }
+}
+
+scenario "护符不足两张时速断之刃不破坏其他随从" {
+    seed 21007;
+    state {
+        player own {
+            field {
+                follower source = 10263110;
+                amulet only = 90031210;
+            }
+        }
+        player oppo {
+            field {
+                follower defender = 10001110 { stats 2/8; }
+                follower bystander = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { attack source into defender; }
+    expect { legal; bystander.zone == field; defender.stats == 2/5; }
+}

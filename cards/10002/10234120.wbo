@@ -7,7 +7,69 @@ card 10234120 {
     trait mysteria;
 
     effect {
-        unplayable;
+        fanfare {
+            earthrite 1 {
+                mode {
+                    option 1 {
+                        label chs "召唤1个『守护者巨像』，使其获得【屏障】。";
+                        label eng "Summon a Guardian Golem and give it Barrier.";
+                        label jpn "『ガーディアンゴーレム』1枚を自分の場に出す。それに【バリア】を持つ。";
+                        label kor "'가디언 골렘' 1장을 내 전장에 소환. 그 추종자는 [배리어]를 갖는다.";
+                        label cht "召喚1張『守護者巨像』，使其獲得【屏障】。";
+                        summon 1 card 90031120;
+                        add barrier to summoned;
+                    }
+                    option 2 {
+                        label chs "抽取3张卡牌。";
+                        label eng "Draw 3 cards.";
+                        label jpn "自分のデッキから3枚を引く。";
+                        label kor "내 덱에서 3장을 뽑는다.";
+                        label cht "抽取3張卡片。";
+                        draw 3;
+                    }
+                    option 3 {
+                        label chs "回复自己的主战者4点生命值。";
+                        label eng "Restore 4 defense to your leader.";
+                        label jpn "自分のリーダーを4回復。";
+                        label kor "내 리더를 4 회복.";
+                        label cht "回復自己的主戰者4點生命值。";
+                        heal own.leader 4;
+                    }
+                }
+            }
+        }
+
+        evolve {
+            earthrite 1 {
+                mode {
+                    option 1 {
+                        label chs "召唤1个『守护者巨像』，使其获得【屏障】。";
+                        label eng "Summon a Guardian Golem and give it Barrier.";
+                        label jpn "『ガーディアンゴーレム』1枚を自分の場に出す。それに【バリア】を持つ。";
+                        label kor "'가디언 골렘' 1장을 내 전장에 소환. 그 추종자는 [배리어]를 갖는다.";
+                        label cht "召喚1張『守護者巨像』，使其獲得【屏障】。";
+                        summon 1 card 90031120;
+                        add barrier to summoned;
+                    }
+                    option 2 {
+                        label chs "抽取3张卡牌。";
+                        label eng "Draw 3 cards.";
+                        label jpn "自分のデッキから3枚を引く。";
+                        label kor "내 덱에서 3장을 뽑는다.";
+                        label cht "抽取3張卡片。";
+                        draw 3;
+                    }
+                    option 3 {
+                        label chs "回复自己的主战者4点生命值。";
+                        label eng "Restore 4 defense to your leader.";
+                        label jpn "自分のリーダーを4回復。";
+                        label kor "내 리더를 4 회복.";
+                        label cht "回復自己的主戰者4點生命值。";
+                        heal own.leader 4;
+                    }
+                }
+            }
+        }
     }
 
     meta {
