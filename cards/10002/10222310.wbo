@@ -5,7 +5,12 @@ card 10222310 {
     cost 2;
 
     effect {
-        unplayable;
+        random target from oppo.field.followers;
+        damage target 4;
+        enhance 4 replaces {
+            random targets from oppo.field.followers count 3;
+            damage targets 4;
+        }
     }
 
     meta {

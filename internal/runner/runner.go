@@ -948,11 +948,25 @@ func (g *game) emitDamage(amount int, target *ir.EventTarget, subject *instance)
 
 func (g *game) commitPlay(i *instance) []execFrame {
 	enhanceCost := g.enhanceCost(i, g.owner(i).pp)
+	// 爆能强化的“改为”档会替换本次打出的基础效果与入场曲，而不是追加。
+	replacing := false
+	for _, a := range i.card.Abilities {
+		trigger, isCost := a.Trigger.(ir.CostTrigger)
+		if isCost && trigger.Kind == "enhance" && trigger.Cost <= enhanceCost && a.Relation == "replaces" {
+			replacing = true
+		}
+	}
 	g.applyPlaySetup(i, true)
-	frames := []execFrame{{body: i.card.PlayEffects, blockID: cardPlayBlockID(i.card.ID), self: i, bindings: frame{}}}
+	frames := []execFrame{}
+	if !replacing {
+		frames = append(frames, execFrame{body: i.card.PlayEffects, blockID: cardPlayBlockID(i.card.ID), self: i, bindings: frame{}})
+	}
 	for _, a := range i.card.Abilities {
 		kind := ir.TriggerKind(a.Trigger)
 		trigger, isCost := a.Trigger.(ir.CostTrigger)
+		if replacing && kind == "fanfare" {
+			continue
+		}
 		if (kind == "fanfare" || kind == "enhance" && isCost && trigger.Cost <= enhanceCost) && (i.zone == "field" || i.card.CardType == "spell") {
 			frames = append(frames, execFrame{body: a.Body, blockID: abilityBlockID(i.card.ID, a.ID), self: i, bindings: frame{}})
 		}

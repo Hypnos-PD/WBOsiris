@@ -206,6 +206,9 @@ func compileAbility(s *syntax.Statement, sid string, scope *idScope, ids map[str
 	if h == "superevolve" && len(s.Tokens()) == 3 {
 		rel = s.Word(1)
 	}
+	if h == "enhance" && len(s.Tokens()) == 3 {
+		rel = s.Word(2)
+	}
 	body, err := compileEffectBlock(s.Blocks()[0], sid, id, ids)
 	if err != nil {
 		return ir.Ability{}, err

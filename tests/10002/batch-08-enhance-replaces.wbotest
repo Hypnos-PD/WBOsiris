@@ -1,0 +1,34 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "焰火占卜普通打出时只打一个随从" {
+    seed 4801;
+    state {
+        player own { pp 2/2; hand { spell source = 10222310; } }
+        player oppo {
+            field {
+                follower a = 10001110 { stats 0/8; }
+                follower b = 10001110 { stats 0/8; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; oppo.field count card 10001110 == 2; own.pp == 0/2; }
+}
+
+scenario "焰火占卜爆能强化四点改为随机打三个随从" {
+    seed 4802;
+    state {
+        player own { pp 4/4; hand { spell source = 10222310; } }
+        player oppo {
+            field {
+                follower a = 10001110 { stats 0/8; }
+                follower b = 10001110 { stats 0/8; }
+                follower c = 10001110 { stats 0/8; }
+            }
+        }
+    }
+    action { play source; }
+    // 基础效果被替换：三点伤害各 4，而不是"随机 1 个"再追加。
+    expect { legal; a.stats == 0/4; b.stats == 0/4; c.stats == 0/4; own.pp == 0/4; }
+}

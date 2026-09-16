@@ -164,7 +164,7 @@ card_restriction   = "unplayable" ;
 ability_block      = simple_ability_name , effect_block
                    | "superevolve" , [super_relation , "evolve"] , effect_block
                    | "engage" , integer , effect_block
-                   | "enhance" , integer , effect_block ;
+                   | "enhance" , integer , ["replaces"] , effect_block ;
 simple_ability_name = "fanfare" | "lastwords" | "attack" | "clash" | "evolve"
                      | "spellboost" ;
 super_relation     = "replaces" | "extends" ;

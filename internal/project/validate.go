@@ -324,8 +324,10 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			}
 			continue
 		case "engage", "enhance", "earthrite", "necromancy":
-			if len(t) != 2 || len(b) != 1 {
-				shapeError(ds, s, h+" 整数 { ... }")
+			// enhance 额外允许 `replaces`：支付该档时改为只执行这个块。
+			replaces := h == "enhance" && len(t) == 3 && t[2].Value == "replaces"
+			if !(len(t) == 2 || replaces) || len(b) != 1 {
+				shapeError(ds, s, h+" 整数 [replaces] { ... }")
 			} else {
 				if _, ok := integer(t[1]); !ok {
 					rangeError(ds, t[1])

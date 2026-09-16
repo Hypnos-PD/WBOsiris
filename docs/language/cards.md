@@ -642,7 +642,13 @@ superevolve replaces evolve { ... }
 superevolve extends evolve { ... }
 engage 1 { ... }
 enhance 7 { ... }
+enhance 7 replaces { ... }
 ```
+
+`enhance N` 在支付该档费用时**追加**执行；文本写"改为"的卡用 `enhance N replaces`，
+支付该档时改为**只执行这个块**：本次打出的基础效果与入场曲都不再发动。它和
+`superevolve replaces evolve` 是同一套替换语义。例：焰火占卜普通打出时对随机 1 个
+敌方随从造成 4 点伤害，`enhance 4 replaces` 改为随机 3 个。
 
 手动进化会触发 `evolve`，手动超进化默认也会触发 `evolve`。普通
 `superevolve` 表示超进化时额外触发的独立能力。
