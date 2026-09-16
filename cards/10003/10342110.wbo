@@ -6,7 +6,13 @@ card 10342110 {
     stats 3/5;
 
     effect {
-        unplayable;
+        rush;
+        ward;
+        when own turn ends {
+            // 先按"将回复的数值"回复主战者，再把本随从回复至上限。
+            heal own.leader self.damage_taken;
+            heal self self.damage_taken;
+        }
     }
 
     meta {

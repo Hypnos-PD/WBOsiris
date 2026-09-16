@@ -600,6 +600,12 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 		for _, i := range targets {
 			i.attackLimitValue = e.Amount
 		}
+	case "set_attack":
+		for _, item := range targets {
+			if item != nil && item.card.CardType == "follower" {
+				item.attack = e.Amount
+			}
+		}
 	case "set_cost":
 		for _, i := range targets {
 			if i != nil {

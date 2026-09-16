@@ -6,7 +6,11 @@ card 10371110 {
     stats 4/4;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            buff self +count(own.field other)/+count(own.field other);
+            destroy own.field other;
+        }
     }
 
     meta {

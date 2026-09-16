@@ -595,6 +595,14 @@ damage target self.attack;
 `own.attacked_this_turn` 和 `oppo.attacked_this_turn` 可直接作为 `if` 条件，
 在前面加 `not` 表示本回合尚未有对应玩家的随从宣告攻击。这里的 `own` 始终指能力控制者。
 
+`set attack T N;` 直接设置目标随从的当前攻击力（与 `set life` 对称）。
+
+`count(集合 other)` 统计时排除来源实例自身，`destroy 集合 other` 同理，
+因此"X 为自己的战场上的其他卡牌张数"写作 `count(own.field other)`。
+
+`self.damage_taken` 读本实例已经受到的伤害，用于"回复至上限"这类文本：
+`heal own.leader self.damage_taken; heal self self.damage_taken;`。
+
 `damage` 可以在数值之后接极值筛选：`damage field.followers 5 highest life;` 只打击生命值最大的
 那些随从（并列全中），`damage all.leaders 3 highest life;` 打击生命值最大的主战者。
 

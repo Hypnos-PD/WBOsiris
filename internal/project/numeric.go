@@ -15,6 +15,11 @@ func numericIR(t []syntax.Token, i int) (int, ir.NumericExpr) {
 	if t[i].Value == "count" || t[i].Value == "sum" {
 		source := valueRefIR(t, i+2)
 		next, _ := parseCountSource(t, i+2)
+		if next < len(t) && t[next].Value == "other" {
+			value, after := otherExclusion(t, next)
+			source = ir.ExcludeRef{Kind: "exclude", Source: source, Value: value}
+			next = after
+		}
 		if t[next].Value == "where" {
 			var predicate ir.Predicate
 			predicate, next = filterIR(t, next)

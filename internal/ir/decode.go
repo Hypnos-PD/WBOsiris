@@ -1002,7 +1002,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			}
 		}
 		return CardEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.Destination, v.Output, v.Count, v.CardID, v.MaxCost, v.TieBreak, v.PreserveInstanceID, v.PreserveMaterials, r}, err
-	case "damage", "heal", "buff_stats", "destroy", "banish", "discard", "return", "add_keyword", "remove_keyword", "remove_ability", "silent_evolve", "set_attack_limit", "set_damage_reduction", "set_life", "set_cost":
+	case "damage", "heal", "buff_stats", "destroy", "banish", "discard", "return", "add_keyword", "remove_keyword", "remove_ability", "silent_evolve", "set_attack_limit", "set_damage_reduction", "set_life", "set_cost", "set_attack":
 		type raw struct {
 			Output                                                      string `json:"output,omitempty"`
 			ID                                                          string `json:"id"`
@@ -1138,6 +1138,10 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		case "set_cost":
 			if len(v.AmountValue) == 0 || v.Amount < 0 || v.Amount > 65535 || v.DamageType != "" || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
 				return nil, fmt.Errorf("invalid set cost shape")
+			}
+		case "set_attack":
+			if len(v.AmountValue) == 0 || v.Amount < 0 || v.Amount > 65535 || v.DamageType != "" || v.Keyword != "" || v.Form != "" || v.Destination != "" || v.DeckInsertion != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
+				return nil, fmt.Errorf("invalid set attack shape")
 			}
 		}
 		if v.Extremum != nil {
@@ -1574,7 +1578,7 @@ func decodeCondition(data []byte) (Condition, error) {
 	if v.Left.Kind == "self_counter" && (v.Left.Side != "" || !ValidCounterName(v.Left.Field)) {
 		return nil, fmt.Errorf("invalid counter condition")
 	}
-	if v.Left.Kind == "self_scalar" && (v.Left.Side != "" || !oneOf(v.Left.Field, "cost", "attack", "life")) {
+	if v.Left.Kind == "self_scalar" && (v.Left.Side != "" || !oneOf(v.Left.Field, "cost", "attack", "life", "damage_taken")) {
 		return nil, fmt.Errorf("invalid self scalar condition")
 	}
 	return CompareCondition{v.Kind, v.Op, v.Left, v.Right}, nil

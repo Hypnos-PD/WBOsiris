@@ -6,7 +6,20 @@ card 10304120 {
     stats 0/3;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from field.followers other;
+            buff target +2/-2;
+            if own.maxpp == 10 {
+                if oppo.maxpp == 10 {
+                    add 1 card 90004330 to hand;
+                }
+            }
+        }
+        drain;
+        evolve {
+            choose target from field.followers;
+            buff target +2/-2;
+        }
     }
 
     meta {

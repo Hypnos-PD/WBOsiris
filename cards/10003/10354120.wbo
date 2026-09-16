@@ -6,7 +6,26 @@ card 10354120 {
     stats 5/5;
 
     effect {
-        unplayable;
+        fanfare {
+            mode {
+                option 1 {
+                    label chs "将1张『绝叫的扩散』加入手牌。";
+                    label eng "Add a Spread of Screams to your hand.";
+                    label jpn "『絶叫の拡散』1枚を自分の手札に加える。";
+                    label kor "'절규의 확산' 1장을 내 패에 넣는다.";
+                    label cht "增加1張『絕叫的擴散』到自己的手牌中。";
+                    add 1 card 90054310 to hand;
+                }
+                option 2 {
+                    label chs "将1张『爱绝的飞翔』加入手牌。";
+                    label eng "Add a Flight of Love's End to your hand.";
+                    label jpn "『愛絶の飛翔』1枚を自分の手札に加える。";
+                    label kor "'애절의 비상' 1장을 내 패에 넣는다.";
+                    label cht "增加1張『愛絕的飛翔』到自己的手牌中。";
+                    add 1 card 90054320 to hand;
+                }
+            }
+        }
     }
 
     meta {

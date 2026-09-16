@@ -385,6 +385,7 @@ numeric_operation = "damage" , value_ref , ["other" , [binding_name]] , effect_a
                   | "heal" , value_ref , ["other" , [binding_name]] , effect_amount , [where_clause] , ";"
                   | "set" , "life" , value_ref , effect_amount , ";"
                   | "set" , "cost" , value_ref , effect_amount , ";"
+                  | "set" , "attack" , value_ref , effect_amount , ";"
                   | "set" , "maxlife" , participant , "." , "leader" , integer , ";"
                   | "buff" , value_ref , ["other" , [binding_name]] , signed_amount , "/" , signed_amount , [where_clause] , [effect_duration] , ";"
                   | "gain" , scalar_ref , integer , ";"

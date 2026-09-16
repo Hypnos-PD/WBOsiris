@@ -6,7 +6,12 @@ card 10374110 {
     stats 2/4;
 
     effect {
-        unplayable;
+        ward;
+        ability_destruction_guard;
+        superevolve {
+            damage oppo.leader count(own.field other);
+            destroy own.field other;
+        }
     }
 
     meta {

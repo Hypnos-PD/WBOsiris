@@ -541,7 +541,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		if good {
 			end, good = parseEffectAmount(t, end)
 		}
-		ok = set("life", "cost")[t[1].Value] && good && end == len(t)
+		ok = set("life", "cost", "attack")[t[1].Value] && good && end == len(t)
 	case "set_attack_limit":
 		ok = len(t) == 3 && t[1].Value == "self" && isU16(t[2])
 		if ok {
@@ -690,6 +690,10 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		if h == "discard" && good && (end == 4 && t[3].Value == "leader" || end == 2 && t[1].Value == "leaders") {
 			good = false
 		}
+		if good && end < len(t) && t[end].Value == "other" {
+			// destroy 集合 other：排除来源实例自身。
+			end = otherExclusionEnd(t, end)
+		}
 		if good && end < len(t) {
 			end, good = parseWhere(t, end)
 		}
@@ -789,7 +793,7 @@ func parseEffectAmount(t []syntax.Token, i int) (int, bool) {
 		return i + 1, true
 	}
 	if i+2 < len(t) && t[i+1].Value == "." {
-		if t[i].Value == "self" && set("attack", "life", "cost")[t[i+2].Value] ||
+		if t[i].Value == "self" && set("attack", "life", "cost", "damage_taken")[t[i+2].Value] ||
 			set("own", "oppo")[t[i].Value] && ir.ValidPlayerScalar(t[i+2].Value) ||
 			t[i].Value == "fused" && set("cost", "distinct")[t[i+2].Value] {
 			return i + 3, true
@@ -799,6 +803,10 @@ func parseEffectAmount(t []syntax.Token, i int) (int, bool) {
 		return i, false
 	}
 	end, ok := parseCountSource(t, i+2)
+	if ok && end < len(t) && t[end].Value == "other" {
+		// count(集合 other)：统计时排除来源实例自身。
+		end = otherExclusionEnd(t, end)
+	}
 	if ok && end < len(t) && t[end].Value == "where" {
 		end, ok = parseWhere(t, end)
 	}

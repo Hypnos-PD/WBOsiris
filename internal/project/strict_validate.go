@@ -371,7 +371,7 @@ func strictCondition(t []syntax.Token, fusion bool) bool {
 		return ok && next+1 < len(t) && op(t[next].Value) && isUnsigned(t[next+1]) && next+2 == len(t)
 	}
 	return len(t) == 5 && (set("own", "oppo")[t[0].Value] && t[1].Value == "." && ir.ValidPlayerScalar(t[2].Value) ||
-		t[0].Value == "self" && t[1].Value == "." && set("cost", "attack", "life")[t[2].Value] ||
+		t[0].Value == "self" && t[1].Value == "." && set("cost", "attack", "life", "damage_taken")[t[2].Value] ||
 		fusion && t[0].Value == "fused" && t[1].Value == "." && set("cost", "distinct")[t[2].Value]) && op(t[3].Value) && isUnsigned(t[4])
 }
 

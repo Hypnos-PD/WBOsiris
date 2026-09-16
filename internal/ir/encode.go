@@ -254,12 +254,12 @@ func (e TargetEffect) MarshalJSON() ([]byte, error) {
 			return nil, fmt.Errorf("damage reduction requires card instances")
 		}
 		object["amount"] = e.Amount
-	case "set_attack_limit", "set_life", "set_cost":
+	case "set_attack_limit", "set_life", "set_cost", "set_attack":
 		if e.Kind == "set_attack_limit" && (e.Amount < 1 || e.Amount > 65535) {
 			return nil, fmt.Errorf("attack limit exceeds u16 range")
 		}
 		object["amount"] = e.Amount
-		if e.Kind == "set_life" || e.Kind == "set_cost" {
+		if e.Kind == "set_life" || e.Kind == "set_cost" || e.Kind == "set_attack" {
 			object["amount"] = amount
 		}
 	case "silent_evolve":

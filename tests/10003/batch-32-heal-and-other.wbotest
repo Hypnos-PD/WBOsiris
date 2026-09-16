@@ -1,0 +1,195 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "侮蔑的祈祷者回复至上限并把等量生命给主战者" {
+    seed 32001;
+    state {
+        player own {
+            leader 15/20;
+            field { follower source = 10342110 { stats 3/5; damage_taken 2; } }
+        }
+    }
+    action { end_turn; }
+    expect {
+        legal;
+        source.stats == 3/5;
+        own.leader.life == 17;
+    }
+}
+
+scenario "侮蔑的继承者入场时发动三次全体两点伤害" {
+    seed 32002;
+    state {
+        player own {
+            pp 9/9;
+            field { follower ally = 10001110 { stats 2/8; } }
+            hand { follower source = 10344110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect {
+        legal;
+        ally.stats == 2/2;
+        enemy.stats == 2/2;
+        source.stats == 5/1;
+        source has ward;
+    }
+}
+
+scenario "破坏的肯定者按其他卡牌数量强化自身并破坏它们" {
+    seed 32003;
+    state {
+        player own {
+            pp 4/4;
+            field {
+                follower source = 10371110;
+                follower ally = 10001110;
+                amulet relic = 10001210;
+            }
+            hand { follower source2 = 10371110; }
+        }
+    }
+    action { play source2; }
+    // 结算时场上有 3 张其他卡牌（另一个同类随从、随从、护符）→ +3/+3；随后它们被破坏。
+    expect {
+        legal;
+        source2.stats == 7/7;
+        source.zone == graveyard;
+        ally.zone == graveyard;
+        relic.zone == graveyard;
+        source2 has ward;
+    }
+}
+
+scenario "破坏的继承者超进化时按其他卡牌数量打击对手主战者" {
+    seed 32004;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field {
+                follower source = 10374110;
+                follower ally = 10001110;
+                amulet relic = 10001210;
+            }
+        }
+        player oppo { leader 20/20; }
+    }
+    action { superevolve source; }
+    expect {
+        legal;
+        oppo.leader.life == 18;
+        ally.zone == graveyard;
+        relic.zone == graveyard;
+        source has ability_destruction_guard;
+    }
+}
+
+scenario "活泼的斥候从牌组召唤低费皇家随从" {
+    seed 32005;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10322120; }
+            deck top {
+                follower wrong = 10001110;
+                follower royal = 10122110;
+                follower other = 10011110;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 10122110 == 1;
+        own.field count card 10001110 == 0;
+    }
+}
+
+scenario "活泼的斥候的进化时强化其他随从" {
+    seed 32006;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field {
+                follower source = 10322120;
+                follower ally = 10001110;
+            }
+        }
+    }
+    action { evolve source; select ally; }
+    expect {
+        legal;
+        ally.stats == 4/4;
+        source.stats == 5/5;
+        own.ep == 0;
+    }
+}
+
+scenario "涸绝的显现指定对手随从并获得虹吸" {
+    seed 32007;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10304120; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; select enemy; }
+    expect {
+        legal;
+        enemy.stats == 4/6;
+        source has drain;
+    }
+}
+
+scenario "双方能量点上限为十时涸绝的显现加入甘露" {
+    seed 32008;
+    state {
+        player own {
+            pp 10/10;
+            field { follower ally = 10001110 { stats 2/8; } }
+            hand { follower source = 10304120; }
+        }
+        player oppo { pp 5/10; }
+    }
+    action { play source; select ally; }
+    expect {
+        legal;
+        ally.stats == 4/6;
+        own.hand count card 90004330 == 1;
+    }
+}
+
+scenario "能量点上限不足十时涸绝的显现不加入甘露" {
+    seed 32009;
+    state {
+        player own {
+            pp 3/3;
+            field { follower ally = 10001110 { stats 2/8; } }
+            hand { follower source = 10304120; }
+        }
+        player oppo { pp 3/3; }
+    }
+    action { play source; select ally; }
+    expect { legal; own.hand count card 90004330 == 0; }
+}
+
+scenario "绝叫与爱绝的显现按模式加入对应的卡牌" {
+    seed 32010;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10354120; }
+        }
+    }
+    action { play source; mode 2; }
+    expect {
+        legal;
+        own.hand count card 90054320 == 1;
+        own.hand count card 90054310 == 0;
+        own.pp == 0/7;
+    }
+}

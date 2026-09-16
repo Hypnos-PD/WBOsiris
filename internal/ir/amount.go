@@ -17,7 +17,22 @@ func validCountSource(source Ref) bool {
 		return validHistoryRef(r)
 	case ZoneRef:
 		return r.Kind == "zone" && validZone(r.Zone) && (validSide(r.Side) || r.Side == "" && r.Zone == "field") &&
-			(r.Member == "" || oneOf(r.Member, "card", "follower", "spell", "amulet"))
+		(r.Member == "" || oneOf(r.Member, "card", "follower", "spell", "amulet"))
+	case ExcludeRef:
+		// 被排除的对象可以是来源自身，也可以是某个绑定；两者都不是"集合"。
+		if r.Kind != "exclude" || !validCountSource(r.Source) {
+			return false
+		}
+		switch v := r.Value.(type) {
+		case nil:
+			return true
+		case SelfRef:
+			return true
+		case BindingRef:
+			return v.Kind == "binding" && v.Name != ""
+		default:
+			return false
+		}
 	case FilterRef:
 		_, zone := r.Source.(ZoneRef)
 		_, binding := r.Source.(BindingRef)
@@ -36,7 +51,7 @@ func validNumericExpr(expr NumericExpr, signed bool) bool {
 		return e != nil && e.Kind == "sum" && validCountSource(e.Source) && oneOf(e.Field, "base_attack", "base_life", "base_cost", "attack", "life", "cost")
 	case *Scalar:
 		return e != nil && (e.Kind == "scalar" && validSide(e.Side) && ValidPlayerScalar(e.Field) ||
-			e.Kind == "self_scalar" && e.Side == "" && oneOf(e.Field, "attack", "life", "cost") ||
+			e.Kind == "self_scalar" && e.Side == "" && oneOf(e.Field, "attack", "life", "cost", "damage_taken") ||
 			e.Kind == "self_counter" && e.Side == "" && ValidCounterName(e.Field) ||
 			e.Kind == "fusion_material_scalar" && e.Side == "" && oneOf(e.Field, "cost", "distinct"))
 	case *NegateExpr:

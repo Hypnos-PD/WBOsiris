@@ -6,7 +6,21 @@ card 10344110 {
     stats 5/7;
 
     effect {
-        unplayable;
+        fanfare {
+            repeat 3 {
+                damage field.followers 2;
+            }
+        }
+        ward;
+        when self survives damage during own turn {
+            damage oppo.leader 1;
+        }
+        superevolve {
+            heal self self.damage_taken;
+            repeat 3 {
+                damage field.followers 2;
+            }
+        }
     }
 
     meta {

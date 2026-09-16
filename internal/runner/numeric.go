@@ -68,6 +68,8 @@ func (g *game) numericValue(expr ir.NumericExpr, self *instance, bindings frame)
 				return self.life
 			case "cost":
 				return max(0, self.cost)
+			case "damage_taken":
+				return self.damageTaken
 			}
 		}
 		p, _ := g.playerForSide(self, e.Side)

@@ -43,7 +43,8 @@ func TestSetLifeCompilation(t *testing.T) {
 }
 
 func TestRejectMalformedSetLife(t *testing.T) {
-	for _, operation := range []string{"set life", "set life self", "set attack self 1", "set life unknown 1", "set life own.leader 1", "set life all.leaders 1", "set life leaders 1", "set life self -1", "set life self 1 extra", "set life self 1 where type follower"} {
+	// `set attack T N` 与 `set cost T N` 一样是合法操作；这里只保留仍然非法的形状。
+	for _, operation := range []string{"set life", "set life self", "set attack", "set attack self", "set attack unknown 1", "set life unknown 1", "set life own.leader 1", "set life all.leaders 1", "set life leaders 1", "set life self -1", "set life self 1 extra", "set life self 1 where type follower"} {
 		f, ds := syntax.Parse("12345678.wbo", []byte(validCard("fanfare { "+operation+"; }")))
 		if len(ds) == 0 && !hasErrors(ValidateFile(f)) {
 			t.Fatal("accepted invalid set life", operation)

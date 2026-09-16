@@ -450,6 +450,11 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			}
 		}
 		end := valueRefEnd(t, 1)
+		if end < len(t) && t[end].Value == "other" {
+			value, next := otherExclusion(t, end)
+			e.Target = ir.ExcludeRef{Kind: "exclude", Source: e.Target, Value: value}
+			end = next
+		}
 		if end < len(t) {
 			e.Predicate, _ = filterIR(t, end)
 		}
@@ -477,6 +482,8 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		kind := "set_life"
 		if t[1].Value == "cost" {
 			kind = "set_cost"
+		} else if t[1].Value == "attack" {
+			kind = "set_attack"
 		}
 		return ir.TargetEffect{NodeBase: base, Kind: kind, Target: valueRefIR(t, 2), Amount: amount, AmountExpr: expr}, nil
 	case "return":
