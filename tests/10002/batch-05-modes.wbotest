@@ -1,0 +1,27 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "九尾的巫女选择模式一召唤四只一尾狐" {
+    seed 4501;
+    state { player own { pp 9/9; hand { follower source = 10254110; } } }
+    action { play source; mode 1; }
+    expect { legal; own.field count card 90054130 == 4; }
+}
+
+scenario "九尾的巫女选择模式二破坏四个随从并回复主战者" {
+    seed 4502;
+    state {
+        player own { leader 10/20; pp 9/9; hand { follower source = 10254110; } }
+        player oppo {
+            field {
+                follower a = 10001110;
+                follower b = 10001110;
+                follower c = 10001110;
+                follower d = 10001110;
+                follower e = 10001110;
+            }
+        }
+    }
+    action { play source; mode 2; }
+    expect { legal; oppo.field count card 10001110 == 1; own.leader.life == 14; }
+}

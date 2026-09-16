@@ -6,7 +6,28 @@ card 10254110 {
     stats 5/9;
 
     effect {
-        unplayable;
+        fanfare {
+            mode {
+                option 1 {
+                    label chs "召唤4个『一尾狐』。";
+                    label eng "Summon 4 copies of One-Tailed Fox.";
+                    label jpn "『一ツ尾狐』4枚を自分の場に出す。";
+                    label kor "일미호 4장을 내 전장에 소환.";
+                    label cht "召喚4張『一尾狐』到自己的戰場上。";
+                    summon 4 card 90054130;
+                }
+                option 2 {
+                    label chs "破坏对手的战场上的随机4个随从。回复自己的主战者4点生命值。";
+                    label eng "Destroy 4 random enemy followers. Restore 4 defense to your leader.";
+                    label jpn "相手の場のフォロワーからランダム4枚を破壊。自分のリーダーを4回復。";
+                    label kor "상대방 전장의 추종자 중 무작위로 4장을 파괴. 내 리더를 4 회복.";
+                    label cht "隨機破壞4張敵方戰場上的從者卡。回復自己的主戰者4點生命值。";
+                    random targets from oppo.field.followers count 4;
+                    destroy targets;
+                    heal own.leader 4;
+                }
+            }
+        }
     }
 
     meta {
