@@ -18,11 +18,11 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 316 · 未实现(骨架) 57 · 未导入 531
+总计 904 · 已完成 318 · 未实现(骨架) 55 · 未导入 531
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
-10002        77      68       9       0
+10002        77      70       7       0
 10003        77       4       0      73
 10004        76       1       0      75
 10005        76       0       0      76
@@ -68,7 +68,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 挂起卡的依赖也会一并挂起：例如 S-01 未解决前，任何"召唤腐臭的僵尸"或"把僵尸加入手牌"
 的卡都保持 `unplayable;`，避免生成行为错误的衍生体。
 
-| S-12 | 纹章块内的集合条件 / 按目标自身数值成倍 | 10204120 格里姆尼尔（"若自己的战场上有超进化后的随从"）、10233310 帕梅拉的舞蹈（"使所有随从的攻击力/生命值变为 2 倍"） | 前者是 S-04 的同一缺口出现在纹章里；后者需要"每个目标按自身当前数值翻倍"，现有 `buff` 的数值引用只有来源自身与 `count(...)` |
+| S-12 | ~~纹章块内的集合条件 / 按目标自身数值成倍~~ **已解决** | 已解锁 10204120 格里姆尼尔（纹章里 `if count(own.field.followers where form super_evolved) >= 1`）与 10233310 帕梅拉的舞蹈（`double stats own.field.followers;`） | 前半在 S-04 之后其实已经可用（纹章块走同一套效果校验），我此前误判为缺口；后半新增 `DoubleStats` 节点：按每个目标自己的当前数值翻倍。 |
 | S-13 | ~~`add card … to hand` 不产生绑定~~ **已解决**：`added` 绑定 | 已解锁 10271120 猫偶；全卡另有约 7 张"加入手牌后立即修改"的卡（10641310、10643310、10844110、10922310 等），后续卡包直接使用 | `add 1 card X to hand` 现在把成功进入手牌的实例绑成 `added`（手牌满被丢弃的不计入），Go 测试同时验证只有新卡被强化、手里的同名旧卡不受影响。 |
 | S-11 | `.wbotest` 无法声明先手 | 影响"抽牌耗尽判负"这类与先手有关的规则验证 | 规则本身已实现（`execute.go` 在无法满足抽牌时让对方获胜），但触发条件是 `firstPlayer != ""`，而场景测试不提供先手信息，这条路径只能由 Go 侧测试覆盖，场景测试写不出来。 |
 | S-18 | ~~条件里判断绑定对象的受伤状态~~ **已解决**：`if <绑定> damaged { … }` | 已解锁 10223110 剑士公主·萝泽（`attack { if opponent damaged { destroy opponent; } }`） | `internal/ir` 新增 `IsDamagedCondition`，条件求值新增 `conditionIn(c, self, bindings)`（执行与预检两处都带当前帧），绑定缺失或对象不是随从时为假。 |
@@ -93,10 +93,23 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-18 | `if <绑定> damaged { … }` —— 条件读取绑定实例的受伤状态 | `internal/ir/model.go`（`IsDamagedCondition`）、`internal/ir/decode.go`（容器解码）、`internal/project/typed_ir.go`/`validate.go`/`strict_validate.go`（`<标识符> damaged` 形状）、`internal/runner/execute.go`（`conditionIn` 带帧求值）、`internal/runner/session.go` 与 `runner.go`（执行与预检改用 `conditionIn`）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/damaged_binding_condition_test.go`（条件形状被保留、拒绝多 token 与无绑定写法）；卡片 10223110 + 4 个场景（爆能/非爆能、攻击受伤/未受伤四个方面） |
 | S-06 | `halve cost 集合;` —— 牌组内卡牌费用减半 | `internal/project/validate.go`（`halve` 语句形状）、`typed_ir.go`（`halve_cost`）、`internal/ir/encode.go`/`decode.go`（新节点与形状校验）、`internal/runner/execute.go`（`ceil(cost/2)`，按集合逐个结算）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/halve_cost_test.go`（目标保留为牌组集合、拒绝 `halve cost`/`halve deck`/多余 token/`countdown`）与 `internal/runner/deck_cost_test.go`（5→3→2 的重复减半、`followers` 不碰法术、整副牌组 `reduce` 夹在 0）；卡片 10244120 + 2 个场景（奇数向上取整、只影响发动时在牌组里的卡） |
 | S-03 | 复查：`field.followers` 选择双方战场随从 | 无需改代码，只补文档与测试：`internal/project/cross_side_selection_test.go`（`field.followers other` 保持 `Side=""` 且排除自身、`own.field.followers` 不变） | 卡片 10201310 + 2 个场景（指定对手随从并降到 0 生命、指定自己的随从）。`grammar.md` 早已写明 `field` 是双方战场合并集合，我此前误判为缺口 |
+| S-12 | `double stats 集合;` —— 按目标自身数值翻倍 | `internal/project/validate.go`（`double` 语句形状）、`typed_ir.go`（`double_stats`）、`internal/ir/encode.go`/`decode.go`、`internal/runner/execute.go`（攻击力、当前生命、已受伤害各 ×2）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/double_stats_test.go`、`internal/runner/double_stats_test.go`（3/6 且已受 4 点伤害 → 6/4、伤害 8；护符不受影响）；卡片 10233310 + 3 个场景（土之印 +1 与获得纹章、土之秘术 10 足够时翻倍并抽牌、不足时只抽牌） |
 
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 19–20（S-12 收尾 + 卡包 10002）
+
+- 完成 2 张卡：10204120 飓风天业·格里姆尼尔（入场曲获得纹章；纹章在己方回合结束时、
+  若场上有超进化随从则对敌方所有随从造成 2 点伤害）、10233310 帕梅拉的舞蹈
+  （土之印 +1 并获得纹章；纹章回合结束时抽 1 张，土之秘术 10 使己方所有随从攻击力/生命值翻倍）。
+- 语言侧：**新原语 `double stats 集合;`**（按每个目标自己的当前数值翻倍，已受伤害一并翻倍），
+  补上 S-12 的后半；前半"纹章块里的集合条件"复查后发现 S-04 之后已经可用，是误判，
+  S-12 现已关闭。
+- 新增 6 个场景（`tests/10002/batch-19-crest-conditions.wbotest`、
+  `batch-20-stat-doubling.wbotest`），土之秘术两条分别覆盖"10 点足够"与"9 点不足"。
+- 全量回归：`check` 0 错 0 警；`test` 478 全绿；语料快照更新为 478 个场景。
 
 ### 批次 18（复查 S-03 + 卡包 10002）
 

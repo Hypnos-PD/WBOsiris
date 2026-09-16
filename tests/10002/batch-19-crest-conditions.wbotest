@@ -1,0 +1,46 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "格里姆尼尔的入场曲获得纹章并自带守护" {
+    seed 19001;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10204120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == field;
+        source has ward;
+        own.crests count card 10204120 == 1;
+        own.pp == 0/3;
+    }
+}
+
+scenario "有超进化随从时纹章在回合结束造成两点伤害" {
+    seed 19002;
+    state {
+        player own {
+            crests { crest grimmnir = 10204120; }
+            field { follower evolved = 10001110 { super_evolved; } }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { end_turn; }
+    expect { legal; enemy.stats == 2/6; }
+}
+
+scenario "没有超进化随从时纹章不造成伤害" {
+    seed 19003;
+    state {
+        player own {
+            crests { crest grimmnir = 10204120; }
+            field { follower plain = 10001110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { end_turn; }
+    expect { legal; enemy.stats == 2/8; }
+}

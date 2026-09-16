@@ -5,7 +5,59 @@ card 10233310 {
     cost 2;
 
     effect {
-        unplayable;
+        add 1 earthsigil;
+        gain own crest 10233310;
+    }
+
+    crest {
+        countdown 1;
+
+        when own turn ends {
+            draw 1;
+            earthrite 10 {
+                double stats own.field.followers;
+            }
+        }
+
+        locale chs {
+            name "纹章：帕梅拉的舞蹈";
+            text """
+【<color=Keyword>吟唱</color>_1】
+自己的回合结束时，抽取1张卡牌。【<color=Keyword>土之秘术</color>_10】使自己的战场上的所有随从的攻击力/生命值变为2倍。
+""";
+        }
+
+        locale eng {
+            name "Crest: Pascale's Dance";
+            text """
+<b><color=Keyword>Countdown</color> (1)</b>
+At the end of your turn, draw a card. <b><color=Keyword>Earth Rite</color> (10)</b> - Double the attack and defense of all allied followers on the field.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：パメラの舞踏";
+            text """
+【<color=Keyword>カウントダウン</color>_1】
+自分のターン終了時、自分のデッキから1枚を引く。【<color=Keyword>土の秘術</color>_10】自分の場のフォロワーすべては攻撃力/体力が2倍になる。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 파멜라의 무도";
+            text """
+[<color=Keyword>카운트다운</color> 1]
+내 턴 종료시, 내 덱에서 1장을 뽑는다. [<color=Keyword>대지의 비술</color> 10] 내 전장의 추종자 모두는 공격력/체력이 2배가 된다.
+""";
+        }
+
+        locale cht {
+            name "紋章：帕梅拉的舞蹈";
+            text """
+【<color=Keyword>倒數</color>_1】
+自己的回合結束時，由自己的牌堆中抽取1張卡片。【<color=Keyword>土之秘術</color>_10】使自己戰場上全部的從者卡攻擊力/生命值轉變為2倍。
+""";
+        }
     }
 
     meta {

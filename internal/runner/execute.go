@@ -719,6 +719,16 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 				i.cost = (i.cost + 1) / 2
 			}
 		}
+	case "double_stats":
+		// 每个目标按自己的当前数值翻倍；已受的伤害也翻倍，因此上限与当前生命一起变化。
+		for _, i := range g.effectTargets(e.Target, self, f) {
+			if i == nil || i.card.CardType != "follower" {
+				continue
+			}
+			i.attack *= 2
+			i.life *= 2
+			i.damageTaken *= 2
+		}
 	case "adjust_earthsigil":
 		for _, i := range own.field {
 			if !g.chargeQueryVisits(1) {

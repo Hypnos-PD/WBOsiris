@@ -494,6 +494,9 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 	case "halve":
 		// halve cost <集合>：把目标的当前费用变为向上取整的一半（官方 FAQ：9 → 5）。
 		return ir.AdjustEffect{NodeBase: base, Kind: "halve_cost", Field: "cost", Target: valueRefIR(t, 2)}, nil
+	case "double":
+		// double stats <集合>：按每个目标自己的当前数值翻倍（攻击力与生命值）。
+		return ir.AdjustEffect{NodeBase: base, Kind: "double_stats", Target: valueRefIR(t, 2)}, nil
 	case "transform":
 		end := valueRefEnd(t, 1)
 		e := ir.CardEffect{NodeBase: base, Kind: "transform", Target: valueRefIR(t, 1), CardID: intToken(t[end+2]), PreserveInstanceID: true, PreserveMaterials: true}

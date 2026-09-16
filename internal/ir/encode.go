@@ -281,6 +281,8 @@ func (e AdjustEffect) MarshalJSON() ([]byte, error) {
 		object["target"], object["times"] = e.Target, e.Times
 	case "halve_cost":
 		object["field"], object["target"] = e.Field, e.Target
+	case "double_stats":
+		object["target"] = e.Target
 	default:
 		return nil, fmt.Errorf("encode unknown adjustment effect kind %q", e.Kind)
 	}

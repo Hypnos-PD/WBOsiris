@@ -6,7 +6,53 @@ card 10204120 {
     stats 2/3;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            gain own crest 10204120;
+        }
+    }
+
+    crest {
+        when own turn ends {
+            if count(own.field.followers where form super_evolved) >= 1 {
+                damage oppo.field.followers 2;
+            }
+        }
+
+        locale chs {
+            name "纹章：飓风天业·格里姆尼尔";
+            text """
+自己的回合结束时，若自己的战场上有超进化后的随从，则对对手的战场上的所有随从造成2点伤害。
+""";
+        }
+
+        locale eng {
+            name "Crest: Grimnir, Tempestuous Heavens";
+            text """
+At the end of your turn, if there's a super-evolved allied follower on the field, deal 2 damage to all enemy followers.
+""";
+        }
+
+        locale jpn {
+            name "紋章：天嵐のグリームニル";
+            text """
+自分のターン終了時、自分の場に超進化後のフォロワーがあるなら、相手の場のフォロワーすべてに2ダメージ。
+""";
+        }
+
+        locale kor {
+            name "문장: 천람의 그림니르";
+            text """
+내 턴 종료시 내 전장에 초진화후인 추종자가 있다면, 상대방 전장의 추종자 모두에게 2 피해.
+""";
+        }
+
+        locale cht {
+            name "紋章：颶風天業‧格里姆尼爾";
+            text """
+自己的回合結束時，如果自己戰場上有已超進化的從者卡，則會給予敵方戰場上全部的從者卡2點傷害。
+""";
+        }
     }
 
     meta {

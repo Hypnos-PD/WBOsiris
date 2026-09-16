@@ -1,0 +1,63 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "帕梅拉的舞蹈增加土之印并获得纹章" {
+    seed 20001;
+    state {
+        player own {
+            pp 2/2;
+            field { amulet sigil = 90031210 { earthsigil 2; } }
+            hand { spell source = 10233310; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        sigil.earthsigil == 3;
+        own.crests count card 10233310 == 1;
+        own.pp == 0/2;
+    }
+}
+
+scenario "土之秘术十足够时纹章翻倍所有随从并抽一张" {
+    seed 20002;
+    state {
+        player own {
+            crests { crest dance = 10233310; }
+            field {
+                amulet sigil = 90031210 { earthsigil 10; }
+                follower unit = 10001110 { stats 4/6; }
+            }
+            deck top { follower drawn = 10001110; }
+        }
+    }
+    action { end_turn; }
+    expect {
+        legal;
+        unit.stats == 8/12;
+        sigil.zone == graveyard;
+        drawn.zone == hand;
+    }
+}
+
+scenario "土之印不足十时只抽牌不翻倍" {
+    seed 20003;
+    state {
+        player own {
+            crests { crest dance = 10233310; }
+            field {
+                amulet sigil = 90031210 { earthsigil 9; }
+                follower unit = 10001110 { stats 4/6; }
+            }
+            deck top { follower drawn = 10001110; }
+        }
+    }
+    action { end_turn; }
+    expect {
+        legal;
+        unit.stats == 4/6;
+        sigil.zone == field;
+        sigil.earthsigil == 9;
+        drawn.zone == hand;
+    }
+}
