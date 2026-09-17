@@ -1,0 +1,35 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "真理的研究设施的启动给手牌随从加费并加身材" {
+    seed 41001;
+    state {
+        turn own 4;
+        player own {
+            pp 1/1;
+            field { amulet lab = 10332210 { countdown 5; } }
+            hand { follower target = 10001110 { cost 2; } }
+        }
+    }
+    action { engage lab; select target; }
+    expect {
+        legal;
+        target.zone == hand;
+        target.cost == 3;
+        target.stats == 3/3;
+        own.pp == 0/1;
+    }
+}
+
+scenario "没有手牌随从时真理的研究设施的启动不选择目标" {
+    seed 41002;
+    state {
+        turn own 4;
+        player own {
+            pp 1/1;
+            field { amulet lab = 10332210 { countdown 5; } }
+        }
+    }
+    action { engage lab; }
+    expect { legal; lab.countdown == 5; own.pp == 0/1; }
+}

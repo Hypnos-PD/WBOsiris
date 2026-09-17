@@ -186,6 +186,9 @@ heal own.leader 5;
 require target from own.field.followers;
 ```
 
+筛选器里的 `where cost changed` 匹配"费用被效果改过"的卡牌（加费、减费与设置费用都算），
+配合 `when own card played` 表达"自己使用费用发生变化的随从时"。
+
 `own.deck has no duplicates` / `oppo.deck has duplicates` 判断牌组里是否有重复的卡牌定义；
 `banish duplicates in own.deck;` 让牌组中的重复卡牌消失，只保留每种的第一张。
 

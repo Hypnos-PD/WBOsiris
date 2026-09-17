@@ -923,6 +923,18 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 			i++
 		case "damaged":
 			i++
+		case "cost":
+			if i+1 < len(t) && t[i+1].Value == "changed" {
+				i += 2
+				break
+			}
+			if i+2 < len(t) && set("==", "!=", "<", "<=", ">", ">=")[t[i+1].Value] {
+				if isUnsigned(t[i+2]) {
+					i += 3
+				} else if i+4 < len(t) && set("own", "oppo")[t[i+2].Value] && t[i+3].Value == "." && ir.ValidPlayerScalar(t[i+4].Value) {
+					i += 5
+				}
+			}
 		case "keyword":
 			if i+1 < len(t) && ir.ValidKeyword(t[i+1].Value) {
 				i += 2
@@ -947,7 +959,7 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 			if i+1 < len(t) && set("unevolved", "evolved", "super_evolved")[t[i+1].Value] {
 				i += 2
 			}
-		case "life", "cost", "attack":
+		case "life", "attack":
 			if i+2 < len(t) && set("==", "!=", "<", "<=", ">", ">=")[t[i+1].Value] {
 				if isUnsigned(t[i+2]) {
 					i += 3

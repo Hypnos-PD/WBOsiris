@@ -5,7 +5,16 @@ card 10332210 {
     cost 3;
 
     effect {
-        unplayable;
+        countdown 5;
+        when own card played where type follower and cost changed {
+            draw 1;
+            reduce countdown self 1;
+        }
+        engage 1 {
+            choose target from own.hand.followers;
+            raise cost target 1;
+            buff target +1/+1;
+        }
     }
 
     meta {

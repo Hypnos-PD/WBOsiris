@@ -289,6 +289,7 @@ BoolExpr =
 | HasForm     { kind: "has_form", form: "unevolved" | "evolved" | "super_evolved" }
 | HasSpellboost { kind: "has_spellboost" }
 | IsDamaged   { kind: "is_damaged" }
+| CostChanged { kind: "cost_changed" }
 | HasKeyword  { kind: "has_keyword", keyword: Keyword }
 | Overflow    { kind: "overflow", side: Side }
 | SelfForm    { kind: "self_form", form: "unevolved" | "evolved" | "super_evolved" }

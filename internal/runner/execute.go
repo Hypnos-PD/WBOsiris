@@ -348,6 +348,8 @@ func (g *game) matches(i *instance, p ir.Predicate, self *instance) bool {
 			return false
 		case "is_damaged":
 			return i.card.CardType == "follower" && i.damageTaken > 0
+		case "cost_changed":
+			return i.costChanged
 		case "has_card":
 			return i.card.ID == x.CardID
 		case "has_type":
@@ -645,6 +647,9 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 				}
 				i.temporaryCost[endingSide] += max(e.Amount, 0) - i.cost
 			}
+			if i.cost != e.Amount {
+				i.costChanged = true
+			}
 			i.cost = max(e.Amount, 0)
 		}
 	case "set_damage_reduction":
@@ -773,6 +778,9 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 		}
 		for _, i := range targets {
 			if e.Field == "cost" {
+				if delta != 0 {
+					i.costChanged = true
+				}
 				i.cost = max(e.Minimum, i.cost+delta)
 			} else if e.Field == "countdown" {
 				i.countdown += delta
@@ -791,6 +799,7 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 		for _, i := range g.effectTargets(e.Target, self, f) {
 			if i != nil && i.cost > 0 {
 				i.cost = (i.cost + 1) / 2
+				i.costChanged = true
 			}
 		}
 	case "double_stats":

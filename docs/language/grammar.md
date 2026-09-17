@@ -221,6 +221,7 @@ filter_conjunction  = filter_term , {"and" , filter_term} ;
 filter_term         = "card" , card_id
                     | "spellboost"
                     | "damaged"
+                    | "cost" , "changed"
                     | "keyword" , ability
                     | "type" , card_type
                     | "class" , identifier

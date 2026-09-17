@@ -41,6 +41,8 @@ type instance struct {
 	temporaryStats                                                               map[string]ir.Stats
 	materials                                                                    []*instance
 	fusedThisTurn                                                                bool
+	// costChanged 记录实例的费用是否被效果改过（"使用费用发生变化的随从时"）。
+	costChanged                                                                  bool
 }
 type player struct {
 	retiredDeck                                               []*instance
