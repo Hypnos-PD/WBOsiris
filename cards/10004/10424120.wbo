@@ -6,7 +6,15 @@ card 10424120 {
     stats 4/3;
 
     effect {
-        unplayable;
+        fanfare {
+            if super_skybound_art {
+                superevolve own.field.followers silent;
+            } else {
+                if skybound_art {
+                    evolve own.field.followers silent;
+                }
+            }
+        }
     }
 
     meta {

@@ -6,7 +6,10 @@ card 10471120 {
     stats 3/1;
 
     effect {
-        unplayable;
+        fanfare {
+            gain skybound own.hand 1;
+        }
+        rush;
     }
 
     meta {

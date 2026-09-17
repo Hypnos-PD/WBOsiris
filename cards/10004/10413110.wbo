@@ -6,7 +6,20 @@ card 10413110 {
     stats 3/2;
 
     effect {
-        unplayable;
+        fanfare {
+            if skybound_art {
+                evolve self silent;
+            }
+            if super_skybound_art {
+                damage oppo.leader 3;
+            }
+        }
+        when self evolved {
+            repeat 7 {
+                random victim from oppo.field.followers;
+                damage victim 1;
+            }
+        }
     }
 
     meta {

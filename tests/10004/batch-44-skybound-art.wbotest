@@ -1,0 +1,199 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "回合数达到十时奥义发动" {
+    seed 44001;
+    state {
+        turn own 10;
+        player own {
+            pp 2/2;
+            hand { follower source = 10414110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.ep == 1; source has rush; }
+}
+
+scenario "回合数不足十时奥义不发动" {
+    seed 44002;
+    state {
+        turn own 3;
+        player own {
+            pp 2/2;
+            hand { follower source = 10414110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.ep == 0; }
+}
+
+scenario "爆燃老大的入场曲让手牌奥义槽加一" {
+    seed 44003;
+    state {
+        turn own 9;
+        player own {
+            pp 2/2;
+            hand {
+                follower source = 10471120;
+                follower held = 10414110;
+            }
+        }
+    }
+    action { play source; }
+    // 手牌里的风之法则因此达到 9+1=10 的奥义槽。
+    expect { legal; held.zone == hand; source has rush; }
+}
+
+scenario "奥义槽达到十时爆燃老大加过的手牌奥义发动" {
+    seed 44004;
+    state {
+        turn own 9;
+        player own {
+            pp 3/3;
+            hand {
+                follower source = 10471120;
+                follower held = 10414110;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; held.zone == hand; }
+}
+
+scenario "征服苍空的骑空士按模式选择能力" {
+    seed 44005;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10403110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; mode 1; }
+    expect { legal; enemy.stats == 2/3; }
+}
+
+scenario "奥义时征服苍空的骑空士自行进化" {
+    seed 44006;
+    state {
+        turn own 10;
+        player own {
+            pp 4/4;
+            hand { follower source = 10403110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; mode 1; }
+    // 征服苍空的骑空士本体 3/2，自行进化后是 5/4。
+    expect { legal; source.evolved == true; source.stats == 5/4; }
+}
+
+scenario "解放奥义时幻彩弓手额外打击对手主战者" {
+    seed 44007;
+    state {
+        turn own 15;
+        player own {
+            pp 4/4;
+            hand { follower source = 10413110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect { legal; source.evolved == true; oppo.leader.life == 17; }
+}
+
+scenario "十天众统领在奥义时让所有未进化随从进化" {
+    seed 44008;
+    state {
+        turn own 10;
+        player own {
+            pp 4/4;
+            field { follower ally = 10001110; }
+            hand { follower source = 10424120; }
+        }
+    }
+    action { play source; }
+    expect { legal; ally.evolved == true; ally.stats == 4/4; }
+}
+
+scenario "解放奥义时十天众统领改为超进化" {
+    seed 44009;
+    state {
+        turn own 15;
+        player own {
+            pp 4/4;
+            field { follower ally = 10001110; }
+            hand { follower source = 10424120; }
+        }
+    }
+    action { play source; }
+    expect { legal; ally.super_evolved == true; ally.stats == 5/5; }
+}
+
+scenario "炼金炎爆在奥义时额外打击对手主战者" {
+    seed 44010;
+    state {
+        turn own 10;
+        player own {
+            pp 2/3;
+            field { amulet sigil = 90031210 { earthsigil 1; } }
+            hand { spell source = 10433310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.stats == 2/4; oppo.leader.life == 18; sigil.earthsigil == 2; }
+}
+
+scenario "淳朴的钢铁之躯在解放奥义时获得疾驰" {
+    seed 44011;
+    state {
+        turn own 15;
+        player own {
+            pp 8/8;
+            hand { follower source = 10442120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has storm; }
+}
+
+scenario "未达解放奥义时淳朴的钢铁之躯没有疾驰" {
+    seed 44012;
+    state {
+        turn own 10;
+        player own {
+            pp 8/8;
+            hand { follower source = 10442120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source lacks storm; }
+}
+
+scenario "奥义时平平无奇的女孩超进化" {
+    seed 44013;
+    state {
+        turn own 10;
+        player own {
+            pp 3/3;
+            hand { follower source = 10443110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.super_evolved == true; }
+}
+
+scenario "原始费用为二的随从入场时平平无奇的女孩获得守护" {
+    seed 44014;
+    state {
+        turn own 3;
+        player own {
+            pp 2/2;
+            field { follower meg = 10443110; }
+            hand { follower cheap = 10001110; }
+        }
+    }
+    action { play cheap; }
+    expect { legal; meg has ward; }
+}

@@ -683,6 +683,12 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 	case "gain":
 		ok = len(t) == 5 && (t[1].Value == "own" || t[1].Value == "oppo") && t[2].Value == "." && set("life", "pp", "maxpp", "ep", "sep", "combo", "shadows", "rally")[t[3].Value] && isUnsigned(t[4])
 		ok = ok || len(t) == 4 && set("own", "oppo")[t[1].Value] && t[2].Value == "crest" && isCardID(t[3])
+		if len(t) >= 4 && t[1].Value == "skybound" {
+			// `gain skybound 集合 N`：奥义槽 +N。
+			end, good := parseValueRef(t, 2)
+			checkBindingAt(t, 2, end, bindings, ds)
+			ok = good && end+1 == len(t) && isUnsigned(t[end])
+		}
 	case "restore":
 		ok = len(t) == 4 && set("own", "oppo")[t[1].Value] && t[2].Value == "." && t[3].Value == "pp"
 	case "destroy", "banish", "discard":
@@ -921,6 +927,14 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 		switch t[i].Value {
 		case "spellboost":
 			i++
+		case "base":
+			if i+4 < len(t) && t[i+1].Value == "." && set("attack", "life", "cost")[t[i+2].Value] && set("==", "!=", "<", "<=", ">", ">=")[t[i+3].Value] {
+				if isUnsigned(t[i+4]) {
+					i += 5
+				} else if i+6 < len(t) && set("own", "oppo")[t[i+4].Value] && t[i+5].Value == "." && ir.ValidPlayerScalar(t[i+6].Value) {
+					i += 7
+				}
+			}
 		case "damaged":
 			i++
 		case "cost":
@@ -1003,7 +1017,7 @@ func validateCondition(t []syntax.Token, ds *[]syntax.Diagnostic) {
 	if evolutionCondition(t) || attackHistoryCondition(t) {
 		return
 	}
-	if len(t) == 1 && t[0].Value == "overflow" {
+	if len(t) == 1 && set("overflow", "skybound_art", "super_skybound_art")[t[0].Value] {
 		return
 	}
 	if damagedBindingCondition(t) {

@@ -43,6 +43,8 @@ type instance struct {
 	fusedThisTurn                                                                bool
 	// costChanged 记录实例的费用是否被效果改过（"使用费用发生变化的随从时"）。
 	costChanged                                                                  bool
+	// skybound 是"在手牌中时己方随从进化过的次数"，奥义槽 = 当前回合数 + 该计数。
+	skybound                                                                    int
 }
 type player struct {
 	retiredDeck                                               []*instance
@@ -1169,6 +1171,10 @@ func (g *game) applyEvolution(i *instance, super bool) {
 	i.evolved, i.superEvolved = true, super
 	i.attack += bonus
 	i.life += bonus
+	// 【奥义】/【解放奥义】的奥义槽按"在手牌中时己方随从进化过的次数"累积。
+	for _, card := range g.owner(i).hand {
+		card.skybound++
+	}
 	target := &ir.EventTarget{Kind: "instance", InstanceID: i.id, CardID: i.card.ID, Side: g.sideOf(i)}
 	event := ir.RuntimeEvent{Kind: "evolved", Side: g.sideOf(i), InstanceID: i.id, CardID: i.card.ID, Subject: target}
 	if g.emit(event) {

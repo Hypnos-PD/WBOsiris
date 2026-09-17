@@ -24,6 +24,8 @@ func (g *game) condition(c ir.Condition, self *instance) bool {
 	case ir.AttackHistoryCondition:
 		p, side := g.playerForSide(self, x.Side)
 		return (side == g.turn.Active && p.attackedThisTurn) == x.Attacked
+	case ir.SkyboundArtCondition:
+		return self != nil && g.turn.Number+self.skybound >= x.Level
 	case ir.DeckDuplicatesCondition:
 		p, _ := g.playerForSide(self, x.Side)
 		seen := map[int]bool{}
@@ -388,7 +390,7 @@ func (g *game) matches(i *instance, p ir.Predicate, self *instance, bindings fra
 		case "compare":
 			right := x.Value
 			if x.ValueScalar != nil {
-				right = g.numericValue(x.ValueScalar, self, nil)
+				right = g.numericValue(x.ValueScalar, self, bindings)
 			}
 			value := i.life
 			switch x.Field {
@@ -396,6 +398,18 @@ func (g *game) matches(i *instance, p ir.Predicate, self *instance, bindings fra
 				value = i.cost
 			case "attack":
 				value = i.currentAttack()
+			case "base_cost":
+				value = i.card.Cost
+			case "base_attack":
+				value = 0
+				if i.card.Stats != nil {
+					value = i.card.Stats.Attack
+				}
+			case "base_life":
+				value = 0
+				if i.card.Stats != nil {
+					value = i.card.Stats.Life
+				}
 			}
 			switch x.Op {
 			case "le":
@@ -765,6 +779,12 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 			if own.maxpp > 10 {
 				own.maxpp = 10
 			}
+		} else if e.Resource == "ep" {
+			own.ep = max(0, own.ep+e.Delta)
+		} else if e.Resource == "sep" {
+			own.sep = max(0, own.sep+e.Delta)
+		} else if e.Resource == "rally" {
+			own.rally = max(0, own.rally+e.Delta)
 		}
 	case "adjust_entity_field":
 		targets := g.effectTargets(e.Target, self, f)
@@ -832,6 +852,12 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 		if e.Delta > 0 {
 			for _, sigil := range g.summonFor(self, e.Owner, 1, ir.MagicSedimentCardID, false) {
 				sigil.earthsigil = e.Delta
+			}
+		}
+	case "adjust_skybound":
+		for _, i := range g.effectTargets(e.Target, self, f) {
+			if i != nil {
+				i.skybound += e.Times
 			}
 		}
 	case "spellboost":

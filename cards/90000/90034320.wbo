@@ -5,7 +5,9 @@ card 90034320 {
     cost 1;
 
     effect {
-        unplayable;
+        choose target from oppo.field.followers or oppo.leader;
+        damage target 2;
+        heal own.leader 1;
     }
 
     meta {

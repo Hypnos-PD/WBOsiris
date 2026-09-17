@@ -186,6 +186,14 @@ heal own.leader 5;
 require target from own.field.followers;
 ```
 
+`if skybound_art { … }` 是【奥义】条件（奥义槽 ≥ 10），`if super_skybound_art { … }` 是
+【解放奥义】（奥义槽 ≥ 15）。奥义槽 = 当前回合数 + 本卡牌在手牌中时己方随从进化过的次数
+（官方术语表：Skybound Art / Super Skybound Art）。`gain skybound 集合 N;` 让集合里的
+卡牌奥义槽 +N（"使自己的所有手牌的奥义槽 +1"）。
+
+筛选器里的 `where base.cost == 2`（`base.cost`/`base.attack`/`base.life`）按原始定义比较，
+与按当前值比较的 `cost` 区分开。
+
 `where card <绑定>` 匹配与那个绑定实例**同一卡牌定义**的对象（绑定名在运行时解析；
 写错名字不会匹配到任何目标，检查器不校验筛选里的绑定名）："使对手场上与其同名的所有随从消失"
 写作 `banish oppo.field.followers where card target;`，配合 `superevolve extends evolve`

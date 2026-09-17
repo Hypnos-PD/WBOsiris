@@ -400,6 +400,14 @@ type DeckDuplicatesCondition struct {
 
 func (c DeckDuplicatesCondition) conditionKind() string { return c.Kind }
 
+// SkyboundArtCondition 判断来源卡牌的奥义槽是否达到阈值：10 是【奥义】，15 是【解放奥义】。
+type SkyboundArtCondition struct {
+	Kind  string `json:"kind"`
+	Level int    `json:"level"`
+}
+
+func (c SkyboundArtCondition) conditionKind() string { return c.Kind }
+
 type Scalar struct {
 	Kind  string `json:"kind"`
 	Side  string `json:"side,omitempty"`

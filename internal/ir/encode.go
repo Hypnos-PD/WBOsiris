@@ -315,7 +315,7 @@ func (e AdjustEffect) MarshalJSON() ([]byte, error) {
 		} else {
 			object["delta"] = e.Delta
 		}
-	case "spellboost":
+	case "spellboost", "adjust_skybound":
 		object["target"], object["times"] = e.Target, e.Times
 	case "halve_cost":
 		object["field"], object["target"] = e.Field, e.Target

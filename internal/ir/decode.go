@@ -1178,7 +1178,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			Keyword: v.Keyword, Until: v.Until, Form: v.Form, Destination: v.Destination, DeckInsertion: v.DeckInsertion,
 			Target: r, Amount: v.Amount, AmountExpr: amountExpr, AttackDelta: v.AttackDelta, LifeDelta: v.LifeDelta, AttackExpr: attackExpr, LifeExpr: lifeExpr, Predicate: p, Extremum: v.Extremum,
 		}, err
-	case "adjust_resource", "restore_resource", "adjust_earthsigil", "adjust_entity_field", "spellboost", "adjust_counter", "halve_cost", "double_stats":
+	case "adjust_resource", "restore_resource", "adjust_earthsigil", "adjust_entity_field", "spellboost", "adjust_counter", "halve_cost", "double_stats", "adjust_skybound":
 		type raw struct {
 			ID                           string `json:"id"`
 			Kind, Owner, Resource, Field string
@@ -1209,7 +1209,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 				return nil, fmt.Errorf("invalid resource restoration")
 			}
 		case "adjust_resource":
-			if !validSide(v.Owner) || !oneOf(v.Resource, "pp", "combo", "maxpp", "shadows") || v.Field != "" || r != nil || v.Minimum != 0 || v.Times != 0 {
+			if !validSide(v.Owner) || !oneOf(v.Resource, "pp", "combo", "maxpp", "shadows", "ep", "sep", "rally") || v.Field != "" || r != nil || v.Minimum != 0 || v.Times != 0 {
 				return nil, fmt.Errorf("invalid resource adjustment")
 			}
 		case "adjust_earthsigil":
@@ -1226,6 +1226,10 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		case "spellboost":
 			if v.Owner != "" || v.Resource != "" || v.Field != "" || r == nil || v.Delta != 0 || v.Minimum != 0 || v.Times < 0 {
 				return nil, fmt.Errorf("invalid spellboost")
+			}
+		case "adjust_skybound":
+			if v.Owner != "" || v.Resource != "" || v.Field != "" || r == nil || v.Delta != 0 || v.Minimum != 0 || v.Times < 0 {
+				return nil, fmt.Errorf("invalid skybound adjustment")
 			}
 		case "halve_cost":
 			if v.Owner != "" || v.Resource != "" || v.Field != "cost" || r == nil || v.Delta != 0 || v.Minimum != 0 || v.Times != 0 {
@@ -1506,7 +1510,7 @@ func decodePredicate(data []byte) (Predicate, error) {
 		if err := strict(data, &v); err != nil {
 			return nil, err
 		}
-		if !oneOf(v.Field, "life", "cost", "attack") || !validOp(v.Op) {
+		if !oneOf(v.Field, "life", "cost", "attack", "base_life", "base_cost", "base_attack") || !validOp(v.Op) {
 			return nil, fmt.Errorf("invalid comparison predicate")
 		}
 		value, expr, err := decodeNumericValue(v.Value, true)
@@ -1596,6 +1600,19 @@ func decodeCondition(data []byte) (Condition, error) {
 			return nil, err
 		}
 		return CountCondition{Kind: v.Kind, Source: source, Op: v.Op, Right: v.Right}, nil
+	}
+	if k.Kind == "skybound_art" {
+		var v struct {
+			Kind  string `json:"kind"`
+			Level int    `json:"level"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if v.Level != 10 && v.Level != 15 {
+			return nil, fmt.Errorf("invalid skybound art condition")
+		}
+		return SkyboundArtCondition{Kind: v.Kind, Level: v.Level}, nil
 	}
 	if k.Kind == "deck_duplicates" {
 		var v struct {

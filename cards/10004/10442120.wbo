@@ -6,7 +6,15 @@ card 10442120 {
     stats 10/8;
 
     effect {
-        unplayable;
+        fanfare {
+            if super_skybound_art {
+                add storm to self;
+            }
+        }
+        superevolve {
+            choose targets from oppo.field.followers count 2;
+            destroy targets;
+        }
     }
 
     meta {

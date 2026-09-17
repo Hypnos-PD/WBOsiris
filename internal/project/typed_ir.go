@@ -441,6 +441,11 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		}
 		return e, nil
 	case "gain":
+		if len(t) >= 4 && t[1].Value == "skybound" {
+			// `gain skybound own.hand N`：让集合中的卡牌奥义槽 +N。
+			end := valueRefEnd(t, 2)
+			return ir.AdjustEffect{NodeBase: base, Kind: "adjust_skybound", Target: valueRefIR(t, 2), Times: intToken(t[end])}, nil
+		}
 		if len(t) == 4 && t[2].Value == "crest" {
 			return ir.CardEffect{NodeBase: base, Kind: "gain_crest", Owner: t[1].Value, CardID: intToken(t[3])}, nil
 		}
@@ -539,6 +544,7 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 	case "spellboost":
 		end := valueRefEnd(t, 1)
 		return ir.AdjustEffect{NodeBase: base, Kind: "spellboost", Target: valueRefIR(t, 1), Times: intToken(t[end])}, nil
+
 	case "halve":
 		// halve cost <集合>：把目标的当前费用变为向上取整的一半（官方 FAQ：9 → 5）。
 		return ir.AdjustEffect{NodeBase: base, Kind: "halve_cost", Field: "cost", Target: valueRefIR(t, 2)}, nil
@@ -665,6 +671,17 @@ func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 		case "form":
 			terms = append(terms, ir.FieldPredicate{Kind: "has_form", Form: t[j+1].Value})
 			j += 2
+		case "base":
+			// `base . cost|attack|life 比较 整数`：按原始定义比较。
+			predicate := ir.FieldPredicate{Kind: "compare", Field: "base_" + t[j+2].Value, Op: compareOp(t[j+3].Value)}
+			if t[j+4].Kind == syntax.Integer {
+				predicate.Value = intToken(t[j+4])
+				j += 5
+			} else {
+				predicate.ValueScalar = &ir.Scalar{Kind: "scalar", Side: t[j+4].Value, Field: t[j+6].Value}
+				j += 7
+			}
+			terms = append(terms, predicate)
 		case "life", "cost", "attack":
 			if t[j].Value == "cost" && j+1 < len(t) && t[j+1].Value == "changed" {
 				terms = append(terms, ir.FieldPredicate{Kind: "cost_changed"})
@@ -698,8 +715,22 @@ func conditionIR(t []syntax.Token) ir.Condition {
 	if len(t) == 0 {
 		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "scalar", Side: "own", Field: "combo"}}
 	}
+	// `if 条件 { ... } else { ... }`：条件部分在 else 之前，先截断再解析。
+	for i, x := range t {
+		if x.Value == "else" {
+			t = t[:i]
+			break
+		}
+	}
 	if damagedBindingCondition(t) {
 		return ir.IsDamagedCondition{Kind: "is_damaged", Name: t[0].Value}
+	}
+	if len(t) == 1 && (t[0].Value == "skybound_art" || t[0].Value == "super_skybound_art") {
+		level := 10
+		if t[0].Value == "super_skybound_art" {
+			level = 15
+		}
+		return ir.SkyboundArtCondition{Kind: "skybound_art", Level: level}
 	}
 	if deckDuplicatesCondition(t) {
 		return ir.DeckDuplicatesCondition{Kind: "deck_duplicates", Side: t[0].Value, Unique: len(t) == 6}
@@ -719,12 +750,6 @@ func conditionIR(t []syntax.Token) ir.Condition {
 	}
 	if counterRef(t, 0) {
 		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "self_counter", Field: t[4].Value}, Op: compareOp(t[5].Value), Right: intToken(t[6])}
-	}
-	for i, x := range t {
-		if x.Value == "else" {
-			t = t[:i]
-			break
-		}
 	}
 	if attackHistoryCondition(t) {
 		attacked := t[0].Value != "not"

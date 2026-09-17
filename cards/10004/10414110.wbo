@@ -6,7 +6,12 @@ card 10414110 {
     stats 2/1;
 
     effect {
-        unplayable;
+        fanfare {
+            if skybound_art {
+                gain own.ep 1;
+            }
+        }
+        rush;
     }
 
     meta {

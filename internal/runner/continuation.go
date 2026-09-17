@@ -138,6 +138,7 @@ type ContinuationEntity struct {
 	Suppressed        []string                 `json:"suppressedAbilities,omitempty"`
 	SuppressAll       bool                     `json:"suppressAllAbilities,omitempty"`
 	CostChanged       bool                     `json:"costChanged,omitempty"`
+	Skybound          int                      `json:"skybound,omitempty"`
 }
 
 type ContinuationEvent struct {
@@ -477,7 +478,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 			Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i),
 			Engaged: i.engaged, SummoningSick: i.summoningSick, Evolved: i.evolved,
 			SuperEvolved: i.superEvolved, Departed: i.departed, FusedThisTurn: i.fusedThisTurn, DamageReduction: i.damageReduction, Abilities: abilities, Materials: instanceIDs(i.materials), Grants: grantIDs(i),
-			Suppressed: suppressedAbilities(i), SuppressAll: i.suppressAll, CostChanged: i.costChanged,
+			Suppressed: suppressedAbilities(i), SuppressAll: i.suppressAll, CostChanged: i.costChanged, Skybound: i.skybound,
 		})
 	}
 	for _, event := range g.events {
@@ -586,7 +587,7 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 			id:           entity.ID, alias: entity.Alias, zone: entity.Zone, card: card,
 			attack: entity.Attack, life: entity.Life, damageTaken: entity.DamageTaken, cost: entity.Cost, earthsigil: entity.Earthsigil, countdown: entity.Countdown,
 			attacksUsed: entity.AttacksUsed, attackLimitValue: limit, engaged: entity.Engaged, summoningSick: entity.SummoningSick,
-			evolved: entity.Evolved, superEvolved: entity.SuperEvolved, departed: entity.Departed, fusedThisTurn: entity.FusedThisTurn, damageReduction: entity.DamageReduction, costChanged: entity.CostChanged, abilities: map[string]bool{},
+			evolved: entity.Evolved, superEvolved: entity.SuperEvolved, departed: entity.Departed, fusedThisTurn: entity.FusedThisTurn, damageReduction: entity.DamageReduction, costChanged: entity.CostChanged, skybound: entity.Skybound, abilities: map[string]bool{},
 		}
 		for _, id := range entity.Grants {
 			grant, ok := grants[id]

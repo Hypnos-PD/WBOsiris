@@ -380,7 +380,7 @@ func strictCondition(t []syntax.Token, fusion bool) bool {
 		return true
 	}
 	if len(t) == 1 {
-		return t[0].Value == "overflow"
+		return set("overflow", "skybound_art", "super_skybound_art")[t[0].Value]
 	}
 	op := func(x string) bool { return set("==", "!=", "<", "<=", ">", ">=")[x] }
 	if len(t) == 7 && counterRef(t, 0) {

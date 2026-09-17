@@ -6,7 +6,30 @@ card 10403110 {
     stats 3/2;
 
     effect {
-        unplayable;
+        fanfare {
+            mode {
+                option 1 {
+                    label chs "对对手的战场上的随机1个随从造成5点伤害。";
+                    label eng "Deal 5 damage to a random enemy follower.";
+                    label jpn "相手の場のフォロワーからランダム1枚に5ダメージ。";
+                    label kor "상대방 전장의 추종자 하나를 무작위로 5 피해.";
+                    label cht "給予敵方戰場上的隨機1張從者卡5點傷害。";
+                    random victim from oppo.field.followers;
+                    damage victim 5;
+                }
+                option 2 {
+                    label chs "抽取2张随从。";
+                    label eng "Draw 2 followers.";
+                    label jpn "自分のデッキからフォロワー2枚を引く。";
+                    label kor "내 덱에서 추종자 2장을 뽑는다.";
+                    label cht "抽取2張從者卡。";
+                    draw 2 from deck where type follower;
+                }
+            }
+            if skybound_art {
+                evolve self silent;
+            }
+        }
     }
 
     meta {

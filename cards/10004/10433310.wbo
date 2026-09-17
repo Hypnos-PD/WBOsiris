@@ -5,7 +5,12 @@ card 10433310 {
     cost 2;
 
     effect {
-        unplayable;
+        choose target from oppo.field.followers;
+        damage target 4;
+        add 1 earthsigil;
+        if skybound_art {
+            damage oppo.leader 2;
+        }
     }
 
     meta {

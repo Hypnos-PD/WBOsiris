@@ -222,6 +222,8 @@ filter_term         = "card" , (card_id | binding_name)
                     | "spellboost"
                     | "damaged"
                     | "cost" , "changed"
+                    | "base" , "." , ("life" | "cost" | "attack") , comparison_operator , (integer | player_scalar)
+                    | ("skybound_art" | "super_skybound_art")
                     | "keyword" , ability
                     | "type" , card_type
                     | "class" , identifier
@@ -393,6 +395,7 @@ numeric_operation = "damage" , value_ref , ["other" , [binding_name]] , effect_a
                   | "buff" , value_ref , ["other" , [binding_name]] , signed_amount , "/" , signed_amount , [where_clause] , [effect_duration] , ";"
                   | "gain" , scalar_ref , integer , ";"
                   | "gain" , participant , "crest" , card_id , ";"
+                  | "gain" , "skybound" , value_ref , integer , ";"
                   | "restore" , participant , "." , "pp" , ";" ;
 
 effect_amount     = integer | counter_ref | "count" , "(" , count_source , [where_clause] , ")"
