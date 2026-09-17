@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10442120 {
+    type follower;
+    cost 8;
+    stats 10/8;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "淳朴的钢铁之躯·无限";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>解放奥义</color>】本随从获得【<color=Keyword>疾驰</color>】。
+<hr><sev>【<color=Keyword>超进化时</color>】选择对手的战场上的2个随从，破坏这些随从。</sev>
+""";
+    }
+
+    locale eng {
+        name "Mugen, Steel-Bodied Honesty";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Super Skybound Art</color></b> - Give this follower <b><color=Keyword>Storm</color></b>.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Select 2 enemy followers on the field and destroy them.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"じゅんぼく\">純朴</rub>の<rub=\"こうたい\">鋼体</rub>・ムゲン";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>解放奥義</color>】これは【<color=Keyword>疾走</color>】を持つ。
+<hr><sev>【<color=Keyword>超進化時</color>】相手の場のフォロワー2枚を選ぶ。それを破壊。</sev>
+""";
+    }
+
+    locale kor {
+        name "순박한 강철육체 무겐";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>해방 오의</color>] 이 추종자는 [<color=Keyword>질주</color>]를 갖는다.
+<hr><sev>[<color=Keyword>초진화시</color>] 상대방 전장에서 추종자 2장을 선택한다. 그 추종자를 파괴.</sev>
+""";
+    }
+
+    locale cht {
+        name "純樸鋼體‧無限";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>解放奧義</color>】使這張卡片獲得【<color=Keyword>疾馳</color>】。
+<hr><sev>【<color=Keyword>超進化時</color>】指定2張敵方戰場上的從者卡。將其破壞。</sev>
+""";
+    }
+
+}

@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10451110 {
+    type follower;
+    cost 2;
+    stats 3/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "憧憬的铁锤·阿尔梅达";
+        text """
+【<color=Keyword>爆能强化</color>_4】本随从进化。本随从+1/+1。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Almeida, Headstrong Miner";
+        text """
+<b><color=Keyword>Enhance</color> (4)</b>: Evolve this follower and give it +1/+1.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しょうけい\">憧憬</rub>の<rub=\"てっつい\">鉄槌</rub>・アルメイダ";
+        text """
+【<color=Keyword>エンハンス</color>_4】これは進化する。これは+1/+1する。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "동경의 쇠망치 알메이다";
+        text """
+[<color=Keyword>증강</color> 4] 이 추종자는 진화한다. 이 추종자는 +1/+1.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "憧憬之鐵鎚‧阿爾梅達";
+        text """
+【<color=Keyword>爆能強化</color>_4】使這張卡片進化。使這張卡片+1/+1。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

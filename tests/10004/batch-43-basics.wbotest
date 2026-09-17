@@ -1,0 +1,173 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "如火斗志打出后就是一个白板随从" {
+    seed 43001;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10422120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.zone == field; source.stats == 5/4; own.pp == 0/3; }
+}
+
+scenario "绽放的肌肉自带潜行与毁灭" {
+    seed 43002;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10422130; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has stealth; source has bane; }
+}
+
+scenario "逐海之人自带守护与灵气" {
+    seed 43003;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10441110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has ward; source has aura; }
+}
+
+scenario "不可思议的哲学家抽取一张法术" {
+    seed 43004;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10431110; }
+            deck top {
+                follower wrong = 10011110;
+                spell right = 10031310;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10031310 == 1; own.hand count card 10011110 == 0; }
+}
+
+scenario "信念腿法爆能强化五点后获得疾驰" {
+    seed 43005;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10421110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has storm; own.pp == 0/5; }
+}
+
+scenario "未爆能强化时信念腿法没有疾驰" {
+    seed 43006;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10421110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source lacks storm; own.pp == 2/4; }
+}
+
+scenario "报恩工匠的谢幕曲把攻击创造物加入手牌" {
+    seed 43007;
+    state {
+        player own { field { follower source = 10471130; } }
+        player oppo { field { follower big = 90004110; } }
+    }
+    action { attack source into big; }
+    expect { legal; source.zone == graveyard; own.hand count card 90072110 == 1; }
+}
+
+scenario "绯焰舞姬让己方全体获得屏障" {
+    seed 43008;
+    state {
+        player own {
+            pp 5/5;
+            field { follower ally = 10001110; }
+            hand { follower source = 10412120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        ally has barrier;
+        source has barrier;
+    }
+}
+
+scenario "迷茫的狮子进化时召唤决心之辉龙" {
+    seed 43009;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10421130; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.field count card 10421120 == 1; source has storm; }
+}
+
+scenario "决心之辉龙进化时召唤迷茫的狮子" {
+    seed 43010;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10421120; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.field count card 10421130 == 1; source has ward; }
+}
+
+scenario "启动护符时英雄幻视获得虹吸" {
+    seed 43011;
+    state {
+        turn own 4;
+        player own {
+            pp 1/1;
+            field {
+                follower source = 10461110;
+                amulet relic = 10001210;
+            }
+        }
+    }
+    action { engage relic; }
+    expect { legal; source has drain; source has storm; }
+}
+
+scenario "超进化已解禁的回合亲爱的搭档自行进化" {
+    seed 43012;
+    state {
+        turn own 7;
+        player own {
+            pp 2/2;
+            hand { follower source = 10401120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == true; source.stats == 5/5; }
+}
+
+scenario "未解禁时亲爱的搭档不会自行进化" {
+    seed 43013;
+    state {
+        turn own 3;
+        player own {
+            pp 2/2;
+            hand { follower source = 10401120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == false; source.stats == 2/2; }
+}

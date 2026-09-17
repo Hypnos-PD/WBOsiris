@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10441120 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "梅格的挚友·玛丽亲";
+        text """
+在手牌中发动。自己的原始费用为3的随从超进化时，回合结束前，使本卡牌的费用变为0。
+<hr>自己的回合结束时，使自己的战场上的随机1个超进化后的随从+1/+1。
+""";
+    }
+
+    locale eng {
+        name "Mari, Meg's Bestie";
+        text """
+Activates in hand. Whenever a 3-base-cost allied follower super-evolves, set the cost of this card to 0 until the end of the turn.
+<hr>At the end of your turn, give a random super-evolved allied follower on the field +1/+1.
+""";
+    }
+
+    locale jpn {
+        name "メグの<rub=\"しんゆう\">親友</rub>・まりっぺ";
+        text """
+手札で働く。自分の元のコスト3のフォロワーが超進化したとき、ターン終了まで、これのコストを0にする。
+<hr>自分のターン終了時、自分の場の超進化後のフォロワーからランダム1枚は+1/+1する。
+""";
+    }
+
+    locale kor {
+        name "메구의 절친 마릿페";
+        text """
+패에서 발동. 원래 비용이 3인 내 추종자가 초진화했을 때, 턴 종료까지 이 추종자의 비용을 0으로 만든다.
+<hr>내 턴 종료시, 내 전장의 초진화후인 추종자 중 무작위로 1장은 +1/+1.
+""";
+    }
+
+    locale cht {
+        name "梅格的摯友‧瑪莉莉";
+        text """
+於手牌中發動。當自己原始消費為3的從者卡超進化時，到回合結束為止，使這張卡片的消費轉變為0。
+<hr>自己的回合結束時，隨機使1張自己戰場上已超進化的從者卡+1/+1。
+""";
+    }
+
+}

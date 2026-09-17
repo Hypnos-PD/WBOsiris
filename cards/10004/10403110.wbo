@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10403110 {
+    type follower;
+    cost 4;
+    stats 3/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class neutral;
+        rarity gold;
+    }
+
+    locale chs {
+        name "征服苍空的骑空士·古兰&姬塔";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>模式</color>】选择1个能力发动。【<color=Keyword>奥义</color>】本随从进化。
+<ridx=0>（1）对对手的战场上的随机1个随从造成5点伤害。</ridx>
+<ridx=1>（2）抽取2张随从。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Gran & Djeeta, Valiant Skyfarers";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a <b><color=Keyword>Mode</color></b> to activate. <b><color=Keyword>Skybound Art</color></b> - Evolve this follower.
+<ridx=0>1. Deal 5 damage to a random enemy follower.</ridx>
+<ridx=1>2. Draw 2 followers.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あお\">蒼</rub>い<rub=\"そら\">空</rub>を<rub=\"ゆ\">征</rub>く<rub=\"きくうし\">騎空士</rub>・グラン＆ジータ";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>モード</color>】1つを選んでその能力が働く。【<color=Keyword>奥義</color>】これは進化する。
+<ridx=0>（1）相手の場のフォロワーからランダム1枚に5ダメージ。</ridx>
+<ridx=1>（2）自分のデッキからフォロワー2枚を引く。</ridx>
+""";
+    }
+
+    locale kor {
+        name "푸른 하늘을 나아가는 기공사 그랑&지타";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동. [<color=Keyword>오의</color>] 이 추종자는 진화한다.
+<ridx=0>(1) 상대방 전장의 추종자 중 무작위로 1장에게 5 피해.</ridx>
+<ridx=1>(2) 내 덱에서 추종자 2장을 뽑는다.</ridx>
+""";
+    }
+
+    locale cht {
+        name "邁向蒼空的騎空士‧葛蘭＆吉塔";
+        text """
+【<color=Keyword>入場曲</color>】指定1個【<color=Keyword>模式</color>】並發動該能力。【<color=Keyword>奧義</color>】使這張卡片進化。
+<ridx=0>（1）隨機給予1張敵方戰場上的從者卡5點傷害。</ridx>
+<ridx=1>（2）由自己的牌堆中抽取2張從者卡。</ridx>
+""";
+    }
+
+}

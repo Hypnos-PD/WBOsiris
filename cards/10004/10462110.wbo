@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10462110 {
+    type follower;
+    cost 4;
+    stats 4/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "沙神的巫女·莎拉";
+        text """
+【<color=Keyword>爆能强化</color>_6】本随从+0/+10。
+<hr>【<color=Keyword>守护</color>】
+<hr><ev>【<color=Keyword>进化时</color>】选择对手的战场上的1个受伤的随从，破坏该随从。</ev>
+""";
+    }
+
+    locale eng {
+        name "Sara, Graphos's Chosen";
+        text """
+<b><color=Keyword>Enhance</color> (6)</b>: Give this follower +0/+10.
+<hr><b><color=Keyword>Ward</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select a damaged enemy follower on the field and destroy it.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"すながみ\">砂神</rub>の<rub=\"みこ\">巫女</rub>・サラ";
+        text """
+【<color=Keyword>エンハンス</color>_6】これは+0/+10する。
+<hr>【<color=Keyword>守護</color>】
+<hr><ev>【<color=Keyword>進化時</color>】相手の場のダメージを受けているフォロワー1枚を選ぶ。それを破壊。</ev>
+""";
+    }
+
+    locale kor {
+        name "모래신의 무녀 사라";
+        text """
+[<color=Keyword>증강</color> 6] 이 추종자는 +0/+10.
+<hr>[<color=Keyword>수호</color>]
+<hr><ev>[<color=Keyword>진화시</color>] 상대방 전장에서 피해를 받은 상태인 추종자 1장을 선택한다. 그 추종자를 파괴.</ev>
+""";
+    }
+
+    locale cht {
+        name "砂神的巫女‧莎拉";
+        text """
+【<color=Keyword>爆能強化</color>_6】使這張卡片+0/+10。
+<hr>【<color=Keyword>守護</color>】
+<hr><ev>【<color=Keyword>進化時</color>】指定1張敵方戰場上已受到傷害的從者卡。將其破壞。</ev>
+""";
+    }
+
+}

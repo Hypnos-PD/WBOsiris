@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10453310 {
+    type spell;
+    cost 5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class abysscraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "堕落";
+        text """
+使战场上的所有随从-2/-2。使自己和对手获得『纹章：堕落』。【<color=Keyword>解放奥义</color>】破坏自己的『纹章：堕落』。
+""";
+    }
+
+    locale eng {
+        name "Corruption";
+        text """
+Give all followers on the field -2/-2. Give yourself and your opponent <b><i>Crest: Corruption</i></b>. <b><color=Keyword>Super Skybound Art</color></b> - Destroy your <b><i>Crest: Corruption</i></b>.
+""";
+    }
+
+    locale jpn {
+        name "コラプション";
+        text """
+場のフォロワーすべては-2/-2する。自分と相手は『クレスト：コラプション』を持つ。【<color=Keyword>解放奥義</color>】自分の『クレスト：コラプション』を破壊。
+""";
+    }
+
+    locale kor {
+        name "커럽션";
+        text """
+전장의 추종자 모두는 -2/-2. 나와 상대방은 「크레스트: 커럽션」을 갖는다. [<color=Keyword>해방 오의</color>] 내 「크레스트: 커럽션」을 파괴.
+""";
+    }
+
+    locale cht {
+        name "腐敗侵襲";
+        text """
+使戰場上全部的從者卡-2/-2。使自己與敵方獲得『紋章：腐敗侵襲』。【<color=Keyword>解放奧義</color>】破壞自己的『紋章：腐敗侵襲』。
+""";
+    }
+
+}

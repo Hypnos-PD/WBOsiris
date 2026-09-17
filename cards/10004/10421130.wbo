@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10421130 {
+    type follower;
+    cost 3;
+    stats 2/1;
+
+    effect {
+        storm;
+        evolve {
+            summon 1 card 10421120;
+        }
+    }
+
+    meta {
+        pack 10004;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "迷茫的狮子·莫德雷德";
+        text """
+【<color=Keyword>疾驰</color>】
+<hr><ev>【<color=Keyword>进化时</color>】召唤1个『<color=Keyword>决心之辉龙·亚瑟</color>』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Mordred, Illusory Lion";
+        text """
+<b><color=Keyword>Storm</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Summon an <b><i><color=Keyword>Arthur, Staunch Dragon</color></i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"めいむ\">迷夢</rub>の<rub=\"しし\">獅子</rub>・モルドレッド";
+        text """
+【<color=Keyword>疾走</color>】
+<hr><ev>【<color=Keyword>進化時</color>】『<color=Keyword>決意の輝竜・アーサー</color>』1枚を自分の場に出す。</ev>
+""";
+    }
+
+    locale kor {
+        name "미몽의 사자 모드레드";
+        text """
+[<color=Keyword>질주</color>]
+<hr><ev>[<color=Keyword>진화시</color>] <color=Keyword>결의의 휘룡 아서</color> 1장을 내 전장에 소환.</ev>
+""";
+    }
+
+    locale cht {
+        name "迷惘的獅子‧莫德雷德";
+        text """
+【<color=Keyword>疾馳</color>】
+<hr><ev>【<color=Keyword>進化時</color>】召喚1張『<color=Keyword>決意的輝龍‧亞瑟</color>』到自己的戰場上。</ev>
+""";
+    }
+
+}

@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10424120 {
+    type follower;
+    cost 4;
+    stats 4/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class swordcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "十天众统领·希耶提";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>奥义</color>】使自己的战场上的所有进化前的随从进化。【<color=Keyword>解放奥义</color>】改为超进化。
+""";
+    }
+
+    locale eng {
+        name "Seofon, Leader of the Eternals";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Skybound Art</color></b> - Evolve all unevolved allied followers on the field. <b><color=Keyword>Super Skybound Art</color></b> - Super-evolve them instead.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"じゅってんしゅう\">十天衆</rub>の<rub=\"とうもく\">頭目</rub>・シエテ";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>奥義</color>】自分の場の進化前のフォロワーすべては進化する。【<color=Keyword>解放奥義</color>】進化するのではなく超進化する。
+""";
+    }
+
+    locale kor {
+        name "십천중 두목 시에테";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>오의</color>] 내 전장의 진화전인 추종자 모두는 진화한다. [<color=Keyword>해방 오의</color>] 진화하는 대신 초진화한다.
+""";
+    }
+
+    locale cht {
+        name "十天眾頭目‧席耶提";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>奧義</color>】使自己戰場上全部進化前的從者卡進化。【<color=Keyword>解放奧義</color>】由原本的進化轉變為超進化。
+""";
+    }
+
+}

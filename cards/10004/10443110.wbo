@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10443110 {
+    type follower;
+    cost 3;
+    stats 2/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class dragoncraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "平平无奇的女孩·梅格";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>奥义</color>】本随从超进化。
+<hr>自己的原始费用为2的随从进入战场时，本随从获得【<color=Keyword>守护</color>】。
+""";
+    }
+
+    locale eng {
+        name "Meg, Girl Next Door";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Skybound Art</color></b> - Super-evolve this follower.
+<hr>Whenever a 2-base-cost allied follower enters the field, give this follower <b><color=Keyword>Ward</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "どこにでもいるフツーの<rub=\"おんな\">女</rub>の<rub=\"こ\">子</rub>・メグ";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>奥義</color>】これは超進化する。
+<hr>自分の元のコスト2のフォロワーが場に出たとき、これは【<color=Keyword>守護</color>】を持つ。
+""";
+    }
+
+    locale kor {
+        name "어디에나 있는 평범한 여자아이 메구";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>오의</color>] 이 추종자는 초진화한다.
+<hr>원래 비용이 2인 내 추종자가 전장에 소환되었을 때, 이 추종자는 [<color=Keyword>수호</color>]를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "隨處可見的平凡女孩‧梅格";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>奧義</color>】使這張卡片超進化。
+<hr>當自己原始消費為2的從者卡進入戰場時，使這張卡片獲得【<color=Keyword>守護</color>】。
+""";
+    }
+
+}

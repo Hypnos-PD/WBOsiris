@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10411120 {
+    type follower;
+    cost 4;
+    stats 2/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "可爱如琬似花·玛娜玛尔";
+        text """
+自己的回合结束时，本随从进化。
+<hr><ev>本随从进化时，对对手的战场上的所有随从造成1点伤害。</ev>
+""";
+    }
+
+    locale eng {
+        name "Manamel, Super Cutest";
+        text """
+At the end of your turn, evolve this follower.
+<hr><ev>When this follower evolves, deal 1 damage to all enemy followers.</ev>
+""";
+    }
+
+    locale jpn {
+        name "カワイイ<rub=\"はな\">花</rub>マル・マナマル";
+        text """
+自分のターン終了時、これは進化する。
+<hr><ev>これが進化したとき、相手の場のフォロワーすべてに1ダメージ。</ev>
+""";
+    }
+
+    locale kor {
+        name "참 귀여워요 마나마루";
+        text """
+내 턴 종료시, 이 추종자는 진화한다.
+<hr><ev>이 추종자가 진화했을 때, 상대방 전장의 추종자 모두에게 1 피해.</ev>
+""";
+    }
+
+    locale cht {
+        name "可愛的花花甜心‧瑪娜麥莉";
+        text """
+自己的回合結束時，使這張卡片進化。
+<hr><ev>當這張卡片進化時，給予敵方戰場上全部的從者卡1點傷害。</ev>
+""";
+    }
+
+}

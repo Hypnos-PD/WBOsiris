@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10443310 {
+    type spell;
+    cost 5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class dragoncraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "星晶兽吸收之力";
+        text """
+选择对手的战场上的1张卡牌，使其消失，将1张同名的卡牌加入自己的手牌。
+""";
+    }
+
+    locale eng {
+        name "Primal Beast Absorption";
+        text """
+Select an enemy card on the field, banish it, and add a copy of it to your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"せいしょうじゅう\">星晶獣</rub>の<rub=\"きゅうしゅう\">吸収</rub>";
+        text """
+相手の場のカード1枚を選ぶ。それを消滅して、同名のカード1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "성정수의 흡수";
+        text """
+상대방 전장에서 카드 1장을 선택한다. 그 카드를 소멸시키고 동명의 카드 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "吸收星晶獸";
+        text """
+指定1張敵方戰場上的卡片。使其消失，並增加1張與其同名的卡片到自己的手牌中。
+""";
+    }
+
+}

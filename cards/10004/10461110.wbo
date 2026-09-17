@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10461110 {
+    type follower;
+    cost 3;
+    stats 2/1;
+
+    effect {
+        storm;
+        when own amulet engaged {
+            add drain to self;
+        }
+    }
+
+    meta {
+        pack 10004;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "英雄幻视·托路";
+        text """
+【<color=Keyword>疾驰</color>】
+自己【<color=Keyword>启动</color>】护符时，本随从获得【<color=Keyword>虹吸</color>】。
+""";
+    }
+
+    locale eng {
+        name "Troue, Heroic Visionary";
+        text """
+<b><color=Keyword>Storm</color></b>
+Whenever you <b><color=Keyword>Engage</color></b> an amulet, give this follower <b><color=Keyword>Drain</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"えいゆうげんし\">英雄幻視</rub>・トルー";
+        text """
+【<color=Keyword>疾走</color>】
+自分がアミュレットを【<color=Keyword>アクト</color>】したとき、これは【<color=Keyword>ドレイン</color>】を持つ。
+""";
+    }
+
+    locale kor {
+        name "영웅환시 토루";
+        text """
+[<color=Keyword>질주</color>]
+내가 마법진을 [<color=Keyword>활성화</color>]했을 때, 이 추종자는 [<color=Keyword>흡혈</color>]을 갖는다.
+""";
+    }
+
+    locale cht {
+        name "英雄幻視‧特爾";
+        text """
+【<color=Keyword>疾馳</color>】
+當自己進行護符卡的【<color=Keyword>策動</color>】時，使這張卡片獲得【<color=Keyword>吸血</color>】。
+""";
+    }
+
+}

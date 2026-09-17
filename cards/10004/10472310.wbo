@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10472310 {
+    type spell;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "身无长物唯有石";
+        text """
+发动6次「对对手的战场上的随机1个随从造成1点伤害」。
+""";
+    }
+
+    locale eng {
+        name "Stone Breaker";
+        text """
+Do this 6 times: \"Deal 1 damage to a random enemy follower.\"
+""";
+    }
+
+    locale jpn {
+        name "ストーン・ブレイク";
+        text """
+「相手の場のフォロワーからランダム1枚に1ダメージ。」を6回行う。
+""";
+    }
+
+    locale kor {
+        name "스톤 브레이크";
+        text """
+「상대방 전장의 추종자 중 무작위로 1장에게 1 피해」를 6회 발동.
+""";
+    }
+
+    locale cht {
+        name "碎石烈槍";
+        text """
+發動6次「隨機給予1張敵方戰場上的從者卡1點傷害」。
+""";
+    }
+
+}

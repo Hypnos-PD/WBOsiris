@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10412110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "美妆少女·克洛伊";
+        text """
+【<color=Keyword>爆能强化</color>_8】选择自己的手牌中的1张随从，召唤该随从。本随从返回手牌。
+""";
+    }
+
+    locale eng {
+        name "Chloe, What a Gal";
+        text """
+<b><color=Keyword>Enhance</color> (8)</b>: Select a follower in your hand and summon it. Return this card to hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"びしょう\">美粧</rub>の<rub=\"おとめ\">乙女</rub>・クロエ";
+        text """
+【<color=Keyword>エンハンス</color>_8】自分の手札のフォロワー1枚を選ぶ。それを自分の場に出す。これを手札に戻す。
+""";
+    }
+
+    locale kor {
+        name "치장하는 소녀 클로에";
+        text """
+[<color=Keyword>증강</color> 8] 내 패에서 추종자 1장을 선택한다. 그 추종자를 내 전장에 소환. 이 추종자를 패로 되돌린다.
+""";
+    }
+
+    locale cht {
+        name "美妝少女‧庫蘿耶";
+        text """
+【<color=Keyword>爆能強化</color>_8】指定1張自己手牌中的從者卡。將其召喚到自己的戰場上。使這張卡片返回手牌中。
+""";
+    }
+
+}

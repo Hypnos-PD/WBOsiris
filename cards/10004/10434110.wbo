@@ -1,0 +1,73 @@
+wbo 0.1.0;
+
+card 10434110 {
+    type follower;
+    cost 3;
+    stats 0/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "水之法则·瓦姆杜斯";
+        text """
+【<color=Keyword>魔力增幅时</color>】本随从+1/+1。
+<hr>【<color=Keyword>入场曲</color>】使自己的所有手牌发动1次魔力增幅。
+<hr><sev>【<color=Keyword>超进化时</color>】【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）使自己的战场上的其他所有随从获得【<color=Keyword>屏障</color>】。</ridx>
+<ridx=1>（2）对对手的战场上的所有随从分配X点伤害。X为本随从的攻击力。</ridx></sev>
+""";
+    }
+
+    locale eng {
+        name "Wamdus, Water Personified";
+        text """
+<b><color=Keyword>On Spellboost</color></b>: Give this follower +1/+1.
+<hr><b><color=Keyword>Fanfare</color></b>: Spellboost your hand.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Give all other allied followers on the field <b><color=Keyword>Barrier</color></b>.</ridx>
+<ridx=1>2. Deal X damage split between all enemy followers. X is this follower's attack.</ridx></sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"みず\">水</rub>の<rub=\"ことわり\">理</rub>・ワムデュス";
+        text """
+【<color=Keyword>スペルブースト時</color>】これは+1/+1する。
+<hr>【<color=Keyword>ファンファーレ</color>】自分の手札すべては1回スペルブーストする。
+<hr><sev>【<color=Keyword>超進化時</color>】【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）自分の場の他のフォロワーすべては【<color=Keyword>バリア</color>】を持つ。</ridx>
+<ridx=1>（2）相手の場のフォロワーすべてにXダメージを割りふる。Xはこれの攻撃力である。</ridx></sev>
+""";
+    }
+
+    locale kor {
+        name "물의 섭리 웜듀스";
+        text """
+[<color=Keyword>주문증폭시</color>] 이 추종자는 +1/+1.
+<hr>[<color=Keyword>출격</color>] 내 패 모두를 1회 주문증폭.
+<hr><sev>[<color=Keyword>초진화시</color>] [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 내 전장의 다른 추종자 모두는 [<color=Keyword>배리어</color>]를 갖는다.</ridx>
+<ridx=1>(2) 상대방 전장의 추종자 모두에게 X 피해를 분배한다. X는 이 추종자의 공격력.</ridx></sev>
+""";
+    }
+
+    locale cht {
+        name "水之攝理‧瓦姆杜斯";
+        text """
+【<color=Keyword>魔力增幅時</color>】使這張卡片+1/+1。
+<hr>【<color=Keyword>入場曲</color>】使自己手牌中全部的卡片發動1次魔力增幅。
+<hr><sev>【<color=Keyword>超進化時</color>】指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）使自己戰場上全部的其他從者卡獲得【<color=Keyword>障壁</color>】。</ridx>
+<ridx=1>（2）對敵方戰場上全部的從者卡分配X點傷害。X為「這張卡片的攻擊力」。</ridx></sev>
+""";
+    }
+
+}

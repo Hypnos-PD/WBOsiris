@@ -1,0 +1,72 @@
+wbo 0.1.0;
+
+card 10423310 {
+    type spell;
+    cost 5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class swordcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "骁勇骑士";
+        text """
+【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）使自己的战场上的从左起的1个皇家护卫·随从获得「1回合可以攻击2次」。</ridx>
+<ridx=1>（2）使自己的战场上的所有皇家护卫·随从+1/+1且获得【<color=Keyword>屏障</color>】。</ridx>
+<ridx=2>（3）回复自己2点能量点。回复自己1点进化点。</ridx>
+<ridx=3>（4）回复自己的主战者6点生命值。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Knightly Ardor";
+        text """
+Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Give the leftmost allied Swordcraft follower on the field \"Can attack 2 times per turn.\"</ridx>
+<ridx=1>2. Give all allied Swordcraft followers on the field +1/+1 and <b><color=Keyword>Barrier</color></b>.</ridx>
+<ridx=2>3. Recover 2 play points and 1 evolution point.</ridx>
+<ridx=3>4. Restore 6 defense to your leader.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "リッター・シュナイト";
+        text """
+【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）自分の場のロイヤル・フォロワー左から1枚は「1ターンに2回攻撃できる。」を持つ。</ridx>
+<ridx=1>（2）自分の場のロイヤル・フォロワーすべては+1/+1して【<color=Keyword>バリア</color>】を持つ。</ridx>
+<ridx=2>（3）自分のPPを2回復。自分のEPを1回復。</ridx>
+<ridx=3>（4）自分のリーダーを6回復。</ridx>
+""";
+    }
+
+    locale kor {
+        name "리터 슈나이트";
+        text """
+[<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 내 전장의 로얄 추종자 중 왼쪽부터 1장은 「1턴에 2회 공격 가능」을 갖는다.</ridx>
+<ridx=1>(2) 내 전장의 로얄 추종자 모두는 +1/+1 및 [<color=Keyword>배리어</color>]를 갖는다.</ridx>
+<ridx=2>(3) 내 PP를 2 회복. 내 EP를 1 회복.</ridx>
+<ridx=3>(4) 내 리더를 6 회복.</ridx>
+""";
+    }
+
+    locale cht {
+        name "英勇騎士的群集";
+        text """
+指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）使自己戰場上由左數來的1張皇家護衛‧從者卡獲得「1回合中可進行2次攻擊」。</ridx>
+<ridx=1>（2）使自己戰場上全部的皇家護衛‧從者卡+1/+1並獲得【<color=Keyword>障壁</color>】。</ridx>
+<ridx=2>（3）回復自己的PP 2點。回復自己的EP 1點。</ridx>
+<ridx=3>（4）回復自己的主戰者6點生命值。</ridx>
+""";
+    }
+
+}

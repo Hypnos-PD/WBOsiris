@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10421110 {
+    type follower;
+    cost 2;
+    stats 3/2;
+
+    effect {
+        enhance 5 {
+            add storm to self;
+        }
+    }
+
+    meta {
+        pack 10004;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "信念腿法·兰德尔";
+        text """
+【<color=Keyword>爆能强化</color>_5】本随从获得【<color=Keyword>疾驰</color>】。
+""";
+    }
+
+    locale eng {
+        name "Randall, Feet Fighter";
+        text """
+<b><color=Keyword>Enhance</color> (5)</b>: Give this follower <b><color=Keyword>Storm</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しんねん\">信念</rub>の<rub=\"しゅうげき\">蹴撃</rub>・ランドル";
+        text """
+【<color=Keyword>エンハンス</color>_5】これは【<color=Keyword>疾走</color>】を持つ。
+""";
+    }
+
+    locale kor {
+        name "신념의 발차기 랜들";
+        text """
+[<color=Keyword>증강</color> 5] 이 추종자는 [<color=Keyword>질주</color>]를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "信念的踢擊‧蘭德爾";
+        text """
+【<color=Keyword>爆能強化</color>_5】使這張卡片獲得【<color=Keyword>疾馳</color>】。
+""";
+    }
+
+}

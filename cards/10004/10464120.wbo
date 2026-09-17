@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10464120 {
+    type follower;
+    cost 8;
+    stats 6/8;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "威严的星晶骑士·薇拉";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的2个随从，使其消失。【<color=Keyword>解放奥义</color>】本随从超进化。
+<hr>【<color=Keyword>守护</color>】
+受到的4点或以上的伤害变为3点。
+""";
+    }
+
+    locale eng {
+        name "Vira, Luminous Primal Knight";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select 2 enemy followers on the field and banish them. <b><color=Keyword>Super Skybound Art</color></b> - Super-evolve this follower.
+<hr><b><color=Keyword>Ward</color></b>
+Can't take more than 3 damage at a time.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"いよう\">威容</rub>なる<rub=\"せいしょうきし\">星晶騎士</rub>・ヴィーラ";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー2枚を選ぶ。それを消滅。【<color=Keyword>解放奥義</color>】これは超進化する。
+<hr>【<color=Keyword>守護</color>】
+受ける4以上のダメージを3にする。
+""";
+    }
+
+    locale kor {
+        name "위엄찬 성정기사 비라";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 2장을 선택한다. 그 추종자를 소멸. [<color=Keyword>해방 오의</color>] 이 추종자는 초진화한다.
+<hr>[<color=Keyword>수호</color>]
+4 이상의 받는 피해를 3으로 만든다.
+""";
+    }
+
+    locale cht {
+        name "威儀的星晶騎士‧薇拉";
+        text """
+【<color=Keyword>入場曲</color>】指定2張敵方戰場上的從者卡。使其消失。【<color=Keyword>解放奧義</color>】使這張卡片超進化。
+<hr>【<color=Keyword>守護</color>】
+受到的傷害為4以上時轉變為3。
+""";
+    }
+
+}

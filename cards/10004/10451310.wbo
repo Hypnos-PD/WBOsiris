@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10451310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "妖异利刃";
+        text """
+对自己的主战者造成2点伤害。使自己获得『纹章：妖异利刃』。
+""";
+    }
+
+    locale eng {
+        name "Valiant Edge";
+        text """
+Deal 2 damage to your leader. Gain <b><i>Crest: Valiant Edge</i></b>.
+""";
+    }
+
+    locale jpn {
+        name "ヴァリアントエッジ";
+        text """
+自分のリーダーに2ダメージ。自分は『クレスト：ヴァリアントエッジ』を持つ。
+""";
+    }
+
+    locale kor {
+        name "밸리언트 에지";
+        text """
+내 리더에게 2 피해. 나는 「크레스트: 밸리언트 에지」를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "異變銳擊";
+        text """
+給予自己的主戰者2點傷害。使自己獲得『紋章：異變銳擊』。
+""";
+    }
+
+}

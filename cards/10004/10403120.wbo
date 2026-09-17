@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10403120 {
+    type follower;
+    cost 2;
+    stats 1/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class neutral;
+        rarity gold;
+    }
+
+    locale chs {
+        name "掌握天空命运的少女·露莉亚";
+        text """
+【<color=Keyword>爆能强化</color>_8】抽取1张费用为7或以上的随从。回复自己7点能量点。
+<hr>【<color=Keyword>屏障</color>】
+""";
+    }
+
+    locale eng {
+        name "Lyria, Skydestined";
+        text """
+<b><color=Keyword>Enhance</color> (8)</b>: Draw a follower that costs 7 or more. Recover 7 play points.
+<hr><b><color=Keyword>Barrier</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"そら\">空</rub>の<rub=\"めいうん\">命運</rub>を<rub=\"にぎ\">握</rub>る<rub=\"しょうじょ\">少女</rub>・ルリア";
+        text """
+【<color=Keyword>エンハンス</color>_8】自分のデッキからコスト7以上のフォロワー1枚を引く。自分のPPを7回復。
+<hr>【<color=Keyword>バリア</color>】
+""";
+    }
+
+    locale kor {
+        name "하늘의 운명을 쥔 소녀 루리아";
+        text """
+[<color=Keyword>증강</color> 8] 내 덱에서 비용이 7 이상인 추종자 1장을 뽑는다. 내 PP를 7 회복.
+<hr>[<color=Keyword>배리어</color>]
+""";
+    }
+
+    locale cht {
+        name "掌握蒼空命運的少女‧露莉亞";
+        text """
+【<color=Keyword>爆能強化</color>_8】由自己的牌堆中抽取1張消費為7以上的從者卡。回復自己的PP 7點。
+<hr>【<color=Keyword>障壁</color>】
+""";
+    }
+
+}

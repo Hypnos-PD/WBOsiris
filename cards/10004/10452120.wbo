@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10452120 {
+    type follower;
+    cost 3;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class abysscraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "爱的旅人·萨堤洛斯";
+        text """
+【<color=Keyword>入场曲</color>】若自己的战场上有进化后的随从，则本随从进化。
+<hr>【<color=Keyword>灵气</color>】
+""";
+    }
+
+    locale eng {
+        name "Satyr, Open-Hearted Rover";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If there's an evolved allied follower on the field, evolve this follower.
+<hr><b><color=Keyword>Aura</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あい\">愛</rub>の<rub=\"たびびと\">旅人</rub>・サテュロス";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の場に進化後のフォロワーがあるなら、これは進化する。
+<hr>【<color=Keyword>オーラ</color>】
+""";
+    }
+
+    locale kor {
+        name "사랑의 여행자 사티로스";
+        text """
+[<color=Keyword>출격</color>] 내 전장에 진화후인 추종자가 있다면, 이 추종자는 진화한다.
+<hr>[<color=Keyword>오라</color>]
+""";
+    }
+
+    locale cht {
+        name "愛之旅人‧薩堤爾";
+        text """
+【<color=Keyword>入場曲</color>】如果自己戰場上有已進化的從者卡，則會使這張卡片進化。
+<hr>【<color=Keyword>光紋</color>】
+""";
+    }
+
+}

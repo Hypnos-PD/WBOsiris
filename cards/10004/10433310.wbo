@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10433310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class runecraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "炼金炎爆";
+        text """
+选择对手的战场上的1个随从，对其造成4点伤害。使自己的战场上的土之印+1。【<color=Keyword>奥义</color>】对对手的主战者造成2点伤害。
+""";
+    }
+
+    locale eng {
+        name "Alchemic Flare";
+        text """
+Select an enemy follower on the field and deal it 4 damage. Gain an earth sigil. <b><color=Keyword>Skybound Art</color></b> - Deal 2 damage to the enemy leader.
+""";
+    }
+
+    locale jpn {
+        name "アルケミック・フレア";
+        text """
+相手の場のフォロワー1枚を選ぶ。それに4ダメージ。自分の場の土の印を+1する。【<color=Keyword>奥義</color>】相手のリーダーに2ダメージ。
+""";
+    }
+
+    locale kor {
+        name "알케믹 플레어";
+        text """
+상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 4 피해. 내 전장의 대지의 인장을 +1. [<color=Keyword>오의</color>] 상대방 리더에게 2 피해.
+""";
+    }
+
+    locale cht {
+        name "鍊金爆炎";
+        text """
+指定1張敵方戰場上的從者卡。給予其4點傷害。使自己戰場上的土之印+1。【<color=Keyword>奧義</color>】給予敵方的主戰者2點傷害。
+""";
+    }
+
+}

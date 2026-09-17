@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10471120 {
+    type follower;
+    cost 2;
+    stats 3/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "爆燃老大·翼";
+        text """
+【<color=Keyword>入场曲</color>】使自己的所有手牌的奥义槽+1。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Tsubasa, Blazing Gearcyclist";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Increase the Skybound Art gauges of all cards in your hand by 1.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ばくねん\">爆燃</rub>の<rub=\"そうちょう\">総長</rub>・ツバサ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札すべての奥義ゲージを+1する。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "폭연의 총장 츠바사";
+        text """
+[<color=Keyword>출격</color>] 내 패 모두의 오의 게이지를 +1.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "爆燃的總長‧翼";
+        text """
+【<color=Keyword>入場曲</color>】使自己手牌中全部的奧義量條+1。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

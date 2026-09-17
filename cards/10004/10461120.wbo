@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10461120 {
+    type follower;
+    cost 2;
+    stats 1/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "克己复礼的修女·拉姆蕾达";
+        text """
+自己的回合结束时，若本随从为进化后，则对战场上的所有随从造成2点伤害。
+<hr><ev>【<color=Keyword>进化时</color>】回合结束前，本随从获得「无法攻击随从或主战者」。</ev>
+""";
+    }
+
+    locale eng {
+        name "Lamretta, Sisterly Shepherd";
+        text """
+At the end of your turn, if this follower is evolved, deal 2 damage to all followers.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Give this follower \"Can't attack followers or leaders\" until the end of the turn.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きよ\">清</rub>く<rub=\"ただ\">正</rub>しい<rub=\"しゅうどうじょ\">修道女</rub>・ラムレッダ";
+        text """
+自分のターン終了時、これが進化後なら、場のフォロワーすべてに2ダメージ。
+<hr><ev>【<color=Keyword>進化時</color>】ターン終了まで、これは「フォロワーやリーダーを攻撃できない。」を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "청렴하고 바른 수녀 람레다";
+        text """
+내 턴 종료시 이 추종자가 진화후라면, 전장의 추종자 모두에게 2 피해.
+<hr><ev>[<color=Keyword>진화시</color>] 턴 종료까지 이 추종자는 「추종자나 리더 공격 불가」를 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "清廉的修道女‧拉姆瑞塔";
+        text """
+自己的回合結束時，如果這張卡片已進化，則會給予戰場上全部的從者卡2點傷害。
+<hr><ev>【<color=Keyword>進化時</color>】到回合結束為止，使這張卡片獲得「無法攻擊從者或主戰者」。</ev>
+""";
+    }
+
+}

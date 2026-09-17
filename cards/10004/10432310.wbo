@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 10432310 {
+    type spell;
+    cost 4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "能量外溢";
+        text """
+【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）抽取1张卡牌。对对手的战场上的随机1个随从造成4点伤害。</ridx>
+<ridx=1>（2）抽取2张卡牌。对对手的战场上的随机2个随从造成4点伤害。对自己的主战者造成2点伤害。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Unleashed";
+        text """
+Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Draw a card. Deal 4 damage to a random enemy follower.</ridx>
+<ridx=1>2. Draw 2 cards. Deal 4 damage to 2 random enemy followers and 2 damage to your leader.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "アンリーシュ";
+        text """
+【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）自分のデッキから1枚を引く。相手の場のフォロワーからランダム1枚に4ダメージ。</ridx>
+<ridx=1>（2）自分のデッキから2枚を引く。相手の場のフォロワーからランダム2枚に4ダメージ。自分のリーダーに2ダメージ。</ridx>
+""";
+    }
+
+    locale kor {
+        name "언리쉬";
+        text """
+[<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 내 덱에서 1장을 뽑는다. 상대방 전장의 추종자 중 무작위로 1장에게 4 피해.</ridx>
+<ridx=1>(2) 내 덱에서 2장을 뽑는다. 상대방 전장의 추종자 중 무작위로 2장에게 4 피해. 내 리더에게 2 피해.</ridx>
+""";
+    }
+
+    locale cht {
+        name "突破束縛";
+        text """
+指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）由自己的牌堆中抽取1張卡片。隨機給予1張敵方戰場上的從者卡4點傷害。</ridx>
+<ridx=1>（2）由自己的牌堆中抽取2張卡片。隨機給予2張敵方戰場上的從者卡4點傷害。給予自己的主戰者2點傷害。</ridx>
+""";
+    }
+
+}

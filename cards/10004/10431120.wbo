@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10431120 {
+    type follower;
+    cost 1;
+    stats 1/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "流浪的家庭教师·斯芙拉玛尔";
+        text """
+自己的回合结束时，使自己的所有手牌发动X次魔力增幅。X为本随从的攻击力。
+<hr><ev>【<color=Keyword>进化时</color>】本随从获得「无法攻击随从或主战者」。</ev>
+""";
+    }
+
+    locale eng {
+        name "Suframare, Wandering Tutor";
+        text """
+At the end of your turn, spellboost your hand X times. X is this follower's attack.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Give this follower \"Can't attack followers or leaders.\"</ev>
+""";
+    }
+
+    locale jpn {
+        name "さすらいの<rub=\"かていきょうし\">家庭教師</rub>・スフラマール";
+        text """
+自分のターン終了時、自分の手札すべてはX回スペルブーストする。Xはこれの攻撃力である。
+<hr><ev>【<color=Keyword>進化時</color>】これは「フォロワーやリーダーを攻撃できない。」を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "떠돌이 가정교사 스플러마르";
+        text """
+내 턴 종료시, 내 패 모두를 X회 주문증폭. X는 이 추종자의 공격력.
+<hr><ev>[<color=Keyword>진화시</color>] 이 추종자는 「추종자나 리더 공격 불가」를 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "遊歷四方的家庭教師‧蘇菲拉瑪";
+        text """
+自己的回合結束時，使自己手牌中全部的卡片發動X次魔力增幅。X為「這張卡片的攻擊力」。
+<hr><ev>【<color=Keyword>進化時</color>】使這張卡片獲得「無法攻擊從者或主戰者」。</ev>
+""";
+    }
+
+}

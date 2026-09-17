@@ -1,0 +1,51 @@
+wbo 0.1.0;
+
+card 10422120 {
+    type follower;
+    cost 3;
+    stats 5/4;
+
+    effect { }
+
+    meta {
+        pack 10004;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "如火斗志·菲泽";
+        text """
+
+""";
+    }
+
+    locale eng {
+        name "Feather, Bombastic Brawler";
+        text """
+
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"も\">燃</rub>え<rub=\"たぎ\">滾</rub>る<rub=\"とうし\">闘志</rub>・フェザー";
+        text """
+
+""";
+    }
+
+    locale kor {
+        name "타오르는 투지 페더";
+        text """
+
+""";
+    }
+
+    locale cht {
+        name "沸騰的鬥志‧費沙";
+        text """
+
+""";
+    }
+
+}

@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10444110 {
+    type follower;
+    cost 7;
+    stats 8/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "炎之法则·威尔纳斯";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的1个随从，对其造成8点伤害。
+<hr>【<color=Keyword>威慑</color>】
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Wilnas, Flame Personified";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select an enemy follower on the field and deal it 8 damage.
+<hr><b><color=Keyword>Intimidate</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ほのお\">炎</rub>の<rub=\"ことわり\">理</rub>・ウィルナス";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー1枚を選ぶ。それに8ダメージ。
+<hr>【<color=Keyword>威圧</color>】
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "불의 섭리 윌나스";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 8 피해.
+<hr>[<color=Keyword>위압</color>]
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "炎之攝理‧維爾納斯";
+        text """
+【<color=Keyword>入場曲</color>】指定1張敵方戰場上的從者卡。給予其8點傷害。
+<hr>【<color=Keyword>威懾</color>】
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

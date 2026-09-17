@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10464110 {
+    type follower;
+    cost 3;
+    stats 5/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "土之法则·伽莱翁";
+        text """
+【<color=Keyword>守护</color>】
+无法攻击随从或主战者。
+自己的回合结束时，若为超进化已解禁的回合，则使自己的战场上的随机1个「本回合中没有进行过攻击的进化前的随从」进化。
+""";
+    }
+
+    locale eng {
+        name "Galleon, Earth Personified";
+        text """
+<b><color=Keyword>Ward</color></b>
+Can't attack followers or leaders.
+At the end of your turn, if you've unlocked super-evolution, evolve a random unevolved allied follower on the field that didn't attack this turn.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"つち\">土</rub>の<rub=\"ことわり\">理</rub>・ガレヲン";
+        text """
+【<color=Keyword>守護</color>】
+フォロワーやリーダーを攻撃できない。
+自分のターン終了時、超進化可能ターンなら、自分の場の「このターン中に攻撃していない、進化前のフォロワー」からランダム1枚は進化する。
+""";
+    }
+
+    locale kor {
+        name "흙의 섭리 갈레온";
+        text """
+[<color=Keyword>수호</color>]
+추종자나 리더 공격 불가.
+내 턴 종료시 초진화 가능 턴이라면, 이번 턴에 공격하지 않은 내 전장의 진화전인 추종자 중 무작위로 1장은 진화한다.
+""";
+    }
+
+    locale cht {
+        name "土之攝理‧嘉列翁";
+        text """
+【<color=Keyword>守護</color>】
+無法攻擊從者或主戰者。
+自己的回合結束時，如果為已超進化解禁的回合，則會隨機使1張自己戰場上「本回合中未進行攻擊且為進化前的從者卡」進化。
+""";
+    }
+
+}

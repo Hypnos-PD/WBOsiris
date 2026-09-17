@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10463110 {
+    type follower;
+    cost 1;
+    stats 0/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class havencraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "魔杖傍身的外科医生·缇可";
+        text """
+自己【<color=Keyword>启动</color>】护符时，回复自己的主战者1点生命值。
+<hr><ev>【<color=Keyword>进化时</color>】选择对手的战场上的1个随从，对其造成3点伤害。</ev>
+""";
+    }
+
+    locale eng {
+        name "Tikoh, Asclepian Surgeon";
+        text """
+Whenever you <b><color=Keyword>Engage</color></b> an amulet, restore 1 defense to your leader.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select an enemy follower on the field and deal it 3 damage.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"まじょう\">魔杖</rub>の<rub=\"げかい\">外科医</rub>・ティコ";
+        text """
+自分がアミュレットを【<color=Keyword>アクト</color>】したとき、自分のリーダーを1回復。
+<hr><ev>【<color=Keyword>進化時</color>】相手の場のフォロワー1枚を選ぶ。それに3ダメージ。</ev>
+""";
+    }
+
+    locale kor {
+        name "마법지팡이를 든 외과의 티코";
+        text """
+내가 마법진을 [<color=Keyword>활성화</color>]했을 때, 내 리더를 1 회복.
+<hr><ev>[<color=Keyword>진화시</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 3 피해.</ev>
+""";
+    }
+
+    locale cht {
+        name "攜持魔杖的外科醫生‧媞可";
+        text """
+當自己進行護符卡的【<color=Keyword>策動</color>】時，回復自己的主戰者1點生命值。
+<hr><ev>【<color=Keyword>進化時</color>】指定1張敵方戰場上的從者卡。給予其3點傷害。</ev>
+""";
+    }
+
+}

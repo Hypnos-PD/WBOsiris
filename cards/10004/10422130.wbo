@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10422130 {
+    type follower;
+    cost 4;
+    stats 2/6;
+
+    effect {
+        stealth;
+        bane;
+    }
+
+    meta {
+        pack 10004;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "绽放的肌肉·菲奥莉托";
+        text """
+【<color=Keyword>潜行</color>】
+【<color=Keyword>毁灭</color>】
+""";
+    }
+
+    locale eng {
+        name "Fiorito, Muscles in Bloom";
+        text """
+<b><color=Keyword>Ambush</color></b>
+<b><color=Keyword>Bane</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はなひら\">花開</rub>く<rub=\"きんにく\">筋肉</rub>・フィオリト";
+        text """
+【<color=Keyword>潜伏</color>】
+【<color=Keyword>必殺</color>】
+""";
+    }
+
+    locale kor {
+        name "꽃피는 근육 피오리토";
+        text """
+[<color=Keyword>잠복</color>]
+[<color=Keyword>필살</color>]
+""";
+    }
+
+    locale cht {
+        name "怒放的肌肉‧菲歐里";
+        text """
+【<color=Keyword>潛行</color>】
+【<color=Keyword>必殺</color>】
+""";
+    }
+
+}

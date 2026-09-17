@@ -1,0 +1,101 @@
+wbo 0.1.0;
+
+card 10441310 {
+    type spell;
+    cost 2;
+
+    effect {
+        gain own crest 10441310;
+    }
+
+    crest {
+        countdown 4;
+
+        when own turn ends {
+            random ally from own.field.followers;
+            buff ally +1/+1;
+        }
+
+        locale chs {
+            name "纹章：破浪新月";
+            text """
+【<color=Keyword>吟唱</color>_4】
+自己的回合结束时，使自己的战场上的随机1个随从+1/+1。
+""";
+        }
+
+        locale eng {
+            name "Crest: Breaking Crescent";
+            text """
+<b><color=Keyword>Countdown</color> (4)</b>
+At the end of your turn, give a random allied follower on the field +1/+1.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：破浪の新月";
+            text """
+【<color=Keyword>カウントダウン</color>_4】
+自分のターン終了時、自分の場のフォロワーからランダム1枚は+1/+1する。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 파랑의 초승달";
+            text """
+[<color=Keyword>카운트다운</color> 4]
+내 턴 종료시, 내 전장의 추종자 중 무작위로 1장은 +1/+1.
+""";
+        }
+
+        locale cht {
+            name "紋章：破浪新月";
+            text """
+【<color=Keyword>倒數</color>_4】
+自己的回合結束時，隨機使1張自己戰場上的從者卡+1/+1。
+""";
+        }
+    }
+
+    meta {
+        pack 10004;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "破浪新月";
+        text """
+使自己获得『纹章：破浪新月』。
+""";
+    }
+
+    locale eng {
+        name "Crescent Tube Ride";
+        text """
+Gain <b><i>Crest: Crescent Tube Ride</i></b>.
+""";
+    }
+
+    locale jpn {
+        name "クレッセント・チューブ・ライド";
+        text """
+自分は『クレスト：クレッセント・チューブ・ライド』を持つ。
+""";
+    }
+
+    locale kor {
+        name "크레센트 튜브 라이드";
+        text """
+나는 「크레스트: 크레센트 튜브 라이드」를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "馳騁新月浪";
+        text """
+使自己獲得『紋章：馳騁新月浪』。
+""";
+    }
+
+}

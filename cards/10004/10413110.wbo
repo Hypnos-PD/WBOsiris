@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10413110 {
+    type follower;
+    cost 4;
+    stats 3/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class forestcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "幻彩弓手·丘比丹";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>奥义</color>】本随从进化。【<color=Keyword>解放奥义</color>】对对手的主战者造成3点伤害。
+<hr><ev>本随从进化时，发动7次「对对手的战场上的随机1个随从造成1点伤害」。</ev>
+""";
+    }
+
+    locale eng {
+        name "Cupitan, Iridescent Archer";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Skybound Art</color></b> - Evolve this follower. <b><color=Keyword>Super Skybound Art</color></b> - Deal 3 damage to the enemy leader.
+<hr><ev>When this follower evolves, do this 7 times: \"Deal 1 damage to a random enemy follower.\"</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"にじいろ\">虹色</rub>の<rub=\"ゆみつか\">弓使</rub>い・クピタン";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>奥義</color>】これは進化する。【<color=Keyword>解放奥義</color>】相手のリーダーに3ダメージ。
+<hr><ev>これが進化したとき、「相手の場のフォロワーからランダム1枚に1ダメージ。」を7回行う。</ev>
+""";
+    }
+
+    locale kor {
+        name "무지갯빛 궁수 쿠피탄";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>오의</color>] 이 추종자는 진화한다. [<color=Keyword>해방 오의</color>] 상대방 리더에게 3 피해.
+<hr><ev>이 추종자가 진화했을 때, 「상대방 전장의 추종자 중 무작위로 1장에게 1 피해」를 7회 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "虹彩弓手‧庫比丹";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>奧義</color>】使這張卡片進化。【<color=Keyword>解放奧義</color>】給予敵方的主戰者3點傷害。
+<hr><ev>當這張卡片進化時，發動7次「隨機給予1張敵方戰場上的從者卡1點傷害」。</ev>
+""";
+    }
+
+}

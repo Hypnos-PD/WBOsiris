@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10471110 {
+    type follower;
+    cost 3;
+    stats 2/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "夜王再起·翔";
+        text """
+【<color=Keyword>入场曲</color>】若为超进化已解禁的回合，则本随从获得【<color=Keyword>屏障</color>】。
+<hr>【<color=Keyword>疾驰</color>】
+""";
+    }
+
+    locale eng {
+        name "Sho, Reborn Night King";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If you've unlocked super-evolution, give this follower <b><color=Keyword>Barrier</color></b>.
+<hr><b><color=Keyword>Storm</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"さいき\">再起</rub>の<rub=\"やおう\">夜王</rub>・ショウ";
+        text """
+【<color=Keyword>ファンファーレ</color>】超進化可能ターンなら、これは【<color=Keyword>バリア</color>】を持つ。
+<hr>【<color=Keyword>疾走</color>】
+""";
+    }
+
+    locale kor {
+        name "갱생한 야왕 쇼";
+        text """
+[<color=Keyword>출격</color>] 초진화 가능 턴이라면, 이 추종자는 [<color=Keyword>배리어</color>]를 갖는다.
+<hr>[<color=Keyword>질주</color>]
+""";
+    }
+
+    locale cht {
+        name "重振旗鼓的夜王‧翔";
+        text """
+【<color=Keyword>入場曲</color>】如果為已超進化解禁的回合，則會使這張卡片獲得【<color=Keyword>障壁</color>】。
+<hr>【<color=Keyword>疾馳</color>】
+""";
+    }
+
+}

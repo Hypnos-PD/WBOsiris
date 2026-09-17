@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10451120 {
+    type follower;
+    cost 6;
+    stats 2/7;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "不屈利刃·巴萨拉卡";
+        text """
+【<color=Keyword>威慑</color>】
+【<color=Keyword>谢幕曲</color>】召唤1个『<color=Keyword>不屈利刃·巴萨拉卡</color>』。对自己的主战者造成2点伤害。
+""";
+    }
+
+    locale eng {
+        name "Vaseraga, Unyielding Scythe";
+        text """
+<b><color=Keyword>Intimidate</color></b>
+<b><color=Keyword>Last Words</color></b>: Summon a <b><i><color=Keyword>Vaseraga, Unyielding Scythe</color></i></b>. Deal 2 damage to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ふくつ\">不屈</rub>の<rub=\"えいじん\">鋭刃</rub>・バザラガ";
+        text """
+【<color=Keyword>威圧</color>】
+【<color=Keyword>ラストワード</color>】『<color=Keyword>不屈の鋭刃・バザラガ</color>』1枚を自分の場に出す。自分のリーダーに2ダメージ。
+""";
+    }
+
+    locale kor {
+        name "불굴의 서슬 바자라가";
+        text """
+[<color=Keyword>위압</color>]
+[<color=Keyword>유언</color>] <color=Keyword>불굴의 서슬 바자라가</color> 1장을 내 전장에 소환. 내 리더에게 2 피해.
+""";
+    }
+
+    locale cht {
+        name "不屈的銳刃‧巴薩拉加";
+        text """
+【<color=Keyword>威懾</color>】
+【<color=Keyword>謝幕曲</color>】召喚1張『<color=Keyword>不屈的銳刃‧巴薩拉加</color>』到自己的戰場上。給予自己的主戰者2點傷害。
+""";
+    }
+
+}

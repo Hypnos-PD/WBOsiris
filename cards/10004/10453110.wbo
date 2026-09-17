@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10453110 {
+    type follower;
+    cost 6;
+    stats 2/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class abysscraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "生与死之技·涅槃";
+        text """
+【<color=Keyword>入场曲</color>】使自己的战场上的所有进化前的随从进化。对自己的主战者造成2点伤害。
+<hr>【<color=Keyword>虹吸</color>】
+""";
+    }
+
+    locale eng {
+        name "Nehan, Dispenser of Samsara";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Evolve all unevolved allied followers on the field. Deal 2 damage to your leader.
+<hr><b><color=Keyword>Drain</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しょうめつ\">生滅</rub>の<rub=\"ぎこう\">技巧</rub>・ネハン";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の場の進化前のフォロワーすべては進化する。自分のリーダーに2ダメージ。
+<hr>【<color=Keyword>ドレイン</color>】
+""";
+    }
+
+    locale kor {
+        name "생멸의 기교 네한";
+        text """
+[<color=Keyword>출격</color>] 내 전장의 진화전인 추종자 모두는 진화한다. 내 리더에게 2 피해.
+<hr>[<color=Keyword>흡혈</color>]
+""";
+    }
+
+    locale cht {
+        name "生滅的技巧‧涅槃";
+        text """
+【<color=Keyword>入場曲</color>】使自己戰場上全部進化前的從者卡進化。給予自己的主戰者2點傷害。
+<hr>【<color=Keyword>吸血</color>】
+""";
+    }
+
+}

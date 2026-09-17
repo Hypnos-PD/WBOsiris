@@ -1,0 +1,73 @@
+wbo 0.1.0;
+
+card 10423110 {
+    type follower;
+    cost 7;
+    stats 6/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class swordcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "真王之刃·黄金骑士";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）本随从超进化。</ridx>
+<ridx=1>（2）对对手的战场上的所有随从造成4点伤害。</ridx>
+<ridx=2>（3）回复自己的主战者4点生命值。</ridx>
+【<color=Keyword>爆能强化</color>_9】改为发动所有能力。
+""";
+    }
+
+    locale eng {
+        name "Golden Knight, True King's Blade";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Super-evolve this follower.</ridx>
+<ridx=1>2. Deal 4 damage to all enemy followers.</ridx>
+<ridx=2>3. Restore 4 defense to your leader.</ridx>
+<b><color=Keyword>Enhance</color> (9)</b>: Activate all of them instead.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しんおう\">真王</rub>の<rub=\"やいば\">刃</rub>・<rub=\"おうごん\">黄金</rub>の<rub=\"きし\">騎士</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）これは超進化する。</ridx>
+<ridx=1>（2）相手の場のフォロワーすべてに4ダメージ。</ridx>
+<ridx=2>（3）自分のリーダーを4回復。</ridx>
+【<color=Keyword>エンハンス</color>_9】1つを選ぶのではなくすべて。
+""";
+    }
+
+    locale kor {
+        name "진왕의 칼날 황금의 기사";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 이 추종자는 초진화한다.</ridx>
+<ridx=1>(2) 상대방 전장의 추종자 모두에게 4 피해.</ridx>
+<ridx=2>(3) 내 리더를 4 회복.</ridx>
+[<color=Keyword>증강</color> 9] 1개를 선택하는 대신 모두.
+""";
+    }
+
+    locale cht {
+        name "真王之刃‧黃金騎士";
+        text """
+【<color=Keyword>入場曲</color>】指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）使這張卡片超進化。</ridx>
+<ridx=1>（2）給予敵方戰場上全部的從者卡4點傷害。</ridx>
+<ridx=2>（3）回復自己的主戰者4點生命值。</ridx>
+【<color=Keyword>爆能強化</color>_9】由原本的指定1個轉變為全部。 
+""";
+    }
+
+}

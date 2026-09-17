@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 10463210 {
+    type amulet;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class havencraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "蕾·菲耶的宝石";
+        text """
+【<color=Keyword>启动</color>】破坏本卡牌。【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）破坏对手的战场上的随机1个随从。</ridx>
+<ridx=1>（2）抽取2张卡牌。</ridx>
+""";
+    }
+
+    locale eng {
+        name "De La Fille's Gleaming Gems";
+        text """
+<b><color=Keyword>Engage</color></b>: Destroy this card. Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Destroy a random enemy follower.</ridx>
+<ridx=1>2. Draw 2 cards.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "レ・フィーエの<rub=\"ほうせき\">宝石</rub>";
+        text """
+【<color=Keyword>アクト</color>】これを破壊。【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）相手の場のフォロワーからランダム1枚を破壊。</ridx>
+<ridx=1>（2）自分のデッキから2枚を引く。</ridx>
+""";
+    }
+
+    locale kor {
+        name "레 피에의 보석";
+        text """
+[<color=Keyword>활성화</color>] 이 마법진을 파괴. [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 상대방 전장의 추종자 중 무작위로 1장을 파괴.</ridx>
+<ridx=1>(2) 내 덱에서 2장을 뽑는다.</ridx>
+""";
+    }
+
+    locale cht {
+        name "蕾菲爾的寶石";
+        text """
+【<color=Keyword>策動</color>】破壞這張卡片。指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）隨機破壞1張敵方戰場上的從者卡。</ridx>
+<ridx=1>（2）由自己的牌堆中抽取2張卡片。</ridx>
+""";
+    }
+
+}

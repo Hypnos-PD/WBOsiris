@@ -1,0 +1,67 @@
+wbo 0.1.0;
+
+card 10413310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class forestcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "亚尔夫海姆";
+        text """
+【<color=Keyword>模式</color>】选择1个能力发动。【<color=Keyword>解放奥义</color>】改为发动所有能力。
+<ridx=0>（1）抽取1张卡牌。回复自己的主战者1点生命值。</ridx>
+<ridx=1>（2）使自己的战场上的所有随从+1/+0且获得【<color=Keyword>突进</color>】。</ridx>
+<ridx=2>（3）使自己的战场上的所有随从+0/+1且获得【<color=Keyword>守护</color>】。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Alfheimr";
+        text """
+Select a <b><color=Keyword>Mode</color></b> to activate. <b><color=Keyword>Super Skybound Art</color></b> - Activate all of them instead.
+<ridx=0>1. Draw a card. Restore 1 defense to your leader.</ridx>
+<ridx=1>2. Give all allied followers on the field +1/+0 and <b><color=Keyword>Rush</color></b>.</ridx>
+<ridx=2>3. Give all allied followers on the field +0/+1 and <b><color=Keyword>Ward</color></b>.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "アルフヘイム";
+        text """
+【<color=Keyword>モード</color>】1つを選んでその能力が働く。【<color=Keyword>解放奥義</color>】1つを選ぶのではなくすべて。
+<ridx=0>（1）自分のデッキから1枚を引く。自分のリーダーを1回復。</ridx>
+<ridx=1>（2）自分の場のフォロワーすべては+1/+0して【<color=Keyword>突進</color>】を持つ。</ridx>
+<ridx=2>（3）自分の場のフォロワーすべては+0/+1して【<color=Keyword>守護</color>】を持つ。</ridx>
+""";
+    }
+
+    locale kor {
+        name "알프헤임";
+        text """
+[<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동. [<color=Keyword>해방 오의</color>] 1개를 선택하는 대신 모두.
+<ridx=0>(1) 내 덱에서 1장을 뽑는다. 내 리더를 1 회복.</ridx>
+<ridx=1>(2) 내 전장의 추종자 모두는 +1/+0 및 [<color=Keyword>돌진</color>]을 갖는다.</ridx>
+<ridx=2>(3) 내 전장의 추종자 모두는 +0/+1 및 [<color=Keyword>수호</color>]를 갖는다.</ridx>
+""";
+    }
+
+    locale cht {
+        name "精靈幻域";
+        text """
+指定1個【<color=Keyword>模式</color>】並發動該能力。【<color=Keyword>解放奧義</color>】由原本的指定1個轉變為全部。
+<ridx=0>（1）由自己的牌堆中抽取1張卡片。回復自己的主戰者1點生命值。</ridx>
+<ridx=1>（2）使自己戰場上全部的從者卡+1/+0並獲得【<color=Keyword>突進</color>】。</ridx>
+<ridx=2>（3）使自己戰場上全部的從者卡+0/+1並獲得【<color=Keyword>守護</color>】。</ridx>
+""";
+    }
+
+}

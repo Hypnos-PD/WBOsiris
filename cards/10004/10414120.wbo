@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10414120 {
+    type follower;
+    cost 5;
+    stats 4/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "调和的舞者·尤艾尔&苏丝雅";
+        text """
+【<color=Keyword>入场曲</color>】发动2次「对对手的战场上的随机1个随从造成4点伤害」。
+<hr><sev>【<color=Keyword>超进化时</color>】使自己获得『纹章：调和的舞者·尤艾尔&苏丝雅』。</sev>
+""";
+    }
+
+    locale eng {
+        name "Yuel & Societte, Dancing Duo";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Do this 2 times: \"Deal 4 damage to a random enemy follower.\"
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Gain <b><i>Crest: Yuel & Societte, Dancing Duo</i></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ちょうわ\">調和</rub>の<rub=\"まいて\">舞手</rub>・ユエル＆ソシエ";
+        text """
+【<color=Keyword>ファンファーレ</color>】「相手の場のフォロワーからランダム1枚に4ダメージ。」を2回行う。
+<hr><sev>【<color=Keyword>超進化時</color>】自分は『クレスト：調和の舞手・ユエル＆ソシエ』を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "조화의 무용수 유엘&소시에";
+        text """
+[<color=Keyword>출격</color>] 「상대방 전장의 추종자 중 무작위로 1장에게 4 피해」를 2회 발동.
+<hr><sev>[<color=Keyword>초진화시</color>] 나는 「크레스트: 조화의 무용수 유엘&소시에」를 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "調和的舞者‧尤埃爾＆蘇希耶";
+        text """
+【<color=Keyword>入場曲</color>】發動2次「隨機給予1張敵方戰場上的從者卡4點傷害」。
+<hr><sev>【<color=Keyword>超進化時</color>】使自己獲得『紋章：調和的舞者‧尤埃爾＆蘇希耶』。</sev>
+""";
+    }
+
+}

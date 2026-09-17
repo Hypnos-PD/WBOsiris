@@ -1,0 +1,28 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "破浪新月获得纹章并在回合结束时强化随机随从" {
+    seed 43101;
+    state {
+        player own {
+            pp 2/2;
+            crests { crest crescent = 10441310; }
+            field { follower ally = 10001110 { stats 2/8; } }
+        }
+    }
+    action { end_turn; }
+    // 只有一个候选随从时随机结果确定。
+    expect { legal; ally.stats == 3/9; }
+}
+
+scenario "破浪新月的入场曲让自己获得纹章" {
+    seed 43102;
+    state {
+        player own {
+            pp 2/2;
+            hand { spell source = 10441310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.crests count card 10441310 == 1; own.pp == 0/2; }
+}

@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10452110 {
+    type follower;
+    cost 6;
+    stats 8/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class abysscraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "霸空武神·哪吒";
+        text """
+【<color=Keyword>突进</color>】
+自己的回合结束时，对对手的战场上的随机1个随从造成4点伤害。对对手的战场上的随机1个随从造成2点伤害。
+""";
+    }
+
+    locale eng {
+        name "Nezha, Soaring War God";
+        text """
+<b><color=Keyword>Rush</color></b>
+At the end of your turn, deal 4 damage to a random enemy follower, then deal 2 damage to a random enemy follower.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はくう\">覇空</rub>の<rub=\"ぶしん\">武神</rub>・ナタク";
+        text """
+【<color=Keyword>突進</color>】
+自分のターン終了時、相手の場のフォロワーからランダム1枚に4ダメージ。相手の場のフォロワーからランダム1枚に2ダメージ。
+""";
+    }
+
+    locale kor {
+        name "패공의 무신 나타";
+        text """
+[<color=Keyword>돌진</color>]
+내 턴 종료시, 상대방 전장의 추종자 중 무작위로 1장에게 4 피해. 상대방 전장의 추종자 중 무작위로 1장에게 2 피해.
+""";
+    }
+
+    locale cht {
+        name "霸空武神‧哪吒";
+        text """
+【<color=Keyword>突進</color>】
+自己的回合結束時，隨機給予1張敵方戰場上的從者卡4點傷害。隨機給予1張敵方戰場上的從者卡2點傷害。
+""";
+    }
+
+}

@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10431310 {
+    type spell;
+    cost 7;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "符文秘术";
+        text """
+对对手的战场上的所有随从造成6点伤害。回复自己的主战者3点生命值。
+""";
+    }
+
+    locale eng {
+        name "Rune Portal";
+        text """
+Deal 6 damage to all enemy followers. Restore 3 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "ルーン・リチュオル";
+        text """
+相手の場のフォロワーすべてに6ダメージ。自分のリーダーを3回復。
+""";
+    }
+
+    locale kor {
+        name "룬 리추얼";
+        text """
+상대방 전장의 추종자 모두에게 6 피해. 내 리더를 3 회복.
+""";
+    }
+
+    locale cht {
+        name "符文儀式";
+        text """
+給予敵方戰場上全部的從者卡6點傷害。回復自己的主戰者3點生命值。
+""";
+    }
+
+}

@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10462120 {
+    type follower;
+    cost 4;
+    stats 3/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "赞恩教僧侣·索菲娅";
+        text """
+【<color=Keyword>入场曲</color>】召唤随机1个自己的牌组中费用为2或以下的主教·随从。
+<hr><sev>【<color=Keyword>超进化时</color>】使自己的战场上的其他所有随从获得【<color=Keyword>屏障</color>】。</sev>
+""";
+    }
+
+    locale eng {
+        name "Sophia, Zeyen Priestess";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a random Havencraft follower that costs 2 or less from your deck.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Give all other allied followers on the field <b><color=Keyword>Barrier</color></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "ゼエン<rub=\"きょう\">教</rub>の<rub=\"そうりょ\">僧侶</rub>・ソフィア";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキのコスト2以下のビショップ・フォロワーからランダム1枚を自分の場に出す。
+<hr><sev>【<color=Keyword>超進化時</color>】自分の場の他のフォロワーすべては【<color=Keyword>バリア</color>】を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "제엔교 수도자 소피아";
+        text """
+[<color=Keyword>출격</color>] 비용이 2 이하인 내 덱의 비숍 추종자 중 무작위로 1장을 내 전장에 소환.
+<hr><sev>[<color=Keyword>초진화시</color>] 내 전장의 다른 추종자 모두는 [<color=Keyword>배리어</color>]를 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "賽恩教的僧侶‧蘇菲雅";
+        text """
+【<color=Keyword>入場曲</color>】隨機將1張「自己牌堆中消費為2以下的主教‧從者卡」召喚到自己的戰場上。
+<hr><sev>【<color=Keyword>超進化時</color>】使自己戰場上全部的其他從者卡獲得【<color=Keyword>障壁</color>】。</sev>
+""";
+    }
+
+}

@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10473110 {
+    type follower;
+    cost 5;
+    stats 3/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class portalcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "向往天空的回归者·卡西乌斯";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的手牌中的1张创造物·随从，对对手的战场上的所有随从造成X点伤害。X为选择的随从的攻击力。
+<hr>【<color=Keyword>谢幕曲</color>】将1张『<color=Keyword>城堡创造物</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Cassius, Sky-Yearning Arrival";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select an Artifact follower in your hand and deal X damage to all enemy followers. X is the selected follower's attack.
+<hr><b><color=Keyword>Last Words</color></b>: Add a <b><i><color=Keyword>Fortifier Artifact</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"そらした\">空慕</rub>う<rub=\"きかんしゃ\">帰還者</rub>・カシウス";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札のアーティファクト・フォロワー1枚を選ぶ。相手の場のフォロワーすべてにXダメージ。Xは選んだフォロワーの攻撃力である。
+<hr>【<color=Keyword>ラストワード</color>】『<color=Keyword>キャッスルアーティファクト</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "하늘을 그리워하는 귀환자 카시우스";
+        text """
+[<color=Keyword>출격</color>] 내 패에서 아티팩트 추종자 1장을 선택한다. 상대방 전장의 추종자 모두에게 X 피해. X는 선택한 추종자의 공격력.
+<hr>[<color=Keyword>유언</color>] <color=Keyword>캐슬 아티팩트</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "思慕蒼空的歸還者‧卡希烏斯";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己手牌中的創造物‧從者卡。給予敵方戰場上全部的從者卡X點傷害。X為「所指定從者卡的攻擊力」。
+<hr>【<color=Keyword>謝幕曲</color>】增加1張『<color=Keyword>堡壘的創造物</color>』到自己的手牌中。
+""";
+    }
+
+}

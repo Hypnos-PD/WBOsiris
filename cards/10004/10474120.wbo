@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10474120 {
+    type follower;
+    cost 9;
+    stats 9/9;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class portalcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "唯一王者·别西卜";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的2个随从，使其失去所有能力，对其造成9点伤害。使对手的主战者获得「受到的伤害+1」。
+""";
+    }
+
+    locale eng {
+        name "Beelzebub, Supreme King";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select 2 enemy followers on the field, remove all abilities from them, and deal them 9 damage. Give the enemy leader \"Takes 1 more damage.\"
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぜんいつ\">全一</rub>の<rub=\"おう\">王</rub>・ベルゼバブ";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー2枚を選ぶ。それは能力すべてを失う。それに9ダメージ。相手のリーダーは「受けるダメージを+1する。」を持つ。
+""";
+    }
+
+    locale kor {
+        name "완전한 왕 벨제붑";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 2장을 선택한다. 그 추종자는 능력을 전부 잃는다. 그 추종자에게 9 피해. 상대방 리더는 「받는 피해를 +1」을 갖는다.
+""";
+    }
+
+    locale cht {
+        name "統世之王‧巴力巴布";
+        text """
+【<color=Keyword>入場曲</color>】指定2張敵方戰場上的從者卡。使其失去全部能力。給予其9點傷害。使敵方的主戰者獲得「使受到的傷害+1」。
+""";
+    }
+
+}

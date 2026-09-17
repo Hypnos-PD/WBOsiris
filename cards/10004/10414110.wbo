@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10414110 {
+    type follower;
+    cost 2;
+    stats 2/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "风之法则·艾云尼亚";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>奥义</color>】回复自己1点进化点。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Ewiyar, Wind Personified";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Skybound Art</color></b> - Recover 1 evolution point.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"かぜ\">風</rub>の<rub=\"ことわり\">理</rub>・イーウィヤ";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>奥義</color>】自分のEPを1回復。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "바람의 섭리 이위야";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>오의</color>] 내 EP를 1 회복.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "風之攝理‧伊維亞";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>奧義</color>】回復自己的EP 1點。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

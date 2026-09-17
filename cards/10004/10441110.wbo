@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10441110 {
+    type follower;
+    cost 3;
+    stats 3/3;
+
+    effect {
+        ward;
+        aura;
+    }
+
+    meta {
+        pack 10004;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "逐海之人·乔尔";
+        text """
+【<color=Keyword>守护</color>】
+【<color=Keyword>灵气</color>】
+""";
+    }
+
+    locale eng {
+        name "Joel, Wave Chaser";
+        text """
+<b><color=Keyword>Ward</color></b>
+<b><color=Keyword>Aura</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"たいかい\">大海</rub>を<rub=\"お\">追</rub>う<rub=\"もの\">者</rub>・ジョエル";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>オーラ</color>】
+""";
+    }
+
+    locale kor {
+        name "대해를 좇는 자 조엘";
+        text """
+[<color=Keyword>수호</color>]
+[<color=Keyword>오라</color>]
+""";
+    }
+
+    locale cht {
+        name "大海的追尋者‧喬爾";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>光紋</color>】
+""";
+    }
+
+}

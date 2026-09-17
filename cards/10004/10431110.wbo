@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10431110 {
+    type follower;
+    cost 3;
+    stats 1/4;
+
+    effect {
+        fanfare {
+            draw 1 from deck where type spell;
+        }
+    }
+
+    meta {
+        pack 10004;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "不可思议的哲学家·菲拉索佩娅";
+        text """
+【<color=Keyword>入场曲</color>】抽取1张法术。
+""";
+    }
+
+    locale eng {
+        name "Philosophia, Cryptic Sophist";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Draw a spell.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ふかしぎ\">不可思議</rub>な<rub=\"てつがくしゃ\">哲学者</rub>・フィラソピラ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキからスペル1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "불가사의한 철학자 필라소피라";
+        text """
+[<color=Keyword>출격</color>] 내 덱에서 주문 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "不可思議的哲學家‧費洛索菲亞";
+        text """
+【<color=Keyword>入場曲</color>】由自己的牌堆中抽取1張法術卡。
+""";
+    }
+
+}

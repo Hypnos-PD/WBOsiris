@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10411310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "彗星";
+        text """
+选择对手的战场上的1个随从，对其造成4点伤害。若自己的战场上有进化后的随从，则抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Comet Drive";
+        text """
+Select an enemy follower on the field and deal it 4 damage. If there's an evolved allied follower on the field, draw a card.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ほうきぼし\">箒星</rub>";
+        text """
+相手の場のフォロワー1枚を選ぶ。それに4ダメージ。自分の場に進化後のフォロワーがあるなら、自分のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "혜성";
+        text """
+상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 4 피해. 내 전장에 진화후인 추종자가 있다면, 내 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "帚星";
+        text """
+指定1張敵方戰場上的從者卡。給予其4點傷害。如果自己戰場上有已進化的從者卡，則會由自己的牌堆中抽取1張卡片。
+""";
+    }
+
+}

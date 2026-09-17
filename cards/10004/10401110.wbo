@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10401110 {
+    type follower;
+    cost 5;
+    stats 5/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10004;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "驰骋天空的守护者·卡塔莉娜";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>奥义</color>】对对手的战场上的随机2个随从造成5点伤害。
+<hr>【<color=Keyword>守护</color>】
+受到的4点或以上的伤害变为3点。
+""";
+    }
+
+    locale eng {
+        name "Katalina, Sky's Protector";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Skybound Art</color></b> - Deal 5 damage to 2 random enemy followers.
+<hr><b><color=Keyword>Ward</color></b>
+Can't take more than 3 damage at a time.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"そらか\">空駆</rub>ける<rub=\"ひごしゃ\">庇護者</rub>・カタリナ";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>奥義</color>】相手の場のフォロワーからランダム2枚に5ダメージ。
+<hr>【<color=Keyword>守護</color>】
+受ける4以上のダメージを3にする。
+""";
+    }
+
+    locale kor {
+        name "하늘을 누비는 비호자 카타리나";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>오의</color>] 상대방 전장의 추종자 중 무작위로 2장에게 5 피해.
+<hr>[<color=Keyword>수호</color>]
+4 이상의 받는 피해를 3으로 만든다.
+""";
+    }
+
+    locale cht {
+        name "翱翔蒼空的捍衛者‧卡塔莉娜";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>奧義</color>】隨機給予2張敵方戰場上的從者卡5點傷害。
+<hr>【<color=Keyword>守護</color>】
+受到的傷害為4以上時轉變為3。
+""";
+    }
+
+}

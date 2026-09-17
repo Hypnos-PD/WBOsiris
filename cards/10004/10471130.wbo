@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10471130 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        lastwords {
+            add 1 card 90072110 to hand;
+        }
+    }
+
+    meta {
+        pack 10004;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "报恩工匠·艾萨克";
+        text """
+【<color=Keyword>谢幕曲</color>】将1张『<color=Keyword>攻击创造物</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Isaac, Congenial Engineer";
+        text """
+<b><color=Keyword>Last Words</color></b>: Add a <b><i><color=Keyword>Striker Artifact</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ほうおん\">報恩</rub>の<rub=\"ぎし\">技師</rub>・アイザック";
+        text """
+【<color=Keyword>ラストワード</color>】『<color=Keyword>アタックアーティファクト</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "보은의 엔지니어 아이작";
+        text """
+[<color=Keyword>유언</color>] <color=Keyword>어택 아티팩트</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "報恩的技師‧艾札克";
+        text """
+【<color=Keyword>謝幕曲</color>】增加1張『<color=Keyword>進攻的創造物</color>』到自己的手牌中。
+""";
+    }
+
+}
