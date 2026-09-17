@@ -940,7 +940,7 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 				i += 2
 			}
 		case "card":
-			if i+1 < len(t) && isCardID(t[i+1]) {
+			if i+1 < len(t) && (isCardID(t[i+1]) || t[i+1].Kind == syntax.Identifier) {
 				i += 2
 			}
 		case "type":

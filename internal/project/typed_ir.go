@@ -646,7 +646,12 @@ func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 			terms = append(terms, ir.FieldPredicate{Kind: "has_keyword", Keyword: t[j+1].Value})
 			j += 2
 		case "card":
-			terms = append(terms, ir.FieldPredicate{Kind: "has_card", CardID: intToken(t[j+1])})
+			if t[j+1].Kind == syntax.Integer {
+				terms = append(terms, ir.FieldPredicate{Kind: "has_card", CardID: intToken(t[j+1])})
+			} else {
+				// `where card target`：与某个绑定同一卡牌定义（同名的动态写法）。
+				terms = append(terms, ir.FieldPredicate{Kind: "same_card", CardRef: ir.BindingRef{Kind: "binding", Name: t[j+1].Value}})
+			}
 			j += 2
 		case "type":
 			terms = append(terms, ir.FieldPredicate{Kind: "has_type", CardType: t[j+1].Value})

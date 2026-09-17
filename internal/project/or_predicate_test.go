@@ -39,7 +39,8 @@ func TestFilterOrPrecedenceAndFormatting(t *testing.T) {
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("and must bind more tightly than or: %#v", got)
 	}
-	for _, filter := range []string{"or card 90073120", "card 90073120 or", "card 90073120 and", "card 90073120 or and card 90073130", "card 90073120 or card invalid"} {
+	// `card <标识符>` 现在是"与某个绑定同卡牌定义"的合法写法，因此这里改用真正缺参数的形状。
+	for _, filter := range []string{"or card 90073120", "card 90073120 or", "card 90073120 and", "card 90073120 or and card 90073130", "card 90073120 or card 123", "card 90073120 or card"} {
 		file, ds := syntax.Parse("12345678.wbo", []byte(validCard(`fusion material from own.hand where `+filter+` { draw 1; }`)))
 		if len(ds) == 0 && !hasErrors(ValidateFile(file)) {
 			t.Fatalf("accepted malformed filter %q", filter)

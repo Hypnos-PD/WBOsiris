@@ -90,6 +90,8 @@ func (p FieldPredicate) MarshalJSON() ([]byte, error) {
 	case "is_damaged", "cost_changed":
 	case "has_card":
 		object["cardId"] = p.CardID
+	case "same_card":
+		object["source"] = p.CardRef
 	case "has_type":
 		object["cardType"] = p.CardType
 	case "has_class":

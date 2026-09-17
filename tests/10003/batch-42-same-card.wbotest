@@ -1,0 +1,67 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "真理的继承者的进化时使指定随从消失" {
+    seed 42001;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10334110; }
+        }
+        player oppo {
+            field {
+                follower victim = 10001110 { stats 2/8; }
+                follower other = 10011110 { stats 2/8; }
+            }
+        }
+    }
+    action { evolve source; select victim; }
+    expect {
+        legal;
+        victim.zone == banished;
+        other.zone == field;
+        source.stats == 3/3;
+        own.ep == 0;
+    }
+}
+
+scenario "超进化时使与选中随从同名的所有随从消失" {
+    seed 42002;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10334110; }
+        }
+        player oppo {
+            field {
+                follower victim = 10001110 { stats 2/8; }
+                follower twin = 10001110 { stats 2/8; }
+                follower other = 10011110 { stats 2/8; }
+            }
+        }
+    }
+    action { superevolve source; select victim; }
+    expect {
+        legal;
+        victim.zone == banished;
+        twin.zone == banished;
+        other.zone == field;
+        source.stats == 4/4;
+        own.sep == 0;
+    }
+}
+
+scenario "真理的继承者的入场曲抽一张卡牌" {
+    seed 42003;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10334110; }
+            deck top { follower drawn = 10011110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10011110 == 1; own.pp == 0/2; }
+}

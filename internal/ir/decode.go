@@ -1406,6 +1406,22 @@ func decodePredicate(data []byte) (Predicate, error) {
 			return nil, fmt.Errorf("invalid predicate card ID")
 		}
 		return FieldPredicate{Kind: v.Kind, CardID: v.CardID}, nil
+	case "same_card":
+		var v struct {
+			Kind   string          `json:"kind"`
+			Source json.RawMessage `json:"source"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		source, err := decodeRef(v.Source)
+		if err != nil {
+			return nil, err
+		}
+		if _, ok := source.(BindingRef); !ok {
+			return nil, fmt.Errorf("same card predicate requires a binding")
+		}
+		return FieldPredicate{Kind: v.Kind, CardRef: source}, nil
 	case "has_type":
 		var v struct {
 			Kind     string `json:"kind"`

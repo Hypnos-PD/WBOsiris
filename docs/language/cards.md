@@ -186,6 +186,11 @@ heal own.leader 5;
 require target from own.field.followers;
 ```
 
+`where card <绑定>` 匹配与那个绑定实例**同一卡牌定义**的对象（绑定名在运行时解析；
+写错名字不会匹配到任何目标，检查器不校验筛选里的绑定名）："使对手场上与其同名的所有随从消失"
+写作 `banish oppo.field.followers where card target;`，配合 `superevolve extends evolve`
+就能沿用普通进化那次选择的目标（两步共享同一绑定帧）。
+
 筛选器里的 `where cost changed` 匹配"费用被效果改过"的卡牌（加费、减费与设置费用都算），
 配合 `when own card played` 表达"自己使用费用发生变化的随从时"。
 

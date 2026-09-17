@@ -6,7 +6,17 @@ card 10334110 {
     stats 1/1;
 
     effect {
-        unplayable;
+        fanfare {
+            draw 1;
+        }
+        evolve {
+            choose target from oppo.field.followers;
+            banish target;
+        }
+        superevolve extends evolve {
+            // "与其同名"：超进化沿用进化时选中的那个随从，消失敌方场上同卡牌定义的其他随从。
+            banish oppo.field.followers where card target;
+        }
     }
 
     meta {

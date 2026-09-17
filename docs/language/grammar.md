@@ -218,7 +218,7 @@ card_type_plural    = "followers" | "spells" | "amulets" ;
 where_clause        = "where" , filter_expression ;
 filter_expression   = filter_conjunction , {"or" , filter_conjunction} ;
 filter_conjunction  = filter_term , {"and" , filter_term} ;
-filter_term         = "card" , card_id
+filter_term         = "card" , (card_id | binding_name)
                     | "spellboost"
                     | "damaged"
                     | "cost" , "changed"

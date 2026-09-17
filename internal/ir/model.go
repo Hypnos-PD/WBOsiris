@@ -309,6 +309,8 @@ type FieldPredicate struct {
 	Op          string  `json:"op,omitempty"`
 	CardID      int     `json:"cardId,omitempty"`
 	Value       int     `json:"value,omitempty"`
+	// CardRef 不是 nil 时表示"与该绑定指向的实例同一卡牌定义"（同名的动态写法）。
+	CardRef Ref `json:"-"`
 	ValueScalar *Scalar `json:"-"`
 }
 
