@@ -6,7 +6,11 @@ card 10451120 {
     stats 2/7;
 
     effect {
-        unplayable;
+        intimidate;
+        lastwords {
+            summon 1 card 10451120;
+            damage own.leader 2;
+        }
     }
 
     meta {

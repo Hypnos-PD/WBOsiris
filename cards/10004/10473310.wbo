@@ -5,7 +5,13 @@ card 10473310 {
     cost 6;
 
     effect {
-        unplayable;
+        if super_skybound_art {
+            damage oppo.field.followers 6;
+            damage oppo.leader 6;
+        } else {
+            damage oppo.field.followers 3;
+            damage oppo.leader 3;
+        }
     }
 
     meta {

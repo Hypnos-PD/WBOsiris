@@ -6,7 +6,10 @@ card 10422110 {
     stats 5/3;
 
     effect {
-        unplayable;
+        intimidate;
+        fanfare {
+            damage oppo.field.followers 3;
+        }
     }
 
     meta {

@@ -6,7 +6,12 @@ card 10452120 {
     stats 3/3;
 
     effect {
-        unplayable;
+        aura;
+        fanfare {
+            if count(own.field.followers where form evolved) >= 1 {
+                evolve self silent;
+            }
+        }
     }
 
     meta {

@@ -5,7 +5,58 @@ card 10451310 {
     cost 2;
 
     effect {
-        unplayable;
+        damage own.leader 2;
+        gain own crest 10451310;
+    }
+
+    crest {
+        countdown 2;
+
+        when own turn ends {
+            random victim from oppo.field.followers;
+            damage victim 2;
+            heal own.leader 1;
+        }
+
+        locale chs {
+            name "纹章：妖异利刃";
+            text """
+【<color=Keyword>吟唱</color>_2】
+自己的回合结束时，对对手的战场上的随机1个随从造成2点伤害。回复自己的主战者1点生命值。
+""";
+        }
+
+        locale eng {
+            name "Crest: Baleful Blade";
+            text """
+<b><color=Keyword>Countdown</color> (2)</b>
+At the end of your turn, deal 2 damage to a random enemy follower and restore 1 defense to your leader.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：妖異の刃";
+            text """
+【<color=Keyword>カウントダウン</color>_2】
+自分のターン終了時、相手の場のフォロワーからランダム1枚に2ダメージ。自分のリーダーを1回復。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 요이한 칼날";
+            text """
+[<color=Keyword>카운트다운</color> 2]
+내 턴 종료시, 상대방 전장의 추종자 중 무작위로 1장에게 2 피해. 내 리더를 1 회복.
+""";
+        }
+
+        locale cht {
+            name "紋章：妖異利刃";
+            text """
+【<color=Keyword>倒數</color>_2】
+自己的回合結束時，隨機給予1張敵方戰場上的從者卡2點傷害。回復自己的主戰者1點生命值。
+""";
+        }
     }
 
     meta {

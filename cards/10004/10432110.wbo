@@ -6,7 +6,11 @@ card 10432110 {
     stats 6/5;
 
     effect {
-        unplayable;
+        fanfare {
+            choose targets from oppo.field.followers count 2;
+            damage targets 4;
+            add 2 earthsigil;
+        }
     }
 
     meta {

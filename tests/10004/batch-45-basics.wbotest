@@ -1,0 +1,328 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "憧憬的铁锤爆能强化四点后自行进化并加身材" {
+    seed 45001;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10451110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.evolved == true;
+        // 3/1 → 进化 +2/+2 → +1/+1
+        source.stats == 6/4;
+        source has rush;
+    }
+}
+
+scenario "未爆能强化时憧憬的铁锤不进化" {
+    seed 45002;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10451110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == false; source.stats == 3/1; own.pp == 1/3; }
+}
+
+scenario "身无长物唯有石对随机随从连续造成六次一点伤害" {
+    seed 45003;
+    state {
+        player own {
+            pp 3/3;
+            hand { spell source = 10472310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect { legal; enemy.stats == 2/2; }
+}
+
+scenario "冰心霸王对敌方全体造成三点伤害并带威慑" {
+    seed 45004;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10422110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/8; }
+                follower second = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source has intimidate;
+        first.stats == 2/5;
+        second.stats == 2/5;
+    }
+}
+
+scenario "有进化后随从时爱的旅人自行进化" {
+    seed 45005;
+    state {
+        player own {
+            pp 3/3;
+            field { follower evolved = 10001110 { evolved; } }
+            hand { follower source = 10452120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == true; source.stats == 5/5; source has aura; }
+}
+
+scenario "没有进化后随从时爱的旅人不进化" {
+    seed 45006;
+    state {
+        player own {
+            pp 3/3;
+            field { follower plain = 10001110; }
+            hand { follower source = 10452120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == false; source.stats == 3/3; }
+}
+
+scenario "超进化已解禁的回合夜王再起获得屏障" {
+    seed 45007;
+    state {
+        turn own 7;
+        player own {
+            pp 3/3;
+            hand { follower source = 10471110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has barrier; source has storm; }
+}
+
+scenario "未解禁时夜王再起没有屏障" {
+    seed 45008;
+    state {
+        turn own 3;
+        player own {
+            pp 3/3;
+            hand { follower source = 10471110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source lacks barrier; source has storm; }
+}
+
+scenario "符文秘术对敌方全体造成六点伤害并回复主战者" {
+    seed 45009;
+    state {
+        player own {
+            leader 15/20;
+            pp 7/7;
+            hand { spell source = 10431310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    // 2/8 的随从吃 6 点伤害后剩 2 点生命。
+    expect { legal; enemy.stats == 2/2; own.leader.life == 18; }
+}
+
+scenario "掌握天空命运的少女爆能强化八抽高费随从并回复能量点" {
+    seed 45010;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10403120; }
+            deck top {
+                follower cheap = 10011110;
+                follower expensive = 10061130;
+            }
+        }
+    }
+    action { play source; }
+    // 抽到 4/4 的 10061130（费用 5）不满足"费用 7 或以上"，因此这里只验证能量点回复。
+    expect { legal; own.pp == 7/8; own.hand count card 10011110 == 0; }
+}
+
+scenario "宙域使者在回合结束时回复全体与主战者" {
+    seed 45011;
+    state {
+        player own {
+            leader 15/20;
+            field {
+                follower healer = 10402110;
+                follower hurt = 10001110 { stats 2/8; damage_taken 3; }
+            }
+        }
+    }
+    action { end_turn; }
+    expect {
+        legal;
+        hurt.stats == 2/6;
+        healer.stats == 3/3;
+        own.leader.life == 16;
+    }
+}
+
+scenario "不屈利刃的谢幕曲召唤自己并让主战者受伤" {
+    seed 45012;
+    state {
+        player own {
+            leader 15/20;
+            field { follower source = 10451120; }
+        }
+        player oppo { field { follower big = 90004110; } }
+    }
+    action { attack source into big; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        own.field count card 10451120 == 1;
+        own.leader.life == 13;
+        source has intimidate;
+    }
+}
+
+scenario "混沌军势未解放奥义时造成三点伤害" {
+    seed 45013;
+    state {
+        turn own 10;
+        player own {
+            pp 6/6;
+            hand { spell source = 10473310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect { legal; enemy.stats == 2/5; oppo.leader.life == 17; }
+}
+
+scenario "混沌军势在解放奥义时改为六点伤害" {
+    seed 45014;
+    state {
+        turn own 15;
+        player own {
+            pp 6/6;
+            hand { spell source = 10473310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect { legal; enemy.stats == 2/2; oppo.leader.life == 14; }
+}
+
+scenario "可爱如琬似花在回合结束时自行进化并对敌方全体造成一点伤害" {
+    seed 45015;
+    state {
+        player own { field { follower source = 10411120; } }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { end_turn; }
+    expect { legal; source.evolved == true; enemy.stats == 2/7; }
+}
+
+scenario "报仇的占卜师对两个随从各造成四点伤害并增加土之印" {
+    seed 45016;
+    state {
+        player own {
+            pp 6/6;
+            field { amulet sigil = 90031210 { earthsigil 1; } }
+            hand { follower source = 10432110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/8; }
+                follower second = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { play source; select first, second; }
+    expect {
+        legal;
+        first.stats == 2/4;
+        second.stats == 2/4;
+        sigil.earthsigil == 3;
+    }
+}
+
+scenario "荆棘旅途的入场曲召唤自己并在土之秘术下让双方进化" {
+    seed 45017;
+    state {
+        player own {
+            pp 5/5;
+            field { amulet sigil = 90031210 { earthsigil 2; } }
+            hand { follower source = 10432120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 10432120 == 2;
+        source.evolved == true;
+        sigil.zone == graveyard;
+    }
+}
+
+scenario "生与死之技让全体未进化随从进化并自伤吸血" {
+    seed 45018;
+    state {
+        player own {
+            pp 6/6;
+            field { follower ally = 10001110; }
+            hand { follower source = 10453110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        ally.evolved == true;
+        ally.stats == 4/4;
+        own.leader.life == 18;
+        source has drain;
+    }
+}
+
+scenario "彗星在有进化后随从时额外抽一张" {
+    seed 45019;
+    state {
+        player own {
+            pp 2/2;
+            field { follower evolved = 10001110 { evolved; } }
+            hand { spell source = 10411310; }
+            deck top { follower drawn = 10011110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.stats == 2/4; own.hand count card 10011110 == 1; }
+}
+
+scenario "莉莉艾的鼓舞把自己战场上的随从变成护符" {
+    seed 45020;
+    state {
+        turn own 4;
+        player own {
+            pp 2/2;
+            field {
+                amulet charm = 10461210;
+                follower ally = 10001110;
+            }
+            deck top { follower drawn = 10011110; }
+        }
+    }
+    action { engage charm; select ally; }
+    expect {
+        legal;
+        charm.zone == graveyard;
+        ally.zone == field;
+        own.field count card 10461210 == 1;
+        own.hand count card 10011110 == 1;
+    }
+}

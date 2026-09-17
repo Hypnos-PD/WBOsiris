@@ -6,7 +6,12 @@ card 10411120 {
     stats 2/1;
 
     effect {
-        unplayable;
+        when own turn ends {
+            evolve self silent;
+        }
+        when self evolved {
+            damage oppo.field.followers 1;
+        }
     }
 
     meta {

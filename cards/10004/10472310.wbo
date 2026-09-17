@@ -5,7 +5,10 @@ card 10472310 {
     cost 3;
 
     effect {
-        unplayable;
+        repeat 6 {
+            random victim from oppo.field.followers;
+            damage victim 1;
+        }
     }
 
     meta {

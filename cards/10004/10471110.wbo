@@ -6,7 +6,12 @@ card 10471110 {
     stats 2/1;
 
     effect {
-        unplayable;
+        storm;
+        fanfare {
+            if own.superevolve_unlocked {
+                add barrier to self;
+            }
+        }
     }
 
     meta {

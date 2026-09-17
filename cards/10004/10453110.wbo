@@ -6,7 +6,11 @@ card 10453110 {
     stats 2/4;
 
     effect {
-        unplayable;
+        fanfare {
+            evolve own.field.followers silent;
+            damage own.leader 2;
+        }
+        drain;
     }
 
     meta {

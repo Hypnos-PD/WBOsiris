@@ -5,7 +5,12 @@ card 10461210 {
     cost 0;
 
     effect {
-        unplayable;
+        engage 2 {
+            destroy self;
+            choose target from own.field.followers;
+            transform target into card 10461210;
+            draw 1;
+        }
     }
 
     meta {

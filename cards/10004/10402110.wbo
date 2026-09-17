@@ -6,7 +6,11 @@ card 10402110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        aura;
+        when own turn ends {
+            heal own.field.followers 1;
+            heal own.leader 1;
+        }
     }
 
     meta {

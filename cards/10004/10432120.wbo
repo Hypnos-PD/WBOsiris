@@ -6,7 +6,13 @@ card 10432120 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 10432120;
+            earthrite 2 {
+                evolve summoned silent;
+                evolve self silent;
+            }
+        }
     }
 
     meta {

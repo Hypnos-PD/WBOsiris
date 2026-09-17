@@ -5,7 +5,11 @@ card 10411310 {
     cost 2;
 
     effect {
-        unplayable;
+        choose target from oppo.field.followers;
+        damage target 4;
+        if count(own.field.followers where form evolved) >= 1 {
+            draw 1;
+        }
     }
 
     meta {

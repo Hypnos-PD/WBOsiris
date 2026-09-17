@@ -1,0 +1,75 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "妖异利刃自伤并让双方获得纹章" {
+    seed 45101;
+    state {
+        player own {
+            leader 18/20;
+            pp 2/2;
+            hand { spell source = 10451310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 16; own.crests count card 10451310 == 1; }
+}
+
+scenario "妖异利刃的纹章在回合结束时打击随机随从并回复主战者" {
+    seed 45102;
+    state {
+        player own {
+            leader 15/20;
+            crests { crest blade = 10451310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { end_turn; }
+    expect { legal; enemy.stats == 2/6; own.leader.life == 16; }
+}
+
+scenario "绮罗星连击五以上时获得纹章" {
+    seed 45103;
+    state {
+        player own {
+            combo 4;
+            pp 1/1;
+            hand { spell source = 10412310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    // 打出本卡后连击为 5，满足条件。
+    expect { legal; own.crests count card 10412310 == 1; enemy.stats == 2/6; }
+}
+
+scenario "连击不足时绮罗星不获得纹章" {
+    seed 45104;
+    state {
+        player own {
+            combo 1;
+            pp 1/1;
+            hand { spell source = 10412310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect { legal; own.crests count card 10412310 == 0; }
+}
+
+scenario "绮罗星的纹章在吟唱结束后造成伤害并回收本卡" {
+    seed 45105;
+    state {
+        player own { }
+        player oppo {
+            leader 20/20;
+            crests { crest star = 10412310 { countdown 1; } }
+        }
+    }
+    action { end_turn; }
+    expect {
+        legal;
+        oppo.crests count card 10412310 == 0;
+        own.leader.life == 19;
+        oppo.hand count card 10412310 == 1;
+    }
+}
