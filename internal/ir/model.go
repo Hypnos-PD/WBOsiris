@@ -467,6 +467,8 @@ func (e RepeatEffect) effectBase() NodeBase { return e.NodeBase }
 type ModeEffect struct {
 	NodeBase
 	Kind    string       `json:"kind"`
+	// Count 是玩家要选择的选项数量，默认 1（【模式】选择 N 个能力发动）。
+	Count   int          `json:"count,omitempty"`
 	Options []ModeOption `json:"options"`
 }
 
@@ -695,8 +697,10 @@ func (a SelectAction) InstanceIDs() []string {
 }
 
 type ModeAction struct {
-	Kind     string `json:"kind"`
-	OptionID int    `json:"optionId"`
+	Kind string `json:"kind"`
+	// OptionID 用于单选；OptionIDs 用于「模式」选择多个能力。
+	OptionID  int   `json:"optionId,omitempty"`
+	OptionIDs []int `json:"optionIds,omitempty"`
 }
 
 func (a ModeAction) actionKind() string { return a.Kind }

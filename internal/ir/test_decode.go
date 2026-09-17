@@ -241,16 +241,30 @@ func decodeAction(data []byte) (Action, error) {
 		return action, nil
 	case "select_mode":
 		var v struct {
-			Kind     string `json:"kind"`
-			OptionID int    `json:"optionId"`
+			Kind      string `json:"kind"`
+			OptionID  int    `json:"optionId,omitempty"`
+			OptionIDs []int  `json:"optionIds,omitempty"`
 		}
 		if err := strict(data, &v); err != nil {
 			return nil, err
 		}
+		if len(v.OptionIDs) > 0 {
+			if v.OptionID != 0 {
+				return nil, fmt.Errorf("malformed mode selection")
+			}
+			seen := map[int]bool{}
+			for _, id := range v.OptionIDs {
+				if id <= 0 || id > 65535 || seen[id] {
+					return nil, fmt.Errorf("malformed mode selection")
+				}
+				seen[id] = true
+			}
+			return ModeAction{Kind: v.Kind, OptionIDs: v.OptionIDs}, nil
+		}
 		if v.OptionID <= 0 || v.OptionID > 65535 {
 			return nil, fmt.Errorf("malformed mode selection")
 		}
-		return ModeAction{v.Kind, v.OptionID}, nil
+		return ModeAction{Kind: v.Kind, OptionID: v.OptionID}, nil
 	case "attack_entity", "attack_leader":
 		var v struct {
 			Kind     string `json:"kind"`

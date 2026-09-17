@@ -5,7 +5,41 @@ card 10353310 {
     cost 3;
 
     effect {
-        unplayable;
+        mode 2 {
+            option 1 {
+                label chs "回复自己1点能量点。";
+                label eng "Restore 1 play point.";
+                label jpn "自分のPPを1回復。";
+                label kor "내 PP를 1 회복.";
+                label cht "回復自己1點能量點。";
+                gain own.pp 1;
+            }
+            option 2 {
+                label chs "抽取1张随从。";
+                label eng "Draw a follower.";
+                label jpn "自分のデッキからフォロワー1枚を引く。";
+                label kor "내 덱에서 추종자 1장을 뽑는다.";
+                label cht "抽取1張從者卡。";
+                draw 1 from deck where type follower;
+            }
+            option 3 {
+                label chs "抽取1张费用为3的法术。";
+                label eng "Draw a spell that costs 3.";
+                label jpn "自分のデッキからコスト3のスペル1枚を引く。";
+                label kor "내 덱에서 비용 3인 주문 1장을 뽑는다.";
+                label cht "抽取1張消費為3的法術卡。";
+                draw 1 from deck where type spell and cost == 3;
+            }
+            option 4 {
+                label chs "对对手的战场上的随机1个随从造成4点伤害。";
+                label eng "Deal 4 damage to a random enemy follower.";
+                label jpn "相手の場のフォロワーからランダム1枚に4ダメージ。";
+                label kor "상대방 전장의 추종자 하나를 무작위로 4 피해.";
+                label cht "給予敵方戰場上的隨機1張從者卡4點傷害。";
+                random victim from oppo.field.followers;
+                damage victim 4;
+            }
+        }
     }
 
     meta {

@@ -1,0 +1,61 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "叫唤与憎恶按选择顺序结算两个能力" {
+    seed 39001;
+    state {
+        player own {
+            pp 3/3;
+            hand { spell source = 10353310; }
+            deck top {
+                follower drawn = 10011110;
+                spell cheap = 10031310;
+            }
+        }
+    }
+    action { play source; mode 1, 2; }
+    // 先回复 1 点能量点（3-3+1=1），再抽 1 张随从。
+    expect {
+        legal;
+        own.pp == 1/3;
+        own.hand count card 10011110 == 1;
+    }
+}
+
+scenario "叫唤与憎恶可以抽费用三的法术" {
+    seed 39002;
+    state {
+        player own {
+            pp 3/3;
+            hand { spell source = 10353310; }
+            deck top {
+                spell wrong = 10031310;
+                spell right = 10122310;
+            }
+        }
+    }
+    action { play source; mode 3, 1; }
+    expect {
+        legal;
+        own.hand count card 10122310 == 1;
+        own.hand count card 10031310 == 0;
+        own.pp == 1/3;
+    }
+}
+
+scenario "叫唤与憎恶的第四项对敌方随从造成四点伤害" {
+    seed 39003;
+    state {
+        player own {
+            pp 3/3;
+            hand { spell source = 10353310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; mode 4, 1; }
+    expect {
+        legal;
+        enemy.stats == 2/4;
+        own.pp == 1/3;
+    }
+}

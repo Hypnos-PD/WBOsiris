@@ -165,7 +165,11 @@ func runScenario(path string, s *ir.Scenario, cards map[int]*ir.Card) Result {
 			response.SelectedInstanceIDs = x.InstanceIDs()
 			response.SelectedLeaderSides = x.LeaderSides
 		case ir.ModeAction:
-			response.SelectedOptionID = x.OptionID
+			if len(x.OptionIDs) > 0 {
+				response.SelectedOptionIDs = x.OptionIDs
+			} else {
+				response.SelectedOptionID = x.OptionID
+			}
 		default:
 			r.Failures = append(r.Failures, "action response kind does not match request")
 		}

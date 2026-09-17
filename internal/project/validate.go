@@ -451,8 +451,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			}
 			continue
 		case "mode":
-			if len(t) != 1 || len(b) != 1 || len(b[0]) < 2 {
-				shapeError(ds, s, "mode { 至少两个 option }")
+			// `mode { ... }` 选 1 个；`mode N { ... }` 选 N 个（【模式】选择 N 个能力发动）。
+			if len(t) < 1 || len(t) > 2 || len(b) != 1 || len(b[0]) < 2 || len(t) == 2 && !isUnsigned(t[1]) {
+				shapeError(ds, s, "mode [数量] { 至少两个 option }")
 			} else {
 				seen := map[string]bool{}
 				for _, o := range b[0] {

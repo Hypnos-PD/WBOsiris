@@ -179,9 +179,22 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 			}
 			continue
 		case "mode":
-			if len(t) != 1 || len(b) != 1 || len(b[0]) < 2 || s.Terminated {
-				shapeError(ds, s, "mode { 至少两个合法 option }")
+			if len(t) < 1 || len(t) > 2 || len(b) != 1 || len(b[0]) < 2 || s.Terminated {
+				shapeError(ds, s, "mode [数量] { 至少两个合法 option }")
 				continue
+			}
+			want := 0
+			if len(t) == 2 {
+				n, ok := uintValue(t[1], 16)
+				if !ok || n == 0 {
+					rangeError(ds, t[1])
+					continue
+				}
+				want = int(n)
+				if want > len(b[0]) {
+					diag(ds, "WBO-E010-DUPLICATE-OPTION", "错误", "mode 数量超过选项数", s.Span)
+					continue
+				}
 			}
 			seen := map[uint64]bool{}
 			for _, o := range b[0] {
@@ -617,10 +630,13 @@ func strictAction(s *syntax.Statement, a map[string]string, ds *[]syntax.Diagnos
 					ok = ok && known
 				}
 			case "mode":
-				ok = ok && len(t) == 2
-				if ok {
-					n, g := uintValue(t[1], 16)
-					ok = g && n > 0
+				ok = ok && len(t) >= 2
+				for n := 1; n < len(t) && ok; n += 2 {
+					id, g := uintValue(t[n], 16)
+					ok = g && id > 0
+					if ok && n+1 < len(t) {
+						ok = t[n+1].Value == ","
+					}
 				}
 			default:
 				ok = false

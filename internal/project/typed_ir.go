@@ -305,6 +305,10 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		}
 		return ir.IfEffect{NodeBase: base, Kind: "if", Condition: conditionIR(t[1:]), Then: then, Else: els}, nil
 	case "mode":
+		count := 0
+		if len(t) > 1 {
+			count = intToken(t[1])
+		}
 		opts := []ir.ModeOption{}
 		for _, o := range s.Blocks()[0] {
 			labels, statements, err := modeOptionParts(o.Blocks()[0])
@@ -317,7 +321,7 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			}
 			opts = append(opts, ir.ModeOption{ID: intAt(o, 1), Body: body, Origin: originIR(o.Span, sid), Labels: labels})
 		}
-		return ir.ModeEffect{NodeBase: base, Kind: "mode", Options: opts}, nil
+		return ir.ModeEffect{NodeBase: base, Kind: "mode", Count: count, Options: opts}, nil
 	case "earthrite", "necromancy":
 		resource := "shadows"
 		if h == "earthrite" {
@@ -988,7 +992,22 @@ func compileActions(s *syntax.Statement, a map[string]string) ([]ir.Action, erro
 			}
 			action = selection
 		case "mode":
-			action = ir.ModeAction{Kind: "select_mode", OptionID: intToken(t[1])}
+			// `mode 1;` 单选，`mode 1, 3;` 对应「模式」选择多个能力。
+			ids := []int{}
+			for n := 1; n < len(t); n++ {
+				if t[n].Kind == syntax.Integer {
+					ids = append(ids, intToken(t[n]))
+				}
+			}
+			if len(ids) > 1 {
+				action = ir.ModeAction{Kind: "select_mode", OptionIDs: ids}
+			} else {
+				optionID := 0
+				if len(ids) == 1 {
+					optionID = ids[0]
+				}
+				action = ir.ModeAction{Kind: "select_mode", OptionID: optionID}
+			}
 		case "end_turn":
 			action = ir.SourceAction{Kind: "end_turn", Actor: "own"}
 		case "advance":

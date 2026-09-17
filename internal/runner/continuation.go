@@ -1114,7 +1114,8 @@ func validatePendingNode(s *Session, pending *pendingChoice) error {
 			}
 		}
 	case ir.ModeEffect:
-		if pending.request.Kind != "mode" || pending.request.MinSelections != 1 || pending.request.MaxSelections != 1 || len(node.Options) != len(pending.request.Candidates) || len(node.Options) != len(pending.options) {
+		want := min(max(node.Count, 1), len(node.Options))
+		if pending.request.Kind != "mode" || pending.request.MinSelections != want || pending.request.MaxSelections != want || len(node.Options) != len(pending.request.Candidates) || len(node.Options) != len(pending.options) {
 			return fmt.Errorf("continuation mode request does not match its IR node")
 		}
 		for n, option := range node.Options {

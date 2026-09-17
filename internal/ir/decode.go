@@ -766,6 +766,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		type raw struct {
 			ID      string            `json:"id"`
 			Kind    string            `json:"kind"`
+			Count   int               `json:"count,omitempty"`
 			Options []json.RawMessage `json:"options"`
 			Origin  Origin            `json:"origin"`
 		}
@@ -776,7 +777,10 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
 			return nil, err
 		}
-		e := ModeEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind}
+		if v.Count < 0 || v.Count > 65535 {
+			return nil, fmt.Errorf("invalid mode count")
+		}
+		e := ModeEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Count: v.Count}
 		seen := map[int]bool{}
 		for _, x := range v.Options {
 			type option struct {
@@ -801,6 +805,9 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		}
 		if len(e.Options) < 2 {
 			return nil, fmt.Errorf("mode requires at least two options")
+		}
+		if e.Count > len(e.Options) {
+			return nil, fmt.Errorf("mode count exceeds its options")
 		}
 		return e, nil
 	case "pay_resource":

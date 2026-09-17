@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"maps"
 	"reflect"
+	"sort"
 
 	"wbo/internal/ir"
 	"wbo/internal/ruleset"
@@ -48,6 +49,8 @@ type ChoiceResponse struct {
 	SelectedInstanceIDs []string `json:"selectedInstanceIds,omitempty"`
 	SelectedLeaderSides []string `json:"selectedLeaderSides,omitempty"`
 	SelectedOptionID    int      `json:"selectedOptionId,omitempty"`
+	// SelectedOptionIDs 用于"【模式】选择 N 个能力发动"的多选响应。
+	SelectedOptionIDs []int `json:"selectedOptionIds,omitempty"`
 }
 
 type ContinuationFrame struct {
@@ -327,11 +330,25 @@ func (s *Session) Resume(response ChoiceResponse) StepResult {
 		s.drainingTrigger, s.triggerBase = true, len(s.stack)
 		s.pushFrame(execFrame{body: p.fusion.Body, blockID: fusionBlockID(p.fusionSource.card.ID, p.fusion.ID), self: p.fusionSource, bindings: frame{}})
 	} else if p.request.Kind == "mode" {
-		body, ok := p.options[response.SelectedOptionID]
-		if !ok || len(response.SelectedInstanceIDs) != 0 || len(response.SelectedLeaderSides) != 0 {
+		chosen := response.SelectedOptionIDs
+		if len(chosen) == 0 {
+			chosen = []int{response.SelectedOptionID}
+		}
+		if len(chosen) != p.request.MinSelections || len(response.SelectedInstanceIDs) != 0 || len(response.SelectedLeaderSides) != 0 {
 			return StepResult{Status: StatusRejected, Choice: s.PendingChoice(), ErrorCode: "invalid_option"}
 		}
-		s.pushFrame(execFrame{body: body, blockID: p.optionBlockIDs[response.SelectedOptionID], self: p.self, bindings: p.bindings})
+		seen := map[int]bool{}
+		for _, id := range chosen {
+			if _, ok := p.options[id]; !ok || seen[id] {
+				return StepResult{Status: StatusRejected, Choice: s.PendingChoice(), ErrorCode: "invalid_option"}
+			}
+			seen[id] = true
+		}
+		// 多个能力按选项编号顺序结算，保证回放确定。
+		sort.Ints(chosen)
+		for _, id := range chosen {
+			s.pushFrame(execFrame{body: p.options[id], blockID: p.optionBlockIDs[id], self: p.self, bindings: p.bindings})
+		}
 	} else {
 		return StepResult{Status: StatusRejected, Choice: s.PendingChoice(), ErrorCode: "unsupported_request"}
 	}
@@ -586,7 +603,9 @@ func (s *Session) modeRequest(e ir.ModeEffect, bindings frame, self *instance) *
 		options[option.ID] = option.Body
 		optionBlockIDs[option.ID] = nestedBlockID(e.ID, fmt.Sprintf("option:%d", option.ID))
 	}
-	request := s.newRequest(e.ID, "mode", 1, 1, items, s.g.sideOf(self))
+	count := max(e.Count, 1)
+	count = min(count, len(items))
+	request := s.newRequest(e.ID, "mode", count, count, items, s.g.sideOf(self))
 	return &pendingChoice{request: request, bindings: bindings, options: options, optionBlockIDs: optionBlockIDs, self: self}
 }
 
