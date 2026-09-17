@@ -104,6 +104,8 @@ func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error)
 			states = append(states, ir.IntrinsicState{Kind: "countdown", Initial: intAt(s, 1)})
 		case h == "damage_reduction":
 			states = append(states, ir.IntrinsicState{Kind: "damage_reduction", Initial: intAt(s, 1)})
+		case h == "damage_cap":
+			states = append(states, ir.IntrinsicState{Kind: "damage_cap", Initial: intAt(s, 1)})
 		case h == "attack_limit":
 			states = append(states, ir.IntrinsicState{Kind: "attack_limit", Initial: intAt(s, 1)})
 		case h == "earthsigil":

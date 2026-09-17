@@ -122,6 +122,7 @@ type ContinuationEntity struct {
 	DamageTaken       int                      `json:"damageTaken"`
 	Earthsigil        int                      `json:"earthsigil"`
 	DamageReduction   int                      `json:"damageReduction"`
+	DamageCap         int                      `json:"damageCap,omitempty"`
 	Countdown         int                      `json:"countdown"`
 	AttacksUsed       int                      `json:"attacksUsed"`
 	AttackLimit       int                      `json:"attackLimit"`
@@ -475,7 +476,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 			TemporaryStats:    maps.Clone(i.temporaryStats),
 			TemporaryCost:     maps.Clone(i.temporaryCost),
 			ID:                i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life, DamageTaken: i.damageTaken,
-			Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i),
+			Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i), DamageCap: i.damageCap,
 			Engaged: i.engaged, SummoningSick: i.summoningSick, Evolved: i.evolved,
 			SuperEvolved: i.superEvolved, Departed: i.departed, FusedThisTurn: i.fusedThisTurn, DamageReduction: i.damageReduction, Abilities: abilities, Materials: instanceIDs(i.materials), Grants: grantIDs(i),
 			Suppressed: suppressedAbilities(i), SuppressAll: i.suppressAll, CostChanged: i.costChanged, Skybound: i.skybound,
@@ -587,7 +588,7 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 			id:           entity.ID, alias: entity.Alias, zone: entity.Zone, card: card,
 			attack: entity.Attack, life: entity.Life, damageTaken: entity.DamageTaken, cost: entity.Cost, earthsigil: entity.Earthsigil, countdown: entity.Countdown,
 			attacksUsed: entity.AttacksUsed, attackLimitValue: limit, engaged: entity.Engaged, summoningSick: entity.SummoningSick,
-			evolved: entity.Evolved, superEvolved: entity.SuperEvolved, departed: entity.Departed, fusedThisTurn: entity.FusedThisTurn, damageReduction: entity.DamageReduction, costChanged: entity.CostChanged, skybound: entity.Skybound, abilities: map[string]bool{},
+			evolved: entity.Evolved, superEvolved: entity.SuperEvolved, departed: entity.Departed, fusedThisTurn: entity.FusedThisTurn, damageReduction: entity.DamageReduction, damageCap: entity.DamageCap, costChanged: entity.CostChanged, skybound: entity.Skybound, abilities: map[string]bool{},
 		}
 		for _, id := range entity.Grants {
 			grant, ok := grants[id]

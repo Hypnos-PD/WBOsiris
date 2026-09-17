@@ -372,7 +372,7 @@ func decodeCard(data []byte, abilityIDs, nodeIDs map[string]bool) (Card, error) 
 			Initial int    `json:"initial"`
 		}
 		var s v
-		if err := strict(x, &s); err != nil || !oneOf(s.Kind, "countdown", "earthsigil", "damage_reduction", "attack_limit") || s.Initial < 0 || s.Kind == "earthsigil" && s.Initial != 1 || s.Kind == "attack_limit" && s.Initial < 1 {
+		if err := strict(x, &s); err != nil || !oneOf(s.Kind, "countdown", "earthsigil", "damage_reduction", "attack_limit", "damage_cap") || s.Initial < 0 || s.Kind == "earthsigil" && s.Initial != 1 || s.Kind == "attack_limit" && s.Initial < 1 {
 			return Card{}, fmt.Errorf("intrinsic state: %w", err)
 		}
 		c.IntrinsicState = append(c.IntrinsicState, IntrinsicState{s.Kind, s.Initial})
@@ -1791,7 +1791,7 @@ func validatePredicateCardRefs(predicate Predicate, cards map[int]bool) error {
 }
 
 func validKeyword(v string) bool {
-	return oneOf(v, "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "ability_target_guard", "ability_destruction_guard", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")
+	return oneOf(v, "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "ability_target_guard", "ability_destruction_guard", "damage_taken_up", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")
 }
 
 func ValidKeyword(v string) bool { return validKeyword(v) }

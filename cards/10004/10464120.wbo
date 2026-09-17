@@ -6,7 +6,15 @@ card 10464120 {
     stats 6/8;
 
     effect {
-        unplayable;
+        ward;
+        damage_cap 3;
+        fanfare {
+            choose victims from oppo.field.followers count 2;
+            banish victims;
+            if super_skybound_art {
+                superevolve self silent;
+            }
+        }
     }
 
     meta {

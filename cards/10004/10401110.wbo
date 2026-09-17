@@ -6,7 +6,14 @@ card 10401110 {
     stats 5/5;
 
     effect {
-        unplayable;
+        ward;
+        damage_cap 3;
+        fanfare {
+            if skybound_art {
+                random victims from oppo.field.followers count 2;
+                damage victims 5;
+            }
+        }
     }
 
     meta {

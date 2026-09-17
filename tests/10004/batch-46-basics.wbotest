@@ -1,0 +1,135 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "奥义时驰骋天空的守护者对随机两个随从各造成五点伤害" {
+    seed 46001;
+    state {
+        turn own 10;
+        player own {
+            pp 5/5;
+            hand { follower source = 10401110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/8; }
+                follower second = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; source has ward; first.stats == 2/3; second.stats == 2/3; }
+}
+
+scenario "回合数不足十时驰骋天空的守护者不发动奥义" {
+    seed 46002;
+    state {
+        turn own 3;
+        player own {
+            pp 5/5;
+            hand { follower source = 10401110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/8; }
+                follower second = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; first.stats == 2/8; second.stats == 2/8; }
+}
+
+scenario "受到的伤害上限把八点伤害压到三点" {
+    seed 46003;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10444110; }
+        }
+        player oppo { field { follower victim = 10401110; } }
+    }
+    action { play source; select victim; }
+    expect { legal; source has intimidate; victim.stats == 5/2; }
+}
+
+scenario "解放奥义时威严的星晶骑士使两个随从消失并超进化" {
+    seed 46004;
+    state {
+        turn own 15;
+        player own {
+            pp 8/8;
+            hand { follower source = 10464120; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110;
+                follower second = 10001110;
+            }
+        }
+    }
+    action { play source; select first, second; }
+    expect {
+        legal;
+        source.super_evolved == true;
+        first.zone == banished;
+        second.zone == banished;
+    }
+}
+
+scenario "未达解放奥义时威严的星晶骑士不超进化" {
+    seed 46005;
+    state {
+        turn own 10;
+        player own {
+            pp 8/8;
+            hand { follower source = 10464120; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110;
+                follower second = 10001110;
+            }
+        }
+    }
+    action { play source; select first, second; }
+    expect { legal; source.super_evolved == false; first.zone == banished; }
+}
+
+scenario "唯一王者让对手两个随从失去能力并造成九点伤害" {
+    seed 46006;
+    state {
+        player own {
+            pp 9/9;
+            hand { follower source = 10474120; }
+        }
+        player oppo {
+            field {
+                follower first = 10001120 { stats 3/9; }
+                follower second = 10001120 { stats 3/9; }
+            }
+        }
+    }
+    action { play source; select first, second; }
+    expect {
+        legal;
+        first.zone == graveyard;
+        second.zone == graveyard;
+        events contains ordered { damage first 9; damage second 9; }
+        // 失去【谢幕曲】后不会因破坏抽牌。
+        events excludes { draw oppo 1; }
+    }
+}
+
+scenario "炎之法则的进化时能力重复入场曲的伤害" {
+    seed 46007;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10444110; }
+        }
+        player oppo { field { follower victim = 10001110 { stats 2/9; } } }
+    }
+    action { evolve source; select victim; }
+    expect { legal; victim.stats == 2/1; }
+}

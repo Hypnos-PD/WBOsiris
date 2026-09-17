@@ -28,6 +28,7 @@ type instance struct {
 	id, alias, zone                                                              string
 	card                                                                         *ir.Card
 	attack, life, cost, earthsigil, countdown, damageReduction, attackLimitValue int
+	damageCap                                                                   int
 	attacksUsed                                                                  int
 	damageTaken                                                                  int
 	engaged, summoningSick                                                       bool
@@ -336,6 +337,8 @@ func resetCardState(i *instance, c *ir.Card) {
 			i.countdown = s.Initial
 		} else if s.Kind == "damage_reduction" {
 			i.damageReduction = s.Initial
+		} else if s.Kind == "damage_cap" {
+			i.damageCap = s.Initial
 		} else if s.Kind == "attack_limit" {
 			i.attackLimitValue = s.Initial
 		}
@@ -815,6 +818,10 @@ func (g *game) damageLeaderFrom(source *instance, target *player, side string, a
 	if amount < 0 {
 		amount = 0
 	}
+	if target.leaderAbilities["damage_taken_up"] {
+		// 「受到的伤害 +1」：先加一，再让【屏障】把这次伤害整体降为 0（官方 QA）。
+		amount++
+	}
 	if target.leaderAbilities["barrier"] && amount > 0 {
 		// 主战者的【屏障】把下一次伤害降为 0（官方 QA：与"受到伤害+1"同时存在时也是 0）。
 		delete(target.leaderAbilities, "barrier")
@@ -846,6 +853,10 @@ func (g *game) damageLeaders(source *instance, amount int) {
 		{&g.oppo, "oppo"},
 	} {
 		damage := amount
+		if target.player.leaderAbilities["damage_taken_up"] {
+			// 「受到的伤害 +1」：先加一，再让【屏障】把这次伤害整体降为 0（官方 QA）。
+			damage++
+		}
 		if target.player.leaderAbilities["barrier"] && damage > 0 {
 			delete(target.player.leaderAbilities, "barrier")
 			damage = 0
@@ -945,6 +956,10 @@ func (g *game) modifyDamage(context damageContext) int {
 		return 0
 	}
 	amount = max(amount-context.target.damageReduction, 0)
+	if cap := context.target.damageCap; cap > 0 && amount > cap {
+		// "受到的 N 点或以上的伤害变为 N-1"：等价于把伤害上限压到 N-1。
+		amount = cap
+	}
 	return min(amount, max(context.target.life, 0))
 }
 

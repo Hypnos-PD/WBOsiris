@@ -6,7 +6,12 @@ card 10474120 {
     stats 9/9;
 
     effect {
-        unplayable;
+        fanfare {
+            choose victims from oppo.field.followers count 2;
+            remove all abilities from victims;
+            damage victims 9;
+            add damage_taken_up to oppo.leader;
+        }
     }
 
     meta {

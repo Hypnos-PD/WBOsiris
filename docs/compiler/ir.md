@@ -147,7 +147,7 @@ Stats = { attack: i16, life: i16 }
 TraitId = string
 Keyword = "ward" | "storm" | "rush" | "bane" | "drain" | "intimidate"
         | "barrier" | "stealth" | "aura" | "ability_target_guard"
-        | "ability_destruction_guard"
+        | "ability_destruction_guard" | "damage_taken_up"
         | "cannot_attack" | "cannot_attack_follower" | "cannot_attack_leader"
 
 CardRestriction =
@@ -179,12 +179,16 @@ Locale = { name: string, text: string }
 参与攻击目标约束。`unplayable` 编译为 `CardRestriction`，只拒绝以该手牌实例为
 来源的 `Play` 指令，不拒绝融合指令或规则效果。
 
-`countdown N` 和 `earthsigil` 编译为 `IntrinsicState`，而不是关键词：
+`countdown N`、`earthsigil`、`damage_reduction N`、`damage_cap N`、`attack_limit N`
+编译为 `IntrinsicState`，而不是关键词：
 
 ```text
 IntrinsicState =
   Countdown  { kind: "countdown", initial: u16 }
 | EarthSigil { kind: "earthsigil", initial: 1 }
+| DamageReduction { kind: "damage_reduction", initial: u16 }
+| DamageCap { kind: "damage_cap", initial: u16 }
+| AttackLimit { kind: "attack_limit", initial: u16 }
 ```
 
 护符实例在控制者回合开始时递减倒计时；变为零时立即执行破坏流程。
@@ -1069,7 +1073,7 @@ ability: Ability, labels?: map<LocaleId, string> }` 附加一个独立触发能�
 | `ward`、`storm`、`rush`、`bane`、`drain`、`intimidate` | `Card.intrinsic` |
 | `unplayable` | `Card.restrictions` 中的 `Unplayable` |
 | `fusion material from S where P { ... }` | `FusionAbility(MaterialFilter)` |
-| `countdown N`、`earthsigil` | `IntrinsicState` |
+| `countdown N`、`earthsigil`、`damage_reduction N`、`damage_cap N`、`attack_limit N` | `IntrinsicState` |
 | `fanfare`、`lastwords`、`attack`、`clash`、`evolve`、`superevolve` | 对应 `Trigger` |
 | `engage N`、`enhance N`、`spellboost {}` | 对应专用 `Trigger` |
 | `when ...` | `EventTrigger(EventPattern)` |

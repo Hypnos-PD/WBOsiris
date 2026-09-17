@@ -6,7 +6,15 @@ card 10444110 {
     stats 8/6;
 
     effect {
-        unplayable;
+        intimidate;
+        fanfare {
+            choose victim from oppo.field.followers;
+            damage victim 8;
+        }
+        when self evolved {
+            choose victim from oppo.field.followers;
+            damage victim 8;
+        }
     }
 
     meta {

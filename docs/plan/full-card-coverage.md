@@ -18,20 +18,20 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 444 · 未实现(骨架) 77 · 未导入 383
+总计 904 · 已完成 448 · 未实现(骨架) 73 · 未导入 383
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
 10002        77      77       0       0
-10003        77      76       1       0
-10004        76      39      37       0
+10003        77      75       2       0
+10004        76      43      33       0
 10005        76       0       0      76
 10006        76       0       0      76
 10007        77       0       0      77
 10008        78       0       0      78
 10009        76       0       0      76
 90000        93      55      38       0
-未完成卡按文本复杂度：中(41–100字) 277 · 短(≤40字) 186 · 长(>100字) 19 · 白板 2
+未完成卡按文本复杂度：中(41–100字) 272 · 短(≤40字) 166 · 长(>100字) 17 · 白板 1
 ```
 
 ## 工作流
@@ -85,6 +85,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-14b | `fused.cost` / `fused.distinct` 作为数值 | S-14 只让它们在条件里可读；`damage oppo.field.followers fused.distinct;` 这类把融合数当伤害值的文本还需要数值入口。`internal/project/numeric.go`（`fused.` → `Scalar{Kind:"fusion_material_scalar"}`）、`internal/project/validate.go`（`parseEffectAmount` 接受 `fused.`）、`internal/ir/amount.go`（`validNumericExpr` 与容器解码）、`internal/runner/numeric.go`（按材料求值） | Go 单测 `internal/project/fused_amount_test.go`；卡片 10324110 篡夺的继承者·辛瑟莱兹按融合种类造成伤害 + 2 个场景 |
 | S-15 | 测试 DSL 的实例字段断言 | 新增 `alias.attack_limit`（取 `attackLimit()`，"1 回合可以攻击 N 次"）与 `alias.damage_reduction`；`internal/project/validate.go`、`strict_validate.go`、`internal/ir/test_decode.go`、`internal/runner/assert.go` 四处白名单同步，写错字段名从"静默不相等"改成检查期报错 | 卡片 10274120 场景直接断言 `source.attack_limit == 2`；全量 444 个场景回归 |
 | S-01 | `remove lastwords from …` / `remove all abilities from …`（实例级失去能力） | `internal/project/validate.go`（`remove` 新增两种形状）、`typed_ir.go` + `keyword_effect.go`（解析成 `remove_ability`，`Keyword` 取 `lastwords`/`all`）、`internal/ir/encode.go`/`decode.go`（新效果种类）、`internal/runner/grant.go`（`suppressed`/`suppressAll`、剔除已排队触发、重新索引）、`internal/runner/execute.go`（派发）、`internal/runner/continuation.go`（连击快照保存抑制状态）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/ability_removal_test.go`（两种形状编成 `remove_ability`、拒绝 `remove fanfare`/漏 `from`/`add lastwords`/带 `until`）与 `internal/runner/ability_removal_test.go`（僵尸链在第二次死亡后停止、`remove all abilities` 同时清掉固有关键词与谢幕曲）；卡片 90051140、10252120、10251310 + 3 个场景 |
+| S-42 | `damage_cap N`（实例伤害上限）与主战者 `damage_taken_up`（受到的伤害 +1） | `internal/project/validate.go`（固有词形状与 `abilities` 集合）、`strict_validate.go`（固有能力/关键词形状表）、`typed_ir.go`（写入 `IntrinsicState`）、`internal/ir/decode.go`（固有状态与关键词白名单）、`internal/runner/runner.go`（`instance.damageCap`、`resetCardState`、`modifyDamage` 在减伤之后压上限；`damageLeaderFrom`/`damageLeaders` 在屏障判定前加一）、`internal/runner/continuation.go`（`DamageCap` 快照与恢复）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/damage_cap_test.go`（8/3/2 三种输入、"受伤 +1"、与屏障同时存在时为 0）；卡片 10401110、10464120、10474120、10444110 + 7 个场景 |
 
 | S-16 | `ability_destruction_guard`（不会被能力破坏） | 新固有关键词：`internal/ir/decode.go` 的 `validKeyword`、`internal/project/validate.go` 的 `abilities`、`strict_validate.go` 的固有能力形状表、`internal/runner/runner.go`（`destroyByEffect` 受保护，必杀改走新的 `destroyByCombat` 不受保护）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/granted_ability_flow_test.go`（能力破坏被挡下、战斗破坏照样生效）；卡片 10273110 + 2 个场景 |
 | S-07 | `when own\|oppo follower evolved\|super_evolved [other]` —— 其他随从的进化事件 | `internal/ir/model.go`（`EventTrigger.ExcludeSelf`）、`internal/ir/decode.go`（校验 `other` 只用于带对象的非受伤事件）、`internal/project/strict_validate.go`（基础事件模式接受进化动词与 `other`）、`internal/project/typed_ir.go`（事件名映射与 `ExcludeSelf`）、`internal/project/validate.go`（`evolved` 绑定）、`internal/runner/runner.go`（进化事件改为把改名随从绑成 `evolved`）、`internal/runner/trigger_index.go`（按实例排除自身）；文档 `grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/evolution_event_test.go`（`other`/绑定/来源区域、拒绝重复 `other` 与 `self … other`）；卡片 10241110、10212120、10252110 + 6 个场景（含"不因普通进化触发"与"不响应自己超进化"两个反向场景） |
@@ -117,10 +118,31 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-39 | ~~动态随机/选择数量~~ **已解决**：`random … count <数值表达式>` | 已解锁 10373110 破坏的团结者、10364110 安息的继承者·妃花；10811110 仍缺"两个计数相减"的算术（见 S-41） | `SelectionEffect` 新增 `CountExpr`，运行时在结算到该语句时求值（0 表示不选、超过候选数按候选数截断）；续局恢复沿用挂起请求里保存的数量。 |
 | S-41 | 数值算术（加减） | 10811110 昔日的天秤·马龙（"X 为对手的战场上的随从数减去自己的战场上的随从数"） | 数值表达式只有 `count/sum/scalar/negate`，没有二元加法或减法。 |
 | S-40 | ~~`set cost` 的持续时间~~ **已解决**：`set cost T N until …` | 已解锁 10334120 绝尽的显现·莱奥 | 实例新增 `temporaryCost`（按结束方记录差量），到期在 `expireTurnEffects` 里按差量还原，连击快照一并保存；这样即使到期前又有永久加减费也不会被覆盖。 |
+| S-42 | ~~伤害上限与主战者"受到的伤害 +1"~~ **已解决**：`damage_cap N` / `add damage_taken_up to <主战者>` | 已解锁 10401110、10444120、10464120、10711110（伤害上限），10474120 及后续所有"使对手主战者获得受伤 +1"的卡 | `damage_cap N` 表示单次受到伤害最多 `N`（= 卡面"受到的 N+1 点或以上变为 N 点"）；主战者关键词 `damage_taken_up` 在屏障判定前先加一。 |
 
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 46（语言扩展 S-42：伤害上限与主战者受伤 +1 + 卡包 10004 第三批）
+
+- **新固有关键词 `damage_cap N`**：实例每次受到的伤害最多为 `N`，对应卡面
+  "受到的 N+1 点或以上的伤害变为 N 点"。`internal/project/validate.go`（与 `damage_reduction` 同一形状）、
+  `strict_validate.go`（固有能力形状表）、`typed_ir.go`（写入 `IntrinsicState`）、
+  `internal/ir/decode.go`（固有状态白名单）、`internal/runner/runner.go`（`instance.damageCap`、
+  `resetCardState`、`modifyDamage` 在减伤之后压上限）、`internal/runner/continuation.go`（`DamageCap` 快照与恢复）。
+- **主战者关键词 `damage_taken_up`**："受到的伤害 +1"，在 `damageLeaderFrom` 与 `damageLeaders`
+  的屏障判定前先加一（因此与【屏障】同时存在时下一次伤害仍为 0，符合官方 QA）。
+  `internal/ir/decode.go` 的 `validKeyword`、`validate.go` 的 `abilities`、`strict_validate.go`
+  的形状表三处同步；卡牌用 `add damage_taken_up to oppo.leader;` 赋予。
+- 完成 4 张：10401110 驰骋天空的守护者·卡塔莉娜（奥义随机 2×5 + 守护 + 伤害上限）、
+  10464120 威严的星晶骑士·薇拉（消失 2 个随从 + 解放奥义超进化 + 守护 + 伤害上限）、
+  10474120 唯一王者·别西卜（选 2 个随从失去所有能力并各受 9 点伤害，对手主战者受伤 +1）、
+  10444110 炎之法则·威尔纳斯（选 1 个随从 8 点伤害 + 威慑 + 进化时重复入场曲）。
+- 新增 7 个场景（`tests/10004/batch-46-basics.wbotest`）；Go 单测
+  `internal/runner/damage_cap_test.go` 覆盖伤害上限的三种输入、主战者受伤 +1、
+  以及"受伤 +1 与屏障同时存在时下一次伤害为 0"。
+- 全量回归：`check` 0 错 0 警；`test` 672 全绿；`go test ./...` 全绿；语料快照更新为 672 个场景。
 
 ### 批次 45（卡包 10004 第二批）
 
