@@ -898,6 +898,9 @@ fanfare {
 
 这不是伤害或回复：不消费屏障，不应用伤害减免，也不产生伤害或回复事件。
 
+`set cost T N until …;` 是临时的费用修改（`until turn ends` / `until own turn ends` /
+`until oppo turn ends`）：到期时按差量还原，"回合结束前使其费用变为 0"就用它。
+
 `raise cost T N;` 给目标的当前费用加 N（没有上限，卡牌文本没有写上限时按字面处理）；
 只做减费时继续用 `reduce cost T N minimum M`。
 `reduce countdown T X` 的增量也可以是数值引用，例如"本护符的倒计数 -X，X 为自己的纹章数"

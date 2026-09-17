@@ -1,0 +1,56 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "绝尽的显现给牌组减费并把随机法术变成伪证并降到零费" {
+    seed 40001;
+    state {
+        player own {
+            pp 9/9;
+            hand {
+                follower source = 10334120;
+                spell victim = 10122310;
+            }
+            deck top {
+                follower cheap = 10011110;
+                follower expensive = 90041120;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        // 牌组里的随从各减 3 费（2 → 0，5 → 2）。
+        cheap.cost == 0;
+        expensive.cost == 2;
+        // 手里的法术变身，并在回合结束前是 0 费。
+        victim.zone == hand;
+        victim.cost == 0;
+    }
+}
+
+scenario "绝尽的伪证给手牌随从加费并破坏敌方随从" {
+    seed 40003;
+    state {
+        player own {
+            pp 4/4;
+            hand {
+                spell proof = 90034310;
+                follower ally = 10001110;
+            }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/8; }
+                follower second = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { play proof; }
+    expect {
+        legal;
+        ally.cost == 3;
+        first.zone == graveyard;
+        second.zone == graveyard;
+        own.pp == 0/4;
+    }
+}

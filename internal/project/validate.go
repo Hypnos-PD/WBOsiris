@@ -546,6 +546,10 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		if good {
 			end, good = parseEffectAmount(t, end)
 		}
+		if good && end < len(t) && t[end].Value == "until" {
+			// `set cost T N until own turn ends`：临时费用修改。
+			end, good = parseEffectDuration(t, end)
+		}
 		ok = set("life", "cost", "attack")[t[1].Value] && good && end == len(t)
 	case "set_attack_limit":
 		ok = len(t) == 3 && t[1].Value == "self" && isU16(t[2])

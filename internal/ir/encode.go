@@ -186,7 +186,7 @@ func (e CardEffect) MarshalJSON() ([]byte, error) {
 }
 
 func (e TargetEffect) MarshalJSON() ([]byte, error) {
-	if e.Until != "" && (!oneOf(e.Kind, "add_keyword", "buff_stats") || !oneOf(e.Until, "turn_end", "own_turn_end", "oppo_turn_end")) {
+	if e.Until != "" && (!oneOf(e.Kind, "add_keyword", "buff_stats", "set_cost") || !oneOf(e.Until, "turn_end", "own_turn_end", "oppo_turn_end")) {
 		return nil, fmt.Errorf("invalid effect duration")
 	}
 	object := effectObject(e.NodeBase, e.Kind)

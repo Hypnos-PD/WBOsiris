@@ -133,6 +133,7 @@ type ContinuationEntity struct {
 	Abilities         []string                 `json:"abilities"`
 	TemporaryKeywords map[string]KeywordExpiry `json:"temporaryKeywords,omitempty"`
 	TemporaryStats    map[string]ir.Stats      `json:"temporaryStats,omitempty"`
+	TemporaryCost     map[string]int          `json:"temporaryCost,omitempty"`
 	Materials         []string                 `json:"materials,omitempty"`
 	Suppressed        []string                 `json:"suppressedAbilities,omitempty"`
 	SuppressAll       bool                     `json:"suppressAllAbilities,omitempty"`
@@ -470,6 +471,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 			UsedTriggers:      maps.Clone(i.usedTriggers),
 			TemporaryKeywords: maps.Clone(i.temporaryKeywords),
 			TemporaryStats:    maps.Clone(i.temporaryStats),
+			TemporaryCost:     maps.Clone(i.temporaryCost),
 			ID:                i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life, DamageTaken: i.damageTaken,
 			Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i),
 			Engaged: i.engaged, SummoningSick: i.summoningSick, Evolved: i.evolved,
@@ -625,6 +627,14 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 		}
 		if len(entity.TemporaryStats) > 0 {
 			i.temporaryStats = maps.Clone(entity.TemporaryStats)
+		}
+		if len(entity.TemporaryCost) > 0 {
+			for side := range entity.TemporaryCost {
+				if side != "own" && side != "oppo" {
+					return nil, fmt.Errorf("invalid temporary cost")
+				}
+			}
+			i.temporaryCost = maps.Clone(entity.TemporaryCost)
 		}
 		if !ir.ValidCounters(i.counters) || len(i.counters) != len(card.Counters) {
 			return nil, fmt.Errorf("invalid continuation counters")

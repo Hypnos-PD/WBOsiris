@@ -37,6 +37,7 @@ type instance struct {
 	rallyPending                                                                 bool
 	abilities                                                                    map[string]bool
 	temporaryKeywords                                                            map[string]KeywordExpiry
+	temporaryCost                                                                map[string]int
 	temporaryStats                                                               map[string]ir.Stats
 	materials                                                                    []*instance
 	fusedThisTurn                                                                bool

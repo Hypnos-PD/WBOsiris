@@ -6,7 +6,12 @@ card 10334120 {
     stats 9/9;
 
     effect {
-        unplayable;
+        fanfare {
+            reduce cost own.deck.followers 3 minimum 0;
+            random target from own.hand.spells;
+            transform target into card 90034310;
+            set cost target 0 until turn ends;
+        }
     }
 
     meta {

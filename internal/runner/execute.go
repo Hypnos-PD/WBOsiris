@@ -633,10 +633,19 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 			}
 		}
 	case "set_cost":
+		endingSide := g.effectEndingSide(e.Until, ownSide)
 		for _, i := range targets {
-			if i != nil {
-				i.cost = max(e.Amount, 0)
+			if i == nil {
+				continue
 			}
+			if endingSide != "" {
+				// "回合结束前，使其费用变为 0"：记录差量，到期时按差量还原。
+				if i.temporaryCost == nil {
+					i.temporaryCost = map[string]int{}
+				}
+				i.temporaryCost[endingSide] += max(e.Amount, 0) - i.cost
+			}
+			i.cost = max(e.Amount, 0)
 		}
 	case "set_damage_reduction":
 		for _, i := range targets {

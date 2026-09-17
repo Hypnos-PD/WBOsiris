@@ -493,13 +493,19 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		}
 		end := valueRefEnd(t, 2)
 		amount, expr := numericIR(t, end)
+		end, _ = parseEffectAmount(t, end)
 		kind := "set_life"
 		if t[1].Value == "cost" {
 			kind = "set_cost"
 		} else if t[1].Value == "attack" {
 			kind = "set_attack"
 		}
-		return ir.TargetEffect{NodeBase: base, Kind: kind, Target: valueRefIR(t, 2), Amount: amount, AmountExpr: expr}, nil
+		e := ir.TargetEffect{NodeBase: base, Kind: kind, Target: valueRefIR(t, 2), Amount: amount, AmountExpr: expr}
+		if end < len(t) && t[end].Value == "until" {
+			// `set cost T N until own turn ends`：临时费用修改。
+			e.Until = effectDurationIR(t, end)
+		}
+		return e, nil
 	case "return":
 		end := valueRefEnd(t, 1)
 		e := ir.TargetEffect{NodeBase: base, Kind: "return", Target: valueRefIR(t, 1), Destination: t[end+1].Value}

@@ -386,7 +386,7 @@ history_source    = participant , "." , "destroyed" , ["." , ("followers" | "amu
 numeric_operation = "damage" , value_ref , ["other" , [binding_name]] , effect_amount , [damage_distribution] , [extremum_clause] , [where_clause] , ";"
                   | "heal" , value_ref , ["other" , [binding_name]] , effect_amount , [where_clause] , ";"
                   | "set" , "life" , value_ref , effect_amount , ";"
-                  | "set" , "cost" , value_ref , effect_amount , ";"
+                  | set_operation_tail
                   | "set" , "attack" , value_ref , effect_amount , ";"
                   | "set" , "maxlife" , participant , "." , "leader" , integer , ";"
                   | "buff" , value_ref , ["other" , [binding_name]] , signed_amount , "/" , signed_amount , [where_clause] , [effect_duration] , ";"
@@ -418,6 +418,7 @@ reduce_operation  = "reduce" , "countdown" , value_ref , integer , ";"
                   | "reduce" , "cost" , value_ref , integer , "minimum" , integer , ";" ;
 halve_operation   = "halve" , "cost" , value_ref , ";" ;
 raise_operation   = "raise" , "cost" , value_ref , integer , ";" ;
+set_operation_tail = "set" , "cost" , value_ref , effect_amount , [effect_duration] , ";" ;
 double_operation  = "double" , "stats" , value_ref , ";" ;
 spellboost_operation = "spellboost" , value_ref , integer , ";" ;
 set_attack_limit_operation = "set_attack_limit" , "self" , positive_integer , ";" ;

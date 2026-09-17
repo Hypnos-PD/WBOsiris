@@ -5,7 +5,8 @@ card 90034310 {
     cost 4;
 
     effect {
-        unplayable;
+        raise cost own.hand.followers 1;
+        destroy oppo.field.followers;
     }
 
     meta {

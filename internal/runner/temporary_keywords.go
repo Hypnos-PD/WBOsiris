@@ -42,12 +42,19 @@ func (i *instance) removeKeyword(keyword string) {
 func (g *game) expireTurnEffects(side string) bool {
 	visits := len(g.instances)
 	for _, i := range g.instances {
-		visits += len(i.temporaryKeywords) + len(i.temporaryStats)
+		visits += len(i.temporaryKeywords) + len(i.temporaryStats) + len(i.temporaryCost)
 	}
 	if !g.chargeQueryVisits(visits) {
 		return false
 	}
 	for _, i := range g.instances {
+		if delta, ok := i.temporaryCost[side]; ok {
+			i.cost = max(0, i.cost-delta)
+			delete(i.temporaryCost, side)
+			if len(i.temporaryCost) == 0 {
+				i.temporaryCost = nil
+			}
+		}
 		if delta, ok := i.temporaryStats[side]; ok {
 			i.attack -= delta.Attack
 			i.life -= delta.Life
