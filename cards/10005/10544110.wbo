@@ -6,7 +6,20 @@ card 10544110 {
     stats 8/8;
 
     effect {
-        unplayable;
+        ward;
+        when own turn ends {
+            if self form unevolved {
+                random victims from oppo.field.followers count 2;
+                damage victims 8;
+                heal own.leader 8;
+            } else {
+                damage oppo.leader 8;
+            }
+        }
+        evolve {
+            remove ward from self;
+            add intimidate to self;
+        }
     }
 
     meta {

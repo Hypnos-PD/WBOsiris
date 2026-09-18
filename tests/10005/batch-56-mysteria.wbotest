@@ -1,0 +1,204 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "明越花阿罗的入场曲造成十点伤害" {
+    seed 56001;
+    state {
+        player own {
+            pp 10/10;
+            hand { follower source = 10534120; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/12; } } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.stats == 2/2; }
+}
+
+scenario "魔力增幅使明越花阿罗的费用下降" {
+    seed 56002;
+    state {
+        player own {
+            pp 6/6;
+            hand {
+                follower source = 10534120;
+                follower booster = 10531120;
+            }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/250; } } }
+    }
+    action { play booster; }
+    expect { legal; source.cost == 7; }
+}
+
+scenario "明越花阿罗进化时把其他随从变成壮丽大神隼" {
+    seed 56003;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            field {
+                follower source = 10534120;
+                follower other = 10001110;
+            }
+        }
+    }
+    action { evolve source; select other; }
+    expect { legal; other.stats == 4/4; }
+}
+
+scenario "至圣威仪的入场曲回复主战者并召唤纯洁白狐" {
+    seed 56004;
+    state {
+        player own {
+            leader 10/20;
+            pp 5/5;
+            hand { follower source = 10563110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 11; own.field count card 10061120 == 1; source has ward; }
+}
+
+scenario "至圣威仪进化时再次回复并召唤纯洁白狐" {
+    seed 56005;
+    state {
+        turn own 5;
+        player own {
+            leader 10/20;
+            ep 1;
+            field { follower source = 10563110; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.leader.life == 11; own.field count card 10061120 == 1; }
+}
+
+scenario "约束的正义在进化前于回合结束打击两个随从并回复" {
+    seed 56006;
+    state {
+        player own {
+            leader 10/20;
+            field { follower source = 10544110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/10; }
+                follower second = 10001110 { stats 2/10; }
+            }
+        }
+    }
+    action { end_turn; }
+    expect { legal; first.stats == 2/2; second.stats == 2/2; own.leader.life == 18; }
+}
+
+scenario "约束的正义进化时失去守护并获得威慑" {
+    seed 56007;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            field { follower source = 10544110; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; source lacks ward; source has intimidate; }
+}
+
+scenario "约束的正义在进化后于回合结束打击对手主战者" {
+    seed 56008;
+    state {
+        player own { field { follower source = 10544110 { evolved; } } }
+    }
+    action { end_turn; }
+    expect { legal; oppo.leader.life == 12; }
+}
+
+scenario "思念的力量模式一让本随从进化" {
+    seed 56009;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10564110; }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; source.evolved == true; source has ward; }
+}
+
+scenario "思念的力量模式二让守护随从进化并加一加一" {
+    seed 56010;
+    state {
+        player own {
+            pp 4/4;
+            field { follower guard = 10001120; }
+            hand { follower source = 10564110; }
+        }
+    }
+    action { play source; mode 2; }
+    expect { legal; guard.evolved == true; guard.stats == 3/5; }
+}
+
+scenario "思念的力量在进化后于回合结束削弱其他随从" {
+    seed 56011;
+    state {
+        player own {
+            field {
+                follower source = 10564110 { evolved; }
+                follower ally = 10001110 { stats 2/5; }
+            }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 3/6; } } }
+    }
+    action { end_turn; }
+    expect { legal; ally.stats == 1/4; enemy.stats == 2/5; }
+}
+
+scenario "虫风花魅禄模式一加入两张妖精" {
+    seed 56012;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10514120; }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; own.hand count card 90011110 == 2; }
+}
+
+scenario "虫风花魅禄模式二回复能量点" {
+    seed 56013;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10514120; }
+        }
+    }
+    action { play source; mode 2; }
+    expect { legal; own.pp == 2/3; }
+}
+
+scenario "虫风花魅禄模式三分配三点伤害" {
+    seed 56014;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10514120; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/6; } } }
+    }
+    action { play source; mode 3; }
+    expect { legal; enemy.stats == 2/3; }
+}
+
+scenario "虫风花魅禄进化时再次发动模式" {
+    seed 56015;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            field { follower source = 10514120; }
+        }
+    }
+    action { evolve source; mode 1; }
+    expect { legal; own.hand count card 90011110 == 2; }
+}

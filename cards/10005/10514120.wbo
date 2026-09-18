@@ -6,7 +6,62 @@ card 10514120 {
     stats 2/2;
 
     effect {
-        unplayable;
+        fanfare {
+            mode {
+                option 1 {
+                    label chs "将2张『妖精』加入手牌。";
+                    label eng "Add 2 Fairies to your hand.";
+                    label jpn "『フェアリー』2枚を自分の手札に加える。";
+                    label kor "「요정」 2장을 내 패에 넣는다.";
+                    label cht "增加2張『妖精』到自己的手牌中。";
+                    add 2 card 90011110 to hand;
+                }
+                option 2 {
+                    label chs "回复自己2点能量点。";
+                    label eng "Recover 2 play points.";
+                    label jpn "自分のPPを2回復。";
+                    label kor "내 PP를 2 회복.";
+                    label cht "回復自己2點PP。";
+                    gain own.pp 2;
+                }
+                option 3 {
+                    label chs "对对手的战场上的所有随从分配3点伤害。";
+                    label eng "Distribute 3 damage among enemy followers.";
+                    label jpn "相手の場のフォロワーすべてに3ダメージを分配。";
+                    label kor "상대방 전장의 추종자 모두에게 3 피해를 분배.";
+                    label cht "對敵方戰場上的全部從者卡分配3點傷害。";
+                    damage oppo.field.followers 3 distributed;
+                }
+            }
+        }
+        evolve {
+            mode {
+                option 1 {
+                    label chs "将2张『妖精』加入手牌。";
+                    label eng "Add 2 Fairies to your hand.";
+                    label jpn "『フェアリー』2枚を自分の手札に加える。";
+                    label kor "「요정」 2장을 내 패에 넣는다.";
+                    label cht "增加2張『妖精』到自己的手牌中。";
+                    add 2 card 90011110 to hand;
+                }
+                option 2 {
+                    label chs "回复自己2点能量点。";
+                    label eng "Recover 2 play points.";
+                    label jpn "自分のPPを2回復。";
+                    label kor "내 PP를 2 회복.";
+                    label cht "回復自己2點PP。";
+                    gain own.pp 2;
+                }
+                option 3 {
+                    label chs "对对手的战场上的所有随从分配3点伤害。";
+                    label eng "Distribute 3 damage among enemy followers.";
+                    label jpn "相手の場のフォロワーすべてに3ダメージを分配。";
+                    label kor "상대방 전장의 추종자 모두에게 3 피해를 분배.";
+                    label cht "對敵方戰場上的全部從者卡分配3點傷害。";
+                    damage oppo.field.followers 3 distributed;
+                }
+            }
+        }
     }
 
     meta {

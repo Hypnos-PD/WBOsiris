@@ -70,7 +70,9 @@ func TestRejectMalformedDamageSurvivalTriggers(t *testing.T) {
 		`when self survives damage where life <= 3 { draw 1; }`,
 		`when self survives damage once per own { draw 1; }`,
 		`when self survives damage once per turn during own turn { draw 1; }`,
-		`when own follower summoned during own turn { draw 1; }`,
+		// 自身专用事件不接受回合窗口（S-68 之后玩家侧事件原则上可以带 during）。
+		`when self summoned during own turn { draw 1; }`,
+		`when self evolved during own turn { draw 1; }`,
 	} {
 		f, ds := syntax.Parse("12345678.wbo", []byte(validCard(body)))
 		if len(ds) == 0 && !hasErrors(ValidateFile(f)) {

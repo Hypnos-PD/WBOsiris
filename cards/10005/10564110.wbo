@@ -6,7 +6,34 @@ card 10564110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            mode {
+                option 1 {
+                    label chs "本随从进化。";
+                    label eng "Evolve this follower.";
+                    label jpn "これは進化する。";
+                    label kor "이 추종자는 진화한다.";
+                    label cht "使這張卡片進化。";
+                    evolve self silent;
+                }
+                option 2 {
+                    label chs "使自己的战场上的随机1个「拥有【守护】的进化前的其他随从」进化，使其+1/+1。";
+                    label eng "Evolve a random other unevolved allied follower with Ward and give it +1/+1.";
+                    label jpn "自分の場の「守護を持つ進化前の他のフォロワー」からランダム1枚は進化し、+1/+1する。";
+                    label kor "내 전장의 「수호를 가진 진화 전의 다른 추종자」 중 무작위로 1장은 진화하고 +1/+1.";
+                    label cht "隨機使1張自己戰場上「擁有【守護】且為進化前的其他從者卡」進化，並使其+1/+1。";
+                    random ally from own.field.followers other where form unevolved and keyword ward;
+                    evolve ally silent;
+                    buff ally +1/+1;
+                }
+            }
+        }
+        when own turn ends {
+            if self form evolved {
+                buff field.followers other -1/-1;
+            }
+        }
     }
 
     meta {

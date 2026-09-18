@@ -6,7 +6,17 @@ card 10534120 {
     stats 4/4;
 
     effect {
-        unplayable;
+        spellboost {
+            reduce cost self 1 minimum 0;
+        }
+        fanfare {
+            require target from oppo.field.followers;
+            damage target 10;
+        }
+        evolve {
+            require target from field.followers other;
+            transform target into card 90061130;
+        }
     }
 
     meta {

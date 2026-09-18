@@ -20,20 +20,20 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 562 · 未实现(骨架) 35 · 未导入 307
+总计 904 · 已完成 567 · 未实现(骨架) 30 · 未导入 307
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
 10002        77      77       0       0
 10003        77      75       2       0
 10004        76      72       4       0
-10005        76      49      27       0
+10005        76      54      22       0
 10006        76       0       0      76
 10007        77       0       0      77
 10008        78       0       0      78
 10009        76       0       0      76
 90000        93      91       2       0
-未完成卡按文本复杂度：中(41–100字) 254 · 短(≤40字) 131 · 长(>100字) 21 · 白板 1
+未完成卡按文本复杂度：中(41–100字) 252 · 短(≤40字) 128 · 长(>100字) 20 · 白板 1
 ```
 
 ## 工作流
@@ -99,6 +99,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-55 | 护符固有关键词 `aura` | `internal/project/strict_validate.go`（非随从只对 `aura` 开例外） | Go 单测 `internal/project/amulet_aura_test.go`（`aura` 编入 intrinsic、护符上的 `ward` 仍被拒绝）；卡片 90064210 + 1 个场景 |
 | S-56 | `raise\|reduce cost T N until …`（带期限的费用修改） | `internal/ir/model.go`（`AdjustEffect.Until`）、`internal/ir/encode.go`/`decode.go`（形状与期限白名单）、`internal/project/validate.go`/`typed_ir.go`（解析）、`internal/runner/execute.go`（按到期侧记录差量）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/temporary_cost_test.go`（到期只撤销自己的差量）；卡片 90044310 + 2 个场景 |
 | S-59 | `add N card C to deck`（加入牌组） | `internal/project/validate.go`/`typed_ir.go`（目的地放宽到 `deck`）、`internal/ir/decode.go`（`add_card`/`add_copies` 允许 `deck`）、`internal/runner/execute.go`（随机位置插入牌组）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/add_to_deck_test.go`（目的地与 `added` 输出、拒绝未知目的地）；卡片 10551310 + 1 个场景 |
+| S-68 | `during own\|oppo turn` 用于回复事件 | `internal/project/strict_validate.go`（事件模式放宽到玩家侧事件）、`internal/ir/decode.go`（`duringTurn` 允许 `healed`） | Go 单测 `internal/project/healed_turn_event_test.go`（回复事件带上回合窗口、`self survives damage during …` 未回归）；卡片 10563110 + 2 个场景 |
 
 | S-16 | `ability_destruction_guard`（不会被能力破坏） | 新固有关键词：`internal/ir/decode.go` 的 `validKeyword`、`internal/project/validate.go` 的 `abilities`、`strict_validate.go` 的固有能力形状表、`internal/runner/runner.go`（`destroyByEffect` 受保护，必杀改走新的 `destroyByCombat` 不受保护）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/granted_ability_flow_test.go`（能力破坏被挡下、战斗破坏照样生效）；卡片 10273110 + 2 个场景 |
 | S-07 | `when own\|oppo follower evolved\|super_evolved [other]` —— 其他随从的进化事件 | `internal/ir/model.go`（`EventTrigger.ExcludeSelf`）、`internal/ir/decode.go`（校验 `other` 只用于带对象的非受伤事件）、`internal/project/strict_validate.go`（基础事件模式接受进化动词与 `other`）、`internal/project/typed_ir.go`（事件名映射与 `ExcludeSelf`）、`internal/project/validate.go`（`evolved` 绑定）、`internal/runner/runner.go`（进化事件改为把改名随从绑成 `evolved`）、`internal/runner/trigger_index.go`（按实例排除自身）；文档 `grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/evolution_event_test.go`（`other`/绑定/来源区域、拒绝重复 `other` 与 `self … other`）；卡片 10241110、10212120、10252110 + 6 个场景（含"不因普通进化触发"与"不响应自己超进化"两个反向场景） |
@@ -153,12 +154,31 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-63 | 抽牌去重 | 10574120 尽小花·伊鞠（"抽取2种费用为1的法术"） | `draw` 没有 `distinct names`（牌组召唤才有）。 |
 | S-64 | 从破坏历史复制同名卡加入手牌 | 10572310 苏生调律（"将随机2种与本次对战中被破坏的自己的随从同名的卡牌各1张…加入手牌"） | `add copies of` 不接受破坏历史目标（`effectTargets` 过滤掉 `destroyed` 实例），也没有"同名的不同种类各1张"。 |
 | S-65 | 从手牌按位置批量选择 | 10502110 星辉女神（"将自己的手牌中从左起的3张卡牌的复制卡牌各1张…加入手牌"） | 选择只有随机、极值与玩家指定；没有"手牌从左起 N 张"。 |
+| S-66 | 本次操作的消失数量 | 10543110 破灭屠戮者（"X 为因本能力消失的卡牌的张数"） | `banish` 没有输出绑定（`destroy`/`summon`/`draw`/`add` 有）。 |
+| S-67 | 主战者生命上限的增减 | 10534110 漫步的《愚者》·琳库露的纹章（"使对手的主战者的生命值的最大值-2"） | `set maxlife` 只能设为绝对值，没有增量形式。 |
+| S-68 | ~~回合窗口事件~~ **已解决**：`during own\|oppo turn` 可用于回复事件 | 已解锁 10563110 至圣威仪 | 检查器原先只允许"受到伤害时"带 `during`；运行时的回合匹配本来就通用。 |
+| S-69 | 跨方混合随机集合 | 10524110 威猛的《战车》·奥辂昂（"随机对战场上的1个其他随从或自己的主战者或对手的主战者造成7点伤害"） | 混合集合只支持"同一方的随从+该方主战者"，无法表达"双方随从+双方主战者"。 |
 | S-51 | 主战者临时"受到的伤害变为 0" | 10444120 世界的伙伴·佐伊（爆能强化 10：主战者直到对手回合结束"受到的1点或以上伤害变为0"） | 主战者关键词只有永久形式；`until ... turn ends` 的期限只作用于随从关键词。 |
 | S-52 | 牌组中发动与【瞬念召唤】 | 10404110 天司长的继承者·圣德芬（"在牌组中发动…【瞬念召唤】本卡牌…被瞬念召唤时获得纹章并返回手牌"） | 需要"在手牌/牌组中监听回合开始""从牌组召唤并选择是否返回手牌"的整套语义。 |
 
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 56（S-68 回合窗口事件 + 卡包 10005 第三批）
+
+- **S-68 `during own|oppo turn` 扩展到回复事件**：原先只允许"受到伤害时"，
+  现在主战者回复也可以限制回合窗口（"自己的主战者回复时，若为自己的回合"）。
+  运行时与 IR 早已通用，只放宽了检查器与解码器。
+- 完成 5 张：10534120 明越花·阿罗（魔力增幅减费、入场曲 10 点伤害、进化时把其他随从变成壮丽大神隼）、
+  10563110 至圣威仪（回复主战者时召唤纯洁白狐）、10544110 约束的《正义》·伊兰翠、
+  10564110 思念的《力量》·索菲娜、10514120 虫风花·魅禄（入场曲与进化时都发动【模式】）。
+- 新增 15 个场景（`tests/10005/batch-56-mysteria.wbotest`）；Go 单测
+  `internal/project/healed_turn_event_test.go`。
+- 新登记缺口：S-66 消失数量（`banish` 没有输出绑定）、S-67 主战者生命上限的增减
+  （10534110 愚者的纹章）、S-69 混合同侧目标集合之外的单次随机选择
+  （10524110 战车要同时随机"其他随从或双方主战者"）。
+- 全量回归：`check` 0 错 0 警；`test` 853 全绿；`go test ./...` 全绿；语料快照更新为 853 个场景。
 
 ### 批次 55（S-59 加入牌组 + 卡包 10005 第二批）
 

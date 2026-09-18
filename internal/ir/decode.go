@@ -612,7 +612,7 @@ func decodeTrigger(data []byte) (Trigger, error) {
 		if v.OncePerTurn != "" && !oneOf(v.OncePerTurn, "any", "own", "oppo") {
 			return nil, fmt.Errorf("invalid trigger turn limit")
 		}
-		if v.DuringTurn != "" && (v.Event != "damaged" || !validSide(v.DuringTurn)) || v.Event == "damaged" && v.SubjectType != "follower" {
+		if v.DuringTurn != "" && (!oneOf(v.Event, "damaged", "healed") || !validSide(v.DuringTurn)) || v.Event == "damaged" && v.SubjectType != "follower" {
 			return nil, fmt.Errorf("damage survival listeners require a follower and a valid turn scope")
 		}
 		if v.SelfOnly && (v.Event != "damaged" && (condition != nil || v.OncePerTurn != "") || v.SourceZone != "" || v.Side != "own" || !(v.SubjectType == "follower" && oneOf(v.Event, "evolved", "super_evolved", "follower_summoned", "damaged", "stats_increased", "life_decreased") || v.SubjectType == "" && v.Event == "card_discarded") || p != nil) {

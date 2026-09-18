@@ -353,7 +353,9 @@ leaving field` 在原区域移动前执行并取消原移动，同一替换块�
 `source_zone` 只用于玩家侧事件，不用于 `when self ...` 或 `grant` 内的附加能力；
 省略时来源位于战场。区域条件约束来源，`where` 则约束事件对象。
 `turn_limit` 用于玩家侧事件及 `when self survives damage`，不用于其他自身事件或 `grant`。
-`during_turn` 仅用于 `survives damage`，限定发生伤害时的回合归属。
+`during_turn` 用于 `self survives damage`、玩家侧伤害与主战者回复事件，
+限定事件发生时的回合归属（例如"自己的主战者回复时，若为自己的回合"写作
+`when own leader healed during own turn { … }`）。
 自身受伤存活事件只能声明在随从上，不接受 `source_zone` 或 `where`；可附加限次与头部 `if` 条件。
 `when own follower survives damage` 与 `when oppo follower survives damage` 监听指定一方的随从，
 可用于纹章，绑定 `damaged`；接受玩家侧事件的来源区域、筛选器、限次和头部条件。

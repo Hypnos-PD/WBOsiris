@@ -1301,6 +1301,10 @@ when own turn ends {
 `when own card discarded` 绑定 `discarded`、`when own follower destroyed` 绑定 `destroyed`、
 `when own follower leaves field` 绑定 `left`，与对应操作的输出同名。
 
+事件头部可以加 `during own turn` / `during oppo turn` 把监听限制在特定玩家的回合
+（`self survives damage during own turn`、`when own leader healed during own turn`），
+用于"若为自己的回合"这类条件。
+
 场上事件监听也可以显式限制为在手牌中发动：
 
 ```wbo

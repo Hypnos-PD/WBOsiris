@@ -6,7 +6,19 @@ card 10563110 {
     stats 2/3;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            heal own.leader 1;
+        }
+        when own leader healed during own turn {
+            summon 1 card 10061120;
+        }
+        evolve {
+            heal own.leader 1;
+        }
+        superevolve {
+            heal own.leader 1;
+        }
     }
 
     meta {

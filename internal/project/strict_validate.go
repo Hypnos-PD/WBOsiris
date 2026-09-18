@@ -290,7 +290,8 @@ func parseEventPattern(t []syntax.Token) (int, string, bool) {
 		end++
 	}
 	if ok && end < len(t) && t[end].Value == "during" {
-		if !survivesDamage || len(t) < end+3 || !set("own", "oppo")[t[end+1].Value] || t[end+2].Value != "turn" {
+		// `during own|oppo turn` 限制事件只在指定玩家的回合触发：用于"若为自己的回合"这类条件。
+		if !survivesDamage && t[1].Value == "self" || len(t) < end+3 || !set("own", "oppo")[t[end+1].Value] || t[end+2].Value != "turn" {
 			return 0, "", false
 		}
 		end += 3
