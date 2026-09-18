@@ -803,6 +803,16 @@ ReplayFanfare = NodeBase & {
 `replay_fanfare` 按实例当前的卡牌定义查找 `fanfare` 能力并作为新的效果帧执行；
 同一实例最多重发 12 次（`fanfareReplays` 随实例快照保存），避免随机自引用无限递归。
 
+GrantFaithModes = NodeBase & {
+  kind: "grant_faith_modes",
+  owner: Side,
+  amount: 1..MaxCounterValue   (* 给该玩家信仰上的 mode_bonus 计数器加 amount *)
+}
+
+`mode_selected` 事件在玩家确认模式选择后按每个选中的选项各派发一次（`random` 模式不派发），
+供 `when own|oppo mode selected` 使用；模式请求的数量会加上该玩家信仰的
+`mode_bonus` 合计，再按选项数截断。
+
 CrestDefinition 与 Card 都带 `passives?: [PassiveName]`：`suppress_fanfare` 与
 `suppress_enhance` 表示持有者（纹章/信仰所在的主战者）的随从入场曲/爆能强化不发动。
 派生纹章实例（`CrestCard()`）会带上这些被动，运行期由 `playerPassive` 查询。

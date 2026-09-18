@@ -305,6 +305,7 @@ fusion_scalar_field = "cost" | "distinct" ;
 
 resource_block    = resource_name , integer , effect_block ;
 resource_name     = "earthrite" | "necromancy" | "faith" ;
+grant_faith_modes = "grant" , "faith" , "modes" , positive_integer , ";" ;
 
 mode_block        = "mode" , [positive_integer] , "{" , option_decl , option_decl , {option_decl} , "}"
                   | "mode" , "random" , positive_integer , ["history" , identifier] ,
@@ -333,6 +334,9 @@ event_pattern     = participant , event_subject , event_verb
                   | participant , "follower" , "survives" , "damage"
                   | participant , "follower" , ("evolved" | "super_evolved") , ["other"]
                   | participant , "turn" , turn_boundary
+                  | participant , "mode" , "selected"
+                  | participant , "earthrite"
+                  | "self" , "invoked"
                   | "self" , ("evolved" | "super_evolved" | "discarded" | "summoned" | "drawn")
                   | "self" , "survives" , "damage" ;
 event_subject     = "follower" | "amulet" | "card" ;

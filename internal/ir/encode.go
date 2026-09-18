@@ -233,6 +233,15 @@ func (e ReplayFanfareEffect) MarshalJSON() ([]byte, error) {
 	return json.Marshal(object)
 }
 
+func (e FaithModesEffect) MarshalJSON() ([]byte, error) {
+	if !oneOf(e.Owner, "own", "oppo") || e.Amount < 1 || e.Amount > MaxCounterValue {
+		return nil, fmt.Errorf("invalid faith modes effect")
+	}
+	object := effectObject(e.NodeBase, e.Kind)
+	object["owner"], object["amount"] = e.Owner, e.Amount
+	return json.Marshal(object)
+}
+
 func (e TargetEffect) MarshalJSON() ([]byte, error) {
 	if e.Until != "" && (!oneOf(e.Kind, "add_keyword", "buff_stats", "set_cost") || !oneOf(e.Until, "turn_end", "own_turn_end", "oppo_turn_end")) {
 		return nil, fmt.Errorf("invalid effect duration")

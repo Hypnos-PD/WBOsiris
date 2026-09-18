@@ -356,6 +356,11 @@ func (s *Session) Resume(response ChoiceResponse) StepResult {
 		// 多个能力按选项编号顺序结算，保证回放确定。
 		sort.Ints(chosen)
 		for _, id := range chosen {
+			// 「自己选择【模式】时」：每个被选中的选项各派发一次事件。
+			event := ir.RuntimeEvent{Kind: "mode_selected", Side: s.g.sideOf(p.self), Count: 1}
+			if s.g.emit(event) {
+				s.g.queueEventTriggers(event, p.self, "")
+			}
 			s.pushFrame(execFrame{body: p.options[id], blockID: p.optionBlockIDs[id], self: p.self, bindings: p.bindings})
 		}
 	} else {
@@ -598,6 +603,21 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 			target.fanfareReplays++
 			s.pushFrame(execFrame{body: ability.Body, blockID: abilityBlockID(target.card.ID, ability.ID), self: target, bindings: bindings})
 		}
+	case ir.FaithModesEffect:
+		p, side := s.g.playerForSide(self, e.Owner)
+		if p != nil {
+			for _, faith := range p.crests {
+				if faith.card == nil || faith.card.CardType != "faith" {
+					continue
+				}
+				if faith.counters == nil {
+					faith.counters = map[string]int{}
+				}
+				faith.counters[faithModeBonusCounter] = min(ir.MaxCounterValue, faith.counters[faithModeBonusCounter]+e.Amount)
+				break
+			}
+			s.g.emit(ir.RuntimeEvent{Kind: "faith_modes_granted", Side: side, Count: e.Amount})
+		}
 	case ir.DeckSummonEffect:
 		bindSummoned(bindings, e.Output, s.g.summonFromDeck(e, self, bindings))
 	case ir.SummonPoolEffect:
@@ -775,6 +795,8 @@ func (s *Session) modeRequest(e ir.ModeEffect, bindings frame, self *instance) *
 		optionBlockIDs[option.ID] = nestedBlockID(e.ID, fmt.Sprintf("option:%d", option.ID))
 	}
 	count := max(e.Count, 1)
+	// 「自己选择的【模式】数+1」：信仰带来的加成，只影响玩家选择（不影响 random 模式）。
+	count += s.g.faithModeBonus(s.g.owner(self))
 	count = min(count, len(items))
 	request := s.newRequest(e.ID, "mode", count, count, items, s.g.sideOf(self))
 	return &pendingChoice{request: request, bindings: bindings, options: options, optionBlockIDs: optionBlockIDs, self: self}

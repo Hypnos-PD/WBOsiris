@@ -7,7 +7,68 @@ card 10354110 {
     trait encroacher;
 
     effect {
-        unplayable;
+        fanfare {
+            faith 10 {
+                // 使自己的信仰获得"自己选择的【模式】数 +1"。
+                grant faith modes 1;
+            }
+        }
+        superevolve {
+            choose target from oppo.field.followers;
+            destroy target;
+            add copies of target to hand;
+        }
+    }
+
+    faith {
+        counter value 0;
+        // 「自己选择的【模式】数 +1」的加成记录在信仰上。
+        counter mode_bonus 0;
+
+        // 「自己选择【模式】时，信仰值+1」：每选中一个模式各一次。
+        when own mode selected {
+            add 1 counter value;
+        }
+
+        locale chs {
+            name "信仰：混融的继承者·莎木·纳克雅";
+            text """
+信仰值起始为0。
+<hr>自己选择【<color=Keyword>模式</color>】时，信仰值+1。
+""";
+        }
+
+        locale eng {
+            name "Faith: Sham & Nacha, Entwining Heirs";
+            text """
+This faith's value starts at 0.
+<hr>Whenever you select <b><color=Keyword>Modes</color></b>, increase this faith's value by 1.
+""";
+        }
+
+        locale jpn {
+            name "信仰：<rub=\"こんゆう\">混融</rub>の<rub=\"けいしょうしゃ\">継承者</rub>・シャム・ナチャ";
+            text """
+信仰値は0から始まる。
+<hr>自分が【<color=Keyword>モード</color>】を選んだとき、信仰値を+1する。
+""";
+        }
+
+        locale kor {
+            name "신앙: 혼융의 계승자 샤무&나차";
+            text """
+신앙 수치는 0부터 시작.
+<hr>내가 [<color=Keyword>모드</color>]를 선택했을 때, 신앙 수치를 +1.
+""";
+        }
+
+        locale cht {
+            name "信仰：混融的繼承者‧莎木＆納克雅";
+            text """
+信仰值由0開始。
+<hr>當自己指定【<color=Keyword>模式</color>】時，使信仰值+1。
+""";
+        }
     }
 
     meta {

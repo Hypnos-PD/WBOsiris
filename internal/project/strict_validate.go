@@ -91,6 +91,10 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 		}
 		switch h {
 		case "grant":
+			if len(t) == 4 && t[1].Value == "faith" && t[2].Value == "modes" {
+				checkU16(t[3], true, ds)
+				continue
+			}
 			if _, ability, err := grantParts(s); err == nil {
 				valid := ability.Word(0) == "lastwords"
 				if ability.Word(0) == "when" {
@@ -372,6 +376,10 @@ func parseBaseEventPattern(t []syntax.Token) (int, string, bool) {
 	if t[2].Value == "earthrite" {
 		// `when own|oppo earthrite`：某位玩家发动【土之秘术】（支付土之印）时。
 		return 3, "", true
+	}
+	if t[2].Value == "mode" && t[3].Value == "selected" {
+		// `when own|oppo mode selected`：玩家选择【模式】时（每个选中的选项各一次）。
+		return 4, "", true
 	}
 	if set("follower", "amulet")[t[2].Value] && set("summoned", "engaged", "destroyed")[t[3].Value] {
 		return 4, t[2].Value, true

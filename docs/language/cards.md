@@ -50,6 +50,11 @@ card 10664120 {
 为每个分配到的点执行一次能力；信仰值本身不消费。
 「使自己的信仰获得「…」」写成 `grant faith { when … { … } }`：`faith` 指**本卡牌定义的信仰**，
 附加的事件监听与随从的 `grant` 一致（可以是任意事件，含 `where` 筛选），之后的事件会照常触发它。
+「自己选择的【模式】数+N」写成 `grant faith modes N;`：给该玩家信仰上的
+`mode_bonus` 计数器加上 N（信仰定义里声明 `counter mode_bonus 0;`），
+之后玩家选择【模式】时可选数量随之增加（只影响玩家选择，不影响 `mode random`；
+超过选项数时按选项数截断）。信仰消失时加成随之消失。
+"自己选择【模式】时"写成 `when own|oppo mode selected { … }`：每选中一个模式各派发一次。
 
 `damage_reduction N` 使该随从每次受到的伤害减少 `N`，实际伤害最低为零。
 在效果块中使用 `set_damage_reduction TARGET N` 可在结算时动态设置目标的固定减伤值；

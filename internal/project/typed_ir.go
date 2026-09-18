@@ -480,6 +480,10 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		}
 		return ir.CardEffect{NodeBase: base, Kind: "summon", Owner: owner, Count: intAt(s, 1), CardID: intToken(t[3]), Output: "summoned"}, nil
 	case "grant":
+		if len(t) == 4 && t[1].Value == "faith" && t[2].Value == "modes" {
+			// `grant faith modes 1;`：使自己的信仰获得"自己选择的【模式】数 +1"。
+			return ir.FaithModesEffect{NodeBase: base, Kind: "grant_faith_modes", Owner: "own", Amount: intAt(s, 3)}, nil
+		}
 		target := valueRefIR(t, 1)
 		if end := valueRefEnd(t, 1); end < len(t) {
 			predicate, _ := filterIR(t, end)
@@ -1130,6 +1134,9 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 	} else if t[2].Value == "earthrite" {
 		// "自己发动【土之秘术】时"：监听土之印支付成功的那一刻。
 		m.Event = "earthrite"
+	} else if t[2].Value == "mode" && t[3].Value == "selected" {
+		// "自己选择【模式】时"：每选中一个模式各派发一次。
+		m.Event = "mode_selected"
 	} else {
 		m.SubjectType = t[2].Value
 		if m.SubjectType == "card" {

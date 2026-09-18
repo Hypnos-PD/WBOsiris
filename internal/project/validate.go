@@ -403,6 +403,12 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			}
 			continue
 		case "grant":
+			if len(t) == 4 && t[1].Value == "faith" && t[2].Value == "modes" {
+				if amount, good := integer(t[3]); !good || amount < 1 || amount > ir.MaxCounterValue {
+					rangeError(ds, t[3])
+				}
+				continue
+			}
 			end, good := parseValueRef(t, 1)
 			checkBindingAt(t, 1, end, bindings, ds)
 			if good && end < len(t) {

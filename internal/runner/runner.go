@@ -1197,6 +1197,24 @@ func (g *game) commitPlay(i *instance) []execFrame {
 }
 
 // playerPassive 检查该玩家身上的持续性规则改动（来自纹章/信仰定义里的 passive 语句）。
+// faithModeBonusCounter 是信仰上记录"自己选择的【模式】数 +N"的计数器名。
+const faithModeBonusCounter = "mode_bonus"
+
+// faithModeBonus 汇总该玩家信仰带来的模式选择加成（只影响玩家选择，不影响 random 模式）。
+func (g *game) faithModeBonus(p *player) int {
+	if p == nil {
+		return 0
+	}
+	total := 0
+	for _, faith := range p.crests {
+		if faith.card == nil || faith.card.CardType != "faith" {
+			continue
+		}
+		total += faith.counters[faithModeBonusCounter]
+	}
+	return min(total, 15)
+}
+
 func (g *game) playerPassive(p *player, name string) bool {
 	if p == nil {
 		return false

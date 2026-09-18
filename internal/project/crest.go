@@ -27,11 +27,16 @@ func validateFaith(parent *Card, decl *syntax.Statement, ds *[]syntax.Diagnostic
 			shapeError(ds, s, "信仰监听来源固定为主战者区域")
 		}
 		if s.Word(0) == "counter" {
-			if len(s.Tokens()) != 3 || s.Word(1) != "value" || intAt(s, 2) != 0 {
-				shapeError(ds, s, "信仰必须声明一次 counter value 0;")
+			if len(s.Tokens()) != 3 {
+				shapeError(ds, s, "counter 名字 整数;")
 				continue
 			}
-			valueSeen = true
+			if s.Word(1) == "value" {
+				if intAt(s, 2) != 0 {
+					shapeError(ds, s, "信仰必须声明 counter value 0;")
+				}
+				valueSeen = true
+			}
 		}
 		abilitySeen = abilitySeen || s.Word(0) == "when"
 		c.Effect = append(c.Effect, s)

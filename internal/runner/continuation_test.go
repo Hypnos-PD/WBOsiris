@@ -231,7 +231,8 @@ func TestContinuationRoundTripPreservesDeathBatch(t *testing.T) {
 		t.Fatal(err)
 	}
 	result := restored.Resume(ChoiceResponse{RequestID: step.Choice.RequestID, ActionID: step.Choice.ActionID, StateRevision: step.Choice.StateRevision, SelectedOptionID: 1})
-	if result.Status != StatusCompleted || restored.g.eventSequence != 3 || restored.g.deathBatchSerial != 1 || len(restored.g.oppo.destroyed) != 1 {
+	// 选择模式本身会派发一条 mode_selected（每个选中的选项一条）。
+	if result.Status != StatusCompleted || restored.g.eventSequence != 4 || restored.g.deathBatchSerial != 1 || len(restored.g.oppo.destroyed) != 1 {
 		t.Fatalf("restored death batch diverged: result=%#v events=%d batches=%d", result, restored.g.eventSequence, restored.g.deathBatchSerial)
 	}
 }

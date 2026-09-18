@@ -668,6 +668,17 @@ type ReplayFanfareEffect struct {
 func (e ReplayFanfareEffect) effectKind() string   { return e.Kind }
 func (e ReplayFanfareEffect) effectBase() NodeBase { return e.NodeBase }
 
+// FaithModesEffect 让该玩家的信仰获得"自己选择的【模式】数 +Amount"。
+type FaithModesEffect struct {
+	NodeBase
+	Kind   string `json:"kind"`
+	Owner  string `json:"owner"`
+	Amount int    `json:"amount"`
+}
+
+func (e FaithModesEffect) effectKind() string   { return e.Kind }
+func (e FaithModesEffect) effectBase() NodeBase { return e.NodeBase }
+
 type CountExpr struct {
 	Kind   string `json:"kind"`
 	Source Ref    `json:"source"`
