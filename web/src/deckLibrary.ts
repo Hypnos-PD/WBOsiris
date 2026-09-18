@@ -1,6 +1,14 @@
 export const LIBRARY_KEY = "wbo-deck-library";
 export const LEGACY_KEY = "wbo-deck-cards";
-export type SavedDeck = { id: string; name: string; cards: string[] };
+export type SavedDeck = {
+  id: string;
+  name: string;
+  cards: string[];
+  /** 官网 hash 式分享码（1.职业.卡牌…）；由规则服务编解码，可能为空。 */
+  code?: string;
+  /** 这副牌组所属赛制：rotation（指定模式）或 unlimited（无限制模式）。 */
+  format?: "rotation" | "unlimited";
+};
 export type DeckLibrary = { version: 1; activeId: string; decks: SavedDeck[] };
 type Storage = Pick<globalThis.Storage, "getItem" | "setItem">;
 export type LibrarySnapshot = {
@@ -90,9 +98,19 @@ export function recoverLibrary(storage: Storage, snapshot: LibrarySnapshot): Lib
 export function importDeck(text: string): SavedDeck {
   if (text.length > 100_000) throw new Error("牌组文件超过 100 KB");
   const value = object(JSON.parse(text));
-  if (value.format !== "wbo-deck" || value.version !== 1) throw new Error("需要 version 1 的 wbo-deck 文件");
-  return newDeck(deckName(value.name), cardIds(value.cards));
+  const fileFormat = value.format;
+  if (fileFormat !== "wbo-deck") throw new Error("需要 wbo-deck 文件");
+  if (value.version === 1) return newDeck(deckName(value.name), cardIds(value.cards));
+  if (value.version === 2) {
+    // v2 只保存官网 hash 式的分享码，卡牌明细由规则服务解码。
+    if (typeof value.code !== "string" || !value.code.trim()) throw new Error("version 2 文件缺少卡组码");
+    const deck = newDeck(deckName(value.name));
+    deck.code = value.code.trim();
+    deck.format = value.environment === "unlimited" ? "unlimited" : "rotation";
+    return deck;
+  }
+  throw new Error("无法识别的 wbo-deck 版本");
 }
-export function exportDeck(deck: SavedDeck): string {
-  return JSON.stringify({ format: "wbo-deck", version: 1, name: deck.name, cards: deck.cards.map(Number) }, null, 2) + "\n";
+export function exportDeck(deck: SavedDeck, code: string): string {
+  return JSON.stringify({ format: "wbo-deck", version: 2, name: deck.name, code, environment: deck.format || "rotation" }, null, 2) + "\n";
 }

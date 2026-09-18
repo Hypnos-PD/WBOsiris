@@ -94,9 +94,10 @@ ocgcore / 客户端 / WindBot 三分结构学的）。
 | --- | --- | --- |
 | `GET` | `/api/health` | 存活探测 |
 | `GET` | `/api/cards` | 卡表 + `practiceDeck` + `formats`（每张卡带 `formats` 与 `deckLegal`） |
+| `POST` | `/api/deckcode` | 卡组码：给 `{cards, format}` 编码，给 `{code}` 解码（官网 hash 规则） |
 | `GET` | `/api/scenarios` | 规则测试场景（调试用） |
 | `POST` | `/api/matches` | 建房：`{deck?, format?, mode?, botDeck?, botPolicy?}` |
-| `GET` | `/api/matches` | 房间列表（只有 `{id, waiting}`，不含任何凭据） |
+| `GET` | `/api/matches` | 房间列表 `{id, waiting, started, spectatable, bot, turn}`，不含任何凭据 |
 | `POST` | `/api/matches/{id}/join?code=…` | 加入：`{deck, format?}`，返回客方凭据 |
 | `POST` | `/api/matches/{id}/mulligan` | 换牌：`{selectedInstanceIds, expectedRevision?}` |
 | `POST` | `/api/matches/{id}/spectate` | 申请观众凭据（返回只读状态） |

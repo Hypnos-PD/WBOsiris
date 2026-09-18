@@ -35,6 +35,11 @@ go run ./cmd/wbo serve --source-root . --listen :23215
 相对路径、源文件与输出文件的 SHA-256，以及转换参数。前端通过生成的
 `src/generated/card-art.json` 查找图片；不依赖外部目录或运行时素材服务。
 
+大厅横幅背景 `assets/lobby-bg.webp` 复刻 WBArts 的主界面插图（`hi_1001` 的
+`bg_hi_1001.png`），转成 1600×1600 的 WebP（约 80 KB）后随前端一起分发。
+界面风格（浅底、黑描边、硬阴影、荧光绿强调、深色侧边栏）也沿用 WBArts 的
+视觉规范，定义集中在 `src/theme.css`；牌桌仍是深色竞技场。
+
 ## 卡图导入
 
 先编译卡池，再指定原始资源的导出目录。需要 Node.js 和支持 WebP 的 ImageMagick。

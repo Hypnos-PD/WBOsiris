@@ -131,6 +131,7 @@ func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/health", s.health)
 	mux.HandleFunc("/api/cards", s.cardCatalog)
+	mux.HandleFunc("/api/deckcode", s.deckCodeHandler)
 	mux.HandleFunc("/api/scenarios", s.scenarios)
 	mux.HandleFunc("/api/sessions", s.sessionsHandler)
 	mux.HandleFunc("/api/sessions/", s.sessionHandler)
@@ -143,14 +144,24 @@ func (s *Server) matchesHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		w.Header().Set("Cache-Control", "no-store")
 		type roomSummary struct {
-			ID      string `json:"id"`
-			Waiting bool   `json:"waiting"`
+			ID          string `json:"id"`
+			Waiting     bool   `json:"waiting"`
+			Started     bool   `json:"started"`
+			Spectatable bool   `json:"spectatable"`
+			Bot         bool   `json:"bot"`
+			Turn        int    `json:"turn,omitempty"`
 		}
 		s.mu.Lock()
 		items := make([]roomSummary, 0, len(s.matches))
 		for id, room := range s.matches {
 			room.mu.Lock()
-			items = append(items, roomSummary{ID: id, Waiting: !room.joined})
+			summary := roomSummary{ID: id, Waiting: !room.joined, Started: room.started, Spectatable: room.session != nil, Bot: room.botDriver != nil}
+			if room.session != nil {
+				if view, err := room.session.SpectatorView(); err == nil {
+					summary.Turn = view.Turn.Number
+				}
+			}
+			items = append(items, summary)
 			room.mu.Unlock()
 		}
 		s.mu.Unlock()

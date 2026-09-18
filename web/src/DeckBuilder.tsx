@@ -67,7 +67,7 @@ export function DeckBuilder({ library, cards, deck, onChange, onPractice, onBatt
     <div className="deck-heading"><div><span className="eyebrow">COLLECTION</span><h1>卡组构筑</h1></div>
       <button className="primary-action" onClick={onPractice} disabled={library.blocked || loading || !cards.length}><Layers size={17}/>练习牌组</button>
     </div>
-    <DeckLibraryBar store={library}/>
+    <DeckLibraryBar store={library} format={format} onFormatChange={onFormatChange}/>
     {error && <div className="deck-load-error" role="alert">{error}<button onClick={onRetry}>重试</button></div>}
     <div className="deck-layout">
       <div className="collection-pane">

@@ -5,7 +5,7 @@ import {
   type DragEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { CircleHelp, History, Menu, Shield, Sparkles, X, Home, Swords, Layers, Film, DoorOpen, Plus, Play, Combine, Zap, ChevronUp, ChevronDown } from "lucide-react";
+import { Bot, ChevronDown, ChevronUp, CircleHelp, Combine, DoorOpen, Eye, Film, History, Home, Layers, Menu, Play, Plus, Shield, Sparkles, Swords, X, Zap } from "lucide-react";
 import { StatusEffects, type StatusEffect } from "./StatusEffects";
 import { DeckBuilder } from "./DeckBuilder";
 import { cardArt, cardText, classNames, deckProblems, typeNames, type CatalogCard, type CatalogFormat } from "./decks";
@@ -21,9 +21,9 @@ import { CrestZone, crestName } from "./CrestZone";
 import { decodeRemote, MatchConnection, type ConnectionStatus } from "./matchConnection";
 import { matchKey, readMatchAuth, readSavedMatches, saveMatchAuth, type SavedMatch } from "./matchStorage";
 import { RoomInvitation } from "./RoomInvitation";
+import { API_BASE } from "./api";
 
-// 默认端口与 `wbo serve` 的默认监听保持一致（23215），避开常见端口。
-const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:23215";
+
 const validPages = new Set(["home", "battle", "decks", "replays", "rooms"]);
 const initialPage = (): "home" | "battle" | "decks" | "replays" | "rooms" => {
   const params = new URLSearchParams(location.search);
@@ -57,7 +57,7 @@ type Card = {
   summoningSick?: boolean;
   type: "随从" | "法术" | "护符" | "纹章";
 };
-type RoomSummary = { id: string; waiting: boolean };
+type RoomSummary = { id: string; waiting: boolean; started?: boolean; spectatable?: boolean; bot?: boolean; turn?: number };
 
 const fallbackCatalog: Record<string, Omit<Card, "id" | "instanceId">> = {
   "10001110": {
@@ -667,11 +667,76 @@ export function App() {
     } catch (error) { setRequestError(error instanceof Error && error.name !== "TimeoutError" ? error.message : "恢复房间超时，请重试"); }
     finally { roomRequest.current = false; setRoomBusy(false); }
   };
+  // 观战：申请只读凭据后直接进牌桌。观众看不到双方手牌，也不能提交动作。
+  const spectate = async (id: string) => {
+    if (roomRequest.current) return;
+    roomRequest.current = true;
+    setRoomBusy(true);
+    setRequestError("");
+    try {
+      const response = await fetch(`${API_BASE}/api/matches/${id}/spectate`, { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+      if (!response.ok) throw new Error((await response.text()).trim() || "无法观战");
+      const data: Remote = await response.json();
+      if (!data.playerToken) throw new Error("观战响应无效");
+      const auth = { id, token: data.playerToken, side: data.side || "spectator" };
+      try { saveMatchAuth(localStorage, auth); refreshSavedRooms(); } catch { /* 隐私模式下不保存 */ }
+      setMatchAuth(auth);
+      setRemote(data);
+      history.replaceState(null, "", `?match=${id}&seat=${data.side || "spectator"}`);
+      setActivePage("battle");
+    } catch (error) { setRequestError(error instanceof Error ? error.message : "无法观战"); }
+    finally { roomRequest.current = false; setRoomBusy(false); }
+  };
+
   const workspacePage = activePage === "home" ? (
-    <section className="workspace-page home-page">
-      <div className="workspace-hero"><span className="eyebrow">WBO OSIRIS</span><h1>战术牌桌，随时开战</h1><p>构筑卡组，加入房间，记录每一次精彩对局。</p><button className="primary-action" onClick={() => navigate("battle")}><Play size={17}/>快速开始</button></div>
-      <div className="workspace-grid"><article><small>当前房间</small><strong>{matchAuth ? matchAuth.id : "尚未加入"}</strong><button onClick={() => navigate("rooms")}>管理房间</button></article><article><small>最近对局</small><strong>{events[0] ?? "暂无记录"}</strong><button onClick={() => navigate("replays")}>查看录像</button></article><article><small>当前牌组</small><strong>{deckLibrary.active.name}</strong><span>{classNames[deckClass]} · {deckCards.length}/40</span><button onClick={() => navigate("decks")}>打开卡组</button></article></div>
-    </section>
+    <div className="lobby">
+      <section className="lobby-banner" aria-label="大厅横幅">
+        <div className="lobby-banner-copy">
+          <em>SHADOWVERSE: WORLDS BEYOND</em>
+          <strong>WBO ARENA</strong>
+          <span>本地规则服务 + 官网同款卡组码。练习模式带 AI 陪练，房间用邀请码和朋友对战，录像可以逐帧复盘，卡组能按指定 / 无限制模式校验。</span>
+        </div>
+      </section>
+      <div className="lobby-actions">
+        <button className="btn primary" disabled={roomBusy || catalogLoading || !!deckErrors.length} onClick={() => createMatch("bot")}><Bot size={16}/>练习对战（对 AI）</button>
+        <button className="btn" disabled={roomBusy || catalogLoading || !!deckErrors.length} onClick={() => createMatch()}><Plus size={16}/>创建房间</button>
+        <button className="btn dark" onClick={() => navigate("decks")}><Layers size={16}/>构筑卡组</button>
+        <button className="btn" onClick={() => navigate("replays")}><Film size={16}/>录像</button>
+      </div>
+      {deckErrors.length > 0 && <p className="lobby-empty" role="status">当前牌组还不能对战：{deckErrors[0]}<button className="btn" onClick={() => navigate("decks")}>去修牌组</button></p>}
+      <div className="lobby-grid">
+        <section className="panel">
+          <div className="panel-head"><h2>公开房间</h2><small>{roomList.length} 个 · 每 5 秒刷新</small></div>
+          <div className="lobby-rooms">
+            {roomList.length ? roomList.map((room) => (
+              <div className="lobby-room" key={room.id}>
+                <div>
+                  <strong>{room.id}</strong>
+                  <small>{room.waiting ? "等待对手加入" : `对局进行中${room.bot ? " · 练习模式" : ""}${room.turn ? ` · 第 ${room.turn} 回合` : ""}`}</small>
+                </div>
+                <div className="lobby-room-actions">
+                  {room.waiting && !room.bot && <button className="btn" onClick={() => { setJoinRoomId(room.id); navigate("rooms"); }}>去加入</button>}
+                  {!room.waiting && room.spectatable && <button className="btn" disabled={roomBusy} onClick={() => spectate(room.id)}><Eye size={15}/>观战</button>}
+                </div>
+              </div>
+            )) : <p className="lobby-empty">还没有公开房间。先来一局练习对战，或者创建房间把邀请链接发给朋友。</p>}
+          </div>
+        </section>
+        <div className="lobby-stack">
+          <section className="panel">
+            <div className="panel-head"><h2>快速加入</h2></div>
+            <div className="lobby-join">
+              <label className="field">房间 ID<input aria-label="房间 ID" value={joinRoomId} onChange={(e) => setJoinRoomId(e.target.value)} placeholder="a1b2c3"/></label>
+              <label className="field">邀请码<input aria-label="邀请码" value={joinRoomCode} onChange={(e) => setJoinRoomCode(e.target.value)} placeholder="8 位邀请码"/></label>
+              <button className="btn primary" disabled={roomBusy || catalogLoading || !joinRoomId.trim() || !joinRoomCode.trim()} onClick={joinRoom}>加入</button>
+            </div>
+          </section>
+          <div className="lobby-stat"><small>当前牌组</small><strong>{deckLibrary.active.name} · {deckCards.length}/40</strong><small>{classNames[deckClass]} · {format === "unlimited" ? "无限制模式" : "指定模式"}{deckErrors.length ? ` · ${deckErrors[0]}` : " · 可以对战"}</small><button className="btn" onClick={() => navigate("decks")}>打开卡组</button></div>
+          <div className="lobby-stat"><small>当前房间</small><strong>{matchAuth ? matchAuth.id : "尚未加入"}</strong><small>{matchAuth ? (matchAuth.side === "spectator" ? "观战中" : matchAuth.side === "own" ? "房主席位" : "客方席位") : "创建或加入房间后会显示在这里"}</small>{matchAuth && <button className="btn" onClick={() => navigate("battle")}>进入牌桌</button>}</div>
+          <div className="lobby-stat"><small>最近对局</small><strong>{events[0] ?? "暂无记录"}</strong><button className="btn" onClick={() => navigate("replays")}>查看录像</button></div>
+        </div>
+      </div>
+    </div>
   ) : activePage === "decks" ? (
     <DeckBuilder library={deckLibrary} cards={catalogCards} deck={deckCards} onChange={changeDeck} onPractice={fillPracticeDeck} onBattle={() => createMatch()} onBotBattle={() => createMatch("bot")} formats={catalogFormats} format={format} onFormatChange={changeFormat} loading={catalogLoading} busy={roomBusy} error={catalogError} onRetry={() => setCatalogVersion((version) => version + 1)}/>
   ) : activePage === "replays" ? (
@@ -696,13 +761,42 @@ export function App() {
       <div className="room-panel">{matchAuth ? <><span className="status-dot"/>当前房间 <strong>{matchAuth.id}</strong><small>{connectionStatus === "unavailable" ? "房间不可用" : remote?.waiting ? "等待对手加入" : remote?.state.gameOver ? "对局已结束" : "对局进行中"}</small>{connectionStatus !== "unavailable" && remote?.waiting && matchAuth.side === "own" && <RoomInvitation key={matchAuth.id} id={matchAuth.id} code={remote.joinCode}/>}<button onClick={() => navigate("battle")}><DoorOpen size={15}/>进入牌桌</button></> : <p className="empty-state">暂无活动房间</p>}</div>
       <div className="join-panel"><h2>加入房间</h2><input aria-label="房间 ID" value={joinRoomId} onChange={(e) => setJoinRoomId(e.target.value)} placeholder="房间 ID"/><input aria-label="邀请码" value={joinRoomCode} onChange={(e) => setJoinRoomCode(e.target.value)} placeholder="邀请码"/><button disabled={roomBusy || catalogLoading || !joinRoomId.trim() || !joinRoomCode.trim()} onClick={joinRoom}><DoorOpen size={15}/>{roomBusy ? "连接中" : "使用牌组加入"}</button></div>
       <div className="room-directory"><h2>公开房间</h2>{roomList.length ? roomList.map((room) => <div className="room-entry" key={room.id}><span>{room.id}</span><small>{room.waiting ? "等待加入" : "对局进行中"}</small></div>) : <p className="empty-state">暂无公开房间</p>}</div>
-      <div className="saved-rooms"><h2>本机保存的房间</h2><p>选择已保存的席位，恢复等待、换牌或进行中的对局。</p>{savedRoomsError && <p role="alert">{savedRoomsError}<button onClick={refreshSavedRooms}>重试</button></p>}{savedRooms.map((auth) => <div className="saved-room" key={matchKey(auth)}><div><strong>{auth.id}</strong><small>{auth.side === "own" ? "房主" : "客方"}{auth.updatedAt ? ` · ${new Date(auth.updatedAt).toLocaleString()}` : ""}</small></div><button disabled={roomBusy} onClick={() => resumeRoom(auth)}>恢复{auth.side === "own" ? "房主" : "客方"}席位</button></div>)}{!savedRooms.length && !savedRoomsError && <p>暂无本机房间记录</p>}</div>
+      <div className="saved-rooms"><h2>本机保存的房间</h2><p>选择已保存的席位，恢复等待、换牌或进行中的对局。</p>{savedRoomsError && <p role="alert">{savedRoomsError}<button onClick={refreshSavedRooms}>重试</button></p>}{savedRooms.map((auth) => <div className="saved-room" key={matchKey(auth)}><div><strong>{auth.id}</strong><small>{auth.side === "own" ? "房主" : auth.side === "spectator" ? "观战" : "客方"}{auth.updatedAt ? ` · ${new Date(auth.updatedAt).toLocaleString()}` : ""}</small></div><button disabled={roomBusy} onClick={() => resumeRoom(auth)}>恢复{auth.side === "own" ? "房主" : auth.side === "spectator" ? "观战" : "客方"}席位</button></div>)}{!savedRooms.length && !savedRoomsError && <p>暂无本机房间记录</p>}</div>
     </section>
   ) : null;
 
   const arc = dragGuide
     ? `M ${dragGuide.x1} ${dragGuide.y1} Q ${(dragGuide.x1 + dragGuide.x2) / 2} ${Math.min(dragGuide.y1, dragGuide.y2) - Math.max(55, Math.abs(dragGuide.x2 - dragGuide.x1) * 0.18)} ${dragGuide.x2} ${dragGuide.y2}`
     : "";
+
+  // 非牌桌页面：走"左侧导航 + 内容区"的外壳，和牌桌完全分开渲染，
+  // 不再把牌桌压在页面底下（这是之前 GUI 显得乱的主要原因）。
+  const pages = ([["home", Home, "大厅"], ["battle", Swords, "牌桌"], ["decks", Layers, "卡组"], ["replays", Film, "录像"], ["rooms", DoorOpen, "房间"]] as const);
+  if (activePage !== "battle") {
+    return (
+      <div className="app-shell">
+        <aside className="app-sidebar">
+          <div className="app-brand"><strong>WBO ARENA</strong><span>影之诗：超凡世界 · 规则沙盒</span></div>
+          <nav className="app-nav" aria-label="主导航">
+            {pages.map(([page, Icon, label]) => (
+              <button key={page} className={activePage === page ? "active" : ""} onClick={() => navigate(page)}>
+                <Icon size={16}/><span>{label}</span>
+              </button>
+            ))}
+          </nav>
+          <div className="app-sidebar-foot">
+            <span>当前牌组</span><b>{deckLibrary.active.name} · {deckCards.length}/40</b>
+            <span>当前房间</span><b>{matchAuth ? `${matchAuth.id}（${matchAuth.side === "spectator" ? "观战" : matchAuth.side === "own" ? "房主" : "客方"}）` : "尚未加入"}</b>
+            <span>规则服务 {catalogLoading ? "连接中" : catalogError ? "不可用" : "已连接"}</span>
+          </div>
+        </aside>
+        <main className="app-main">
+          {requestError && <div className="network-notice" role="alert"><span>{requestError}</span><button aria-label="关闭提示" title="关闭" onClick={() => setRequestError("")}><X size={17}/></button></div>}
+          {workspacePage}
+        </main>
+      </div>
+    );
+  }
 
   return (
     <main
@@ -719,12 +813,16 @@ export function App() {
         </div>
       )}
       <header className="battle-topbar">
-        <nav className="main-nav">{([["home", Home, "主页"],["battle", Swords, "对战"],["decks", Layers, "卡组"],["replays", Film, "录像"],["rooms", DoorOpen, "房间"]] as const).map(([page, Icon, label]) => <button key={page} className={activePage === page ? "active" : ""} onClick={() => navigate(page)} title={label}><Icon size={17}/><span>{label}</span></button>)}</nav>
+        <nav className="main-nav">
+          <button onClick={() => navigate("home")} title="返回大厅"><DoorOpen size={17}/><span>返回大厅</span></button>
+          {remote?.bot && <span className="battle-badge">练习模式 · AI</span>}
+          {matchAuth?.side === "spectator" && <span className="battle-badge">观战 · 只读</span>}
+        </nav>
         <div className="topbar-actions">
           <button title="帮助">
             <CircleHelp size={18} />
           </button>
-          {matchAuth && remote && !remote.waiting && !remote.state.gameOver && <button title="认输" onClick={() => { if (window.confirm("确定要认输吗？")) void send({ kind: "concede" }); }}>认输</button>}
+          {matchAuth && matchAuth.side !== "spectator" && remote && !remote.waiting && !remote.state.gameOver && <button title="认输" onClick={() => { if (window.confirm("确定要认输吗？")) void send({ kind: "concede" }); }}>认输</button>}
           <button
             title="创建新对局"
             disabled={roomBusy}
@@ -734,8 +832,7 @@ export function App() {
           </button>
         </div>
       </header>
-      {activePage !== "battle" && workspacePage}
-      <div className={activePage !== "battle" ? "battle-table dimmed" : "battle-table"}>
+      <div className="battle-table">
       <section className="battle-table">
         <div className="leader-hud opponent-hud">
           <div className="opponent-side-meta">
@@ -1036,7 +1133,7 @@ export function App() {
           <RoomInvitation key={matchAuth.id} id={matchAuth.id} code={remote.joinCode}/>
         </aside>
       )}
-      {activePage === "battle" && !remote?.waiting && remote?.matchPhase === "mulligan" && (
+      {activePage === "battle" && !remote?.waiting && remote?.matchPhase === "mulligan" && matchAuth?.side !== "spectator" && (
         <aside className="mulligan-panel">
           <b>重新抽牌</b>
           {remote.state.firstPlayer && <strong>{remote.state.firstPlayer === "own" ? "你是先手" : "你是后手"}</strong>}
