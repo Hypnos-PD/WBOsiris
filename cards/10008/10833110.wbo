@@ -1,0 +1,64 @@
+wbo 0.1.0;
+
+card 10833110 {
+    type follower;
+    cost 3;
+    stats 3/2;
+    trait mysteria;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class runecraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "玛纳利亚文书官·琪可";
+        text """
+【<color=Keyword>入场曲</color>】将2张『<color=Keyword>玛纳利亚魔弹</color>』加入手牌。
+<hr><ev>【<color=Keyword>进化时</color>】使自己的手牌中的所有玛纳利亚·法术的费用-1。</ev>
+<sev>【<color=Keyword>超进化时</color>】使自己获得『纹章：玛纳利亚文书官·琪可』。</sev>
+""";
+    }
+
+    locale eng {
+        name "Tico, Mysterian Spellcrafter";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add 2 copies of <b><i><color=Keyword>Mysterian Missile</color></i></b> to your hand.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Reduce the cost of all Mysteria spells in your hand by 1.</ev>
+<sev><b><color=Keyword>Super-Evolve</color></b>: Gain <b><i>Crest: Tico, Mysterian Spellcrafter</i></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "マナリアスクリプター・ティコ";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>マナリアの魔弾</color>』2枚を自分の手札に加える。
+<hr><ev>【<color=Keyword>進化時</color>】自分の手札のマナリア・スペルすべてのコストを-1する。</ev>
+<sev>【<color=Keyword>超進化時</color>】自分は『クレスト：マナリアスクリプター・ティコ』を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "마나리아 스크립터 티코";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>마나리아 마법탄</color> 2장을 내 패에 넣는다.
+<hr><ev>[<color=Keyword>진화시</color>] 내 패의 마나리아 주문 모두의 비용을 -1.</ev>
+<sev>[<color=Keyword>초진화시</color>] 나는 「크레스트: 마나리아 스크립터 티코」를 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "馬納歷亞記錄者‧琪可";
+        text """
+【<color=Keyword>入場曲</color>】增加2張『<color=Keyword>馬納歷亞魔彈</color>』到自己的手牌中。
+<hr><ev>【<color=Keyword>進化時</color>】使自己手牌中全部的馬納歷亞‧法術卡消費-1。</ev>
+<sev>【<color=Keyword>超進化時</color>】使自己獲得『紋章：馬納歷亞記錄者‧琪可』。</sev>
+""";
+    }
+
+}

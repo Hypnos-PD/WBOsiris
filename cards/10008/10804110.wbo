@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10804110 {
+    type follower;
+    cost 9;
+    stats 13/13;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class neutral;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "阿尔比昂巴哈姆特";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）使战场上的其他所有随从消失。</ridx>
+<ridx=1>（2）使战场上的所有护符消失。</ridx>
+<ridx=2>（3）使所有纹章消失。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Alabaster Bahamut";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Banish all other followers from the field.</ridx>
+<ridx=1>2. Banish all amulets from the field.</ridx>
+<ridx=2>3. Banish all crests.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "アルビオンバハムート";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）場の他のフォロワーすべてを消滅。</ridx>
+<ridx=1>（2）場のアミュレットすべてを消滅。</ridx>
+<ridx=2>（3）クレストすべてを消滅。</ridx>
+""";
+    }
+
+    locale kor {
+        name "알비온 바하무트";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 전장의 다른 추종자 모두를 소멸.</ridx>
+<ridx=1>(2) 전장의 마법진 모두를 소멸.</ridx>
+<ridx=2>(3) 크레스트 모두를 소멸.</ridx>
+""";
+    }
+
+    locale cht {
+        name "白銀巴哈姆特";
+        text """
+【<color=Keyword>入場曲</color>】指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）使戰場上全部的其他從者卡消失。</ridx>
+<ridx=1>（2）使戰場上全部的護符卡消失。</ridx>
+<ridx=2>（3）使全部的紋章消失。</ridx>
+""";
+    }
+
+}

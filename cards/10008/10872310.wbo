@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10872310 {
+    type spell;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "纯净无垢的日常";
+        text """
+抽取2张卡牌。若为超进化已解禁的回合，则回复自己的主战者2点生命值。
+""";
+    }
+
+    locale eng {
+        name "Unsullied Days";
+        text """
+Draw 2 cards. If you've unlocked super-evolution, restore 2 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"けが\">穢</rub>れなき<rub=\"ひび\">日々</rub>";
+        text """
+自分のデッキから2枚を引く。超進化可能ターンなら、自分のリーダーを2回復。
+""";
+    }
+
+    locale kor {
+        name "때묻지 않은 나날";
+        text """
+내 덱에서 2장을 뽑는다. 초진화 가능 턴이라면, 내 리더를 2 회복.
+""";
+    }
+
+    locale cht {
+        name "無垢的日子";
+        text """
+由自己的牌堆中抽取2張卡片。如果為已超進化解禁的回合，則會回復自己的主戰者2點生命值。
+""";
+    }
+
+}

@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 10833310 {
+    type spell;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class runecraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "钢铁的小憩";
+        text """
+X起始为0。
+【<color=Keyword>魔力增幅时</color>】使本卡牌的X+1。
+<hr>抽取2张卡牌。若X为5或以上，则回复自己的主战者2点生命值。回复自己2点能量点。
+""";
+    }
+
+    locale eng {
+        name "Amethyst's Naptime";
+        text """
+X starts at 0.
+<b><color=Keyword>On Spellboost</color></b>: Increase X by 1.
+<hr>Draw 2 cards. If X is at least 5, restore 2 defense to your leader and recover 2 play points.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"こうてつ\">鋼鉄</rub>の<rub=\"まどろ\">微睡</rub>み";
+        text """
+Xは0から始まる。
+【<color=Keyword>スペルブースト時</color>】これのXを+1する。
+<hr>自分のデッキから2枚を引く。Xが5以上なら、自分のリーダーを2回復。自分のPPを2回復。
+""";
+    }
+
+    locale kor {
+        name "강철의 휴식";
+        text """
+X는 0부터 시작.
+[<color=Keyword>주문증폭시</color>] 이 주문의 X를 +1.
+<hr>내 덱에서 2장을 뽑는다. X가 5 이상이라면, 내 리더를 2 회복. 내 PP를 2 회복.
+""";
+    }
+
+    locale cht {
+        name "鋼鐵的小憩";
+        text """
+X由0開始。
+【<color=Keyword>魔力增幅時</color>】使這張卡片的X+1。
+<hr>由自己的牌堆中抽取2張卡片。如果X為5以上，則會回復自己的主戰者2點生命值。回復自己的PP 2點。
+""";
+    }
+
+}

@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10842110 {
+    type follower;
+    cost 5;
+    stats 3/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "闪耀旋律·莉芙&萝萝";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>闪耀旋律·莉芙&萝萝</color>』。
+<hr>【<color=Keyword>突进</color>】
+自己的回合结束时，将1张『<color=Keyword>大海虎鲸</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Reef & Lolo, Serene Sirens";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Reef & Lolo, Serene Sirens</color></i></b>.
+<hr><b><color=Keyword>Rush</color></b>
+At the end of your turn, add a <b><i><color=Keyword>Majestic Megalorca</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "キラキラサウンド・リーフ＆ロロ";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>キラキラサウンド・リーフ＆ロロ</color>』1枚を自分の場に出す。
+<hr>【<color=Keyword>突進</color>】
+自分のターン終了時、『<color=Keyword>大海のオルカ</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "반짝반짝 사운드 리프&로로";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>반짝반짝 사운드 리프&로로</color> 1장을 내 전장에 소환.
+<hr>[<color=Keyword>돌진</color>]
+내 턴 종료시, <color=Keyword>대해의 오르카</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "閃亮之音‧凜菲＆洛蘿";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>閃亮之音‧凜菲＆洛蘿</color>』到自己的戰場上。
+<hr>【<color=Keyword>突進</color>】
+自己的回合結束時，增加1張『<color=Keyword>滄海虎鯨</color>』到自己的手牌中。
+""";
+    }
+
+}

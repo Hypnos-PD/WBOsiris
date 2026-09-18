@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10814120 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "永恒冰晶·蒂亚";
+        text """
+【<color=Keyword>爆能强化</color>_4】使自己的战场上的所有随从+1/+1。
+<hr>【<color=Keyword>突进</color>】
+本随从在战场上获得攻击力或生命值增加时，自己的每回合中可触发1次，将1张『<color=Keyword>冰晶剑士·伊芙</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Tia, Eternal Crystalian";
+        text """
+<b><color=Keyword>Enhance</color> (4)</b>: Give all allied followers on the field +1/+1.
+<hr><b><color=Keyword>Rush</color></b>
+Once on each of your turns, when this follower is given + attack or defense on the field, add an <b><i><color=Keyword>Eve, Blade of Crystalia</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "エターナルクリスタリア・ティア";
+        text """
+【<color=Keyword>エンハンス</color>_4】自分の場のフォロワーすべては+1/+1する。
+<hr>【<color=Keyword>突進</color>】
+これの攻撃力か体力が場で+されたとき、自分のターンごとに1回、『<color=Keyword>ソードクリスタリア・イヴ</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "영원의 얼음수정족 티아";
+        text """
+[<color=Keyword>증강</color> 4] 내 전장의 추종자 모두는 +1/+1.
+<hr>[<color=Keyword>돌진</color>]
+이 추종자의 공격력이나 체력이 전장에서 증가했을 때, 내 턴마다 1회에 한해 <color=Keyword>빙정검 얼음수정족 이브</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "永恆冰晶‧蒂亞";
+        text """
+【<color=Keyword>爆能強化</color>_4】使自己戰場上全部的從者卡+1/+1。
+<hr>【<color=Keyword>突進</color>】
+當這張卡片的攻擊力或生命值在戰場上因「+」而增加時，每個自己的回合僅限發動1次，增加1張『<color=Keyword>凍劍冰晶‧伊芙</color>』到自己的手牌中。
+""";
+    }
+
+}

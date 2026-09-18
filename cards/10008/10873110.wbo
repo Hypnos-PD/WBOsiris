@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10873110 {
+    type follower;
+    cost 7;
+    stats 5/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class portalcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "知恩图报·米莉亚姆";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的1个随从，破坏该随从。召唤1个『<color=Keyword>绚烂的创造物</color>』。
+""";
+    }
+
+    locale eng {
+        name "Miriam, Reciprocator";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select an enemy follower on the field and destroy it. Summon a <b><i><color=Keyword>Radiant Artifact</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "レシプロケイト・ミリアム";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー1枚を選ぶ。それを破壊。『<color=Keyword>レディアントアーティファクト</color>』1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "레시프로케이트 미리암";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴. <color=Keyword>빛의 아티팩트</color> 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "銘恩圖報‧米莉亞姆";
+        text """
+【<color=Keyword>入場曲</color>】指定1張敵方戰場上的從者卡。將其破壞。召喚1張『<color=Keyword>絢爛的創造物</color>』到自己的戰場上。
+""";
+    }
+
+}

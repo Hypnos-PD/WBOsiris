@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10854120 {
+    type follower;
+    cost 5;
+    stats 1/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class abysscraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "日月的蔷薇·赛蕾丝";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>唤灵</color>_20】使自己的手牌中的所有梦魇·卡牌的费用-2。
+<hr>【<color=Keyword>交战时</color>】对交战对手造成4点伤害。
+自己的回合结束时，回复自己的主战者4点生命值。
+""";
+    }
+
+    locale eng {
+        name "Ceres, Liminal Rose";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Necromancy</color> (20)</b> - Reduce the cost of all Abysscraft cards in your hand by 2.
+<hr><b><color=Keyword>Clash</color></b>: Deal 4 damage to the opposing follower.
+At the end of your turn, restore 4 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ひ\">陽</rub>と<rub=\"つき\">月</rub>の<rub=\"ばら\">薔薇</rub>・セレス";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>ネクロマンス</color>_20】自分の手札のナイトメア・カードすべてのコストを-2する。
+<hr>【<color=Keyword>交戦時</color>】交戦相手に4ダメージ。
+自分のターン終了時、自分のリーダーを4回復。
+""";
+    }
+
+    locale kor {
+        name "해와 달의 장미 세레스";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>사령술</color> 20] 내 패의 나이트메어 카드 모두의 비용을 -2.
+<hr>[<color=Keyword>교전시</color>] 교전 상대에게 4 피해.
+내 턴 종료시, 내 리더를 4 회복.
+""";
+    }
+
+    locale cht {
+        name "陽與月之薔薇‧賽蕾絲";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>死靈術</color>_20】使自己手牌中全部的夜魔‧卡片消費-2。
+<hr>【<color=Keyword>交戰時</color>】給予交戰對象4點傷害。
+自己的回合結束時，回復自己的主戰者4點生命值。
+""";
+    }
+
+}

@@ -1,0 +1,78 @@
+wbo 0.1.0;
+
+card 10854110 {
+    type follower;
+    cost 8;
+    stats 6/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class abysscraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "出发的憧憬·苇剑&武津御";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）对对手的主战者造成4点伤害。回复自己的主战者4点生命值。</ridx>
+<ridx=1>（2）对对手的战场上的所有随从造成5点伤害。回复自己1点进化点。</ridx>
+<hr><ev>【<color=Keyword>进化时</color>】【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）抽取2张卡牌。</ridx>
+<ridx=1>（2）回复自己2点能量点。</ridx></ev>
+""";
+    }
+
+    locale eng {
+        name "Itsurugi & Taketsumi, Brothers";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Deal 4 damage to the enemy leader. Restore 4 defense to your leader.</ridx>
+<ridx=1>2. Deal 5 damage to all enemy followers. Recover 1 evolution point.</ridx>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Draw 2 cards.</ridx>
+<ridx=1>2. Recover 2 play points.</ridx></ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しゅっぱつ\">出発</rub>の<rub=\"しょうけい\">憧憬</rub>・イツルギ＆タケツミ";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）相手のリーダーに4ダメージ。自分のリーダーを4回復。</ridx>
+<ridx=1>（2）相手の場のフォロワーすべてに5ダメージ。自分のEPを1回復。</ridx>
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）自分のデッキから2枚を引く。</ridx>
+<ridx=1>（2）自分のPPを2回復。</ridx></ev>
+""";
+    }
+
+    locale kor {
+        name "출발의 동경 이츠루기&타케츠미";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 상대방 리더에게 4 피해. 내 리더를 4 회복.</ridx>
+<ridx=1>(2) 상대방 전장의 추종자 모두에게 5 피해. 내 EP를 1 회복.</ridx>
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 내 덱에서 2장을 뽑는다.</ridx>
+<ridx=1>(2) 내 PP를 2 회복.</ridx></ev>
+""";
+    }
+
+    locale cht {
+        name "啟程的憧憬‧壹劍＆武祇";
+        text """
+【<color=Keyword>入場曲</color>】指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）給予敵方的主戰者4點傷害。回復自己的主戰者4點生命值。</ridx>
+<ridx=1>（2）給予敵方戰場上全部的從者卡5點傷害。回復自己的EP 1點。</ridx>
+<hr><ev>【<color=Keyword>進化時</color>】指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）由自己的牌堆中抽取2張卡片。</ridx>
+<ridx=1>（2）回復自己的PP 2點。</ridx></ev>
+""";
+    }
+
+}

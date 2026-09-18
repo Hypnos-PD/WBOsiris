@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10801110 {
+    type follower;
+    cost 2;
+    stats 1/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "自律的圣鸟·汉萨";
+        text """
+<ev>【<color=Keyword>进化时</color>】本随从+5/+5。</ev>
+""";
+    }
+
+    locale eng {
+        name "Hamsa, Sculpted Divinity";
+        text """
+<ev><b><color=Keyword>Evolve</color></b>: Give this follower +5/+5.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"こっき\">克己</rub>の<rub=\"せいちょう\">聖鳥</rub>・ハンサ";
+        text """
+<ev>【<color=Keyword>進化時</color>】これは+5/+5する。</ev>
+""";
+    }
+
+    locale kor {
+        name "극기의 성조 함사";
+        text """
+<ev>[<color=Keyword>진화시</color>] 이 추종자는 +5/+5.</ev>
+""";
+    }
+
+    locale cht {
+        name "克己聖鳥‧漢薩";
+        text """
+<ev>【<color=Keyword>進化時</color>】使這張卡片+5/+5。</ev>
+""";
+    }
+
+}

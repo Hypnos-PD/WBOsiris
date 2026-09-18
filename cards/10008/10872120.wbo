@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10872120 {
+    type follower;
+    cost 3;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "门扉接续者·拉姿莉";
+        text """
+【<color=Keyword>入场曲</color>】将1张『<color=Keyword>绚烂的创造物</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Lazuli, Gateway Connector";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add a <b><i><color=Keyword>Radiant Artifact</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "ポータルコネクター・ラズリ";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>レディアントアーティファクト</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "포탈 커넥터 라즐리";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>빛의 아티팩트</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "門扉銜接者‧菈姿莉";
+        text """
+【<color=Keyword>入場曲</color>】增加1張『<color=Keyword>絢爛的創造物</color>』到自己的手牌中。
+""";
+    }
+
+}

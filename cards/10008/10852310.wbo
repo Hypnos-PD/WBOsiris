@@ -1,0 +1,72 @@
+wbo 0.1.0;
+
+card 10852310 {
+    type spell;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class abysscraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "启程的退场";
+        text """
+【<color=Keyword>模式</color>】选择2个能力发动。
+<ridx=0>（1）对对手的主战者造成1点伤害。</ridx>
+<ridx=1>（2）回复自己的主战者2点生命值。</ridx>
+<ridx=2>（3）对对手的战场上的随机1个随从造成3点伤害。</ridx>
+<ridx=3>（4）使自己的墓场+4。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Bittersweet Departures";
+        text """
+Select 2 <b><color=Keyword>Mode</color><color=Keyword>s</color></b> to activate.
+<ridx=0>1. Deal 1 damage to the enemy leader.</ridx>
+<ridx=1>2. Restore 2 defense to your leader.</ridx>
+<ridx=2>3. Deal 3 damage to a random enemy follower.</ridx>
+<ridx=3>4. Gain 4 shadows.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"たびだ\">旅立</rub>ちの<rub=\"たいしゅつ\">退出</rub>";
+        text """
+【<color=Keyword>モード</color>】2つを選んでその能力が働く。
+<ridx=0>（1）相手のリーダーに1ダメージ。</ridx>
+<ridx=1>（2）自分のリーダーを2回復。</ridx>
+<ridx=2>（3）相手の場のフォロワーからランダム1枚に3ダメージ。</ridx>
+<ridx=3>（4）自分の墓場を+4する。</ridx>
+""";
+    }
+
+    locale kor {
+        name "여정의 배웅";
+        text """
+[<color=Keyword>모드</color>] 2개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 상대방 리더에게 1 피해.</ridx>
+<ridx=1>(2) 내 리더를 2 회복.</ridx>
+<ridx=2>(3) 상대방 전장의 추종자 중 무작위로 1장에게 3 피해.</ridx>
+<ridx=3>(4) 내 묘지를 +4.</ridx>
+""";
+    }
+
+    locale cht {
+        name "行途止息";
+        text """
+指定2個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）給予敵方的主戰者1點傷害。</ridx>
+<ridx=1>（2）回復自己的主戰者2點生命值。</ridx>
+<ridx=2>（3）隨機給予1張敵方戰場上的從者卡3點傷害。</ridx>
+<ridx=3>（4）使自己的墓場+4。</ridx>
+""";
+    }
+
+}

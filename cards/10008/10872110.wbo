@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10872110 {
+    type follower;
+    cost 4;
+    stats 6/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "人造的馈赠·蕾拉";
+        text """
+【<color=Keyword>突进</color>】
+【<color=Keyword>谢幕曲</color>】将1张『<color=Keyword>古老的创造物</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Layla, Artificial Gift of Life";
+        text """
+<b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Last Words</color></b>: Add an <b><i><color=Keyword>Ancient Artifact</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "アーティフィシャルギフト・レイラ";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>ラストワード</color>】『<color=Keyword>エンシェントアーティファクト</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "아티피셜 기프트 레이라";
+        text """
+[<color=Keyword>돌진</color>]
+[<color=Keyword>유언</color>] <color=Keyword>고대의 아티팩트</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "人造的禮物‧萊菈";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>謝幕曲</color>】增加1張『<color=Keyword>古老的創造物</color>』到自己的手牌中。
+""";
+    }
+
+}

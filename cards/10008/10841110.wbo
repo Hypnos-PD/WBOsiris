@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10841110 {
+    type follower;
+    cost 4;
+    stats 1/7;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "狼人族首领·契特";
+        text """
+【<color=Keyword>入场曲</color>】若自己的主战者的生命值为10或以下，则本随从进化。
+<hr>【<color=Keyword>毁灭</color>】
+【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Gido, Leader of the Pack";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If your leader's defense is 10 or less, evolve this follower.
+<hr><b><color=Keyword>Bane</color></b>
+<b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"じんろうぞく\">人狼族</rub>の<rub=\"おさ\">長</rub>・ギド";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のリーダーの体力が10以下なら、これは進化する。
+<hr>【<color=Keyword>必殺</color>】
+【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "늑대인간 족장 기드";
+        text """
+[<color=Keyword>출격</color>] 내 리더의 체력이 10 이하라면, 이 추종자는 진화한다.
+<hr>[<color=Keyword>필살</color>]
+[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "狼人族長‧契特";
+        text """
+【<color=Keyword>入場曲</color>】如果自己主戰者的生命值為10以下，則會使這張卡片進化。
+<hr>【<color=Keyword>必殺</color>】
+【<color=Keyword>守護</color>】
+""";
+    }
+
+}

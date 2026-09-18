@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10851120 {
+    type follower;
+    cost 1;
+    stats 1/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "可爱恶魔·莉莉姆";
+        text """
+【<color=Keyword>攻击时</color>】对所有主战者造成1点伤害。
+【<color=Keyword>谢幕曲</color>】将1张『<color=Keyword>蝙蝠</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Lilith, Devilish Cutie";
+        text """
+<b><color=Keyword>Strike</color></b>: Deal 1 damage to both leaders.
+<b><color=Keyword>Last Words</color></b>: Add a <b><i><color=Keyword>Bat</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "キュートな<rub=\"あくま\">悪魔</rub>・リリム";
+        text """
+【<color=Keyword>攻撃時</color>】リーダーすべてに1ダメージ。
+【<color=Keyword>ラストワード</color>】『<color=Keyword>バット</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "큐티 악마 릴림";
+        text """
+[<color=Keyword>공격시</color>] 리더 모두에게 1 피해.
+[<color=Keyword>유언</color>] <color=Keyword>박쥐</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "甜美惡魔‧莉莉姆";
+        text """
+【<color=Keyword>攻擊時</color>】給予全部的主戰者1點傷害。
+【<color=Keyword>謝幕曲</color>】增加1張『<color=Keyword>蝙蝠</color>』到自己的手牌中。
+""";
+    }
+
+}

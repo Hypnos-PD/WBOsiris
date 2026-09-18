@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10823110 {
+    type follower;
+    cost 3;
+    stats 2/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class swordcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "冲田总司";
+        text """
+【<color=Keyword>入场曲</color>】若为超进化已解禁的回合，则本随从进化。
+<hr>【<color=Keyword>突进</color>】
+【<color=Keyword>攻击时</color>】若攻击随从，则发动1次「对交战对手造成3点伤害」。若本随从为进化后，则改为发动3次。
+""";
+    }
+
+    locale eng {
+        name "Okita Souji";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If you've unlocked super-evolution, evolve this follower.
+<hr><b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Follower</color></b> <b><color=Keyword>Strike</color></b>: Do this 1 time: \"Deal 3 damage to the opposing follower.\" If this follower is evolved, do it 3 times instead.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"おきたそうじ\">沖田総司</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】超進化可能ターンなら、これは進化する。
+<hr>【<color=Keyword>突進</color>】
+【<color=Keyword>攻撃時</color>】フォロワーへの攻撃なら、「交戦相手に3ダメージ。」を1回行う。これが進化後なら、1回ではなく3回。
+""";
+    }
+
+    locale kor {
+        name "오키타 소지";
+        text """
+[<color=Keyword>출격</color>] 초진화 가능 턴이라면, 이 추종자는 진화한다.
+<hr>[<color=Keyword>돌진</color>]
+[<color=Keyword>공격시</color>] 추종자를 공격한다면, 「교전 상대에게 3 피해」를 1회 발동. 이 추종자가 진화후라면, 1회 대신 3회.
+""";
+    }
+
+    locale cht {
+        name "沖田總司";
+        text """
+【<color=Keyword>入場曲</color>】如果為已超進化解禁的回合，則會使這張卡片進化。
+<hr>【<color=Keyword>突進</color>】
+【<color=Keyword>攻擊時</color>】如果對從者卡進行攻擊，則會發動1次「給予交戰對象3點傷害」。如果這張卡片已進化，則會由原本的1次轉變為3次。
+""";
+    }
+
+}

@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10812310 {
+    type spell;
+    cost 4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "宁静的孤独";
+        text """
+选择对手的战场上的1个随从，破坏该随从。回复自己的主战者2点生命值。
+""";
+    }
+
+    locale eng {
+        name "Peaceful Solitude";
+        text """
+Select an enemy follower on the field and destroy it. Restore 2 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"おだ\">穏</rub>やかなる<rub=\"こどく\">孤独</rub>";
+        text """
+相手の場のフォロワー1枚を選ぶ。それを破壊。自分のリーダーを2回復。
+""";
+    }
+
+    locale kor {
+        name "잔잔한 고독";
+        text """
+상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴. 내 리더를 2 회복.
+""";
+    }
+
+    locale cht {
+        name "平靜的孤獨";
+        text """
+指定1張敵方戰場上的從者卡。將其破壞。回復自己的主戰者2點生命值。
+""";
+    }
+
+}

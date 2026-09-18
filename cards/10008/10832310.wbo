@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10832310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "其乐融融的团聚";
+        text """
+回复自己的主战者2点生命值。使自己的所有手牌发动1次魔力增幅。
+""";
+    }
+
+    locale eng {
+        name "Harmonious Meal";
+        text """
+Restore 2 defense to your leader. Spellboost your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"むつ\">睦</rub>まやかな<rub=\"だんらん\">団欒</rub>";
+        text """
+自分のリーダーを2回復。自分の手札すべては1回スペルブーストする。
+""";
+    }
+
+    locale kor {
+        name "단란한 한때";
+        text """
+내 리더를 2 회복. 내 패 모두를 1회 주문증폭.
+""";
+    }
+
+    locale cht {
+        name "和睦歡聚";
+        text """
+回復自己的主戰者2點生命值。使自己手牌中全部的卡片發動1次魔力增幅。
+""";
+    }
+
+}

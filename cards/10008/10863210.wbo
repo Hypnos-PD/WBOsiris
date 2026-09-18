@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10863210 {
+    type amulet;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class havencraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "同窗好友";
+        text """
+【<color=Keyword>吟唱</color>_2】
+自己的回合结束时，抽取1张卡牌。若自己的战场上有进化后的随从，则回复自己的主战者1点生命值。若自己的战场上有超进化后的随从，则改为回复2点。
+""";
+    }
+
+    locale eng {
+        name "Academy Hijinks";
+        text """
+<b><color=Keyword>Countdown</color> (2)</b>
+At the end of your turn, draw a card and, if there's an evolved allied follower on the field, restore 1 defense to your leader. If there's a super-evolved allied follower on the field, restore 2 defense instead.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ほうゆう\">朋友</rub>の<rub=\"がっきゅう\">学級</rub>";
+        text """
+【<color=Keyword>カウントダウン</color>_2】
+自分のターン終了時、自分のデッキから1枚を引く。自分の場に進化後のフォロワーがあるなら、自分のリーダーを1回復。自分の場に超進化後のフォロワーがあるなら、1回復ではなく2回復。
+""";
+    }
+
+    locale kor {
+        name "벗들의 교실";
+        text """
+[<color=Keyword>카운트다운</color> 2]
+내 턴 종료시, 내 덱에서 1장을 뽑는다. 내 전장에 진화후인 추종자가 있다면, 내 리더를 1 회복. 내 전장에 초진화후인 추종자가 있다면, 1 회복 대신 2 회복.
+""";
+    }
+
+    locale cht {
+        name "同窗之友";
+        text """
+【<color=Keyword>倒數</color>_2】
+自己的回合結束時，由自己的牌堆中抽取1張卡片。如果自己戰場上有已進化的從者卡，則會回復自己的主戰者1點生命值。如果自己戰場上有已超進化的從者卡，則會由原本的回復1點轉變為回復2點。
+""";
+    }
+
+}

@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10843310 {
+    type spell;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class dragoncraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "狐火蜃景";
+        text """
+选择对手的战场上的1个随从或对手的主战者，对其造成1点伤害。将1张『<color=Keyword>狐火蜃景</color>』加入牌组。若为【<color=Keyword>觉醒</color>】，则抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Ephemeral Foxfire";
+        text """
+Select an enemy follower on the field or the enemy leader and deal it 1 damage. Add an <b><i><color=Keyword>Ephemeral Foxfire</color></i></b> to your deck. If you're in <b><color=Keyword>Overflow</color></b>, draw a card.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きつねびかげろう\">狐火陽炎</rub>";
+        text """
+相手の場のフォロワー1枚か相手のリーダーを選ぶ。それに1ダメージ。『<color=Keyword>狐火陽炎</color>』1枚を自分のデッキに加える。【<color=Keyword>覚醒</color>】なら、自分のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "여우불 아지랑이";
+        text """
+상대방 리더나 상대방 전장에서 추종자 1장을 선택한다. 그 대상에게 1 피해. <color=Keyword>여우불 아지랑이</color> 1장을 내 덱에 넣는다. [<color=Keyword>각성</color>]이라면, 내 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "狐火陽炎";
+        text """
+指定1張敵方戰場上的從者卡或敵方的主戰者。給予其1點傷害。增加1張『<color=Keyword>狐火陽炎</color>』到自己的牌堆中。如果【<color=Keyword>覺醒</color>】已發動，則會由自己的牌堆中抽取1張卡片。
+""";
+    }
+
+}

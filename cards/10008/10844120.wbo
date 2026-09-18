@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10844120 {
+    type follower;
+    cost 8;
+    stats 6/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "金银绚烂·璐米欧儿&雅尔贞特";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的2张手牌，舍弃这些手牌。对对手的战场上的所有随从和对手的主战者造成4点伤害。
+<hr><sev>【<color=Keyword>超进化时</color>】抽取3张卡牌。</sev>
+""";
+    }
+
+    locale eng {
+        name "Lumiore & Argente, Shining Wings";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select 2 cards in your hand and discard them. Deal 4 damage to all enemies.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Draw 3 cards.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きんぎんけんらん\">金銀絢爛</rub>・リュミオール＆アルジャンテ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札2枚を選ぶ。それを捨てる。相手の場のフォロワーすべてと相手のリーダーに4ダメージ。
+<hr><sev>【<color=Keyword>超進化時</color>】自分のデッキから3枚を引く。</sev>
+""";
+    }
+
+    locale kor {
+        name "금은현란 루미오르&아르장테";
+        text """
+[<color=Keyword>출격</color>] 내 패에서 2장을 선택한다. 그 카드를 버린다. 상대방 전장의 추종자 모두와 상대방 리더에게 4 피해.
+<hr><sev>[<color=Keyword>초진화시</color>] 내 덱에서 3장을 뽑는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "金銀絢爛‧璐米歐兒＆雅爾貞特";
+        text """
+【<color=Keyword>入場曲</color>】指定2張自己手牌中的卡片。將其捨棄。給予敵方戰場上全部的從者卡與敵方的主戰者4點傷害。
+<hr><sev>【<color=Keyword>超進化時</color>】由自己的牌堆中抽取3張卡片。</sev>
+""";
+    }
+
+}

@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10821110 {
+    type follower;
+    cost 7;
+    stats 5/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "武力与治安·娜哈特·娜哈特&宾森特";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>娜哈特的私兵</color>』。对对手的战场上的所有随从造成3点伤害。
+<hr><sev>【<color=Keyword>超进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</sev>
+""";
+    }
+
+    locale eng {
+        name "Naht & Vince, Force and Order";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Naht's Henchman</color></i></b>. Deal 3 damage to all enemy followers.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぶりょく\">武力</rub>と<rub=\"ちあん\">治安</rub>・ナハト・ナハト＆ヴィンセント";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>ナハトの私兵</color>』1枚を自分の場に出す。相手の場のフォロワーすべてに3ダメージ。
+<hr><sev>【<color=Keyword>超進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</sev>
+""";
+    }
+
+    locale kor {
+        name "무력과 치안 나흐트 나흐트&빈센트";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>나흐트의 사병</color> 1장을 내 전장에 소환. 상대방 전장의 추종자 모두에게 3 피해.
+<hr><sev>[<color=Keyword>초진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</sev>
+""";
+    }
+
+    locale cht {
+        name "武力與秩序‧娜哈特‧娜哈特＆賓森特";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>娜哈特的私兵</color>』到自己的戰場上。給予敵方戰場上全部的從者卡3點傷害。
+<hr><sev>【<color=Keyword>超進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</sev>
+""";
+    }
+
+}

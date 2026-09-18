@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10812110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "太古的妖精·露芙蕾";
+        text """
+本随从在战场上获得攻击力或生命值增加时，自己的每回合中可触发1次，召唤1个『<color=Keyword>妖精</color>』。
+【<color=Keyword>谢幕曲</color>】将1张『<color=Keyword>妖精</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Ruflet, Primeval Fairy";
+        text """
+Once on each of your turns, when this follower is given + attack or defense on the field, summon a <b><i><color=Keyword>Fairy</color></i></b>.
+<b><color=Keyword>Last Words</color></b>: Add a <b><i><color=Keyword>Fairy</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"たいこ\">太古</rub>の<rub=\"ようせい\">妖精</rub>・ルフレ";
+        text """
+これの攻撃力か体力が場で+されたとき、自分のターンごとに1回、『<color=Keyword>フェアリー</color>』1枚を自分の場に出す。
+【<color=Keyword>ラストワード</color>】『<color=Keyword>フェアリー</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "태고의 요정 루플레";
+        text """
+이 추종자의 공격력이나 체력이 전장에서 증가했을 때, 내 턴마다 1회에 한해 <color=Keyword>요정</color> 1장을 내 전장에 소환.
+[<color=Keyword>유언</color>] <color=Keyword>요정</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "太古妖精‧露芙蕊";
+        text """
+當這張卡片的攻擊力或生命值在戰場上因「+」而增加時，每個自己的回合僅限發動1次，召喚1張『<color=Keyword>妖精</color>』到自己的戰場上。
+【<color=Keyword>謝幕曲</color>】增加1張『<color=Keyword>妖精</color>』到自己的手牌中。
+""";
+    }
+
+}

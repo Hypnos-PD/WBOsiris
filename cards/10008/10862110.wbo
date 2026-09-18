@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10862110 {
+    type follower;
+    cost 8;
+    stats 6/7;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "天阳的使徒·艾迪特";
+        text """
+【<color=Keyword>守护</color>】
+【<color=Keyword>灵气</color>】
+【<color=Keyword>谢幕曲</color>】召唤1个『<color=Keyword>天阳的使徒·艾迪特</color>』，使其失去【<color=Keyword>谢幕曲</color>】。
+<hr><sev>【<color=Keyword>超进化时</color>】选择对手的战场上的1个随从，破坏该随从。</sev>
+""";
+    }
+
+    locale eng {
+        name "Edeth, Voice of Heaven";
+        text """
+<b><color=Keyword>Ward</color></b>
+<b><color=Keyword>Aura</color></b>
+<b><color=Keyword>Last Words</color></b>: Summon an <b><i><color=Keyword>Edeth, Voice of Heaven</color></i></b> and remove <b><color=Keyword>Last Words</color></b> from it.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Select an enemy follower on the field and destroy it.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんよう\">天陽</rub>の<rub=\"しと\">使徒</rub>・エーディット";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>オーラ</color>】
+【<color=Keyword>ラストワード</color>】『<color=Keyword>天陽の使徒・エーディット</color>』1枚を自分の場に出す。それは【<color=Keyword>ラストワード</color>】を失う。
+<hr><sev>【<color=Keyword>超進化時</color>】相手の場のフォロワー1枚を選ぶ。それを破壊。</sev>
+""";
+    }
+
+    locale kor {
+        name "천양의 사도 에디트";
+        text """
+[<color=Keyword>수호</color>]
+[<color=Keyword>오라</color>]
+[<color=Keyword>유언</color>] <color=Keyword>천양의 사도 에디트</color> 1장을 내 전장에 소환. 그 추종자는 [<color=Keyword>유언</color>]을 잃는다.
+<hr><sev>[<color=Keyword>초진화시</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴.</sev>
+""";
+    }
+
+    locale cht {
+        name "天陽使徒‧亞狄德";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>光紋</color>】
+【<color=Keyword>謝幕曲</color>】召喚1張『<color=Keyword>天陽使徒‧亞狄德</color>』到自己的戰場上。使其失去【<color=Keyword>謝幕曲</color>】。
+<hr><sev>【<color=Keyword>超進化時</color>】指定1張敵方戰場上的從者卡。將其破壞。</sev>
+""";
+    }
+
+}

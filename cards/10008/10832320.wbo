@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10832320 {
+    type spell;
+    cost 5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "伏地雷击";
+        text """
+对对手的战场上的随机1个攻击力最大的随从造成8点伤害。对对手的主战者造成2点伤害。【<color=Keyword>土之秘术</color>_2】将1张『<color=Keyword>伏地雷击</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Earth-Shattering Bolt";
+        text """
+Deal 8 damage to a random enemy follower with the highest attack. Deal 2 damage to the enemy leader. <b><color=Keyword>Earth Rite</color> (2)</b> - Add an <b><i><color=Keyword>Earth-Shattering Bolt</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ち\">地</rub>を<rub=\"は\">這</rub>う<rub=\"らいげき\">雷撃</rub>";
+        text """
+相手の場の攻撃力最大のフォロワーからランダム1枚に8ダメージ。相手のリーダーに2ダメージ。【<color=Keyword>土の秘術</color>_2】『<color=Keyword>地を這う雷撃</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "땅을 기는 뇌격";
+        text """
+공격력이 가장 높은 상대방 전장의 추종자 중 무작위로 1장에게 8 피해. 상대방 리더에게 2 피해. [<color=Keyword>대지의 비술</color> 2] <color=Keyword>땅을 기는 뇌격</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "伏地雷擊";
+        text """
+隨機給予1張敵方戰場上攻擊力最高的從者卡8點傷害。給予敵方的主戰者2點傷害。【<color=Keyword>土之秘術</color>_2】增加1張『<color=Keyword>伏地雷擊</color>』到自己的手牌中。
+""";
+    }
+
+}

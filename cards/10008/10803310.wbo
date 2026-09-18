@@ -1,0 +1,67 @@
+wbo 0.1.0;
+
+card 10803310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class neutral;
+        rarity gold;
+    }
+
+    locale chs {
+        name "传承的意志";
+        text """
+【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）对对手的战场上的随机1个随从造成3点伤害。</ridx>
+<ridx=1>（2）发动【<color=Keyword>亡者召还</color>_2】。</ridx>
+<ridx=2>（3）使自己的战场上的所有随从+1/+0。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Wills United";
+        text """
+Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Deal 3 damage to a random enemy follower.</ridx>
+<ridx=1>2. <b><color=Keyword>Reanimate</color> (2)</b>.</ridx>
+<ridx=2>3. Give all allied followers on the field +1/+0.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"そうしょう\">相承</rub>の<rub=\"いし\">意思</rub>";
+        text """
+【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）相手の場のフォロワーからランダム1枚に3ダメージ。</ridx>
+<ridx=1>（2）【<color=Keyword>リアニメイト</color>_2】を行う。</ridx>
+<ridx=2>（3）自分の場のフォロワーすべては+1/+0する。</ridx>
+""";
+    }
+
+    locale kor {
+        name "계승의 의지";
+        text """
+[<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 상대방 전장의 추종자 중 무작위로 1장에게 3 피해.</ridx>
+<ridx=1>(2) [<color=Keyword>소생</color> 2]를 발동.</ridx>
+<ridx=2>(3) 내 전장의 추종자 모두는 +1/+0.</ridx>
+""";
+    }
+
+    locale cht {
+        name "相承的意志";
+        text """
+指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）隨機給予1張敵方戰場上的從者卡3點傷害。</ridx>
+<ridx=1>（2）發動【<color=Keyword>亡者召還</color>_2】。</ridx>
+<ridx=2>（3）使自己戰場上全部的從者卡+1/+0。</ridx>
+""";
+    }
+
+}

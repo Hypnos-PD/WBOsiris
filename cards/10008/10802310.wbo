@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10802310 {
+    type spell;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class neutral;
+        rarity silver;
+    }
+
+    locale chs {
+        name "救世的英姿";
+        text """
+将对手的手牌中的随机1张卡牌的复制卡牌以非公开形式加入自己的手牌，使其费用-1。抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Legacy of the Brave";
+        text """
+Add an exact copy of a random card in your opponent's hand to your hand without revealing it and reduce its cost by 1. Draw a card.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きゅうせい\">救世</rub>の<rub=\"ゆうし\">勇姿</rub>";
+        text """
+相手の手札からランダム1枚のコピー1枚を非公開で自分の手札に加える。それのコストを-1する。自分のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "구원의 위용";
+        text """
+상대방 패에서 무작위로 1장의 복사본 1장을 비공개로 내 패에 넣는다. 그 카드의 비용을 -1. 내 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "救世英姿";
+        text """
+隨機複製1張敵方手牌中的卡片並以非公開形式增加到自己的手牌中。使其消費-1。由自己的牌堆中抽取1張卡片。
+""";
+    }
+
+}

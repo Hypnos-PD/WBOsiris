@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10832110 {
+    type follower;
+    cost 5;
+    stats 1/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "快乐绽花·萨米&玛莉";
+        text """
+【<color=Keyword>魔力增幅时</color>】使本卡牌的费用-1。
+<hr>【<color=Keyword>入场曲</color>】抽取2张卡牌。对手抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Sammy & Marie, Flowers of Joy";
+        text """
+<b><color=Keyword>On Spellboost</color></b>: Reduce the cost of this card by 1.
+<hr><b><color=Keyword>Fanfare</color></b>: Draw 2 cards. Your opponent draws a card.
+""";
+    }
+
+    locale jpn {
+        name "ハッピーフラワー・サミー＆マリー";
+        text """
+【<color=Keyword>スペルブースト時</color>】これのコストを-1する。
+<hr>【<color=Keyword>ファンファーレ</color>】自分のデッキから2枚を引く。相手は自身のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "해피 플라워 새미&마리";
+        text """
+[<color=Keyword>주문증폭시</color>] 이 추종자의 비용을 -1.
+<hr>[<color=Keyword>출격</color>] 내 덱에서 2장을 뽑는다. 상대방은 자신의 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "歡悅之花‧薩米＆瑪莉";
+        text """
+【<color=Keyword>魔力增幅時</color>】使這張卡片的消費-1。
+<hr>【<color=Keyword>入場曲</color>】由自己的牌堆中抽取2張卡片。使敵方由其牌堆中抽取1張卡片。
+""";
+    }
+
+}

@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10844110 {
+    type follower;
+    cost 4;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "反照的赤红·德莱克&亚瑞札特";
+        text """
+【<color=Keyword>入场曲</color>】本随从+X/+X。若X为2或以上，则本随从进化。X为本次对战中进入战场的自己的其他『<color=Keyword>反照的赤红·德莱克&亚瑞札特</color>』的张数。
+<hr>【<color=Keyword>守护</color>】
+【<color=Keyword>谢幕曲</color>】使自己获得『纹章：反照的赤红·德莱克&亚瑞札特』。
+""";
+    }
+
+    locale eng {
+        name "Drache & Aluzard, Burning Blood";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Give this follower +X/+X. If X is at least 2, evolve this follower. X is the number of other allied copies of <b><i><color=Keyword>Drache & Aluzard, Burning Blood</color></i></b> that have entered the field this match.
+<hr><b><color=Keyword>Ward</color></b>
+<b><color=Keyword>Last Words</color></b>: Gain <b><i>Crest: Drache & Aluzard, Burning Blood</i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はんしょう\">反照</rub>の<rub=\"あかべに\">赤紅</rub>・ドラーク＆アルザード";
+        text """
+【<color=Keyword>ファンファーレ</color>】これは+X/+Xする。Xが2以上なら、これは進化する。Xはこのバトル中に場に出た自分の他の『<color=Keyword>反照の赤紅・ドラーク＆アルザード</color>』の枚数である。
+<hr>【<color=Keyword>守護</color>】
+【<color=Keyword>ラストワード</color>】自分は『クレスト：反照の赤紅・ドラーク＆アルザード』を持つ。
+""";
+    }
+
+    locale kor {
+        name "반조의 적홍 드라크&알루자드";
+        text """
+[<color=Keyword>출격</color>] 이 추종자는 +X/+X. X가 2 이상이라면, 이 추종자는 진화한다. X는 이번 대전에서 전장에 소환된 내 다른 <color=Keyword>반조의 적홍 드라크&알루자드</color>의 수.
+<hr>[<color=Keyword>수호</color>]
+[<color=Keyword>유언</color>] 나는 「크레스트: 반조의 적홍 드라크&알루자드」를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "返照的赤紅‧德萊克＆亞瑞札特";
+        text """
+【<color=Keyword>入場曲</color>】使這張卡片+X/+X。如果X為2以上，則會使這張卡片進化。X為「本次對戰中自己已進入戰場的其他『<color=Keyword>返照的赤紅‧德萊克＆亞瑞札特</color>』張數」。
+<hr>【<color=Keyword>守護</color>】
+【<color=Keyword>謝幕曲</color>】使自己獲得『紋章：返照的赤紅‧德萊克＆亞瑞札特』。
+""";
+    }
+
+}

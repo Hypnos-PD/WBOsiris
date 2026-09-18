@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10864110 {
+    type follower;
+    cost 7;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "飞跃的姐妹·贝尔迪俪亚&卡诗黛儿";
+        text """
+【<color=Keyword>入场曲</color>】召唤随机1个自己的牌组中费用为2或以下的随从，使其超进化。
+<hr><sev>【<color=Keyword>超进化时</color>】使自己获得『纹章：飞跃的姐妹·贝尔迪俪亚&卡诗黛儿』。</sev>
+""";
+    }
+
+    locale eng {
+        name "Verdilia & Castelle, Sisters";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a random follower that costs 2 or less from your deck and super-evolve it.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Gain <b><i>Crest: Verdilia & Castelle, Sisters</i></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ひやく\">飛躍</rub>の<rub=\"しまい\">姉妹</rub>・ベルディリア＆カステル";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキのコスト2以下のフォロワーからランダム1枚を自分の場に出す。それは超進化する。
+<hr><sev>【<color=Keyword>超進化時</color>】自分は『クレスト：飛躍の姉妹・ベルディリア＆カステル』を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "비약의 자매 베르딜리아&카스텔";
+        text """
+[<color=Keyword>출격</color>] 비용이 2 이하인 내 덱의 추종자 중 무작위로 1장을 내 전장에 소환. 그 추종자는 초진화한다.
+<hr><sev>[<color=Keyword>초진화시</color>] 나는 「크레스트: 비약의 자매 베르딜리아&카스텔」을 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "躍進的姊妹‧貝爾迪儷亞＆卡詩黛兒";
+        text """
+【<color=Keyword>入場曲</color>】隨機將1張「自己牌堆中消費為2以下的從者卡」召喚到自己的戰場上。使其超進化。
+<hr><sev>【<color=Keyword>超進化時</color>】使自己獲得『紋章：躍進的姊妹‧貝爾迪儷亞＆卡詩黛兒』。</sev>
+""";
+    }
+
+}

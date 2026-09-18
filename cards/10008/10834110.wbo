@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10834110 {
+    type follower;
+    cost 6;
+    stats 5/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "恩爱的大地·坦忒拉&拉缇卡";
+        text """
+X起始为0。
+【<color=Keyword>魔力增幅时</color>】使本卡牌的X+1。
+<hr>【<color=Keyword>入场曲</color>】若X为10或以上，则将1张『<color=Keyword>苍奏之四</color>』加入手牌。若为20或以上，则将1张『<color=Keyword>宏大的回归</color>』加入手牌。
+<hr>【<color=Keyword>疾驰</color>】
+""";
+    }
+
+    locale eng {
+        name "Tetra & Ladica, Forest BFFs";
+        text """
+X starts at 0.
+<b><color=Keyword>On Spellboost</color></b>: Increase X by 1.
+<hr><b><color=Keyword>Fanfare</color></b>: If X is at least 10, add a <b><i><color=Keyword>Delta Cannon</color></i></b> to your hand. If X is at least 20, add a <b><i><color=Keyword>Send 'Em Packing</color></i></b> to your hand.
+<hr><b><color=Keyword>Storm</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"おんあい\">恩愛</rub>の<rub=\"だいち\">大地</rub>・テトラ＆ラティカ";
+        text """
+Xは0から始まる。
+【<color=Keyword>スペルブースト時</color>】これのXを+1する。
+<hr>【<color=Keyword>ファンファーレ</color>】Xが10以上なら、『<color=Keyword>ソニック・フォー</color>』1枚を自分の手札に加える。20以上なら、『<color=Keyword>大いなる回帰</color>』1枚を自分の手札に加える。
+<hr>【<color=Keyword>疾走</color>】
+""";
+    }
+
+    locale kor {
+        name "은애의 대지 테트라&라티카";
+        text """
+X는 0부터 시작.
+[<color=Keyword>주문증폭시</color>] 이 추종자의 X를 +1.
+<hr>[<color=Keyword>출격</color>] X가 10 이상이라면, <color=Keyword>소닉 포</color> 1장을 내 패에 넣는다. 20 이상이라면, <color=Keyword>위대한 회귀</color> 1장을 내 패에 넣는다.
+<hr>[<color=Keyword>질주</color>]
+""";
+    }
+
+    locale cht {
+        name "恩愛的大地‧坦忒菈＆拉緹卡";
+        text """
+X由0開始。
+【<color=Keyword>魔力增幅時</color>】使這張卡片的X+1。
+<hr>【<color=Keyword>入場曲</color>】如果X為10以上，則會增加1張『<color=Keyword>蒼奏之四</color>』到自己的手牌中。如果為20以上，則會增加1張『<color=Keyword>宏大的回歸</color>』到自己的手牌中。
+<hr>【<color=Keyword>疾馳</color>】
+""";
+    }
+
+}

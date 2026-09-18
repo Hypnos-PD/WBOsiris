@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10814110 {
+    type follower;
+    cost 7;
+    stats 4/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "离合有终·赛德斯&梅希亚";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的1个随从，破坏该随从。使自己的战场上的其他所有随从+1/+1。
+<hr>【<color=Keyword>疾驰</color>】
+【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Setus & Maisha, Bladerights";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select an enemy follower on the field and destroy it. Give all other allied followers on the field +1/+1.
+<hr><b><color=Keyword>Storm</color></b>
+<b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"りごう\">離合</rub>の<rub=\"ゆうしゅう\">有終</rub>・セタス＆メイシア";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー1枚を選ぶ。それを破壊。自分の場の他のフォロワーすべては+1/+1する。
+<hr>【<color=Keyword>疾走</color>】
+【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "이합의 유종 세타스&메이시아";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴. 내 전장의 다른 추종자 모두는 +1/+1.
+<hr>[<color=Keyword>질주</color>]
+[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "聚散終定‧賽德斯＆梅希亞";
+        text """
+【<color=Keyword>入場曲</color>】指定1張敵方戰場上的從者卡。將其破壞。使自己戰場上全部的其他從者卡+1/+1。
+<hr>【<color=Keyword>疾馳</color>】
+【<color=Keyword>守護</color>】
+""";
+    }
+
+}

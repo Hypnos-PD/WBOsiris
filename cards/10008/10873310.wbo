@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10873310 {
+    type spell;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class portalcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "开辟未来";
+        text """
+选择对手的战场上的1个随从，对其造成6点伤害。若本次对战中进入战场的自己的创造物·随从的种类为3种或以上，则回复自己1点进化点。
+""";
+    }
+
+    locale eng {
+        name "The Journey Ahead";
+        text """
+Select an enemy follower on the field and deal it 6 damage. If at least 3 differently named allied Artifact followers have entered the field this match, recover 1 evolution point.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"き\">切</rub>り<rub=\"ひら\">拓</rub>く<rub=\"みらい\">未来</rub>";
+        text """
+相手の場のフォロワー1枚を選ぶ。それに6ダメージ。このバトル中に場に出た自分のアーティファクト・フォロワーの種類が3以上なら、自分のEPを1回復。
+""";
+    }
+
+    locale kor {
+        name "개척하는 미래";
+        text """
+상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 6 피해. 이번 대전에서 전장에 소환된 내 아티팩트 추종자의 종류 수가 3 이상이라면, 내 EP를 1 회복.
+""";
+    }
+
+    locale cht {
+        name "開闢未來";
+        text """
+指定1張敵方戰場上的從者卡。給予其6點傷害。如果本次對戰中自己已進入戰場的創造物‧從者卡種類為3以上，則會回復自己的EP 1點。
+""";
+    }
+
+}

@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10824110 {
+    type follower;
+    cost 5;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class swordcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "天命的子弹·巴妮&巴隆";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>天命的子弹·巴妮&巴隆</color>』。【<color=Keyword>协作</color>_20】对对手的主战者造成4点伤害。
+<hr>【<color=Keyword>突进</color>】
+<hr><ev>【<color=Keyword>进化时</color>】将1张『<color=Keyword>亡命者的枪击</color>』加入手牌。</ev>
+""";
+    }
+
+    locale eng {
+        name "Bunny & Baron, Fate's Bullet";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Bunny & Baron, Fate's Bullet</color></i></b>. <b><color=Keyword>Rally</color> (20)</b> - Deal 4 damage to the enemy leader.
+<hr><b><color=Keyword>Rush</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Add a <b><i><color=Keyword>Desperados' Shot</color></i></b> to your hand.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんめい\">天命</rub>の<rub=\"だんがん\">弾丸</rub>・バニー＆バロン";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>天命の弾丸・バニー＆バロン</color>』1枚を自分の場に出す。【<color=Keyword>連携</color>_20】相手のリーダーに4ダメージ。
+<hr>【<color=Keyword>突進</color>】
+<hr><ev>【<color=Keyword>進化時</color>】『<color=Keyword>デスペラードショット</color>』1枚を自分の手札に加える。</ev>
+""";
+    }
+
+    locale kor {
+        name "천명의 탄환 버니&버론";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>천명의 탄환 버니&버론</color> 1장을 내 전장에 소환. [<color=Keyword>연계</color> 20] 상대방 리더에게 4 피해.
+<hr>[<color=Keyword>돌진</color>]
+<hr><ev>[<color=Keyword>진화시</color>] <color=Keyword>데스페라도 샷</color> 1장을 내 패에 넣는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "天命子彈‧峇妮＆峇儂";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>天命子彈‧峇妮＆峇儂</color>』到自己的戰場上。【<color=Keyword>協作</color>_20】給予敵方的主戰者4點傷害。
+<hr>【<color=Keyword>突進</color>】
+<hr><ev>【<color=Keyword>進化時</color>】增加1張『<color=Keyword>亡命者的槍擊</color>』到自己的手牌中。</ev>
+""";
+    }
+
+}

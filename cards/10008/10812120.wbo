@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10812120 {
+    type follower;
+    cost 4;
+    stats 3/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "情念的毒荆·莉柯瑞丝";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>温柔读心者·米榭儿</color>』。
+<hr>【<color=Keyword>突进</color>】
+【<color=Keyword>毁灭</color>】
+""";
+    }
+
+    locale eng {
+        name "Lycoris, Barbs of Passion";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Michelle, Kind Mindreader</color></i></b>.
+<hr><b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Bane</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"じょうねん\">情念</rub>の<rub=\"どくし\">毒茨</rub>・リコリス";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>優しき読心者・ミツェル</color>』1枚を自分の場に出す。
+<hr>【<color=Keyword>突進</color>】
+【<color=Keyword>必殺</color>】
+""";
+    }
+
+    locale kor {
+        name "정념의 독가시 리코리스";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>다정한 마음읽기 미첼</color> 1장을 내 전장에 소환.
+<hr>[<color=Keyword>돌진</color>]
+[<color=Keyword>필살</color>]
+""";
+    }
+
+    locale cht {
+        name "情念毒棘‧莉柯瑞絲";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>溫柔讀心者‧米榭兒</color>』到自己的戰場上。
+<hr>【<color=Keyword>突進</color>】
+【<color=Keyword>必殺</color>】
+""";
+    }
+
+}

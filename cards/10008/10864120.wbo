@@ -1,0 +1,73 @@
+wbo 0.1.0;
+
+card 10864120 {
+    type follower;
+    cost 5;
+    stats 2/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "希望的光彩·莉迪耶尔";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>模式</color>】选择1个能力发动。对本随从造成3点伤害。
+<ridx=0>（1）对对手的战场上的所有随从造成3点伤害。</ridx>
+<ridx=1>（2）对对手的主战者造成3点伤害。</ridx>
+<ridx=2>（3）回复自己的主战者3点生命值。</ridx>
+<hr><ev>【<color=Keyword>进化时</color>】使自己获得『纹章：希望的光彩·莉迪耶尔』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Zoe, Dazzling Hope";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a <b><color=Keyword>Mode</color></b> to activate. Deal 3 damage to this follower.
+<ridx=0>1. Deal 3 damage to all enemy followers.</ridx>
+<ridx=1>2. Deal 3 damage to the enemy leader.</ridx>
+<ridx=2>3. Restore 3 defense to your leader.</ridx>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Gain <b><i>Crest: Zoe, Dazzling Hope</i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きぼう\">希望</rub>の<rub=\"こうさい\">光彩</rub>・リテュエル";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>モード</color>】1つを選んでその能力が働く。これに3ダメージ。
+<ridx=0>（1）相手の場のフォロワーすべてに3ダメージ。</ridx>
+<ridx=1>（2）相手のリーダーに3ダメージ。</ridx>
+<ridx=2>（3）自分のリーダーを3回復。</ridx>
+<hr><ev>【<color=Keyword>進化時</color>】自分は『クレスト：希望の光彩・リテュエル』を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "희망의 광채 리튜엘";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동. 이 추종자에게 3 피해.
+<ridx=0>(1) 상대방 전장의 추종자 모두에게 3 피해.</ridx>
+<ridx=1>(2) 상대방 리더에게 3 피해.</ridx>
+<ridx=2>(3) 내 리더를 3 회복.</ridx>
+<hr><ev>[<color=Keyword>진화시</color>] 나는 「크레스트: 희망의 광채 리튜엘」을 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "希望的光彩‧莉迪耶爾";
+        text """
+【<color=Keyword>入場曲</color>】指定1個【<color=Keyword>模式</color>】並發動該能力。給予這張卡片3點傷害。
+<ridx=0>（1）給予敵方戰場上全部的從者卡3點傷害。</ridx>
+<ridx=1>（2）給予敵方的主戰者3點傷害。</ridx>
+<ridx=2>（3）回復自己的主戰者3點生命值。</ridx>
+<hr><ev>【<color=Keyword>進化時</color>】使自己獲得『紋章：希望的光彩‧莉迪耶爾』。</ev>
+""";
+    }
+
+}

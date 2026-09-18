@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10822310 {
+    type spell;
+    cost 4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "重历新生";
+        text """
+使对手的战场上的随机1个攻击力最大的随从<nobr>-10/-10</nobr>。
+【<color=Keyword>爆能强化</color>_6】召唤3个『<color=Keyword>异形</color>』。
+""";
+    }
+
+    locale eng {
+        name "Shared Existence";
+        text """
+Give a random enemy follower on the field with the highest attack -10/-10.
+<b><color=Keyword>Enhance</color> (6)</b>: Summon 3 copies of <b><i><color=Keyword>Wretch</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "リライブリライフ";
+        text """
+相手の場の攻撃力最大のフォロワーからランダム1枚は-10/-10する。
+【<color=Keyword>エンハンス</color>_6】『<color=Keyword>異形</color>』3枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "리라이브 리라이프";
+        text """
+공격력이 가장 높은 상대방 전장의 추종자 중 무작위로 1장은 -10/-10.
+[<color=Keyword>증강</color> 6] <color=Keyword>이형</color> 3장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "嶄新的開始";
+        text """
+隨機使1張敵方戰場上攻擊力最高的從者卡-10/-10。
+【<color=Keyword>爆能強化</color>_6】召喚3張『<color=Keyword>異形</color>』到自己的戰場上。
+""";
+    }
+
+}

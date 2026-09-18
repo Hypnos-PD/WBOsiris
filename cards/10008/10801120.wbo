@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10801120 {
+    type follower;
+    cost 5;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "无尽旅途·蕾娜";
+        text """
+【<color=Keyword>入场曲</color>】回复自己1点进化点。
+""";
+    }
+
+    locale eng {
+        name "Reina, Timeless Wanderer";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Recover 1 evolution point.
+""";
+    }
+
+    locale jpn {
+        name "タイムレスジャーニー・レイナ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のEPを1回復。
+""";
+    }
+
+    locale kor {
+        name "끝없는 여정 레이나";
+        text """
+[<color=Keyword>출격</color>] 내 EP를 1 회복.
+""";
+    }
+
+    locale cht {
+        name "永久的旅行‧蕾娜";
+        text """
+【<color=Keyword>入場曲</color>】回復自己的EP 1點。
+""";
+    }
+
+}

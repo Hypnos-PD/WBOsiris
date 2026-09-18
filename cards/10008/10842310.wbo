@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10842310 {
+    type spell;
+    cost 6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "末世死化妆";
+        text """
+对对手的战场上的随机1个随从造成4点伤害。对对手的主战者造成4点伤害。
+""";
+    }
+
+    locale eng {
+        name "Art of Decay";
+        text """
+Deal 4 damage to a random enemy follower. Deal 4 damage to the enemy leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"まっせしにげしょう\">末世死化粧</rub>";
+        text """
+相手の場のフォロワーからランダム1枚に4ダメージ。相手のリーダーに4ダメージ。
+""";
+    }
+
+    locale kor {
+        name "말세 사화장";
+        text """
+상대방 전장의 추종자 중 무작위로 1장에게 4 피해. 상대방 리더에게 4 피해.
+""";
+    }
+
+    locale cht {
+        name "末世死化粧";
+        text """
+隨機給予1張敵方戰場上的從者卡4點傷害。給予敵方的主戰者4點傷害。
+""";
+    }
+
+}

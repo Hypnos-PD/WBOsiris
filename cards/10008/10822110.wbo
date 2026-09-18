@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10822110 {
+    type follower;
+    cost 3;
+    stats 1/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "越狱者·卡婕";
+        text """
+自己使用法术时，自己的每回合中可触发1次，对对手的战场上的随机1个随从造成2点伤害。
+<hr><ev>【<color=Keyword>进化时</color>】将1张『<color=Keyword>闪耀的金币</color>』加入手牌。</ev>
+""";
+    }
+
+    locale eng {
+        name "Katze, Magical Thief";
+        text """
+Once on each of your turns, when you play a spell, deal 2 damage to a random enemy follower.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Add a <b><i><color=Keyword>Glittering Gold</color></i></b> to your hand.</ev>
+""";
+    }
+
+    locale jpn {
+        name "ジェイルブレイク・カッツェ";
+        text """
+自分がスペルをプレイしたとき、自分のターンごとに1回、相手の場のフォロワーからランダム1枚に2ダメージ。
+<hr><ev>【<color=Keyword>進化時</color>】『<color=Keyword>輝く金貨</color>』1枚を自分の手札に加える。</ev>
+""";
+    }
+
+    locale kor {
+        name "제일브레이크 캇체";
+        text """
+내가 주문을 사용했을 때, 내 턴마다 1회에 한해 상대방 전장의 추종자 중 무작위로 1장에게 2 피해.
+<hr><ev>[<color=Keyword>진화시</color>] <color=Keyword>찬란한 금화</color> 1장을 내 패에 넣는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "越獄逃脫‧卡婕";
+        text """
+當自己使用法術卡時，每個自己的回合僅限發動1次，隨機給予1張敵方戰場上的從者卡2點傷害。
+<hr><ev>【<color=Keyword>進化時</color>】增加1張『<color=Keyword>閃耀的金幣</color>』到自己的手牌中。</ev>
+""";
+    }
+
+}

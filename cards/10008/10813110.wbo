@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10813110 {
+    type follower;
+    cost 6;
+    stats 1/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class forestcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "温柔读心者·米榭儿";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>情念的毒荆·莉柯瑞丝</color>』。使自己的战场上的所有随从获得【<color=Keyword>屏障</color>】。
+<hr>【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Michelle, Kind Mindreader";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Lycoris, Barbs of Passion</color></i></b>. Give all allied followers on the field <b><color=Keyword>Barrier</color></b>.
+<hr><b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"やさ\">優</rub>しき<rub=\"どくしんしゃ\">読心者</rub>・ミツェル";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>情念の毒茨・リコリス</color>』1枚を自分の場に出す。自分の場のフォロワーすべては【<color=Keyword>バリア</color>】を持つ。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "다정한 마음읽기 미첼";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>정념의 독가시 리코리스</color> 1장을 내 전장에 소환. 내 전장의 추종자 모두는 [<color=Keyword>배리어</color>]를 갖는다.
+<hr>[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "溫柔讀心者‧米榭兒";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>情念毒棘‧莉柯瑞絲</color>』到自己的戰場上。使自己戰場上全部的從者卡獲得【<color=Keyword>障壁</color>】。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+}

@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10813310 {
+    type spell;
+    cost 5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class forestcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "水镜的信赖";
+        text """
+召唤随机2种自己的牌组中费用为2或以下的随从。使自己的战场上的所有随从+1/+1。
+""";
+    }
+
+    locale eng {
+        name "Curiosity Abounds";
+        text """
+Summon 2 random differently named followers that cost 2 or less from your deck. Give all allied followers on the field +1/+1.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"みずかがみ\">水鏡</rub>の<rub=\"しんらい\">信頼</rub>";
+        text """
+自分のデッキのコスト2以下のフォロワーからランダム2種類を自分の場に出す。自分の場のフォロワーすべては+1/+1する。
+""";
+    }
+
+    locale kor {
+        name "물에 비친 신뢰";
+        text """
+비용이 2 이하인 내 덱의 추종자 중 무작위로 2종류를 내 전장에 소환. 내 전장의 추종자 모두는 +1/+1.
+""";
+    }
+
+    locale cht {
+        name "水鏡的信賴";
+        text """
+隨機將2種「自己牌堆中消費為2以下的從者卡」召喚到自己的戰場上。使自己戰場上全部的從者卡+1/+1。
+""";
+    }
+
+}

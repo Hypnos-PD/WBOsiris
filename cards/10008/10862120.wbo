@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10862120 {
+    type follower;
+    cost 6;
+    stats 3/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "深渊探究者·维切";
+        text """
+在手牌中发动。自己的随从超进化时，使本卡牌的费用-3。
+<hr>【<color=Keyword>突进</color>】
+【<color=Keyword>毁灭</color>】
+""";
+    }
+
+    locale eng {
+        name "Viche, Abyssal Researcher";
+        text """
+Activates in hand. Whenever an allied follower super-evolves, reduce the cost of this card by 3.
+<hr><b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Bane</color></b>
+""";
+    }
+
+    locale jpn {
+        name "アビスリサーチャー・ヴィーチェ";
+        text """
+手札で働く。自分のフォロワーが超進化したとき、これのコストを-3する。
+<hr>【<color=Keyword>突進</color>】
+【<color=Keyword>必殺</color>】
+""";
+    }
+
+    locale kor {
+        name "어비스 리서처 비체";
+        text """
+패에서 발동. 내 추종자가 초진화했을 때, 이 추종자의 비용을 -3.
+<hr>[<color=Keyword>돌진</color>]
+[<color=Keyword>필살</color>]
+""";
+    }
+
+    locale cht {
+        name "深淵研究家‧薇茜";
+        text """
+於手牌中發動。當自己的從者卡超進化時，使這張卡片的消費-3。
+<hr>【<color=Keyword>突進</color>】
+【<color=Keyword>必殺</color>】
+""";
+    }
+
+}

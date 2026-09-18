@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10843110 {
+    type follower;
+    cost 6;
+    stats 6/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class dragoncraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "穹顶的战火·杰亚达";
+        text """
+【<color=Keyword>突进</color>】
+【<color=Keyword>威慑</color>】
+【<color=Keyword>攻击时</color>】本随从获得【<color=Keyword>屏障</color>】。若攻击随从，则回合结束前，本随从获得「1回合可以攻击2次」。
+""";
+    }
+
+    locale eng {
+        name "Giada, Peerless Flame of War";
+        text """
+<b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Intimidate</color></b>
+<b><color=Keyword>Strike</color></b>: Give this follower <b><color=Keyword>Barrier</color></b>. If attacking a follower, give this follower \"Can attack 2 times per turn\" until the end of the turn.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんちょう\">天頂</rub>の<rub=\"せんか\">戦火</rub>・ジェアーダ";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>威圧</color>】
+【<color=Keyword>攻撃時</color>】これは【<color=Keyword>バリア</color>】を持つ。フォロワーへの攻撃なら、ターン終了まで、これは「1ターンに2回攻撃できる。」を持つ。
+""";
+    }
+
+    locale kor {
+        name "천정의 전쟁 제아다";
+        text """
+[<color=Keyword>돌진</color>]
+[<color=Keyword>위압</color>]
+[<color=Keyword>공격시</color>] 이 추종자는 [<color=Keyword>배리어</color>]를 갖는다. 추종자를 공격한다면, 턴 종료까지 이 추종자는 「1턴에 2회 공격 가능」을 갖는다.
+""";
+    }
+
+    locale cht {
+        name "天頂戰火‧潔安達";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>威懾</color>】
+【<color=Keyword>攻擊時</color>】使這張卡片獲得【<color=Keyword>障壁</color>】。如果對從者卡進行攻擊，則到回合結束為止，使這張卡片獲得「1回合中可進行2次攻擊」。
+""";
+    }
+
+}

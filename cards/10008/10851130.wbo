@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10851130 {
+    type follower;
+    cost 2;
+    stats 1/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "兔耳恶魔·莉蜜儿";
+        text """
+【<color=Keyword>入场曲</color>】若自己的主战者的生命值大于对手的主战者的生命值，则召唤2个『<color=Keyword>蝙蝠</color>』。
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Limil, Devilish Bunny";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If your leader's defense is higher than the enemy leader's defense, summon 2 copies of <b><i><color=Keyword>Bat</color></i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "バニーな<rub=\"あくま\">悪魔</rub>・リミル";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のリーダーの体力が相手のリーダーの体力より大きいなら、『<color=Keyword>バット</color>』2枚を自分の場に出す。
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "버니 악마 리밀";
+        text """
+[<color=Keyword>출격</color>] 내 리더의 체력이 상대방 리더의 체력보다 높다면, <color=Keyword>박쥐</color> 2장을 내 전장에 소환.
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "俏麗惡魔‧莉蜜兒";
+        text """
+【<color=Keyword>入場曲</color>】如果自己主戰者的生命值大於敵方主戰者的生命值，則會召喚2張『<color=Keyword>蝙蝠</color>』到自己的戰場上。
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

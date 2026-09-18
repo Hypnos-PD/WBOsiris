@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10871110 {
+    type follower;
+    cost 7;
+    stats 7/7;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "满溢的幸福·库伦特司";
+        text """
+【<color=Keyword>守护</color>】
+【<color=Keyword>谢幕曲</color>】召唤1个『<color=Keyword>满溢的幸福·库伦特司</color>』，使其失去【<color=Keyword>谢幕曲</color>】。
+""";
+    }
+
+    locale eng {
+        name "Kratos, Everyday Joy";
+        text """
+<b><color=Keyword>Ward</color></b>
+<b><color=Keyword>Last Words</color></b>: Summon a <b><i><color=Keyword>Kratos, Everyday Joy</color></i></b> and remove <b><color=Keyword>Last Words</color></b> from it.
+""";
+    }
+
+    locale jpn {
+        name "ありふれた<rub=\"こうふく\">幸福</rub>・クラトス";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>ラストワード</color>】『<color=Keyword>ありふれた幸福・クラトス</color>』1枚を自分の場に出す。それは【<color=Keyword>ラストワード</color>】を失う。
+""";
+    }
+
+    locale kor {
+        name "평범한 행복 크라토스";
+        text """
+[<color=Keyword>수호</color>]
+[<color=Keyword>유언</color>] <color=Keyword>평범한 행복 크라토스</color> 1장을 내 전장에 소환. 그 추종자는 [<color=Keyword>유언</color>]을 잃는다.
+""";
+    }
+
+    locale cht {
+        name "平凡的幸福‧庫倫特司";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>謝幕曲</color>】召喚1張『<color=Keyword>平凡的幸福‧庫倫特司</color>』到自己的戰場上。使其失去【<color=Keyword>謝幕曲</color>】。
+""";
+    }
+
+}

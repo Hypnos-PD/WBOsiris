@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10821120 {
+    type follower;
+    cost 2;
+    stats 2/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "寡言的刺客·夏伊莉";
+        text """
+【<color=Keyword>潜行</color>】
+<hr><ev>【<color=Keyword>进化时</color>】选择对手的战场上的1个随从，对手的回合结束前，使其获得「无法攻击随从或主战者」。</ev>
+""";
+    }
+
+    locale eng {
+        name "Shaili, Prowling Assassin";
+        text """
+<b><color=Keyword>Ambush</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select an enemy follower on the field and give it \"Can't attack followers or leaders\" until the end of your opponent's turn.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"かもく\">寡黙</rub>なアサシン・シャイリィ";
+        text """
+【<color=Keyword>潜伏</color>】
+<hr><ev>【<color=Keyword>進化時</color>】相手の場のフォロワー1枚を選ぶ。相手のターン終了まで、それは「フォロワーやリーダーを攻撃できない。」を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "과묵한 어쌔신 샤일리";
+        text """
+[<color=Keyword>잠복</color>]
+<hr><ev>[<color=Keyword>진화시</color>] 상대방 전장에서 추종자 1장을 선택한다. 상대방 턴 종료까지 그 추종자는 「추종자나 리더 공격 불가」를 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "寡言的暗殺者‧夏莉";
+        text """
+【<color=Keyword>潛行</color>】
+<hr><ev>【<color=Keyword>進化時</color>】指定1張敵方戰場上的從者卡。到敵方的回合結束為止，使其獲得「無法攻擊從者或主戰者」。</ev>
+""";
+    }
+
+}

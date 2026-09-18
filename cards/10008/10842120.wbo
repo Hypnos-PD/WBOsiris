@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10842120 {
+    type follower;
+    cost 2;
+    stats 2/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "满面笑容的烹饪·琪米卡";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的1张手牌，舍弃该手牌。抽取1张卡牌。回复自己的主战者1点生命值。
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Kimika, Cook of Happiness";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a card in your hand and discard it. Draw a card. Restore 1 defense to your leader.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"えがお\">笑顔</rub>の<rub=\"ちょうり\">調理</rub>・キミカ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札1枚を選ぶ。それを捨てる。自分のデッキから1枚を引く。自分のリーダーを1回復。
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "웃음의 요리사 키미카";
+        text """
+[<color=Keyword>출격</color>] 내 패에서 1장을 선택한다. 그 카드를 버린다. 내 덱에서 1장을 뽑는다. 내 리더를 1 회복.
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "喜笑顏開的烹飪‧希美加";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己手牌中的卡片。將其捨棄。由自己的牌堆中抽取1張卡片。回復自己的主戰者1點生命值。
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10804120 {
+    type follower;
+    cost 9;
+    stats 7/7;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10008;
+        class neutral;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "高洁的黑翼·奥莉薇";
+        text """
+【<color=Keyword>入场曲</color>】回复自己2点超进化点。
+<hr>【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Olivia, Proud Dark Angel";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Recover 2 super-evolution points.
+<hr><b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"けだか\">気高</rub>き<rub=\"こくよく\">黒翼</rub>・オリヴィエ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のSEPを2回復。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "고결한 흑익 올리비에";
+        text """
+[<color=Keyword>출격</color>] 내 SEP를 2 회복.
+<hr>[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "高潔的黑翼‧奧莉薇";
+        text """
+【<color=Keyword>入場曲</color>】回復自己的SEP 2點。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+}
