@@ -570,6 +570,7 @@ func decodeTrigger(data []byte) (Trigger, error) {
 			Event       string          `json:"event"`
 			Side        string          `json:"side"`
 			SubjectType string          `json:"subjectType,omitempty"`
+			TargetKind  string          `json:"targetKind,omitempty"`
 			SourceZone  string          `json:"sourceZone,omitempty"`
 			OncePerTurn string          `json:"oncePerTurn,omitempty"`
 			DuringTurn  string          `json:"duringTurn,omitempty"`
@@ -600,11 +601,14 @@ func decodeTrigger(data []byte) (Trigger, error) {
 				return nil, fmt.Errorf("event conditions cannot access fusion materials")
 			}
 		}
-		if !validSide(v.Side) || !oneOf(v.Event, "follower_summoned", "amulet_summoned", "follower_left", "destroyed", "healed", "damaged", "card_fused", "amulet_engaged", "card_discarded", "card_played", "card_drawn", "stats_increased", "life_decreased", "turn_started", "turn_ended", "evolved", "super_evolved") || v.SubjectType != "" && !oneOf(v.SubjectType, "follower", "amulet", "leader") || v.SourceZone != "" && !oneOf(v.SourceZone, "hand", "field") || v.Event == "destroyed" && v.SubjectType == "" {
+		if !validSide(v.Side) || !oneOf(v.Event, "follower_summoned", "amulet_summoned", "follower_left", "destroyed", "healed", "damaged", "attacked", "card_fused", "amulet_engaged", "card_discarded", "card_played", "card_drawn", "stats_increased", "life_decreased", "turn_started", "turn_ended", "evolved", "super_evolved") || v.SubjectType != "" && !oneOf(v.SubjectType, "follower", "amulet", "leader") || v.SourceZone != "" && !oneOf(v.SourceZone, "hand", "field") || v.Event == "destroyed" && v.SubjectType == "" {
 			return nil, fmt.Errorf("invalid event trigger")
 		}
 		if v.Event == "amulet_summoned" && (v.SubjectType != "amulet" || v.SelfOnly) || v.Event == "follower_summoned" && v.SubjectType == "amulet" {
 			return nil, fmt.Errorf("summon event does not match its subject type")
+		}
+		if v.TargetKind != "" && (v.Event != "attacked" || v.TargetKind != "leader") {
+			return nil, fmt.Errorf("invalid event target kind")
 		}
 		if v.Event == "healed" && (v.SubjectType != "leader" || p != nil) || v.SubjectType == "leader" && v.Event != "healed" {
 			return nil, fmt.Errorf("healed listeners require a leader without a card predicate")
@@ -622,7 +626,7 @@ func decodeTrigger(data []byte) (Trigger, error) {
 		if v.ExcludeSelf && (v.SelfOnly || v.SubjectType == "" && !cardEvent || v.Event == "damaged") {
 			return nil, fmt.Errorf("invalid other subject trigger")
 		}
-		return EventTrigger{Kind: v.Kind, Event: v.Event, Side: v.Side, SourceZone: v.SourceZone, SubjectType: v.SubjectType, SelfOnly: v.SelfOnly, ExcludeSelf: v.ExcludeSelf, Predicate: p, OncePerTurn: v.OncePerTurn, DuringTurn: v.DuringTurn, Condition: condition}, nil
+		return EventTrigger{Kind: v.Kind, Event: v.Event, Side: v.Side, SourceZone: v.SourceZone, SubjectType: v.SubjectType, TargetKind: v.TargetKind, SelfOnly: v.SelfOnly, ExcludeSelf: v.ExcludeSelf, Predicate: p, OncePerTurn: v.OncePerTurn, DuringTurn: v.DuringTurn, Condition: condition}, nil
 	case "replacement":
 		type raw struct {
 			Kind    string          `json:"kind"`

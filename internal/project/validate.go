@@ -224,6 +224,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 	if event == "drawn" {
 		bindings["drawn"] = true
 	}
+	if event == "attacks" {
+		bindings["attacker"] = true
+	}
 	if event == "discarded" {
 		bindings["discarded"] = true
 	}

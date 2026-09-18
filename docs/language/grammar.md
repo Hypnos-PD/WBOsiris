@@ -315,6 +315,7 @@ option_label      = "label" , locale_id , string , ";" ;
 ```ebnf
 event_block       = "when" , event_pattern , [during_turn] , [source_zone] , [turn_limit] , [where_clause] , ["if" , condition] , effect_block ;
 event_pattern     = participant , event_subject , event_verb
+                  | participant , "follower" , "attacks" , ["leader"]
                   | participant , "leader" , "healed"
                   | participant , "follower" , "leaves" , "field"
                   | participant , "follower" , "survives" , "damage"

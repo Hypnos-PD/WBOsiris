@@ -6,7 +6,64 @@ card 10474110 {
     stats 6/6;
 
     effect {
-        unplayable;
+        fanfare {
+            repeat 6 {
+                random victim from oppo.field.followers;
+                damage victim 1;
+            }
+            buff oppo.hand.followers +1/+0;
+            if skybound_art {
+                gain own crest 10474110;
+            }
+        }
+    }
+
+    crest {
+        countdown 2;
+
+        when oppo follower attacks leader where keyword storm {
+            buff attacker -3/-0 until turn ends;
+        }
+
+        locale chs {
+            name "纹章：光之法则·龙敖";
+            text """
+【<color=Keyword>吟唱</color>_2】
+对手的拥有【<color=Keyword>疾驰</color>】的随从攻击主战者时，回合结束前，使其-3/-0。
+""";
+        }
+
+        locale eng {
+            name "Crest: Lu Woh, Light Personified";
+            text """
+<b><color=Keyword>Countdown</color> (2)</b>
+Whenever an enemy follower with <b><color=Keyword>Storm</color></b> attacks a leader, give it -3/-0 until the end of the turn.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"ひかり\">光</rub>の<rub=\"ことわり\">理</rub>・ル・オー";
+            text """
+【<color=Keyword>カウントダウン</color>_2】
+相手の【<color=Keyword>疾走</color>】を持つフォロワーがリーダーを攻撃したとき、ターン終了まで、それは-3/-0する。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 빛의 섭리 루 오";
+            text """
+[<color=Keyword>카운트다운</color> 2]
+상대방의 [<color=Keyword>질주</color>]를 가진 추종자가 리더를 공격했을 때, 턴 종료까지 그 추종자는 -3/-0.
+""";
+        }
+
+        locale cht {
+            name "紋章：光之攝理‧盧歐";
+            text """
+【<color=Keyword>倒數</color>_2】
+敵方擁有【<color=Keyword>疾馳</color>】的從者卡攻擊主戰者時，到回合結束為止使其-3/-0。
+""";
+        }
     }
 
     meta {

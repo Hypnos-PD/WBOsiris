@@ -6,7 +6,58 @@ card 10544120 {
     stats 1/2;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90041130;
+        }
+        evolve {
+            require target from own.hand;
+            discard target;
+            gain own crest 10544120;
+        }
+    }
+
+    crest {
+        when own follower attacks where trait marine {
+            buff attacker +1/+0 until turn ends;
+        }
+        when own follower attacks once per own turn where trait marine {
+            add 1 card 90041130 to hand;
+        }
+
+        locale chs {
+            name "纹章：波摇花·夕夜";
+            text """
+自己的海洋·随从攻击时，回合结束前，使其+1/+0。自己的每回合中可触发1次，将1张『<color=Keyword>大海虎鲸</color>』加入手牌。
+""";
+        }
+
+        locale eng {
+            name "Crest: Hazuki, Wavebloom";
+            text """
+Whenever an allied Marine follower attacks, give it +1/+0 until the end of the turn and, once on each of your turns, add a <b><i><color=Keyword>Majestic Megalorca</color></i></b> to your hand.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"はようか\">波揺花</rub>・ユウヤ";
+            text """
+自分の海洋・フォロワーが攻撃したとき、ターン終了までそれを+1/+0する。自分のターンごとに1回、『<color=Keyword>大海のシャチ</color>』1枚を自分の手札に加える。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 파요화·유야";
+            text """
+내 바다 추종자가 공격했을 때, 턴 종료까지 그 추종자는 +1/+0. 내 턴마다 1회, 「<color=Keyword>대해의 범고래</color>」 1장을 내 패에 넣는다.
+""";
+        }
+
+        locale cht {
+            name "紋章：波搖花‧夕夜";
+            text """
+自己的海洋‧從者卡攻擊時，到回合結束為止使其+1/+0。每個自己的回合僅限發動1次，增加1張『<color=Keyword>大海虎鯨</color>』到自己的手牌中。
+""";
+        }
     }
 
     meta {

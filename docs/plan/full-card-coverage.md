@@ -20,20 +20,20 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 573 · 未实现(骨架) 24 · 未导入 307
+总计 904 · 已完成 575 · 未实现(骨架) 22 · 未导入 307
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
 10002        77      77       0       0
 10003        77      75       2       0
-10004        76      72       4       0
-10005        76      60      16       0
+10004        76      73       3       0
+10005        76      61      15       0
 10006        76       0       0      76
 10007        77       0       0      77
 10008        78       0       0      78
 10009        76       0       0      76
 90000        93      91       2       0
-未完成卡按文本复杂度：中(41–100字) 246 · 短(≤40字) 128 · 长(>100字) 20 · 白板 1
+未完成卡按文本复杂度：中(41–100字) 245 · 短(≤40字) 127 · 长(>100字) 20 · 白板 1
 ```
 
 ## 工作流
@@ -103,6 +103,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-62 | 抽牌事件 `card_drawn` | `internal/project/strict_validate.go`（`card drawn` / `self drawn` 事件形状）、`typed_ir.go`（映射到 `card_drawn`、`self drawn` 隐式 `sourceZone=hand`）、`validate.go`（登记 `drawn` 绑定）、`internal/ir/decode.go`（事件白名单与自身监听的形状）、`internal/runner/execute.go`（`triggerDrawn` 按每张抽到的卡派发）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/drawn_event_test.go`（双方抽牌、`during` 窗口、`self drawn`、`drawn.cost` 作为数值）；卡片 10561120、10522110、10562120 + 8 个场景 |
 | S-70 | `summon random N card A or card B [for own\|oppo]`（随机池召唤） | `internal/ir/summon_pool.go`（新节点与池校验）、`internal/ir/decode.go`（解码与卡牌引用检查）、`internal/project/summon_pool.go`/`typed_ir.go`/`validate.go`（解析与形状）、`internal/runner/summon_pool.go` + `session.go`（随机抽取并召唤）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/summon_pool_test.go`（池内容、`for oppo`、拒绝单卡池）；卡片 10564120 + 3 个场景 |
 | S-58 | `own\|oppo.hand\|deck has N same cost`（同费用张数） | `internal/ir/model.go`（`SameCostCondition`）、`internal/ir/decode.go`、`internal/project/strict_validate.go`/`validate.go`/`typed_ir.go`、`internal/runner/execute.go`（按当前费用统计最多同费张数）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/same_cost_and_summoned_all_test.go`；卡片 10553310 + 2 个场景 |
+| S-71 | `when own\|oppo follower attacks [leader]`（宣告攻击事件） | `internal/ir/model.go`（`EventTrigger.TargetKind`）、`internal/ir/decode.go`（事件白名单与目标种类校验）、`internal/project/strict_validate.go`/`typed_ir.go`/`validate.go`（事件形状与 `attacker` 绑定）、`internal/runner/runner.go`（事件带上攻击方一侧、绑定名 `attacker`）、`internal/runner/trigger_index.go`（按目标种类过滤）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/attack_event_test.go`（双方、`attacks leader`、筛选与临时增益）；卡片 10474110、10544120 + 8 个场景 |
 | S-61 | `summoned_all`（一次结算的全部召唤） | `internal/runner/bindings.go`（`bindSummoned`）、`internal/runner/execute.go`/`session.go`（所有召唤类效果改为写入累计绑定）、`internal/project/validate.go`（登记 `summoned_all`）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/same_cost_and_summoned_all_test.go`；卡片 10571110 + 3 个场景 |
 
 | S-16 | `ability_destruction_guard`（不会被能力破坏） | 新固有关键词：`internal/ir/decode.go` 的 `validKeyword`、`internal/project/validate.go` 的 `abilities`、`strict_validate.go` 的固有能力形状表、`internal/runner/runner.go`（`destroyByEffect` 受保护，必杀改走新的 `destroyByCombat` 不受保护）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/granted_ability_flow_test.go`（能力破坏被挡下、战斗破坏照样生效）；卡片 10273110 + 2 个场景 |
@@ -165,13 +166,28 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-68 | ~~回合窗口事件~~ **已解决**：`during own\|oppo turn` 可用于回复事件 | 已解锁 10563110 至圣威仪 | 检查器原先只允许"受到伤害时"带 `during`；运行时的回合匹配本来就通用。 |
 | S-69 | 跨方混合随机集合 | 10524110 威猛的《战车》·奥辂昂（"随机对战场上的1个其他随从或自己的主战者或对手的主战者造成7点伤害"） | 混合集合只支持"同一方的随从+该方主战者"，无法表达"双方随从+双方主战者"。 |
 | S-70 | ~~从两种指定卡中随机召唤~~ **已解决**：`summon random N card A or card B [...] [for own\|oppo];` | 已解锁 10564120 雾卷花·茎白 | 新 IR 节点 `SummonPoolEffect`：每次抽取消费一次对局随机数，池内卡牌定义必须互不相同（2..16 种）。 |
-| S-71 | 其他随从的宣告攻击事件 | 10544120 波摇花·夕夜的纹章（"自己的海洋·随从攻击时，回合结束前，使其+1/+0"） | 只有来源自身的 `attack` 能力，没有"自己的其他随从宣告攻击"的监听。 |
+| S-71 | ~~其他随从的宣告攻击事件~~ **已解决**：`when own\|oppo follower attacks [leader] [where …]` | 已解锁 10474110 光之法则·龙敖、10544120 波摇花·夕夜 | 绑定 `attacker`；`attacks leader` 用 `EventTrigger.targetKind="leader"` 限定攻击目标。 |
 | S-51 | 主战者临时"受到的伤害变为 0" | 10444120 世界的伙伴·佐伊（爆能强化 10：主战者直到对手回合结束"受到的1点或以上伤害变为0"） | 主战者关键词只有永久形式；`until ... turn ends` 的期限只作用于随从关键词。 |
 | S-52 | 牌组中发动与【瞬念召唤】 | 10404110 天司长的继承者·圣德芬（"在牌组中发动…【瞬念召唤】本卡牌…被瞬念召唤时获得纹章并返回手牌"） | 需要"在手牌/牌组中监听回合开始""从牌组召唤并选择是否返回手牌"的整套语义。 |
 
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 60（S-71 宣告攻击事件 + 卡包 10004 / 10005）
+
+- **S-71 `when own|oppo follower attacks [leader] [where …]`**：监听其他随从宣告攻击，
+  绑定 `attacker` 指向攻击方；`attacks leader` 额外限定目标为主战者（IR 的
+  `EventTrigger.targetKind`）。运行时把宣告攻击事件的 `side` 设为攻击方一侧，
+  监听派发的绑定名从内部的 `attack` 改为 `attacker`。
+- 完成 2 张：
+  - 10474110 光之法则·龙敖（入场曲连打 6 次 1 点 + 强化对手手牌、奥义获得纹章；
+    纹章让对手带【疾驰】的随从攻击主战者时 -3/-0 到回合结束）；
+  - 10544120 波摇花·夕夜（入场曲召唤大海虎鲸、进化时舍弃一张手牌并获得纹章；
+    纹章让自己的海洋随从攻击时 +1/+0，并且每回合一次把大海虎鲸加入手牌）。
+- 新增 8 个场景（`tests/10005/batch-60-attack-events.wbotest`）；Go 单测
+  `internal/project/attack_event_test.go`。
+- 全量回归：`check` 0 错 0 警；`test` 877 全绿；`go test ./...` 全绿；语料快照更新为 877 个场景。
 
 ### 批次 59（S-58 同费用手牌判断 + S-61 召唤累计输出 + 卡包 10005 第六批）
 

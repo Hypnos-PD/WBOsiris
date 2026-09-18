@@ -690,11 +690,11 @@ func (g *game) commitAttack(a ir.AttackAction) string {
 		g.attack.defender = defender.id
 		defenderTarget = ir.EventTarget{Kind: "instance", InstanceID: defender.id}
 	}
-	event := ir.RuntimeEvent{Kind: "attacked", Attacker: &attackerTarget, Defender: &defenderTarget}
+	event := ir.RuntimeEvent{Kind: "attacked", Side: a.Actor, Attacker: &attackerTarget, Defender: &defenderTarget}
 	if !g.emit(event) {
 		return ""
 	}
-	g.queueEventTriggers(event, attacker, "attack")
+	g.queueEventTriggers(event, attacker, "attacker")
 	g.queueSimpleTriggers(attacker, "attack")
 	return ""
 }

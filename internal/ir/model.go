@@ -205,6 +205,8 @@ type EventTrigger struct {
 	Side        string    `json:"side"`
 	SourceZone  string    `json:"sourceZone,omitempty"`
 	SubjectType string    `json:"subjectType,omitempty"`
+	// TargetKind 限定事件的另一方（目前只有"攻击主战者"的 attacked："leader"）。
+	TargetKind string `json:"targetKind,omitempty"`
 	SelfOnly    bool      `json:"selfOnly,omitempty"`
 	// ExcludeSelf 对应事件模式里的 other：监听器不响应来源实例自身的该事件。
 	ExcludeSelf bool      `json:"excludeSelf,omitempty"`

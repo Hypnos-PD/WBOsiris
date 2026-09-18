@@ -1,0 +1,106 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "光之法则龙敖的入场曲连打六次并强化对手手牌" {
+    seed 60001;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10474110; }
+        }
+        player oppo {
+            field { follower enemy = 10001110 { stats 2/12; } }
+            hand { follower held = 10001110; }
+        }
+    }
+    action { play source; }
+    expect { legal; enemy.stats == 2/6; held.stats == 3/2; }
+}
+
+scenario "奥义时龙敖获得纹章" {
+    seed 60002;
+    state {
+        turn own 10;
+        player own {
+            pp 5/5;
+            hand { follower source = 10474110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.crests count card 10474110 == 1; }
+}
+
+scenario "龙敖的纹章让对手的疾驰随从攻击主战者时减攻" {
+    seed 60003;
+    state {
+        // 纹章属于对手，因此"对手的疾驰随从"指本次行动方的随从。
+        player own { field { follower runner = 10001110 { stats 5/5; storm; } } }
+        player oppo { crests { crest luwoh = 10474110; } }
+    }
+    action { attack runner into oppo.leader; }
+    // 宣告攻击时先被 -3/-0，因此实际只打出 2 点伤害。
+    expect { legal; runner.stats == 2/5; oppo.leader.life == 18; }
+}
+
+scenario "没有疾驰的对手随从攻击时纹章不发动" {
+    seed 60004;
+    state {
+        player own { field { follower walker = 10001110 { stats 5/5; } } }
+        player oppo { crests { crest luwoh = 10474110; } }
+    }
+    action { attack walker into oppo.leader; }
+    expect { legal; walker.stats == 5/5; oppo.leader.life == 15; }
+}
+
+scenario "波摇花夕夜的入场曲召唤大海虎鲸" {
+    seed 60005;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10544120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90041130 == 1; }
+}
+
+scenario "波摇花夕夜进化时舍弃手牌并获得纹章" {
+    seed 60006;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            field { follower source = 10544120; }
+            hand { follower other = 10001110; }
+        }
+    }
+    action { evolve source; select other; }
+    expect { legal; other.zone == graveyard; own.crests count card 10544120 == 1; }
+}
+
+scenario "海洋随从攻击时纹章强化它并把大海虎鲸加入手牌" {
+    seed 60007;
+    state {
+        player own {
+            crests { crest hazuki = 10544120; }
+            field { follower whale = 90041130; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { attack whale into enemy; }
+    // 攻击时先 +1/+0，交战受 2 点伤害。
+    expect { legal; whale.stats == 3/0; own.hand count card 90041130 == 1; }
+}
+
+scenario "非海洋随从攻击时纹章不发动" {
+    seed 60008;
+    state {
+        player own {
+            crests { crest hazuki = 10544120; }
+            field { follower soldier = 10001110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { attack soldier into enemy; }
+    expect { legal; own.hand count card 90041130 == 0; soldier.stats == 2/0; }
+}

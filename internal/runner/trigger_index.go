@@ -127,6 +127,9 @@ func (g *game) queueEventTriggersFor(kind string, event ir.RuntimeEvent, subject
 				if trigger.SubjectType == "leader" && (event.Target == nil || event.Target.Kind != "leader" || event.Actual <= 0) {
 					continue
 				}
+				if trigger.TargetKind == "leader" && (event.Defender == nil || event.Defender.Kind != "leader") {
+					continue
+				}
 				if !eventSideMatches(trigger.Side, side.name, event.Side) || subject != nil && !g.matches(subject, trigger.Predicate, source, frame{}) || subject != nil && trigger.SubjectType != "" && subject.card.CardType != trigger.SubjectType {
 					continue
 				}

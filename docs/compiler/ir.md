@@ -472,6 +472,7 @@ EventPattern = {
   oncePerTurn: ("own" | "oppo" | "any")?,
   duringTurn: ("own" | "oppo")?,
   subjectType: (CardType | "leader")?,
+  targetKind: "leader"?,   (* 目前只用于 attacked：只监听攻击主战者 *)
   zone: Zone?,
   excludeSelf: bool?,
   predicate: BoolExpr?

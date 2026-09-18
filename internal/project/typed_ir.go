@@ -865,6 +865,11 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 		}
 		if len(t) >= 5 && m.SubjectType == "follower" && (values(t[3:5]) == "stats increased" || values(t[3:5]) == "life decreased") {
 			m.Event = map[string]string{"stats increased": "stats_increased", "life decreased": "life_decreased"}[values(t[3:5])]
+		} else if m.SubjectType == "follower" && t[3].Value == "attacks" {
+			m.Event = "attacked"
+			if len(t) >= 5 && t[4].Value == "leader" {
+				m.TargetKind = "leader"
+			}
 		} else {
 			m.Event = map[string]string{"summoned": "follower_summoned", "leaves": "follower_left", "survives": "damaged", "destroyed": "destroyed", "healed": "healed", "fused": "card_fused", "engaged": "amulet_engaged", "discarded": "card_discarded", "played": "card_played", "drawn": "card_drawn", "evolved": "evolved", "super_evolved": "super_evolved", "increased": "stats_increased", "decreased": "life_decreased"}[t[3].Value]
 		}

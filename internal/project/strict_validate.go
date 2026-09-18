@@ -351,6 +351,13 @@ func parseBaseEventPattern(t []syntax.Token) (int, string, bool) {
 	if set("follower", "amulet")[t[2].Value] && set("summoned", "engaged", "destroyed")[t[3].Value] {
 		return 4, t[2].Value, true
 	}
+	if t[2].Value == "follower" && t[3].Value == "attacks" {
+		// `when own|oppo follower attacks [leader]`：其他随从宣告攻击时。
+		if len(t) >= 5 && t[4].Value == "leader" {
+			return 5, "follower", true
+		}
+		return 4, "follower", true
+	}
 	if t[2].Value == "follower" && set("evolved", "super_evolved")[t[3].Value] {
 		return 4, "follower", true
 	}

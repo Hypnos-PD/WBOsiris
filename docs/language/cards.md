@@ -1318,6 +1318,10 @@ when own turn ends {
 （可以当数值用，例如 `damage oppo.field.followers drawn.cost;`）。
 "抽到本卡牌时"写作 `when self drawn { set cost self 3 until turn ends; }`：
 监听在该实例进入手牌后触发，每次抽到都会按张结算。
+其他随从的宣告攻击用 `when own|oppo follower attacks [leader] [where …] { … }` 表达，
+绑定 `attacker` 指向攻击方；加 `attacks leader` 只监听攻击主战者的那部分
+（例如"对手拥有【疾驰】的随从攻击主战者时，使其 -3/-0"写作
+`when oppo follower attacks leader where keyword storm { buff attacker -3/-0 until turn ends; }`）。
 
 场上事件监听也可以显式限制为在手牌中发动：
 
