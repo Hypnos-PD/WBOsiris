@@ -5,11 +5,14 @@ import path from 'node:path';
 import {test} from 'node:test';
 
 import {
+  candidateClasses,
   scanRuleRequires,
+  screenEnglishSplit,
   screenSelectedCondition,
   screenSentenceSplit,
   splitSentences,
   stripText,
+  verifyDispositions,
 } from './card_scope_screen.mjs';
 
 const card = ({chs, eng, jpn, id = 90000000, name = '样例'}) => ({
@@ -66,6 +69,61 @@ test('日文出现「選んだなら」时进入 B 类候选', () => {
   assert.equal(rows[0].id, 90000000);
 });
 
+test('英文句数多于中文且含条件词时进入 D 类候选', () => {
+  const rows = screenEnglishSplit([
+    card({
+      chs: '选择1个模式发动。若自己的战场上有2张以上卡牌，则改为发动所有模式。1.对对手主战者造成2点伤害。2.回复自己2点生命值。',
+      eng: 'Select a Mode to activate. If there are at least 2 allied cards on the field, activate all of them instead. 1. Deal 2 damage to the enemy leader. 2. Restore 2 defense to your leader.',
+      jpn: 'モードを1つ選ぶ。自分の場にカードが2枚以上あるなら、すべてのモードを発動する。',
+    }),
+    card({
+      chs: '抽取2张卡牌。',
+      eng: 'Draw 2 cards.',
+      jpn: '自分のデッキから2枚を引く。',
+      id: 90000002,
+      name: '白板',
+    }),
+  ]);
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].id, 90000000);
+});
+
+test('candidateClasses 汇总同一张卡在多个清单里的类别', () => {
+  const cards = [
+    card({
+      id: 90064320,
+      chs: '选择战场上的1张卡牌，破坏该卡牌。若选择了自己的护符，则对对手的主战者造成2点伤害。将1张『天书深渊』加入手牌。',
+      eng: 'Select a card on the field and destroy it. If you selected an allied amulet, deal 2 damage to the enemy leader and add a Depths of the Eld Tome to your hand.',
+      jpn: '場のカード1枚を選ぶ。それを破壊。自分のアミュレットを選んだなら、相手のリーダーに2ダメージ。『天書の深淵』1枚を自分の手札に加える。',
+    }),
+  ];
+  const classes = candidateClasses(cards);
+  assert.deepEqual([...classes.get('90064320')].sort(), ['A', 'B']);
+});
+
+test('verifyDispositions 报告未核对、类别不符、结论非法与过期条目', () => {
+  const candidates = new Map([
+    ['1', new Set(['A'])],
+    ['2', new Set(['A', 'B'])],
+    ['3', new Set(['D'])],
+  ]);
+  const ledger = {
+    cards: {
+      1: {classes: ['A'], verdict: 'scope_confirmed', note: '已核对'},
+      2: {classes: ['A'], verdict: 'nonsense', note: ''},
+      9: {classes: ['A'], verdict: 'scope_confirmed', note: '过期'},
+    },
+  };
+  const problems = verifyDispositions(candidates, ledger);
+  assert.deepEqual(problems, [
+    '2: 账本缺少 B 类',
+    '2: 判定结论缺失或非法',
+    '2: 缺少说明',
+    '未核对: 3 (D)',
+    '账本已过期: 9 不再是候选',
+  ]);
+});
+
 function writeRules(files) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'wbo-scope-'));
   for (const [name, body] of Object.entries(files)) {
@@ -74,7 +132,7 @@ function writeRules(files) {
   return dir;
 }
 
-test('scanRuleRequires 只挑出非法术卡里的 require', () => {
+test('scanRuleRequires 只挑出非法术卡里非法术/非启动能力的 require', () => {
   const dir = writeRules({
     '10000001.wbo': `wbo 0.1.0;
 
@@ -122,10 +180,7 @@ card 10000003 {
     const rows = scanRuleRequires(['10000001.wbo', '10000002.wbo', '10000003.wbo'].map(name => path.join(dir, name)));
     assert.deepEqual(
       rows.map(row => [row.id, row.block]),
-      [
-        ['10000001', 'fanfare'],
-        ['10000003', 'engage'],
-      ],
+      [['10000001', 'fanfare']],
     );
   } finally {
     fs.rmSync(dir, {recursive: true, force: true});

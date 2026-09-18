@@ -1,0 +1,171 @@
+{
+  "version": 1,
+  "comment": "A/B/D 三类条件范围候选的逐卡核对结论。改动卡牌文本或规则后跑 `node scripts/card_scope_screen.mjs --verify`；新候选没有条目就会退出 1。",
+  "cards": {
+    "10133310": {
+      "classes": ["A"],
+      "verdict": "scope_confirmed",
+      "note": "X≥5 的条件只覆盖『变身为有所成长了！』；`draw 2` 无条件。句数差来自 `X起始为0` 说明句。"
+    },
+    "10153110": {
+      "classes": ["A"],
+      "verdict": "merged_by_english",
+      "note": "官方英文 `restore 4 instead and give this follower Barrier` 把【屏障】并进『超进化后』条件；日/中/韩用句号切断。按英文实现，与 SWB-RL 断言一致。"
+    },
+    "10262110": {
+      "classes": ["A"],
+      "verdict": "scope_confirmed",
+      "note": "条件是『改为发动2次』的重复次数，条件句之后没有别的效果。"
+    },
+    "10344110": {
+      "classes": ["A"],
+      "verdict": "scope_confirmed",
+      "note": "句数差来自【守护】等关键词被英文并句；条件只覆盖『自己的回合中受到伤害且没被破坏时打1点』。"
+    },
+    "10404110": {
+      "classes": ["A"],
+      "verdict": "unimplemented",
+      "note": "骨架挂起：S-52『牌组中发动 + 瞬念召唤』。"
+    },
+    "10474110": {
+      "classes": ["A"],
+      "verdict": "scope_confirmed",
+      "note": "只有【奥义】纹章句在 `skybound_art` 条件下；随机打击与手牌增益无条件。"
+    },
+    "10503210": {
+      "classes": ["A"],
+      "verdict": "unimplemented",
+      "note": "骨架挂起：需要『与使用的卡牌原始费用相同』的战场筛选。"
+    },
+    "10543310": {
+      "classes": ["A"],
+      "verdict": "scope_confirmed",
+      "note": "『若为【觉醒】，则对对手的主战者造成2点伤害』只覆盖这一句；重复2次的随机伤害无条件。"
+    },
+    "10544110": {
+      "classes": ["A"],
+      "verdict": "scope_confirmed",
+      "note": "日/英都把『回复8点』放进『进化前』分支；进化后分支是打对手主战者8点。"
+    },
+    "10554120": {
+      "classes": ["A"],
+      "verdict": "scope_confirmed",
+      "note": "『手牌4张同费用』只覆盖追加伤害；句数差来自 `X为因本能力返回牌组的张数` 说明句与超进化分块。"
+    },
+    "10564110": {
+      "classes": ["D"],
+      "verdict": "scope_confirmed",
+      "note": "英文把模式列表切成多句（`1.`/`2.`）；模式本身无条件，回合结束的 -1/-1 由『已进化』条件控制。"
+    },
+    "10574110": {
+      "classes": ["D"],
+      "verdict": "unimplemented",
+      "note": "骨架挂起：S-74 按选项记录『尚未发动』。"
+    },
+    "10643310": {
+      "classes": ["D"],
+      "verdict": "scope_confirmed",
+      "note": "『费用为7』与『费用为5』是两个独立条件，各自决定是否加卡并减费；英文把两个 if 并进一句造成句数差。"
+    },
+    "10663210": {
+      "classes": ["B"],
+      "verdict": "scope_confirmed",
+      "note": "『选到自己的护符』只影响回复2点能量点，实现在条件内。"
+    },
+    "10664110": {
+      "classes": ["B"],
+      "verdict": "scope_confirmed",
+      "note": "『选到自己的护符』只影响对敌方全体3点伤害，实现在条件内。"
+    },
+    "10704110": {
+      "classes": ["A"],
+      "verdict": "scope_confirmed",
+      "note": "【屏障】在『攻击随从』条件内；『使交战对手获得…』虽然日文是独立句，但『交战对手』只有攻击随从时存在，放在同一 `if` 内等价。"
+    },
+    "10754120": {
+      "classes": ["A"],
+      "verdict": "merged_by_english",
+      "note": "英文把『对对手主战者造成1点伤害』并进『自己的亡者·随从入场时』监听，即每次入场打1点；日/中用句号切断。"
+    },
+    "10763110": {
+      "classes": ["A"],
+      "verdict": "merged_by_english",
+      "note": "英文 `evolve this follower and give it Barrier` 把【屏障】并进『3张护符』条件；与 10153110 同一口径。"
+    },
+    "10771310": {
+      "classes": ["D"],
+      "verdict": "scope_confirmed",
+      "note": "英文把模式列表切成多句；『入场3种创造物』在实现里用 `if/else` 表达『改为发动全部』。"
+    },
+    "10823110": {
+      "classes": ["A"],
+      "verdict": "scope_confirmed",
+      "note": "『攻击随从时』只覆盖攻击时能力；『若为进化后则改为3次』是同一能力内的次数条件。"
+    },
+    "10823310": {
+      "classes": ["D"],
+      "verdict": "scope_confirmed",
+      "note": "英文把模式列表切成多句；条件是『发动全部模式』的门槛，模式各自无条件。"
+    },
+    "10833310": {
+      "classes": ["A"],
+      "verdict": "merged_by_english",
+      "note": "英文 `restore 2 defense to your leader and recover 2 play points` 把回复能量点并进 X≥5 条件；日/中用句号切断。"
+    },
+    "10863210": {
+      "classes": ["A"],
+      "verdict": "scope_confirmed",
+      "note": "抽1张无条件；回复1点/2点分别由『有进化后随从』『有超进化后随从』决定。"
+    },
+    "10943110": {
+      "classes": ["A"],
+      "verdict": "scope_confirmed",
+      "note": "条件是『改为发动2次』的重复次数。"
+    },
+    "10954120": {
+      "classes": ["D"],
+      "verdict": "scope_confirmed",
+      "note": "英文把模式列表切成多句；手牌中回合结束的减费条件与模式本身分开。"
+    },
+    "10962310": {
+      "classes": ["D"],
+      "verdict": "scope_confirmed",
+      "note": "英文把模式列表切成多句；条件是『发动全部模式』的门槛，模式各自无条件。"
+    },
+    "10972110": {
+      "classes": ["A"],
+      "verdict": "merged_by_english",
+      "note": "英文 `... and restore 4 defense to your leader` 把回复4点并进『牌组没有重复卡牌』条件；与 10153110/10763110 同一口径。"
+    },
+    "90064320": {
+      "classes": ["A", "B"],
+      "verdict": "merged_by_english",
+      "note": "日文与英文都把『将1张天书深渊加入手牌』放进『选到自己的护符』条件内，中/韩用句号切断；按日+英实现。SWB-RL 放在条件外，是已知分歧。"
+    },
+    "10372110": {
+      "classes": ["B"],
+      "verdict": "scope_confirmed",
+      "note": "条件是『是否做出了选择』；官方 QA 明确选中的卡没被破坏时2点伤害照常发动，后续句独立结算（与 90064320 同形不同解）。"
+    },
+    "10372210": {
+      "classes": ["B"],
+      "verdict": "scope_confirmed",
+      "note": "条件是『是否做出了选择』；抽2张独立结算。"
+    },
+    "10521110": {
+      "classes": ["B"],
+      "verdict": "scope_confirmed",
+      "note": "『选到法术』只影响回复量（改为回复6点），实现为 if/else。"
+    },
+    "10653110": {
+      "classes": ["B"],
+      "verdict": "scope_confirmed",
+      "note": "条件是『是否做出了选择』；『本随从进化』独立结算。"
+    },
+    "10753110": {
+      "classes": ["B"],
+      "verdict": "scope_confirmed",
+      "note": "条件是『是否做出了选择』；『随机破坏对手1个随从』独立结算。"
+    }
+  }
+}
