@@ -7,7 +7,66 @@ card 10624120 {
     trait encroacher;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 90024320 to hand;
+        }
+        evolve {
+            faith 5 {
+                grant faith {
+                    when own card played where enhanced {
+                        buff own.field.followers +1/+1;
+                    }
+                }
+            }
+        }
+    }
+
+    faith {
+        counter value 0;
+
+        when own card played where enhanced {
+            add 1 counter value;
+        }
+
+        locale chs {
+            name "信仰：古旧天剑·伊德梅塔";
+            text """
+信仰值起始为0。
+<hr>自己通过【<color=Keyword>爆能强化</color>】使用卡牌时，信仰值+1。
+""";
+        }
+
+        locale eng {
+            name "Faith: Ancient Blades, Idemeta";
+            text """
+This faith's value starts at 0.
+<hr>Whenever you play an <b><color=Keyword>Enhance</color>d</b> card, increase this faith's value by 1.
+""";
+        }
+
+        locale jpn {
+            name "信仰：<rub=\"こきゅうてんけん\">古旧天剣</rub>・イデメタ";
+            text """
+信仰値は0から始まる。
+<hr>自分がカードを【<color=Keyword>エンハンス</color>】でプレイしたとき、信仰値を+1する。
+""";
+        }
+
+        locale kor {
+            name "신앙: 고구천검 이데메타";
+            text """
+신앙 수치는 0부터 시작.
+<hr>내가 카드를 [<color=Keyword>증강</color>]으로 사용했을 때, 신앙 수치를 +1.
+""";
+        }
+
+        locale cht {
+            name "信仰：古舊天劍‧伊德梅塔";
+            text """
+信仰值由0開始。
+<hr>當自己透過【<color=Keyword>爆能強化</color>】使用卡片時，使信仰值+1。
+""";
+        }
     }
 
     meta {

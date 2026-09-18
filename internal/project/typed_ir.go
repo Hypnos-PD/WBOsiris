@@ -648,6 +648,10 @@ func valueRefIR(t []syntax.Token, i int) ir.Ref {
 	if t[i].Value == "self" {
 		return ir.SelfRef{Kind: "self", ValueType: "entity"}
 	}
+	if t[i].Value == "faith" {
+		// "本卡牌定义的信仰"（与纹章共用主战者区域）。
+		return ir.FaithRef{Kind: "faith", ValueType: "entity"}
+	}
 	if set("target", "summoned", "drawn", "engaged")[t[i].Value] || t[i].Kind == syntax.Identifier && !set("own", "oppo", "field")[t[i].Value] {
 		return ir.BindingRef{Kind: "binding", Name: t[i].Value}
 	}

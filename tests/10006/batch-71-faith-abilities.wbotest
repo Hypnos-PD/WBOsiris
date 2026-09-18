@@ -1,0 +1,96 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "信仰值足够时古旧天枪支付十点并加入天枪深渊" {
+    seed 71001;
+    state {
+        player own {
+            pp 1/1;
+            crests { faith spear = 10614120 { counter value 10; } }
+            hand { follower source = 10614120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90014330 == 1; spear.counter.value == 0; source has drain; }
+}
+
+scenario "信仰值不足时古旧天枪既不加牌也不扣信仰值" {
+    seed 71002;
+    state {
+        player own {
+            pp 1/1;
+            crests { faith spear = 10614120 { counter value 9; } }
+            hand { follower source = 10614120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90014330 == 0; spear.counter.value == 9; }
+}
+
+scenario "自己的随从进化时古旧天枪的信仰值加一" {
+    seed 71003;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            crests { faith spear = 10614120 { counter value 0; } }
+            field { follower ally = 10001110; }
+        }
+    }
+    action { evolve ally; }
+    expect { legal; spear.counter.value == 1; }
+}
+
+scenario "古旧天剑的入场曲把天剑深渊加入手牌" {
+    seed 71004;
+    state {
+        player own {
+            pp 2/2;
+            crests { faith blades = 10624120 { counter value 0; } }
+            hand { follower source = 10624120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90024320 == 1; }
+}
+
+scenario "信仰值足够时古旧天剑的进化时能力支付五点" {
+    seed 71005;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            crests { faith blades = 10624120 { counter value 5; } }
+            field { follower source = 10624120; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; blades.counter.value == 0; }
+}
+
+scenario "信仰值不足时古旧天剑的进化时能力不发动" {
+    seed 71006;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            crests { faith blades = 10624120 { counter value 4; } }
+            field { follower source = 10624120; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; blades.counter.value == 4; }
+}
+
+scenario "通过爆能强化使用卡牌时古旧天剑的信仰值加一" {
+    seed 71007;
+    state {
+        player own {
+            pp 3/3;
+            crests { faith blades = 10624120 { counter value 0; } }
+            hand { follower source = 10621110; }
+        }
+    }
+    action { play source; }
+    expect { legal; blades.counter.value == 1; source.stats == 3/3; }
+}

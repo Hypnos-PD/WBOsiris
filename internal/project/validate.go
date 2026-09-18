@@ -1164,7 +1164,7 @@ func checkBindingAt(t []syntax.Token, start, end int, b map[string]bool, ds *[]s
 		return
 	}
 	name := t[start].Value
-	if t[start].Kind == syntax.Identifier && !set("self", "own", "oppo", "field", "all")[name] && !b[name] {
+	if t[start].Kind == syntax.Identifier && !set("self", "faith", "own", "oppo", "field", "all")[name] && !b[name] {
 		diag(ds, "WBO-E009-BINDING-SCOPE", "错误", "绑定在使用前未定义: "+name, t[start].Span)
 	}
 }

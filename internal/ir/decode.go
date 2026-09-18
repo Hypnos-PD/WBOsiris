@@ -1371,6 +1371,18 @@ func decodeRef(data []byte) (Ref, error) {
 			return nil, fmt.Errorf("invalid self reference")
 		}
 		return SelfRef{v.Kind, v.ValueType}, nil
+	case "faith":
+		var v struct {
+			Kind      string `json:"kind"`
+			ValueType string `json:"valueType,omitempty"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if v.ValueType != "" && v.ValueType != "entity" {
+			return nil, fmt.Errorf("invalid faith reference")
+		}
+		return FaithRef{v.Kind, v.ValueType}, nil
 	case "binding":
 		var v struct {
 			Kind string `json:"kind"`

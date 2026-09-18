@@ -240,6 +240,14 @@ type SelfRef struct {
 
 func (r SelfRef) refKind() string { return r.Kind }
 
+// FaithRef 指向"本卡牌定义的信仰"实体（与纹章共用主战者区域）。
+type FaithRef struct {
+	Kind      string `json:"kind"`
+	ValueType string `json:"valueType,omitempty"`
+}
+
+func (r FaithRef) refKind() string { return r.Kind }
+
 type BindingRef struct {
 	Kind string `json:"kind"`
 	Name string `json:"name"`

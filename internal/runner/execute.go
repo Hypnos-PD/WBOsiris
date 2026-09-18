@@ -204,6 +204,16 @@ func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 			return nil
 		}
 		return []*instance{self}
+	case ir.FaithRef:
+		if self == nil || self.card == nil {
+			return nil
+		}
+		for _, faith := range g.owner(self).crests {
+			if faith.card != nil && faith.card.CardType == "faith" && faith.card.ID == self.card.ID {
+				return []*instance{faith}
+			}
+		}
+		return nil
 	case ir.BindingRef:
 		return g.boundInstances(f[r.Name])
 	case ir.DestructionBatchRef:

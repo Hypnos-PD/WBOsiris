@@ -50,7 +50,9 @@ func TestGrantRejectsCapturedBindingsAndUnsupportedTriggers(t *testing.T) {
 		`grant missing { lastwords { draw 1; } }`,
 		`grant self { lastwords; }`,
 		`grant self { fanfare { draw 1; } }`,
-		`grant self { when own follower summoned { draw 1; } }`,
+		// 事件监听可以附加（含筛选），但自身专用事件与 require 仍然被拒绝。
+		`grant self { when self summoned { draw 1; } }`,
+		`grant self { when own follower summoned { require target from own.hand; } }`,
 		`grant self { lastwords { require target from own.hand; } }`,
 		`grant self { lastwords { add 1 counter x; } }`,
 		`grant self { lastwords { draw 1; } lastwords { draw 1; } }`,

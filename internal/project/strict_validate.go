@@ -95,10 +95,15 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 				valid := ability.Word(0) == "lastwords"
 				if ability.Word(0) == "when" {
 					end, _, ok := parseEventPattern(ability.Tokens())
-					valid = ok && end == len(ability.Tokens()) && ir.ValidGrantedTrigger(eventPatternIR(ability.Tokens()))
+					tokens := ability.Tokens()
+					if ok && end < len(tokens) && tokens[end].Value == "where" {
+						// 附加的事件监听可以带筛选（"自己通过【爆能强化】使用卡牌时"）。
+						end, ok = parseWhere(tokens, end)
+					}
+					valid = ok && end == len(tokens) && ir.ValidGrantedTrigger(eventPatternIR(tokens))
 				}
 				if !valid || len(ability.Blocks()) != 1 || repeatHasRequire(ability.Blocks()[0]) {
-					shapeError(ds, s, "附加能力只允许 lastwords 或回合开始/结束触发，不允许 require")
+					shapeError(ds, s, "附加能力只允许 lastwords 或事件监听，不允许 require")
 				}
 				strictEffectBlock([]*syntax.Statement{ability}, effectContext{cardType: "follower"}, ds)
 			}

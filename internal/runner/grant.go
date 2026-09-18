@@ -102,7 +102,10 @@ func (g *game) grantAbility(e ir.GrantEffect, self *instance, bindings frame) {
 		if !g.chargeQueryVisits(1) {
 			return
 		}
-		if target.card.CardType != "follower" || target.zone != "field" && target.zone != "hand" {
+		if target.card.CardType != "follower" && target.card.CardType != "faith" {
+			continue
+		}
+		if target.card.CardType == "follower" && target.zone != "field" && target.zone != "hand" {
 			continue
 		}
 		if !g.chargeQueryVisits(len(target.card.Abilities) + len(target.grants) + 1) {

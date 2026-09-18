@@ -78,6 +78,9 @@ func (g *game) effectTargets(ref ir.Ref, self *instance, bindings frame) []*inst
 // crestZoneRef 判断引用链是否指向显式的纹章集合。
 func crestZoneRef(ref ir.Ref) bool {
 	switch r := ref.(type) {
+	case ir.FaithRef:
+		// 「使自己的信仰获得「…」」：目标是主战者区域里的信仰实体。
+		return true
 	case ir.ZoneRef:
 		return r.Zone == "crests"
 	case ir.FilterRef:

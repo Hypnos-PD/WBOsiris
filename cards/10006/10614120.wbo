@@ -7,7 +7,65 @@ card 10614120 {
     trait encroacher;
 
     effect {
-        unplayable;
+        drain;
+        fanfare {
+            faith 10 {
+                add 1 card 90014330 to hand;
+                grant faith {
+                    when own follower evolved {
+                        damage oppo.leader 1;
+                    }
+                }
+            }
+        }
+    }
+
+    faith {
+        counter value 0;
+
+        when own follower evolved {
+            add 1 counter value;
+        }
+
+        locale chs {
+            name "信仰：古旧天枪·萨莎妮德";
+            text """
+信仰值起始为0。
+<hr>自己的随从进化时，信仰值+1。
+""";
+        }
+
+        locale eng {
+            name "Faith: Ancient Heavenspear, Sasanid";
+            text """
+This faith's value starts at 0.
+<hr>Whenever an allied follower evolves, increase this faith's value by 1.
+""";
+        }
+
+        locale jpn {
+            name "信仰：<rub=\"こきゅうてんそう\">古旧天槍</rub>・ササニド";
+            text """
+信仰値は0から始まる。
+<hr>自分のフォロワーが進化したとき、信仰値を+1する。
+""";
+        }
+
+        locale kor {
+            name "신앙: 고구천창 사사니드";
+            text """
+신앙 수치는 0부터 시작.
+<hr>내 추종자가 진화했을 때, 신앙 수치를 +1.
+""";
+        }
+
+        locale cht {
+            name "信仰：古舊天槍‧薩莎妮德";
+            text """
+信仰值由0開始。
+<hr>當自己的從者卡進化時，使信仰值+1。
+""";
+        }
     }
 
     meta {

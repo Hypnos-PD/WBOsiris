@@ -17,7 +17,12 @@ func ValidGrantedTrigger(t Trigger) bool {
 		return t.Kind == "lastwords"
 	}
 	if t, ok := t.(EventTrigger); ok {
-		return (t.Event == "turn_started" || t.Event == "turn_ended") && t.OncePerTurn == "" && t.DuringTurn == "" && t.SourceZone == "" && !t.SelfOnly && t.SubjectType == "" && t.Predicate == nil && t.Condition == nil
+		// 回合开始/结束监听保持原有的"无筛选、无自身限制"形状；
+		// 另外允许把事件监听（如"自己的随从进化时""通过爆能强化使用卡牌时"）附加给信仰等永久实体。
+		if t.Event == "turn_started" || t.Event == "turn_ended" {
+			return t.OncePerTurn == "" && t.DuringTurn == "" && t.SourceZone == "" && !t.SelfOnly && t.SubjectType == "" && t.Predicate == nil && t.Condition == nil
+		}
+		return !t.SelfOnly && !t.ExcludeSelf
 	}
 	return false
 }
