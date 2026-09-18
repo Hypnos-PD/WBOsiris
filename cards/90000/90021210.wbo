@@ -5,7 +5,13 @@ card 90021210 {
     cost 1;
 
     effect {
-        unplayable;
+        countdown 7;
+        when own card played where type spell {
+            reduce countdown self 1;
+        }
+        lastwords {
+            damage oppo.leader 2;
+        }
     }
 
     meta {

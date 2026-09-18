@@ -7,7 +7,13 @@ card 90023110 {
     trait officer;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            if count(own.field.followers where card 10223120) >= 1 {
+                buff self +1/+1;
+                add bane to self;
+            }
+        }
     }
 
     meta {

@@ -6,7 +6,7 @@ card 90074140 {
     stats 3/3;
 
     effect {
-        unplayable;
+        rush;
     }
 
     meta {

@@ -5,6 +5,7 @@
 //   node scripts/card_worklist.mjs [--cards ../WBArts/data/cards.json] [--root .] [--pack 10002] [--limit 30]
 import {readFileSync, readdirSync, statSync} from 'node:fs';
 import {join, resolve, basename} from 'node:path';
+import {isPlaceholder} from './card_placeholder.mjs';
 
 const args = process.argv.slice(2);
 const option = (name, fallback) => {
@@ -28,10 +29,11 @@ function walk(dir, out = []) {
 const files = walk(join(root, 'cards'));
 const written = new Map();
 const unfinished = new Set();
+
 for (const path of files) {
   const id = basename(path, '.wbo');
   written.set(id, path);
-  if (/^\s*unplayable;\s*$/m.test(readFileSync(path, 'utf8'))) unfinished.add(id);
+  if (isPlaceholder(readFileSync(path, 'utf8'))) unfinished.add(id);
 }
 
 const cards = JSON.parse(readFileSync(source, 'utf8'));

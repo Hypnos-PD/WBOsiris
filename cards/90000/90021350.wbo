@@ -5,7 +5,25 @@ card 90021350 {
     cost 0;
 
     effect {
-        unplayable;
+        mode {
+            option 1 {
+                label chs "抽取1张卡牌。";
+                label eng "Draw a card.";
+                label jpn "自分のデッキから1枚を引く。";
+                label kor "내 덱에서 1장을 뽑는다.";
+                label cht "由自己的牌堆中抽取1張卡片。";
+                draw 1;
+            }
+            option 2 {
+                label chs "对对手的战场上的随机1个随从造成2点伤害。";
+                label eng "Deal 2 damage to a random enemy follower.";
+                label jpn "相手の場のフォロワーからランダム1枚に2ダメージ。";
+                label kor "상대방 전장의 추종자 중 무작위로 1장에게 2 피해.";
+                label cht "隨機給予1張敵方戰場上的從者卡2點傷害。";
+                random victim from oppo.field.followers;
+                damage victim 2;
+            }
+        }
     }
 
     meta {

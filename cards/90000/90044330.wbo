@@ -6,7 +6,12 @@ card 90044330 {
     trait encroacher;
 
     effect {
-        unplayable;
+        damage oppo.leader 1;
+        heal own.leader 1;
+        when self discarded {
+            damage oppo.leader 1;
+            heal own.leader 1;
+        }
     }
 
     meta {

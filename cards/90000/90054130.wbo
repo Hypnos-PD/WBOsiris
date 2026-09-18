@@ -6,7 +6,12 @@ card 90054130 {
     stats 2/3;
 
     effect {
-        unplayable;
+        rush;
+        ward;
+        lastwords {
+            random ally from own.field.followers where card 10254110;
+            buff ally +1/+0;
+        }
     }
 
     meta {

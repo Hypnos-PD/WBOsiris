@@ -5,7 +5,14 @@ card 90014320 {
     cost 6;
 
     effect {
-        unplayable;
+        when own turn ends while self in hand {
+            reduce cost self 1 minimum 0;
+        }
+        if count(own.field.followers where card 10314120) >= 1 {
+            damage oppo.leader 20;
+        } else {
+            damage oppo.leader 6;
+        }
     }
 
     meta {

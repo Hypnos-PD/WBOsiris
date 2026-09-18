@@ -1,0 +1,216 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "伊鞠的小鬼与新绿的妖精携带关键词" {
+    seed 52001;
+    state {
+        player own {
+            field {
+                follower imp = 90074140;
+                follower sapling = 90011120;
+                follower knight = 90014110;
+            }
+        }
+    }
+    action { end_turn; }
+    expect {
+        legal;
+        imp has rush;
+        sapling has ward;
+        knight has storm;
+        knight has ward;
+        // 新绿的妖精在自己的回合结束时进化：1/1 → 3/3。
+        sapling.evolved == true;
+        sapling.stats == 3/3;
+    }
+}
+
+scenario "新约白之章的谢幕曲回复主战者并召唤黑之章" {
+    seed 52002;
+    state {
+        player own {
+            leader 10/20;
+            pp 1/1;
+            field { amulet white = 90074210; }
+            hand { spell source = 90074310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; select white; }
+    expect {
+        legal;
+        white.zone == graveyard;
+        own.leader.life == 11;
+        own.field count card 90074220 == 1;
+        enemy.stats == 2/4;
+    }
+}
+
+scenario "新约黑之章的谢幕曲打击对手主战者并召唤白之章" {
+    seed 52003;
+    state {
+        player own {
+            pp 1/1;
+            field { amulet black = 90074220; }
+            hand { spell source = 90074310; }
+        }
+    }
+    action { play source; select black; }
+    expect { legal; black.zone == graveyard; oppo.leader.life == 19; own.field count card 90074210 == 1; }
+}
+
+scenario "令人战栗的海盗旗在使用法术时推进吟唱" {
+    seed 52004;
+    state {
+        player own {
+            pp 1/1;
+            field { amulet flag = 90021210; }
+            deck top { follower first = 10001110; follower second = 10001110; }
+            hand { spell source = 90054330; }
+        }
+    }
+    action { play source; }
+    expect { legal; flag.countdown == 6; }
+}
+
+scenario "一尾狐的谢幕曲强化双轮夜行" {
+    seed 52005;
+    state {
+        player own {
+            field {
+                follower fox = 90054130;
+                follower pair = 10254110;
+            }
+        }
+        player oppo { field { follower big = 10001110 { stats 5/5; } } }
+    }
+    action { attack fox into big; }
+    expect { legal; fox.zone == graveyard; pair.stats == 6/9; }
+}
+
+scenario "闪耀的金币模式一抽牌" {
+    seed 52006;
+    state {
+        player own {
+            deck top { follower drew = 10001110; }
+            hand { spell source = 90021350; }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; own.hand count card 10001110 == 1; }
+}
+
+scenario "闪耀的金币模式二打击随机敌方随从" {
+    seed 52007;
+    state {
+        player own { hand { spell source = 90021350; } }
+        player oppo { field { follower enemy = 10001110 { stats 2/6; } } }
+    }
+    action { play source; mode 2; }
+    expect { legal; enemy.stats == 2/4; }
+}
+
+scenario "安静的女仆在有普莉姆时加身材并失去毁灭" {
+    seed 52008;
+    state {
+        player own {
+            pp 2/2;
+            field { follower princess = 10223120; }
+            hand { follower source = 90023110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.stats == 3/3; source has bane; source has ward; }
+}
+
+scenario "没有普莉姆时安静的女仆只是带守护的2/2" {
+    seed 52009;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 90023110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.stats == 2/2; source lacks bane; source has ward; }
+}
+
+scenario "天刀深渊打出时打击对手主战者并回复主战者" {
+    seed 52010;
+    state {
+        player own {
+            leader 10/20;
+            pp 2/2;
+            hand { spell source = 90044330; }
+        }
+    }
+    action { play source; }
+    expect { legal; oppo.leader.life == 19; own.leader.life == 11; }
+}
+
+scenario "天刀深渊被舍弃时也触发生效" {
+    seed 52011;
+    state {
+        player own {
+            leader 10/20;
+            pp 3/3;
+            field { amulet altar = 10143210; }
+            hand { spell mine = 90044330; }
+        }
+    }
+    action { engage altar; select mine; }
+    expect { legal; mine.zone == graveyard; oppo.leader.life == 19; own.leader.life == 11; }
+}
+
+scenario "月影指环在护符达到三张时于回合结束打击对手全体" {
+    seed 52012;
+    state {
+        player own {
+            field {
+                amulet ring = 90064210;
+                amulet white = 90074210;
+                amulet black = 90074220;
+            }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/6; } } }
+    }
+    action { end_turn; }
+    expect { legal; enemy.stats == 2/3; oppo.leader.life == 17; }
+}
+
+scenario "绝命的痛击对对手主战者造成六点伤害" {
+    seed 52013;
+    state {
+        player own {
+            pp 6/6;
+            hand { spell source = 90014320; }
+        }
+    }
+    action { play source; }
+    expect { legal; oppo.leader.life == 14; }
+}
+
+scenario "有艾斯迪亚时绝命的痛击改为二十点伤害" {
+    seed 52014;
+    state {
+        player own {
+            pp 6/6;
+            field { follower ace = 10314120; }
+            hand { spell source = 90014320; }
+        }
+    }
+    action { play source; }
+    expect { legal; oppo.leader.life == 0; events contains ordered { game_end own; } }
+}
+
+scenario "天斧深渊复制高费随从并降低复制体的费用" {
+    seed 52015;
+    state {
+        player own {
+            field { follower big = 10401110; }
+            hand { spell source = 90074320; }
+        }
+    }
+    action { play source; select big; }
+    expect { legal; own.hand count card 10401110 == 1; }
+}

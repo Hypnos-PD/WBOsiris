@@ -6,7 +6,8 @@ card 90014110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        storm;
+        ward;
     }
 
     meta {

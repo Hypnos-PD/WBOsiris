@@ -7,7 +7,10 @@ card 90011120 {
     trait pixie;
 
     effect {
-        unplayable;
+        ward;
+        when own turn ends {
+            evolve self silent;
+        }
     }
 
     meta {

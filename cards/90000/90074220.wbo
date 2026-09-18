@@ -5,7 +5,11 @@ card 90074220 {
     cost 3;
 
     effect {
-        unplayable;
+        countdown 1;
+        lastwords {
+            damage oppo.leader 1;
+            summon 1 card 90074210;
+        }
     }
 
     meta {

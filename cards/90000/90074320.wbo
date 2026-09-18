@@ -6,7 +6,9 @@ card 90074320 {
     trait encroacher;
 
     effect {
-        unplayable;
+        require target from own.field.followers where base.cost >= 5;
+        add copies of target to hand;
+        reduce cost added 3 minimum 0;
     }
 
     meta {

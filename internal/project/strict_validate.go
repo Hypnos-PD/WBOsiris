@@ -71,7 +71,7 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 		if ctx.cardType != "follower" && h == "set" && len(t) > 2 && t[2].Value == "self" {
 			diag(ds, "WBO-E008-TYPE-MISMATCH", "错误", "set life self 只允许用于随从", s.Span)
 		}
-		if abilities[h] && len(b) == 0 && ctx.cardType != "follower" {
+		if abilities[h] && len(b) == 0 && ctx.cardType != "follower" && h != "aura" {
 			diag(ds, "WBO-E012-INVALID-TRIGGER", "错误", h+" 固有能力只允许用于随从", s.Span)
 		}
 		if (set("fanfare", "lastwords")[h] || h == "replace" && len(b) > 0) && ctx.cardType == "spell" {

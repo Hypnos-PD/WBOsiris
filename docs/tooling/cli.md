@@ -156,7 +156,11 @@ go vet ./...
 ```
 
 `card_coverage.sh` 输出规则包中的卡牌总数、可执行卡牌数、比例和仍标记为
-`unplayable` 的骨架数；可用 `--min-playable N` 或 `--min-percent N` 设置门槛。
+骨架的卡数；可用 `--min-playable N` 或 `--min-percent N` 设置门槛。
+判定"骨架"的条件是 `effect` 块里**只有**一条 `unplayable;`（`scripts/card_placeholder.mjs`）：
+真正无法使用但仍带其它能力（例如未来核心、过往核心的融合块）的卡算作已完成，
+`--list-unplayable` 输出的也就是这些骨架文件。
+该判定有 `scripts/card_placeholder.test.mjs`，可用 `node --test scripts/card_placeholder.test.mjs` 运行。
 
 集成测试会检查当前全部卡牌和测试场景、严格引用、畸形输入拒绝、格式化幂等、
 类型化 IR、确定性编译和固定源根下的来源 ID 稳定性。
