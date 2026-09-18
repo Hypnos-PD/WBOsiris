@@ -347,6 +347,24 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			return nil, err
 		}
 		return ir.PayResourceEffect{NodeBase: base, Kind: "pay_resource", Resource: resource, Amount: intAt(s, 1), OnPaid: body}, nil
+	case "distribute":
+		// `distribute faith <卡牌ID> { option N { ... } ... }`：把信仰值逐点随机分配给若干能力。
+		if len(t) != 3 || t[1].Value != "faith" || !isCardID(t[2]) {
+			return nil, fmt.Errorf("distribute 语句必须写成 distribute faith <卡牌ID> { option 1 { ... } ... }")
+		}
+		effect := ir.DistributeFaithEffect{NodeBase: base, Kind: "distribute_faith", FaithID: intToken(t[2])}
+		for _, o := range s.Blocks()[0] {
+			labels, statements, err := modeOptionParts(o.Blocks()[0])
+			if err != nil {
+				return nil, err
+			}
+			body, err := compileEffectBlock(statements, sid, id+"/option/"+o.Word(1), ids)
+			if err != nil {
+				return nil, err
+			}
+			effect.Options = append(effect.Options, ir.ModeOption{ID: intAt(o, 1), Body: body, Origin: originIR(o.Span, sid), Labels: labels})
+		}
+		return effect, nil
 	case "draw":
 		owner, offset := "own", 2
 		if len(t) >= 4 && t[2].Value == "for" {

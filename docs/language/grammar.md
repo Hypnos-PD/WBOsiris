@@ -137,6 +137,7 @@ effect_statement  = intrinsic_statement
                   | repeat_statement
                   | resource_block
                   | mode_block
+                  | distribute_block
                   | grant_block
                   | operation ;
 
@@ -296,10 +297,11 @@ scalar_field      = "life" | "pp" | "maxpp" | "ep" | "sep" | "combo"
 fusion_scalar_field = "cost" | "distinct" ;
 
 resource_block    = resource_name , integer , effect_block ;
-resource_name     = "earthrite" | "necromancy" ;
+resource_name     = "earthrite" | "necromancy" | "faith" ;
 
 mode_block        = "mode" , [positive_integer] , "{" , option_decl , option_decl , {option_decl} , "}"
                   | "mode" , "random" , positive_integer , "{" , option_decl , option_decl , {option_decl} , "}" ;
+distribute_block  = "distribute" , "faith" , card_id , "{" , option_decl , option_decl , {option_decl} , "}" ;
 option_decl       = "option" , integer , "{" , {option_label} , {effect_statement} , "}" ;
 option_label      = "label" , locale_id , string , ";" ;
 ```

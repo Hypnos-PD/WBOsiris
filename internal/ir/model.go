@@ -516,6 +516,18 @@ type ModeOption struct {
 	Origin Origin            `json:"origin"`
 	Labels map[string]string `json:"labels,omitempty"`
 }
+
+// DistributeFaithEffect 把「某个信仰的信仰值」逐点随机分配给若干能力：
+// 每一点独立等概率落在某个选项上，选项按编号顺序结算（每个分配到的点执行一次能力）。
+type DistributeFaithEffect struct {
+	NodeBase
+	Kind    string       `json:"kind"`
+	FaithID int          `json:"faithId"`
+	Options []ModeOption `json:"options"`
+}
+
+func (e DistributeFaithEffect) effectKind() string   { return e.Kind }
+func (e DistributeFaithEffect) effectBase() NodeBase { return e.NodeBase }
 type PayResourceEffect struct {
 	NodeBase
 	Kind     string   `json:"kind"`

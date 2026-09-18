@@ -6,7 +6,19 @@ card 90034330 {
     trait encroacher;
 
     effect {
-        unplayable;
+        summon 1 card 10631110;
+        // X/Y/Z 由信仰值逐点随机分配：每一点独立落在「+X/+X」「回复主战者」「打击对手主战者」之一。
+        distribute faith 10634120 {
+            option 1 {
+                buff summoned +1/+1;
+            }
+            option 2 {
+                heal own.leader 1;
+            }
+            option 3 {
+                damage oppo.leader 1;
+            }
+        }
     }
 
     meta {

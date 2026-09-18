@@ -44,6 +44,10 @@ card 10664120 {
 `faith N { … }` 与 `earthrite`/`necromancy` 同属资源支付块：信仰不存在或信仰值不足时
 整块不执行（不会扣值，也不会产生块内效果）；信仰值由信仰自身的事件监听增长。
 测试里可以用 `crests { faith 别名 = 卡牌ID { counter value N; } }` 直接放置信仰。
+需要把信仰值当数值分配时用
+`distribute faith <卡牌ID> { option 1 { … } option 2 { … } … }`：
+信仰值会**逐点**独立等概率分给某个选项（每点消费一次随机数），再按选项编号顺序
+为每个分配到的点执行一次能力；信仰值本身不消费。
 
 `damage_reduction N` 使该随从每次受到的伤害减少 `N`，实际伤害最低为零。
 在效果块中使用 `set_damage_reduction TARGET N` 可在结算时动态设置目标的固定减伤值；

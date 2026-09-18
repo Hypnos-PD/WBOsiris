@@ -846,6 +846,48 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		}
 		b, err := decodeEffects(v.OnPaid, nodeIDs)
 		return PayResourceEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Resource, v.Amount, b}, err
+	case "distribute_faith":
+		type raw struct {
+			ID      string            `json:"id"`
+			Kind    string            `json:"kind"`
+			FaithID int               `json:"faithId"`
+			Options []json.RawMessage `json:"options"`
+			Origin  Origin            `json:"origin"`
+		}
+		var v raw
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
+			return nil, err
+		}
+		if !validCardID(v.FaithID) || len(v.Options) < 2 {
+			return nil, fmt.Errorf("invalid distribute_faith shape")
+		}
+		e := DistributeFaithEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, FaithID: v.FaithID}
+		seen := map[int]bool{}
+		for _, x := range v.Options {
+			type option struct {
+				ID     int               `json:"id"`
+				Body   []json.RawMessage `json:"body"`
+				Origin Origin            `json:"origin"`
+				Labels map[string]string `json:"labels,omitempty"`
+			}
+			var o option
+			if err := strict(x, &o); err != nil {
+				return nil, err
+			}
+			if seen[o.ID] || o.ID <= 0 || o.ID > 65535 || !validOrigin(o.Origin) || !ValidChoiceLabels(o.Labels) {
+				return nil, fmt.Errorf("duplicate distribute option")
+			}
+			seen[o.ID] = true
+			b, err := decodeEffects(o.Body, nodeIDs)
+			if err != nil {
+				return nil, err
+			}
+			e.Options = append(e.Options, ModeOption{ID: o.ID, Body: b, Origin: o.Origin, Labels: o.Labels})
+		}
+		return e, nil
 	case "draw":
 		type raw struct {
 			ID                              string `json:"id"`

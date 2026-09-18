@@ -1,0 +1,36 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "天晶深渊按信仰值随机分配增身材回复与伤害" {
+    seed 70001;
+    state {
+        player own {
+            leader 10/20;
+            pp 6/6;
+            crests { faith crystals = 10634120 { counter value 6; } }
+            hand { spell source = 90034330; }
+        }
+    }
+    action { play source; }
+    // 信仰值 7：入场曲召唤的天晶魔手让信仰值 +1，随后 7 点逐点随机分配（本 seed 固定）。
+    expect {
+        legal;
+        own.field count card 10631110 == 1;
+        crystals.counter.value == 7;
+        own.leader.life == 15;
+        oppo.leader.life == 20;
+    }
+}
+
+scenario "没有信仰时天晶深渊只召唤天晶魔手" {
+    seed 70002;
+    state {
+        player own {
+            leader 10/20;
+            pp 6/6;
+            hand { spell source = 90034330; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10631110 == 1; own.leader.life == 10; oppo.leader.life == 20; }
+}

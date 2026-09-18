@@ -535,6 +535,9 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 			return nil
 		}
 		return s.modeRequest(e, bindings, self)
+	case ir.DistributeFaithEffect:
+		s.pushFaithDistribution(e, bindings, self)
+		return nil
 	case ir.PayResourceEffect:
 		paid := false
 		own, _, _ := s.g.relativePlayers(self)
@@ -607,6 +610,53 @@ func (s *Session) targetRequest(e ir.SelectionEffect, candidates []ir.EventTarge
 	}
 	request := s.newRequest(e.ID, "target", count, count, items, s.g.sideOf(self))
 	return &pendingChoice{request: request, binding: e.Binding, bindings: bindings, self: self}
+}
+
+// pushFaithDistribution 把指定信仰的信仰值逐点随机分配：
+// 每一点独立等概率落在某个选项上，最终按选项编号顺序、每个分配到的点执行一次能力。
+func (s *Session) pushFaithDistribution(e ir.DistributeFaithEffect, bindings frame, self *instance) {
+	own, _ := s.g.playerForSide(self, "")
+	var faith *instance
+	for _, candidate := range own.crests {
+		if candidate.card != nil && candidate.card.CardType == "faith" && candidate.card.ID == e.FaithID {
+			faith = candidate
+			break
+		}
+	}
+	if faith == nil {
+		return
+	}
+	value := max(faith.counters["value"], 0)
+	if value == 0 {
+		return
+	}
+	assignment := map[int]int{}
+	for n := 0; n < value; n++ {
+		if !s.g.chargeQueryVisits(len(e.Options)) {
+			return
+		}
+		index := 0
+		if len(e.Options) > 1 {
+			index = s.g.rng.Index(len(e.Options))
+		}
+		assignment[e.Options[index].ID]++
+	}
+	ids := make([]int, 0, len(assignment))
+	for id := range assignment {
+		ids = append(ids, id)
+	}
+	sort.Ints(ids)
+	for _, id := range ids {
+		for _, option := range e.Options {
+			if option.ID != id {
+				continue
+			}
+			for n := 0; n < assignment[id]; n++ {
+				s.pushFrame(execFrame{body: option.Body, blockID: nestedBlockID(e.ID, fmt.Sprintf("option:%d:%d", id, n)), self: self, bindings: bindings})
+			}
+			break
+		}
+	}
 }
 
 // pushRandomMode 随机选出 Count 个互不相同的选项（不向玩家提问），

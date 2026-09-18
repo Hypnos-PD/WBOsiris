@@ -511,6 +511,31 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 				}
 			}
 			continue
+		case "distribute":
+			// `distribute faith <卡牌ID> { option 1 { ... } ... }`：把信仰值逐点随机分配。
+			if len(t) != 3 || t[1].Value != "faith" || !isCardID(t[2]) || len(b) != 1 || len(b[0]) < 2 || s.Terminated {
+				shapeError(ds, s, "distribute faith 卡牌ID { 至少两个 option }")
+			} else {
+				seen := map[string]bool{}
+				for _, o := range b[0] {
+					ot := o.Tokens()
+					if len(ot) != 2 || ot[0].Value != "option" || len(o.Blocks()) != 1 {
+						shapeError(ds, o, "option 整数 { ... }")
+						continue
+					}
+					if seen[ot[1].Value] {
+						diag(ds, "WBO-E010-DUPLICATE-OPTION", "错误", "distribute 选项编号重复", o.Span)
+					}
+					seen[ot[1].Value] = true
+					_, body, err := modeOptionParts(o.Blocks()[0])
+					if err != nil {
+						shapeError(ds, o, err.Error())
+					} else {
+						validateEffectBlock(body, ds, bindings, "")
+					}
+				}
+			}
+			continue
 		}
 		if !validateOperation(s, ds, bindings) {
 			unknown(ds, t[0], "效果语句")
