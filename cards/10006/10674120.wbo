@@ -7,7 +7,12 @@ card 10674120 {
     trait encroacher;
 
     effect {
-        unplayable;
+        rush;
+        fanfare {
+            if count(own.field.followers where base.cost >= 5) >= 1 {
+                add 1 card 90074320 to hand;
+            }
+        }
     }
 
     meta {

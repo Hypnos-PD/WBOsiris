@@ -7,7 +7,16 @@ card 10644120 {
     trait encroacher;
 
     effect {
-        unplayable;
+        bane;
+        when self discarded {
+            summon 1 card 10644120;
+        }
+        evolve {
+            add 1 card 90044330 to hand;
+        }
+        superevolve replaces evolve {
+            add 3 card 90044330 to hand;
+        }
     }
 
     meta {

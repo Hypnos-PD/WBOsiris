@@ -6,7 +6,21 @@ card 10624110 {
     stats 4/5;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 10621110;
+            add bane to summoned;
+        }
+        enhance 7 {
+            summon 1 card 10621110;
+            add drain to summoned;
+        }
+        enhance 8 {
+            summon 1 card 10621110;
+            add storm to summoned;
+        }
+        superevolve {
+            buff own.field.followers other +1/+1;
+        }
     }
 
     meta {

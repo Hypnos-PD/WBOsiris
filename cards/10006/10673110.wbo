@@ -6,7 +6,15 @@ card 10673110 {
     stats 3/4;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 2 card 10673110;
+        }
+        when own turn ends {
+            damage oppo.field.followers 3 distributed;
+        }
+        evolve {
+            damage oppo.field.followers 3 distributed;
+        }
     }
 
     meta {

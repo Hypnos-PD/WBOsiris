@@ -6,7 +6,20 @@ card 10643110 {
     stats 6/9;
 
     effect {
-        unplayable;
+        ward;
+        barrier;
+        fanfare {
+            require target from own.hand;
+            discard target;
+            random victim from oppo.field.followers;
+            damage victim 6;
+        }
+        evolve {
+            require target from own.hand;
+            discard target;
+            random victim from oppo.field.followers;
+            damage victim 6;
+        }
     }
 
     meta {

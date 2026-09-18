@@ -6,7 +6,34 @@ card 10633310 {
     trait encroacher;
 
     effect {
-        unplayable;
+        mode {
+            option 1 {
+                label chs "召唤1个『天晶魔手』，使其+1/+0且获得【疾驰】。";
+                label eng "Summon a Crystal Hand, give it +1/+0 and Storm.";
+                label jpn "『天晶魔手』1枚を自分の場に出す。それは+1/+0して【疾走】を持つ。";
+                label kor "「천정마수」 1장을 내 전장에 소환. 그 추종자는 +1/+0 및 [질주]를 갖는다.";
+                label cht "召喚1張『天晶魔手』。使其+1/+0並獲得【疾馳】。";
+                summon 1 card 10631110;
+                buff summoned +1/+0;
+                add storm to summoned;
+            }
+            option 2 {
+                label chs "召唤2个『天晶魔手』，使其+1/+0。";
+                label eng "Summon 2 Crystal Hands and give them +1/+0.";
+                label jpn "『天晶魔手』2枚を自分の場に出す。それらは+1/+0する。";
+                label kor "「천정마수」 2장을 내 전장에 소환. 그 추종자들은 +1/+0.";
+                label cht "召喚2張『天晶魔手』。使其+1/+0。";
+                summon 2 card 10631110;
+                buff summoned +1/+0;
+            }
+        }
+        enhance 5 replaces {
+            summon 1 card 10631110;
+            add storm to summoned;
+            buff summoned +1/+0;
+            summon 2 card 10631110;
+            buff summoned +1/+0;
+        }
     }
 
     meta {
