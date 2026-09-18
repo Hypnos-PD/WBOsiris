@@ -351,6 +351,10 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		if len(t) == 4 && t[2].Value == "counter" {
 			return ir.AdjustEffect{NodeBase: base, Kind: "adjust_counter", Field: t[3].Value, Delta: intToken(t[1])}, nil
 		}
+		if len(t) >= 6 && t[1].Value == "copies" && t[2].Value == "of" {
+			// `add copies of 集合 to hand`：复制集合里每个对象的同名卡并加入手牌。
+			return ir.CardEffect{NodeBase: base, Kind: "add_copies", Owner: "own", Destination: t[len(t)-1].Value, Target: valueRefIR(t, 3), Output: "added"}, nil
+		}
 		if t[1].Kind == syntax.Integer && t[2].Value == "card" {
 			// 加入手牌的成功实例绑定为 added，便于"加入后立即修改"的文本。
 			return ir.CardEffect{NodeBase: base, Kind: "add_card", Owner: "own", Count: intAt(s, 1), CardID: intToken(t[3]), Destination: "hand", Output: "added"}, nil
@@ -376,6 +380,10 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 				target = ir.FilterRef{Kind: "filter", Source: target, Predicate: predicate}
 			}
 			return ir.CardEffect{NodeBase: base, Kind: "summon_copies", Owner: "own", Target: target, Output: "summoned"}, nil
+		}
+		if len(t) == 2 {
+			// `summon target`：把已经存在于手牌的对象直接放到战场（不发动入场曲）。
+			return ir.CardEffect{NodeBase: base, Kind: "summon_from_hand", Owner: "own", Target: valueRefIR(t, 1), Output: "summoned"}, nil
 		}
 		owner := "own"
 		if len(t) >= 6 && t[4].Value == "for" {

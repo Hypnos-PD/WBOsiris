@@ -549,8 +549,47 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 		if e.Output != "" {
 			f[e.Output] = bindEntities(added...)
 		}
+	case "add_copies":
+		// `add copies of 集合 to hand`：按每个目标当前的卡牌定义复制一张同名卡加入手牌。
+		added := []*instance{}
+		for _, target := range g.effectTargets(e.Target, self, f) {
+			if target.card == nil || target.card.CardType == "crest" {
+				continue
+			}
+			if !g.reserveCreatedInstance() {
+				break
+			}
+			g.serial++
+			i := g.newInstance(target.card, fmt.Sprintf("added-%d", g.serial), fmt.Sprintf("@added%d", g.serial), "hand")
+			g.putInHandOrOverdraw(own, i)
+			if i.zone == "hand" {
+				added = append(added, i)
+			}
+		}
+		if e.Output != "" {
+			f[e.Output] = bindEntities(added...)
+		}
 	case "summon":
 		f[e.Output] = bindEntities(g.summonFor(self, e.Owner, e.Count, e.CardID, false)...)
+	case "summon_from_hand":
+		// `summon target`：把已经存在于手牌的对象直接放到战场，不发动入场曲。
+		batch := []*instance{}
+		for _, target := range g.effectTargets(e.Target, self, f) {
+			if target == nil || target.zone != "hand" || target.card == nil || len(own.field) >= fieldLimit {
+				continue
+			}
+			if target.card.CardType != "follower" && target.card.CardType != "amulet" {
+				continue
+			}
+			g.move(target, "field")
+			target.summoningSick = target.card.CardType == "follower"
+			g.mergeEarthSigil(target)
+			batch = append(batch, target)
+			g.triggerSummoned(target)
+		}
+		if e.Output != "" {
+			f[e.Output] = bindEntities(batch...)
+		}
 	case "summon_copies":
 		f[e.Output] = bindEntities(g.summonCopies(self, e.Owner, g.effectTargets(e.Target, self, f))...)
 	case "reanimate":

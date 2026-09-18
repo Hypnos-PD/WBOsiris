@@ -1,0 +1,76 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "星晶兽吸收之力让敌方随从消失并把同名卡加入手牌" {
+    seed 49001;
+    state {
+        player own {
+            pp 5/5;
+            hand { spell source = 10443310; }
+        }
+        player oppo { field { follower enemy = 10001110; } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.zone == banished; own.hand count card 10001110 == 1; }
+}
+
+scenario "星晶兽吸收之力也能复制敌方护符" {
+    seed 49002;
+    state {
+        player own {
+            pp 5/5;
+            hand { spell source = 10443310; }
+        }
+        player oppo { field { amulet relic = 10061210; } }
+    }
+    action { play source; select relic; }
+    expect { legal; relic.zone == banished; own.hand count card 10061210 == 1; }
+}
+
+scenario "没有敌方卡牌时星晶兽吸收之力不能使用" {
+    seed 49003;
+    state {
+        player own {
+            pp 5/5;
+            hand { spell source = 10443310; }
+        }
+    }
+    action { play source; }
+    expect { illegal target_required; unchanged; source.zone == hand; own.pp == 5/5; }
+}
+
+scenario "爆能强化八点让美妆少女召唤手牌随从并返回手牌" {
+    seed 49004;
+    state {
+        player own {
+            pp 8/8;
+            hand {
+                follower source = 10412110;
+                follower partner = 10001110;
+            }
+        }
+    }
+    action { play source; select partner; }
+    expect {
+        legal;
+        own.field count card 10001110 == 1;
+        own.hand count card 10001110 == 0;
+        own.hand count card 10412110 == 1;
+        source.zone == hand;
+    }
+}
+
+scenario "未爆能强化时美妆少女只是普通打出" {
+    seed 49005;
+    state {
+        player own {
+            pp 2/2;
+            hand {
+                follower source = 10412110;
+                follower partner = 10001110;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; source.zone == field; own.field count card 10001110 == 0; own.hand count card 10001110 == 1; }
+}

@@ -6,7 +6,11 @@ card 10412110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        enhance 8 {
+            require target from own.hand.followers;
+            summon target;
+            return self to hand;
+        }
     }
 
     meta {

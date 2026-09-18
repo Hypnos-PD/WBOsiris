@@ -429,6 +429,14 @@ remove all abilities from targets;
 多个对象按集合的稳定顺序处理，战场满后停止。`summoned` 只包含实际创建的副本，
 没有创建时也会清空，且可作为后续效果或下一次复制的输入。
 
+`summon <绑定>;` 把已经存在于手牌中的对象直接放到战场：它不发动入场曲，随从获得入场等待，
+仍然发出 `summoned` 事件并消耗一个战场空位。典型写法是
+`choose target from own.hand.followers; summon target;`（"召唤手牌中的该随从"）。
+`add copies of <集合> to hand;` 则按每个目标当前的卡牌定义复制一张同名卡加入手牌
+（手牌满时按过抽处理，不计入 `added`）；复制可以作用于已经消失的实例，
+因为只读取卡牌身份，所以"使其消失，将1张同名的卡牌加入自己的手牌"写作
+`banish target; add copies of target to hand;`。
+
 ```wbo
 choose targets from own.hand where type follower and trait artifact and cost <= 5 count 3;
 summon copies of targets;

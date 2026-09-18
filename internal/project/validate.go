@@ -610,6 +610,14 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		if len(t) == 4 && isUnsigned(t[1]) && t[2].Value == "counter" && t[3].Kind == syntax.Identifier && ir.ValidCounterName(t[3].Value) {
 			ok = true
 		}
+		if len(t) >= 6 && t[1].Value == "copies" && t[2].Value == "of" {
+			// add copies of 集合 to hand|deck：把集合里每个对象的同名卡加入目标区域。
+			end, good := parseValueRef(t, 3)
+			checkBindingAt(t, 3, end, bindings, ds)
+			if good && end+2 == len(t) && t[end].Value == "to" && set("hand", "deck")[t[end+1].Value] {
+				ok = true
+			}
+		}
 		if len(t) == 6 && isUnsigned(t[1]) && t[2].Value == "card" && isCardID(t[3]) && t[4].Value == "to" && t[5].Value == "hand" {
 			ok = true
 		}
@@ -635,6 +643,11 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		}
 	case "summon":
 		ok = len(t) == 4 && isUnsigned(t[1]) && t[2].Value == "card" && isCardID(t[3])
+		if len(t) == 2 && t[1].Kind == syntax.Identifier {
+			// `summon target;`：把已经存在于手牌的对象直接放到战场（不发动入场曲）。
+			checkBindingAt(t, 1, 2, bindings, ds)
+			ok = true
+		}
 		if len(t) == 6 && isUnsigned(t[1]) && t[2].Value == "card" && isCardID(t[3]) && t[4].Value == "for" && set("own", "oppo")[t[5].Value] {
 			// summon N card X for own|oppo：在指定一方的战场上召唤。
 			ok = true

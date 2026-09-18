@@ -390,13 +390,15 @@ add_operation     = "add" , integer , "card" , card_id , "to" , "hand" , ";"
                   | "add" , "combo" , integer , ";"
                   | "add" , integer , "earthsigil" , ";"
                   | "add" , integer , "counter" , counter_name , ";"
+                  | "add" , "copies" , "of" , value_ref , "to" , ("hand" | "deck") , ";"
                   | "add" , ability , "to" , value_ref , ["other" , [binding_name]] , [where_clause] , [effect_duration] , ";" ;
 effect_duration   = "until" , [participant] , "turn" , "ends" ;
 
 summon_operation  = "summon" , integer , "card" , card_id , ["for" , participant] , ";"
                   | "summon" , "random" , integer , "from" , deck_summon_source , [where_clause] , ["distinct" , "names"] , ";"
                   | "summon" , "random" , integer , "from" , history_source , [where_clause] , [extremum_clause] , ";"
-                  | "summon" , "copies" , "of" , value_ref , [where_clause] , ";" ;
+                  | "summon" , "copies" , "of" , value_ref , [where_clause] , ";"
+                  | "summon" , value_ref , ";" ;
 deck_summon_source = "own" , "." , "deck" , "." , ("followers" | "amulets") ;
 history_source    = participant , "." , "destroyed" , ["." , ("followers" | "amulets")] , ["this" , "turn"] ;
 numeric_operation = "damage" , value_ref , ["other" , [binding_name]] , effect_amount , [damage_distribution] , [extremum_clause] , [where_clause] , ";"
@@ -465,6 +467,8 @@ scalar_ref        = participant , "." , scalar_field ;
 `summon N card C` 按数量依次创建实例并覆盖 `summoned`；`draw` 按本次抽取顺序移动实例并
 覆盖 `drawn`。`add card ... to hand` 创建实例但不视为抽牌。批量操作只把
 实际成功进入目标区域的实例写入输出绑定。
+`summon <绑定>` 把已经存在于手牌中的对象直接移动到战场（不发动入场曲，随从获得入场等待，
+仍发出 `summoned` 事件）；`add copies of <集合> to hand` 按目标当前的卡牌定义复制同名卡加入手牌。
 牌组随机召唤移动已有实例，保留修改；数量上限取操作开始时的战场空位。
 `distinct names` 必须在筛选后，按实体副本等概率逐次抽选，每次选中后排除同名候选。
 没有该子句时只排除选中的实体。未选中的卡保留原牌组顺序，不公开身份。

@@ -976,7 +976,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			return nil, fmt.Errorf("invalid summon_copies shape")
 		}
 		return CardEffect{NodeBase: v.NodeBase, Kind: v.Kind, Owner: v.Owner, Target: target, Output: v.Output}, nil
-	case "add_card", "summon", "reanimate", "transform", "gain_crest", "banish_duplicates":
+	case "add_card", "add_copies", "summon", "summon_from_hand", "reanimate", "transform", "gain_crest", "banish_duplicates":
 		type raw struct {
 			ID                                         string `json:"id"`
 			Kind, Owner, Destination, Output, TieBreak string
@@ -1010,6 +1010,14 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		case "add_card":
 			if !validSide(v.Owner) || v.Destination != "hand" || v.Count < 0 || !validCardID(v.CardID) || v.Output != "added" || v.TieBreak != "" || v.MaxCost != 0 || r != nil || v.PreserveInstanceID || v.PreserveMaterials {
 				return nil, fmt.Errorf("invalid add_card shape")
+			}
+		case "add_copies":
+			if !validSide(v.Owner) || v.Destination != "hand" || r == nil || v.Count != 0 || v.CardID != 0 || v.Output != "added" || v.TieBreak != "" || v.MaxCost != 0 || v.PreserveInstanceID || v.PreserveMaterials {
+				return nil, fmt.Errorf("invalid add_copies shape")
+			}
+		case "summon_from_hand":
+			if !validSide(v.Owner) || r == nil || v.Count != 0 || v.CardID != 0 || v.Destination != "" || v.Output != "summoned" || v.TieBreak != "" || v.MaxCost != 0 || v.PreserveInstanceID || v.PreserveMaterials {
+				return nil, fmt.Errorf("invalid summon_from_hand shape")
 			}
 		case "summon":
 			if !validSide(v.Owner) || v.Count < 0 || !validCardID(v.CardID) || v.Output != "summoned" || v.Destination != "" || v.TieBreak != "" || v.MaxCost != 0 || r != nil || v.PreserveInstanceID || v.PreserveMaterials {

@@ -683,6 +683,21 @@ SummonCopies = NodeBase & {
   output: "summoned"
 }
 
+AddCopies = NodeBase & {
+  kind: "add_copies",
+  owner: Side,
+  target: ValueRef | SetExpr,
+  destination: "hand",
+  output: "added"
+}
+
+SummonFromHand = NodeBase & {
+  kind: "summon_from_hand",
+  owner: Side,
+  target: ValueRef | SetExpr,
+  output: "summoned"
+}
+
 Destroy = NodeBase & {
   kind: "destroy",
   target: ValueRef | SetExpr,
@@ -1062,8 +1077,10 @@ ability: Ability, labels?: map<LocaleId, string> }` 附加一个独立触发能�
 | `earthrite N`、`necromancy N` | `PayResource` |
 | `draw N`、`draw all from deck where P` | `Draw` |
 | `add N card C to hand` | `AddCard` |
+| `add copies of S to hand` | `AddCopies` |
 | `summon N card C` | `Summon` |
 | `summon copies of S` | `SummonCopies` |
+| `summon T`（手牌对象直接进入战场） | `SummonFromHand` |
 | `grant T { 能力 }` | `GrantAbility` |
 | `damage T N`、`heal T N` | `Damage`、`Heal` |
 | `set life T N` | `SetLife` |

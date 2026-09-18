@@ -5,7 +5,9 @@ card 10443310 {
     cost 5;
 
     effect {
-        unplayable;
+        require target from oppo.field;
+        banish target;
+        add copies of target to hand;
     }
 
     meta {

@@ -172,8 +172,12 @@ func (e CardEffect) MarshalJSON() ([]byte, error) {
 		object["owner"], object["destination"] = e.Owner, e.Destination
 	case "add_card":
 		object["owner"], object["count"], object["cardId"], object["destination"], object["output"] = e.Owner, e.Count, e.CardID, e.Destination, e.Output
+	case "add_copies":
+		object["owner"], object["target"], object["destination"], object["output"] = e.Owner, e.Target, e.Destination, e.Output
 	case "summon":
 		object["owner"], object["count"], object["cardId"], object["output"] = e.Owner, e.Count, e.CardID, e.Output
+	case "summon_from_hand":
+		object["owner"], object["target"], object["output"] = e.Owner, e.Target, e.Output
 	case "summon_copies":
 		object["owner"], object["target"], object["output"] = e.Owner, e.Target, e.Output
 	case "reanimate":
