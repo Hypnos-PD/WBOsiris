@@ -1,0 +1,107 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+// 官方 QA：只有"需要在打出时选择卡牌"的法术，才会因为选不到目标而不能打出。
+// https://shadowverse-wb.com/chs/usersupport/?tab=2#bxi2b429pl7（法术不能打出）
+// 随从与护符即使没有可选对象也能打出，能力照常结算——例如『向往天空的回归者·卡西乌斯』
+// 在手牌里没有创造物·随从时照样能打出，并对对手战场造成 0 点伤害。
+
+scenario "卡西乌斯手牌里没有创造物随从时仍能打出，X 为 0" {
+    seed 73001;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10473110; }
+        }
+        player oppo {
+            field { follower victim = 10001110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.zone == field; victim.stats == 2/2; }
+}
+
+scenario "卡西乌斯手牌里有创造物随从时必须选它并按其攻击力造成伤害" {
+    seed 73002;
+    state {
+        player own {
+            pp 5/5;
+            hand {
+                follower source = 10473110;
+                follower material = 90071150;
+            }
+        }
+        player oppo {
+            field { follower victim = 10001110; }
+        }
+    }
+    action { play source; select material; }
+    expect { legal; source.zone == field; victim.zone == graveyard; }
+}
+
+scenario "对手没有随从时阿罗照样能打出" {
+    seed 73003;
+    state {
+        player own {
+            pp 10/10;
+            hand { follower source = 10534120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.zone == field; }
+}
+
+scenario "对手没有随从时牵线搭桥的青鬼照样能打出并抽牌" {
+    seed 73004;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10552120; }
+            deck top { follower next = 10001110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == field;
+        own.hand count card 10001110 == 1;
+    }
+}
+
+scenario "莲妥丝在战场上不足三张其他卡牌时仍能打出并破坏现有的卡牌" {
+    seed 73005;
+    state {
+        player own {
+            pp 9/9;
+            field { amulet only = 10001210; }
+            hand { follower source = 10664120; }
+        }
+    }
+    action { play source; select only; }
+    expect { legal; source.zone == field; only.zone == graveyard; }
+}
+
+scenario "进化时没有可选目标时照样能进化" {
+    seed 73006;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10541110; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; source.evolved == true; }
+}
+
+scenario "启动能力没有可选目标时依然不能启动" {
+    seed 73007;
+    state {
+        player own {
+            pp 4/4;
+            field { amulet source = 10462210; }
+        }
+    }
+    action { engage source; }
+    expect { illegal target_required; source.zone == field; own.pp == 4/4; }
+}

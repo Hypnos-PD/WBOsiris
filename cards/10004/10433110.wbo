@@ -7,7 +7,7 @@ card 10433110 {
 
     effect {
         fanfare {
-            require target from oppo.field.followers;
+            choose target from oppo.field.followers;
             remove all abilities from target;
             damage target 3;
         }

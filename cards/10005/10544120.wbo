@@ -10,7 +10,7 @@ card 10544120 {
             summon 1 card 90041130;
         }
         evolve {
-            require target from own.hand;
+            choose target from own.hand;
             discard target;
             gain own crest 10544120;
         }

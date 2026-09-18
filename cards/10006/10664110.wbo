@@ -6,7 +6,17 @@ card 10664110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            // 官方 QA：先从历史里等概率抽 1 张，再从"与第 1 张不同种类"的剩余候选里抽第 2 张。
+            summon random 2 from own.destroyed.amulets where base.cost <= 2 and lastwords distinct names;
+        }
+        superevolve {
+            choose target from field other;
+            if count(own.field.amulets where card target) >= 1 {
+                damage oppo.field.followers 3;
+            }
+            destroy target;
+        }
     }
 
     meta {

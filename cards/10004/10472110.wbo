@@ -8,7 +8,7 @@ card 10472110 {
     effect {
         fanfare {
             if skybound_art {
-                require ally from own.field.followers other where form unevolved;
+                choose ally from own.field.followers other where form unevolved;
                 evolve ally silent;
                 evolve self silent;
             }

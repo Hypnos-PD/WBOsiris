@@ -107,6 +107,9 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-73 | `mode random N { … }`（随机模式） | `internal/ir/model.go`（`ModeEffect.Random`）、`internal/ir/decode.go`、`internal/project/validate.go`/`strict_validate.go`/`typed_ir.go`、`internal/runner/session.go`（`pushRandomMode`：随机选 N 个不同选项并按编号入栈）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/random_mode_test.go`（编译保留 `random` 与数量、拒绝 0 与单选项）；卡片 10532310 + 2 个场景 |
 | S-75 | `where not <词条>`（否定筛选） | `internal/ir/model.go`（`NotPredicate`）、`internal/ir/decode.go`（解码、卡牌引用检查）、`internal/project/validate.go`（`negatedWhereTerm`）、`typed_ir.go`（`filterIR`）、`internal/runner/execute.go`（`matches` 取反）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/not_filter_test.go`；卡片 10603210 + 1 个场景 |
 | S-77 | `where enhanced`（本次通过爆能强化打出） | `internal/runner/runner.go`（`instance.enhancedPlay` 在 `applyPlaySetup` 前设置）、`internal/project/validate.go`/`typed_ir.go`（筛选词条）、`internal/ir/decode.go`/`encode.go`（谓词白名单）、`internal/runner/execute.go`（求值）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/enhanced_filter_test.go`；卡片 10622310 + 3 个场景 |
+| S-78 | `where lastwords`（拥有【谢幕曲】筛选） | `internal/project/validate.go`（`parseWhere`/`negatedWhereTerm` 接受 `lastwords`）、`typed_ir.go`（`has_lastwords` 谓词）、`internal/ir/decode.go`/`encode.go`（谓词白名单）、`internal/runner/execute.go`（按卡牌定义的 `lastwords` 触发判定）；文档 `cards.md`/`grammar.md` | 卡片 10663210、10664110 + 3 个场景（含"只破坏过同一种护符时只召唤一张"）。局限：只看卡牌定义的固有能力，`grant` 临时获得的【谢幕曲】不算 |
+| S-79 | 破坏历史召唤的 `distinct names`（随机 N 种各 1 张） | `internal/ir/history_summon.go`（`DistinctNames`）、`internal/ir/decode.go`（解码并写回效果）、`internal/project/history_summon.go`（解析 `distinct names`）、`internal/runner/history_summon.go`（每抽一张后按卡牌 ID 排除同名候选）；文档 `cards.md` | Go 单测 + 卡片 10664110 + 2 个场景。解码器最初漏了 `DistinctNames` 回填，运行期恒为 `false`，被"只有一种护符时只召唤一张"的场景抓住 |
+| S-80 | 非法术卡的选择不该阻塞打出／进化：`require` → `choose` | 29 张随从/护符卡的 34 处 `require`（入场曲、爆能强化、进化时、超进化时）改写为 `choose`；`engage`（启动能力）与法术顶层的 `require` 保留；文档 `cards.md` 写明适用边界 | 官方 QA：[随从/护符没有可选择的手牌也能使用、能力也发动，法术不能](https://shadowverse-wb.com/chs/usersupport/?tab=2#q2lo-vv80cvw)、[卡西乌斯没有创造物随从时照样打出并造成 0 点伤害](https://shadowverse-wb.com/chs/usersupport/?tab=2#49odoxq3_z)。新增 `tests/10004/batch-73-target-availability.wbotest` 7 个场景（打出、进化、抽牌、破坏、启动能力仍不可用） |
 | S-57 | 归属判断（`count(own.<区域> where card <绑定>)`） | 无需新节点：`same_card` 谓词 + 区域计数；但修好了 `conditionIn` 里 `CountCondition` 丢帧的问题（`internal/runner/execute.go`） | 卡片 90064320 + 2 个场景（敌方随从时不加牌、自己的护符时追加 2 点伤害并加牌） |
 | S-66 | `banish` 输出 `banished` | `internal/project/typed_ir.go`（写入输出）、`validate.go`（登记绑定）、`internal/ir/encode.go`/`decode.go`（形状白名单）、`internal/runner/execute.go`（记录实际消失的实例）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/banish_output_test.go`（输出保留、`count(banished)` 作为分配伤害量）；卡片 10543110 + 2 个场景 |
 | S-61 | `summoned_all`（一次结算的全部召唤） | `internal/runner/bindings.go`（`bindSummoned`）、`internal/runner/execute.go`/`session.go`（所有召唤类效果改为写入累计绑定）、`internal/project/validate.go`（登记 `summoned_all`）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/same_cost_and_summoned_all_test.go`；卡片 10571110 + 3 个场景 |
@@ -184,6 +187,45 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 
 ## 批次记录
 
+### 批次 73（条件范围专项核查：S-80 选择不该阻塞打出）
+
+起因：复查 90064320 天书深渊的条件范围时顺手问了"还有没有同类问题"。结论是
+**条件范围本身没有别的错**，但同一类"选择与后续效果的范围"里抓到一个更大的问题：
+
+- **S-80**：`require` 被当成所有卡牌的"可打出性"检查，于是随从/护符只要入场曲里
+  选不到目标就整张卡不能打出、进化时选不到目标就不能进化。官方 QA 明确只有
+  **法术**与**启动能力**才有这条限制：随从/护符没有可选对象时照样能打出、能力照常结算。
+  把 29 张随从/护符卡的 34 处 `require` 改成 `choose`（`engage` 与法术保留 `require`），
+  与既有的"有候选必须选、无候选绑定 `none` 并继续结算"语义一致，没有引入新原语。
+- **工具化**：新增 `scripts/card_scope_screen.mjs`（含 `node --test` 单测），输出
+  A 句数错位、B「〜を選んだなら」身份条件、C 非法术卡仍在用 `require` 三张清单，
+  以后每批可以顺手跑一次。
+- 核查结论与"同形不同解"的四张卡（90064320 vs 10372110／10372210／10653110／10753110）
+  记在[条件范围专项核查](#条件范围专项核查配合批次-67批次-73)一节。
+- 新增 7 个场景（`tests/10004/batch-73-target-availability.wbotest`）。
+- 全量回归：`check` 0 错 0 警；`test` 991 全绿；`go test ./...` 全绿；语料快照更新为 991 个场景。
+
+### 批次 72（S-78 谢幕曲筛选 + S-79 历史召唤去重 + 卡包 10006 收尾）
+
+- **S-78 `where lastwords`**：筛选"拥有【谢幕曲】"的卡牌，读取卡牌定义里的
+  `lastwords` 触发（含通过 `grant` 写进定义的形态；运行中临时授予的不算）。
+  编码器/解码器白名单与 `parseWhere`/`negatedWhereTerm` 同步补齐。
+- **S-79 破坏历史召唤的 `distinct names`**：用于"随机 2 种…各 1 张"。
+  官方 QA 明确了结算顺序：先从全部历史记录里等概率抽 1 张，再从"与第 1 张不同种类"
+  的剩余候选里抽第 2 张，因此同名记录多的更容易被选中；候选耗尽时少召唤。
+  与牌组召唤的 `distinct names` 语义一致。
+- 修好一处自己写出来的 bug：`internal/ir/decode.go` 解出 `distinctNames` 却忘了
+  回填到 `HistorySummonEffect`，运行期恒为 `false`。补的"只破坏过同一种护符时
+  只召唤一张"场景立刻抓到了它——**编解码白名单加字段时，解码分支必须真的把字段
+  传进效果结构体，`check` 不会覆盖这条路径**。
+- 完成 3 张：10603110 彷徨于黑暗之兽（入场曲从【疾驰】【毁灭】【威慑】【虹吸】
+  【灵气】【屏障】里随机 3 个，`mode random 3`）、10663210 崇高的天书（吟唱 2；
+  入场曲选 1 张其他卡牌破坏，选到自己的护符时回复 2 点能量点；谢幕曲随机召唤
+  1 张被破坏的低费谢幕曲护符）、10664110 崇高的憎恶·康蒂玛（入场曲随机 2 种
+  各 1 张；超进化时同样的归属判断 + 对敌方全体 3 点伤害并破坏）。
+- 新增 5 个场景（`tests/10006/batch-72-lastwords-and-random-keywords.wbotest`）。
+- 全量回归：`check` 0 错 0 警；`test` 984 全绿；`go test ./...` 全绿；语料快照更新为 984 个场景。
+
 ### 批次 71（信仰授权能力 + 卡包 10006）
 
 - **`grant faith { … }`：把事件监听附加到信仰实体**：新增 `FaithRef`（"本卡牌定义的信仰"），
@@ -237,7 +279,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 - 新增 9 个场景（`tests/10006/batch-68-discard-and-elder.wbotest`）。
 - 全量回归：`check` 0 错 0 警；`test` 965 全绿；`go test ./...` 全绿；语料快照更新为 965 个场景。
 
-### 条件范围专项核查（配合批次 67）
+### 条件范围专项核查（配合批次 67、批次 73）
 
 发现 90064320 天书深渊的条件范围错误后，做了两类系统排查：
 
@@ -257,6 +299,29 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
      同类结构还有未导入的 10763110 审理的守卫（英文同样并入条件句），届时按同一口径处理。
 2. **权威顺序**：卡牌文本（多语言）+ QA 优先，SWB-RL 只作第二意见。遇到冲突时在场景测试里固定最终行为，
    并把冲突写进本节，避免以后再翻案。
+
+**批次 73 把这次排查工具化并对全部 904 张卡重跑**：`scripts/card_scope_screen.mjs`
+（判定逻辑有 `scripts/card_scope_screen.test.mjs` 覆盖，`node --test scripts/card_scope_screen.test.mjs`）
+输出三个清单：
+
+- **A 句数错位（19 张）**：中文/日文句子比英文多、且中文含条件词。逐张核对后条件范围都与文本一致：
+  多数是"条件只影响紧随其后的量"（10262110、10543310、10943110、10823110 的"改为发动 N 次"）
+  或对 X／数量说明句的切分（10133310、10503210、10554120），以及 `<hr>` 分隔的独立能力块
+  （90044330 天刀深渊：前半是"被舍弃时"，后半是打出时的无条件效果，实现正确）。
+- **B 所选卡身份条件（8 张）**：日文出现「〜を選んだなら」。除 90064320 外还有
+  10372110 破坏的祈祷者、10372210 破坏的荒野、10521110 好施的名人、10653110 渴命的破坏者、
+  10663210 崇高的天书、10664110 崇高的憎恶·康蒂玛、10753110 骸骨驯兽师（未导入）。
+  其中 10521110、10663210、10664110 的条件句是能力最后一句（只影响回复量或是否追加效果），无范围问题；
+  10372110／10372210／10653110／10753110 的形状与 90064320 最接近（「選んだなら、A。B。」）。
+- **两处"同形不同解"必须记牢**：
+  90064320 的条件是**所选卡的身份**（「自分のアミュレットを選んだなら」），官方英文把后续的
+  "2 点伤害"和"加回手牌"两句都并进条件内，因此按条件内处理；
+  10372110／10372210／10653110／10753110 的条件是**是否做出了选择**，后续句是独立效果，
+  官方英文没有并进条件内，且 10372110 的[官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#yxrw-1c_x)
+  明确"选中的卡没被破坏时，2 点伤害照常发动"（选到无法被能力破坏的莉洁纳仍然发动），
+  因此后续句与选择/破坏是否成功无关；三张卡的现有实现（`choose` + 直接结算后续句）与 SWB-RL 一致，保持不变。
+  **以后不要用"统一口径"去改这四张卡**——它们靠的是各自英文写法和 QA，而不是同一条规则。
+- **C 规则侧 `require`（批次 73 修正）**：见 S-80。
 
 ### 批次 67（S-77 爆能强化打出事件 + S-57 归属判断复核 + 卡包 10006 / 90000）
 

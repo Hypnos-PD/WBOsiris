@@ -17,7 +17,19 @@ func TestGrantRoundTripAndRejectUnsupportedAbility(t *testing.T) {
 	if err != nil || !reflect.DeepEqual(decoded, e) {
 		t.Fatal("round trip", err, decoded)
 	}
-	for _, trigger := range []Trigger{SimpleTrigger{Kind: "fanfare"}, SimpleTrigger{Kind: "spellboost"}, EventTrigger{Kind: "event", Event: "follower_summoned", Side: "own"}} {
+	// 事件监听是允许的（信仰等永久实体要挂"自己的随从进化时"这类监听），
+	// 但被限制成"只能被动观察、不能只对自己生效"的形状。
+	e.Ability.Trigger = EventTrigger{Kind: "event", Event: "follower_summoned", Side: "own"}
+	data, _ = json.Marshal(e)
+	if decoded, err := decodeEffect(data, map[string]bool{}); err != nil || !reflect.DeepEqual(decoded, e) {
+		t.Fatal("granted event trigger round trip", err, decoded)
+	}
+	for _, trigger := range []Trigger{
+		SimpleTrigger{Kind: "fanfare"},
+		SimpleTrigger{Kind: "spellboost"},
+		EventTrigger{Kind: "event", Event: "follower_summoned", Side: "own", SelfOnly: true},
+		EventTrigger{Kind: "event", Event: "follower_summoned", Side: "own", ExcludeSelf: true},
+	} {
 		e.Ability.Trigger = trigger
 		data, _ := json.Marshal(e)
 		if _, err := decodeEffect(data, map[string]bool{}); err == nil {

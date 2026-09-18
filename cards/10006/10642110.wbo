@@ -9,7 +9,7 @@ card 10642110 {
         rush;
         barrier;
         fanfare {
-            require target from own.hand;
+            choose target from own.hand;
             discard target;
         }
     }

@@ -9,13 +9,13 @@ card 10643110 {
         ward;
         barrier;
         fanfare {
-            require target from own.hand;
+            choose target from own.hand;
             discard target;
             random victim from oppo.field.followers;
             damage victim 6;
         }
         evolve {
-            require target from own.hand;
+            choose target from own.hand;
             discard target;
             random victim from oppo.field.followers;
             damage victim 6;

@@ -7,7 +7,7 @@ card 10542110 {
 
     effect {
         fanfare {
-            require target from oppo.field.followers;
+            choose target from oppo.field.followers;
             damage target 7;
             summon 1 card 90041120;
         }

@@ -11,7 +11,7 @@ card 10462110 {
             buff self +0/+10;
         }
         evolve {
-            require target from oppo.field.followers where damaged;
+            choose target from oppo.field.followers where damaged;
             destroy target;
         }
     }

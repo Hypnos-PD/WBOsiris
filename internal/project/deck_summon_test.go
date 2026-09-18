@@ -68,7 +68,7 @@ func TestRejectMalformedDeckSummon(t *testing.T) {
 		"summon random 1 from own.deck.amulets distinct;", "summon random 1 from own.deck.amulets names;",
 		"summon random 1 from own.deck.amulets distinct names where cost <= 3;",
 		"summon random 1 from own.deck.amulets highest cost;", "summon random 1 from own.deck.amulets this turn;",
-		"summon random 1 from own.destroyed.amulets distinct names;",
+		"summon random 1 from own.destroyed.amulets distinct names where base.cost <= 2;",
 	} {
 		f, ds := syntax.Parse("12345678.wbo", []byte(validCard("fanfare { "+operation+" }")))
 		if len(ds) == 0 && !hasErrors(ValidateFile(f)) {

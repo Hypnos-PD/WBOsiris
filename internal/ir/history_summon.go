@@ -7,6 +7,8 @@ type HistorySummonEffect struct {
 	Owner    string             `json:"owner"`
 	Source   Ref                `json:"source"`
 	Count    int                `json:"count"`
+	// DistinctNames 让每次抽取后排除同名（同一卡牌定义）的候选："随机2种…各1张"。
+	DistinctNames bool               `json:"distinctNames,omitempty"`
 	Extremum *SelectionExtremum `json:"extremum,omitempty"`
 	Output   string             `json:"output"`
 }

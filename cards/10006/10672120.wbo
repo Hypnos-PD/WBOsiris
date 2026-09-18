@@ -8,7 +8,7 @@ card 10672120 {
     effect {
         stealth;
         fanfare {
-            require target from oppo.field.followers where life <= 3;
+            choose target from oppo.field.followers where life <= 3;
             banish target;
         }
     }

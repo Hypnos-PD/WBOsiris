@@ -7,7 +7,7 @@ card 10641110 {
 
     effect {
         fanfare {
-            require target from own.hand;
+            choose target from own.hand;
             discard target;
         }
         lastwords {

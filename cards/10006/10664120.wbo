@@ -9,7 +9,7 @@ card 10664120 {
     effect {
         ward;
         fanfare {
-            require targets from field other count 3;
+            choose targets from field other count 3;
             destroy targets;
         }
         when own turn ends {

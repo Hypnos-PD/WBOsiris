@@ -162,6 +162,19 @@ go vet ./...
 `--list-unplayable` 输出的也就是这些骨架文件。
 该判定有 `scripts/card_placeholder.test.mjs`，可用 `node --test scripts/card_placeholder.test.mjs` 运行。
 
+`scripts/card_scope_screen.mjs` 是条件范围候选筛查工具，从卡表里挑出
+"中文/日文句子比英文多且含条件词"（条件可能被句号切断了范围）与
+"日文出现「〜を選んだなら」"（条件依赖所选卡牌身份）两类卡牌，并列出规则文件里
+非法术卡仍在用 `require` 的位置。判定逻辑有 `scripts/card_scope_screen.test.mjs`：
+
+```bash
+node scripts/card_scope_screen.mjs --cards ../WBArts/data/cards.json --rules cards
+node --test scripts/card_scope_screen.test.mjs
+```
+
+新写或复核卡牌时跑一次，再用官方英文文本与 QA 逐张判定，结论记进
+[全卡覆盖计划的条件范围专项核查](../plan/full-card-coverage.md)。
+
 集成测试会检查当前全部卡牌和测试场景、严格引用、畸形输入拒绝、格式化幂等、
 类型化 IR、确定性编译和固定源根下的来源 ID 稳定性。
 

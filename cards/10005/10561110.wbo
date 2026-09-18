@@ -8,11 +8,11 @@ card 10561110 {
     effect {
         ward;
         fanfare {
-            require target from oppo.field.followers;
+            choose target from oppo.field.followers;
             damage target 2;
         }
         evolve {
-            require target from oppo.field.followers;
+            choose target from oppo.field.followers;
             damage target 2;
         }
     }

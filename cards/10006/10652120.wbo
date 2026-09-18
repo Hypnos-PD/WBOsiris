@@ -10,7 +10,7 @@ card 10652120 {
             add storm to self;
         }
         evolve {
-            require target from oppo.field.followers;
+            choose target from oppo.field.followers;
             damage target 4;
         }
     }

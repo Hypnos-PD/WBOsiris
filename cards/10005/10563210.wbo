@@ -6,7 +6,7 @@ card 10563210 {
 
     effect {
         fanfare {
-            require target from oppo.field.followers;
+            choose target from oppo.field.followers;
             damage target 5;
         }
         engage 0 {

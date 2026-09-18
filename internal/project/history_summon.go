@@ -47,5 +47,9 @@ func historySummonIR(t []syntax.Token, base ir.NodeBase) (ir.HistorySummonEffect
 	}
 	var ok bool
 	e.Extremum, end, ok = parseExtremum(t, end)
+	if ok && end+2 == len(t) && t[end].Value == "distinct" && t[end+1].Value == "names" {
+		e.DistinctNames = true
+		end += 2
+	}
 	return e, ok && end == len(t)
 }

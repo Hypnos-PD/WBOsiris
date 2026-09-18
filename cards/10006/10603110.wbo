@@ -6,7 +6,17 @@ card 10603110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            // 【疾驰】【毁灭】【威慑】【虹吸】【灵气】【屏障】中随机 3 个。
+            mode random 3 {
+                option 1 { add storm to self; }
+                option 2 { add bane to self; }
+                option 3 { add intimidate to self; }
+                option 4 { add drain to self; }
+                option 5 { add aura to self; }
+                option 6 { add barrier to self; }
+            }
+        }
     }
 
     meta {

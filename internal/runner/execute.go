@@ -387,6 +387,13 @@ func (g *game) matches(i *instance, p ir.Predicate, self *instance, bindings fra
 			return false
 		case "is_damaged":
 			return i.card.CardType == "follower" && i.damageTaken > 0
+		case "has_lastwords":
+			for _, ability := range i.card.Abilities {
+				if trigger, ok := ability.Trigger.(ir.SimpleTrigger); ok && trigger.Kind == "lastwords" {
+					return true
+				}
+			}
+			return false
 		case "attacked_this_turn":
 			return i.attacksUsed > 0
 		case "not_attacked_this_turn":

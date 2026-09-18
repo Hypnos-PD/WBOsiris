@@ -7,7 +7,7 @@ card 10621120 {
 
     effect {
         fanfare {
-            require target from own.hand;
+            choose target from own.hand;
             return target to deck;
             draw 2 from deck where class swordcraft and type follower;
         }

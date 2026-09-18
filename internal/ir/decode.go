@@ -1015,6 +1015,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			Owner    string             `json:"owner"`
 			Source   json.RawMessage    `json:"source"`
 			Count    int                `json:"count"`
+			DistinctNames bool          `json:"distinctNames,omitempty"`
 			Extremum *SelectionExtremum `json:"extremum,omitempty"`
 			Output   string             `json:"output"`
 		}
@@ -1031,7 +1032,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if !validSide(v.Owner) || !ValidHistorySummonSource(source) || v.Count < 1 || v.Count > 65535 || !ValidSelectionExtremum(v.Extremum) || v.Output != "summoned" {
 			return nil, fmt.Errorf("invalid summon_from_history shape")
 		}
-		return HistorySummonEffect{NodeBase: v.NodeBase, Kind: v.Kind, Owner: v.Owner, Source: source, Count: v.Count, Extremum: v.Extremum, Output: v.Output}, nil
+		return HistorySummonEffect{NodeBase: v.NodeBase, Kind: v.Kind, Owner: v.Owner, Source: source, Count: v.Count, DistinctNames: v.DistinctNames, Extremum: v.Extremum, Output: v.Output}, nil
 	case "summon_copies":
 		var v struct {
 			NodeBase
@@ -1611,7 +1612,7 @@ func decodePredicate(data []byte) (Predicate, error) {
 			return nil, fmt.Errorf("invalid predicate form")
 		}
 		return FieldPredicate{Kind: v.Kind, Form: v.Form}, nil
-	case "is_damaged", "cost_changed", "attacked_this_turn", "not_attacked_this_turn", "was_enhanced":
+	case "is_damaged", "cost_changed", "attacked_this_turn", "not_attacked_this_turn", "was_enhanced", "has_lastwords":
 		var v struct {
 			Kind string `json:"kind"`
 		}

@@ -7,7 +7,7 @@ card 10412110 {
 
     effect {
         enhance 8 {
-            require target from own.hand.followers;
+            choose target from own.hand.followers;
             summon target;
             return self to hand;
         }

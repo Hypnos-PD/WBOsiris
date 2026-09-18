@@ -1080,6 +1080,8 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 			}
 		case "damaged":
 			i++
+		case "lastwords":
+			i++
 		case "enhanced":
 			i++
 		case "attacked":

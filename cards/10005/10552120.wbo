@@ -7,12 +7,12 @@ card 10552120 {
 
     effect {
         fanfare {
-            require target from oppo.field.followers;
+            choose target from oppo.field.followers;
             add cannot_attack to target until oppo turn ends;
             draw 1;
         }
         evolve {
-            require target from oppo.field.followers;
+            choose target from oppo.field.followers;
             add cannot_attack to target until oppo turn ends;
             draw 1;
         }

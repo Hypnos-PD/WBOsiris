@@ -21,8 +21,13 @@ func (g *game) summonFromHistory(e ir.HistorySummonEffect, self *instance, bindi
 			index = g.rng.Index(len(candidates))
 		}
 		cardID := candidates[index].card.ID
-		candidates[index] = candidates[len(candidates)-1]
-		candidates = candidates[:len(candidates)-1]
+		remaining := candidates[:0]
+		for _, candidate := range candidates {
+			if candidate != candidates[index] && (!e.DistinctNames || candidate.card.ID != cardID) {
+				remaining = append(remaining, candidate)
+			}
+		}
+		candidates = remaining
 		out = append(out, g.summonFor(self, e.Owner, 1, cardID, false)...)
 	}
 	return out

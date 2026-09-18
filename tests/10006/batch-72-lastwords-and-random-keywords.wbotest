@@ -1,0 +1,81 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "彷徨于黑暗之兽随机获得六个关键词中的三个" {
+    seed 72001;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10603110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source has storm;
+        source has drain;
+        source has aura;
+        source lacks bane;
+        source lacks intimidate;
+        source lacks barrier;
+    }
+}
+
+scenario "崇高的天书破坏其他卡牌并回复能量点" {
+    seed 72002;
+    state {
+        player own {
+            pp 4/4;
+            field { amulet own1 = 10001210; }
+            hand { amulet source = 10663210; }
+        }
+    }
+    action { play source; select own1; }
+    expect { legal; own1.zone == graveyard; own.pp == 2/4; }
+}
+
+scenario "崇高的天书的谢幕曲召唤被破坏的谢幕曲护符" {
+    seed 72003;
+    state {
+        player own {
+            pp 1/1;
+            field { amulet source = 10663210; }
+            hand { spell remover = 90074310; }
+            destroyed { amulet fallen = 10062210; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; source.zone == graveyard; own.field count card 10062210 == 1; }
+}
+
+scenario "崇高的憎恶召唤两种被破坏的谢幕曲护符" {
+    seed 72004;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10664110; }
+            destroyed {
+                amulet first = 10161210;
+                amulet second = 10163210;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10161210 == 1; own.field count card 10163210 == 1; }
+}
+
+scenario "崇高的憎恶只破坏过同一种谢幕曲护符时只召唤一张" {
+    seed 72005;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10664110; }
+            destroyed {
+                amulet first = 10161210;
+                amulet second = 10161210;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10161210 == 1; }
+}

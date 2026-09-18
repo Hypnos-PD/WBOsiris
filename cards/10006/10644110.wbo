@@ -10,7 +10,7 @@ card 10644110 {
         bane;
         aura;
         fanfare {
-            require target from own.hand;
+            choose target from own.hand;
             discard target;
             add 2 card 10642310 to hand;
         }

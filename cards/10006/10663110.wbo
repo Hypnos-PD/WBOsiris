@@ -12,7 +12,7 @@ card 10663110 {
             summon 1 card 10663110;
         }
         evolve {
-            require target from oppo.field.followers;
+            choose target from oppo.field.followers;
             destroy target;
         }
     }

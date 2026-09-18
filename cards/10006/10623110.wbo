@@ -7,7 +7,7 @@ card 10623110 {
 
     effect {
         fanfare {
-            require target from oppo.field.followers;
+            choose target from oppo.field.followers;
             destroy target;
         }
         enhance 6 {

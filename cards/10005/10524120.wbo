@@ -7,7 +7,7 @@ card 10524120 {
 
     effect {
         fanfare {
-            require target from oppo.field.followers;
+            choose target from oppo.field.followers;
             banish target;
             add 1 card 90021350 to hand;
         }

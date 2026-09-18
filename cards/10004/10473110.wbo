@@ -7,7 +7,7 @@ card 10473110 {
 
     effect {
         fanfare {
-            require target from own.hand.followers where trait artifact;
+            choose target from own.hand.followers where trait artifact;
             damage oppo.field.followers target.attack;
         }
         lastwords {

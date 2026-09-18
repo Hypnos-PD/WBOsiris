@@ -6,7 +6,17 @@ card 10663210 {
     trait encroacher;
 
     effect {
-        unplayable;
+        countdown 2;
+        fanfare {
+            choose target from field other;
+            if count(own.field.amulets where card target) >= 1 {
+                gain own.pp 2;
+            }
+            destroy target;
+        }
+        lastwords {
+            summon random 1 from own.destroyed.amulets where base.cost <= 2 and lastwords;
+        }
     }
 
     meta {

@@ -11,7 +11,7 @@ card 10614110 {
             summon 3 card 90011120;
         }
         superevolve {
-            require target from oppo.field.followers;
+            choose target from oppo.field.followers;
             destroy target;
         }
     }

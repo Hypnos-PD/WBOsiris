@@ -226,6 +226,15 @@ heal own.leader 5;
 require target from own.field.followers;
 ```
 
+这条限制只适用于**法术**与**启动能力**（`engage`）。随从与护符即使没有可选对象
+也能正常打出，能力照常结算——[官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#q2lo-vv80cvw)
+写明"随从和护符在没有可选择手牌时依旧可以使用，能力也会发动；法术则无法使用"，
+而[卡西乌斯那条 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#49odoxq3_z)
+进一步给出随从的例子：手牌里没有创造物·随从时照样能打出『向往天空的回归者·卡西乌斯』，
+对对手战场造成 0 点伤害。因此随从、护符的入场曲、爆能强化、进化时、超进化时、
+谢幕曲与触发能力里的选择一律写 `choose`：有候选时必须选，没有候选时绑定 `none`
+并继续结算后面的语句。法术顶层的必选目标仍写 `require`，没有目标时整张卡不能打出。
+
 `if skybound_art { … }` 是【奥义】条件（奥义槽 ≥ 10），`if super_skybound_art { … }` 是
 【解放奥义】（奥义槽 ≥ 15）。奥义槽 = 当前回合数 + 本卡牌在手牌中时己方随从进化过的次数
 （官方术语表：Skybound Art / Super Skybound Art）。`gain skybound 集合 N;` 让集合里的
@@ -567,14 +576,18 @@ fanfare {
 N 张牌消费 N−1 次随机决策；十张启示录牌组消费九次，单张牌组无需随机数。
 新实例预算与查询预算先整体核验，预算不足不替换原牌组，也不消费随机数。
 
-`summon random N from 破坏历史 [where ...] [highest|lowest 属性]` 从历史中抽取记录，
+`summon random N from 破坏历史 [where ...] [highest|lowest 属性] [distinct names]` 从历史中抽取记录，
 按对应卡牌定义召唤同名的新卡。新卡使用原始费用、身材、吟唱和固有能力，
 不继承伤害、费用修正、额外关键词、计数器、进化或附加能力，也不获得亡者类型。
 原实例和破坏记录保留。支持双方的随从与护符历史，以及可选的 `this turn` 回合窗口。
+与牌组召唤一样，`distinct names` 要求本次召唤的卡名两两不同：每抽到一张后，
+后续抽取都排除同名的其余记录（同名记录不消耗、也不重复召唤），候选耗尽时少召唤。
+官方 QA 对这种"随机 2 种各 1 张"的写法给出的结算顺序正是"先等概率抽第 1 张，
+再从与它不同种类的剩余候选中抽第 2 张"，因此重名卡越多越容易被选中。
 
 ```wbo
 lastwords {
-    summon random 1 from own.destroyed.amulets highest base.cost;
+    summon random 2 from own.destroyed.amulets where base.cost <= 2 and lastwords distinct names;
 }
 ```
 
@@ -1438,6 +1451,10 @@ when own follower destroyed where keyword ward {
 它可用于事件、选择、集合操作和历史统计，并可与 `and`、`or` 组合。
 `K` 使用固有关键词的标识，例如 `ward`、`barrier`、`storm`；入场曲、谢幕曲、
 吟唱和土之印层数不是这个筛选器的关键词。
+
+`where lastwords` 单独判断卡牌定义里是否带【谢幕曲】能力，用于"拥有【谢幕曲】的
+护符"这类筛选；它只关心能力是否存在，不等待该能力真正触发。目前的判定读取
+卡牌定义的固有能力，运行中通过 `grant` 临时获得的【谢幕曲】还不算在内。
 
 同批死亡先整体离场，再逐个产生破坏监听并排入谢幕曲。随从在同批死亡中已经离场，
 不能靠自己的破坏监听强化而存活。事件块的 `destroyed` 绑定本次被破坏的实例，

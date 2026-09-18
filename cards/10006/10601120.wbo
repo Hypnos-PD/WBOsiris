@@ -8,7 +8,7 @@ card 10601120 {
     effect {
         bane;
         fanfare {
-            require target from oppo.field.followers;
+            choose target from oppo.field.followers;
             destroy target;
         }
     }
