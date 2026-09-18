@@ -20,20 +20,20 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 878 · 未实现(骨架) 26 · 未导入 0
+总计 904 · 已完成 880 · 未实现(骨架) 24 · 未导入 0
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
 10002        77      77       0       0
 10003        77      75       2       0
 10004        76      73       3       0
-10005        76      67       9       0
+10005        76      68       8       0
 10006        76      74       2       0
 10007        77      77       0       0
 10008        78      74       4       0
-10009        76      70       6       0
+10009        76      71       5       0
 90000        93      93       0       0
-未完成卡按文本复杂度：中(41–100字) 162 · 短(≤40字) 65 · 长(>100字) 10
+未完成卡按文本复杂度：中(41–100字) 18 · 短(≤40字) 2 · 长(>100字) 4
 ```
 
 ## 工作流
@@ -168,7 +168,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-60 | 按牌组随机随从变身并复制 | 10533310 壮美的明越花（"使自己的战场上的所有随从分别变身为自己的牌组中的随机1张随从的复制随从"） | 需要"从牌组随机取一张随从的定义并让每个己方随从变成它的复制"的组合操作。 |
 | S-61 | ~~同一次打出的多个召唤输出~~ **已解决**：`summoned_all` | 已解锁 10571110 舞台缔造者 | 所有召唤类效果都会把成功入场的实例累加进 `summoned_all`；`summoned` 语义不变（最近一次）。 |
 
-| S-72 | 返回张数与按返回张数抽牌 | 10554120 奥夜花·释藤（"使自己的所有手牌返回牌组。抽取X张卡牌。X为因本能力返回牌组的张数"） | `return` 没有输出绑定或返回数量；`draw` 的数量也不能引用"本次操作的计数"。 |
+| S-72 | ~~返回张数与按返回张数抽牌~~ **已解决**：`return` 输出 `returned`、`draw <数值表达式>` | 已解锁 10554120 奥夜花·释藤、10932120 高洁哲学家 | `return <集合> to hand\|deck` 把实际移动的实例写入绑定 `returned`；`draw` 的数量改为接受数值表达式（`draw count(returned);`），编解码、运行期求值与测试 DSL 同步。 |
 | S-62 | ~~抽牌事件~~ **已解决**：`when own\|oppo card drawn [during … turn]` 与 `when self drawn` | 已解锁 10561120 连结的使徒、10522110 迅猛的武术家、10562120 穷途末路的巫女 | 绑定 `drawn` 指向被抽到的实例；运行时按每张抽到的卡派发监听（公开事实仍是聚合事件），`during` 回合窗口同时扩展到此事件。 |
 | S-63 | ~~抽牌去重~~ **已解决**：`draw N from deck where … distinct names` | 已解锁 10574120 尽小花·伊鞠 | 与牌组召唤同义：每抽中一张就排除同卡名的其余候选，张数上限是候选里不同卡名的数量；只允许与筛选搭配（不能配 `draw all` 或裸 `draw N`）。`DrawEffect.DistinctNames` 参与编解码，`internal/project/draw_owner_test.go` 覆盖编译、解码回填与错误形状。 |
 | S-64 | ~~从破坏历史复制同名卡~~ **已解决**：`add random N copies from 破坏历史 [where …] [highest\|lowest 属性] [distinct names] to hand\|deck;` | 已解锁 10572310 苏生调律、10803110 遗忘的纯真·爱卡、10871130 器械操纵者·吉尔克、10901310 轮回转冲 | 复用 `HistorySummonEffect`：`Destination` 为空时照旧召唤到战场，为 `hand`/`deck` 时按记录复制新实例放进目标区域（输出绑定 `added`）。抽选逻辑与历史召唤一致，`distinct names` 用于"随机 2 种各 1 张"。 |
@@ -198,6 +198,24 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 101（S-72 返回张数 + 按返回张数抽牌）
+
+- **S-72 `return` 输出 `returned` + 动态抽牌数量**：`return <集合> to hand|deck;`
+  现在把**实际移动**的实例写入绑定 `returned`（本来就在目标区域、没有真正移动的不计入，
+  与 `destroyed`/`banished` 同构）。`draw` 的数量从"只接受整数"扩展到接受数值表达式，
+  于是"抽取X张卡牌，X为因本能力返回牌组的张数"写成
+  `return own.hand to deck; draw count(returned);`。
+  改动面：`internal/project/typed_ir.go`（输出绑定与数量表达式）、`validate.go`
+  （语句形状与绑定作用域）、`internal/ir/{model,encode,decode}.go`（`DrawEffect.CountExpr`
+  与 `output: "returned"` 白名单）、`internal/runner/execute.go`（运行期求值）。
+- 完成 2 张：10554120 奥夜花·释藤（"发动2次"的整段能力，含超进化时复制入场曲）、
+  10932120 高洁哲学家。
+- 新增 6 个场景（`tests/10009/batch-101-returned-count.wbotest`、
+  `tests/10005/batch-101-returned-count.wbotest`），覆盖"抽牌张数=返回张数而不是牌组张数"、
+  返回 0 张不抽牌、四张同费用才追加伤害、超进化分支；Go 单测
+  `internal/project/draw_count_test.go`（输出绑定、数量表达式、未定义绑定被拒绝）。
+- 全量回归：`check` 0 错 0 警；`test` 1339 全绿；`go test ./...` 全绿；语料快照更新为 1339 个场景。
 
 ### 批次 100（卡包 10009 第五批 10 张 + 能量点支付块）
 

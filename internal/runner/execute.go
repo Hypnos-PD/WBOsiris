@@ -502,7 +502,11 @@ func (g *game) draw(e ir.DrawEffect, self *instance, f frame) {
 	if g.budget != nil && g.budget.exceeded {
 		return
 	}
-	count := min(max(0, e.Count), len(candidates))
+	want := e.Count
+	if e.CountExpr != nil {
+		want = g.numericValue(e.CountExpr, self, f)
+	}
+	count := min(max(0, want), len(candidates))
 	if e.DistinctNames {
 		// "抽取 N 种…"：每种卡名最多抽一张，所以张数上限是候选里不同卡名的数量。
 		count = min(count, distinctNameCount(candidates))
@@ -555,7 +559,7 @@ func (g *game) draw(e ir.DrawEffect, self *instance, f frame) {
 		}
 	}
 	own.deck = kept
-	if g.firstPlayer != "" && e.Predicate == nil && !e.All && count < e.Count {
+	if g.firstPlayer != "" && e.Predicate == nil && !e.All && count < want {
 		g.finishGame(oppositeSide(ownSide))
 	}
 }
@@ -841,8 +845,16 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 			f[e.Output] = bindEntities(banished...)
 		}
 	case "return":
+		returned := []*instance{}
 		for _, i := range targets {
+			before := i.zone
 			g.returnCard(i, e.Destination)
+			if i.zone != before {
+				returned = append(returned, i)
+			}
+		}
+		if e.Output != "" {
+			f[e.Output] = bindEntities(returned...)
 		}
 	case "heal":
 		for _, target := range targets {

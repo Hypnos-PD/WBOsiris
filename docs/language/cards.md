@@ -185,6 +185,9 @@ effect {
 - `added`：最近一次 `add 1 card X to hand` 实际进入手牌的实例（手牌已满被丢弃的不计入），
   用于"加入手牌后立即修改"的文本，例如 `add 1 card 90071110 to hand; buff added +3/+0;`。
 - `destroyed`：最近一次 `destroy` 操作实际破坏的目标集合。
+- `returned`：最近一次 `return` 操作实际返回 `hand`/`deck` 的实例集合，
+  用于"抽取X张卡牌，X为因本能力返回牌组的张数"这类文本（`draw count(returned);`）。
+  本来就已经在目标区域、没有真正移动的实例不计入。
 - `opponent`：`attack`、`clash` 能力中本次交战的另一随从；攻击主战者时为空。
 
 对 `summoned` 或 `drawn` 执行操作时，会按顺序对集合中的每个实例执行。手牌
@@ -466,12 +469,17 @@ superevolve {
 筛选不足只抽取现有匹配项，不因未找到目标而败北。所有抽牌事件公开数量，隐藏手牌
 身份；超出手牌上限的卡牌进入墓场，但不加入供后续能力使用的 `drawn` 绑定。
 
+抽牌张数也可以是数值表达式，例如按本次返回牌组的张数抽牌写作
+`return own.hand to deck; draw count(returned);`（`returned` 见[来源与目标](#来源与目标)）。
+动态数量与 `draw N` 形状一致：仍可接 `for own|oppo` 与 `from deck where …`。
+
 ```wbo
 draw 2;
 draw all from deck where card 10022120;
 draw 1 from deck where type follower;
 draw 1 for oppo;
 draw 2 for oppo from deck where type spell;
+draw count(returned);
 add 2 card 90011110 to hand;
 summon 1 card 90021110;
 damage oppo.leader 3;

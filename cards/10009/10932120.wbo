@@ -6,7 +6,10 @@ card 10932120 {
     stats 2/3;
 
     effect {
-        unplayable;
+        fanfare {
+            return own.hand to deck;
+            draw count(returned);
+        }
     }
 
     meta {

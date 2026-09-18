@@ -902,7 +902,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		type raw struct {
 			ID                              string `json:"id"`
 			Kind, Owner, SourceZone, Output string
-			Count                           *int            `json:"count,omitempty"`
+			Count                           json.RawMessage `json:"count,omitempty"`
 			All                             bool            `json:"all"`
 			Predicate                       json.RawMessage `json:"predicate,omitempty"`
 			DistinctNames                   bool            `json:"distinctNames,omitempty"`
@@ -920,17 +920,20 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if len(v.Predicate) > 0 {
 			p, err = decodePredicate(v.Predicate)
 		}
-		if !validSide(v.Owner) || v.SourceZone != "deck" || v.Output != "drawn" || v.All && v.Count != nil || !v.All && (v.Count == nil || *v.Count < 0) {
+		count, countExpr := 0, (NumericExpr)(nil)
+		if len(v.Count) > 0 {
+			count, countExpr, err = decodeNumericValue(v.Count, false)
+			if err != nil {
+				return nil, err
+			}
+		}
+		if !validSide(v.Owner) || v.SourceZone != "deck" || v.Output != "drawn" || v.All && len(v.Count) > 0 || !v.All && len(v.Count) == 0 {
 			return nil, fmt.Errorf("invalid draw shape")
 		}
 		if v.DistinctNames && (v.All || len(v.Predicate) == 0) {
 			return nil, fmt.Errorf("invalid draw shape")
 		}
-		count := 0
-		if v.Count != nil {
-			count = *v.Count
-		}
-		return DrawEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Owner: v.Owner, SourceZone: v.SourceZone, Output: v.Output, Count: count, All: v.All, Predicate: p, DistinctNames: v.DistinctNames}, err
+		return DrawEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Owner: v.Owner, SourceZone: v.SourceZone, Output: v.Output, Count: count, CountExpr: countExpr, All: v.All, Predicate: p, DistinctNames: v.DistinctNames}, err
 	case "grant_ability":
 		var v struct {
 			NodeBase
@@ -1155,7 +1158,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if err := strict(data, &v); err != nil {
 			return nil, err
 		}
-		if v.Output != "" && !(v.Kind == "destroy" && v.Output == "destroyed" || v.Kind == "banish" && v.Output == "banished") {
+		if v.Output != "" && !(v.Kind == "destroy" && v.Output == "destroyed" || v.Kind == "banish" && v.Output == "banished" || v.Kind == "return" && v.Output == "returned") {
 			return nil, fmt.Errorf("invalid target effect output")
 		}
 		if v.Until != "" && (!oneOf(v.Kind, "add_keyword", "buff_stats", "set_cost") || !oneOf(v.Until, "turn_end", "own_turn_end", "oppo_turn_end")) {
@@ -1239,7 +1242,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 				return nil, fmt.Errorf("invalid removal shape")
 			}
 		case "return":
-			if !oneOf(v.Destination, "hand", "deck") || v.Destination == "deck" && v.DeckInsertion != "uniform_random_position" || v.Destination == "hand" && v.DeckInsertion != "" || v.DamageType != "" || v.Amount != 0 || v.Keyword != "" || v.Form != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
+			if !oneOf(v.Destination, "hand", "deck") || v.Destination == "deck" && v.DeckInsertion != "uniform_random_position" || v.Destination == "hand" && v.DeckInsertion != "" || v.Output != "returned" || v.DamageType != "" || v.Amount != 0 || v.Keyword != "" || v.Form != "" || v.AttackDelta != 0 || v.LifeDelta != 0 || p != nil {
 				return nil, fmt.Errorf("invalid return shape")
 			}
 		case "add_keyword", "remove_keyword":

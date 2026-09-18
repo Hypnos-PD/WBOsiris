@@ -654,7 +654,7 @@ PayResource = NodeBase & {
 Draw = NodeBase & {
   kind: "draw",
   owner: Side,
-  count: IntExpr?,
+  count: IntExpr?,  // 整数或数值表达式（如 count(<集合绑定>) 的动态张数）
   all: bool,
   sourceZone: "deck",
   predicate: BoolExpr?,
@@ -743,7 +743,8 @@ Return = NodeBase & {
   kind: "return",
   target: ValueRef | SetExpr,
   destination: "hand" | "deck",
-  deckInsertion: "uniform_random_position"?
+  deckInsertion: "uniform_random_position"?,
+  output: "returned"
 }
 
 Reanimate = NodeBase & {

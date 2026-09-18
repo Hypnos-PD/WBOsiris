@@ -10,7 +10,7 @@ func TestDecodeRejectsHistoryEffectTargetsButAcceptsCounts(t *testing.T) {
 	history := ZoneRef{Kind: "zone", Side: "own", Zone: "destroyed", Member: "card"}
 	base := NodeBase{ID: strings.Repeat("a", 32), Origin: testOrigin()}
 	for _, effect := range []Effect{
-		TargetEffect{NodeBase: base, Kind: "return", Target: history, Destination: "hand"},
+		TargetEffect{NodeBase: base, Kind: "return", Target: history, Destination: "hand", Output: "returned"},
 		TargetEffect{NodeBase: base, Kind: "damage", DamageType: "effect", Target: FilterRef{Kind: "filter", Source: history, Predicate: FieldPredicate{Kind: "has_type", CardType: "follower"}}, Amount: 2},
 		SelectionEffect{NodeBase: base, Kind: "choose", Policy: "optional", Binding: "old", Source: history},
 		AdjustEffect{NodeBase: base, Kind: "adjust_entity_field", Field: "cost", Target: history, Delta: -1},

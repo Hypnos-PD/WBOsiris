@@ -565,6 +565,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 		if h == "destroy" {
 			bindings["destroyed"] = true
 		}
+		if h == "return" {
+			bindings["returned"] = true
+		}
 		if h == "banish" {
 			bindings["banished"] = true
 		}
@@ -583,6 +586,8 @@ func producedBindings(body []*syntax.Statement) map[string]bool {
 		out["drawn"] = true
 	case "add":
 		out["added"] = true
+	case "return":
+		out["returned"] = true
 	case "destroy":
 		out["destroyed"] = true
 		case "summon", "reanimate":
@@ -652,10 +657,20 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		ok = good && end+1 == len(t) && isU16(t[end])
 	case "draw":
 		// draw <amount> [for own|oppo] [from deck <where>]
+		// <amount> 可以是整数、all，或 count(...)/sum(...) 这样的动态数量
+		// （"抽取X张卡牌，X为因本能力返回牌组的张数"）。
 		offset := 2
 		ok = len(t) >= 2 && (isUnsigned(t[1]) || t[1].Value == "all")
-		if ok && len(t) >= 4 && t[2].Value == "for" && set("own", "oppo")[t[3].Value] {
-			offset = 4
+		if !ok && len(t) >= 2 && set("count", "sum")[t[1].Value] {
+			end, good := parseEffectAmount(t, 1)
+			if good && end >= 3 && t[2].Kind == syntax.Identifier {
+				// `count(<绑定>)`：集合绑定本身要已定义。
+				checkBindingAt(t, 2, end, bindings, ds)
+			}
+			ok, offset = good, end
+		}
+		if ok && len(t) >= offset+2 && t[offset].Value == "for" && set("own", "oppo")[t[offset+1].Value] {
+			offset += 2
 		}
 		if ok && len(t) == offset {
 			// draw all 必须带过滤器。

@@ -155,7 +155,11 @@ func (e DrawEffect) MarshalJSON() ([]byte, error) {
 	object := effectObject(e.NodeBase, e.Kind)
 	object["owner"], object["sourceZone"], object["all"], object["output"] = e.Owner, e.SourceZone, e.All, e.Output
 	if !e.All {
-		object["count"] = e.Count
+		count, err := numericValue(e.Count, e.CountExpr, false)
+		if err != nil {
+			return nil, err
+		}
+		object["count"] = count
 	}
 	if e.Predicate != nil {
 		object["predicate"] = e.Predicate
@@ -204,7 +208,7 @@ func (e TargetEffect) MarshalJSON() ([]byte, error) {
 		object["until"] = e.Until
 	}
 	if e.Output != "" {
-		if !(e.Kind == "destroy" && e.Output == "destroyed" || e.Kind == "banish" && e.Output == "banished") {
+		if !(e.Kind == "destroy" && e.Output == "destroyed" || e.Kind == "banish" && e.Output == "banished" || e.Kind == "return" && e.Output == "returned") {
 			return nil, fmt.Errorf("invalid target effect output")
 		}
 		object["output"] = e.Output

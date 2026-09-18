@@ -720,11 +720,13 @@ fact_object       = alias | participant , "." , "leader" | "card" , card_id ;
    对手。绑定具有所在效果调用帧的词法作用域：内层块可读外层绑定；同名新绑定
    覆盖当前帧旧值，离开帧后恢复外层值。
 9. `choose`、`require`、`random` 的 `binding_name` 建立或覆盖绑定；当前语料
-   使用稳定名 `target`。操作输出 `summoned`、`drawn`、`destroyed` 和事件输出同样是绑定。
+   使用稳定名 `target`。操作输出 `summoned`、`drawn`、`destroyed`、`banished`、`returned`
+   和事件输出同样是绑定。
    使用前必须在所有可达控制流上已定义，`superevolve extends evolve` 是允许
    读取普通进化块输出绑定的特例。绑定值必须满足操作所需的单值、集合和类型。
-10. 新的召唤、抽牌或破坏操作即使成功数为零，也以对应空集合替换旧的 `summoned`、
-    `drawn` 或 `destroyed`。事件绑定只在对应监听器调用帧有效。实例离开原区域后，绑定和测试
+10. 新的召唤、抽牌、破坏、消失或返回操作即使成功数为零，也以对应空集合替换旧的
+   `summoned`、`drawn`、`destroyed`、`banished` 或 `returned`。
+   事件绑定只在对应监听器调用帧有效。实例离开原区域后，绑定和测试
     别名仍指向同一实例。
 11. `where` 的字段必须适用于候选类型；例如 `life` 只适用于随从，`trait` 只
     匹配具有该种族的卡牌。应用于操作的 `where` 先过滤其紧邻集合操作数，再按

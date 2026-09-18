@@ -384,9 +384,18 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		if len(t) >= 4 && t[2].Value == "for" {
 			owner, offset = t[3].Value, 4
 		}
+		if set("count", "sum")[t[1].Value] {
+			// `draw count(<绑定>)`：动态抽牌数量，运行期求值。
+			if end, ok := parseEffectAmount(t, 1); ok {
+				offset = end
+				if len(t) >= end+2 && t[end].Value == "for" {
+					owner, offset = t[end+1].Value, end+2
+				}
+			}
+		}
 		e := ir.DrawEffect{NodeBase: base, Kind: "draw", Owner: owner, SourceZone: "deck", All: t[1].Value == "all", Output: "drawn"}
 		if t[1].Value != "all" {
-			e.Count = intAt(s, 1)
+			e.Count, e.CountExpr = numericIR(t, 1)
 		}
 		if len(t) > offset {
 			e.Predicate, _ = filterIR(t, offset+2)
@@ -588,7 +597,9 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		return e, nil
 	case "return":
 		end := valueRefEnd(t, 1)
-		e := ir.TargetEffect{NodeBase: base, Kind: "return", Target: valueRefIR(t, 1), Destination: t[end+1].Value}
+		// `return T to deck` 把实际返回的实例绑定成 `returned`，
+		// 用于"抽取X张卡牌，X为因本能力返回牌组的张数"。
+		e := ir.TargetEffect{NodeBase: base, Kind: "return", Target: valueRefIR(t, 1), Destination: t[end+1].Value, Output: "returned"}
 		if t[end+1].Value == "deck" {
 			e.DeckInsertion = "uniform_random_position"
 		}

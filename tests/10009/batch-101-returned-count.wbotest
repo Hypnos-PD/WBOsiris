@@ -1,0 +1,69 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "高洁哲学家把手牌全部洗回牌组后按返回张数抽牌" {
+    seed 101001;
+    state {
+        player own {
+            pp 3/3;
+            hand {
+                follower source = 10932120;
+                follower first = 10001110;
+                follower second = 10021110;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == field;
+        own.hand count card 10001110 == 1;
+        own.hand count card 10021110 == 1;
+        own.deck count card 10001110 == 0;
+        own.deck count card 10021110 == 0;
+    }
+}
+
+scenario "高洁哲学家的抽牌张数等于返回张数而不是牌组张数" {
+    seed 101002;
+    state {
+        player own {
+            pp 3/3;
+            deck top {
+                follower extra1 = 10011110;
+                follower extra2 = 10011110;
+                follower extra3 = 10011110;
+            }
+            hand {
+                follower source = 10932120;
+                follower first = 10001110;
+                follower second = 10021110;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        // 返回 2 张后牌组共 5 张；抽牌张数若被错写成"牌组张数"就会把牌组抽空。
+        own.deck count card 10011110 == 3;
+        own.hand count card 10001110 == 1;
+        own.hand count card 10021110 == 1;
+    }
+}
+
+scenario "高洁哲学家在没有其他手牌时返回零张不抽牌" {
+    seed 101003;
+    state {
+        player own {
+            pp 3/3;
+            deck top { follower next = 10011110; }
+            hand { follower source = 10932120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.hand count card 10011110 == 0;
+        own.deck count card 10011110 == 1;
+    }
+}

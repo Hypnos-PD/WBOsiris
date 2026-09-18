@@ -559,6 +559,9 @@ type DrawEffect struct {
 	SourceZone string    `json:"sourceZone"`
 	Output     string    `json:"output"`
 	Count      int       `json:"count,omitempty"`
+	// CountExpr 支持动态抽牌数量（"抽取X张卡牌，X为因本能力返回牌组的张数"）；
+	// 与 Count 互斥，求值在运行期进行。
+	CountExpr NumericExpr `json:"-"`
 	All        bool      `json:"all"`
 	Predicate  Predicate `json:"predicate,omitempty"`
 	// DistinctNames 要求本次抽到的卡牌卡名两两不同（"抽取 2 种…"），
