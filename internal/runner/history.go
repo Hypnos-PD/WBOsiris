@@ -59,11 +59,31 @@ func historyInstances(history []DestructionRecord, cards map[int]*ir.Card) []*in
 
 func (g *game) effectTargets(ref ir.Ref, self *instance, bindings frame) []*instance {
 	items := g.fromRef(ref, self, bindings)
+	// 纹章不在战场上，普通目标解析看不到它们；只有显式的 `own.crests` / `oppo.crests`
+	// 集合（例如"破坏自己的纹章""使自己的纹章的倒计数 -1"）才把纹章纳入目标。
+	allowCrests := crestZoneRef(ref)
 	targets := make([]*instance, 0, len(items))
 	for _, i := range items {
-		if i != nil && i.zone != "destroyed" && (i.card == nil || i.card.CardType != "crest") {
-			targets = append(targets, i)
+		if i == nil || i.zone == "destroyed" {
+			continue
 		}
+		if i.card != nil && i.card.CardType == "crest" && (!allowCrests || i.zone != "crests") {
+			continue
+		}
+		targets = append(targets, i)
 	}
 	return targets
+}
+
+// crestZoneRef 判断引用链是否指向显式的纹章集合。
+func crestZoneRef(ref ir.Ref) bool {
+	switch r := ref.(type) {
+	case ir.ZoneRef:
+		return r.Zone == "crests"
+	case ir.FilterRef:
+		return crestZoneRef(r.Source)
+	case ir.ExcludeRef:
+		return crestZoneRef(r.Source)
+	}
+	return false
 }

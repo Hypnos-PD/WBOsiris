@@ -6,7 +6,14 @@ card 10442110 {
     stats 5/4;
 
     effect {
-        unplayable;
+        fanfare {
+            if own.maxpp == 10 {
+                evolve self silent;
+            }
+        }
+        when self evolved {
+            damage oppo.field.followers 3;
+        }
     }
 
     meta {

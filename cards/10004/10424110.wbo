@@ -6,7 +6,14 @@ card 10424110 {
     stats 3/2;
 
     effect {
-        unplayable;
+        rush;
+        fanfare {
+            summon 1 card 10424110;
+        }
+        enhance 6 {
+            add bane to summoned;
+            add storm to self;
+        }
     }
 
     meta {

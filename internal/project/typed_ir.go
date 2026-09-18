@@ -621,6 +621,10 @@ func setExprIR(t []syntax.Token, i int) (ir.Ref, int) {
 	if memberEnd >= 2 && set("followers", "spells", "amulets")[t[memberEnd-1].Value] {
 		member = strings.TrimSuffix(t[memberEnd-1].Value, "s")
 	}
+	if zone == "crests" {
+		// 纹章区域只在"自己的纹章"这类显式集合里出现，成员固定为纹章实体。
+		member = "card"
+	}
 	if thisTurn {
 		return ir.HistoryRef{Kind: "history", Side: side, Member: member, Window: "this_turn"}, end
 	}

@@ -46,4 +46,7 @@ func TestCrestStrictDecode(t *testing.T) {
 	if _, err := decodeRef([]byte(`{"kind":"zone","side":"own","zone":"crests"}`)); err == nil {
 		t.Fatal("generic card selection can access crests")
 	}
+	if _, err := decodeRef([]byte(`{"kind":"zone","side":"own","zone":"crests","member":"card"}`)); err != nil {
+		t.Fatal("explicit crest selection must be available:", err)
+	}
 }

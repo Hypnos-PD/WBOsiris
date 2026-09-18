@@ -1330,7 +1330,7 @@ func decodeRef(data []byte) (Ref, error) {
 		if err := strict(data, &v); err != nil {
 			return nil, err
 		}
-		if v.Side != "" && !validSide(v.Side) || !validZone(v.Zone) || v.Zone == "crests" || v.Member != "" && !oneOf(v.Member, "card", "follower", "spell", "amulet") {
+		if v.Side != "" && !validSide(v.Side) || !validZone(v.Zone) || v.Zone == "crests" && v.Member != "card" || v.Member != "" && !oneOf(v.Member, "card", "follower", "spell", "amulet") {
 			return nil, fmt.Errorf("invalid zone reference")
 		}
 		return ZoneRef{v.Kind, v.Side, v.Zone, v.Member}, nil

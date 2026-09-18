@@ -6,7 +6,13 @@ card 10463110 {
     stats 0/4;
 
     effect {
-        unplayable;
+        when own amulet engaged {
+            heal own.leader 1;
+        }
+        evolve {
+            require target from oppo.field.followers;
+            damage target 3;
+        }
     }
 
     meta {

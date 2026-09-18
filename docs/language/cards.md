@@ -211,6 +211,12 @@ require target from own.field.followers;
 `own.deck has no duplicates` / `oppo.deck has duplicates` 判断牌组里是否有重复的卡牌定义；
 `banish duplicates in own.deck;` 让牌组中的重复卡牌消失，只保留每种的第一张。
 
+纹章不在战场上，普通的目标解析（`self`、`field.followers` 等）看不到它们。
+需要操作纹章时必须显式写 `own.crests` / `oppo.crests`：例如
+`destroy own.crests where card 10453310;` 破坏自己的某个纹章（走纹章退场并触发谢幕曲），
+`reduce countdown own.crests 1;` 推进自己所有纹章的吟唱。显式集合之外的写法则
+仍然解析不到纹章，纹章也不会被当成普通卡移动或变身。
+
 `count` 后面可以跟数值表达式（例如 `count own.crests`、`count(own.field other)`）：
 动态数量在结算到该语句时求值，为 0 时不选任何目标。
 
@@ -738,6 +744,12 @@ enhance 7 replaces { ... }
 `superevolve replaces evolve` 是同一套替换语义。例：焰火占卜普通打出时对随机 1 个
 敌方随从造成 4 点伤害，`enhance 4 replaces` 改为随机 3 个。
 
+一次打出的外层效果、入场曲与爆能强化按声明顺序共用同一个**打出帧**：
+后声明的块可以读取先声明块的输出（`summoned`、`added`、`drawn`、`destroyed` 与选择绑定），
+例如"爆能强化_6：使其获得【毁灭】"写作 `enhance 6 { add bane to summoned; }`，
+其中 `summoned` 来自同一次打出里先声明的入场曲。反过来把爆能强化写在入场曲之前时，
+该绑定仍未定义，检查器会报错。
+
 手动进化会触发 `evolve`，手动超进化默认也会触发 `evolve`。普通
 `superevolve` 表示超进化时额外触发的独立能力。
 
@@ -1256,6 +1268,12 @@ when own turn ends {
     draw 1;
 }
 ```
+
+`when own card played` 把本次打出的卡绑定为 `played`
+（例如纹章"自己使用随从时使其进化"写作 `evolve played silent;`）；
+`when own follower summoned` 绑定 `summoned`、`when own amulet engaged` 绑定 `engaged`、
+`when own card discarded` 绑定 `discarded`、`when own follower destroyed` 绑定 `destroyed`、
+`when own follower leaves field` 绑定 `left`，与对应操作的输出同名。
 
 场上事件监听也可以显式限制为在手牌中发动：
 

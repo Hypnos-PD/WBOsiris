@@ -18,20 +18,20 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 448 · 未实现(骨架) 73 · 未导入 383
+总计 904 · 已完成 462 · 未实现(骨架) 59 · 未导入 383
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
 10002        77      77       0       0
 10003        77      75       2       0
-10004        76      43      33       0
+10004        76      57      19       0
 10005        76       0       0      76
 10006        76       0       0      76
 10007        77       0       0      77
 10008        78       0       0      78
 10009        76       0       0      76
 90000        93      55      38       0
-未完成卡按文本复杂度：中(41–100字) 272 · 短(≤40字) 166 · 长(>100字) 17 · 白板 1
+未完成卡按文本复杂度：中(41–100字) 258 · 短(≤40字) 166 · 长(>100字) 17 · 白板 1
 ```
 
 ## 工作流
@@ -86,6 +86,8 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-15 | 测试 DSL 的实例字段断言 | 新增 `alias.attack_limit`（取 `attackLimit()`，"1 回合可以攻击 N 次"）与 `alias.damage_reduction`；`internal/project/validate.go`、`strict_validate.go`、`internal/ir/test_decode.go`、`internal/runner/assert.go` 四处白名单同步，写错字段名从"静默不相等"改成检查期报错 | 卡片 10274120 场景直接断言 `source.attack_limit == 2`；全量 444 个场景回归 |
 | S-01 | `remove lastwords from …` / `remove all abilities from …`（实例级失去能力） | `internal/project/validate.go`（`remove` 新增两种形状）、`typed_ir.go` + `keyword_effect.go`（解析成 `remove_ability`，`Keyword` 取 `lastwords`/`all`）、`internal/ir/encode.go`/`decode.go`（新效果种类）、`internal/runner/grant.go`（`suppressed`/`suppressAll`、剔除已排队触发、重新索引）、`internal/runner/execute.go`（派发）、`internal/runner/continuation.go`（连击快照保存抑制状态）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/ability_removal_test.go`（两种形状编成 `remove_ability`、拒绝 `remove fanfare`/漏 `from`/`add lastwords`/带 `until`）与 `internal/runner/ability_removal_test.go`（僵尸链在第二次死亡后停止、`remove all abilities` 同时清掉固有关键词与谢幕曲）；卡片 90051140、10252120、10251310 + 3 个场景 |
 | S-42 | `damage_cap N`（实例伤害上限）与主战者 `damage_taken_up`（受到的伤害 +1） | `internal/project/validate.go`（固有词形状与 `abilities` 集合）、`strict_validate.go`（固有能力/关键词形状表）、`typed_ir.go`（写入 `IntrinsicState`）、`internal/ir/decode.go`（固有状态与关键词白名单）、`internal/runner/runner.go`（`instance.damageCap`、`resetCardState`、`modifyDamage` 在减伤之后压上限；`damageLeaderFrom`/`damageLeaders` 在屏障判定前加一）、`internal/runner/continuation.go`（`DamageCap` 快照与恢复）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/damage_cap_test.go`（8/3/2 三种输入、"受伤 +1"、与屏障同时存在时为 0）；卡片 10401110、10464120、10474120、10444110 + 7 个场景 |
+| S-43 | `own.crests` / `oppo.crests` 作为可操作目标集合 | `internal/project/validate.go`（目标集合接受 `crests`）、`typed_ir.go`（纹章集合的成员固定为 `card`）、`internal/ir/decode.go`（只接受 `zone:"crests"` 且 `member:"card"`）、`internal/runner/history.go`（`crestZoneRef`：只有显式纹章集合才把纹章纳入目标）、`internal/runner/runner.go`（`destroyTargets` 对纹章走 `expireCrest`）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/crest_target_and_play_frame_test.go`、`internal/ir/crest_test.go`（拒绝泛化的纹章区域引用）、`internal/runner/crest_test.go`（纹章不会被当成普通卡移动或变身）；卡片 10453310、10454120 + 4 个场景 |
+| S-44 | 一次打出的效果块共享打出帧 | `internal/runner/runner.go`（`commitPlay` 为外层效果、入场曲与爆能强化创建同一个 `frame`）、`internal/project/validate.go`（把入场曲的输出并入后续 `enhance` 的可见绑定；`producedBindings` 补上 `added`；登记 `played` 事件绑定）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/crest_target_and_play_frame_test.go`（声明顺序两侧）、`internal/runner/enhance_play_frame_test.go`（爆能强化的复制体获得【毁灭】且本体没有）；卡片 10424110 + 2 个场景 |
 
 | S-16 | `ability_destruction_guard`（不会被能力破坏） | 新固有关键词：`internal/ir/decode.go` 的 `validKeyword`、`internal/project/validate.go` 的 `abilities`、`strict_validate.go` 的固有能力形状表、`internal/runner/runner.go`（`destroyByEffect` 受保护，必杀改走新的 `destroyByCombat` 不受保护）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/granted_ability_flow_test.go`（能力破坏被挡下、战斗破坏照样生效）；卡片 10273110 + 2 个场景 |
 | S-07 | `when own\|oppo follower evolved\|super_evolved [other]` —— 其他随从的进化事件 | `internal/ir/model.go`（`EventTrigger.ExcludeSelf`）、`internal/ir/decode.go`（校验 `other` 只用于带对象的非受伤事件）、`internal/project/strict_validate.go`（基础事件模式接受进化动词与 `other`）、`internal/project/typed_ir.go`（事件名映射与 `ExcludeSelf`）、`internal/project/validate.go`（`evolved` 绑定）、`internal/runner/runner.go`（进化事件改为把改名随从绑成 `evolved`）、`internal/runner/trigger_index.go`（按实例排除自身）；文档 `grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/evolution_event_test.go`（`other`/绑定/来源区域、拒绝重复 `other` 与 `self … other`）；卡片 10241110、10212120、10252110 + 6 个场景（含"不因普通进化触发"与"不响应自己超进化"两个反向场景） |
@@ -119,10 +121,32 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-41 | 数值算术（加减） | 10811110 昔日的天秤·马龙（"X 为对手的战场上的随从数减去自己的战场上的随从数"） | 数值表达式只有 `count/sum/scalar/negate`，没有二元加法或减法。 |
 | S-40 | ~~`set cost` 的持续时间~~ **已解决**：`set cost T N until …` | 已解锁 10334120 绝尽的显现·莱奥 | 实例新增 `temporaryCost`（按结束方记录差量），到期在 `expireTurnEffects` 里按差量还原，连击快照一并保存；这样即使到期前又有永久加减费也不会被覆盖。 |
 | S-42 | ~~伤害上限与主战者"受到的伤害 +1"~~ **已解决**：`damage_cap N` / `add damage_taken_up to <主战者>` | 已解锁 10401110、10444120、10464120、10711110（伤害上限），10474120 及后续所有"使对手主战者获得受伤 +1"的卡 | `damage_cap N` 表示单次受到伤害最多 `N`（= 卡面"受到的 N+1 点或以上变为 N 点"）；主战者关键词 `damage_taken_up` 在屏障判定前先加一。 |
+| S-43 | ~~以纹章为效果目标~~ **已解决**：`own.crests` / `oppo.crests` | 已解锁 10453310 堕落（解放奥义破坏自己的纹章）、10454120 彼列（超进化推进自己纹章的吟唱）、90064310 延迟全部纹章的吟唱 | 纹章不在战场上，普通目标解析仍然看不到它们；只有显式写 `own.crests` / `oppo.crests` 的集合会解析到纹章实体（`destroy`、倒计数调整等）。破坏纹章走 `expireCrest`，因此触发谢幕曲；IR 只接受 `zone:"crests"` 且 `member:"card"` 的窄形式。 |
+| S-44 | ~~爆能强化读取入场曲的输出~~ **已解决**：一次打出共享打出帧 | 已解锁 10424110 塞达&贝阿朵丽丝（爆能强化让入场曲召唤的复制体获得【毁灭】）；后续所有"爆能强化改写入场曲衍生体"的卡可用 | 外层效果、入场曲与爆能强化属于同一次打出，按声明顺序共用同一个 `frame`，后声明的块可以读取先声明块的输出（`summoned`、`added`、`drawn`、`destroyed` 与选择绑定）。顺带修好：运行时早就绑定 `played` 的 `when own card played` 在检查器里没有登记，写作 `evolve played silent;` 会被误报为未定义绑定。 |
 
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 47（语言扩展 S-43 / S-44 + 卡包 10004 第四批）
+
+- **S-43 以纹章为效果目标**：`own.crests` / `oppo.crests` 成为可操作集合。运行时只有显式
+  纹章集合才解析到纹章实体，其余路径（`self`、`field` 等）仍然看不到纹章；
+  `destroy` 对纹章走 `expireCrest`（触发谢幕曲），IR 只接受 `zone:"crests"` 且
+  `member:"card"` 的窄形式，避免把纹章当成普通卡移动或变身。
+- **S-44 共享打出帧**：一次打出的外层效果、入场曲与爆能强化共用同一个 `frame`，
+  后声明的块可以读取先声明块的输出；同时补登记了运行时早已存在的 `played` 事件绑定
+  （`evolve played silent;`）。
+- 完成 14 张：10442310 至爱狂轰、10463110 魔杖傍身的外科医生·缇可、10462110 沙神的巫女·莎拉、
+  10442110 冰封的命运·伊什米尔、10452110 霸空武神·哪吒、10462120 赞恩教僧侣·索菲娅、
+  10461120 克己复礼的修女·拉姆蕾达、10472110 轰雷闪狼·尤斯提斯、
+  10424110 真红与群青·塞达&贝阿朵丽丝、10472120 严厉的教官·伊尔莎、10452130 元素共鸣·巴尔，
+  以及三张纹章卡 10414120 调和的舞者·尤艾尔&苏丝雅、10453310 堕落、10454120 狡诈的堕天司·彼列。
+- 新增 28 个场景（`tests/10004/batch-47-basics.wbotest`、`batch-47-crests.wbotest`）；
+  Go 单测 `internal/project/crest_target_and_play_frame_test.go`、
+  `internal/runner/enhance_play_frame_test.go`。
+- 修正两处既有实现：`producedBindings` 漏掉 `add` 的 `added` 输出；检查器漏登记 `played` 绑定。
+- 全量回归：`check` 0 错 0 警；`test` 700 全绿；`go test ./...` 全绿；语料快照更新为 700 个场景。
 
 ### 批次 46（语言扩展 S-42：伤害上限与主战者受伤 +1 + 卡包 10004 第三批）
 

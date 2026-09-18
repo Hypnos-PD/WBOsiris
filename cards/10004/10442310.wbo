@@ -5,7 +5,9 @@ card 10442310 {
     cost 2;
 
     effect {
-        unplayable;
+        require target from oppo.field.followers;
+        damage target 3;
+        add cannot_attack to target until oppo turn ends;
     }
 
     meta {

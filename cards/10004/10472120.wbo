@@ -6,7 +6,29 @@ card 10472120 {
     stats 7/6;
 
     effect {
-        unplayable;
+        fanfare {
+            mode {
+                option 1 {
+                    label chs "发动3次「对对手的战场上的随机1个随从造成4点伤害」。";
+                    label eng "Do this 3 times: \"Deal 4 damage to a random enemy follower.\"";
+                    label jpn "「相手の場のフォロワーからランダム1枚に4ダメージ。」を3回行う。";
+                    label kor "「상대방 전장의 추종자 중 무작위로 1장에게 4 피해」를 3회 발동.";
+                    label cht "發動3次「隨機給予1張敵方戰場上的從者卡4點傷害」。";
+                    repeat 3 {
+                        random victim from oppo.field.followers;
+                        damage victim 4;
+                    }
+                }
+                option 2 {
+                    label chs "对对手的主战者造成4点伤害。";
+                    label eng "Deal 4 damage to the enemy leader.";
+                    label jpn "相手のリーダーに4ダメージ。";
+                    label kor "상대방 리더에게 4 피해.";
+                    label cht "給予敵方的主戰者4點傷害。";
+                    damage oppo.leader 4;
+                }
+            }
+        }
     }
 
     meta {

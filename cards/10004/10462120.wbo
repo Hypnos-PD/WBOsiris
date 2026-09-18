@@ -6,7 +6,12 @@ card 10462120 {
     stats 3/5;
 
     effect {
-        unplayable;
+        fanfare {
+            summon random 1 from own.deck.followers where class havencraft and cost <= 2;
+        }
+        superevolve {
+            add barrier to own.field.followers other;
+        }
     }
 
     meta {

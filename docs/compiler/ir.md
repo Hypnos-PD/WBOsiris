@@ -117,7 +117,11 @@ ID 或场景 ID、节点语义角色、父节点 ID、节点规范化语法指�
 普通效果节点的稳定 ID 与来源字段编码。加载器必须确认引用卡牌声明了纹章。
 运行时从嵌套定义派生 `cardType: "crest"` 实例，所属卡牌 ID 不变，实例 ID 独立。
 公开状态的 `PlayerView.crests` 保留获得顺序，实体的 `crestLocales` 携带纹章本地化，
-避免客户端误显示所属随从的能力。普通卡牌 `ZoneRef` 不接受 `crests`。
+避免客户端误显示所属随从的能力。普通卡牌 `ZoneRef` 不接受只写 `crests` 的形式：
+只有 `{ kind: "zone", side: "own" | "oppo", zone: "crests", member: "card" }`
+这种显式的纹章集合才能被解码。运行时同样只有显式写 `own.crests` / `oppo.crests`
+的效果会解析到纹章实体；其余路径看不到纹章，纹章不会被当成普通卡移动或变身，
+破坏纹章走纹章退场流程（触发谢幕曲）。
 测试状态允许第七个区域 `crests`，其中实例 `declaredType` 必须为 `crest`。
 
 ## 卡牌定义
@@ -454,6 +458,12 @@ Trigger =
 `actionPlans` 只描述手动进化动作需要执行的能力；`frame=continue` 表示沿用上一步的
 绑定帧，其他触发直接按 `Trigger` 入队。
 
+正常打出时，外层效果（`PlayTrigger`）与本次生效的 `FanfareTrigger`、`EnhanceTrigger`
+属于同一次打出结算，按声明顺序共用同一个绑定帧：后声明的块可以读取先声明块的输出
+（`summoned`、`added`、`drawn`、`destroyed` 与选择绑定）。例如"爆能强化_6：使其获得
+【毁灭】"的 `add bane to summoned` 读到的就是同一次入场曲召唤的复制体。其它触发
+（`lastwords`、`evolve`、`superevolve`、`attack` 等）在不同时点结算，不共享该帧。
+
 ```text
 EventPattern = {
   event: EventKind,
@@ -504,6 +514,11 @@ MovePattern = {
 `follower_left` 在状态重置前匹配事件对象并保存 `left` 绑定，包含离场前卡牌身份、
 `from=field` 与目的区域；`card_fused` 匹配一次成功融合，使用融合前的来源卡筛选，
 本体融合能力执行完毕后才排空外部监听队列。
+
+`card_played` 在卡牌打出后派发，绑定名为 `played`（本次打出的实例），
+用于"自己使用卡牌时"的监听（例如纹章：`when own card played ... { evolve played silent; }`）。
+同一事件家族的输出绑定与对应操作同名：入场曲召唤 `summoned`、护符启动 `engaged`、
+弃牌 `discarded`、破坏 `destroyed`、离场 `left`、攻击/交战的另一随从 `opponent`。
 
 `when own follower destroyed` 编译为 `event=destroyed`、`side=own`、`subjectType=follower`；
 也接受 `oppo` 与 `amulet`，拒绝未指定类型、法术及自身专用破坏监听。

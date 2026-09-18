@@ -1,0 +1,275 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "至爱狂轰对指定随从造成三点伤害并禁止其攻击" {
+    seed 47001;
+    state {
+        player own {
+            pp 2/2;
+            hand { spell source = 10442310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/5; } } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.stats == 2/2; enemy has cannot_attack; }
+}
+
+scenario "没有敌方随从时至爱狂轰不能使用" {
+    seed 47002;
+    state {
+        player own {
+            pp 2/2;
+            hand { spell source = 10442310; }
+        }
+    }
+    action { play source; }
+    expect { illegal target_required; unchanged; source.zone == hand; own.pp == 2/2; }
+}
+
+scenario "自己启动护符时魔杖傍身的外科医生回复主战者" {
+    seed 47003;
+    state {
+        player own {
+            leader 10/20;
+            pp 1/1;
+            field {
+                follower source = 10463110;
+                amulet sigil = 90031210;
+            }
+        }
+    }
+    action { engage sigil; }
+    expect { legal; own.leader.life == 11; }
+}
+
+scenario "魔杖傍身的外科医生进化时对敌方随从造成三点伤害" {
+    seed 47004;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            field { follower source = 10463110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/6; } } }
+    }
+    action { evolve source; select enemy; }
+    expect { legal; enemy.stats == 2/3; source.stats == 2/6; }
+}
+
+scenario "爆能强化六点使沙神的巫女加十点生命并获得守护" {
+    seed 47005;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10462110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.stats == 4/15; source has ward; own.pp == 0/6; }
+}
+
+scenario "沙神的巫女进化时破坏受伤的敌方随从" {
+    seed 47006;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            field { follower source = 10462110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/5; damage_taken 2; } } }
+    }
+    action { evolve source; select enemy; }
+    expect { legal; enemy.zone == graveyard; }
+}
+
+scenario "能量点上限为十时冰封的命运进化并对敌方全体造成三点伤害" {
+    seed 47007;
+    state {
+        player own {
+            pp 10/10;
+            hand { follower source = 10442110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/8; }
+                follower second = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == true; first.stats == 2/5; second.stats == 2/5; }
+}
+
+scenario "能量点上限不足十时冰封的命运不进化" {
+    seed 47008;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10442110; }
+        }
+        player oppo { field { follower first = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect { legal; source.evolved == false; first.stats == 2/8; }
+}
+
+scenario "霸空武神在回合结束时对敌方随机随从造成四点和两点伤害" {
+    seed 47009;
+    state {
+        player own { field { follower source = 10452110; } }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { end_turn; }
+    expect { legal; source has rush; enemy.stats == 2/2; }
+}
+
+scenario "赞恩教僧侣从牌组随机召唤低费主教随从" {
+    seed 47010;
+    state {
+        player own {
+            pp 4/4;
+            deck top { follower recruit = 10061120; }
+            hand { follower source = 10462120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10061120 == 1; }
+}
+
+scenario "赞恩教僧侣超进化使其他随从获得屏障" {
+    seed 47011;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field {
+                follower source = 10462120;
+                follower ally = 10001110;
+            }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; ally has barrier; source lacks barrier; }
+}
+
+scenario "克己复礼的修女在进化后于回合结束时对全体随从造成两点伤害" {
+    seed 47012;
+    state {
+        player own { field { follower source = 10461120 { evolved; } } }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { end_turn; }
+    expect { legal; enemy.stats == 2/6; source.stats == 1/2; }
+}
+
+scenario "克己复礼的修女进化时在回合结束前无法攻击" {
+    seed 47013;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            field { follower source = 10461120; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; source has cannot_attack; }
+}
+
+scenario "奥义时轰雷闪狼使进化前的其他随从和本随从进化" {
+    seed 47014;
+    state {
+        turn own 10;
+        player own {
+            pp 5/5;
+            field { follower ally = 10001110; }
+            hand { follower source = 10472110; }
+        }
+    }
+    action { play source; select ally; }
+    expect { legal; source.evolved == true; ally.evolved == true; ally.stats == 4/4; }
+}
+
+scenario "轰雷闪狼交战时对交战对手造成三点伤害" {
+    seed 47015;
+    state {
+        player own { field { follower source = 10472110; } }
+        player oppo { field { follower enemy = 10001110 { stats 2/6; } } }
+    }
+    action { attack source into enemy; }
+    expect { legal; enemy.zone == graveyard; source.stats == 5/2; }
+}
+
+scenario "真红与群青的入场曲召唤自己的复制体" {
+    seed 47016;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10424110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10424110 == 2; source has rush; }
+}
+
+scenario "爆能强化六点使真红与群青获得疾驰并让复制体获得毁灭" {
+    seed 47017;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10424110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10424110 == 2; source has storm; }
+}
+
+scenario "严厉的教官模式一对随机随从发动三次四点伤害" {
+    seed 47018;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10472120; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/15; } } }
+    }
+    action { play source; mode 1; }
+    expect { legal; enemy.stats == 2/3; }
+}
+
+scenario "严厉的教官模式二打击对手主战者" {
+    seed 47019;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10472120; }
+        }
+    }
+    action { play source; mode 2; }
+    expect { legal; oppo.leader.life == 16; }
+}
+
+scenario "元素共鸣模式一使随机其他随从和本随从加一加一" {
+    seed 47020;
+    state {
+        player own {
+            pp 3/3;
+            field { follower ally = 10001110; }
+            hand { follower source = 10452130; }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; ally.stats == 3/3; source.stats == 3/3; }
+}
+
+scenario "元素共鸣模式二对敌方随机随从造成三点伤害" {
+    seed 47021;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10452130; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/6; } } }
+    }
+    action { play source; mode 2; }
+    expect { legal; enemy.stats == 2/3; }
+}

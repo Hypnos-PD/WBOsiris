@@ -6,7 +6,13 @@ card 10452110 {
     stats 8/6;
 
     effect {
-        unplayable;
+        rush;
+        when own turn ends {
+            random victim from oppo.field.followers;
+            damage victim 4;
+            random victim from oppo.field.followers;
+            damage victim 2;
+        }
     }
 
     meta {

@@ -180,6 +180,12 @@ super_relation     = "replaces" | "extends" ;
 固有能力仅使用 `ability` 中的稳定英文标识。新增固有能力必须由新语言版本显式
 登记，不能把任意 `identifier` 静默当作能力。
 
+一次打出的外层效果、入场曲与爆能强化属于同一次结算，按卡面声明顺序在同一个
+**打出帧**里执行：后声明的块可以读取先声明块的输出绑定（`summoned`、`added`、
+`drawn`、`destroyed` 与选择绑定）。因此 `enhance` 可以引用同一次打出的入场曲召唤的
+随从；把 `enhance` 写在入场曲之前时该绑定仍未定义，检查器会拒绝。
+其它能力块（`lastwords`、`evolve`、`superevolve` 等）在不同时点结算，不共享这个打出帧。
+
 `intimidate` 禁止敌方随从以该随从为攻击目标，但不妨碍能力选择、能力伤害或其他
 非攻击效果。它与 `ward` 同时存在于一个随从时，该随从的 `ward` 不生效。
 `unplayable` 是卡牌固有限制：该手牌实例不能用于 `play` 指令，但仍可作为融合来源
@@ -215,7 +221,7 @@ target_set          = "field" , ["." , card_type_plural]
                      | participant , "." , zone , ["." , card_type_plural] , ["this" , "turn"] ;
 participant         = "own" | "oppo" ;
 zone                = "deck" | "hand" | "field" | "graveyard" | "banished"
-                    | "destroyed" ;
+                    | "destroyed" | "crests" ;
 card_type_plural    = "followers" | "spells" | "amulets" ;
 
 where_clause        = "where" , filter_expression ;
@@ -238,7 +244,11 @@ comparison_operator = "==" | "!=" | "<" | "<=" | ">" | ">=" ;
 ```
 
 `field` 表示双方战场合并后的稳定有序集合；`own.field`、`oppo.field` 可包含随从
-和护符。复数类型后缀缩窄集合类型。`other` 排除与 `self` 同一实例的对象，
+和护符。复数类型后缀缩窄集合类型。`own.crests`、`oppo.crests` 表示该玩家当前的纹章集合；
+纹章不在战场上，只有显式写这条
+集合的效果（破坏、倒计数调整等）才会解析到纹章，`self`、`field` 等路径看不到它们。
+破坏纹章走纹章退场并触发谢幕曲，纹章不会被当成普通卡移动或变身。
+`other` 排除与 `self` 同一实例的对象，
 写成 `other 绑定名` 时改为排除该绑定指向的实例（例如【攻击时】的"非交战对手"写作
 `other opponent`）；两种写法都必须写在 `where` 前。`and` 的优先级高于 `or`；不支持括号过滤器。
 `cost` 比较实例的当前费用，包括加费或降费效果，不比较原始费用。

@@ -6,7 +6,16 @@ card 10472110 {
     stats 5/4;
 
     effect {
-        unplayable;
+        fanfare {
+            if skybound_art {
+                require ally from own.field.followers other where form unevolved;
+                evolve ally silent;
+                evolve self silent;
+            }
+        }
+        clash {
+            damage opponent 3;
+        }
     }
 
     meta {

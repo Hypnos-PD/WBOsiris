@@ -209,11 +209,17 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 	for k, v := range inherited {
 		bindings[k] = v
 	}
+	// 一次打出的入场曲与爆能强化共享同一个打出帧：后声明的块可以读取先声明块的输出
+	// （例如"爆能强化_6：使其获得【毁灭】"里的"其"指向入场曲召唤的随从）。
+	playOutputs := map[string]bool{}
 	if event == "summoned" {
 		bindings["summoned"] = true
 	}
 	if event == "engaged" {
 		bindings["engaged"] = true
+	}
+	if event == "played" {
+		bindings["played"] = true
 	}
 	if event == "discarded" {
 		bindings["discarded"] = true
@@ -300,6 +306,11 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 		case "fanfare", "lastwords", "attack", "clash", "evolve", "spellboost":
 			if len(t) == 1 && len(b) == 1 && !s.Terminated {
 				validateEffectBlock(b[0], ds, bindings, h)
+				if h == "fanfare" {
+					for k, v := range producedBindings(b[0]) {
+						playOutputs[k] = v
+					}
+				}
 				continue
 			}
 			if h != "evolve" && h != "spellboost" {
@@ -335,7 +346,17 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 				if _, ok := integer(t[1]); !ok {
 					rangeError(ds, t[1])
 				}
-				validateEffectBlock(b[0], ds, bindings, "")
+				visible := bindings
+				if h == "enhance" && len(playOutputs) > 0 {
+					visible = map[string]bool{}
+					for k, v := range bindings {
+						visible[k] = v
+					}
+					for k, v := range playOutputs {
+						visible[k] = v
+					}
+				}
+				validateEffectBlock(b[0], ds, visible, "")
 			}
 			continue
 		case "fusion":
@@ -497,11 +518,13 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 func producedBindings(body []*syntax.Statement) map[string]bool {
 	out := map[string]bool{}
 	for _, s := range body {
-		switch s.Word(0) {
-		case "draw":
-			out["drawn"] = true
-		case "destroy":
-			out["destroyed"] = true
+	switch s.Word(0) {
+	case "draw":
+		out["drawn"] = true
+	case "add":
+		out["added"] = true
+	case "destroy":
+		out["destroyed"] = true
 		case "summon", "reanimate":
 			out["summoned"] = true
 		case "choose", "require", "random":
@@ -876,7 +899,7 @@ func parseTargetSet(t []syntax.Token, i int) (int, bool) {
 	if t[i].Value != "own" && t[i].Value != "oppo" {
 		return i, false
 	}
-	if i+2 >= len(t) || t[i+1].Value != "." || !set("deck", "hand", "field", "graveyard", "banished", "destroyed")[t[i+2].Value] {
+	if i+2 >= len(t) || t[i+1].Value != "." || !set("deck", "hand", "field", "graveyard", "banished", "destroyed", "crests")[t[i+2].Value] {
 		return i, false
 	}
 	i += 3

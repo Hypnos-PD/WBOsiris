@@ -5,7 +5,60 @@ card 10453310 {
     cost 5;
 
     effect {
-        unplayable;
+        buff field.followers -2/-2;
+        gain own crest 10453310;
+        gain oppo crest 10453310;
+        if super_skybound_art {
+            destroy own.crests where card 10453310;
+        }
+    }
+
+    crest {
+        countdown 4;
+
+        when own turn ends {
+            damage own.leader 2;
+        }
+
+        locale chs {
+            name "纹章：堕落";
+            text """
+【<color=Keyword>吟唱</color>_4】
+自己的回合结束时，对自己的主战者造成2点伤害。
+""";
+        }
+
+        locale eng {
+            name "Crest: Corruption";
+            text """
+<b><color:Keyword>Countdown</color> (4)</b>
+At the end of your turn, deal 2 damage to your leader.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"だらく\">堕落</rub>";
+            text """
+【<color:Keyword>カウントダウン</color>_4】
+自分のターン終了時、自分のリーダーに2ダメージ。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 타락";
+            text """
+[<color:Keyword>카운트다운</color> 4]
+내 턴 종료시, 내 리더에게 2 피해.
+""";
+        }
+
+        locale cht {
+            name "紋章：墮落";
+            text """
+【<color:Keyword>倒數</color>_4】
+自己的回合結束時，給予自己的主戰者2點傷害。
+""";
+        }
     }
 
     meta {

@@ -973,6 +973,16 @@ func (g *game) destroyByCombat(targets []*instance) []*instance {
 }
 
 func (g *game) destroyTargets(targets []*instance, respectAbilityGuard bool) []*instance {
+	var destroyed []*instance
+	// 纹章不在战场上：破坏纹章走纹章退场路径（触发谢幕曲），且不受「不会被能力破坏」影响。
+	for _, target := range targets {
+		if target != nil && target.zone == "crests" {
+			if owner := g.owner(target); owner != nil {
+				g.expireCrest(owner, target)
+				destroyed = append(destroyed, target)
+			}
+		}
+	}
 	allowed := make([]*instance, 0, len(targets))
 	selected := map[*instance]bool{}
 	for _, target := range targets {
@@ -988,7 +998,6 @@ func (g *game) destroyTargets(targets []*instance, respectAbilityGuard bool) []*
 		allowed = append(allowed, target)
 		selected[target] = true
 	}
-	var destroyed []*instance
 	for _, target := range g.resolveDeathBatch(allowed) {
 		if selected[target] {
 			destroyed = append(destroyed, target)
@@ -1039,9 +1048,12 @@ func (g *game) commitPlay(i *instance) []execFrame {
 		}
 	}
 	g.applyPlaySetup(i, true)
+	// 一次打出产生的所有效果块（外层效果、入场曲、爆能强化）共享同一个打出帧，
+	// 因此后声明的块可以读取先声明块的输出，例如爆能强化让入场曲召唤的随从获得【毁灭】。
+	playFrame := frame{}
 	frames := []execFrame{}
 	if !replacing {
-		frames = append(frames, execFrame{body: i.card.PlayEffects, blockID: cardPlayBlockID(i.card.ID), self: i, bindings: frame{}})
+		frames = append(frames, execFrame{body: i.card.PlayEffects, blockID: cardPlayBlockID(i.card.ID), self: i, bindings: playFrame})
 	}
 	for _, a := range i.card.Abilities {
 		kind := ir.TriggerKind(a.Trigger)
@@ -1050,7 +1062,7 @@ func (g *game) commitPlay(i *instance) []execFrame {
 			continue
 		}
 		if (kind == "fanfare" || kind == "enhance" && isCost && trigger.Cost <= enhanceCost) && (i.zone == "field" || i.card.CardType == "spell") {
-			frames = append(frames, execFrame{body: a.Body, blockID: abilityBlockID(i.card.ID, a.ID), self: i, bindings: frame{}})
+			frames = append(frames, execFrame{body: a.Body, blockID: abilityBlockID(i.card.ID, a.ID), self: i, bindings: playFrame})
 		}
 	}
 	return frames

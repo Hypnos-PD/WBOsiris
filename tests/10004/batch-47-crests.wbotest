@@ -1,0 +1,103 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "调和的舞者的入场曲对随机随从造成两次四点伤害" {
+    seed 47101;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10414120; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect { legal; enemy.zone == graveyard; }
+}
+
+scenario "调和的舞者超进化使自己获得纹章" {
+    seed 47107;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10414120; }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; source.super_evolved == true; own.crests count card 10414120 == 1; }
+}
+
+scenario "调和的舞者的纹章在使用随从时使其进化" {
+    seed 47102;
+    state {
+        player own {
+            pp 2/2;
+            crests { crest dance = 10414120; }
+            hand { follower source = 10001110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == true; source.stats == 4/4; }
+}
+
+scenario "堕落让双方获得纹章且在解放奥义时破坏自己的纹章" {
+    seed 47103;
+    state {
+        turn own 15;
+        player own {
+            pp 5/5;
+            field { follower ally = 10001110 { stats 2/5; } }
+            hand { spell source = 10453310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 3/6; } } }
+    }
+    action { play source; }
+    expect {
+        legal;
+        ally.stats == 0/3;
+        enemy.stats == 1/4;
+        own.crests count card 10453310 == 0;
+        oppo.crests count card 10453310 == 1;
+    }
+}
+
+scenario "未达解放奥义时堕落保留自己的纹章" {
+    seed 47104;
+    state {
+        turn own 5;
+        player own {
+            pp 5/5;
+            hand { spell source = 10453310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.crests count card 10453310 == 1; oppo.crests count card 10453310 == 1; }
+}
+
+scenario "解放奥义时狡诈的堕天司获得纹章并重创其他随从" {
+    seed 47105;
+    state {
+        turn own 15;
+        player own {
+            pp 7/7;
+            hand { follower source = 10454120; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/12; } } }
+    }
+    action { play source; }
+    expect { legal; enemy.stats == 2/2; own.crests count card 10454120 == 1; }
+}
+
+scenario "狡诈的堕天司超进化推进自己纹章的吟唱" {
+    seed 47106;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10454120; }
+            crests { crest belial = 10454120; }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; belial.countdown == 3; }
+}
