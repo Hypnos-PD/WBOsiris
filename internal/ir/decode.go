@@ -1242,6 +1242,24 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			return nil, fmt.Errorf("invalid faith modes effect")
 		}
 		return FaithModesEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Owner: v.Owner, Amount: v.Amount}, nil
+	case "set_empty_deck_outcome":
+		var v struct {
+			ID      string `json:"id"`
+			Kind    string `json:"kind"`
+			Side    string `json:"side"`
+			Outcome string `json:"outcome"`
+			Origin  Origin `json:"origin"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
+			return nil, err
+		}
+		if !validSide(v.Side) || !oneOf(v.Outcome, "defeat", "victory") {
+			return nil, fmt.Errorf("invalid empty deck outcome effect")
+		}
+		return EmptyDeckOutcomeEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Side: v.Side, Outcome: v.Outcome}, nil
 	case "damage", "heal", "buff_stats", "destroy", "banish", "discard", "return", "add_keyword", "remove_keyword", "remove_ability", "silent_evolve", "set_attack_limit", "set_damage_reduction", "set_life", "set_cost", "set_attack":
 		type raw struct {
 			Output                                                      string `json:"output,omitempty"`

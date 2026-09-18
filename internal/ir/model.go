@@ -679,6 +679,18 @@ type FaithModesEffect struct {
 func (e FaithModesEffect) effectKind() string   { return e.Kind }
 func (e FaithModesEffect) effectBase() NodeBase { return e.NodeBase }
 
+// EmptyDeckOutcomeEffect 改变该玩家牌组耗尽时的结果（"使自己的牌组底部的亡者之王卡牌
+// 变身为胜利的卡牌"）：牌组耗尽时改为胜利而不是败北。
+type EmptyDeckOutcomeEffect struct {
+	NodeBase
+	Kind    string `json:"kind"`
+	Side    string `json:"side"`
+	Outcome string `json:"outcome"`
+}
+
+func (e EmptyDeckOutcomeEffect) effectKind() string   { return e.Kind }
+func (e EmptyDeckOutcomeEffect) effectBase() NodeBase { return e.NodeBase }
+
 type CountExpr struct {
 	Kind   string `json:"kind"`
 	Source Ref    `json:"source"`

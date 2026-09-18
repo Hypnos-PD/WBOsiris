@@ -618,6 +618,12 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 			}
 			s.g.emit(ir.RuntimeEvent{Kind: "faith_modes_granted", Side: side, Count: e.Amount})
 		}
+	case ir.EmptyDeckOutcomeEffect:
+		p, side := s.g.playerForSide(self, e.Side)
+		if p != nil {
+			p.deckOutcome = e.Outcome
+			s.g.emit(ir.RuntimeEvent{Kind: "empty_deck_outcome_set", Side: side})
+		}
 	case ir.DeckSummonEffect:
 		bindSummoned(bindings, e.Output, s.g.summonFromDeck(e, self, bindings))
 	case ir.SummonPoolEffect:

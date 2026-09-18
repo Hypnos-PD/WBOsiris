@@ -809,6 +809,12 @@ GrantFaithModes = NodeBase & {
   amount: 1..MaxCounterValue   (* 给该玩家信仰上的 mode_bonus 计数器加 amount *)
 }
 
+EmptyDeckOutcome = NodeBase & {
+  kind: "set_empty_deck_outcome",
+  side: Side,
+  outcome: "defeat" | "victory"  (* 牌组耗尽（抽不到牌）时的结果；跨续局保存 *)
+}
+
 `mode_selected` 事件在玩家确认模式选择后按每个选中的选项各派发一次（`random` 模式不派发），
 供 `when own|oppo mode selected` 使用；模式请求的数量会加上该玩家信仰的
 `mode_bonus` 合计，再按选项数截断。

@@ -634,8 +634,12 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 	}
 	ok := false
 	switch h {
-	case "set":
-		if t[1].Value == "maxlife" {
+		case "set":
+			if len(t) == 5 && values(t[1:3]) == "empty deck" && set("own", "oppo")[t[3].Value] && set("victory", "defeat")[t[4].Value] {
+				ok = true
+				break
+			}
+			if t[1].Value == "maxlife" {
 			_, ok = leaderMaxLifeIR(t, ir.NodeBase{})
 			break
 		}
@@ -1182,6 +1186,10 @@ func negatedWhereTerm(t []syntax.Token, i int) (int, bool) {
 		}
 	case "keyword":
 		if i+1 < len(t) && ir.ValidKeyword(t[i+1].Value) {
+			return i + 2, true
+		}
+	case "card":
+		if i+1 < len(t) && isCardID(t[i+1]) {
 			return i + 2, true
 		}
 	}

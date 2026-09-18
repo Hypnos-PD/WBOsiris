@@ -6,7 +6,64 @@ card 10304110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 90004320 to hand;
+        }
+        evolve {
+            gain own crest 10304110;
+            // 获得纹章时：牌组变为『麦哲佩恩牌组』，并使牌组底部的亡者之王卡牌
+            // 变身成胜利的卡牌（表示为"牌组耗尽时改为胜利"）。
+            replace own.deck with shuffled 1 card 10301110, 1 card 10301310, 1 card 10302110, 1 card 10303110, 1 card 10303210, 1 card 10304120, 1 card 10311110, 1 card 10311120, 1 card 10311310, 1 card 10312110, 1 card 10312120, 1 card 10312210, 1 card 10313110, 1 card 10313310, 1 card 10314110, 1 card 10314120, 1 card 10321110, 1 card 10321120, 1 card 10321310, 1 card 10322110, 1 card 10322120, 1 card 10322210, 1 card 10323110, 1 card 10323310, 1 card 10324110, 1 card 10324120, 1 card 10331110, 1 card 10331120, 1 card 10331310, 1 card 10332110, 1 card 10332210, 1 card 10332310, 1 card 10333110, 1 card 10333310, 1 card 10334110, 1 card 10334120, 1 card 10341110, 1 card 10341120, 1 card 10341310, 1 card 10342110, 1 card 10342120, 1 card 10342210, 1 card 10343110, 1 card 10343310, 1 card 10344110, 1 card 10344120, 1 card 10351110, 1 card 10351120, 1 card 10351310, 1 card 10352110, 1 card 10352120, 1 card 10352210, 1 card 10353110, 1 card 10353310, 1 card 10354110, 1 card 10354120, 1 card 10361110, 1 card 10361120, 1 card 10361310, 1 card 10362110, 1 card 10362210, 1 card 10362220, 1 card 10363110, 1 card 10363210, 1 card 10364110, 1 card 10364120, 1 card 10371110, 1 card 10371120, 1 card 10371310, 1 card 10372110, 1 card 10372120, 1 card 10372210, 1 card 10373110, 1 card 10373310, 1 card 10374110, 1 card 10374120;
+            set empty deck own victory;
+        }
+    }
+
+    crest {
+        when own turn ends {
+            // 舍弃除『绝大的证明』以外的所有手牌，然后抽 6 张。
+            discard own.hand where not card 90004320;
+            draw 6;
+        }
+
+        locale chs {
+            name "纹章：绝大的显现·麦哲佩恩";
+            text """
+获得本纹章时，使自己的牌组变为『<color=Keyword>麦哲佩恩牌组</color>』。使自己的牌组底部的亡者之王卡牌变身为胜利的卡牌。
+<hr>自己的回合结束时，舍弃自己的手牌中的所有除『<color=Keyword>绝大的证明</color>』以外的卡牌。抽取6张卡牌。
+""";
+        }
+
+        locale eng {
+            name "Crest: Mjerrabaine, Great Manifest";
+            text """
+When you gain this crest, replace your deck with the <b><color=Keyword>Mjerrabaine Deck</color></b> and transform the Reaper Card at the bottom of your deck into a Victory Card.
+<hr>At the end of your turn, discard all cards not named <b><i><color=Keyword>Great Testimony</color></i></b> and draw 6 cards.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"ぜつだい\">絶大</rub>の<rub=\"けんげん\">顕現</rub>・マゼルベイン";
+            text """
+これを持ったとき、自分のデッキを【<color=Keyword>マゼルベインデッキ</color>】にする。自分のデッキの下にある死神のカードを勝利のカードに変身させる。
+<hr>自分のターン終了時、自分の手札の『<color=Keyword>絶大の証明</color>』でないカードすべてを捨てる。自分のデッキから6枚を引く。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 절대의 현현 마젤베인";
+            text """
+이 능력을 가졌을 때, 내 덱을 [<color=Keyword>마젤베인 덱</color>]으로 바꾼다. 내 덱 가장 밑에 있는 사신의 카드를 승리의 카드로 변신시킨다.
+<hr>내 턴 종료시, <color=Keyword>위대의 증명</color>이 아닌 내 패의 카드를 모두 버린다. 내 덱에서 6장을 뽑는다.
+""";
+        }
+
+        locale cht {
+            name "紋章：絕大的顯現‧馬塞班恩";
+            text """
+當獲得這個紋章時，以【<color=Keyword>馬塞班恩牌組</color>】取代自己牌堆中的卡片。使自己牌堆底部的死神卡片變身為勝利卡片。
+<hr>自己的回合結束時，捨棄全部自己手牌中非『<color=Keyword>絕大的證明</color>』的卡片。由自己的牌堆中抽取6張卡片。
+""";
+        }
     }
 
     meta {

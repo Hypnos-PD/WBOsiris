@@ -242,6 +242,15 @@ func (e FaithModesEffect) MarshalJSON() ([]byte, error) {
 	return json.Marshal(object)
 }
 
+func (e EmptyDeckOutcomeEffect) MarshalJSON() ([]byte, error) {
+	if !oneOf(e.Side, "own", "oppo") || !oneOf(e.Outcome, "defeat", "victory") {
+		return nil, fmt.Errorf("invalid empty deck outcome effect")
+	}
+	object := effectObject(e.NodeBase, e.Kind)
+	object["side"], object["outcome"] = e.Side, e.Outcome
+	return json.Marshal(object)
+}
+
 func (e TargetEffect) MarshalJSON() ([]byte, error) {
 	if e.Until != "" && (!oneOf(e.Kind, "add_keyword", "buff_stats", "set_cost") || !oneOf(e.Until, "turn_end", "own_turn_end", "oppo_turn_end")) {
 		return nil, fmt.Errorf("invalid effect duration")

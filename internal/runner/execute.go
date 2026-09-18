@@ -577,7 +577,12 @@ func (g *game) draw(e ir.DrawEffect, self *instance, f frame) {
 	}
 	own.deck = kept
 	if g.firstPlayer != "" && e.Predicate == nil && !e.All && count < want {
-		g.finishGame(oppositeSide(ownSide))
+		if own.deckOutcome == "victory" {
+			// 「胜利的卡牌」：牌组耗尽时改为自己胜利。
+			g.finishGame(ownSide)
+		} else {
+			g.finishGame(oppositeSide(ownSide))
+		}
 	}
 }
 

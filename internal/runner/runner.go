@@ -78,6 +78,8 @@ type player struct {
 	// evolutionsThisMatch 记录本场对战中该玩家随从进化过的次数（含超进化），
 	// 读作 `own.evolutions`（"本次对战中自己的随从的进化次数为6次或以上"）。
 	evolutionsThisMatch                                       int
+	// deckOutcome 是"牌组耗尽时的结果"（空字符串表示常规败北；"victory" 表示胜利的卡牌）。
+	deckOutcome                                               string
 	deck, hand, field, graveyard, banished                    []*instance
 	destroyed                                                 []DestructionRecord
 	resolving                                                 []*instance

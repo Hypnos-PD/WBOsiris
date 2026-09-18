@@ -101,6 +101,8 @@ type ContinuationPlayer struct {
 	PlayedCosts []int `json:"playedCosts,omitempty"`
 	// EvolutionsThisMatch 是本场对战中该玩家随从进化过的次数（含超进化）。
 	EvolutionsThisMatch int `json:"evolutionsThisMatch,omitempty"`
+	// DeckOutcome 是"牌组耗尽时的结果"（"victory" 表示胜利的卡牌）。
+	DeckOutcome string `json:"deckOutcome,omitempty"`
 	LeaderAbilities  []string            `json:"leaderAbilities,omitempty"`
 	// LeaderTemporary 是主战者级关键词的到期时点（"到对手的回合结束为止"）。
 	LeaderTemporary map[string]KeywordExpiry `json:"leaderTemporary,omitempty"`
@@ -603,6 +605,7 @@ func snapshotContinuationPlayer(p player) ContinuationPlayer {
 		Entered:          instanceIDs(p.entered),
 		PlayedCosts:      sortedCardIDs(p.playedCosts),
 		EvolutionsThisMatch: p.evolutionsThisMatch,
+		DeckOutcome:         p.deckOutcome,
 		Deck: instanceIDs(p.deck), Hand: instanceIDs(p.hand), Field: instanceIDs(p.field), EvolvedThisTurn: p.evolvedThisTurn,
 		Graveyard: instanceIDs(p.graveyard), Banished: instanceIDs(p.banished), Destroyed: cloneDestructionHistory(p.destroyed),
 		Resolving:    instanceIDs(p.resolving),
@@ -990,6 +993,7 @@ func restorePlayer(saved ContinuationPlayer, instances map[string]*instance, car
 		}
 	}
 	p.evolutionsThisMatch = saved.EvolutionsThisMatch
+	p.deckOutcome = saved.DeckOutcome
 	if p.leaderMax < 1 || p.leaderMax > 65535 || p.leaderLife < 0 || p.leaderLife > p.leaderMax {
 		return player{}, fmt.Errorf("invalid continuation leader life")
 	}

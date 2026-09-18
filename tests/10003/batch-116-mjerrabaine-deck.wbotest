@@ -1,0 +1,67 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "绝大的显现的入场曲把绝大的证明加入手牌" {
+    seed 116001;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10304110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90004320 == 1; }
+}
+
+scenario "绝大的显现进化时获得纹章并把牌组换成麦哲佩恩牌组" {
+    seed 116002;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10304110; }
+            deck top {
+                follower leftover = 10001110;
+                follower extra = 10001120;
+            }
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        own.crests count card 10304110 == 1;
+        // 旧牌组被替换：原先的卡不在牌组里，牌组里出现麦哲佩恩牌组的卡。
+        own.deck count card 10001110 == 0;
+        own.deck count card 10001120 == 0;
+        own.deck count card 10301110 == 1;
+        own.deck count card 10374120 == 1;
+    }
+}
+
+scenario "纹章在回合结束舍弃除绝大的证明以外的手牌并抽六张" {
+    seed 116003;
+    state {
+        player own {
+            crests { crest mjerrabaine = 10304110; }
+            deck top {
+                follower first = 10001110;
+                follower second = 10001110;
+                follower third = 10001110;
+                follower fourth = 10001110;
+                follower fifth = 10001110;
+                follower sixth = 10001110;
+            }
+            hand {
+                spell testimony = 90004320;
+                follower other = 10021110;
+            }
+        }
+    }
+    action { advance turn_end own; }
+    expect {
+        legal;
+        testimony.zone == hand;
+        other.zone == graveyard;
+        own.hand count card 10001110 == 6;
+    }
+}

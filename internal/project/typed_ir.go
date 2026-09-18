@@ -598,6 +598,10 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		end := valueRefEnd(t, 1)
 		return ir.TargetEffect{NodeBase: base, Kind: "set_damage_reduction", Target: valueRefIR(t, 1), Amount: intToken(t[end])}, nil
 	case "set":
+		if len(t) == 5 && values(t[1:3]) == "empty deck" && set("own", "oppo")[t[3].Value] && set("victory", "defeat")[t[4].Value] {
+			// `set empty deck own victory;`：牌组耗尽时改为胜利（胜利的卡牌）。
+			return ir.EmptyDeckOutcomeEffect{NodeBase: base, Kind: "set_empty_deck_outcome", Side: t[3].Value, Outcome: t[4].Value}, nil
+		}
 		if t[1].Value == "maxlife" {
 			e, _ := leaderMaxLifeIR(t, base)
 			return e, nil
@@ -890,6 +894,10 @@ func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 				j += 3
 			case t[j+1].Value == "keyword":
 				inner = ir.FieldPredicate{Kind: "has_keyword", Keyword: t[j+2].Value}
+				j += 3
+			case t[j+1].Value == "card" && j+2 < len(t) && isCardID(t[j+2]):
+				// `where not card <ID>`：排除指定卡牌定义。
+				inner = ir.FieldPredicate{Kind: "has_card", CardID: intToken(t[j+2])}
 				j += 3
 			default:
 				j++
