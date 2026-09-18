@@ -8,6 +8,7 @@ import {
 import { Bot, ChevronDown, ChevronUp, CircleHelp, Combine, DoorOpen, Eye, Film, History, Home, Layers, Menu, Play, Plus, Shield, Sparkles, Swords, X, Zap } from "lucide-react";
 import { StatusEffects, type StatusEffect } from "./StatusEffects";
 import { DeckBuilder } from "./DeckBuilder";
+import { HomeIllustrationView, type HomeIllustration } from "./HomeIllustration";
 import { cardArt, cardText, classNames, deckProblems, typeNames, type CatalogCard, type CatalogFormat } from "./decks";
 import { useDeckLibrary } from "./useDeckLibrary";
 import { CardArt } from "./CardArt";
@@ -150,6 +151,7 @@ export function App() {
   const [catalog, setCatalog] = useState(fallbackCatalog);
   const [catalogCards, setCatalogCards] = useState<CatalogCard[]>([]);
   const [catalogFormats, setCatalogFormats] = useState<CatalogFormat[]>([]);
+  const [homeIllust, setHomeIllust] = useState<HomeIllustration | null>(null);
   const [format, setFormat] = useState<string>(() => localStorage.getItem("wbo-format") || "rotation");
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [catalogError, setCatalogError] = useState("");
@@ -241,6 +243,16 @@ export function App() {
       .finally(() => { if (!controller.signal.aborted) setCatalogLoading(false); });
     return () => controller.abort();
   }, [catalogVersion]);
+
+  // 主界面插图参数（背景 + Spine 立绘的合成）随前端分发，加载失败就退回静态背景。
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/assets/home/hi_1001.json", { cache: "force-cache" })
+      .then((response) => (response.ok ? response.json() : Promise.reject(new Error("no illustration"))))
+      .then((config: HomeIllustration) => { if (!cancelled) setHomeIllust(config); })
+      .catch(() => { if (!cancelled) setHomeIllust(null); });
+    return () => { cancelled = true; };
+  }, []);
 
   const acceptMatch = (data: Remote, previousToken = "") => {
     const token = data.playerToken || previousToken;
@@ -691,6 +703,9 @@ export function App() {
   const workspacePage = activePage === "home" ? (
     <div className="lobby">
       <section className="lobby-banner" aria-label="大厅横幅">
+        {homeIllust
+          ? <HomeIllustrationView config={homeIllust}/>
+          : <img className="home-illustration-fallback" src="/assets/home/hi_1001-bg.webp" alt=""/>}
         <div className="lobby-banner-copy">
           <em>SHADOWVERSE: WORLDS BEYOND</em>
           <strong>WBO ARENA</strong>

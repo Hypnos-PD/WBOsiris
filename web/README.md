@@ -35,10 +35,17 @@ go run ./cmd/wbo serve --source-root . --listen :23215
 相对路径、源文件与输出文件的 SHA-256，以及转换参数。前端通过生成的
 `src/generated/card-art.json` 查找图片；不依赖外部目录或运行时素材服务。
 
-大厅横幅背景 `assets/lobby-bg.webp` 复刻 WBArts 的主界面插图（`hi_1001` 的
-`bg_hi_1001.png`），转成 1600×1600 的 WebP（约 80 KB）后随前端一起分发。
-界面风格（浅底、黑描边、硬阴影、荧光绿强调、深色侧边栏）也沿用 WBArts 的
-视觉规范，定义集中在 `src/theme.css`；牌桌仍是深色竞技场。
+大厅横幅是**主界面插图（home illustration）的合成**，与 WBArts 的 `/hi/` 页面同一套：
+背景贴图 + Spine 立绘（`idle` 待机、点击触发 `tap_01..04`），相机窗口与背景摆位由
+`src/HomeIllustration.tsx` 按 WBArts 的公式换算（`skeletonScale × prefabScale × 布局缩放`
+把 Unity 的 19.2×10.8 世界窗口映射到 spine 世界坐标，背景按 spine-player 默认 10%
+内边距填满相机）。素材在 `public/assets/home/`：`hi_1001.json`（从 WBArts 的
+index + config 提炼的参数）、`hi_1001.skel`/`.atlas`/`.webp`（立绘，图集转 WebP 并改写过
+图集页名）与 `hi_1001-bg.webp`（背景，1600²）。
+
+界面风格（浅底、黑描边、硬阴影、荧光绿强调、深色侧边栏）也沿用 WBArts 的视觉规范，
+定义集中在 `src/theme.css`；牌桌仍是深色竞技场。Spine 运行时是
+`@esotericsoftware/spine-player@4.2.119`，与 WBArts 同版本。
 
 ## 卡图导入
 
