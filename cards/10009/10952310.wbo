@@ -5,7 +5,18 @@ card 10952310 {
     cost 2;
 
     effect {
-        unplayable;
+        repeat 1 {
+            random victim from oppo.field.followers;
+            damage victim 3;
+            damage all.leaders 1;
+        }
+        enhance 4 replaces {
+            repeat 2 {
+                random victim from oppo.field.followers;
+                damage victim 3;
+                damage all.leaders 1;
+            }
+        }
     }
 
     meta {

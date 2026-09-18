@@ -5,7 +5,14 @@ card 10971310 {
     cost 6;
 
     effect {
-        unplayable;
+        mode {
+            option 1 {
+                damage oppo.field.followers 5;
+            }
+            option 2 {
+                summon 2 card 90071150;
+            }
+        }
     }
 
     meta {

@@ -6,7 +6,13 @@ card 10973110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from oppo.field.followers;
+            destroy target;
+            if own.deck has no duplicates {
+                add storm to self;
+            }
+        }
     }
 
     meta {

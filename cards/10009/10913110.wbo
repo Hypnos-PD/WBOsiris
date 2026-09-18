@@ -6,7 +6,16 @@ card 10913110 {
     stats 1/3;
 
     effect {
-        unplayable;
+        fanfare {
+            if combo >= 3 {
+                draw 2;
+            }
+        }
+        evolve {
+            choose target from own.field.followers other;
+            buff target +1/+1;
+            add rush to target;
+        }
     }
 
     meta {

@@ -5,7 +5,13 @@ card 10922310 {
     cost 3;
 
     effect {
-        unplayable;
+        choose target from oppo.field.followers;
+        damage target 5;
+        // 「若本卡牌的费用为3」：按打出时的当前费用判断（被减费后就不再加牌）。
+        if self.cost == 3 {
+            add 1 card 10922310 to hand;
+            set cost added 1;
+        }
     }
 
     meta {

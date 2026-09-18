@@ -5,7 +5,12 @@ card 10923310 {
     cost 4;
 
     effect {
-        unplayable;
+        summon 1 card 90021210;
+        damage oppo.field.followers 2;
+        enhance 6 replaces {
+            summon 2 card 90021210;
+            damage oppo.field.followers 4;
+        }
     }
 
     meta {

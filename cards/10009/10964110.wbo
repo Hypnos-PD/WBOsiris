@@ -6,7 +6,57 @@ card 10964110 {
     stats 6/6;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from oppo.field.followers;
+            destroy target;
+        }
+        evolve {
+            gain own crest 10964110;
+        }
+    }
+
+    crest {
+        when own turn ends {
+            if count(own.field where base.cost >= 6) >= 1 {
+                damage oppo.leader 1;
+                heal own.leader 1;
+            }
+        }
+
+        locale chs {
+            name "纹章：神纹的罪人·艾尔拉德";
+            text """
+自己的回合结束时，若自己的战场上有原始费用为6或以上的卡牌，则对对手的主战者造成1点伤害。回复自己的主战者1点生命值。
+""";
+        }
+
+        locale eng {
+            name "Crest: Elrade, Sinbound Inquisitor";
+            text """
+At the end of your turn, if there's a card with a base cost of 6 or more on your field, deal 1 damage to the enemy leader and restore 1 defense to your leader.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"しんもん\">神紋</rub>の<rub=\"とがびと\">咎人</rub>・エルラーデ";
+            text """
+自分のターン終了時、自分の場に元のコスト6以上のカードがあるなら、相手のリーダーに1ダメージ。自分のリーダーを1回復。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 신문의 죄인 엘라데";
+            text """
+내 턴 종료 시, 내 전장에 원래 비용이 6 이상인 카드가 있다면 상대방 리더에게 1 피해. 내 리더를 1 회복.
+""";
+        }
+
+        locale cht {
+            name "紋章：神紋的罪人‧艾爾拉德";
+            text """
+自己的回合結束時，若自己的戰場上有原始消費為6以上的卡片，則給予敵方的主戰者1點傷害。回復自己的主戰者1點生命值。
+""";
+        }
     }
 
     meta {

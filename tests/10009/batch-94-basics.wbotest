@@ -1,0 +1,263 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "神纹誓言的入场曲破坏所有随从" {
+    seed 94001;
+    state {
+        player own {
+            pp 6/6;
+            field { follower mine = 10001110; }
+            hand { amulet source = 10963210; }
+        }
+        player oppo {
+            field { follower theirs = 10001110; }
+        }
+    }
+    action { play source; }
+    expect { legal; mine.zone == graveyard; theirs.zone == graveyard; }
+}
+
+scenario "神纹誓言的启动破坏自身并抽牌回复" {
+    seed 94002;
+    state {
+        player own {
+            leader 10/20;
+            pp 1/1;
+            field { amulet source = 10963210; }
+            deck top { follower next = 10011110; }
+        }
+    }
+    action { engage source; }
+    expect { legal; source.zone == graveyard; own.hand count card 10011110 == 1; own.leader.life == 11; }
+}
+
+scenario "铸铁亲信在牌组无重复时获得疾驰" {
+    seed 94003;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10973110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.zone == graveyard; source has storm; }
+}
+
+scenario "逆行的罪人召唤海盗旗并推进倒计数" {
+    seed 94004;
+    state {
+        player own {
+            pp 7/7;
+            field { amulet banner = 90021210 { countdown 7; } }
+            hand { follower source = 10924110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90021210 == 2; banner.countdown == 2; source has storm; }
+}
+
+scenario "神纹的罪人的入场曲破坏敌方随从" {
+    seed 94005;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10964110; }
+        }
+        player oppo {
+            field { follower victim = 10001110; }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.zone == graveyard; }
+}
+
+scenario "神纹的罪人的进化时获得纹章" {
+    seed 94017;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10964110; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.crests count card 10964110 == 1; }
+}
+
+scenario "神纹的罪人的纹章在有大费卡时打击主战者并回复" {
+    seed 94006;
+    state {
+        player own {
+            leader 10/20;
+            field {
+                follower source = 10964110;
+                follower big = 10804110;
+            }
+            crests { crest emblem = 10964110; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; oppo.leader.life == 19; own.leader.life == 11; }
+}
+
+scenario "次元选定模式一打击敌方全体" {
+    seed 94007;
+    state {
+        player own {
+            pp 6/6;
+            hand { spell source = 10971310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; victim.stats == 0/4; }
+}
+
+scenario "次元选定模式二召唤两个神秘的创造物" {
+    seed 94008;
+    state {
+        player own {
+            pp 6/6;
+            hand { spell source = 10971310; }
+        }
+    }
+    action { play source; mode 2; }
+    expect { legal; own.field count card 90071150 == 2; }
+}
+
+scenario "白牙燐敛在牌组无重复时破坏敌方全体" {
+    seed 94009;
+    state {
+        player own {
+            pp 4/4;
+            hand { spell source = 10973310; }
+        }
+        player oppo {
+            field {
+                follower first = 10001120 { stats 0/9; }
+                follower second = 10001110;
+            }
+        }
+    }
+    action { play source; select first; }
+    expect { legal; first.zone == graveyard; second.zone == graveyard; }
+}
+
+scenario "枝叶大姐大在连击达标时抽两张牌" {
+    seed 94010;
+    state {
+        player own {
+            pp 2/2;
+            combo 3;
+            hand { follower source = 10913110; }
+            deck top {
+                follower a = 10011110;
+                follower b = 10011120;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10011110 == 1; own.hand count card 10011120 == 1; }
+}
+
+scenario "枝叶大姐大的进化时强化其他随从" {
+    seed 94011;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field {
+                follower source = 10913110;
+                follower ally = 10001110;
+            }
+        }
+    }
+    action { evolve source; select ally; }
+    expect { legal; ally.stats == 3/3; ally has rush; }
+}
+
+scenario "锁链相连打击随机随从与所有主战者" {
+    seed 94012;
+    state {
+        player own {
+            pp 2/2;
+            hand { spell source = 10952310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; victim.stats == 0/6; own.leader.life == 19; oppo.leader.life == 19; }
+}
+
+scenario "锁链相连爆能强化时改为发动两次" {
+    seed 94013;
+    state {
+        player own {
+            pp 4/4;
+            hand { spell source = 10952310; }
+        }
+        player oppo {
+            field {
+                follower first = 10001120 { stats 0/9; }
+                follower second = 10001120 { stats 0/9; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 18; oppo.leader.life == 18; }
+}
+
+scenario "燃尽之缘按原费用加一张减费的同名卡" {
+    seed 94014;
+    state {
+        player own {
+            pp 3/3;
+            hand { spell source = 10922310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 0/4; own.hand count card 10922310 == 1; }
+}
+
+scenario "黄金时代召唤海盗旗并打击敌方全体" {
+    seed 94015;
+    state {
+        player own {
+            pp 4/4;
+            hand { spell source = 10923310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90021210 == 1; victim.stats == 0/7; }
+}
+
+scenario "刀线客召唤两种傀儡并在人偶入场时打击主战者" {
+    seed 94016;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10972120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90071120 == 1;
+        own.field count card 90071110 == 1;
+        // 两张人偶各触发一次入场监听。
+        oppo.leader.life == 18;
+    }
+}

@@ -5,7 +5,14 @@ card 10963210 {
     cost 6;
 
     effect {
-        unplayable;
+        fanfare {
+            destroy field.followers;
+        }
+        engage 1 {
+            destroy self;
+            draw 1;
+            heal own.leader 1;
+        }
     }
 
     meta {

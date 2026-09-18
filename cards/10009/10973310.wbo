@@ -5,7 +5,12 @@ card 10973310 {
     cost 4;
 
     effect {
-        unplayable;
+        choose target from oppo.field.followers;
+        if own.deck has no duplicates {
+            destroy oppo.field.followers;
+        } else {
+            destroy target;
+        }
     }
 
     meta {

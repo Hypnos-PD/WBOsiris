@@ -6,7 +6,11 @@ card 10924110 {
     stats 4/3;
 
     effect {
-        unplayable;
+        storm;
+        fanfare {
+            summon 1 card 90021210;
+            reduce countdown own.field.amulets where card 90021210 5;
+        }
     }
 
     meta {
