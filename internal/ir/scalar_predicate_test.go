@@ -20,6 +20,18 @@ func TestPlayerScalarPredicateRoundTrip(t *testing.T) {
 			}
 		}
 	}
+	// 绑定标量（含原始数值）同样可以参与筛选比较："X 为使用的卡牌的原始费用"。
+	for _, field := range []string{"cost", "base_cost"} {
+		p := FieldPredicate{Kind: "compare", Field: "base_cost", Op: "eq", ValueScalar: &Scalar{Kind: "binding_scalar", Side: "played", Field: field}}
+		data, err := json.Marshal(p)
+		if err != nil {
+			t.Fatal(err)
+		}
+		decoded, err := decodePredicate(data)
+		if err != nil || !reflect.DeepEqual(p, decoded) {
+			t.Fatal(string(data), decoded, err)
+		}
+	}
 }
 
 func TestPlayerScalarPredicateRejectsAmbiguousValues(t *testing.T) {
@@ -29,6 +41,7 @@ func TestPlayerScalarPredicateRejectsAmbiguousValues(t *testing.T) {
 		`{"kind":"scalar","side":"own","field":"cost"}`,
 		`{"kind":"scalar","side":"own","field":"combo","extra":1}`,
 		`{"kind":"self_scalar","field":"cost"}`,
+		`{"kind":"binding_scalar","side":"played","field":"base_attack2"}`,
 		`{"kind":"count","source":{"kind":"zone","side":"own","zone":"hand"}}`,
 		`{"kind":"negate","value":{"kind":"scalar","side":"own","field":"combo"}}`,
 	} {

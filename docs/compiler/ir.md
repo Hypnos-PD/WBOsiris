@@ -933,7 +933,8 @@ NumericExpr = Count { kind: "count", source: ZoneSet | HistorySet | BindingRef |
             | PlayerScalar { kind: "scalar", side: "own" | "oppo",
                              field: "combo" | "rally" | "crests" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" | "hand_count" | "earthsigils" }
             | SelfScalar { kind: "self_scalar", field: "attack" | "life" | "cost" }
-            | BindingScalar { kind: "binding_scalar", side: BindingName, field: "attack" | "life" | "cost" }
+            | BindingScalar { kind: "binding_scalar", side: BindingName,
+                              field: "attack" | "life" | "cost" | "base_attack" | "base_life" | "base_cost" }
             | SelfCounter { kind: "self_counter", field: CounterName }
             | Difference { kind: "difference", left: NumericExpr, right: NumericExpr }
 EffectAmount = nonnegative_integer | NumericExpr

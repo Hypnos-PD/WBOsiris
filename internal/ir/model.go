@@ -409,6 +409,17 @@ type CompareCondition struct {
 
 func (c CompareCondition) conditionKind() string { return c.Kind }
 
+// PlayedCostsCondition 判断"本场对战中该玩家使用过的卡牌的原始费用"是否涵盖
+// From..To 的所有数值（"费用包含1到8所有数值"）。
+type PlayedCostsCondition struct {
+	Kind string `json:"kind"`
+	Side string `json:"side"`
+	From int    `json:"from"`
+	To   int    `json:"to"`
+}
+
+func (c PlayedCostsCondition) conditionKind() string { return c.Kind }
+
 func (c CompareCondition) MarshalJSON() ([]byte, error) {
 	right, err := numericValue(c.Right, c.RightExpr, false)
 	if err != nil {
@@ -751,6 +762,9 @@ type PlayerState struct {
 	// LeaderAttackedLastTurn 用于"自己的随从在自己的上一回合中攻击过主战者"这类条件，
 	// 让场景测试可以直接摆出这种历史。
 	LeaderAttackedLastTurn bool `json:"leaderAttackedLastTurn,omitempty"`
+	// PlayedCosts 让场景测试直接摆出"本场对战中已使用过的卡牌原始费用"
+	// （条件 `own.played has costs N to M`）。
+	PlayedCosts []int `json:"playedCosts,omitempty"`
 	ExtraPPEarly bool                      `json:"extraPPEarly,omitempty"`
 	ExtraPPLate  bool                      `json:"extraPPLate,omitempty"`
 	Zones        map[string][]TestInstance `json:"zones"`

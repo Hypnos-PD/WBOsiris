@@ -54,7 +54,7 @@ func validNumericExpr(expr NumericExpr, signed bool) bool {
 	case *Scalar:
 		return e != nil && (e.Kind == "scalar" && validSide(e.Side) && ValidPlayerScalar(e.Field) ||
 			e.Kind == "self_scalar" && e.Side == "" && oneOf(e.Field, "attack", "life", "cost", "damage_taken") ||
-			e.Kind == "binding_scalar" && ValidBindingName(e.Side) && oneOf(e.Field, "attack", "life", "cost") ||
+			e.Kind == "binding_scalar" && ValidBindingName(e.Side) && oneOf(e.Field, "attack", "life", "cost", "base_attack", "base_life", "base_cost") ||
 			e.Kind == "self_counter" && e.Side == "" && ValidCounterName(e.Field) ||
 			e.Kind == "fusion_material_scalar" && e.Side == "" && oneOf(e.Field, "cost", "distinct"))
 	case *NegateExpr:

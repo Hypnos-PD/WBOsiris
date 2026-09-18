@@ -1,0 +1,36 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "混沌监狱在费用一到八都用过时于回合结束破坏自己" {
+    seed 107101;
+    state {
+        player own {
+            played costs 1 to 8;
+            field {
+                amulet source = 10903210;
+                follower ally = 10001110;
+            }
+            destroyed { follower gone = 10021110; }
+        }
+    }
+    action { end_turn; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        // 谢幕曲：召唤被破坏随从的同名卡，再把全体随从 +3/+3。
+        own.field count card 10021110 == 1;
+        ally.stats == 5/5;
+    }
+}
+
+scenario "混沌监狱在费用不全时不会被破坏" {
+    seed 107102;
+    state {
+        player own {
+            played costs 1 to 7;
+            field { amulet source = 10903210; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; source.zone == field; }
+}

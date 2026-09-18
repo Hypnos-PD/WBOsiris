@@ -5,7 +5,16 @@ card 10503210 {
     cost 1;
 
     effect {
-        unplayable;
+        countdown 5;
+        // 「自己使用其他卡牌时」：X 为打出的卡牌的原始费用，战场上有另一张同原始费用的卡就减 1 吟唱。
+        when own card played other {
+            if count(field other played where base.cost == played.base.cost) >= 1 {
+                reduce countdown self 1;
+            }
+        }
+        lastwords {
+            draw 2;
+        }
     }
 
     meta {

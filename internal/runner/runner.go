@@ -66,6 +66,9 @@ type player struct {
 	// 读作 `count(own.entered [other] [where …])`（"本场对战中进入战场的
 	// 自己的其他『…』的张数"）。`other` 用来排除正在结算的来源实例。
 	entered                                                   []*instance
+	// playedCosts 记录本场对战中自己使用过的卡牌的原始费用，
+	// 读作 `own.played has costs N to M`（"费用包含1到8所有数值"）。
+	playedCosts                                               map[int]bool
 	deck, hand, field, graveyard, banished                    []*instance
 	destroyed                                                 []DestructionRecord
 	resolving                                                 []*instance
@@ -242,6 +245,12 @@ func (g *game) loadState(s ir.State) error {
 		p.pp, p.maxpp, p.ep, p.sep, p.combo, p.shadows = src.PP, src.MaxPP, src.EP, src.SEP, src.Combo, src.Shadows
 		p.rally = src.Rally
 		p.leaderAttackedLastTurn = src.LeaderAttackedLastTurn
+		if len(src.PlayedCosts) > 0 {
+			p.playedCosts = make(map[int]bool, len(src.PlayedCosts))
+			for _, cost := range src.PlayedCosts {
+				p.playedCosts[cost] = true
+			}
+		}
 		p.extraPPEarly, p.extraPPLate = src.ExtraPPEarly, src.ExtraPPLate
 		for _, zone := range []string{"deck", "hand", "field", "graveyard", "banished", "destroyed", "crests"} {
 			for _, decl := range src.Zones[zone] {

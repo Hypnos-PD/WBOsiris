@@ -99,6 +99,7 @@ func decodePlayer(data []byte, instances map[string]bool) (PlayerState, error) {
 		Shadows int                          `json:"shadows"`
 		Rally   int                          `json:"rally"`
 		LeaderAttackedLastTurn bool          `json:"leaderAttackedLastTurn,omitempty"`
+		PlayedCosts []int `json:"playedCosts,omitempty"`
 		Zones   map[string][]json.RawMessage `json:"zones"`
 	}
 	var v raw
@@ -108,7 +109,7 @@ func decodePlayer(data []byte, instances map[string]bool) (PlayerState, error) {
 	if len(v.Zones) != 6 && !(len(v.Zones) == 7 && v.Zones["crests"] != nil) {
 		return PlayerState{}, fmt.Errorf("malformed zones")
 	}
-	p := PlayerState{Leader: v.Leader, PP: v.PP, MaxPP: v.MaxPP, EP: v.EP, SEP: v.SEP, Combo: v.Combo, Shadows: v.Shadows, Rally: v.Rally, LeaderAttackedLastTurn: v.LeaderAttackedLastTurn, Zones: map[string][]TestInstance{}}
+	p := PlayerState{Leader: v.Leader, PP: v.PP, MaxPP: v.MaxPP, EP: v.EP, SEP: v.SEP, Combo: v.Combo, Shadows: v.Shadows, Rally: v.Rally, LeaderAttackedLastTurn: v.LeaderAttackedLastTurn, PlayedCosts: v.PlayedCosts, Zones: map[string][]TestInstance{}}
 	for _, zone := range []string{"deck", "hand", "field", "graveyard", "banished", "destroyed", "crests"} {
 		items, ok := v.Zones[zone]
 		if !ok && zone != "crests" {

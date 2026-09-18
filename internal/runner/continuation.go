@@ -96,6 +96,9 @@ type ContinuationPlayer struct {
 	// Entered 是按入场顺序记录的本场对战入场实例 ID（随从与护符），
 	// 读作 `count(own.entered …)`。
 	Entered []string `json:"entered,omitempty"`
+	// PlayedCosts 是本场对战中该玩家使用过的卡牌的原始费用（去重），
+	// 读作 `own.played has costs N to M`。
+	PlayedCosts []int `json:"playedCosts,omitempty"`
 	LeaderAbilities  []string            `json:"leaderAbilities,omitempty"`
 	AttackedThisTurn bool                `json:"attackedThisTurn"`
 	// LeaderAttackedThisTurn / LeaderAttackedLastTurn：本回合 / 上一回合攻击过主战者。
@@ -549,6 +552,7 @@ func snapshotContinuationPlayer(p player) ContinuationPlayer {
 		LeaderAttackedThisTurn: p.leaderAttackedThisTurn, LeaderAttackedLastTurn: p.leaderAttackedLastTurn,
 		EnteredArtifacts: sortedCardIDs(p.enteredArtifacts),
 		Entered:          instanceIDs(p.entered),
+		PlayedCosts:      sortedCardIDs(p.playedCosts),
 		Deck: instanceIDs(p.deck), Hand: instanceIDs(p.hand), Field: instanceIDs(p.field), EvolvedThisTurn: p.evolvedThisTurn,
 		Graveyard: instanceIDs(p.graveyard), Banished: instanceIDs(p.banished), Destroyed: cloneDestructionHistory(p.destroyed),
 		Resolving:    instanceIDs(p.resolving),
@@ -926,6 +930,12 @@ func restorePlayer(saved ContinuationPlayer, instances map[string]*instance, car
 		p.enteredArtifacts = make(map[int]bool, len(saved.EnteredArtifacts))
 		for _, id := range saved.EnteredArtifacts {
 			p.enteredArtifacts[id] = true
+		}
+	}
+	if len(saved.PlayedCosts) > 0 {
+		p.playedCosts = make(map[int]bool, len(saved.PlayedCosts))
+		for _, cost := range saved.PlayedCosts {
+			p.playedCosts[cost] = true
 		}
 	}
 	if p.leaderMax < 1 || p.leaderMax > 65535 || p.leaderLife < 0 || p.leaderLife > p.leaderMax {

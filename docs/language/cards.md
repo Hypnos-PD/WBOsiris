@@ -300,6 +300,11 @@ require target from own.field.followers;
 `<绑定>.attack|life|cost`，读取该绑定里第一个实例的当前数值，例如
 "X 为选择的随从的攻击力"写作 `require target from own.hand.followers where trait artifact;
 damage oppo.field.followers target.attack;`。绑定名写错不会报错，求值为 0。
+加 `base.` 读取卡牌定义里的原始数值：`<绑定>.base.attack|life|cost`，
+例如"X 为使用的卡牌的原始费用"写作 `played.base.cost`（`played` 是
+`when own card played` 监听里指向被打出卡牌的绑定）。比较右侧同样可用这些标量，
+因此"战场上存在另一张与该卡牌原始费用相同的卡牌"写作
+`count(field other played where base.cost == played.base.cost) >= 1`。
 `raise countdown <集合> N` 与 `reduce countdown <集合> N` 互为反向，可用来推进或延后
 护符与纹章的吟唱；`set_attack_limit <目标> N` 把"1回合可以攻击 N 次"给到任意随从，
 写 `self` 时就是本随从。
@@ -1427,6 +1432,18 @@ if count(oppo.hand) <= 5 { ... }
 比较的右侧同样可以是数值表达式，例如"若自己的主战者的生命值大于对手的主战者的生命值"
 写作 `if own.life > oppo.life { ... }`。左侧保持标量写法：集合计数之间的比较
 （`count(A) > count(B)`）还没有实现，写了会在检查阶段报错而不是静默按 0 结算。
+
+`own.played has costs N to M` 判断"本场对战中该玩家使用过的卡牌的**原始费用**"
+是否涵盖 N 到 M 的所有数值（"费用包含1到8所有数值"），只统计从手牌打出的卡牌，
+召唤与【瞬念召唤】不计入；爆能强化、激奏、结晶仍按卡牌定义的原始费用记录：
+
+```wbo
+when own turn ends {
+    if own.played has costs 1 to 8 {
+        destroy self;
+    }
+}
+```
 
 卡牌在入场曲结算前已经计入连击。土之秘术和唤灵会在资源充足时自动支付，
 资源不足时跳过对应代码块。支付成功后，即使后续操作失败也不会退还资源。

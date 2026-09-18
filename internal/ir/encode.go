@@ -105,7 +105,7 @@ func (p FieldPredicate) MarshalJSON() ([]byte, error) {
 	case "compare":
 		object["field"], object["op"], object["value"] = p.Field, p.Op, p.Value
 		if p.ValueScalar != nil {
-			if p.Value != 0 || p.ValueScalar.Kind != "scalar" || !validNumericExpr(p.ValueScalar, false) {
+			if p.Value != 0 || !oneOf(p.ValueScalar.Kind, "scalar", "binding_scalar") || !validNumericExpr(p.ValueScalar, false) {
 				return nil, fmt.Errorf("invalid predicate scalar or conflicting literal")
 			}
 			object["value"] = p.ValueScalar

@@ -772,6 +772,31 @@ func setExprIR(t []syntax.Token, i int) (ir.Ref, int) {
 	}
 	return ir.ZoneRef{Kind: "zone", Side: side, Zone: zone, Member: member}, end
 }
+
+// whereScalarIR 解析筛选比较里的右值；返回 (nil, end, true) 表示整数。
+// 支持玩家标量、自己标量、绑定标量与绑定的原始数值（`played.base.cost`）。
+func whereScalarIR(t []syntax.Token, i int) (*ir.Scalar, int, bool) {
+	if i >= len(t) {
+		return nil, i, false
+	}
+	if t[i].Kind == syntax.Integer {
+		return nil, i + 1, true
+	}
+	if i+2 < len(t) && t[i+1].Value == "." {
+		switch {
+		case set("own", "oppo")[t[i].Value] && ir.ValidPlayerScalar(t[i+2].Value):
+			return &ir.Scalar{Kind: "scalar", Side: t[i].Value, Field: t[i+2].Value}, i + 3, true
+		case set("self", "own", "oppo", "field", "all", "leaders")[t[i].Value]:
+			return nil, i, false
+		case t[i].Kind == syntax.Identifier && set("attack", "life", "cost")[t[i+2].Value]:
+			return &ir.Scalar{Kind: "binding_scalar", Side: t[i].Value, Field: t[i+2].Value}, i + 3, true
+		case t[i].Kind == syntax.Identifier && t[i+2].Value == "base" && i+4 < len(t) && t[i+3].Value == "." && set("attack", "life", "cost")[t[i+4].Value]:
+			return &ir.Scalar{Kind: "binding_scalar", Side: t[i].Value, Field: "base_" + t[i+4].Value}, i + 5, true
+		}
+	}
+	return nil, i, false
+}
+
 func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 	end, ok := parseWhere(t, i)
 	if !ok {
@@ -862,13 +887,16 @@ func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 		case "base":
 			// `base . cost|attack|life 比较 整数`：按原始定义比较。
 			predicate := ir.FieldPredicate{Kind: "compare", Field: "base_" + t[j+2].Value, Op: compareOp(t[j+3].Value)}
-			if t[j+4].Kind == syntax.Integer {
-				predicate.Value = intToken(t[j+4])
-				j += 5
-			} else {
-				predicate.ValueScalar = &ir.Scalar{Kind: "scalar", Side: t[j+4].Value, Field: t[j+6].Value}
-				j += 7
+			scalar, next, ok := whereScalarIR(t, j+4)
+			if !ok {
+				return nil, i
 			}
+			if scalar == nil {
+				predicate.Value = intToken(t[j+4])
+			} else {
+				predicate.ValueScalar = scalar
+			}
+			j = next
 			terms = append(terms, predicate)
 		case "life", "cost", "attack":
 			if t[j].Value == "cost" && j+1 < len(t) && t[j+1].Value == "changed" {
@@ -877,13 +905,16 @@ func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 				break
 			}
 			predicate := ir.FieldPredicate{Kind: "compare", Field: t[j].Value, Op: compareOp(t[j+1].Value)}
-			if t[j+2].Kind == syntax.Integer {
-				predicate.Value = intToken(t[j+2])
-				j += 3
-			} else {
-				predicate.ValueScalar = &ir.Scalar{Kind: "scalar", Side: t[j+2].Value, Field: t[j+4].Value}
-				j += 5
+			scalar, next, ok := whereScalarIR(t, j+2)
+			if !ok {
+				return nil, i
 			}
+			if scalar == nil {
+				predicate.Value = intToken(t[j+2])
+			} else {
+				predicate.ValueScalar = scalar
+			}
+			j = next
 			terms = append(terms, predicate)
 		}
 		if j < end && t[j].Value == "and" {
@@ -925,6 +956,11 @@ func conditionIR(t []syntax.Token) ir.Condition {
 	}
 	if sameCostCondition(t) {
 		return ir.SameCostCondition{Kind: "same_cost", Side: t[0].Value, Zone: t[2].Value, Count: intToken(t[4])}
+	}
+	if playedCostsCondition(t) {
+		from, _ := integer(t[5])
+		to, _ := integer(t[7])
+		return ir.PlayedCostsCondition{Kind: "played_costs", Side: t[0].Value, From: from, To: to}
 	}
 	if t[0].Value == "count" || t[0].Value == "sum" {
 		source := valueRefIR(t, 2)
@@ -1200,6 +1236,14 @@ func compilePlayerState(s *syntax.Statement, p *ir.PlayerState, a map[string]str
 		case "attacked_leader_last_turn":
 			if len(t) == 1 {
 				p.LeaderAttackedLastTurn = true
+			}
+		case "played":
+			// `played costs 1 to 8;`：场景测试直接摆出已使用卡牌的原始费用。
+			if len(t) == 5 && t[1].Value == "costs" && t[3].Value == "to" {
+				from, to := intToken(t[2]), intToken(t[4])
+				for cost := from; cost <= to; cost++ {
+					p.PlayedCosts = append(p.PlayedCosts, cost)
+				}
 			}
 		default:
 			zone := x.Word(0)

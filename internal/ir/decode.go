@@ -1715,7 +1715,7 @@ func decodePredicate(data []byte) (Predicate, error) {
 		if expr != nil {
 			var ok bool
 			scalar, ok = expr.(*Scalar)
-			if !ok || scalar.Kind != "scalar" {
+			if !ok || !oneOf(scalar.Kind, "scalar", "binding_scalar") || !validNumericExpr(scalar, false) {
 				return nil, fmt.Errorf("predicate value requires an integer or player scalar")
 			}
 		}
@@ -1795,6 +1795,21 @@ func decodeCondition(data []byte) (Condition, error) {
 			return nil, err
 		}
 		return CountCondition{Kind: v.Kind, Source: source, Op: v.Op, Right: v.Right}, nil
+	}
+	if k.Kind == "played_costs" {
+		var v struct {
+			Kind string `json:"kind"`
+			Side string `json:"side"`
+			From int    `json:"from"`
+			To   int    `json:"to"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if !validSide(v.Side) || v.From < 0 || v.To > 65535 || v.From > v.To {
+			return nil, fmt.Errorf("invalid played costs condition")
+		}
+		return PlayedCostsCondition{Kind: v.Kind, Side: v.Side, From: v.From, To: v.To}, nil
 	}
 	if k.Kind == "skybound_art" {
 		var v struct {

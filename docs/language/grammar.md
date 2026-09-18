@@ -283,6 +283,7 @@ condition         = "overflow"
                   | participant , "." , evolution_unlock
                   | ["not"] , participant , "." , "attacked_this_turn"
                   | participant , "." , ("hand" | "deck") , "has" , integer , "same" , "cost"
+                  | participant , "." , "played" , "has" , "costs" , nonnegative_integer , "to" , nonnegative_integer
                   | binding_name , "damaged"
                   | participant , "." , "deck" , "has" , ["no"] , "duplicates"
                   | scalar_value , comparison_operator , integer

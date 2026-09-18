@@ -75,7 +75,8 @@ func (g *game) numericValue(expr ir.NumericExpr, self *instance, bindings frame)
 			}
 		}
 		if e.Kind == "binding_scalar" {
-			// `<绑定>.attack|life|cost`：读取绑定里第一个实例的当前数值。
+			// `<绑定>.attack|life|cost`：读取绑定里第一个实例的当前数值；
+			// `base_*` 读取它的卡牌定义（"使用的卡牌的原始费用"）。
 			for _, bound := range bindings[e.Side] {
 				item := g.instances[bound.InstanceID]
 				if item == nil {
@@ -88,6 +89,16 @@ func (g *game) numericValue(expr ir.NumericExpr, self *instance, bindings frame)
 					return item.life
 				case "cost":
 					return max(0, item.cost)
+				case "base_attack":
+					if item.card.Stats != nil {
+						return item.card.Stats.Attack
+					}
+				case "base_life":
+					if item.card.Stats != nil {
+						return item.card.Stats.Life
+					}
+				case "base_cost":
+					return item.card.Cost
 				}
 			}
 			return 0

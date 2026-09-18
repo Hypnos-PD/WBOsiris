@@ -1158,6 +1158,27 @@ func negatedWhereTerm(t []syntax.Token, i int) (int, bool) {
 	return i, false
 }
 
+// whereScalarValueEnd 解析筛选比较里的右值：整数、玩家标量、自己标量、
+// 绑定标量，以及绑定的原始数值（`played.base.cost`）。
+func whereScalarValueEnd(t []syntax.Token, i int) (int, bool) {
+	if isUnsigned(t[i]) {
+		return i + 1, true
+	}
+	if i+2 < len(t) && t[i+1].Value == "." {
+		switch {
+		case set("own", "oppo")[t[i].Value] && ir.ValidPlayerScalar(t[i+2].Value):
+			return i + 3, true
+		case set("self", "own", "oppo", "field", "all", "leaders")[t[i].Value]:
+			return i, false
+		case t[i].Kind == syntax.Identifier && set("attack", "life", "cost")[t[i+2].Value]:
+			return i + 3, true
+		case t[i].Kind == syntax.Identifier && t[i+2].Value == "base" && i+4 < len(t) && t[i+3].Value == "." && set("attack", "life", "cost")[t[i+4].Value]:
+			return i + 5, true
+		}
+	}
+	return i, false
+}
+
 func parseWhere(t []syntax.Token, i int) (int, bool) {
 	if i >= len(t) || t[i].Value != "where" {
 		return i, false
@@ -1171,10 +1192,8 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 			i++
 		case "base":
 			if i+4 < len(t) && t[i+1].Value == "." && set("attack", "life", "cost")[t[i+2].Value] && set("==", "!=", "<", "<=", ">", ">=")[t[i+3].Value] {
-				if isUnsigned(t[i+4]) {
-					i += 5
-				} else if i+6 < len(t) && set("own", "oppo")[t[i+4].Value] && t[i+5].Value == "." && ir.ValidPlayerScalar(t[i+6].Value) {
-					i += 7
+				if end, ok := whereScalarValueEnd(t, i+4); ok {
+					i = end
 				}
 			}
 		case "damaged":
@@ -1200,10 +1219,8 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 				break
 			}
 			if i+2 < len(t) && set("==", "!=", "<", "<=", ">", ">=")[t[i+1].Value] {
-				if isUnsigned(t[i+2]) {
-					i += 3
-				} else if i+4 < len(t) && set("own", "oppo")[t[i+2].Value] && t[i+3].Value == "." && ir.ValidPlayerScalar(t[i+4].Value) {
-					i += 5
+				if end, ok := whereScalarValueEnd(t, i+2); ok {
+					i = end
 				}
 			}
 		case "keyword":
@@ -1284,6 +1301,14 @@ func validateCondition(t []syntax.Token, ds *[]syntax.Diagnostic) {
 		return
 	}
 	if sameCostCondition(t) {
+		return
+	}
+	if playedCostsCondition(t) {
+		if from, okFrom := integer(t[5]); !okFrom || from < 0 {
+			diag(ds, "WBO-E001-SYNTAX", "错误", "played has costs 的范围必须是整数", t[5].Span)
+		} else if to, okTo := integer(t[7]); !okTo || to < from || to > 65535 {
+			diag(ds, "WBO-E001-SYNTAX", "错误", "played has costs 的范围必须是递增的整数", t[7].Span)
+		}
 		return
 	}
 	if len(t) > 0 && (t[0].Value == "count" || t[0].Value == "sum") {

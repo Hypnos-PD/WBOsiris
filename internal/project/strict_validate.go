@@ -398,6 +398,9 @@ func strictCondition(t []syntax.Token, fusion bool) bool {
 	if evolutionCondition(t) || attackHistoryCondition(t) {
 		return true
 	}
+	if playedCostsCondition(t) {
+		return true
+	}
 	if damagedBindingCondition(t) {
 		return true
 	}
@@ -505,6 +508,13 @@ func sameCostCondition(t []syntax.Token) bool {
 		t[5].Value == "same" && t[6].Value == "cost"
 }
 
+// playedCostsCondition 匹配 `own|oppo.played has costs N to M`
+//（"本场对战中自己使用的卡牌的原始费用包含 N 到 M 所有数值"）。
+func playedCostsCondition(t []syntax.Token) bool {
+	return len(t) == 8 && set("own", "oppo")[t[0].Value] && t[1].Value == "." && t[2].Value == "played" &&
+		t[3].Value == "has" && t[4].Value == "costs" && isUnsigned(t[5]) && t[6].Value == "to" && isUnsigned(t[7])
+}
+
 // damagedBindingCondition 匹配 `<绑定> damaged`，例如【攻击时】里的 `opponent damaged`。
 func damagedBindingCondition(t []syntax.Token) bool {
 	return len(t) == 2 && t[0].Kind == syntax.Identifier && t[1].Value == "damaged"
@@ -610,6 +620,11 @@ func strictPlayer(s *syntax.Statement, a map[string]string, ds *[]syntax.Diagnos
 			// 场景状态：标记"自己的随从在上一回合中攻击过主战者"。
 			if len(tt) != 1 || !x.Terminated {
 				shapeError(ds, x, h+";")
+			}
+		case "played":
+			// 场景状态：直接摆出"本场对战中已使用过的卡牌原始费用"。
+			if len(tt) != 5 || tt[1].Value != "costs" || !isUnsigned(tt[2]) || tt[3].Value != "to" || !isUnsigned(tt[4]) || !x.Terminated {
+				shapeError(ds, x, "played costs 整数 to 整数;")
 			}
 		case "deck":
 			if len(tt) != 2 || tt[1].Value != "top" {

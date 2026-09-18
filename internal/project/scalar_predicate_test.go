@@ -13,6 +13,7 @@ import (
 func TestCompilePlayerScalarPredicates(t *testing.T) {
 	source := validCard(`fanfare {
     draw 1 from deck where type follower and cost == own.combo;
+    draw 1 from deck where base.cost == played.base.cost;
     choose targets from oppo.field.followers where life <= own.life or cost != oppo.pp;
     damage targets count(own.hand where cost >= own.ep);
     buff own.field.followers +1/+1 where cost < oppo.sep;
@@ -55,10 +56,14 @@ fusion material from own.hand where cost <= oppo.maxpp { draw 1; }`)
 	if p.ValueScalar == nil || *p.ValueScalar != (ir.Scalar{Kind: "scalar", Side: "own", Field: "combo"}) {
 		t.Fatal("predicate lost the ability controller", p)
 	}
+	bound := decoded.Cards[0].Abilities[0].Body[1].(ir.DrawEffect).Predicate.(ir.FieldPredicate)
+	if bound.Field != "base_cost" || bound.ValueScalar == nil || *bound.ValueScalar != (ir.Scalar{Kind: "binding_scalar", Side: "played", Field: "base_cost"}) {
+		t.Fatal("predicate lost the played binding scalar", bound)
+	}
 }
 
 func TestRejectMalformedPlayerScalarPredicates(t *testing.T) {
-	for _, right := range []string{"combo", "self.cost", "target.cost", "own.cost", "both.combo", "own", "own.", "own.combo + 1", "count(own.hand)", "-own.combo", "own.combo.combo"} {
+	for _, right := range []string{"combo", "self.cost", "own.cost", "both.combo", "own", "own.", "own.combo + 1", "count(own.hand)", "-own.combo", "own.combo.combo", "played.base.cost.extra"} {
 		f, ds := syntax.Parse("12345678.wbo", []byte(validCard("fanfare { draw 1 from deck where cost == "+right+"; }")))
 		if len(ds) == 0 && !hasErrors(ValidateFile(f)) {
 			t.Fatal("accepted ambiguous scalar comparison", right)

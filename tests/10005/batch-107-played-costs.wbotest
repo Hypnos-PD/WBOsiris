@@ -1,0 +1,58 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "大游戏世界在使用同原始费用的卡牌时减少吟唱" {
+    seed 107001;
+    state {
+        player own {
+            pp 1/1;
+            field { amulet source = 10503210; }
+            hand { follower same = 10021110; }
+        }
+    }
+    action { play same; }
+    expect {
+        legal;
+        // 护符自己的原始费用就是 1，与使用的随从相同，因此吟唱 -1。
+        source.countdown == 4;
+    }
+}
+
+scenario "大游戏世界在使用不同原始费用的卡牌时吟唱不变" {
+    seed 107002;
+    state {
+        player own {
+            pp 2/2;
+            field { amulet source = 10503210; }
+            hand { follower other = 10001110; }
+        }
+    }
+    action { play other; }
+    expect {
+        legal;
+        // 使用的随从原始费用为 2，战场上没有其他原始费用 2 的卡牌。
+        source.countdown == 5;
+    }
+}
+
+scenario "大游戏世界的谢幕曲抽两张牌" {
+    seed 107003;
+    state {
+        player own {
+            pp 1/1;
+            field { amulet source = 10503210; }
+            deck top {
+                follower first = 10001110;
+                follower second = 10001120;
+            }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        own.hand count card 10001110 == 1;
+        own.hand count card 10001120 == 1;
+    }
+}

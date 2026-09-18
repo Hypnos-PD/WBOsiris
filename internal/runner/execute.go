@@ -92,6 +92,14 @@ func (g *game) condition(c ir.Condition, self *instance) bool {
 		return p.maxpp >= 7
 	case ir.CountCondition:
 		return compareCount(g.numericValue(&ir.CountExpr{Kind: "count", Source: x.Source}, self, nil), x.Op, x.Right)
+	case ir.PlayedCostsCondition:
+		p, _ := g.playerForSide(self, x.Side)
+		for cost := x.From; cost <= x.To; cost++ {
+			if !p.playedCosts[cost] {
+				return false
+			}
+		}
+		return true
 	case ir.CompareCondition:
 		n := 0
 		if x.Left.Kind == "self_counter" || x.Left.Kind == "scalar" || x.Left.Kind == "self_scalar" {
@@ -1191,6 +1199,13 @@ func (g *game) triggerLifeDecreased(target *instance) {
 
 // triggerPlayed 在卡牌被打出后发出 card_played 事件，监听者用 `when own card played` 声明。
 func (g *game) triggerPlayed(played *instance) {
+	if p := g.owner(played); p != nil && played.card != nil {
+		// 记下"使用的卡牌的原始费用"，供"费用包含1到8所有数值"这类条件使用。
+		if p.playedCosts == nil {
+			p.playedCosts = map[int]bool{}
+		}
+		p.playedCosts[played.card.Cost] = true
+	}
 	event := ir.RuntimeEvent{Kind: "card_played", Side: g.sideOf(played), InstanceID: played.id, CardID: played.card.ID, Count: 1}
 	if !g.emit(event) {
 		return

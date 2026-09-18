@@ -20,20 +20,20 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 892 · 未实现(骨架) 12 · 未导入 0
+总计 904 · 已完成 894 · 未实现(骨架) 10 · 未导入 0
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
 10002        77      77       0       0
 10003        77      75       2       0
 10004        76      74       2       0
-10005        76      71       5       0
+10005        76      72       4       0
 10006        76      75       1       0
 10007        77      77       0       0
 10008        78      78       0       0
-10009        76      74       2       0
+10009        76      75       1       0
 90000        93      93       0       0
-未完成卡按文本复杂度：中(41–100字) 9 · 短(≤40字) 1 · 长(>100字) 2
+未完成卡按文本复杂度：中(41–100字) 7 · 短(≤40字) 1 · 长(>100字) 2
 ```
 
 ## 工作流
@@ -189,6 +189,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-93 | ~~变身为随机一张卡的复制~~ **已解决**：`transform <目标> into random card from <集合>` | 已解锁 10602210 被侵略的世界 | `CardEffect.CopySource` 与 `CardID` 互斥；一次结算只抽一次随机数（只剩一条候选不消费），多个目标共用结果，来源为空时不变身。 |
 | S-94 | ~~按集合顺序取前 N 个（"从左起"）~~ **已解决**：`first <绑定> from <集合> [where …] [count N]` | 已解锁 10423310 骁勇骑士、10502110 星辉女神 | 新的选择语句：不询问玩家、不消费随机决策，按区域顺序（战场=入场顺序，手牌=获得顺序）取前 N 个；候选不足时少取，空集合绑定空集合。不走目标保护（潜行/不可选中）判定。 |
 | S-95 | ~~顺序发动能力的循环计数~~ **已解决**：`add 1 counter NAME modulo M` | 已解锁 10964120 翼天的变貌·奥梅里欧 | 计数器加完取模，走完最后一个能力自动回到第一个；`adjust_counter` 新增 `modulo`，运行期按取模写入，编解码同步。 |
+| S-96 | ~~"本场对战中使用过的卡牌原始费用"~~ **已解决**：`own\|oppo.played has costs N to M` 与 `<绑定>.base.cost` | 已解锁 10503210 大游戏世界、10903210 混沌监狱·阿兹弗特 | 玩家新增 `playedCosts` 台账（打出时记录卡牌定义的原始费用，跨回合与续局保留）；条件由 `PlayedCostsCondition` 表达。顺带让绑定标量支持 `base.attack/life/cost`，并允许筛选比较的右侧写标量（`base.cost == played.base.cost`）。 |
 | S-87 | ~~"上一回合中攻击过主战者"~~ **已解决**：`own\|oppo.attacked_leader_last_turn` | 已解锁 10942110 绝倒的袭击者、10943110 尘土的不法者、10943310 利牙、10944110 穿孔的罪人·安缇马丽亚 | 玩家新增"本回合/上一回合攻击过主战者"两个标记：攻击主战者时置位本回合标记，进入该玩家回合时结转并清空。场景状态可直接写 `attacked_leader_last_turn;`；Go 单测 `internal/runner/leader_attack_history_test.go` 覆盖结转、清空与续局保存。 |
 | S-88 | ~~【激奏】（accelerate）打出模式~~ **已解决**：`accelerate N { … }` | 10671110 低劣的玩具（激奏 2：召唤 1 个自己）、10672110 拙劣的人偶（激奏 3：召唤 2 个自己）、10673110 愚劣的兵器（激奏 4：召唤 1 个自己）、10844120 金银绚烂·璐米欧儿&雅尔贞特（激奏 3：能量点上限 +1）、10901110 最古老的狱卒（激奏 1：随机随从 2 点伤害） | 新打出模式：`internal/project/typed_ir.go`/`validate.go`/`strict_validate.go` 解析 `accelerate N { … }` 块（CostTrigger），`internal/ir/decode.go`/`test_decode.go` 接受 `accelerate` 触发器与动作，`internal/runner/runner.go` 新增 `accelerate` 动作：付激奏费用、把卡牌放进"结算中"区域（不入场、不发动入场曲）、只结算激奏能力，结算后按法术流程进入墓场；测试 DSL 与模拟器命令同步。场景测试覆盖"激奏召唤/加能量上限/打伤害"与"正常打出仍走本体和入场曲""费用不足不能激奏" |
 | S-89 | ~~【结晶】（crystallize）打出模式~~ **已解决**：`crystallize N { … }` | 10661110 崇奉的懦者（结晶 2）、10662110 崇敬的涂描者（结晶 1）、10663110 崇拜的圣骑士（结晶 1）、10952110 渊底上校（结晶 2）、10962120 奇迹独角兔（结晶 1，含启动推进吟唱） | 新打出模式与衍生卡面：`project/crest.go` 的 `validateCrystallize`（允许 counter/countdown/lastwords/when/engage）、`ir/crest.go` 的 `CrystallizeDefinition` + `CrystallizeCard()`（派生为护符卡面）、编解码与 `runner.commitCrystallize`（付结晶费用→换卡面→进入战场→只结算衍生护符的打出效果，本体入场曲不发动）；测试 DSL 与模拟器命令同步。Go 单测 `internal/runner/crystallize_test.go` 覆盖吟唱归零后由谢幕曲召唤本体 |
@@ -207,6 +208,24 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 107（S-96 "使用过的卡牌原始费用"台账）
+
+- **玩家台账 `playedCosts`**：打出卡牌时记录卡牌定义的原始费用（爆能强化／激奏／结晶
+  仍按定义费用记录，召唤不计入），跨回合与续局保存；测试状态可以用
+  `played costs 1 to 8;` 直接摆出历史。
+- **S-96 条件 `own|oppo.played has costs N to M`**：判断这些费用是否涵盖 N..M 的所有数值。
+- **绑定标量的原始数值**：`<绑定>.base.attack|life|cost`（"X 为使用的卡牌的原始费用"
+  写作 `played.base.cost`），并且筛选比较的右侧现在可以写标量，
+  于是"战场上存在另一张与该卡牌原始费用相同的卡牌"写作
+  `count(field other played where base.cost == played.base.cost) >= 1`。
+- 完成 2 张：10503210 大游戏世界（吟唱 5；自己使用其他卡牌时若有同原始费用的其他卡牌
+  则吟唱 -1；谢幕曲抽 2）、10903210 混沌监狱·阿兹弗特（回合结束时若费用 1..8 都用过
+  则破坏自己；谢幕曲召唤 4 种被破坏随从的同名卡并把全体随从 +3/+3）。
+- 新增 5 个场景（`tests/10005/batch-107-played-costs.wbotest`、
+  `tests/10009/batch-107-played-costs.wbotest`），覆盖"护符自身的原始费用也算在内"、
+  费用不全时不破坏、谢幕曲抽牌；Go 单测 `internal/project/played_costs_test.go`。
+- 全量回归：`check` 0 错 0 警；`test` 1376 全绿；`go test ./...` 全绿；语料快照更新为 1376 个场景。
 
 ### 批次 106（S-95 循环计数 + S-60 随机复制变身）
 
