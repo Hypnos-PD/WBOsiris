@@ -58,9 +58,12 @@ cd web && VITE_API_BASE=https://sva.hypd.asia/wbo npm run dev
 ### 2. 桌面壳（真窗口 / 改 Go 用这个）
 
 ```bash
-cd desktop
-wails dev -tags webkit2_41      # Arch 只有 WebKitGTK 4.1，必须带这个 tag
+scripts/wails.sh dev            # 用仓库固定的 Wails CLI（go.mod 的 tool 依赖），不用全局装
 ```
+
+Wails CLI 已经作为 tool 依赖钉在 `go.mod` 里（`v2.16.0`），所以新环境只要 `go mod download`
+就能用；Linux 上脚本会自动检测 WebKitGTK 版本，只有 4.1 的系统补上 `-tags webkit2_41`
+（Arch、新版 Debian/Ubuntu 都是这种）。想直接调 CLI 也可以 `go tool wails dev`。
 
 `wails dev` 会自己构建前端、开真窗口，并 watch `desktop/` 自动重建；它另起一个
 `http://localhost:34115` 的 dev server。注意：它**不 watch `web/src`**，改前端请用上面第 1 条，
@@ -69,9 +72,9 @@ wails dev -tags webkit2_41      # Arch 只有 WebKitGTK 4.1，必须带这个 ta
 跑打包后的二进制：
 
 ```bash
-cd desktop && wails build -tags webkit2_41 -ldflags "-X main.version=dev"
-./build/bin/WBOsiris                                    # 内嵌默认立绘
-./build/bin/WBOsiris --assets-dir ../web/public/assets/home   # 用完整的 40 张立绘
+scripts/wails.sh build -ldflags "-X main.version=dev"
+./desktop/build/bin/WBOsiris                                   # 内嵌默认立绘
+./desktop/build/bin/WBOsiris --assets-dir web/public/assets/home   # 用完整的 40 张立绘
 ```
 
 客户端默认连**进程内**规则服务（离线可用）；要试线上大厅就在「设置 → 规则服务」填
@@ -100,6 +103,9 @@ AppImage 需要能运行 FUSE 或 `APPIMAGE_EXTRACT_AND_RUN=1`（脚本内部已
 
 ### 常见坑
 
+- **`command not found: wails`**：CLI 不需要全局安装，用 `scripts/wails.sh` 或 `go tool wails`；
+  如果确实想装到全局，`go install github.com/wailsapp/wails/v2/cmd/wails@v2.16.0` 之后
+  记得把 `$(go env GOPATH)/bin` 加进 PATH（zsh：`export PATH="$PATH:$(go env GOPATH)/bin"`）。
 - **`wails doctor` 会说 `libwebkit` 缺失**：它只探测 WebKitGTK 4.0；Arch 只有 4.1，
   带上 `-tags webkit2_41` 就能编译，这条警告可以直接忽略。
 - **窗口一片空白**：无头/虚拟显示下需要上面那三个环境变量；真机上一般是缺 WebKitGTK 运行库。

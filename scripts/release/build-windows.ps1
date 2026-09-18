@@ -20,7 +20,8 @@ $binary = Join-Path $root "desktop\build\bin\WBOsiris.exe"
 if (-not $SkipBuild) {
   Push-Location (Join-Path $root "desktop")
   try {
-    wails build -platform windows/amd64 -nsis -ldflags "-X main.version=$Version"
+    # 用仓库固定的 Wails CLI（go.mod 的 tool 依赖），不需要全局安装。
+    go tool wails build -platform windows/amd64 -nsis -ldflags "-X main.version=$Version"
   } finally {
     Pop-Location
   }

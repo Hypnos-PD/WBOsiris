@@ -30,8 +30,8 @@ done
 
 binary="$root/desktop/build/bin/WBOsiris"
 if ((!skip_build)); then
-  # wails.json 里的 frontend:build 会先构建并同步 web/dist。
-  (cd "$root/desktop" && wails build -tags webkit2_41 -ldflags "-X main.version=$version")
+  # 用仓库固定的 Wails CLI；wails.json 里的 frontend:build 会先构建并同步 web/dist。
+  "$root/scripts/wails.sh" build -ldflags "-X main.version=$version"
 fi
 [[ -x "$binary" ]] || { printf '找不到二进制：%s\n' "$binary" >&2; exit 1; }
 
