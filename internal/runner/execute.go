@@ -1213,6 +1213,37 @@ func (g *game) triggerPlayed(played *instance) {
 	g.queueEventTriggers(event, played, "played")
 }
 
+// invokeInstance 瞬念召唤：把牌组里的实例移到战场。不支付费用、不增加连击、
+// 不算抽牌，也不发动入场曲；产生正常入场事件后派发"被瞬念召唤时"事件。
+func (g *game) invokeInstance(i *instance) {
+	if i == nil || i.zone != "deck" || i.card == nil {
+		return
+	}
+	p := g.owner(i)
+	if p == nil || len(p.field) >= fieldLimit {
+		return
+	}
+	for index, deck := range p.deck {
+		if deck != i {
+			continue
+		}
+		p.deck = append(p.deck[:index], p.deck[index+1:]...)
+		break
+	}
+	if i.zone != "deck" {
+		return
+	}
+	g.detachEventSource(i)
+	g.addToZone(p, i, "field")
+	i.summoningSick = i.card.CardType == "follower"
+	g.triggerSummoned(i)
+	event := ir.RuntimeEvent{Kind: "card_invoked", Side: g.sideOf(i), InstanceID: i.id, CardID: i.card.ID, Count: 1}
+	if !g.emit(event) {
+		return
+	}
+	g.queueEventTriggers(event, i, "invoked")
+}
+
 // setLeaderKeyword 给主战者加上/移除关键词（目前只有【屏障】这类主战者级状态）。
 func (g *game) setLeaderKeyword(sides []string, keyword string, enabled bool) {
 	for _, side := range sides {

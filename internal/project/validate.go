@@ -608,7 +608,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		return false
 	}
 	h := t[0].Value
-	known := set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "raise", "halve", "double", "spellboost", "transform", "set_attack_limit", "set_damage_reduction", "set")
+	known := set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "raise", "halve", "double", "spellboost", "transform", "invoke", "set_attack_limit", "set_damage_reduction", "set")
 	if !known[h] {
 		return false
 	}
@@ -976,6 +976,11 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 				end, good = parseWhere(t, end)
 			}
 		}
+		ok = good && end == len(t)
+	case "invoke":
+		// `invoke self;`：瞬念召唤牌组里的本卡牌。
+		end, good := parseValueRef(t, 1)
+		checkBindingAt(t, 1, end, bindings, ds)
 		ok = good && end == len(t)
 	}
 	if !ok {

@@ -333,7 +333,8 @@ event_pattern     = participant , event_subject , event_verb
 event_subject     = "follower" | "amulet" | "card" ;
 event_verb        = "summoned" | "engaged" | "discarded" | "fused" | "played" | "destroyed"
                   | "drawn" | "stats" , "increased" | "life" , "decreased" ;
-source_zone       = "while" , "self" , "in" , ("hand" | "field") ;
+source_zone       = "while" , "self" , "in" , ("hand" | "field" | "deck") ;
+                    (* deck 只用于回合开始/结束事件："在牌组中发动" *) 
 turn_limit        = "once" , "per" , [participant] , "turn" ;
 during_turn       = "during" , participant , "turn" ;
 turn_boundary     = "starts" | "ends" ;
@@ -451,6 +452,7 @@ ability_operation = "remove" , ability , "from" , value_ref , ["other" , [bindin
                   | "remove" , "all" , "abilities" , "from" , value_ref , ["other" , [binding_name]] , [where_clause] , ";" ;
 return_operation  = "return" , value_ref , "to" , ("hand" | "deck") , ";" ;
 evolve_operation  = ("evolve" | "superevolve") , value_ref , "silent" , ";" ;
+invoke_operation  = "invoke" , value_ref , ";" ; (* 瞬念召唤牌组里的本卡牌 *)
 reanimate_operation = "reanimate" , integer , ";" ;
 
 reduce_operation  = "reduce" , "countdown" , value_ref , integer , ";"

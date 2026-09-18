@@ -9,7 +9,7 @@ type triggerIndex struct {
 // 索引只保存候选位置，实际顺序始终以当前场面为准。
 
 func (x *triggerIndex) add(i *instance) {
-	if i == nil || i.zone != "field" && i.zone != "hand" && i.zone != "crests" {
+	if i == nil || i.zone != "field" && i.zone != "hand" && i.zone != "crests" && i.zone != "deck" {
 		return
 	}
 	if x.byKind == nil {
@@ -103,7 +103,7 @@ func (g *game) queueEventTriggers(event ir.RuntimeEvent, subject *instance, bind
 func (g *game) queueEventTriggersFor(kind string, event ir.RuntimeEvent, subject *instance, binding, area string) bool {
 	for _, side := range g.orderedSides() {
 		p := g.player(side.name)
-		for _, source := range append(append(append([]*instance{}, p.crests...), side.field...), p.hand...) {
+		for _, source := range append(append(append(append([]*instance{}, p.crests...), side.field...), p.hand...), p.deck...) {
 			if area == "crests" && source.zone != "crests" || area == "cards" && source.zone == "crests" {
 				continue
 			}
@@ -112,6 +112,10 @@ func (g *game) queueEventTriggersFor(kind string, event ir.RuntimeEvent, subject
 					return false
 				}
 				trigger := ability.Trigger.(ir.EventTrigger)
+				if trigger.SourceZone != "" && source.zone != trigger.SourceZone {
+					// "在牌组中发动"这类能力只在声明的区域生效；索引可能在移动后残留。
+					continue
+				}
 				if trigger.SelfOnly && subject != source {
 					continue
 				}

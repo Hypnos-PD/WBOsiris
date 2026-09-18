@@ -303,7 +303,8 @@ func parseEventPattern(t []syntax.Token) (int, string, bool) {
 		end += 3
 	}
 	if ok && end < len(t) && t[end].Value == "while" {
-		if t[1].Value == "self" || len(t) < end+4 || values(t[end:end+3]) != "while self in" || !set("field", "hand")[t[end+3].Value] {
+		deckZone := len(t) > end+3 && t[end+3].Value == "deck" && len(t) >= 4 && t[2].Value == "turn" && set("starts", "ends")[t[3].Value]
+		if t[1].Value == "self" || len(t) < end+4 || values(t[end:end+3]) != "while self in" || !set("field", "hand", "deck")[t[end+3].Value] || t[end+3].Value == "deck" && !deckZone {
 			return 0, "", false
 		}
 		end += 4
@@ -340,6 +341,10 @@ func parseBaseEventPattern(t []syntax.Token) (int, string, bool) {
 	}
 	if len(t) == 3 && t[0].Value == "when" && t[1].Value == "self" && set("evolved", "super_evolved", "summoned")[t[2].Value] {
 		return 3, "follower", true
+	}
+	if len(t) == 3 && t[0].Value == "when" && t[1].Value == "self" && t[2].Value == "invoked" {
+		// "被【瞬念召唤】时"对随从与护符都成立。
+		return 3, "card", true
 	}
 	// `when self stats increased` / `when self life decreased`：本实例在战场上的身材增减。
 	if len(t) >= 4 && t[0].Value == "when" && t[1].Value == "self" && (values(t[2:4]) == "stats increased" || values(t[2:4]) == "life decreased") {
@@ -610,7 +615,7 @@ func strictPlayer(s *syntax.Statement, a map[string]string, ds *[]syntax.Diagnos
 				checkI16orU16(tt[1], h == "leader", ds)
 				checkI16orU16(tt[3], h == "leader", ds)
 			}
-		case "ep", "sep", "combo", "shadows", "rally":
+		case "ep", "sep", "combo", "shadows", "rally", "evolutions":
 			if len(tt) != 2 || !x.Terminated {
 				shapeError(ds, x, h+" 整数;")
 			} else {
@@ -820,7 +825,7 @@ func strictAssertion(s *syntax.Statement, a map[string]string, ds *[]syntax.Diag
 	return assertionRef(t[:eq], a, ds) && assertionValue(t[eq+1:])
 }
 func assertionRef(t []syntax.Token, a map[string]string, ds *[]syntax.Diagnostic) bool {
-	if len(t) == 3 && set("own", "oppo")[t[0].Value] && t[1].Value == "." && set("life", "pp", "maxpp", "ep", "sep", "combo", "shadows", "rally", "earthsigils", "entered_artifacts")[t[2].Value] {
+	if len(t) == 3 && set("own", "oppo")[t[0].Value] && t[1].Value == "." && set("life", "pp", "maxpp", "ep", "sep", "combo", "shadows", "rally", "earthsigils", "entered_artifacts", "evolutions")[t[2].Value] {
 		return true
 	}
 	if len(t) == 5 && set("own", "oppo")[t[0].Value] && values(t[1:4]) == ". leader ." && set("life", "maxlife")[t[4].Value] {

@@ -1,0 +1,45 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "泽勒尔在费用一到八都用过后于回合结束瞬念召唤" {
+    seed 108101;
+    state {
+        player own {
+            played costs 1 to 8;
+            deck top { follower source = 10904110; }
+        }
+    }
+    action { advance turn_end own; }
+    expect { legal; source.zone == field; }
+}
+
+scenario "泽勒尔在费用不全时留在牌组" {
+    seed 108102;
+    state {
+        player own {
+            played costs 1 to 7;
+            deck top { follower source = 10904110; }
+        }
+    }
+    action { advance turn_end own; }
+    expect { legal; source.zone == deck; }
+}
+
+scenario "泽勒尔的入场曲对选中的随从造成九点伤害" {
+    seed 108103;
+    state {
+        player own {
+            pp 9/9;
+            hand { follower source = 10904110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/12; } }
+        }
+    }
+    action { play source; select victim; }
+    expect {
+        legal;
+        victim.stats == 0/3;
+        source has intimidate;
+    }
+}

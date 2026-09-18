@@ -120,6 +120,8 @@ func (g *game) numericValue(expr ir.NumericExpr, self *instance, bindings frame)
 			return total
 		case "entered_artifacts":
 			return len(p.enteredArtifacts)
+		case "evolutions":
+			return p.evolutionsThisMatch
 		case "combo":
 			return p.combo
 		case "pp":

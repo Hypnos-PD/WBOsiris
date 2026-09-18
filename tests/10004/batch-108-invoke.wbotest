@@ -1,0 +1,92 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "圣德芬在进化六次后于回合开始瞬念召唤并获得纹章" {
+    seed 108001;
+    state {
+        player own {
+            evolutions 6;
+            deck top {
+                follower source = 10404110;
+                follower next = 10001110;
+            }
+        }
+    }
+    action { advance turn_start own; }
+    expect {
+        legal;
+        // 瞬念召唤后获得纹章并返回手牌。
+        own.crests count card 10404110 == 1;
+        own.hand count card 10404110 == 1;
+        own.field count card 10404110 == 0;
+    }
+}
+
+scenario "圣德芬在进化次数不足时不瞬念召唤" {
+    seed 108002;
+    state {
+        player own {
+            evolutions 5;
+            deck top { follower source = 10404110; }
+        }
+    }
+    action { advance turn_start own; }
+    expect {
+        legal;
+        source.zone == deck;
+        own.crests count card 10404110 == 0;
+        own.hand count card 10404110 == 0;
+    }
+}
+
+scenario "圣德芬正常打出时不会获得纹章" {
+    seed 108003;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10404110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == field;
+        own.crests count card 10404110 == 0;
+        own.field count card 10404110 == 1;
+    }
+}
+
+scenario "圣德芬在解放奥义可用时对随机目标打五次两点" {
+    seed 108004;
+    state {
+        turn own 15;
+        player own {
+            pp 6/6;
+            hand { follower source = 10404110; }
+        }
+        player oppo { leader 20/20; }
+    }
+    action { play source; }
+    expect {
+        legal;
+        // 对手没有随从，五次随机目标都打在主战者身上。
+        oppo.leader.life == 10;
+    }
+}
+
+scenario "圣德芬的纹章在回合结束回复全体随从与主战者各一点" {
+    seed 108005;
+    state {
+        player own {
+            leader 10/20;
+            crests { crest emblem = 10404110; }
+            field { follower hurt = 10001110 { stats 2/2; damage_taken 1; } }
+        }
+    }
+    action { advance turn_end own; }
+    expect {
+        legal;
+        own.leader.life == 11;
+        hurt.stats == 2/2;
+    }
+}

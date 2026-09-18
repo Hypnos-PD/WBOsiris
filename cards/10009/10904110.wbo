@@ -6,7 +6,17 @@ card 10904110 {
     stats 9/9;
 
     effect {
-        unplayable;
+        // 在牌组中发动：自己的回合结束时，本场对战中费用 1..8 都用过则瞬念召唤。
+        when own turn ends while self in deck {
+            if own.played has costs 1 to 8 {
+                invoke self;
+            }
+        }
+        fanfare {
+            choose target from oppo.field.followers;
+            damage target 9;
+        }
+        intimidate;
     }
 
     meta {

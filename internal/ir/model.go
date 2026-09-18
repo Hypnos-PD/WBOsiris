@@ -631,6 +631,17 @@ type CopyRandomEffect struct {
 func (e CopyRandomEffect) effectKind() string   { return e.Kind }
 func (e CopyRandomEffect) effectBase() NodeBase { return e.NodeBase }
 
+// InvokeEffect 瞬念召唤：把牌组里的实例移到战场。不支付费用、不增加连击、
+// 不发动入场曲，但会产生正常的入场事件，随后派发"被瞬念召唤时"事件。
+type InvokeEffect struct {
+	NodeBase
+	Kind   string `json:"kind"`
+	Target Ref    `json:"target"`
+}
+
+func (e InvokeEffect) effectKind() string   { return e.Kind }
+func (e InvokeEffect) effectBase() NodeBase { return e.NodeBase }
+
 type CountExpr struct {
 	Kind   string `json:"kind"`
 	Source Ref    `json:"source"`
@@ -765,6 +776,8 @@ type PlayerState struct {
 	// PlayedCosts 让场景测试直接摆出"本场对战中已使用过的卡牌原始费用"
 	// （条件 `own.played has costs N to M`）。
 	PlayedCosts []int `json:"playedCosts,omitempty"`
+	// EvolutionsThisMatch 让场景测试直接摆出"本场对战中自己的随从进化过的次数"。
+	EvolutionsThisMatch int `json:"evolutionsThisMatch,omitempty"`
 	ExtraPPEarly bool                      `json:"extraPPEarly,omitempty"`
 	ExtraPPLate  bool                      `json:"extraPPLate,omitempty"`
 	Zones        map[string][]TestInstance `json:"zones"`

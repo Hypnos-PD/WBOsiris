@@ -581,6 +581,10 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 		bindSummoned(bindings, e.Output, s.g.summonFromHistory(e, self, bindings))
 	case ir.CopyRandomEffect:
 		s.g.copyRandomFrom(e, self, bindings)
+	case ir.InvokeEffect:
+		for _, target := range s.g.effectTargets(e.Target, self, bindings) {
+			s.g.invokeInstance(target)
+		}
 	case ir.DeckSummonEffect:
 		bindSummoned(bindings, e.Output, s.g.summonFromDeck(e, self, bindings))
 	case ir.SummonPoolEffect:

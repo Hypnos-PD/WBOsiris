@@ -621,7 +621,7 @@ func decodeTrigger(data []byte) (Trigger, error) {
 				return nil, fmt.Errorf("event conditions cannot access fusion materials")
 			}
 		}
-		if !validSide(v.Side) || !oneOf(v.Event, "follower_summoned", "amulet_summoned", "follower_left", "destroyed", "healed", "damaged", "attacked", "card_fused", "amulet_engaged", "card_discarded", "card_played", "card_drawn", "stats_increased", "life_decreased", "turn_started", "turn_ended", "evolved", "super_evolved", "earthrite") || v.SubjectType != "" && !oneOf(v.SubjectType, "follower", "amulet", "leader") || v.SourceZone != "" && !oneOf(v.SourceZone, "hand", "field") || v.Event == "destroyed" && v.SubjectType == "" {
+		if !validSide(v.Side) || !oneOf(v.Event, "follower_summoned", "amulet_summoned", "follower_left", "destroyed", "healed", "damaged", "attacked", "card_fused", "amulet_engaged", "card_discarded", "card_played", "card_drawn", "card_invoked", "stats_increased", "life_decreased", "turn_started", "turn_ended", "evolved", "super_evolved", "earthrite") || v.SubjectType != "" && !oneOf(v.SubjectType, "follower", "amulet", "leader") || v.SourceZone != "" && !oneOf(v.SourceZone, "hand", "field", "deck") || v.SourceZone == "deck" && v.Event != "turn_started" && v.Event != "turn_ended" || v.Event == "destroyed" && v.SubjectType == "" {
 			return nil, fmt.Errorf("invalid event trigger")
 		}
 		if v.Event == "amulet_summoned" && (v.SubjectType != "amulet" || v.SelfOnly) || v.Event == "follower_summoned" && v.SubjectType == "amulet" {
@@ -639,7 +639,7 @@ func decodeTrigger(data []byte) (Trigger, error) {
 		if v.DuringTurn != "" && (!oneOf(v.Event, "damaged", "healed", "card_drawn", "follower_summoned") || !validSide(v.DuringTurn)) || v.Event == "damaged" && v.SubjectType != "follower" {
 			return nil, fmt.Errorf("damage survival listeners require a follower and a valid turn scope")
 		}
-		if v.SelfOnly && (v.Event != "damaged" && (condition != nil || v.OncePerTurn != "") || v.SourceZone != "" && !(v.Event == "card_drawn" && v.SourceZone == "hand") || v.Side != "own" || !(v.SubjectType == "follower" && oneOf(v.Event, "evolved", "super_evolved", "follower_summoned", "damaged", "stats_increased", "life_decreased") || v.SubjectType == "" && oneOf(v.Event, "card_discarded", "card_drawn")) || p != nil) {
+		if v.SelfOnly && (v.Event != "damaged" && (condition != nil || v.OncePerTurn != "") || v.SourceZone != "" && !(v.Event == "card_drawn" && v.SourceZone == "hand") || v.Side != "own" || !(v.SubjectType == "follower" && oneOf(v.Event, "evolved", "super_evolved", "follower_summoned", "damaged", "stats_increased", "life_decreased") || v.SubjectType == "" && oneOf(v.Event, "card_discarded", "card_drawn", "card_invoked")) || p != nil) {
 			return nil, fmt.Errorf("invalid self event trigger")
 		}
 		cardEvent := oneOf(v.Event, "card_played", "card_discarded", "card_fused")
@@ -1181,6 +1181,27 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			return nil, fmt.Errorf("invalid copy_random source")
 		}
 		return CopyRandomEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Owner: v.Owner, Source: source, Count: v.Count, Destination: v.Destination, Output: v.Output}, nil
+	case "invoke":
+		var v struct {
+			ID     string          `json:"id"`
+			Kind   string          `json:"kind"`
+			Target json.RawMessage `json:"target"`
+			Origin Origin          `json:"origin"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
+			return nil, err
+		}
+		target, err := decodeRef(v.Target)
+		if err != nil {
+			return nil, err
+		}
+		if target == nil {
+			return nil, fmt.Errorf("invoke requires a target")
+		}
+		return InvokeEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Target: target}, nil
 	case "damage", "heal", "buff_stats", "destroy", "banish", "discard", "return", "add_keyword", "remove_keyword", "remove_ability", "silent_evolve", "set_attack_limit", "set_damage_reduction", "set_life", "set_cost", "set_attack":
 		type raw struct {
 			Output                                                      string `json:"output,omitempty"`

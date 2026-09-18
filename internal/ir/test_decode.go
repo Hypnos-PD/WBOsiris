@@ -100,6 +100,7 @@ func decodePlayer(data []byte, instances map[string]bool) (PlayerState, error) {
 		Rally   int                          `json:"rally"`
 		LeaderAttackedLastTurn bool          `json:"leaderAttackedLastTurn,omitempty"`
 		PlayedCosts []int `json:"playedCosts,omitempty"`
+		EvolutionsThisMatch int `json:"evolutionsThisMatch,omitempty"`
 		Zones   map[string][]json.RawMessage `json:"zones"`
 	}
 	var v raw
@@ -109,7 +110,7 @@ func decodePlayer(data []byte, instances map[string]bool) (PlayerState, error) {
 	if len(v.Zones) != 6 && !(len(v.Zones) == 7 && v.Zones["crests"] != nil) {
 		return PlayerState{}, fmt.Errorf("malformed zones")
 	}
-	p := PlayerState{Leader: v.Leader, PP: v.PP, MaxPP: v.MaxPP, EP: v.EP, SEP: v.SEP, Combo: v.Combo, Shadows: v.Shadows, Rally: v.Rally, LeaderAttackedLastTurn: v.LeaderAttackedLastTurn, PlayedCosts: v.PlayedCosts, Zones: map[string][]TestInstance{}}
+	p := PlayerState{Leader: v.Leader, PP: v.PP, MaxPP: v.MaxPP, EP: v.EP, SEP: v.SEP, Combo: v.Combo, Shadows: v.Shadows, Rally: v.Rally, LeaderAttackedLastTurn: v.LeaderAttackedLastTurn, PlayedCosts: v.PlayedCosts, EvolutionsThisMatch: v.EvolutionsThisMatch, Zones: map[string][]TestInstance{}}
 	for _, zone := range []string{"deck", "hand", "field", "graveyard", "banished", "destroyed", "crests"} {
 		items, ok := v.Zones[zone]
 		if !ok && zone != "crests" {
@@ -465,7 +466,7 @@ func decodeTestRef(data []byte) (TestRef, error) {
 		if err := strict(data, &v); err != nil {
 			return TestRef{}, err
 		}
-		if !validSide(v.Side) || v.Kind == "player_pp_pair" && v.Field != "" || v.Kind == "player_field" && !oneOf(v.Field, "leader.life", "leader.maxlife", "pp", "maxpp", "ep", "sep", "combo", "shadows", "rally", "earthsigils", "entered_artifacts") {
+		if !validSide(v.Side) || v.Kind == "player_pp_pair" && v.Field != "" || v.Kind == "player_field" && !oneOf(v.Field, "leader.life", "leader.maxlife", "pp", "maxpp", "ep", "sep", "combo", "shadows", "rally", "earthsigils", "entered_artifacts", "evolutions") {
 			return TestRef{}, fmt.Errorf("malformed player reference")
 		}
 		return TestRef{Kind: v.Kind, Side: v.Side, Field: v.Field}, nil

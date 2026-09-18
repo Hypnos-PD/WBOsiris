@@ -970,6 +970,29 @@ enhance 7 { ... }
 enhance 7 replaces { ... }
 ```
 
+"在牌组中发动"的能力写 `when … while self in deck { … }`，只允许回合开始与回合结束
+两个时点；满足条件时用 `invoke self;` 瞬念召唤本卡牌：
+
+```wbo
+// 在牌组中发动：自己的回合开始时，本场对战中自己的随从进化过6次以上则瞬念召唤。
+when own turn starts while self in deck {
+    if own.evolutions >= 6 {
+        invoke self;
+    }
+}
+// 被【瞬念召唤】时：获得纹章并返回手牌。
+when self invoked {
+    gain own crest 10404110;
+    return self to hand;
+}
+```
+
+`invoke <目标>;` 把牌组里的该实例移到战场：不支付费用、不增加连击、不算抽牌、
+也不发动入场曲（与亡者召还、牌组召唤一致），但会产生正常的入场事件，
+随后派发"被瞬念召唤时"事件供 `when self invoked` 使用。官方 QA 明确了时点顺序：
+纹章的回合开始能力先结算，其次才是牌组中发动的能力，最后是回合开始的抽牌。
+`own.evolutions` / `oppo.evolutions` 是"本场对战中该玩家随从进化过的次数"（含超进化）。
+
 `enhance N` 在支付该档费用时**追加**执行；文本写"改为"的卡用 `enhance N replaces`，
 支付该档时改为**只执行这个块**：本次打出的基础效果与入场曲都不再发动。它和
 `superevolve replaces evolve` 是同一套替换语义。例：焰火占卜普通打出时对随机 1 个

@@ -781,6 +781,15 @@ Return = NodeBase & {
   output: "returned"
 }
 
+Invoke = NodeBase & {
+  kind: "invoke",
+  target: ValueRef            (* 目前只用于 `invoke self`：把牌组里的本卡牌移到战场 *)
+}
+
+`invoke` 不支付费用、不增加连击、不算抽牌，也不发动入场曲；它产生正常的入场事件
+（`follower_summoned` 等）后派发 `card_invoked` 事件，供 `when self invoked` 使用。
+牌组中的监听写作 `EventTrigger{sourceZone: "deck"}`，只允许 `turn_started` 与 `turn_ended`。
+
 Reanimate = NodeBase & {
   kind: "reanimate",
   owner: Side,

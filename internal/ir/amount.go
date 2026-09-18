@@ -6,7 +6,7 @@ import (
 )
 
 func ValidPlayerScalar(field string) bool {
-	return oneOf(field, "combo", "pp", "maxpp", "life", "ep", "sep", "shadows", "hand_count", "earthsigils", "entered_artifacts", "rally", "crests")
+	return oneOf(field, "combo", "pp", "maxpp", "life", "ep", "sep", "shadows", "hand_count", "earthsigils", "entered_artifacts", "rally", "crests", "evolutions")
 }
 
 func validCountSource(source Ref) bool {

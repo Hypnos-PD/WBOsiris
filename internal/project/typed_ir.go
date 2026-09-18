@@ -678,6 +678,9 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 	case "double":
 		// double stats <集合>：按每个目标自己的当前数值翻倍（攻击力与生命值）。
 		return ir.AdjustEffect{NodeBase: base, Kind: "double_stats", Target: valueRefIR(t, 2)}, nil
+	case "invoke":
+		// `invoke self;`：瞬念召唤牌组里的本卡牌。
+		return ir.InvokeEffect{NodeBase: base, Kind: "invoke", Target: valueRefIR(t, 1)}, nil
 	case "transform":
 		end := valueRefEnd(t, 1)
 		target := valueRefIR(t, 1)
@@ -1062,6 +1065,10 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 		if t[2].Value == "summoned" {
 			return ir.EventTrigger{Kind: "event", Event: "follower_summoned", Side: "own", SubjectType: "follower", SelfOnly: true}
 		}
+		if t[2].Value == "invoked" {
+			// "被【瞬念召唤】时"：本实例从牌组被瞬念召唤到战场后。
+			return ir.EventTrigger{Kind: "event", Event: "card_invoked", Side: "own", SelfOnly: true}
+		}
 		if t[2].Value == "stats" || t[2].Value == "life" {
 			return ir.EventTrigger{Kind: "event", Event: map[string]string{"stats": "stats_increased", "life": "life_decreased"}[t[2].Value], Side: "own", SubjectType: "follower", SelfOnly: true}
 		}
@@ -1233,6 +1240,9 @@ func compilePlayerState(s *syntax.Statement, p *ir.PlayerState, a map[string]str
 			p.Shadows = intToken(t[1])
 		case "rally":
 			p.Rally = intToken(t[1])
+		case "evolutions":
+			// `evolutions 6;`：场景测试直接摆出"本场对战中自己的随从进化次数"。
+			p.EvolutionsThisMatch = intToken(t[1])
 		case "attacked_leader_last_turn":
 			if len(t) == 1 {
 				p.LeaderAttackedLastTurn = true

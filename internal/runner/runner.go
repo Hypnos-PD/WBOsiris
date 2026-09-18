@@ -69,6 +69,9 @@ type player struct {
 	// playedCosts 记录本场对战中自己使用过的卡牌的原始费用，
 	// 读作 `own.played has costs N to M`（"费用包含1到8所有数值"）。
 	playedCosts                                               map[int]bool
+	// evolutionsThisMatch 记录本场对战中该玩家随从进化过的次数（含超进化），
+	// 读作 `own.evolutions`（"本次对战中自己的随从的进化次数为6次或以上"）。
+	evolutionsThisMatch                                       int
 	deck, hand, field, graveyard, banished                    []*instance
 	destroyed                                                 []DestructionRecord
 	resolving                                                 []*instance
@@ -244,6 +247,7 @@ func (g *game) loadState(s ir.State) error {
 		p.leaderLife, p.leaderMax = src.Leader.Life, src.Leader.MaxLife
 		p.pp, p.maxpp, p.ep, p.sep, p.combo, p.shadows = src.PP, src.MaxPP, src.EP, src.SEP, src.Combo, src.Shadows
 		p.rally = src.Rally
+		p.evolutionsThisMatch = src.EvolutionsThisMatch
 		p.leaderAttackedLastTurn = src.LeaderAttackedLastTurn
 		if len(src.PlayedCosts) > 0 {
 			p.playedCosts = make(map[int]bool, len(src.PlayedCosts))
@@ -423,6 +427,7 @@ func (g *game) addToZone(p *player, i *instance, z string) {
 		p.retiredCrests = append(p.retiredCrests, i)
 	case "deck":
 		p.deck = append(p.deck, i)
+		g.triggerIndex.add(i)
 	case "hand":
 		p.hand = append(p.hand, i)
 		g.triggerIndex.add(i)
@@ -1332,6 +1337,8 @@ func (g *game) applyEvolution(i *instance, super bool) {
 	i.evolved, i.superEvolved = true, super
 	i.attack += bonus
 	i.life += bonus
+	// "本场对战中自己的随从进化过的次数"（瞬念召唤的条件之一）。
+	g.owner(i).evolutionsThisMatch++
 	// 【奥义】/【解放奥义】的奥义槽按"在手牌中时己方随从进化过的次数"累积。
 	for _, card := range g.owner(i).hand {
 		card.skybound++

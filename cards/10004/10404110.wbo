@@ -6,7 +6,74 @@ card 10404110 {
     stats 7/6;
 
     effect {
-        unplayable;
+        // 在牌组中发动：自己的回合开始时，本场对战中自己的随从进化过 6 次以上则瞬念召唤。
+        when own turn starts while self in deck {
+            if own.evolutions >= 6 {
+                invoke self;
+            }
+        }
+        // 被【瞬念召唤】时：获得纹章并返回手牌（官方 QA：只有瞬念召唤才获得纹章）。
+        when self invoked {
+            gain own crest 10404110;
+            return self to hand;
+        }
+        fanfare {
+            if super_skybound_art {
+                repeat 5 {
+                    random victim from oppo.field.followers or oppo.leader;
+                    damage victim 2;
+                }
+            }
+        }
+    }
+
+    crest {
+        countdown 2;
+
+        when own turn ends {
+            heal own.field.followers 1;
+            heal own.leader 1;
+        }
+
+        locale chs {
+            name "纹章：天司长的继承者·圣德芬";
+            text """
+【<color=Keyword>吟唱</color>_2】
+自己的回合结束时，回复自己的战场上的所有随从与自己的主战者各1点生命值。
+""";
+        }
+
+        locale eng {
+            name "Crest: Sandalphon, Primarch Successor";
+            text """
+<b><color=Keyword>Countdown</color> (2)</b>
+At the end of your turn, restore 1 defense to all allied followers on the field and restore 1 defense to your leader.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"てんしちょう\">天司長</rub>の<rub=\"こうけい\">後継</rub>・サンダルフォン";
+            text """
+【<color=Keyword>カウントダウン</color>_2】
+自分のターン終了時、自分の場のフォロワーすべてと自分のリーダーを1回復。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 천사장의 후계 샌달폰";
+            text """
+[<color=Keyword>카운트다운</color> 2]
+내 턴 종료 시, 내 전장의 추종자 모두와 내 리더를 1 회복.
+""";
+        }
+
+        locale cht {
+            name "紋章：天司長的繼承者‧聖德芬";
+            text """
+【<color=Keyword>吟唱</color>_2】
+自己的回合結束時，回復自己的戰場上全體從者與自己的主戰者各1點生命值。
+""";
+        }
     }
 
     meta {
