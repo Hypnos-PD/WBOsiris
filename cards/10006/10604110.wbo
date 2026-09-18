@@ -7,7 +7,29 @@ card 10604110 {
     trait encroacher;
 
     effect {
-        unplayable;
+        fanfare {
+            // 【入场曲】从下列能力中随机发动 2 个。
+            mode random 2 {
+                option 1 {
+                    random victim from oppo.field.followers;
+                    destroy victim;
+                }
+                option 2 {
+                    damage oppo.leader 2;
+                }
+                option 3 {
+                    gain own.pp 2;
+                }
+                option 4 {
+                    buff self +4/+4;
+                    // "发动本随从的【入场曲】"：重新执行上面这段能力。
+                    replay fanfare self;
+                }
+            }
+        }
+        superevolve {
+            replay fanfare self;
+        }
     }
 
     meta {

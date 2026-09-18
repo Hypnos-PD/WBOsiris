@@ -794,6 +794,14 @@ Invoke = NodeBase & {
 （`follower_summoned` 等）后派发 `card_invoked` 事件，供 `when self invoked` 使用。
 牌组中的监听写作 `EventTrigger{sourceZone: "deck"}`，只允许 `turn_started` 与 `turn_ended`。
 
+ReplayFanfare = NodeBase & {
+  kind: "replay_fanfare",
+  target: ValueRef            (* 目前只用于 `replay fanfare self` *)
+}
+
+`replay_fanfare` 按实例当前的卡牌定义查找 `fanfare` 能力并作为新的效果帧执行；
+同一实例最多重发 12 次（`fanfareReplays` 随实例快照保存），避免随机自引用无限递归。
+
 Reanimate = NodeBase & {
   kind: "reanimate",
   owner: Side,

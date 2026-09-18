@@ -48,6 +48,8 @@ type instance struct {
 	costChanged                                                                  bool
 	// skybound 是"在手牌中时己方随从进化过的次数"，奥义槽 = 当前回合数 + 该计数。
 	skybound                                                                    int
+	// fanfareReplays 记录本实例被"重新发动入场曲"的次数（防止随机自引用无限递归）。
+	fanfareReplays                                                              int
 }
 type player struct {
 	retiredDeck                                               []*instance
@@ -1478,6 +1480,10 @@ func (g *game) advanceTurn() {
 	}
 	g.emit(ir.RuntimeEvent{Kind: "turn_started", Side: g.turn.Active})
 }
+
+// fanfareReplayLimit 限制同一实例"重新发动入场曲"的次数：卡牌可以用随机模式自引用，
+// 真实对局里概率极低的长链会收敛，引擎需要一个确定性上限避免无限递归。
+const fanfareReplayLimit = 12
 
 func findAbility(card *ir.Card, kind string) *ir.Ability {
 	for n := range card.Abilities {

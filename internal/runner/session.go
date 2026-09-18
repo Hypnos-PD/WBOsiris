@@ -585,6 +585,19 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 		for _, target := range s.g.effectTargets(e.Target, self, bindings) {
 			s.g.invokeInstance(target)
 		}
+	case ir.ReplayFanfareEffect:
+		// "发动本随从的【入场曲】"：按当前卡牌定义重新执行 fanfare 能力。
+		for _, target := range s.g.effectTargets(e.Target, self, bindings) {
+			if target == nil || target.card == nil || target.zone != "field" || target.fanfareReplays >= fanfareReplayLimit {
+				continue
+			}
+			ability := findAbility(target.card, "fanfare")
+			if ability == nil {
+				continue
+			}
+			target.fanfareReplays++
+			s.pushFrame(execFrame{body: ability.Body, blockID: abilityBlockID(target.card.ID, ability.ID), self: target, bindings: bindings})
+		}
 	case ir.DeckSummonEffect:
 		bindSummoned(bindings, e.Output, s.g.summonFromDeck(e, self, bindings))
 	case ir.SummonPoolEffect:

@@ -1018,6 +1018,24 @@ when self invoked {
 纹章的回合开始能力先结算，其次才是牌组中发动的能力，最后是回合开始的抽牌。
 `own.evolutions` / `oppo.evolutions` 是"本场对战中该玩家随从进化过的次数"（含超进化）。
 
+"发动本随从的【入场曲】"写作 `replay fanfare self;`：按当前卡牌定义重新执行本实例的
+`fanfare` 能力（包含其中的 `mode random` 等结构，重新随机）。同一实例的重发次数有 12 次
+的安全上限，避免"随机模式里包含重发自身"这类卡牌无限递归：
+
+```wbo
+fanfare {
+    mode random 2 {
+        option 1 { random victim from oppo.field.followers; destroy victim; }
+        option 2 { damage oppo.leader 2; }
+        option 3 { gain own.pp 2; }
+        option 4 { buff self +4/+4; replay fanfare self; }
+    }
+}
+superevolve {
+    replay fanfare self;
+}
+```
+
 `enhance N` 在支付该档费用时**追加**执行；文本写"改为"的卡用 `enhance N replaces`，
 支付该档时改为**只执行这个块**：本次打出的基础效果与入场曲都不再发动。它和
 `superevolve replaces evolve` 是同一套替换语义。例：焰火占卜普通打出时对随机 1 个

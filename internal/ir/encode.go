@@ -224,6 +224,15 @@ func (e InvokeEffect) MarshalJSON() ([]byte, error) {
 	return json.Marshal(object)
 }
 
+func (e ReplayFanfareEffect) MarshalJSON() ([]byte, error) {
+	if e.Target == nil {
+		return nil, fmt.Errorf("replay fanfare requires a target")
+	}
+	object := effectObject(e.NodeBase, e.Kind)
+	object["target"] = e.Target
+	return json.Marshal(object)
+}
+
 func (e TargetEffect) MarshalJSON() ([]byte, error) {
 	if e.Until != "" && (!oneOf(e.Kind, "add_keyword", "buff_stats", "set_cost") || !oneOf(e.Until, "turn_end", "own_turn_end", "oppo_turn_end")) {
 		return nil, fmt.Errorf("invalid effect duration")

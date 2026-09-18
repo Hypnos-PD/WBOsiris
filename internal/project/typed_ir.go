@@ -680,6 +680,12 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 	case "invoke":
 		// `invoke self;`：瞬念召唤牌组里的本卡牌。
 		return ir.InvokeEffect{NodeBase: base, Kind: "invoke", Target: valueRefIR(t, 1)}, nil
+	case "replay":
+		// `replay fanfare self;`：重新发动本随从的【入场曲】。
+		if len(t) >= 3 && t[1].Value == "fanfare" {
+			return ir.ReplayFanfareEffect{NodeBase: base, Kind: "replay_fanfare", Target: valueRefIR(t, 2)}, nil
+		}
+		return nil, fmt.Errorf("WBO-E017-IR-INCOMPATIBLE: 无法编译效果构造 %q", h)
 	case "transform":
 		end := valueRefEnd(t, 1)
 		target := valueRefIR(t, 1)

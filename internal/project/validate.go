@@ -606,7 +606,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		return false
 	}
 	h := t[0].Value
-	known := set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "raise", "halve", "double", "spellboost", "transform", "invoke", "set_attack_limit", "set_damage_reduction", "set")
+	known := set("draw", "add", "summon", "damage", "heal", "buff", "gain", "restore", "destroy", "banish", "discard", "remove", "return", "evolve", "superevolve", "reanimate", "reduce", "raise", "halve", "double", "spellboost", "transform", "invoke", "replay", "set_attack_limit", "set_damage_reduction", "set")
 	if !known[h] {
 		return false
 	}
@@ -980,6 +980,11 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		end, good := parseValueRef(t, 1)
 		checkBindingAt(t, 1, end, bindings, ds)
 		ok = good && end == len(t)
+	case "replay":
+		// `replay fanfare self;`：重新发动本随从的【入场曲】。
+		end, good := parseValueRef(t, 2)
+		checkBindingAt(t, 2, end, bindings, ds)
+		ok = len(t) >= 3 && t[1].Value == "fanfare" && good && end == len(t)
 	}
 	if !ok {
 		shapeError(ds, s, h+" 的规范参数;")

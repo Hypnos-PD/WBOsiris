@@ -454,6 +454,7 @@ ability_operation = "remove" , ability , "from" , value_ref , ["other" , [bindin
 return_operation  = "return" , value_ref , "to" , ("hand" | "deck") , ";" ;
 evolve_operation  = ("evolve" | "superevolve") , value_ref , "silent" , ";" ;
 invoke_operation  = "invoke" , value_ref , ";" ; (* 瞬念召唤牌组里的本卡牌 *)
+replay_operation  = "replay" , "fanfare" , value_ref , ";" ; (* 重新发动该实例的入场曲 *)
 reanimate_operation = "reanimate" , integer , ";" ;
 
 reduce_operation  = "reduce" , "countdown" , value_ref , integer , ";"

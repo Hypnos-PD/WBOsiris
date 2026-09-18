@@ -1,0 +1,53 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "恐惧的象征的入场曲随机发动两个能力" {
+    seed 111001;
+    state {
+        player own {
+            pp 9/9;
+            hand { follower source = 10604110; }
+        }
+        player oppo {
+            leader 20/20;
+            field {
+                follower first = 10001110 { stats 2/12; }
+                follower second = 10001110 { stats 2/12; }
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        // 该种子下随机抽到 3 次(4)、3 次(2)、1 次(3)、1 次(1)，其中每次(4)都会重发入场曲。
+        source.stats == 16/16;
+        oppo.leader.life == 14;
+        own.pp == 2/9;
+        oppo.field count card 10001110 == 1;
+    }
+}
+
+scenario "恐惧的象征的超进化时重发入场曲" {
+    seed 111002;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            pp 3/9;
+            field { follower source = 10604110; }
+        }
+        player oppo {
+            leader 20/20;
+            field { follower enemy = 10001110 { stats 2/12; } }
+        }
+    }
+    action { superevolve source; }
+    expect {
+        legal;
+        // 超进化 +3/+3 后该种子抽到 (4)(2) 与重发后的 (2)(3)。
+        source.stats == 11/11;
+        oppo.leader.life == 16;
+        own.pp == 5/9;
+        oppo.field count card 10001110 == 1;
+    }
+}

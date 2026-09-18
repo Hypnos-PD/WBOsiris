@@ -644,6 +644,18 @@ type InvokeEffect struct {
 func (e InvokeEffect) effectKind() string   { return e.Kind }
 func (e InvokeEffect) effectBase() NodeBase { return e.NodeBase }
 
+// ReplayFanfareEffect 重新发动指定实例的入场曲（"发动本随从的【入场曲】"）。
+// 运行期按当前卡牌定义查找 fanfare 能力并作为新的效果帧执行；同一实例的重复次数
+// 有安全上限，避免随机自引用无限递归。
+type ReplayFanfareEffect struct {
+	NodeBase
+	Kind   string `json:"kind"`
+	Target Ref    `json:"target"`
+}
+
+func (e ReplayFanfareEffect) effectKind() string   { return e.Kind }
+func (e ReplayFanfareEffect) effectBase() NodeBase { return e.NodeBase }
+
 type CountExpr struct {
 	Kind   string `json:"kind"`
 	Source Ref    `json:"source"`

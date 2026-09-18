@@ -1202,6 +1202,27 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			return nil, fmt.Errorf("invoke requires a target")
 		}
 		return InvokeEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Target: target}, nil
+	case "replay_fanfare":
+		var v struct {
+			ID     string          `json:"id"`
+			Kind   string          `json:"kind"`
+			Target json.RawMessage `json:"target"`
+			Origin Origin          `json:"origin"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
+			return nil, err
+		}
+		target, err := decodeRef(v.Target)
+		if err != nil {
+			return nil, err
+		}
+		if target == nil {
+			return nil, fmt.Errorf("replay fanfare requires a target")
+		}
+		return ReplayFanfareEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Target: target}, nil
 	case "damage", "heal", "buff_stats", "destroy", "banish", "discard", "return", "add_keyword", "remove_keyword", "remove_ability", "silent_evolve", "set_attack_limit", "set_damage_reduction", "set_life", "set_cost", "set_attack":
 		type raw struct {
 			Output                                                      string `json:"output,omitempty"`
