@@ -692,6 +692,8 @@ type AdjustEffect struct {
 	Delta    int    `json:"delta,omitempty"`
 	// DeltaExpr 支持动态增量（例如"倒计数 -X"，X 为纹章数）。
 	DeltaExpr NumericExpr `json:"-"`
+	// Modulo 只用于 `adjust_counter`：加上增量后按该值取模（"按顺序循环发动"）。
+	Modulo  int `json:"modulo,omitempty"`
 	Minimum  int    `json:"minimum,omitempty"`
 	Times    int    `json:"times,omitempty"`
 	// Until 为空表示永久修改费用；否则记录差量并在对应回合结束时还原。

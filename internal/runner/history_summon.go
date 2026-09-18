@@ -129,20 +129,3 @@ func (g *game) copyRandomFrom(e ir.CopyRandomEffect, self *instance, bindings fr
 	}
 	return out
 }
-
-// randomCardFrom 从集合里等概率取一张的卡牌定义（用于"变身为随机一张卡的复制"）。
-// 空集合返回 nil；多条候选时消费一次随机决策。
-func (g *game) randomCardFrom(ref ir.Ref, self *instance, bindings frame) *ir.Card {
-	candidates := g.fromRef(ref, self, bindings)
-	if g.budget != nil && (g.budget.exceeded || !g.budget.chargeCandidates(uint64(len(candidates)))) {
-		return nil
-	}
-	if len(candidates) == 0 {
-		return nil
-	}
-	index := 0
-	if len(candidates) > 1 {
-		index = g.rng.Index(len(candidates))
-	}
-	return candidates[index].card
-}

@@ -602,6 +602,11 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 			if !exists {
 				return nil
 			}
+			if e.Modulo > 0 {
+				// 循环计数器：加上增量后取模（"按顺序发动以下1个能力"）。
+				self.counters[e.Field] = (value + e.Delta) % e.Modulo
+				return nil
+			}
 			if e.Delta < 0 || e.Delta > ir.MaxCounterValue-value {
 				s.fault = "counter_overflow"
 				return nil

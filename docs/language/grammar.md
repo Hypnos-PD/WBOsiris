@@ -401,7 +401,7 @@ draw_amount       = integer | "all" ;
 add_operation     = "add" , integer , "card" , card_id , "to" , "hand" , ";"
                   | "add" , "combo" , integer , ";"
                   | "add" , integer , "earthsigil" , ";"
-                  | "add" , integer , "counter" , counter_name , ";"
+                  | "add" , integer , "counter" , counter_name , ["modulo" , positive_integer] , ";"
                   | "add" , integer , "card" , card_id , "to" , ("hand" | "deck") , ";"
                   | "add" , "copies" , "of" , value_ref , "to" , ("hand" | "deck") , ";"
                   | "add" , "random" , integer , "copies" , "from" , value_ref , [where_clause] , "to" , ("hand" | "deck") , ";"

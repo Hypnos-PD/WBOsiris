@@ -938,6 +938,7 @@ NumericExpr = Count { kind: "count", source: ZoneSet | HistorySet | BindingRef |
             | Difference { kind: "difference", left: NumericExpr, right: NumericExpr }
 EffectAmount = nonnegative_integer | NumericExpr
 AdjustCounter = NodeBase & { kind: "adjust_counter", field: CounterName, delta: nonnegative_i32 }
+(* modulo 存在时按它取模：value = (value + delta) % modulo，用于"按顺序循环发动" *)
 StatDelta = i16 | NumericExpr | Negate { kind: "negate", value: NumericExpr }
 
 Damage = NodeBase & {

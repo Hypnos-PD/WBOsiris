@@ -745,33 +745,58 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 		if g.budget != nil && g.budget.exceeded {
 			return
 		}
-		card := g.cards[e.CardID]
-		if e.CopySource != nil {
-			// `transform <目标> into random card from <集合>`：变身为随机一张卡的复制。
-			card = g.randomCardFrom(e.CopySource, self, f)
+		if e.CopySource == nil {
+			card := g.cards[e.CardID]
+			for _, i := range targets {
+				g.transformTarget(i, card)
+			}
+			return
+		}
+		// `transform <目标> into random card from <集合>`：每个目标各自等概率取一张
+		// （"分别变身"），候选集合只查询一次；只剩一条候选时不消费随机决策。
+		candidates := g.fromRef(e.CopySource, self, f)
+		if g.budget != nil && (g.budget.exceeded || !g.budget.chargeCandidates(uint64(len(candidates)))) {
+			return
+		}
+		if len(candidates) == 0 {
+			return
 		}
 		for _, i := range targets {
-			if c := card; c != nil && (i.zone == "hand" || i.zone == "deck" || i.zone == "field" && c.CardType != "spell") {
-				event := ir.RuntimeEvent{Kind: "card_transformed", Side: g.sideOf(i), From: i.zone,
-					Subject: &ir.EventTarget{Kind: "instance", InstanceID: i.id, CardID: i.card.ID},
-					Target:  &ir.EventTarget{Kind: "instance", InstanceID: i.id, CardID: c.ID}}
-				if i.zone == "hand" || i.zone == "deck" || i.zone == "attached" {
-					event.PrivateTo = event.Side
-				}
-				if !g.emit(event) {
-					return
-				}
-				if i.zone == "field" || i.zone == "hand" {
-					g.detachEventSource(i)
-				}
-				resetCardState(i, c)
-				if i.zone == "field" {
-					i.summoningSick = c.CardType == "follower"
-				}
-				g.triggerIndex.add(i)
+			index := 0
+			if len(candidates) > 1 {
+				index = g.rng.Index(len(candidates))
 			}
+			g.transformTarget(i, candidates[index].card)
 		}
 	}
+}
+
+// transformTarget 把实例 i 的身份换成卡牌 c（保留实例身份、区域位置与附着材料）。
+// 手牌、牌组与战场上的存续卡牌都可以变身；战场卡牌不能变身为法术。
+func (g *game) transformTarget(i *instance, c *ir.Card) {
+	if c == nil || i == nil {
+		return
+	}
+	if i.zone != "hand" && i.zone != "deck" && (i.zone != "field" || c.CardType == "spell") {
+		return
+	}
+	event := ir.RuntimeEvent{Kind: "card_transformed", Side: g.sideOf(i), From: i.zone,
+		Subject: &ir.EventTarget{Kind: "instance", InstanceID: i.id, CardID: i.card.ID},
+		Target:  &ir.EventTarget{Kind: "instance", InstanceID: i.id, CardID: c.ID}}
+	if i.zone == "hand" || i.zone == "deck" || i.zone == "attached" {
+		event.PrivateTo = event.Side
+	}
+	if !g.emit(event) {
+		return
+	}
+	if i.zone == "field" || i.zone == "hand" {
+		g.detachEventSource(i)
+	}
+	resetCardState(i, c)
+	if i.zone == "field" {
+		i.summoningSick = c.CardType == "follower"
+	}
+	g.triggerIndex.add(i)
 }
 func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 	_, _, ownSide := g.relativePlayers(self)

@@ -5,7 +5,8 @@ card 10533310 {
     cost 7;
 
     effect {
-        unplayable;
+        // 每个随从各自从牌组里随机取 1 张随从的卡牌定义，变身为它的复制。
+        transform own.field.followers into random card from own.deck.followers;
     }
 
     meta {

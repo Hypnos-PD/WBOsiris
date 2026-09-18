@@ -1,0 +1,66 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "奥梅里欧在自己的护符被破坏时按顺序发动三个能力" {
+    seed 106001;
+    state {
+        turn own 7;
+        player own {
+            leader 10/20;
+            ep 1;
+            field {
+                follower source = 10964120;
+                amulet first = 10603210;
+                amulet second = 10603210;
+                amulet third = 10603210;
+            }
+        }
+        player oppo {
+            field {
+                follower enemy1 = 10001110 { stats 2/9; }
+                follower enemy2 = 10001110 { stats 2/9; }
+            }
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        // 三个护符被破坏，依次发动 (1) 两个随机敌方随从各 3 点、(2) 回复主战者 2 点、
+        // (3) 召唤神圣猎鹰。
+        enemy1.stats == 2/6;
+        enemy2.stats == 2/6;
+        own.leader.life == 12;
+        own.field count card 90061110 == 1;
+        first.zone == graveyard;
+    }
+}
+
+scenario "奥梅里欧循环到第三个能力后从头开始" {
+    seed 106002;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field {
+                follower source = 10964120 { counter step 2; }
+                amulet first = 10603210;
+                amulet second = 10603210;
+            }
+        }
+        player oppo {
+            field {
+                follower enemy1 = 10001110 { stats 2/9; }
+                follower enemy2 = 10001110 { stats 2/9; }
+            }
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        // 计数器覆盖为 2：第一次破坏走 (3) 召唤神圣猎鹰并回到 0，
+        // 第二次破坏重新走 (1) 打两个随机随从 3 点。
+        own.field count card 90061110 == 1;
+        enemy1.stats == 2/6;
+        enemy2.stats == 2/6;
+    }
+}

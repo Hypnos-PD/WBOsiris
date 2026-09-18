@@ -1341,6 +1341,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			Until                        string          `json:"until,omitempty"`
 			Target                       json.RawMessage `json:"target,omitempty"`
 			Delta, Minimum, Times        int
+			Modulo                       int `json:"modulo,omitempty"`
 			DeltaValue                   json.RawMessage `json:"deltaValue,omitempty"`
 			Origin                       Origin `json:"origin"`
 		}
@@ -1356,9 +1357,12 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if len(v.Target) > 0 {
 			r, err = decodeRef(v.Target)
 		}
+		if v.Kind != "adjust_counter" && v.Modulo != 0 {
+			return nil, fmt.Errorf("invalid adjustment modulo")
+		}
 		switch v.Kind {
 		case "adjust_counter":
-			if v.Owner != "" || v.Resource != "" || !ValidCounterName(v.Field) || r != nil || v.Minimum != 0 || v.Times != 0 || v.Delta < 0 || v.Delta > MaxCounterValue {
+			if v.Owner != "" || v.Resource != "" || !ValidCounterName(v.Field) || r != nil || v.Minimum != 0 || v.Times != 0 || v.Delta < 0 || v.Delta > MaxCounterValue || v.Modulo < 0 || v.Modulo > MaxCounterValue {
 				return nil, fmt.Errorf("invalid counter adjustment")
 			}
 		case "restore_resource":
@@ -1410,7 +1414,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 				deltaExpr = expr
 			}
 		}
-		return AdjustEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.Resource, v.Field, r, v.Delta, deltaExpr, v.Minimum, v.Times, v.Until}, err
+		return AdjustEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Owner: v.Owner, Resource: v.Resource, Field: v.Field, Target: r, Delta: v.Delta, DeltaExpr: deltaExpr, Modulo: v.Modulo, Minimum: v.Minimum, Times: v.Times, Until: v.Until}, err
 	default:
 		return nil, fmt.Errorf("unknown executable effect kind %q", k.Kind)
 	}

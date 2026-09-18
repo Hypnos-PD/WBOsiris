@@ -419,6 +419,10 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		if len(t) == 4 && t[2].Value == "counter" {
 			return ir.AdjustEffect{NodeBase: base, Kind: "adjust_counter", Field: t[3].Value, Delta: intToken(t[1])}, nil
 		}
+		if len(t) == 6 && t[2].Value == "counter" && t[4].Value == "modulo" {
+			// `add 1 counter step modulo 3;`：加完再取模，用于"按顺序循环发动"。
+			return ir.AdjustEffect{NodeBase: base, Kind: "adjust_counter", Field: t[3].Value, Delta: intToken(t[1]), Modulo: intToken(t[5])}, nil
+		}
 		if len(t) >= 6 && t[1].Value == "copies" && t[2].Value == "of" {
 			// `add copies of 集合 to hand`：复制集合里每个对象的同名卡并加入手牌。
 			return ir.CardEffect{NodeBase: base, Kind: "add_copies", Owner: "own", Destination: t[len(t)-1].Value, Target: valueRefIR(t, 3), Output: "added"}, nil

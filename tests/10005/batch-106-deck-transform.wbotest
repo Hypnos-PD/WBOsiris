@@ -1,0 +1,54 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "壮美的明越花让所有随从变成牌组中唯一随从的复制" {
+    seed 106101;
+    state {
+        player own {
+            pp 7/7;
+            field {
+                follower first = 10001110;
+                follower second = 10001120;
+            }
+            deck top {
+                follower copy = 10022120;
+                spell filler = 10012310;
+            }
+            hand { spell source = 10533310; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        // 牌组里只有 1 张随从，候选唯一时不消费随机决策。
+        own.field count card 10022120 == 2;
+        first.stats == 3/3;
+        rng.consumed == 0;
+    }
+}
+
+scenario "壮美的明越花让每个随从各自抽取牌组里的随从" {
+    seed 106102;
+    state {
+        player own {
+            pp 7/7;
+            field {
+                follower first = 10001110;
+                follower second = 10001120;
+            }
+            deck top {
+                follower one = 10022120;
+                follower two = 10021110;
+            }
+            hand { spell source = 10533310; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        // 每个目标各抽一次，因此消费两次随机决策；原来的两张牌都不再是本来的定义。
+        rng.consumed == 2;
+        own.field count card 10001110 == 0;
+        own.field count card 10001120 == 0;
+    }
+}

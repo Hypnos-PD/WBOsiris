@@ -6,7 +6,24 @@ card 10964120 {
     stats 3/5;
 
     effect {
-        unplayable;
+        // 「順に1つ」：用实例计数器记住下一次该发动第几个能力，加完取模循环。
+        counter step 0;
+        when own amulet destroyed {
+            if self.counter.step == 0 {
+                random victims from oppo.field.followers count 2;
+                damage victims 3;
+            } else {
+                if self.counter.step == 1 {
+                    heal own.leader 2;
+                } else {
+                    summon 1 card 90061110;
+                }
+            }
+            add 1 counter step modulo 3;
+        }
+        evolve {
+            destroy own.field.amulets;
+        }
     }
 
     meta {

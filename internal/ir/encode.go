@@ -332,6 +332,12 @@ func (e AdjustEffect) MarshalJSON() ([]byte, error) {
 		object["owner"], object["delta"] = e.Owner, e.Delta
 	case "adjust_counter":
 		object["field"], object["delta"] = e.Field, e.Delta
+		if e.Modulo != 0 {
+			if e.Modulo < 1 || e.Modulo > MaxCounterValue {
+				return nil, fmt.Errorf("invalid counter modulo")
+			}
+			object["modulo"] = e.Modulo
+		}
 	case "adjust_entity_field":
 		if e.Until != "" && (e.Field != "cost" || !oneOf(e.Until, "turn_end", "own_turn_end", "oppo_turn_end")) {
 			return nil, fmt.Errorf("invalid entity adjustment duration")

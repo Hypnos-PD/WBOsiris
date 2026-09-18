@@ -163,6 +163,25 @@ effect {
 
 `counter NAME INITIAL;` 只允许出现在 `effect` 最外层，同一名称只能声明一次。
 名称匹配 `[a-z][a-z0-9_]{0,31}`，初始值、增加量及运行时值均为 `0..2147483647`。
+`add 1 counter NAME modulo M;` 在加上增量后按 M 取模，用于"按顺序循环发动以下 1 个能力"
+这类每次触发前进一格、走完回到第一个的写法：
+
+```wbo
+counter step 0;
+when own amulet destroyed {
+    if self.counter.step == 0 {
+        random victims from oppo.field.followers count 2;
+        damage victims 3;
+    } else {
+        if self.counter.step == 1 {
+            heal own.leader 2;
+        } else {
+            summon 1 card 90061110;
+        }
+    }
+    add 1 counter step modulo 3;
+}
+```
 `add N counter NAME;` 增加能力来源实例的值；`self.counter.NAME` 可用于伤害、
 治疗、属性变化、重复次数及条件，例如 `if self.counter.x >= 5 { draw 1; }`。
 读取和增加必须引用本卡已声明的名称，不从展示文本推断计数器。
@@ -1277,7 +1296,8 @@ engage 0 {
 
 `transform <目标> into random card from <集合>;` 在结算时从集合里等概率取一张
 （只有一条候选时不消费随机决策），把目标的身份换成它的卡牌定义；来源为空时不变身。
-一次结算只抽一次，多个目标共用同一个结果；抽选来源同样可以带 `where` 筛选。
+多个目标时每个目标各自抽一次（"分别变身为…的复制"），候选集合只查询一次；
+抽选来源同样可以带 `where` 筛选。
 可以变身手牌、牌组与战场上的存续卡牌；主战者与历史区域不是合法集合目标，
 已经离开这些区域的绑定会被跳过。战场卡牌不能变身为法术。
 

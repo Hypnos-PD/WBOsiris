@@ -699,6 +699,11 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		if len(t) == 4 && isUnsigned(t[1]) && t[2].Value == "counter" && t[3].Kind == syntax.Identifier && ir.ValidCounterName(t[3].Value) {
 			ok = true
 		}
+		if len(t) == 6 && isUnsigned(t[1]) && t[2].Value == "counter" && t[3].Kind == syntax.Identifier && ir.ValidCounterName(t[3].Value) && t[4].Value == "modulo" {
+			if modulo, good := integer(t[5]); good && modulo >= 1 && modulo <= ir.MaxCounterValue {
+				ok = true
+			}
+		}
 		if len(t) >= 6 && t[1].Value == "copies" && t[2].Value == "of" {
 			// add copies of 集合 to hand|deck：把集合里每个对象的同名卡加入目标区域。
 			end, good := parseValueRef(t, 3)
