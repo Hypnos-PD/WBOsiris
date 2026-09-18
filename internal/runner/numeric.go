@@ -1,30 +1,57 @@
 package runner
 
-import "wbo/internal/ir"
+import (
+	"sort"
+
+	"wbo/internal/ir"
+)
 
 func (g *game) numericValue(expr ir.NumericExpr, self *instance, bindings frame) int {
 	switch e := expr.(type) {
 	case *ir.SumExpr:
+		value := func(i *instance) int {
+			switch e.Field {
+			case "cost":
+				return max(0, i.cost)
+			case "attack":
+				if i.card.Stats != nil {
+					return i.currentAttack()
+				}
+			case "life":
+				if i.card.Stats != nil {
+					return i.life
+				}
+			case "base_cost":
+				return i.card.Cost
+			case "base_attack":
+				if i.card.Stats != nil {
+					return i.card.Stats.Attack
+				}
+			case "base_life":
+				if i.card.Stats != nil {
+					return i.card.Stats.Life
+				}
+			}
+			return 0
+		}
+		items := g.fromRef(e.Source, self, bindings)
+		if e.Limit > 0 && len(items) > e.Limit {
+			// "原始费用最大的3张卡牌的费用合计"：先按字段取极值，再求和。
+			sorted := append([]*instance(nil), items...)
+			sort.SliceStable(sorted, func(a, b int) bool {
+				if e.Direction == "lowest" {
+					return value(sorted[a]) < value(sorted[b])
+				}
+				return value(sorted[a]) > value(sorted[b])
+			})
+			items = sorted[:e.Limit]
+		}
 		total := 0
-		for _, i := range g.fromRef(e.Source, self, bindings) {
+		for _, i := range items {
 			if !g.chargeQueryVisits(1) {
 				return 0
 			}
-			if e.Field == "cost" {
-				total += max(0, i.cost)
-			} else if e.Field == "attack" && i.card.Stats != nil {
-				total += i.currentAttack()
-			} else if e.Field == "life" && i.card.Stats != nil {
-				total += i.life
-			} else if e.Field == "base_cost" {
-				total += i.card.Cost
-			} else if i.card.Stats != nil {
-				if e.Field == "base_attack" {
-					total += i.card.Stats.Attack
-				} else if e.Field == "base_life" {
-					total += i.card.Stats.Life
-				}
-			}
+			total += value(i)
 		}
 		return total
 	case *ir.CountExpr:

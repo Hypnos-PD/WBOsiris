@@ -290,6 +290,8 @@ condition         = "overflow"
                   | participant , "." , "deck" , "has" , ["no"] , "duplicates"
                   | scalar_value , comparison_operator , integer
                   | ("count" | "sum") , effect_amount_tail , comparison_operator , integer ;
+(* 两侧为标量、集合计数或求和表达式时也可以比较，
+   例如 sum(own.hand, base.cost) highest 3 > sum(oppo.hand, base.cost) highest 3 *)
 (* 标量左值与集合计数左值的右值都可以写成 effect_amount，
    例如 own.life > oppo.life；集合计数之间比较尚未支持。 *)
 follower_form     = "unevolved" | "evolved" | "super_evolved" ;
@@ -436,6 +438,7 @@ numeric_operation = "damage" , value_ref , ["other" , [binding_name]] , effect_a
 
 effect_amount     = integer | counter_ref | "count" , "(" , count_source , [where_clause] , ")"
                   | "sum" , "(" , count_source , [where_clause] , "," , ["base" , "."] , ("attack" | "life" | "cost") , ")"
+                    , [("highest" | "lowest") , positive_integer]
                   | player_scalar
                   | "self" , "." , ("cost" | "attack" | "life")
                   | binding_name , "." , ("attack" | "life" | "cost")

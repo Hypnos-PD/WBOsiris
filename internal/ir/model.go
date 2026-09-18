@@ -406,6 +406,9 @@ type CompareCondition struct {
 	Op    string `json:"op"`
 	Left  Scalar `json:"left"`
 	Right int    `json:"right"`
+	// LeftExpr 允许左值也是数值表达式（"自己的手牌中原始费用最大的3张卡牌的费用合计
+	// 大于对手的…"），与 Left 互斥。
+	LeftExpr NumericExpr `json:"-"`
 	// RightExpr 允许右值也是数值表达式（"若自己的主战者的生命值大于对手的主战者的生命值"
 	// 写作 `own.life > oppo.life`）；与 Right 互斥，求值在运行期进行。
 	RightExpr NumericExpr `json:"-"`
@@ -429,7 +432,11 @@ func (c CompareCondition) MarshalJSON() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return json.Marshal(map[string]any{"kind": c.Kind, "op": c.Op, "left": c.Left, "right": right})
+	var left any = c.Left
+	if c.LeftExpr != nil {
+		left = c.LeftExpr
+	}
+	return json.Marshal(map[string]any{"kind": c.Kind, "op": c.Op, "left": left, "right": right})
 }
 
 // IsDamagedCondition 判断某个绑定实例当前是否生命值受损。
@@ -670,6 +677,9 @@ type SumExpr struct {
 	Kind   string `json:"kind"`
 	Source Ref    `json:"source"`
 	Field  string `json:"field"`
+	// Limit 与 Direction 只对最高的/最低的 N 张求和（"原始费用最大的3张卡牌的费用合计"）。
+	Limit     int    `json:"limit,omitempty"`
+	Direction string `json:"direction,omitempty"`
 }
 
 func (e *SumExpr) numericKind() string { return e.Kind }

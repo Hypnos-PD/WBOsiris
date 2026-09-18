@@ -1913,25 +1913,49 @@ func decodeCondition(data []byte) (Condition, error) {
 		return nil, fmt.Errorf("unknown condition kind %q", k.Kind)
 	}
 	var v struct {
-		Kind  string `json:"kind"`
-		Left  Scalar `json:"left"`
-		Op    string `json:"op"`
+		Kind  string          `json:"kind"`
+		Left  json.RawMessage `json:"left"`
+		Op    string          `json:"op"`
 		Right json.RawMessage `json:"right"`
 	}
 	if err := strict(data, &v); err != nil {
 		return nil, err
 	}
-	if !oneOf(v.Left.Kind, "scalar", "fusion_material_scalar", "self_counter", "self_scalar") || !validOp(v.Op) {
-		return nil, fmt.Errorf("unknown scalar kind")
+	if !validOp(v.Op) {
+		return nil, fmt.Errorf("invalid comparison operator")
 	}
-	if v.Left.Kind == "scalar" && (!validSide(v.Left.Side) || !ValidPlayerScalar(v.Left.Field)) || v.Left.Kind == "fusion_material_scalar" && (v.Left.Side != "" || !oneOf(v.Left.Field, "cost", "distinct")) {
-		return nil, fmt.Errorf("invalid condition scalar")
+	_, leftExpr, err := decodeNumericValue(v.Left, false)
+	if err != nil {
+		return nil, err
 	}
-	if v.Left.Kind == "self_counter" && (v.Left.Side != "" || !ValidCounterName(v.Left.Field)) {
-		return nil, fmt.Errorf("invalid counter condition")
-	}
-	if v.Left.Kind == "self_scalar" && (v.Left.Side != "" || !oneOf(v.Left.Field, "cost", "attack", "life", "damage_taken")) {
-		return nil, fmt.Errorf("invalid self scalar condition")
+	condition := CompareCondition{Kind: v.Kind, Op: v.Op}
+	if leftExpr == nil {
+		return nil, fmt.Errorf("condition left must be a value expression")
+	} else if scalar, ok := leftExpr.(*Scalar); ok {
+		if !oneOf(scalar.Kind, "scalar", "fusion_material_scalar", "self_counter", "self_scalar") {
+			return nil, fmt.Errorf("unknown scalar kind")
+		}
+		if scalar.Kind == "scalar" && (!validSide(scalar.Side) || !ValidPlayerScalar(scalar.Field)) || scalar.Kind == "fusion_material_scalar" && (scalar.Side != "" || !oneOf(scalar.Field, "cost", "distinct")) {
+			return nil, fmt.Errorf("invalid condition scalar")
+		}
+		if scalar.Kind == "self_counter" && (scalar.Side != "" || !ValidCounterName(scalar.Field)) {
+			return nil, fmt.Errorf("invalid counter condition")
+		}
+		if scalar.Kind == "self_scalar" && (scalar.Side != "" || !oneOf(scalar.Field, "cost", "attack", "life", "damage_taken")) {
+			return nil, fmt.Errorf("invalid self scalar condition")
+		}
+		condition.Left = *scalar
+	} else {
+		switch expr := leftExpr.(type) {
+		case *CountExpr, *SumExpr, *DifferenceExpr:
+		case *Scalar:
+			if expr.Kind == "binding_scalar" {
+				return nil, fmt.Errorf("invalid condition scalar")
+			}
+		default:
+			return nil, fmt.Errorf("invalid condition scalar")
+		}
+		condition.LeftExpr = leftExpr
 	}
 	right, rightExpr, err := decodeNumericValue(v.Right, false)
 	if err != nil {
@@ -1949,7 +1973,8 @@ func decodeCondition(data []byte) (Condition, error) {
 			return nil, fmt.Errorf("invalid condition scalar")
 		}
 	}
-	return CompareCondition{Kind: v.Kind, Op: v.Op, Left: v.Left, Right: right, RightExpr: rightExpr}, nil
+	condition.Right, condition.RightExpr = right, rightExpr
+	return condition, nil
 }
 func newNode(id string, seen map[string]bool, origins ...Origin) error {
 	if !nodeIDPattern.MatchString(id) {

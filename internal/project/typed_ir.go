@@ -1019,7 +1019,18 @@ func conditionIR(t []syntax.Token) ir.Condition {
 		if next < len(t) && t[next].Value == ")" {
 			next++
 		}
-		return ir.CountCondition{Kind: "count_compare", Source: source, Op: compareOp(t[next].Value), Right: intToken(t[next+1])}
+		// `sum(集合, base.cost) highest 3` 的尾巴也算在左操作数里。
+		if operandEnd, ok := parseEffectAmount(t, 0); ok {
+			next = operandEnd
+		}
+		if next+1 < len(t) && isUnsigned(t[next+1]) && next+2 == len(t) {
+			return ir.CountCondition{Kind: "count_compare", Source: source, Op: compareOp(t[next].Value), Right: intToken(t[next+1])}
+		}
+		// `count(A) 比较 count(B)` / `sum(...) highest 3 比较 sum(...) highest 3`：
+		// 两侧都是数值表达式，走通用的比较条件。
+		_, leftExpr := numericIR(t, 0)
+		right, rightExpr := numericIR(t, next+1)
+		return ir.CompareCondition{Kind: "compare", Op: compareOp(t[next].Value), LeftExpr: leftExpr, Right: right, RightExpr: rightExpr}
 	}
 	if counterRef(t, 0) {
 		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "self_counter", Field: t[4].Value}, Op: compareOp(t[5].Value), Right: intToken(t[6])}

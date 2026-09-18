@@ -6,7 +6,12 @@ card 10502120 {
     stats 4/5;
 
     effect {
-        unplayable;
+        evolve {
+            // 「自己的手牌中原始费用最大的3张卡牌的费用合计」大于对手的同类合计时破坏对手全体随从。
+            if sum(own.hand, base.cost) highest 3 > sum(oppo.hand, base.cost) highest 3 {
+                destroy oppo.field.followers;
+            }
+        }
     }
 
     meta {

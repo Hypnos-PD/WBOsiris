@@ -1,0 +1,87 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "手持军配团扇的伟丈夫在自己最高费用合计更大时破坏对手全体随从" {
+    seed 114001;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10502120; }
+            hand {
+                follower own1 = 10022120;
+                follower own2 = 10022120;
+                follower own3 = 10022120;
+            }
+        }
+        player oppo {
+            hand {
+                follower their1 = 10021110;
+                follower their2 = 10021110;
+                follower their3 = 10021110;
+            }
+            field {
+                follower victim1 = 10001110 { stats 2/12; }
+                follower victim2 = 10001110 { stats 2/12; }
+            }
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        // 我方最高三张费用合计 9（3+3+3）大于对手的 3（1+1+1）。
+        victim1.zone == graveyard;
+        victim2.zone == graveyard;
+    }
+}
+
+scenario "手持军配团扇的伟丈夫在费用合计不更大时不动对手随从" {
+    seed 114002;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10502120; }
+            hand {
+                follower own1 = 10021110;
+                follower own2 = 10021110;
+                follower own3 = 10021110;
+            }
+        }
+        player oppo {
+            hand {
+                follower their1 = 10022120;
+                follower their2 = 10022120;
+                follower their3 = 10022120;
+            }
+            field { follower victim = 10001110 { stats 2/12; } }
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        // 我方最高三张合计 3，小于对手的 9。
+        victim.zone == field;
+    }
+}
+
+scenario "凑不满三张时按现有张数求和" {
+    seed 114003;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10502120; }
+            hand { follower own1 = 10022120; }
+        }
+        player oppo {
+            field { follower victim = 10001110 { stats 2/12; } }
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        // 我方只有 1 张手牌（费用 3），对手没有手牌（合计 0）。
+        victim.zone == graveyard;
+    }
+}

@@ -102,13 +102,22 @@ func TestEnteredCountCompiles(t *testing.T) {
 	if !ok || predicate.Kind != "has_card" || predicate.CardID != 12345678 {
 		t.Fatalf("entered count lost its card filter: %#v", filter.Predicate)
 	}
-	// 集合计数之间的比较暂时还不支持，必须报错而不是静默按 0 结算。
-	if _, ds := compile(t, validCard(`
+	// 集合计数之间的比较使用两侧都是表达式的通用比较节点。
+	compare, ds := compile(t, validCard(`
 		fanfare {
 			if count(own.hand) > count(oppo.hand) {
 				draw 1;
 			}
-		}`)); len(ds) == 0 {
-		t.Fatal("count(A) > count(B) was accepted")
+		}`))
+	if len(ds) != 0 {
+		t.Fatal(ds)
+	}
+	both, ok := compare.Cards[0].Abilities[0].Body[0].(ir.IfEffect)
+	if !ok {
+		t.Fatalf("if did not compile: %#v", compare.Cards[0].Abilities[0].Body[0])
+	}
+	comparison, ok := both.Condition.(ir.CompareCondition)
+	if !ok || comparison.LeftExpr == nil || comparison.RightExpr == nil || comparison.Op != "gt" {
+		t.Fatalf("expression comparison lost: %#v", both.Condition)
 	}
 }

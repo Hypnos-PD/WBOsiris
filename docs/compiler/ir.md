@@ -955,7 +955,8 @@ HistorySet = { kind: "history", side: "own" | "oppo", window: "this_turn",
                member?: "card" | "follower" | "amulet" }
 NumericExpr = Count { kind: "count", source: ZoneSet | HistorySet | BindingRef | FilterSet }
             | Sum { kind: "sum", source: ZoneSet | HistorySet | BindingRef | FilterSet,
-                    field: "base_attack" | "base_life" | "base_cost" | "attack" | "life" | "cost" }
+                    field: "base_attack" | "base_life" | "base_cost" | "attack" | "life" | "cost",
+                    limit?: 1..65535, direction?: "highest" | "lowest" }
             | PlayerScalar { kind: "scalar", side: "own" | "oppo",
                              field: "combo" | "rally" | "crests" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" | "hand_count" | "earthsigils" }
             | SelfScalar { kind: "self_scalar", field: "attack" | "life" | "cost" }

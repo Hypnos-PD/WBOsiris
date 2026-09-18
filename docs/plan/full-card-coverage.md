@@ -20,20 +20,20 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 901 · 未实现(骨架) 3 · 未导入 0
+总计 904 · 已完成 902 · 未实现(骨架) 2 · 未导入 0
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
 10002        77      77       0       0
 10003        77      75       2       0
 10004        76      76       0       0
-10005        76      75       1       0
+10005        76      76       0       0
 10006        76      76       0       0
 10007        77      77       0       0
 10008        78      78       0       0
 10009        76      76       0       0
 90000        93      93       0       0
-未完成卡按文本复杂度：中(41–100字) 3
+未完成卡按文本复杂度：中(41–100字) 2
 ```
 
 ## 工作流
@@ -178,7 +178,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-65 | 从手牌按位置批量选择 | 10502110 星辉女神（"将自己的手牌中从左起的3张卡牌的复制卡牌各1张…加入手牌"） | 选择只有随机、极值与玩家指定；没有"手牌从左起 N 张"。 |
 | S-66 | ~~本次操作的消失数量~~ **已解决**：`banish` 输出 `banished` | 已解锁 10543110 破灭屠戮者 | 与 `destroyed` 同构；数量用 `count(banished)` 读取，可当伤害量或增益量。 |
 | S-67 | ~~主战者生命上限的增减~~ **已解决**：`raise maxlife own\|oppo.leader N` / `reduce maxlife …` | 已解锁 10534110 漫步的《愚者》·琳库露的纹章 | 增量形式 `kind: "adjust_leader_max_life"`（`delta=true`），上限夹在 1..65535，当前生命高于新上限时降到上限——与既有 `set maxlife` 及 SWB-RL 的 `change_leader_max_health` 同一口径。 |
-| S-81 | 取前 N 张的求和与求和比较 | 10502120 手持军配团扇的伟丈夫（"自己的手牌中原始费用最大的3张卡牌的费用合计 大于 对手…则破坏对手的战场上的所有随从"） | `sum(集合, 字段)` 不支持"最大的 N 张"；条件只有 `count(...) 比较 整数`，没有 `sum(...) 比较 sum(...)`。需要给求和加极值/张数上限，并新增求和之间的比较条件。 |
+| S-81 | ~~取前 N 张的求和与求和比较~~ **已解决**：`sum(集合, 字段) highest\|lowest N` + 表达式之间的比较 | 已解锁 10502120 手持军配团扇的伟丈夫 | `SumExpr` 新增 `limit`/`direction`（先按字段排序再取 N 张求和，不足 N 张按现有张数）；`CompareCondition` 新增 `LeftExpr`，两侧都可以是 `count`/`sum` 表达式，`count(A) > count(B)` 也随之成立。 |
 | S-82 | ~~"自己发动【土之秘术】时"事件~~ **已解决**：`when own\|oppo earthrite [while self in hand]` | 已解锁 10731310 召唤仆从、10733310 饕餮魔咒；卡包 10007 因此收满 | 新事件 `earthrite`：`internal/runner/session.go` 在土之印实际扣除成功后派发（不足时整块跳过，不派发），`internal/project/strict_validate.go`/`typed_ir.go` 解析事件头，`internal/ir/decode.go` 加入白名单；监听可挂在手牌卡上（沿用 `while self in hand`）。 |
 | S-83 | ~~"本次对战中进入战场的自己的创造物·随从的种类数"~~ **已解决**：`own\|oppo.entered_artifacts` | 已解锁 10771120 炫酷舞者、10771310 跑酷、10772120 大胆的涂鸦师、10773310 瞬移斩击、10774110 虚刻的安纳提玛·斯卡雷特、10774120 奋厉追赶·米乌；10008 的 10873310 直接可用 | 新玩家标量：随从进入战场时按卡牌 ID 去重记录"创造物·随从"种类（`internal/runner/execute.go` 的 `triggerSummoned`/`recordEnteredArtifact`），数值、断言、存档快照都接上；测试状态里 `field`/`destroyed` 中已存在的创造物视作本场入场过。 |
 | S-85 | ~~"可以无视【守护】进行攻击"~~ **已解决**：固有关键词 `ignore_ward` | 已解锁 10851110 通透的信念·安瑟珠 | 新关键词 `ignore_ward`（`internal/ir/decode.go` 的 `validKeyword`、`internal/project/validate.go` 的 `abilities`）；攻击合法性检查的两处守护限制（攻击主战者、攻击非守护随从）都加上 `!attacker.abilities["ignore_ward"]`。场景测试覆盖"越过守护打主战者"与"没有该关键词时必须先打守护"两侧。 |
@@ -209,6 +209,19 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 114（S-81 取前 N 张的求和与求和比较）
+
+- **`sum(集合 [where …], 字段) highest|lowest N`**：`SumExpr` 新增 `limit`/`direction`，
+  运行期先按字段排序再取 N 张求和；不足 N 张时按现有张数求和，同值时取任意 N 张（和相同）。
+- **表达式之间的比较**：`CompareCondition` 新增 `LeftExpr`，条件两侧都可以是 `count(...)`、
+  `sum(...) ... highest N` 这类数值表达式（此前被明确拒绝的 `count(A) > count(B)` 也随之支持）。
+  形如 `count(...) 比较 整数` 的旧写法仍然编译为原来的 `CountCondition`，行为不变。
+- 完成 1 张：10502120 手持军配团扇的伟丈夫（进化时若自己手牌中原始费用最大的 3 张合计
+  大于对手的同类合计，则破坏对手战场上的所有随从）。卡包 10005 因此收满。
+- 新增 3 个场景（`tests/10005/batch-114-top-cost-sum.wbotest`），覆盖"合计更大"、
+  "合计不更大"与"手牌不足三张"；Go 单测 `internal/project/top_sum_condition_test.go`。
+- 全量回归：`check` 0 错 0 警；`test` 1408 全绿；`go test ./...` 全绿；语料快照更新为 1408 个场景。
 
 ### 批次 113（持续性规则改动的纹章）
 

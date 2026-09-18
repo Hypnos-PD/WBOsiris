@@ -1056,7 +1056,15 @@ func parseEffectOperand(t []syntax.Token, i int) (int, bool) {
 	if !ok || end >= len(t) || t[end].Value != ")" {
 		return end, false
 	}
-	return end + 1, true
+	end++
+	if t[i].Value == "sum" && end+1 < len(t) && set("highest", "lowest")[t[end].Value] {
+		// `sum(集合, base.cost) highest 3`：取最高的 N 张再求和。
+		if count, good := integer(t[end+1]); !good || count < 1 {
+			return end, false
+		}
+		end += 2
+	}
+	return end, true
 }
 
 func parseSignedAmount(t []syntax.Token, i int) (int, bool) {
@@ -1347,8 +1355,10 @@ func validateCondition(t []syntax.Token, ds *[]syntax.Diagnostic) {
 	}
 	if len(t) > 0 && (t[0].Value == "count" || t[0].Value == "sum") {
 		next, ok := parseEffectAmount(t, 0)
-		if !ok || next+1 >= len(t) || !set("==", "!=", "<", "<=", ">", ">=")[t[next].Value] || !isUnsigned(t[next+1]) {
-			diag(ds, "WBO-E001-SYNTAX", "错误", "count 条件必须写成 count(集合) 比较 整数", t[0].Span)
+		if !ok || next+1 >= len(t) || !set("==", "!=", "<", "<=", ">", ">=")[t[next].Value] {
+			diag(ds, "WBO-E001-SYNTAX", "错误", "count 条件必须写成 count(集合) 比较 数值", t[0].Span)
+		} else if right, good := parseEffectAmount(t, next+1); !good || right != len(t) {
+			diag(ds, "WBO-E001-SYNTAX", "错误", "count 条件的右值必须是整数或数值表达式", t[next+1].Span)
 		}
 		return
 	}

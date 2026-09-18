@@ -45,10 +45,18 @@ func numericOperandIR(t []syntax.Token, i int) (int, ir.NumericExpr) {
 		}
 		if t[i].Value == "sum" {
 			field := t[next+1].Value
+			end := next + 2
 			if field == "base" {
 				field = "base_" + t[next+3].Value
+				end = next + 4
 			}
-			return 0, &ir.SumExpr{Kind: "sum", Source: source, Field: field}
+			// `sum(集合, base.cost) highest 3`：取最高的 N 张再求和。
+			limit, direction := 0, ""
+			if end+2 < len(t) && t[end].Value == ")" && set("highest", "lowest")[t[end+1].Value] && isUnsigned(t[end+2]) {
+				limit = intToken(t[end+2])
+				direction = t[end+1].Value
+			}
+			return 0, &ir.SumExpr{Kind: "sum", Source: source, Field: field, Limit: limit, Direction: direction}
 		}
 		return 0, &ir.CountExpr{Kind: "count", Source: source}
 	}

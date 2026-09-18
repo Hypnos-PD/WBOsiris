@@ -50,7 +50,8 @@ func validNumericExpr(expr NumericExpr, signed bool) bool {
 	case *CountExpr:
 		return e != nil && e.Kind == "count" && validCountSource(e.Source)
 	case *SumExpr:
-		return e != nil && e.Kind == "sum" && validCountSource(e.Source) && oneOf(e.Field, "base_attack", "base_life", "base_cost", "attack", "life", "cost")
+		return e != nil && e.Kind == "sum" && validCountSource(e.Source) && oneOf(e.Field, "base_attack", "base_life", "base_cost", "attack", "life", "cost") &&
+			(e.Limit == 0 && e.Direction == "" || e.Limit > 0 && e.Limit <= 65535 && oneOf(e.Direction, "highest", "lowest"))
 	case *Scalar:
 		return e != nil && (e.Kind == "scalar" && validSide(e.Side) && ValidPlayerScalar(e.Field) ||
 			e.Kind == "self_scalar" && e.Side == "" && oneOf(e.Field, "attack", "life", "cost", "damage_taken") ||
@@ -86,6 +87,8 @@ func decodeNumericValue(data json.RawMessage, signed bool) (int, NumericExpr, er
 		Value  json.RawMessage `json:"value"`
 		Left   json.RawMessage `json:"left"`
 		Right  json.RawMessage `json:"right"`
+		Limit  int             `json:"limit"`
+		Direction string       `json:"direction"`
 	}
 	if err := strict(data, &raw); err != nil {
 		return 0, nil, err
@@ -102,7 +105,9 @@ func decodeNumericValue(data json.RawMessage, signed bool) (int, NumericExpr, er
 		}
 		expr = &CountExpr{Kind: "count", Source: source}
 		if raw.Kind == "sum" {
-			expr = &SumExpr{Kind: "sum", Source: source, Field: raw.Field}
+			expr = &SumExpr{Kind: "sum", Source: source, Field: raw.Field, Limit: raw.Limit, Direction: raw.Direction}
+		} else if raw.Limit != 0 || raw.Direction != "" {
+			return 0, nil, fmt.Errorf("invalid count fields")
 		}
 	case "scalar", "self_scalar", "binding_scalar", "self_counter", "fusion_material_scalar":
 		if len(raw.Source) > 0 || len(raw.Value) > 0 {

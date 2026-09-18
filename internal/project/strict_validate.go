@@ -454,11 +454,6 @@ func strictCondition(t []syntax.Token, fusion bool) bool {
 	if !ok || right != len(t) {
 		return false
 	}
-	// 集合计数作为左值时，右值暂时只支持整数：`count(A) 比较 count(B)`
-	// 需要新的比较节点（记在挂起登记里）。
-	if set("count", "sum")[t[0].Value] && !isUnsigned(t[index+1]) {
-		return false
-	}
 	return true
 }
 
