@@ -27,7 +27,9 @@ type Server struct {
 	illustrationRoot string
 	illustrations    illustrationCache
 	// lobbyAuth 是"进入大厅需要登录"的校验（复用 WBArts 的账号）。
-	lobbyAuth   lobbyAuth
+	lobbyAuth lobbyAuth
+	// version 是部署时写入的版本标识（通常是提交号），用于核对线上跑的是哪一版。
+	version     string
 	sessions    map[string]*runner.Session
 	matches     map[string]*match
 	mu          sync.Mutex
@@ -641,10 +643,15 @@ func randomID(bytes int) string {
 func (s *Server) health(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Cache-Control", "no-store")
 	writeJSON(w, map[string]any{
-		"ok": true, "ruleset": "wbo-standard-0.3.0",
+		"ok": true, "ruleset": "wbo-standard-0.3.0", "version": s.version,
 		// 客户端据此决定进大厅是否需要登录（本地开发/离线时是 false）。
 		"lobbyRequiresLogin": s.lobbyAuth.required,
 	})
+}
+
+// SetVersion 记录构建/部署版本，供 /api/health 汇报。
+func (s *Server) SetVersion(version string) {
+	s.version = strings.TrimSpace(version)
 }
 
 func (s *Server) scenarios(w http.ResponseWriter, _ *http.Request) {

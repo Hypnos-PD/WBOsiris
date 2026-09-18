@@ -20,6 +20,7 @@ func runServe(args []string) int {
 	// 托管在线上时要求"进大厅先登录"，校验复用 WBArts 的账号（/api/auth/me）。
 	// 本地开发默认不校验，直接传 --auth-verify-url 即可打开。
 	authVerify := fs.String("auth-verify-url", "", "大厅登录校验地址，例如 https://sva.hypd.asia/api/auth/me；留空表示本地模式不要求登录")
+	version := fs.String("version", "", "写入 /api/health 的版本标识（部署脚本会填提交号）")
 	if fs.Parse(args) != nil {
 		return 2
 	}
@@ -42,6 +43,13 @@ func runServe(args []string) int {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
+	if *version == "" {
+		// 没显式传就读服务目录里的 VERSION（部署脚本会写）。
+		if data, readErr := os.ReadFile(filepath.Join(base, "VERSION")); readErr == nil {
+			*version = string(data)
+		}
+	}
+	h.SetVersion(*version)
 	fmt.Fprintln(os.Stderr, "WBO simulator listening on", *listen)
 	if err := http.ListenAndServe(*listen, h.Handler()); err != nil {
 		fmt.Fprintln(os.Stderr, err)

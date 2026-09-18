@@ -75,6 +75,8 @@ GOOS=linux GOARCH=amd64 go build -o build/wbosiris-server ./cmd/wbo
 printf 'Uploading to %s:%s (%s)\n' "$host" "$remote_dir" "$commit"
 ssh -- "$host" "set -euo pipefail; mkdir -p '$remote_dir'"
 scp -q build/wbosiris-server "$host:$remote_dir/wbosiris-server.new"
+printf '%s\n' "$commit" > build/VERSION
+scp -q build/VERSION "$host:$remote_dir/VERSION"
 tar -C . -cf - cards tests | ssh -- "$host" "set -euo pipefail; mkdir -p '$remote_dir'; tar -C '$remote_dir' -xf -"
 
 ssh -- "$host" "
@@ -95,15 +97,20 @@ if ! systemctl restart \"\$service\" || ! systemctl is-active --quiet \"\$servic
   exit 1
 fi
 if ! curl --fail --silent --retry 10 --retry-connrefused --retry-delay 1 --max-time 3 -- '$health_url' >/dev/null 2>&1; then
-  echo "health check failed: $health_url; rolling back" >&2
+  echo 'health check failed; rolling back' >&2
   restore
   exit 1
 fi
-rm -f \"\$backup\"
+rm -f \"\$backup\" \"\$dir/wbosiris-server.new\"
 "
 
 if [[ -n "$public_url" ]]; then
-  curl --fail --silent --show-error --max-time 15 -- "$public_url" >/dev/null
+  body=$(curl --fail --silent --show-error --max-time 15 -- "$public_url")
   printf 'Public health check passed: %s\n' "$public_url"
+  # 线上跑的版本必须就是这次构建的提交，否则本次部署没有真正生效。
+  if ! printf '%s' "$body" | grep -q "\"version\":\"$commit\""; then
+    printf 'Deployed version mismatch: %s\n' "$body" >&2
+    exit 1
+  fi
 fi
 printf 'Deployed %s to %s (%s)\n' "$commit" "$host" "$service"
