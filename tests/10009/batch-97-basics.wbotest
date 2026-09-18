@@ -1,0 +1,238 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "最古老的狱卒打击选中的随从与另一个随机随从" {
+    seed 97001;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10901110; }
+        }
+        player oppo {
+            field {
+                follower chosen = 10001120 { stats 0/9; }
+                follower other = 10001120 { stats 0/9; }
+            }
+        }
+    }
+    action { play source; select chosen; }
+    expect { legal; chosen.stats == 0/3; other.stats == 0/7; source has ward; }
+}
+
+scenario "龙人管家回复主战者与能量点并强化其他随从" {
+    seed 97002;
+    state {
+        turn own 7;
+        player own {
+            leader 10/20;
+            pp 10/10;
+            ep 1;
+            field {
+                follower source = 10942120;
+                follower ally = 10001110;
+            }
+        }
+    }
+    action { evolve source; select ally; }
+    expect { legal; ally.stats == 5/5; }
+}
+
+scenario "龙人管家的入场曲回复生命与能量点" {
+    seed 97003;
+    state {
+        player own {
+            leader 10/20;
+            pp 10/10;
+            hand { follower source = 10942120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 13; own.pp == 5/10; }
+}
+
+scenario "绯岸橙醉破坏随从并抽牌" {
+    seed 97004;
+    state {
+        player own {
+            pp 4/4;
+            hand { spell source = 10913310; }
+            deck top { follower next = 10011110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.zone == graveyard; own.hand count card 10011110 == 1; }
+}
+
+scenario "绯岸橙醉在连击三点的回合结束时减费" {
+    seed 97005;
+    state {
+        player own {
+            combo 3;
+            hand { spell source = 10913310; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; source.cost == 3; }
+}
+
+scenario "咆哮圣堂的谢幕曲召唤圣炎猛虎并打击随机随从" {
+    seed 97006;
+    state {
+        player own {
+            pp 1/1;
+            field { amulet source = 10961210; }
+            hand { spell remover = 90074310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play remover; select source; }
+    // 90074310 自身会对随机敌方随从打 4 点，再加上谢幕曲的 4 点。
+    expect { legal; own.field count card 90061120 == 1; victim.stats == 0/1; }
+}
+
+scenario "锻磨保镖在牌组无重复时打击随从并回复" {
+    seed 97007;
+    state {
+        player own {
+            leader 10/20;
+            pp 4/4;
+            hand { follower source = 10972110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 0/5; own.leader.life == 14; }
+}
+
+scenario "激烈的副总长打击敌方全体与所有主战者" {
+    seed 97008;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10953110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; victim.stats == 0/6; own.leader.life == 17; oppo.leader.life == 17; }
+}
+
+scenario "弹哭的变貌让创造物入场时破坏敌方随机随从" {
+    seed 97009;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10974120; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90074150 == 1;
+        // 击针看守入场触发一次，破坏对手随机 1 个随从。
+        victim.zone == graveyard;
+    }
+}
+
+scenario "碎裂的盗匪在上一回合攻击过主战者时获得疾驰" {
+    seed 97010;
+    state {
+        player own {
+            pp 1/1;
+            attacked_leader_last_turn;
+            hand { follower source = 10941110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has storm; }
+}
+
+scenario "烟管的罪人在连击三点时改为打击敌方全体" {
+    seed 97011;
+    state {
+        player own {
+            pp 3/3;
+            combo 3;
+            hand { follower source = 10914110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001120 { stats 0/9; }
+                follower second = 10001120 { stats 0/9; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; first.stats == 0/5; second.stats == 0/5; }
+}
+
+scenario "无我看守按手牌中立张数打击两个随机随从" {
+    seed 97012;
+    state {
+        player own {
+            pp 5/5;
+            hand {
+                follower source = 10903110;
+                follower neutralcard = 10001110;
+            }
+        }
+        player oppo {
+            field {
+                follower first = 10001120 { stats 0/9; }
+                follower second = 10001120 { stats 0/9; }
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        // 打出时本卡已离开手牌：手牌中立卡 = 中立随从 + 加入的最古老的狱卒 = 2。
+        first.stats == 0/7;
+        second.stats == 0/7;
+    }
+}
+
+scenario "束刃的罪人进化时清理牌组并获得纹章" {
+    seed 97013;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10974110; }
+            deck top {
+                follower copy = 10974110;
+                follower other = 10011110;
+            }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.deck count card 10974110 == 0; own.crests count card 10974110 == 1; }
+}
+
+scenario "心醉的研究者爆能强化时召唤三个带守护的实验体" {
+    seed 97014;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10932110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 10931110 == 3;
+        all own.field where card 10931110 have ward;
+    }
+}

@@ -6,7 +6,14 @@ card 10972110 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fanfare {
+            // 条件范围：英文把"回复 4 点"并进"牌组没有重复"的条件句内，按同一口径处理。
+            if own.deck has no duplicates {
+                choose target from oppo.field.followers;
+                damage target 4;
+                heal own.leader 4;
+            }
+        }
     }
 
     meta {

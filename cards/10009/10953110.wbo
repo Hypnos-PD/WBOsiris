@@ -6,7 +6,13 @@ card 10953110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            damage oppo.field.followers 3;
+            damage all.leaders 3;
+        }
+        superevolve {
+            draw 2;
+        }
     }
 
     meta {

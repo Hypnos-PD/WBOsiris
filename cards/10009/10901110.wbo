@@ -6,7 +6,14 @@ card 10901110 {
     stats 6/6;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            choose target from oppo.field.followers;
+            damage target 6;
+            // 「选中的以外的随机 1 个」：用 `other <绑定>` 排除刚选中的那张。
+            random victim from oppo.field.followers other target;
+            damage victim 2;
+        }
     }
 
     meta {

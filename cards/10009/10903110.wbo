@@ -6,7 +6,15 @@ card 10903110 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 10901110 to hand;
+            // X 为自己的手牌中的中立卡牌张数。
+            random victims from oppo.field.followers count 2;
+            damage victims count(own.hand where class neutral);
+        }
+        evolve {
+            gain own.pp 1;
+        }
     }
 
     meta {

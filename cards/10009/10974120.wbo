@@ -6,7 +6,16 @@ card 10974120 {
     stats 5/5;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90074150;
+        }
+        when own follower summoned where trait artifact {
+            random victim from oppo.field.followers;
+            destroy victim;
+        }
+        superevolve {
+            summon 1 card 90074150;
+        }
     }
 
     meta {

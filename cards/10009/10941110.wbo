@@ -6,7 +6,15 @@ card 10941110 {
     stats 1/1;
 
     effect {
-        unplayable;
+        fanfare {
+            if own.attacked_leader_last_turn {
+                add storm to self;
+            }
+        }
+        lastwords {
+            add 1 card 10941110 to hand;
+            remove lastwords from added;
+        }
     }
 
     meta {

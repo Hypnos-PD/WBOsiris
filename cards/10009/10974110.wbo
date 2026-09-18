@@ -6,7 +6,55 @@ card 10974110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        bane;
+        evolve {
+            // 先把牌组里所有同名卡消失，再检查"牌组没有重复卡牌"。
+            banish own.deck where card 10974110;
+            if own.deck has no duplicates {
+                gain own crest 10974110;
+            }
+        }
+    }
+
+    crest {
+        when own card played once per own turn where type follower {
+            evolve played silent;
+        }
+
+        locale chs {
+            name "纹章：束刃的罪人·卡特斯罗特";
+            text """
+自己使用随从时，自己的每回合中可触发1次，使其进化。
+""";
+        }
+
+        locale eng {
+            name "Crest: Cutthroat, Sinbound Blade";
+            text """
+Once per your turn, whenever you play a follower, evolve it.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"そくじん\">束刃</rub>の<rub=\"とがびと\">咎人</rub>・カットスロート";
+            text """
+自分がフォロワーをプレイしたとき、自分のターンごとに1回、それは進化する。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 속인의 죄인 캇츠로트";
+            text """
+내가 추종자를 플레이했을 때, 내 턴마다 1번, 그 추종자는 진화한다.
+""";
+        }
+
+        locale cht {
+            name "紋章：束刃的罪人‧卡特斯羅特";
+            text """
+自己使用從者卡時，自己的每回合中可發動1次，使其進化。
+""";
+        }
     }
 
     meta {

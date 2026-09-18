@@ -5,7 +5,12 @@ card 10913310 {
     cost 4;
 
     effect {
-        unplayable;
+        when own turn ends while self in hand if combo >= 3 {
+            reduce cost self 1 minimum 0;
+        }
+        choose target from oppo.field.followers;
+        destroy target;
+        draw 1;
     }
 
     meta {

@@ -6,7 +6,17 @@ card 10932110 {
     stats 1/1;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 2 card 10931110;
+        }
+        enhance 8 replaces {
+            summon 3 card 10931110;
+            add ward to summoned_all;
+        }
+        evolve {
+            choose target from own.field.followers where card 10931110;
+            add bane to target;
+        }
     }
 
     meta {

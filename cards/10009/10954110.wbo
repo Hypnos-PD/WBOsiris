@@ -6,7 +6,61 @@ card 10954110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            repeat 3 {
+                reanimate 2;
+            }
+            damage oppo.field.followers 2;
+        }
+        superevolve {
+            gain own crest 10954110;
+        }
+    }
+
+    crest {
+        when own turn ends {
+            if count(own.field where lastwords) >= 1 {
+                random victim from own.field where lastwords;
+                destroy victim;
+                random foe from oppo.field.followers;
+                destroy foe;
+            }
+        }
+
+        locale chs {
+            name "纹章：伊斯坦戴德 对 玛尔奇盖特";
+            text """
+自己的回合结束时，若自己的战场上有拥有【谢幕曲】的卡牌，则破坏自己的战场上随机1张拥有【谢幕曲】的卡牌和对手的战场上的随机1个随从。
+""";
+        }
+
+        locale eng {
+            name "Crest: Istended vs. Marchlgate";
+            text """
+At the end of your turn, if there's a card with Last Words on your field, destroy a random allied Last Words card and a random enemy follower.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：イステンデッドVSマルチルゲート";
+            text """
+自分のターン終了時、自分の場に【ラストワード】を持つカードがあるなら、自分の場の【ラストワード】を持つカードからランダム1枚と相手の場のフォロワーからランダム1枚を破壊。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 이스텐데드 VS 마르칠게이트";
+            text """
+내 턴 종료 시, 내 전장에 [유언]을 가진 카드가 있다면 내 전장의 [유언]을 가진 카드 중 무작위 1장과 상대방 전장의 추종자 중 무작위 1장을 파괴.
+""";
+        }
+
+        locale cht {
+            name "紋章：伊斯坦戴德 對 瑪爾奇蓋特";
+            text """
+自己的回合結束時，若自己的戰場上有擁有【謝幕曲】的卡牌，則破壞自己的戰場上隨機1張擁有【謝幕曲】的卡牌和敵方戰場上的隨機1張從者卡。
+""";
+        }
     }
 
     meta {
