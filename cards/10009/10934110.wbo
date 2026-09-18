@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10934110 {
+    type follower;
+    cost 7;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "万术的罪人·赛菲";
+        text """
+【<color=Keyword>融合</color>】卡牌
+与本卡牌【<color=Keyword>融合</color>】时，消耗2点能量点，召唤1个『<color=Keyword>沉溺的实验体</color>』。
+<hr>【<color=Keyword>入场曲</color>】召唤2个『<color=Keyword>沉溺的实验体</color>』。
+<hr><sev>【<color=Keyword>超进化时</color>】使自己获得『纹章：万术的罪人·赛菲』。</sev>
+""";
+    }
+
+    locale eng {
+        name "Sephie, Maven Convict";
+        text """
+<b><color=Keyword>Fuse</color></b>: Cards
+Whenever you <b><color=Keyword>Fuse</color></b> to this card, spend 2 play points to summon an <b><i><color=Keyword>Obsessed Test Subject</color></i></b>.
+<hr><b><color=Keyword>Fanfare</color></b>: Summon 2 copies of <b><i><color=Keyword>Obsessed Test Subject</color></i></b>.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Gain <b><i>Crest: Sephie, Maven Convict</i></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ばんじゅつ\">万術</rub>の<rub=\"とがびと\">咎人</rub>・セフィー";
+        text """
+【<color=Keyword>融合</color>】カード
+これに【<color=Keyword>融合</color>】したとき、自分のPPを2消費して、『<color=Keyword>没入の実験体</color>』1枚を自分の場に出す。
+<hr>【<color=Keyword>ファンファーレ</color>】『<color=Keyword>没入の実験体</color>』2枚を自分の場に出す。
+<hr><sev>【<color=Keyword>超進化時</color>】自分は『クレスト：万術の咎人・セフィー』を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "만술의 죄인 세피";
+        text """
+[<color=Keyword>융합</color>] 카드
+이 추종자에 [<color=Keyword>융합</color>]했을 때, 내 PP를 2 소비하고 <color=Keyword>몰입의 실험체</color> 1장을 내 전장에 소환.
+<hr>[<color=Keyword>출격</color>] <color=Keyword>몰입의 실험체</color> 2장을 내 전장에 소환.
+<hr><sev>[<color=Keyword>초진화시</color>] 나는 「크레스트: 만술의 죄인 세피」를 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "萬術的罪人‧瑟霏";
+        text """
+【<color=Keyword>融合</color>】卡片
+與這張卡片進行【<color=Keyword>融合</color>】時，消耗自己的PP 2點，召喚1張『<color=Keyword>入神的實驗體</color>』到自己的戰場上。
+<hr>【<color=Keyword>入場曲</color>】召喚2張『<color=Keyword>入神的實驗體</color>』到自己的戰場上。
+<hr><sev>【<color=Keyword>超進化時</color>】使自己獲得『紋章：萬術的罪人‧瑟霏』。</sev>
+""";
+    }
+
+}

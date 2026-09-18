@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 10961210 {
+    type amulet;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "咆哮圣堂";
+        text """
+【<color=Keyword>吟唱</color>_3】
+【<color=Keyword>谢幕曲</color>】召唤1个『<color=Keyword>圣炎猛虎</color>』。对对手的战场上的随机1个随从造成4点伤害。
+<hr>费用3【<color=Keyword>启动</color>】本护符的倒计数-3。
+""";
+    }
+
+    locale eng {
+        name "Roaring Basilica";
+        text """
+<b><color=Keyword>Countdown</color> (3)</b>
+<b><color=Keyword>Last Words</color></b>: Summon a <b><i><color=Keyword>Holyflame Tiger</color></i></b>. Deal 4 damage to a random enemy follower.
+<hr><b><color=Keyword>Engage</color> (3)</b>: Advance this amulet's count by 3.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ほうこう\">咆哮</rub>の<rub=\"せいどう\">聖堂</rub>";
+        text """
+【<color=Keyword>カウントダウン</color>_3】
+【<color=Keyword>ラストワード</color>】『<color=Keyword>ホーリーフレイムタイガー</color>』1枚を自分の場に出す。相手の場のフォロワーからランダム1枚に4ダメージ。
+<hr>コスト3【<color=Keyword>アクト</color>】これのカウントを-3する。
+""";
+    }
+
+    locale kor {
+        name "포효의 성당";
+        text """
+[<color=Keyword>카운트다운</color> 3]
+[<color=Keyword>유언</color>] <color=Keyword>성화의 맹호</color> 1장을 내 전장에 소환. 상대방 전장의 추종자 중 무작위로 1장에게 4 피해.
+<hr>비용 3 [<color=Keyword>활성화</color>] 이 마법진의 카운트를 -3.
+""";
+    }
+
+    locale cht {
+        name "咆哮的聖堂";
+        text """
+【<color=Keyword>倒數</color>_3】
+【<color=Keyword>謝幕曲</color>】召喚1張『<color=Keyword>聖炎猛虎</color>』到自己的戰場上。隨機給予1張敵方戰場上的從者卡4點傷害。
+<hr>消費3【<color=Keyword>策動</color>】使這張卡片的倒數回合數-3。
+""";
+    }
+
+}

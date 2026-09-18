@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10921120 {
+    type follower;
+    cost 4;
+    stats 5/5;
+
+    effect {
+        rush;
+        ward;
+    }
+
+    meta {
+        pack 10009;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "团结骑兵";
+        text """
+【<color=Keyword>突进</color>】
+【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Kindred Cavalrywoman";
+        text """
+<b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"だんけつ\">団結</rub>の<rub=\"きへい\">騎兵</rub>";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "단결의 기병";
+        text """
+[<color=Keyword>돌진</color>]
+[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "團結的騎兵";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>守護</color>】
+""";
+    }
+
+}

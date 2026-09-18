@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 10962310 {
+    type spell;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "铭刻之约";
+        text """
+【<color=Keyword>模式</color>】选择1个能力发动。若自己的战场上有原始费用为6或以上的卡牌，则改为发动所有能力。
+<ridx=0>（1）对对手的战场上的随机1个随从造成3点伤害。</ridx>
+<ridx=1>（2）回复自己的主战者2点生命值。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Vow of Devotion";
+        text """
+Select a <b><color=Keyword>Mode</color></b> to activate. If there's an allied card on the field with a base cost of 6 or more, activate all of them instead.
+<ridx=0>1. Deal 3 damage to a random enemy follower.</ridx>
+<ridx=1>2. Restore 2 defense to your leader.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きざ\">刻</rub>みし<rub=\"やくそく\">約束</rub>";
+        text """
+【<color=Keyword>モード</color>】1つを選んでその能力が働く。自分の場に元のコスト6以上のカードがあるなら、1つを選ぶのではなくすべて。
+<ridx=0>（1）相手の場のフォロワーからランダム1枚に3ダメージ。</ridx>
+<ridx=1>（2）自分のリーダーを2回復。</ridx>
+""";
+    }
+
+    locale kor {
+        name "새겨진 약속";
+        text """
+[<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동. 내 전장에 원래 비용이 6 이상인 카드가 있다면, 1개를 선택하는 대신 모두.
+<ridx=0>(1) 상대방 전장의 추종자 중 무작위로 1장에게 3 피해.</ridx>
+<ridx=1>(2) 내 리더를 2 회복.</ridx>
+""";
+    }
+
+    locale cht {
+        name "刻骨之約";
+        text """
+指定1個【<color=Keyword>模式</color>】並發動該能力。如果自己戰場上有原始消費為6以上的卡片，則會由原本的指定1個轉變為全部。
+<ridx=0>（1）隨機給予1張敵方戰場上的從者卡3點傷害。</ridx>
+<ridx=1>（2）回復自己的主戰者2點生命值。</ridx>
+""";
+    }
+
+}

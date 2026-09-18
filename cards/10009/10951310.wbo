@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10951310 {
+    type spell;
+    cost 4;
+
+    effect {
+        summon 1 card 90051130;
+        summon 1 card 90051140;
+    }
+
+    meta {
+        pack 10009;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "恐怖惊遇";
+        text """
+召唤1个『<color=Keyword>怨灵</color>』和1个『<color=Keyword>腐臭的僵尸</color>』。
+""";
+    }
+
+    locale eng {
+        name "Spooky Surprise";
+        text """
+Summon a <b><i><color=Keyword>Ghost</color></i></b> and <b><i><color=Keyword>Rotting Zombie</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "ホラーサプライズ";
+        text """
+『<color=Keyword>ゴースト</color>』1枚と『<color=Keyword>腐臭のゾンビ</color>』1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "호러 서프라이즈";
+        text """
+<color=Keyword>유령</color> 1장, <color=Keyword>부취 좀비</color> 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "悚慄驚愕";
+        text """
+召喚1張『<color=Keyword>怨靈</color>』與1張『<color=Keyword>腐臭的殭屍</color>』到自己的戰場上。
+""";
+    }
+
+}

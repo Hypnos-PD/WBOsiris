@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10941310 {
+    type spell;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "幼龙闹脾气";
+        text """
+召唤1个『<color=Keyword>炽炎幼龙</color>』。
+【<color=Keyword>爆能强化</color>_3】对对手的战场上的随机1个随从造成3点伤害。
+""";
+    }
+
+    locale eng {
+        name "Drake Whelp's Tantrum";
+        text """
+Summon a <b><i><color=Keyword>Fire Drake Whelp</color></i></b>.
+<b><color=Keyword>Enhance</color> (3)</b>: Deal 3 damage to a random enemy follower.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ようりゅう\">幼竜</rub>の<rub=\"かんしゃく\">癇癪</rub>";
+        text """
+『<color=Keyword>ベビーファイアドレイク</color>』1枚を自分の場に出す。
+【<color=Keyword>エンハンス</color>_3】相手の場のフォロワーからランダム1枚に3ダメージ。
+""";
+    }
+
+    locale kor {
+        name "어린 용의 생떼";
+        text """
+<color=Keyword>어린 화염룡</color> 1장을 내 전장에 소환.
+[<color=Keyword>증강</color> 3] 상대방 전장의 추종자 중 무작위로 1장에게 3 피해.
+""";
+    }
+
+    locale cht {
+        name "幼龍發怒";
+        text """
+召喚1張『<color=Keyword>熾炎幼龍</color>』到自己的戰場上。
+【<color=Keyword>爆能強化</color>_3】隨機給予1張敵方戰場上的從者卡3點傷害。
+""";
+    }
+
+}

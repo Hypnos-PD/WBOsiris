@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10974120 {
+    type follower;
+    cost 7;
+    stats 5/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class portalcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "弹哭的变貌·艾兹伊甸";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>击针看守</color>』。
+<hr>自己的创造物·随从进入战场时，破坏对手的战场上的随机1个随从。
+<hr><sev>【<color=Keyword>超进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</sev>
+""";
+    }
+
+    locale eng {
+        name "Aizeden, Killshot Revenant";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Warden of the Trigger</color></i></b>.
+<hr>Whenever an allied Artifact follower enters the field, destroy a random enemy follower.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"だんこく\">弾哭</rub>の<rub=\"へんぼう\">変貌</rub>・アイズエデン";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>撃針の看守</color>』1枚を自分の場に出す。
+<hr>自分のアーティファクト・フォロワーが場に出たとき、相手の場のフォロワーからランダム1枚を破壊。
+<hr><sev>【<color=Keyword>超進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</sev>
+""";
+    }
+
+    locale kor {
+        name "탄곡의 변모 아이즈에덴";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>격침의 간수</color> 1장을 내 전장에 소환.
+<hr>내 아티팩트 추종자가 전장에 소환되었을 때, 상대방 전장의 추종자 중 무작위로 1장을 파괴.
+<hr><sev>[<color=Keyword>초진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</sev>
+""";
+    }
+
+    locale cht {
+        name "彈哭的轉變‧艾斯伊登";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>擊針看守</color>』到自己的戰場上。
+<hr>當自己的創造物‧從者卡進入戰場時，隨機破壞1張敵方戰場上的從者卡。
+<hr><sev>【<color=Keyword>超進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</sev>
+""";
+    }
+
+}

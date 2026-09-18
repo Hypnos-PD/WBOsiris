@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 10912310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "绿伞会两大招牌";
+        text """
+【<color=Keyword>模式</color>】选择1个能力发动。【<color=Keyword>连击</color>_3】改为发动所有能力。
+<ridx=0>（1）对对手的战场上的随机1个随从造成4点伤害。</ridx>
+<ridx=1>（2）将1张『<color=Keyword>森林的奥秘</color>』和1张『<color=Keyword>妖精</color>』加入手牌。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Verdant Ring Kindred";
+        text """
+Select a <b><color=Keyword>Mode</color></b> to activate. <b><color=Keyword>Combo</color> (3)</b> - Activate all of them instead.
+<ridx=0>1. Deal 4 damage to a random enemy follower.</ridx>
+<ridx=1>2. Add a <b><i><color=Keyword>Deepwood Bounty</color></i></b> and <b><i><color=Keyword>Fairy</color></i></b> to your hand.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"りょくさんかい\">緑傘会</rub>の<rub=\"にまいかんばん\">二枚看板</rub>";
+        text """
+【<color=Keyword>モード</color>】1つを選んでその能力が働く。【<color=Keyword>コンボ</color>_3】1つを選ぶのではなくすべて。
+<ridx=0>（1）相手の場のフォロワーからランダム1枚に4ダメージ。</ridx>
+<ridx=1>（2）『<color=Keyword>森の神秘</color>』1枚と『<color=Keyword>フェアリー</color>』1枚を自分の手札に加える。</ridx>
+""";
+    }
+
+    locale kor {
+        name "녹산회의 두 주역";
+        text """
+[<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동. [<color=Keyword>콤보</color> 3] 1개를 선택하는 대신 모두.
+<ridx=0>(1) 상대방 전장의 추종자 중 무작위로 1장에게 4 피해.</ridx>
+<ridx=1>(2) <color=Keyword>숲의 신비</color> 1장, <color=Keyword>요정</color> 1장을 내 패에 넣는다.</ridx>
+""";
+    }
+
+    locale cht {
+        name "綠傘會雙主力";
+        text """
+指定1個【<color=Keyword>模式</color>】並發動該能力。【<color=Keyword>連擊</color>_3】由原本的指定1個轉變為全部。
+<ridx=0>（1）隨機給予1張敵方戰場上的從者卡4點傷害。</ridx>
+<ridx=1>（2）增加1張『<color=Keyword>森林的奧祕</color>』與1張『<color=Keyword>妖精</color>』到自己的手牌中。</ridx>
+""";
+    }
+
+}

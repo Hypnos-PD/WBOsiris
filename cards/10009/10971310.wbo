@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 10971310 {
+    type spell;
+    cost 6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "次元选定";
+        text """
+【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）对对手的战场上的所有随从造成5点伤害。</ridx>
+<ridx=1>（2）召唤2个『<color=Keyword>神秘的创造物</color>』。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Dimensional Selection";
+        text """
+Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Deal 5 damage to all enemy followers.</ridx>
+<ridx=1>2. Summon 2 copies of <b><i><color=Keyword>Mystic Artifact</color></i></b>.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"じげん\">次元</rub>の<rub=\"せんてい\">選定</rub>";
+        text """
+【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）相手の場のフォロワーすべてに5ダメージ。</ridx>
+<ridx=1>（2）『<color=Keyword>ミスティックアーティファクト</color>』2枚を自分の場に出す。</ridx>
+""";
+    }
+
+    locale kor {
+        name "차원 선정";
+        text """
+[<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 상대방 전장의 추종자 모두에게 5 피해.</ridx>
+<ridx=1>(2) <color=Keyword>신비의 아티팩트</color> 2장을 내 전장에 소환.</ridx>
+""";
+    }
+
+    locale cht {
+        name "次元的選定";
+        text """
+指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）給予敵方戰場上全部的從者卡5點傷害。</ridx>
+<ridx=1>（2）召喚2張『<color=Keyword>神祕的創造物</color>』到自己的戰場上。</ridx>
+""";
+    }
+
+}

@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10931110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "沉溺的实验体";
+        text """
+本随从进入战场时，若本次对战中进入战场的自己的其他『<color=Keyword>沉溺的实验体</color>』的张数为5张或以上，则本随从+3/+3。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Obsessed Test Subject";
+        text """
+When this follower enters the field, if at least 5 other allied copies of <b><i><color=Keyword>Obsessed Test Subject</color></i></b> have entered the field this match, give it +3/+3.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぼつにゅう\">没入</rub>の<rub=\"じっけんたい\">実験体</rub>";
+        text """
+これが場に出たとき、このバトル中に場に出た自分の他の『<color=Keyword>没入の実験体</color>』の枚数が5以上なら、これは+3/+3する。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "몰입의 실험체";
+        text """
+이 추종자가 전장에 소환되었을 때 이번 대전에서 전장에 소환된 내 다른 <color=Keyword>몰입의 실험체</color>의 수가 5 이상이라면, 이 추종자는 +3/+3.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "入神的實驗體";
+        text """
+當這張卡片進入戰場時，如果本次對戰中自己已進入戰場的其他『<color=Keyword>入神的實驗體</color>』張數為5以上，則會使這張卡片+3/+3。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

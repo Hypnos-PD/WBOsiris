@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10932120 {
+    type follower;
+    cost 3;
+    stats 2/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "高洁哲学家";
+        text """
+【<color=Keyword>入场曲</color>】使自己的所有手牌返回牌组。抽取X张卡牌。X为因本能力返回牌组的张数。
+""";
+    }
+
+    locale eng {
+        name "Noble Philosopher";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Return your hand to deck. Draw X cards. X is the number of cards you returned.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"こうけつ\">高潔</rub>なる<rub=\"てつがくしゃ\">哲学者</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札すべてをデッキに戻す。自分のデッキからX枚を引く。Xはこれでデッキに戻した枚数である。
+""";
+    }
+
+    locale kor {
+        name "고결한 철학자";
+        text """
+[<color=Keyword>출격</color>] 내 패 모두를 덱으로 되돌린다. 내 덱에서 X장을 뽑는다. X는 이 능력으로 덱으로 되돌린 카드 수.
+""";
+    }
+
+    locale cht {
+        name "高潔的哲學家";
+        text """
+【<color=Keyword>入場曲</color>】使自己手牌中全部的卡片返回牌堆中。由自己的牌堆中抽取X張卡片。X為「因這張卡片而返回牌堆的卡片張數」。
+""";
+    }
+
+}

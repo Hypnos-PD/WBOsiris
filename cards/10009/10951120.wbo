@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10951120 {
+    type follower;
+    cost 2;
+    stats 1/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "幽冥中尉";
+        text """
+【<color=Keyword>谢幕曲</color>】召唤1个『<color=Keyword>幽冥中尉</color>』，使其+1/+0且获得【<color=Keyword>突进</color>】，使其失去【<color=Keyword>谢幕曲</color>】。
+""";
+    }
+
+    locale eng {
+        name "Netherworld Lieutenant";
+        text """
+<b><color=Keyword>Last Words</color></b>: Summon a <b><i><color=Keyword>Netherworld Lieutenant</color></i></b>, give it +1/+0 and <b><color=Keyword>Rush</color></b>, and remove <b><color=Keyword>Last Words</color></b> from it.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ゆうめい\">幽冥</rub>の<rub=\"ちゅうい\">中尉</rub>";
+        text """
+【<color=Keyword>ラストワード</color>】『<color=Keyword>幽冥の中尉</color>』1枚を自分の場に出す。それは+1/+0して【<color=Keyword>突進</color>】を持つ。それは【<color=Keyword>ラストワード</color>】を失う。
+""";
+    }
+
+    locale kor {
+        name "저승의 중위";
+        text """
+[<color=Keyword>유언</color>] <color=Keyword>저승의 중위</color> 1장을 내 전장에 소환. 그 추종자는 +1/+0 및 [<color=Keyword>돌진</color>]을 갖는다. 그 추종자는 [<color=Keyword>유언</color>]을 잃는다.
+""";
+    }
+
+    locale cht {
+        name "幽冥中尉";
+        text """
+【<color=Keyword>謝幕曲</color>】召喚1張『<color=Keyword>幽冥中尉</color>』到自己的戰場上。使其+1/+0並獲得【<color=Keyword>突進</color>】。使其失去【<color=Keyword>謝幕曲</color>】。
+""";
+    }
+
+}

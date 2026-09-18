@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10903210 {
+    type amulet;
+    cost 8;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class neutral;
+        rarity gold;
+    }
+
+    locale chs {
+        name "混沌监狱·阿兹弗特";
+        text """
+自己的回合结束时，若本次对战中自己使用的卡牌的原始费用包含1到8所有数值，则破坏本卡牌。
+【<color=Keyword>谢幕曲</color>】召唤随机4种与本次对战中被破坏的自己的随从同名的随从各1个。使自己的战场上的所有随从+3/+3。
+""";
+    }
+
+    locale eng {
+        name "Azvaldt, Penitentiary of Chaos";
+        text """
+At the end of your turn, if you've played cards with base costs of 1, 2, 3, 4, 5, 6, 7, and 8 this match, destroy this card.
+<b><color=Keyword>Last Words</color></b>: Summon a copy each of 4 random differently named allied followers destroyed this match. Give all allied followers on the field +3/+3.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"こんめい\">混迷</rub>の<rub=\"かんごく\">監獄</rub>・アズヴォルト";
+        text """
+自分のターン終了時、このバトル中に自分がプレイしたカードの元のコストに1～8すべてが含まれているなら、これを破壊。
+【<color=Keyword>ラストワード</color>】このバトル中に破壊された自分のフォロワーからランダム4種類と同名のカード1枚ずつを自分の場に出す。自分の場のフォロワーすべては+3/+3する。
+""";
+    }
+
+    locale kor {
+        name "혼미의 감옥 아즈볼트";
+        text """
+내 턴 종료시 이번 대전에서 내가 사용한 카드의 원래 비용에 1~8이 모두 포함되어 있다면, 이 마법진을 파괴.
+[<color=Keyword>유언</color>] 이번 대전에서 파괴된 내 추종자 중 무작위로 4종류와 동명의 추종자 1장씩을 내 전장에 소환. 내 전장의 추종자 모두는 +3/+3.
+""";
+    }
+
+    locale cht {
+        name "崩亂的監獄‧阿茲弗特";
+        text """
+自己的回合結束時，如果本次對戰中自己已使用的卡片之原始消費包含1～8的全部數值，則會破壞這張卡片。
+【<color=Keyword>謝幕曲</color>】隨機召喚4種與「本次對戰中自己已被破壞的從者卡」同名的卡片各1張到自己的戰場上。使自己戰場上全部的從者卡+3/+3。
+""";
+    }
+
+}

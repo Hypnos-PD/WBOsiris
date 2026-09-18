@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10961120 {
+    type follower;
+    cost 6;
+    stats 3/4;
+
+    effect {
+        rush;
+        fanfare {
+            summon 2 card 10961120;
+        }
+    }
+
+    meta {
+        pack 10009;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "鹿鹰兽";
+        text """
+【<color=Keyword>入场曲</color>】召唤2个『<color=Keyword>鹿鹰兽</color>』。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Peryton";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon 2 copies of <b><i><color=Keyword>Peryton</color></i></b>.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "ペリュトン";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>ペリュトン</color>』2枚を自分の場に出す。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "페리톤";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>페리톤</color> 2장을 내 전장에 소환.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "鹿鷹獸";
+        text """
+【<color=Keyword>入場曲</color>】召喚2張『<color=Keyword>鹿鷹獸</color>』到自己的戰場上。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

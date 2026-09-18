@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10933310 {
+    type spell;
+    cost 5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class runecraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "乌涅";
+        text """
+召唤1个『<color=Keyword>沉溺的实验体</color>』。发动2次「对对手的战场上的随机1个随从造成7点伤害」。
+""";
+    }
+
+    locale eng {
+        name "Obsidian Raven";
+        text """
+Summon an <b><i><color=Keyword>Obsessed Test Subject</color></i></b>. Do this 2 times: \"Deal 7 damage to a random enemy follower.\"
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"うのくろつち\">烏ノ涅</rub>";
+        text """
+『<color=Keyword>没入の実験体</color>』1枚を自分の場に出す。「相手の場のフォロワーからランダム1枚に7ダメージ。」を2回行う。
+""";
+    }
+
+    locale kor {
+        name "오의 열";
+        text """
+<color=Keyword>몰입의 실험체</color> 1장을 내 전장에 소환. 「상대방 전장의 추종자 중 무작위로 1장에게 7 피해」를 2회 발동.
+""";
+    }
+
+    locale cht {
+        name "烏涅";
+        text """
+召喚1張『<color=Keyword>入神的實驗體</color>』到自己的戰場上。發動2次「隨機給予1張敵方戰場上的從者卡7點傷害」。
+""";
+    }
+
+}

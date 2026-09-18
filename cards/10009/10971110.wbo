@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10971110 {
+    type follower;
+    cost 1;
+    stats 1/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "青锈小卒";
+        text """
+【<color=Keyword>入场曲</color>】若自己的牌组中没有重复卡牌，则选择对手的战场上的1个随从，对其造成5点伤害。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Bluerust Underling";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If there are no duplicates in your deck, select an enemy follower on the field and deal it 5 damage.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あおさび\">青錆</rub>の<rub=\"した\">下</rub>っ<rub=\"ぱ\">端</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキに重複するカードがないなら、相手の場のフォロワー1枚を選ぶ。それに5ダメージ。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "청녹의 말단";
+        text """
+[<color=Keyword>출격</color>] 내 덱에 중복되는 카드가 없다면, 상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 5 피해.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "銅綠小卒";
+        text """
+【<color=Keyword>入場曲</color>】如果自己的牌堆中沒有重複的卡片，則會指定1張敵方戰場上的從者卡。給予其5點傷害。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

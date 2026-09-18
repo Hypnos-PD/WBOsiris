@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10962120 {
+    type follower;
+    cost 3;
+    stats 2/1;
+
+    effect {
+        storm;
+    }
+
+    meta {
+        pack 10009;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "奇迹独角兔";
+        text """
+【<color=Keyword>疾驰</color>】
+""";
+    }
+
+    locale eng {
+        name "Miraculous Al-mi'raj";
+        text """
+<b><color=Keyword>Storm</color></b>
+""";
+    }
+
+    locale jpn {
+        name "ミラクルアルミラージ";
+        text """
+【<color=Keyword>疾走</color>】
+""";
+    }
+
+    locale kor {
+        name "미라클 알미라지";
+        text """
+[<color=Keyword>질주</color>]
+""";
+    }
+
+    locale cht {
+        name "奇蹟的月兔妖";
+        text """
+【<color=Keyword>疾馳</color>】
+""";
+    }
+
+}

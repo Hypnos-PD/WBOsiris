@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10932310 {
+    type spell;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "人性的爱";
+        text """
+召唤1个『<color=Keyword>沉溺的实验体</color>』，使其+1/+0。将1张『<color=Keyword>沉溺的实验体</color>』加入手牌，使其+1/+0。
+""";
+    }
+
+    locale eng {
+        name "Humane Love";
+        text """
+Summon an <b><i><color=Keyword>Obsessed Test Subject</color></i></b> and give it +1/+0. Add an <b><i><color=Keyword>Obsessed Test Subject</color></i></b> to your hand and give it +1/+0.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ひと\">人</rub>らしい<rub=\"あい\">愛</rub>";
+        text """
+『<color=Keyword>没入の実験体</color>』1枚を自分の場に出す。それは+1/+0する。『<color=Keyword>没入の実験体</color>』1枚を自分の手札に加える。それは+1/+0する。
+""";
+    }
+
+    locale kor {
+        name "사람다운 사랑";
+        text """
+<color=Keyword>몰입의 실험체</color> 1장을 내 전장에 소환. 그 추종자는 +1/+0. <color=Keyword>몰입의 실험체</color> 1장을 내 패에 넣는다. 그 추종자는 +1/+0.
+""";
+    }
+
+    locale cht {
+        name "人性之愛";
+        text """
+召喚1張『<color=Keyword>入神的實驗體</color>』到自己的戰場上。使其+1/+0。增加1張『<color=Keyword>入神的實驗體</color>』到自己的手牌中。使其+1/+0。
+""";
+    }
+
+}

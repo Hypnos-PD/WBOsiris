@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10942110 {
+    type follower;
+    cost 2;
+    stats 1/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "绝倒的袭击者";
+        text """
+【<color=Keyword>疾驰</color>】
+【<color=Keyword>攻击时</color>】若自己的随从在自己的上一回合中攻击过主战者，则回合结束前，本随从+1/+0。
+""";
+    }
+
+    locale eng {
+        name "High-Spirited Marauder";
+        text """
+<b><color=Keyword>Storm</color></b>
+<b><color=Keyword>Strike</color></b>: If an allied follower attacked a leader on your last turn, give this follower +1/+0 until the end of the turn.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぜっとう\">絶倒</rub>の<rub=\"しゅうげきしゃ\">襲撃者</rub>";
+        text """
+【<color=Keyword>疾走</color>】
+【<color=Keyword>攻撃時</color>】直前の自分のターンに自分のフォロワーがリーダーを攻撃していたなら、ターン終了まで、これは+1/+0する。
+""";
+    }
+
+    locale kor {
+        name "절도의 습격자";
+        text """
+[<color=Keyword>질주</color>]
+[<color=Keyword>공격시</color>] 직전 내 턴에 내 추종자가 리더를 공격했다면, 턴 종료까지 이 추종자는 +1/+0.
+""";
+    }
+
+    locale cht {
+        name "狂樂的襲擊者";
+        text """
+【<color=Keyword>疾馳</color>】
+【<color=Keyword>攻擊時</color>】如果上個自己的回合中自己的從者卡已攻擊主戰者，則到回合結束為止，使這張卡片+1/+0。
+""";
+    }
+
+}

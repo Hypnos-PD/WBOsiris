@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10921110 {
+    type follower;
+    cost 2;
+    stats 2/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "海域斥候";
+        text """
+【<color=Keyword>入场曲</color>】召唤1张『<color=Keyword>令人战栗的海盗旗</color>』。
+<hr><ev>【<color=Keyword>进化时</color>】将1张『<color=Keyword>黄金之靴</color>』加入手牌。</ev>
+""";
+    }
+
+    locale eng {
+        name "Open-Sea Scout";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Dread Pirate's Flag</color></i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Add a <b><i><color=Keyword>Gilded Boots</color></i></b> to your hand.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"かいいき\">海域</rub>の<rub=\"せっこう\">斥候</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>戦慄の海賊旗</color>』1枚を自分の場に出す。
+<hr><ev>【<color=Keyword>進化時</color>】『<color=Keyword>黄金の靴</color>』1枚を自分の手札に加える。</ev>
+""";
+    }
+
+    locale kor {
+        name "해역의 척후";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>전율의 해적기</color> 1장을 내 전장에 소환.
+<hr><ev>[<color=Keyword>진화시</color>] <color=Keyword>황금 신발</color> 1장을 내 패에 넣는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "海域斥候";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>戰慄的海賊旗</color>』到自己的戰場上。
+<hr><ev>【<color=Keyword>進化時</color>】增加1張『<color=Keyword>黃金之靴</color>』到自己的手牌中。</ev>
+""";
+    }
+
+}

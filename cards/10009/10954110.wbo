@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10954110 {
+    type follower;
+    cost 7;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class abysscraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "伊斯坦戴德 对 玛尔奇盖特";
+        text """
+【<color=Keyword>入场曲</color>】发动3次【<color=Keyword>亡者召还</color>_2】。对对手的战场上的所有随从造成2点伤害。
+<hr><sev>【<color=Keyword>超进化时</color>】使自己获得『纹章：伊斯坦戴德 对 玛尔奇盖特』。</sev>
+""";
+    }
+
+    locale eng {
+        name "Istyndet vs. Mitilykket";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Do this 3 times: \"<b><color=Keyword>Reanimate</color> (2)</b>.\" Deal 2 damage to all enemy followers.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Gain <b><i>Crest: Istyndet vs. Mitilykket</i></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "イステンデッドVSマルチルゲート";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>リアニメイト</color>_2】を3回行う。相手の場のフォロワーすべてに2ダメージ。
+<hr><sev>【<color=Keyword>超進化時</color>】自分は『クレスト：イステンデッドVSマルチルゲート』を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "이스텐데드vs마르틸게이트";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>소생</color> 2]를 3회 발동. 상대방 전장의 추종자 모두에게 2 피해.
+<hr><sev>[<color=Keyword>초진화시</color>] 나는 「크레스트: 이스텐데드vs마르틸게이트」를 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "夷蘇丹忒VS茉爾契坎妲";
+        text """
+【<color=Keyword>入場曲</color>】發動3次【<color=Keyword>亡者召還</color>_2】。給予敵方戰場上全部的從者卡2點傷害。
+<hr><sev>【<color=Keyword>超進化時</color>】使自己獲得『紋章：夷蘇丹忒VS茉爾契坎妲』。</sev>
+""";
+    }
+
+}

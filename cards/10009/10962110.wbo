@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10962110 {
+    type follower;
+    cost 3;
+    stats 1/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "纪律间谍";
+        text """
+【<color=Keyword>入场曲</color>】对手的回合结束前，本随从获得【<color=Keyword>潜行</color>】。
+<hr>自己的回合结束时，回复自己的主战者1点生命值。
+""";
+    }
+
+    locale eng {
+        name "Agent of the Testaments";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Give this follower <b><color=Keyword>Ambush</color></b> until the end of your opponent's turn.
+<hr>At the end of your turn, restore 1 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きりつ\">紀律</rub>の<rub=\"ちょうほういん\">諜報員</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手のターン終了まで、これは【<color=Keyword>潜伏</color>】を持つ。
+<hr>自分のターン終了時、自分のリーダーを1回復。
+""";
+    }
+
+    locale kor {
+        name "기율의 첩보원";
+        text """
+[<color=Keyword>출격</color>] 상대방 턴 종료까지 이 추종자는 [<color=Keyword>잠복</color>]을 갖는다.
+<hr>내 턴 종료시, 내 리더를 1 회복.
+""";
+    }
+
+    locale cht {
+        name "紀律間諜";
+        text """
+【<color=Keyword>入場曲</color>】到敵方的回合結束為止，使這張卡片獲得【<color=Keyword>潛行</color>】。
+<hr>自己的回合結束時，回復自己的主戰者1點生命值。
+""";
+    }
+
+}

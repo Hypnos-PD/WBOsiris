@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10973310 {
+    type spell;
+    cost 4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class portalcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "白牙燐敛 ";
+        text """
+选择对手的战场上的1个随从，破坏该随从。若自己的牌组中没有重复卡牌，则改为破坏对手的战场上的所有随从。
+""";
+    }
+
+    locale eng {
+        name "Soulforge";
+        text """
+Select an enemy follower on the field and destroy it. If there are no duplicates in your deck, destroy all enemy followers instead.
+""";
+    }
+
+    locale jpn {
+        name "ハクガ<rub=\"りんれん\">燐斂</rub>";
+        text """
+相手の場のフォロワー1枚を選ぶ。それを破壊。自分のデッキに重複するカードがないなら、1枚を選ぶのではなくすべて。
+""";
+    }
+
+    locale kor {
+        name "하쿠가 인렴";
+        text """
+상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴. 내 덱에 중복되는 카드가 없다면, 1장을 선택하는 대신 모두.
+""";
+    }
+
+    locale cht {
+        name "白燐斂";
+        text """
+指定1張敵方戰場上的從者卡。將其破壞。如果自己的牌堆中沒有重複的卡片，則會由原本的指定1張轉變為全部。
+""";
+    }
+
+}

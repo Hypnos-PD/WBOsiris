@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10911120 {
+    type follower;
+    cost 7;
+    stats 10/8;
+
+    effect {
+        intimidate;
+    }
+
+    meta {
+        pack 10009;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "金刚伙伴";
+        text """
+【<color=Keyword>威慑</color>】
+""";
+    }
+
+    locale eng {
+        name "Jungle Youth";
+        text """
+<b><color=Keyword>Intimidate</color></b>
+""";
+    }
+
+    locale jpn {
+        name "コングフレンド";
+        text """
+【<color=Keyword>威圧</color>】
+""";
+    }
+
+    locale kor {
+        name "콩 프렌드";
+        text """
+[<color=Keyword>위압</color>]
+""";
+    }
+
+    locale cht {
+        name "大猩猩之友";
+        text """
+【<color=Keyword>威懾</color>】
+""";
+    }
+
+}

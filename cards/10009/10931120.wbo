@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10931120 {
+    type follower;
+    cost 7;
+    stats 4/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "钥灵";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的1个随从，对其造成7点伤害。对对手的主战者造成4点伤害。
+<hr><ev>【<color=Keyword>进化时</color>】选择自己的手牌中的1张拥有【<color=Keyword>魔力增幅时</color>】的卡牌，使其发动4次魔力增幅。</ev>
+""";
+    }
+
+    locale eng {
+        name "Key Spirit";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select an enemy follower on the field and deal it 7 damage. Deal 4 damage to the enemy leader.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select a card in your hand with <b><color=Keyword>On Spellboost</color></b> and spellboost it 4 times.</ev>
+""";
+    }
+
+    locale jpn {
+        name "キースピリット";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー1枚を選ぶ。それに7ダメージ。相手のリーダーに4ダメージ。
+<hr><ev>【<color=Keyword>進化時</color>】自分の手札の【<color=Keyword>スペルブースト時</color>】を持つカード1枚を選ぶ。それは4回スペルブーストする。</ev>
+""";
+    }
+
+    locale kor {
+        name "키 스피릿";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 7 피해. 상대방 리더에게 4 피해.
+<hr><ev>[<color=Keyword>진화시</color>] 내 패에서 [<color=Keyword>주문증폭시</color>]를 가진 카드 1장을 선택한다. 그 카드를 4회 주문증폭.</ev>
+""";
+    }
+
+    locale cht {
+        name "造鑰之靈";
+        text """
+【<color=Keyword>入場曲</color>】指定1張敵方戰場上的從者卡。給予其7點傷害。給予敵方的主戰者4點傷害。
+<hr><ev>【<color=Keyword>進化時</color>】指定1張自己手牌中擁有【<color=Keyword>魔力增幅時</color>】的卡片。使其發動4次魔力增幅。</ev>
+""";
+    }
+
+}

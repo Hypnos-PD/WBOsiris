@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10912110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        fanfare {
+            add 1 card 90011110 to hand;
+            if combo >= 3 {
+                add bane to added;
+            }
+        }
+    }
+
+    meta {
+        pack 10009;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "根延潜伏者";
+        text """
+【<color=Keyword>入场曲</color>】将1张『<color=Keyword>妖精</color>』加入手牌。【<color=Keyword>连击</color>_3】使其获得【<color=Keyword>毁灭</color>】。
+""";
+    }
+
+    locale eng {
+        name "Leafshadow Assassin";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add a <b><i><color=Keyword>Fairy</color></i></b> to your hand. <b><color=Keyword>Combo</color> (3)</b> - Give it <b><color=Keyword>Bane</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ねざし\">根差</rub>の<rub=\"しかく\">刺客</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>フェアリー</color>』1枚を自分の手札に加える。【<color=Keyword>コンボ</color>_3】それは【<color=Keyword>必殺</color>】を持つ。
+""";
+    }
+
+    locale kor {
+        name "뿌리의 자객";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>요정</color> 1장을 내 패에 넣는다. [<color=Keyword>콤보</color> 3] 그 추종자는 [<color=Keyword>필살</color>]을 갖는다.
+""";
+    }
+
+    locale cht {
+        name "深根刺客";
+        text """
+【<color=Keyword>入場曲</color>】增加1張『<color=Keyword>妖精</color>』到自己的手牌中。【<color=Keyword>連擊</color>_3】使其獲得【<color=Keyword>必殺</color>】。
+""";
+    }
+
+}

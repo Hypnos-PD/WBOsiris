@@ -28,14 +28,14 @@ func TestProjectCorpusAndReferenceStrictness(t *testing.T) {
 		t.Fatalf("default check errors: %#v", l.Diagnostics)
 	}
 	// 语料快照：全卡覆盖工作推进时要一起更新（见 docs/plan/full-card-coverage.md）。
-	if len(l.Cards) != 834 {
+	if len(l.Cards) != 910 {
 		t.Fatalf("cards=%d", len(l.Cards))
 	}
 	sc := 0
 	for _, tf := range l.Tests {
 		sc += len(tf.Scenarios)
 	}
-	if sc != 1229 {
+	if sc != 1245 {
 		t.Fatalf("scenarios=%d", sc)
 	}
 	if len(l.Unresolved) != 0 {
@@ -57,7 +57,7 @@ func TestCompileDeterministicAndStructured(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(typed.Cards) != 834 || len(typed.Sources) != 834 {
+	if len(typed.Cards) != 910 || len(typed.Sources) != 910 {
 		t.Fatalf("typed card pack has cards=%d sources=%d", len(typed.Cards), len(typed.Sources))
 	}
 	a, err := Compile(l, true)
@@ -102,7 +102,7 @@ func TestCompileTestPackStructured(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(typed.Scenarios) != 1229 || typed.Scenarios[0].Name != "Orchis grants Storm and Bane to the summoned Lloyd" {
+	if len(typed.Scenarios) != 1245 || typed.Scenarios[0].Name != "Orchis grants Storm and Bane to the summoned Lloyd" {
 		t.Fatalf("bad typed test pack: scenarios=%d", len(typed.Scenarios))
 	}
 	b, err := Compile(l, true)
@@ -120,7 +120,7 @@ func TestCompileTestPackStructured(t *testing.T) {
 		t.Fatal("test pack is missing ruleset dependency")
 	}
 	scenarios := pack["scenarios"].([]any)
-	if len(scenarios) != 1229 {
+	if len(scenarios) != 1245 {
 		t.Fatalf("scenarios=%d", len(scenarios))
 	}
 	first := scenarios[0].(map[string]any)

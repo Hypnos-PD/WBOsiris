@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10952110 {
+    type follower;
+    cost 6;
+    stats 4/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class abysscraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "渊底上校";
+        text """
+【<color=Keyword>守护</color>】
+【<color=Keyword>谢幕曲</color>】破坏对手的战场上的随机1个随从。回复自己的主战者2点生命值。
+""";
+    }
+
+    locale eng {
+        name "Void Colonel";
+        text """
+<b><color=Keyword>Ward</color></b>
+<b><color=Keyword>Last Words</color></b>: Destroy a random enemy follower. Restore 2 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"えんてい\">淵底</rub>の<rub=\"たいさ\">大佐</rub>";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>ラストワード</color>】相手の場のフォロワーからランダム1枚を破壊。自分のリーダーを2回復。
+""";
+    }
+
+    locale kor {
+        name "연저의 대령";
+        text """
+[<color=Keyword>수호</color>]
+[<color=Keyword>유언</color>] 상대방 전장의 추종자 중 무작위로 1장을 파괴. 내 리더를 2 회복.
+""";
+    }
+
+    locale cht {
+        name "淵底上校";
+        text """
+【<color=Keyword>守護</color>】
+【<color=Keyword>謝幕曲</color>】隨機破壞1張敵方戰場上的從者卡。回復自己的主戰者2點生命值。
+""";
+    }
+
+}

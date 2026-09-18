@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10922110 {
+    type follower;
+    cost 3;
+    stats 3/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "漩涡炮手";
+        text """
+【<color=Keyword>入场曲</color>】召唤1张『<color=Keyword>令人战栗的海盗旗</color>』。将1张『<color=Keyword>黄金之杯</color>』加入手牌。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Whirlpool Gunner";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Dread Pirate's Flag</color></i></b>. Add a <b><i><color=Keyword>Gilded Goblet</color></i></b> to your hand.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"うずしお\">渦潮</rub>の<rub=\"ほうしゅ\">砲手</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>戦慄の海賊旗</color>』1枚を自分の場に出す。『<color=Keyword>黄金の杯</color>』1枚を自分の手札に加える。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "와류의 포수";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>전율의 해적기</color> 1장을 내 전장에 소환. <color=Keyword>황금 잔</color> 1장을 내 패에 넣는다.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "渦潮砲手";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>戰慄的海賊旗</color>』到自己的戰場上。增加1張『<color=Keyword>黃金之杯</color>』到自己的手牌中。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

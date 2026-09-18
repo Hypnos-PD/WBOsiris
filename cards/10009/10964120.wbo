@@ -1,0 +1,73 @@
+wbo 0.1.0;
+
+card 10964120 {
+    type follower;
+    cost 6;
+    stats 3/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "翼天的变貌·奥梅里欧";
+        text """
+自己的护符被破坏时，按顺序发动以下1个能力。
+<ridx=0>（1）对对手的战场上的随机2个随从造成3点伤害。</ridx>
+<ridx=1>（2）回复自己的主战者2点生命值。</ridx>
+<ridx=2>（3）召唤1个『<color=Keyword>神圣猎鹰</color>』。</ridx>
+<hr><ev>【<color=Keyword>进化时</color>】破坏自己的战场上的所有护符。</ev>
+""";
+    }
+
+    locale eng {
+        name "Omerio, Winged Revenant";
+        text """
+Whenever an allied amulet is destroyed, activate an ability in sequence from the following.
+<ridx=0>1. Deal 3 damage to 2 random enemy followers.</ridx>
+<ridx=1>2. Restore 2 defense to your leader.</ridx>
+<ridx=2>3. Summon a <b><i><color=Keyword>Holy Falcon</color></i></b>.</ridx>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Destroy all allied amulets.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"よくてん\">翼天</rub>の<rub=\"へんぼう\">変貌</rub>・オルメリオ";
+        text """
+自分のアミュレットが破壊されたとき、下記の能力から順に1つの能力が働く。
+<ridx=0>（1）相手の場のフォロワーからランダム2枚に3ダメージ。</ridx>
+<ridx=1>（2）自分のリーダーを2回復。</ridx>
+<ridx=2>（3）『<color=Keyword>ホーリーファルコン</color>』1枚を自分の場に出す。</ridx>
+<hr><ev>【<color=Keyword>進化時</color>】自分の場のアミュレットすべてを破壊。</ev>
+""";
+    }
+
+    locale kor {
+        name "익천의 변모 오르메리오";
+        text """
+내 마법진이 파괴되었을 때, 아래 능력을 순서대로 1개 발동.
+<ridx=0>(1) 상대방 전장의 추종자 중 무작위로 2장에게 3 피해.</ridx>
+<ridx=1>(2) 내 리더를 2 회복.</ridx>
+<ridx=2>(3) <color=Keyword>신성한 매</color> 1장을 내 전장에 소환.</ridx>
+<hr><ev>[<color=Keyword>진화시</color>] 내 전장의 마법진 모두를 파괴.</ev>
+""";
+    }
+
+    locale cht {
+        name "翼天的轉變‧奧魯梅利歐";
+        text """
+當自己的護符卡被破壞時，由下列能力中依序發動1個能力。
+<ridx=0>（1）隨機給予2張敵方戰場上的從者卡3點傷害。</ridx>
+<ridx=1>（2）回復自己的主戰者2點生命值。</ridx>
+<ridx=2>（3）召喚1張『<color=Keyword>神聖獵鷹</color>』到自己的戰場上。</ridx>
+<hr><ev>【<color=Keyword>進化時</color>】破壞自己戰場上全部的護符卡。</ev>
+""";
+    }
+
+}

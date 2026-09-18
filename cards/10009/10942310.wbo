@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10942310 {
+    type spell;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "颚口之别";
+        text """
+选择自己的2张手牌，舍弃这些手牌。对对手的战场上的随机1个随从和对手的主战者造成3点伤害。
+""";
+    }
+
+    locale eng {
+        name "Parting Jaws";
+        text """
+Select 2 cards in your hand and discard them. Deal 3 damage to a random enemy follower and the enemy leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あぎと\">顎門</rub>の<rub=\"わか\">別</rub>れ";
+        text """
+自分の手札2枚を選ぶ。それを捨てる。相手の場のフォロワーからランダム1枚と相手のリーダーに3ダメージ。
+""";
+    }
+
+    locale kor {
+        name "이별의 문턱";
+        text """
+내 패에서 2장을 선택한다. 그 카드를 버린다. 상대방 전장의 추종자 중 무작위로 1장과 상대방 리더에게 3 피해.
+""";
+    }
+
+    locale cht {
+        name "硬顎之別離";
+        text """
+指定2張自己手牌中的卡片。將其捨棄。給予隨機1張敵方戰場上的從者卡與敵方的主戰者各3點傷害。
+""";
+    }
+
+}

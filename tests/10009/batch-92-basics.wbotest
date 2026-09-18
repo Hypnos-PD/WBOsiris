@@ -1,0 +1,222 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "金刚伙伴自带威慑" {
+    seed 92001;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10911120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has intimidate; }
+}
+
+scenario "奇迹独角兔自带疾驰" {
+    seed 92002;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10962120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has storm; }
+}
+
+scenario "团结骑兵自带突进与守护" {
+    seed 92003;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10921120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has rush; source has ward; }
+}
+
+scenario "过度反应把三张召唤真理加入手牌" {
+    seed 92004;
+    state {
+        player own {
+            pp 1/1;
+            hand { spell source = 10931310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10031320 == 3; }
+}
+
+scenario "强袭的特攻队长入场打击所有主战者" {
+    seed 92005;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10951110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 18; oppo.leader.life == 18; }
+}
+
+scenario "恐怖惊遇召唤怨灵与腐臭的僵尸" {
+    seed 92006;
+    state {
+        player own {
+            pp 4/4;
+            hand { spell source = 10951310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90051130 == 1; own.field count card 90051140 == 1; }
+}
+
+scenario "鹿鹰兽入场再召唤两个自己" {
+    seed 92007;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10961120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10961120 == 3; source has rush; }
+}
+
+scenario "森林陷阱破坏进入战场的对手随从与自身" {
+    seed 92008;
+    state {
+        player own {
+            pp 8/8;
+            field { amulet source = 10911210; }
+            // 10224120 的入场曲会"在对手的战场上"召唤 2 个骑士，用来触发本护符。
+            hand { follower summoner = 10224120; }
+        }
+    }
+    action { play summoner; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        // 只结算排队中的那一次；护符离场后剩下的骑士留在对手战场。
+        oppo.field count card 90021110 == 1;
+        oppo.graveyard count card 90021110 == 1;
+    }
+}
+
+scenario "发芽组员在连击达标时抽一张牌" {
+    seed 92009;
+    state {
+        player own {
+            pp 1/1;
+            combo 3;
+            hand { follower source = 10911110; }
+            deck top { follower next = 10011110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10011110 == 1; source has rush; }
+}
+
+scenario "洞窟龙在觉醒时入场即进化" {
+    seed 92010;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10941120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == true; source has stealth; }
+}
+
+scenario "武皇的变貌自带四种关键词并且一回合可攻击三次" {
+    seed 92011;
+    state {
+        player own {
+            pp 10/10;
+            hand { follower source = 10924120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source has storm;
+        source has bane;
+        source has ward;
+        source has aura;
+        source.attack_limit == 3;
+    }
+}
+
+scenario "圣剑天使让两个其他随从各加三加三" {
+    seed 92012;
+    state {
+        player own {
+            pp 7/7;
+            field {
+                follower first = 10001110;
+                follower second = 10001120;
+            }
+            hand { follower source = 10902110; }
+        }
+    }
+    action { play source; select first, second; }
+    expect { legal; first.stats == 5/5; second.stats == 3/5; }
+}
+
+scenario "破式的变貌自带魔力增幅与三种关键词" {
+    seed 92013;
+    state {
+        player own {
+            pp 10/10;
+            hand { follower source = 10934120 { cost 9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; source has bane; source has ward; source has aura; }
+}
+
+scenario "条规成员在自己的主战者回复时进化" {
+    seed 92014;
+    state {
+        player own {
+            leader 10/20;
+            pp 2/2;
+            field { follower source = 10961110; }
+            hand { spell healcard = 10832310; }
+        }
+    }
+    action { play healcard; }
+    expect { legal; source.evolved == true; own.leader.life == 12; }
+}
+
+scenario "根延潜伏者在连击达标时让妖精获得毁灭" {
+    seed 92015;
+    state {
+        player own {
+            pp 2/2;
+            combo 3;
+            hand { follower source = 10912110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90011110 == 1; all own.hand where card 90011110 have bane; }
+}
+
+scenario "方阵召唤守护的铁甲骑士并在爆能强化时召唤五个" {
+    seed 92016;
+    state {
+        player own {
+            pp 6/6;
+            hand { spell source = 10921310; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90021120 == 5;
+        all own.field where card 90021120 have ward;
+    }
+}

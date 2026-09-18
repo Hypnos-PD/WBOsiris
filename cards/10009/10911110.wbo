@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10911110 {
+    type follower;
+    cost 1;
+    stats 1/1;
+
+    effect {
+        rush;
+        fanfare {
+            if combo >= 3 {
+                draw 1;
+            }
+        }
+    }
+
+    meta {
+        pack 10009;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "发芽组员";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>连击</color>_3】抽取1张卡牌。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Sprouting Initiate";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Combo</color> (3)</b> - Draw a card.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はつが\">発芽</rub>の<rub=\"くみいん\">組員</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>コンボ</color>_3】自分のデッキから1枚を引く。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "새순의 조직원";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>콤보</color> 3] 내 덱에서 1장을 뽑는다.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "萌芽組員";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>連擊</color>_3】由自己的牌堆中抽取1張卡片。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

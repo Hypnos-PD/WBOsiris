@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10954120 {
+    type follower;
+    cost 8;
+    stats 8/8;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class abysscraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "伽罗塔德 对 泽特";
+        text """
+在手牌中发动。自己的回合结束时，若自己的主战者的生命值为12或以下，则使本卡牌的费用-1。
+<hr>【<color=Keyword>入场曲</color>】【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）本随从获得【<color=Keyword>疾驰</color>】。对自己的主战者造成2点伤害。</ridx>
+<ridx=1>（2）本随从获得【<color=Keyword>守护</color>】。对对手的战场上的所有随从造成8点伤害。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Garodeth vs. Zeth";
+        text """
+Activates in hand. At the end of your turn, if your leader's defense is 12 or less, reduce the cost of this card by 1.
+<hr><b><color=Keyword>Fanfare</color></b>: Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Give this follower <b><color=Keyword>Storm</color></b>. Deal 2 damage to your leader.</ridx>
+<ridx=1>2. Give this follower <b><color=Keyword>Ward</color></b>. Deal 8 damage to all enemy followers.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "ガロダートVSゼット";
+        text """
+手札で働く。自分のターン終了時、自分のリーダーの体力が12以下なら、これのコストを-1する。
+<hr>【<color=Keyword>ファンファーレ</color>】【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）これは【<color=Keyword>疾走</color>】を持つ。自分のリーダーに2ダメージ。</ridx>
+<ridx=1>（2）これは【<color=Keyword>守護</color>】を持つ。相手の場のフォロワーすべてに8ダメージ。</ridx>
+""";
+    }
+
+    locale kor {
+        name "가로더트vs제트";
+        text """
+패에서 발동. 내 턴 종료시 내 리더의 체력이 12 이하라면, 이 추종자의 비용을 -1.
+<hr>[<color=Keyword>출격</color>] [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 이 추종자는 [<color=Keyword>질주</color>]를 갖는다. 내 리더에게 2 피해.</ridx>
+<ridx=1>(2) 이 추종자는 [<color=Keyword>수호</color>]를 갖는다. 상대방 전장의 추종자 모두에게 8 피해.</ridx>
+""";
+    }
+
+    locale cht {
+        name "葛洛達特VS杰德";
+        text """
+於手牌中發動。自己的回合結束時，如果自己主戰者的生命值為12以下，則會使這張卡片的消費-1。
+<hr>【<color=Keyword>入場曲</color>】指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）使這張卡片獲得【<color=Keyword>疾馳</color>】。給予自己的主戰者2點傷害。</ridx>
+<ridx=1>（2）使這張卡片獲得【<color=Keyword>守護</color>】。給予敵方戰場上全部的從者卡8點傷害。</ridx>
+""";
+    }
+
+}

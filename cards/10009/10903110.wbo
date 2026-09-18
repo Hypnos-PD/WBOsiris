@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10903110 {
+    type follower;
+    cost 5;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class neutral;
+        rarity gold;
+    }
+
+    locale chs {
+        name "无我看守";
+        text """
+【<color=Keyword>入场曲</color>】将1张『<color=Keyword>最古老的狱卒</color>』加入手牌。对对手的战场上的随机2个随从造成X点伤害。X为自己的手牌中的中立·卡牌的张数。
+<hr><ev>【<color=Keyword>进化时</color>】回复自己1点能量点。</ev>
+""";
+    }
+
+    locale eng {
+        name "Warden of Selflessness";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add a <b><i><color=Keyword>Jailor of Antiquity</color></i></b> to your hand. Deal X damage to 2 random enemy followers. X is the number of Neutral cards in your hand.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Recover 1 play point.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"むが\">無我</rub>の<rub=\"かんしゅ\">看守</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>最古の獄卒</color>』1枚を自分の手札に加える。相手の場のフォロワーからランダム2枚にXダメージ。Xは自分の手札のニュートラル・カードの枚数である。
+<hr><ev>【<color=Keyword>進化時</color>】自分のPPを1回復。</ev>
+""";
+    }
+
+    locale kor {
+        name "무아의 간수";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>최구의 옥졸</color> 1장을 내 패에 넣는다. 상대방 전장의 추종자 중 무작위로 2장에게 X 피해. X는 내 패의 중립 카드 수.
+<hr><ev>[<color=Keyword>진화시</color>] 내 PP를 1 회복.</ev>
+""";
+    }
+
+    locale cht {
+        name "無我的看守";
+        text """
+【<color=Keyword>入場曲</color>】增加1張『<color=Keyword>邃古的獄卒</color>』到自己的手牌中。隨機給予2張敵方戰場上的從者卡X點傷害。X為「自己手牌中的中立‧卡片張數」。
+<hr><ev>【<color=Keyword>進化時</color>】回復自己的PP 1點。</ev>
+""";
+    }
+
+}

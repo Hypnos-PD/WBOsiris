@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10901310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "轮回转冲";
+        text """
+将随机1张与本次对战中被破坏的原始费用最大的自己的随从同名的卡牌以非公开形式加入牌组。抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Initiation of Rebirth";
+        text """
+Add a copy of a random allied follower destroyed this match with the highest base cost to your deck without revealing it. Draw a card.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"りんねてんしょう\">輪廻転衝</rub>";
+        text """
+このバトル中に破壊された自分の元のコスト最大のフォロワーからランダム1枚と同名のカード1枚を非公開で自分のデッキに加える。自分のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "윤회전충";
+        text """
+이번 대전에서 파괴된 원래 비용이 가장 높은 내 추종자 중 무작위로 1장과 동명의 추종자 1장을 비공개로 내 덱에 넣는다. 내 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "輪迴轉衝";
+        text """
+隨機將1張與「本次對戰中自己已被破壞且原始消費最高的從者卡」同名的卡片以非公開形式增加到自己的牌堆中。由自己的牌堆中抽取1張卡片。
+""";
+    }
+
+}

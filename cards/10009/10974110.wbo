@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10974110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class portalcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "束刃的罪人·卡特斯罗特";
+        text """
+【<color=Keyword>毁灭</color>】
+<hr><ev>【<color=Keyword>进化时</color>】使自己的牌组中的所有『<color=Keyword>束刃的罪人·卡特斯罗特</color>』消失。之后，若自己的牌组中没有重复卡牌，则使自己获得『纹章：束刃的罪人·卡特斯罗特』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Cutthroat, Fluxblade Convict";
+        text """
+<b><color=Keyword>Bane</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Banish all copies of <b><i><color=Keyword>Cutthroat, Fluxblade Convict</color></i></b> from your deck. Then, if there are no duplicates in your deck, gain <b><i>Crest: Cutthroat, Fluxblade Convict</i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"そくじん\">束刃</rub>の<rub=\"とがびと\">咎人</rub>・カットスロート";
+        text """
+【<color=Keyword>必殺</color>】
+<hr><ev>【<color=Keyword>進化時</color>】自分のデッキの『<color=Keyword>束刃の咎人・カットスロート</color>』すべてを消滅。その後、自分のデッキに重複するカードがないなら、自分は『クレスト：束刃の咎人・カットスロート』を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "결인의 죄인 컷스로트";
+        text """
+[<color=Keyword>필살</color>]
+<hr><ev>[<color=Keyword>진화시</color>] 내 덱의 <color=Keyword>결인의 죄인 컷스로트</color> 모두를 소멸. 그다음 내 덱에 중복되는 카드가 없다면, 나는 「크레스트: 결인의 죄인 컷스로트」를 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "束刃的罪人‧卡托司瑞德";
+        text """
+【<color=Keyword>必殺</color>】
+<hr><ev>【<color=Keyword>進化時</color>】使自己牌堆中全部的『<color=Keyword>束刃的罪人‧卡托司瑞德</color>』消失。隨後，如果自己的牌堆中沒有重複的卡片，則會使自己獲得『紋章：束刃的罪人‧卡托司瑞德』。</ev>
+""";
+    }
+
+}

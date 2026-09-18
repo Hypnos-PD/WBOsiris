@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10961110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        ward;
+        when own leader healed during own turn {
+            evolve self silent;
+        }
+    }
+
+    meta {
+        pack 10009;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "条规成员";
+        text """
+【<color=Keyword>守护</color>】
+自己的主战者回复时，若为自己的回合，则本随从进化。
+""";
+    }
+
+    locale eng {
+        name "Follower of the Tenets";
+        text """
+<b><color=Keyword>Ward</color></b>
+During your turn, when your leader's defense is restored, evolve this follower.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"じょうき\">条規</rub>の<rub=\"こうせいいん\">構成員</rub>";
+        text """
+【<color=Keyword>守護</color>】
+自分のリーダーが回復したとき、自分のターンなら、これは進化する。
+""";
+    }
+
+    locale kor {
+        name "규정의 구성원";
+        text """
+[<color=Keyword>수호</color>]
+내 리더가 회복했을 때 내 턴이라면, 이 추종자는 진화한다.
+""";
+    }
+
+    locale cht {
+        name "條規成員";
+        text """
+【<color=Keyword>守護</color>】
+當自己的主戰者回復生命值時，如果是自己的回合，則會使這張卡片進化。
+""";
+    }
+
+}

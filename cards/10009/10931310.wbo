@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10931310 {
+    type spell;
+    cost 1;
+
+    effect {
+        add 3 card 10031320 to hand;
+    }
+
+    meta {
+        pack 10009;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "过度反应";
+        text """
+将3张『<color=Keyword>召唤真理</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Miscalculated Experiment";
+        text """
+Add 3 copies of <b><i><color=Keyword>Truth Summons</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"かじょうはんのう\">過剰反応</rub>";
+        text """
+『<color=Keyword>真理の召喚</color>』3枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "과잉 반응";
+        text """
+<color=Keyword>진리의 소환</color> 3장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "反應失控";
+        text """
+增加3張『<color=Keyword>召喚真理</color>』到自己的手牌中。
+""";
+    }
+
+}

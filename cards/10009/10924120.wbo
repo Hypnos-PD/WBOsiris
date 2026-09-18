@@ -1,0 +1,77 @@
+wbo 0.1.0;
+
+card 10924120 {
+    type follower;
+    cost 10;
+    stats 2/12;
+
+    effect {
+        storm;
+        bane;
+        ward;
+        aura;
+        attack_limit 3;
+    }
+
+    meta {
+        pack 10009;
+        class swordcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "武皇的变貌·贝尔铁佐";
+        text """
+【<color=Keyword>疾驰</color>】
+【<color=Keyword>毁灭</color>】
+【<color=Keyword>守护</color>】
+【<color=Keyword>灵气</color>】
+1回合可以攻击3次。
+""";
+    }
+
+    locale eng {
+        name "Beltezore, Valorous Revenant";
+        text """
+<b><color=Keyword>Storm</color></b>
+<b><color=Keyword>Bane</color></b>
+<b><color=Keyword>Ward</color></b>
+<b><color=Keyword>Aura</color></b>
+Can attack 3 times per turn.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぶこう\">武皇</rub>の<rub=\"へんぼう\">変貌</rub>・ベルテゾール";
+        text """
+【<color=Keyword>疾走</color>】
+【<color=Keyword>必殺</color>】
+【<color=Keyword>守護</color>】
+【<color=Keyword>オーラ</color>】
+1ターンに3回攻撃できる。
+""";
+    }
+
+    locale kor {
+        name "무황의 변모 벨테조르";
+        text """
+[<color=Keyword>질주</color>]
+[<color=Keyword>필살</color>]
+[<color=Keyword>수호</color>]
+[<color=Keyword>오라</color>]
+1턴에 3회 공격 가능.
+""";
+    }
+
+    locale cht {
+        name "武皇的轉變‧貝爾鐵佐";
+        text """
+【<color=Keyword>疾馳</color>】
+【<color=Keyword>必殺</color>】
+【<color=Keyword>守護</color>】
+【<color=Keyword>光紋</color>】
+1回合中可進行3次攻擊。
+""";
+    }
+
+}

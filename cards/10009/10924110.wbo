@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10924110 {
+    type follower;
+    cost 7;
+    stats 4/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class swordcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "逆行的罪人·巴巴洛丝";
+        text """
+【<color=Keyword>入场曲</color>】召唤1张『<color=Keyword>令人战栗的海盗旗</color>』。使自己的战场上的所有『<color=Keyword>令人战栗的海盗旗</color>』的倒计数-5。
+<hr>【<color=Keyword>疾驰</color>】
+""";
+    }
+
+    locale eng {
+        name "Barbaros, Rebellious Convict";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Dread Pirate's Flag</color></i></b>. Advance the counts of all allied copies of <b><i><color=Keyword>Dread Pirate's Flag</color></i></b> on the field by 5.
+<hr><b><color=Keyword>Storm</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぎゃっこう\">逆行</rub>の<rub=\"とがびと\">咎人</rub>・バルバロス";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>戦慄の海賊旗</color>』1枚を自分の場に出す。自分の場の『<color=Keyword>戦慄の海賊旗</color>』すべてのカウントを-5する。
+<hr>【<color=Keyword>疾走</color>】
+""";
+    }
+
+    locale kor {
+        name "역행의 죄인 바르바로스";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>전율의 해적기</color> 1장을 내 전장에 소환. 내 전장의 <color=Keyword>전율의 해적기</color> 모두의 카운트를 -5.
+<hr>[<color=Keyword>질주</color>]
+""";
+    }
+
+    locale cht {
+        name "逆行的罪人‧芭芭蘿絲";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>戰慄的海賊旗</color>』到自己的戰場上。使自己戰場上全部的『<color=Keyword>戰慄的海賊旗</color>』倒數回合數-5。
+<hr>【<color=Keyword>疾馳</color>】
+""";
+    }
+
+}

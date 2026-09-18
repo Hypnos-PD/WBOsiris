@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10964110 {
+    type follower;
+    cost 6;
+    stats 6/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "神纹的罪人·艾尔拉德";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的1个随从，破坏该随从。
+<hr><ev>【<color=Keyword>进化时</color>】使自己获得『纹章：神纹的罪人·艾尔拉德』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Erralde, Signet Convict";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select an enemy follower on the field and destroy it.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Gain <b><i>Crest: Erralde, Signet Convict</i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しんもん\">神紋</rub>の<rub=\"とがびと\">咎人</rub>・エルラーデ";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー1枚を選ぶ。それを破壊。
+<hr><ev>【<color=Keyword>進化時</color>】自分は『クレスト：神紋の咎人・エルラーデ』を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "신문의 죄인 에르라데";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴.
+<hr><ev>[<color=Keyword>진화시</color>] 나는 「크레스트: 신문의 죄인 에르라데」를 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "神紋的罪人‧艾路拉戴";
+        text """
+【<color=Keyword>入場曲</color>】指定1張敵方戰場上的從者卡。將其破壞。
+<hr><ev>【<color=Keyword>進化時</color>】使自己獲得『紋章：神紋的罪人‧艾路拉戴』。</ev>
+""";
+    }
+
+}

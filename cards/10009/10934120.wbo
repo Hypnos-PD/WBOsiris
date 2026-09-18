@@ -1,0 +1,73 @@
+wbo 0.1.0;
+
+card 10934120 {
+    type follower;
+    cost 10;
+    stats 4/6;
+
+    effect {
+        spellboost {
+            reduce cost self 1 minimum 0;
+        }
+        bane;
+        ward;
+        aura;
+    }
+
+    meta {
+        pack 10009;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "破式的变貌·菲绫";
+        text """
+【<color=Keyword>魔力增幅时</color>】使本卡牌的费用-1。
+<hr>【<color=Keyword>毁灭</color>】
+【<color=Keyword>守护</color>】
+【<color=Keyword>灵气</color>】
+""";
+    }
+
+    locale eng {
+        name "Phylene, Cleansing Revenant";
+        text """
+<b><color=Keyword>On Spellboost</color></b>: Reduce the cost of this card by 1.
+<hr><b><color=Keyword>Bane</color></b>
+<b><color=Keyword>Ward</color></b>
+<b><color=Keyword>Aura</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はしき\">破式</rub>の<rub=\"へんぼう\">変貌</rub>・フィーリン";
+        text """
+【<color=Keyword>スペルブースト時</color>】これのコストを-1する。
+<hr>【<color=Keyword>必殺</color>】
+【<color=Keyword>守護</color>】
+【<color=Keyword>オーラ</color>】
+""";
+    }
+
+    locale kor {
+        name "파식의 변모 피린";
+        text """
+[<color=Keyword>주문증폭시</color>] 이 추종자의 비용을 -1.
+<hr>[<color=Keyword>필살</color>]
+[<color=Keyword>수호</color>]
+[<color=Keyword>오라</color>]
+""";
+    }
+
+    locale cht {
+        name "破式的轉變‧霏凜";
+        text """
+【<color=Keyword>魔力增幅時</color>】使這張卡片的消費-1。
+<hr>【<color=Keyword>必殺</color>】
+【<color=Keyword>守護</color>】
+【<color=Keyword>光紋</color>】
+""";
+    }
+
+}

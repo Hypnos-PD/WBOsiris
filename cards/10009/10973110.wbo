@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10973110 {
+    type follower;
+    cost 5;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class portalcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "铸铁亲信";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的1个随从，破坏该随从。若自己的牌组中没有重复卡牌，则本随从获得【<color=Keyword>疾驰</color>】。
+""";
+    }
+
+    locale eng {
+        name "Steelforged Right Hand";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select an enemy follower on the field and destroy it. If there are no duplicates in your deck, give this follower <b><color=Keyword>Storm</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"いてつ\">鋳鉄</rub>の<rub=\"ふくしん\">腹心</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー1枚を選ぶ。それを破壊。自分のデッキに重複するカードがないなら、これは【<color=Keyword>疾走</color>】を持つ。
+""";
+    }
+
+    locale kor {
+        name "주철의 심복";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴. 내 덱에 중복되는 카드가 없다면, 이 추종자는 [<color=Keyword>질주</color>]를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "鑄鐵親信";
+        text """
+【<color=Keyword>入場曲</color>】指定1張敵方戰場上的從者卡。將其破壞。如果自己的牌堆中沒有重複的卡片，則會使這張卡片獲得【<color=Keyword>疾馳</color>】。
+""";
+    }
+
+}

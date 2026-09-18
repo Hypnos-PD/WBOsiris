@@ -1,0 +1,56 @@
+wbo 0.1.0;
+
+card 10911210 {
+    type amulet;
+    cost 3;
+
+    effect {
+        // 「对手的随从进入战场时，破坏该随从和本卡牌」。
+        when oppo follower summoned {
+            destroy summoned;
+            destroy self;
+        }
+    }
+
+    meta {
+        pack 10009;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "森林陷阱";
+        text """
+对手的随从进入战场时，破坏该随从和本卡牌。
+""";
+    }
+
+    locale eng {
+        name "Trap in the Woods";
+        text """
+Whenever an enemy follower enters the field, destroy it and this card.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しんりん\">森林</rub>の<rub=\"わな\">罠</rub>";
+        text """
+相手のフォロワーが場に出たとき、それとこれを破壊。
+""";
+    }
+
+    locale kor {
+        name "숲속의 덫";
+        text """
+상대방 추종자가 전장에 소환되었을 때, 그 추종자와 이 마법진을 파괴.
+""";
+    }
+
+    locale cht {
+        name "森林陷阱";
+        text """
+當敵方的從者卡進入戰場時，將其與這張卡片破壞。
+""";
+    }
+
+}

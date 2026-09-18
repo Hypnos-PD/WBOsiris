@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10943310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class dragoncraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "利牙";
+        text """
+对对手的战场上的所有随从分配3点伤害。若自己的随从在自己的上一回合中攻击过主战者，则改为分配6点伤害。
+""";
+    }
+
+    locale eng {
+        name "Artiglio";
+        text """
+Deal 3 damage split between all enemy followers. If an allied follower attacked a leader on your last turn, deal 6 damage instead.
+""";
+    }
+
+    locale jpn {
+        name "ウンギア";
+        text """
+相手の場のフォロワーすべてに3ダメージを割りふる。直前の自分のターンに自分のフォロワーがリーダーを攻撃していたなら、3ダメージではなく6ダメージ。
+""";
+    }
+
+    locale kor {
+        name "운기아";
+        text """
+상대방 전장의 추종자 모두에게 3 피해를 분배한다. 직전 내 턴에 내 추종자가 리더를 공격했다면, 3 피해 대신 6 피해.
+""";
+    }
+
+    locale cht {
+        name "恩奇亞";
+        text """
+對敵方戰場上全部的從者卡分配3點傷害。如果上個自己的回合中自己的從者卡已攻擊主戰者，則會由原本的3點傷害轉變為6點傷害。
+""";
+    }
+
+}

@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10923310 {
+    type spell;
+    cost 4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class swordcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "黄金时代";
+        text """
+召唤1张『<color=Keyword>令人战栗的海盗旗</color>』。对对手的战场上的所有随从造成2点伤害。
+【<color=Keyword>爆能强化</color>_6】改为召唤2张。改为4点伤害。
+""";
+    }
+
+    locale eng {
+        name "L'Age d'Or";
+        text """
+Summon a <b><i><color=Keyword>Dread Pirate's Flag</color></i></b>. Deal 2 damage to all enemy followers.
+<b><color=Keyword>Enhance</color> (6)</b>: Summon 2 instead. Deal 4 damage instead.
+""";
+    }
+
+    locale jpn {
+        name "アージュドール";
+        text """
+『<color=Keyword>戦慄の海賊旗</color>』1枚を自分の場に出す。相手の場のフォロワーすべてに2ダメージ。
+【<color=Keyword>エンハンス</color>_6】1枚ではなく2枚。2ダメージではなく4ダメージ。
+""";
+    }
+
+    locale kor {
+        name "아즈도르";
+        text """
+<color=Keyword>전율의 해적기</color> 1장을 내 전장에 소환. 상대방 전장의 추종자 모두에게 2 피해.
+[<color=Keyword>증강</color> 6] 1장 대신 2장. 2 피해 대신 4 피해.
+""";
+    }
+
+    locale cht {
+        name "黃金時代";
+        text """
+召喚1張『<color=Keyword>戰慄的海賊旗</color>』到自己的戰場上。給予敵方戰場上全部的從者卡2點傷害。
+【<color=Keyword>爆能強化</color>_6】由原本的1張轉變為2張。由原本的2點傷害轉變為4點傷害。
+""";
+    }
+
+}

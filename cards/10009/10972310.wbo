@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10972310 {
+    type spell;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "屈辱流放";
+        text """
+选择自己的1张手牌，舍弃该手牌。抽取1张卡牌。若自己的牌组中没有重复卡牌，则改为抽取3张。
+""";
+    }
+
+    locale eng {
+        name "Disgraceful Banishment";
+        text """
+Select a card in your hand and discard it. Draw a card. If there are no duplicates in your deck, draw 3 instead.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"くつじょく\">屈辱</rub>なる<rub=\"ほうちく\">放逐</rub>";
+        text """
+自分の手札1枚を選ぶ。それを捨てる。自分のデッキから1枚を引く。自分のデッキに重複するカードがないなら、1枚を引くのではなく3枚を引く。
+""";
+    }
+
+    locale kor {
+        name "굴욕적인 추방";
+        text """
+내 패에서 1장을 선택한다. 그 카드를 버린다. 내 덱에서 1장을 뽑는다. 내 덱에 중복되는 카드가 없다면, 1장을 뽑는 대신 3장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "屈辱的流放";
+        text """
+指定1張自己手牌中的卡片。將其捨棄。由自己的牌堆中抽取1張卡片。如果自己的牌堆中沒有重複的卡片，則會由原本的抽取1張轉變為抽取3張。
+""";
+    }
+
+}

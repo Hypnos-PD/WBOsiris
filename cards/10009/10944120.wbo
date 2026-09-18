@@ -1,0 +1,73 @@
+wbo 0.1.0;
+
+card 10944120 {
+    type follower;
+    cost 7;
+    stats 5/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "禁牙的变貌·诺玛格达拉";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）抽取1张卡牌。回复自己的主战者3点生命值。</ridx>
+<ridx=1>（2）使对手的战场上的所有随从-0/-4。</ridx>
+<hr>【<color=Keyword>守护</color>】
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Normagdala, Ravening Revenant";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Draw a card. Restore 3 defense to your leader.</ridx>
+<ridx=1>2. Give all enemy followers on the field -0/-4.</ridx>
+<hr><b><color=Keyword>Ward</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きんが\">禁牙</rub>の<rub=\"へんぼう\">変貌</rub>・ノマグダラ";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）自分のデッキから1枚を引く。自分のリーダーを3回復。</ridx>
+<ridx=1>（2）相手の場のフォロワーすべては-0/-4する。</ridx>
+<hr>【<color=Keyword>守護</color>】
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "금아의 변모 노마그달라";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 내 덱에서 1장을 뽑는다. 내 리더를 3 회복.</ridx>
+<ridx=1>(2) 상대방 전장의 추종자 모두는 -0/-4.</ridx>
+<hr>[<color=Keyword>수호</color>]
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "禁牙的轉變‧諾瑪塔拉";
+        text """
+【<color=Keyword>入場曲</color>】指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）由自己的牌堆中抽取1張卡片。回復自己的主戰者3點生命值。</ridx>
+<ridx=1>（2）使敵方戰場上全部的從者卡-0/-4。</ridx>
+<hr>【<color=Keyword>守護</color>】
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10944110 {
+    type follower;
+    cost 7;
+    stats 6/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10009;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "穿孔的罪人·安缇马丽亚";
+        text """
+【<color=Keyword>入场曲</color>】若自己的随从在自己的上一回合中攻击过主战者，则本随从获得【<color=Keyword>疾驰</color>】。
+<hr>【<color=Keyword>突进</color>】
+可以无视【<color=Keyword>守护</color>】进行攻击。
+""";
+    }
+
+    locale eng {
+        name "Antemaria, Piercing Convict";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If an allied follower attacked a leader on your last turn, give this follower <b><color=Keyword>Storm</color></b>.
+<hr><b><color=Keyword>Rush</color></b>
+Ignores <b><color=Keyword>Ward</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"せんこう\">穿孔</rub>の<rub=\"とがびと\">咎人</rub>・アンテマリア";
+        text """
+【<color=Keyword>ファンファーレ</color>】直前の自分のターンに自分のフォロワーがリーダーを攻撃していたなら、これは【<color=Keyword>疾走</color>】を持つ。
+<hr>【<color=Keyword>突進</color>】
+【<color=Keyword>守護</color>】を無視して攻撃できる。
+""";
+    }
+
+    locale kor {
+        name "천공의 죄인 안테마리아";
+        text """
+[<color=Keyword>출격</color>] 직전 내 턴에 내 추종자가 리더를 공격했다면, 이 추종자는 [<color=Keyword>질주</color>]를 갖는다.
+<hr>[<color=Keyword>돌진</color>]
+[<color=Keyword>수호</color>]를 무시하고 공격 가능.
+""";
+    }
+
+    locale cht {
+        name "穿孔的罪人‧安媞馬麗亞";
+        text """
+【<color=Keyword>入場曲</color>】如果上個自己的回合中自己的從者卡已攻擊主戰者，則會使這張卡片獲得【<color=Keyword>疾馳</color>】。
+<hr>【<color=Keyword>突進</color>】
+可無視【<color=Keyword>守護</color>】進行攻擊。
+""";
+    }
+
+}
