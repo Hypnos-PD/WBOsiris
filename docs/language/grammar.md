@@ -404,6 +404,7 @@ add_operation     = "add" , integer , "card" , card_id , "to" , "hand" , ";"
                   | "add" , integer , "counter" , counter_name , ";"
                   | "add" , integer , "card" , card_id , "to" , ("hand" | "deck") , ";"
                   | "add" , "copies" , "of" , value_ref , "to" , ("hand" | "deck") , ";"
+                  | "add" , "random" , integer , "copies" , "from" , value_ref , [where_clause] , "to" , ("hand" | "deck") , ";"
                   | "add" , ability , "to" , value_ref , ["other" , [binding_name]] , [where_clause] , [effect_duration] , ";" ;
 effect_duration   = "until" , [participant] , "turn" , "ends" ;
 
@@ -460,7 +461,9 @@ double_operation  = "double" , "stats" , value_ref , ";" ;
 spellboost_operation = "spellboost" , value_ref , integer , ";" ;
 set_attack_limit_operation = "set_attack_limit" , value_ref , positive_integer , ";" ;
 set_damage_reduction_operation = "set_damage_reduction" , value_ref , nonnegative_integer , ";" ;
-transform_operation = "transform" , value_ref , "into" , "card" , card_id ,
+transform_operation = "transform" , value_ref , ["other" , [binding_name]] , "into" , "card" , card_id ,
+                      ["preserving" , "materials"] , [where_clause] , ";"
+                    | "transform" , value_ref , ["other" , [binding_name]] , "into" , "random" , "card" , "from" , value_ref ,
                       ["preserving" , "materials"] , [where_clause] , ";" ;
 
 positive_integer  = integer ; (* semantic constraint: value >= 1 *)

@@ -744,8 +744,13 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 		if g.budget != nil && g.budget.exceeded {
 			return
 		}
+		card := g.cards[e.CardID]
+		if e.CopySource != nil {
+			// `transform <目标> into random card from <集合>`：变身为随机一张卡的复制。
+			card = g.randomCardFrom(e.CopySource, self, f)
+		}
 		for _, i := range targets {
-			if c := g.cards[e.CardID]; c != nil && (i.zone == "hand" || i.zone == "deck" || i.zone == "field" && c.CardType != "spell") {
+			if c := card; c != nil && (i.zone == "hand" || i.zone == "deck" || i.zone == "field" && c.CardType != "spell") {
 				event := ir.RuntimeEvent{Kind: "card_transformed", Side: g.sideOf(i), From: i.zone,
 					Subject: &ir.EventTarget{Kind: "instance", InstanceID: i.id, CardID: i.card.ID},
 					Target:  &ir.EventTarget{Kind: "instance", InstanceID: i.id, CardID: c.ID}}

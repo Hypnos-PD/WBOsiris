@@ -571,6 +571,8 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 		s.g.execCardEffect(e, self, bindings)
 	case ir.HistorySummonEffect:
 		bindSummoned(bindings, e.Output, s.g.summonFromHistory(e, self, bindings))
+	case ir.CopyRandomEffect:
+		s.g.copyRandomFrom(e, self, bindings)
 	case ir.DeckSummonEffect:
 		bindSummoned(bindings, e.Output, s.g.summonFromDeck(e, self, bindings))
 	case ir.SummonPoolEffect:

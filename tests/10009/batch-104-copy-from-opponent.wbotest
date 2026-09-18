@@ -1,0 +1,39 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "温泉度假猴的入场曲复制对手手牌里的一张" {
+    seed 104101;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10912120; }
+        }
+        player oppo {
+            hand {
+                follower first = 10001110;
+                follower second = 10001110;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; source.zone == field; own.hand count card 10001110 == 1; }
+}
+
+scenario "温泉度假猴的进化时发动与入场曲相同的能力" {
+    seed 104102;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10912120; }
+        }
+        player oppo {
+            hand {
+                follower first = 10001110;
+                follower second = 10001110;
+            }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.hand count card 10001110 == 1; }
+}

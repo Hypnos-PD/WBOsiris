@@ -690,8 +690,10 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		}
 	case "add":
 		if len(t) >= 9 && t[1].Value == "random" && t[3].Value == "copies" && t[4].Value == "from" {
-			// `add random N copies from <破坏历史> … to hand|deck;`
-			_, ok = historySummonIR(t, ir.NodeBase{})
+			// `add random N copies from <破坏历史|任意集合> … to hand|deck;`
+			if _, ok = historySummonIR(t, ir.NodeBase{}); !ok {
+				_, ok = copyRandomIR(t, ir.NodeBase{})
+			}
 			break
 		}
 		if len(t) == 4 && isUnsigned(t[1]) && t[2].Value == "counter" && t[3].Kind == syntax.Identifier && ir.ValidCounterName(t[3].Value) {
@@ -953,9 +955,15 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 			// `transform 集合 other into card C`：排除来源实例自身。
 			end = otherExclusionEnd(t, end)
 		}
-		good = good && ir.ValidTransformTarget(valueRefIR(t, 1)) && end+3 <= len(t) && t[end].Value == "into" && t[end+1].Value == "card" && isCardID(t[end+2])
-		if good {
+		good = good && ir.ValidTransformTarget(valueRefIR(t, 1)) && end+3 <= len(t) && t[end].Value == "into"
+		if good && end+4 <= len(t) && values(t[end+1:end+4]) == "random card from" {
+			// `transform <目标> into random card from <集合>`：变身为随机一张卡的复制。
+			end, good = parseTargetSet(t, end+4)
+		} else if good {
+			good = t[end+1].Value == "card" && isCardID(t[end+2])
 			end += 3
+		}
+		if good {
 			if end+1 < len(t) && t[end].Value == "preserving" && t[end+1].Value == "materials" {
 				end += 2
 			}

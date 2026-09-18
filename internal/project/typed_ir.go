@@ -411,6 +411,10 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			if e, ok := historySummonIR(t, base); ok {
 				return e, nil
 			}
+			// `add random N copies from oppo.hand|oppo.deck … to hand|deck;`
+			if e, ok := copyRandomIR(t, base); ok {
+				return e, nil
+			}
 		}
 		if len(t) == 4 && t[2].Value == "counter" {
 			return ir.AdjustEffect{NodeBase: base, Kind: "adjust_counter", Field: t[3].Value, Delta: intToken(t[1])}, nil
@@ -679,8 +683,16 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			target = ir.ExcludeRef{Kind: "exclude", Source: target, Value: value}
 			end = next
 		}
-		e := ir.CardEffect{NodeBase: base, Kind: "transform", Target: target, CardID: intToken(t[end+2]), PreserveInstanceID: true, PreserveMaterials: true}
-		end += 3
+		e := ir.CardEffect{NodeBase: base, Kind: "transform", Target: target, PreserveInstanceID: true, PreserveMaterials: true}
+		if end < len(t) && t[end].Value == "into" && end+4 < len(t) && t[end+1].Value == "random" && t[end+2].Value == "card" && t[end+3].Value == "from" {
+			// `transform <目标> into random card from <集合>`：变身为随机一张卡的复制。
+			source, next := setExprIR(t, end+4)
+			e.CopySource = source
+			end = next
+		} else {
+			e.CardID = intToken(t[end+2])
+			end += 3
+		}
 		if end < len(t) && t[end].Value == "preserving" {
 			end += 2
 		}

@@ -1085,6 +1085,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			Kind, Owner, Destination, Output, TieBreak string
 			Count, CardID, MaxCost                     int
 			Target                                     json.RawMessage `json:"target,omitempty"`
+			CopySource                                 json.RawMessage `json:"copySource,omitempty"`
 			PreserveInstanceID                         bool            `json:"preserveInstanceId,omitempty"`
 			PreserveMaterials                          bool            `json:"preserveMaterials,omitempty"`
 			Origin                                     Origin          `json:"origin"`
@@ -1097,9 +1098,16 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			return nil, err
 		}
 		var r Ref
+		var copySource Ref
 		var err error
 		if len(v.Target) > 0 {
 			r, err = decodeRef(v.Target)
+		}
+		if err == nil && len(v.CopySource) > 0 {
+			copySource, err = decodeRef(v.CopySource)
+		}
+		if v.Kind != "transform" && len(v.CopySource) > 0 {
+			return nil, fmt.Errorf("invalid %s shape", v.Kind)
 		}
 		switch v.Kind {
 		case "gain_crest":
@@ -1131,11 +1139,48 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 				return nil, fmt.Errorf("invalid reanimate shape")
 			}
 		case "transform":
-			if !ValidTransformTarget(r) || !validCardID(v.CardID) || !v.PreserveInstanceID || !v.PreserveMaterials || v.Owner != "" || v.Destination != "" || v.Output != "" || v.TieBreak != "" || v.Count != 0 || v.MaxCost != 0 {
+			// `transform … into card C` 与 `transform … into random card from S` 互斥。
+			randomSource := copySource != nil
+			if !ValidTransformTarget(r) || !v.PreserveInstanceID || !v.PreserveMaterials || v.Owner != "" || v.Destination != "" || v.Output != "" || v.TieBreak != "" || v.Count != 0 || v.MaxCost != 0 {
+				return nil, fmt.Errorf("invalid transform shape")
+			}
+			if randomSource {
+				if !validCountSource(copySource) || v.CardID != 0 {
+					return nil, fmt.Errorf("invalid transform shape")
+				}
+			} else if !validCardID(v.CardID) {
 				return nil, fmt.Errorf("invalid transform shape")
 			}
 		}
-		return CardEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.Destination, v.Output, v.Count, v.CardID, v.MaxCost, v.TieBreak, v.PreserveInstanceID, v.PreserveMaterials, r}, err
+		return CardEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Owner: v.Owner, Destination: v.Destination, Output: v.Output, Count: v.Count, CardID: v.CardID, MaxCost: v.MaxCost, TieBreak: v.TieBreak, PreserveInstanceID: v.PreserveInstanceID, PreserveMaterials: v.PreserveMaterials, Target: r, CopySource: copySource}, err
+	case "copy_random":
+		var v struct {
+			ID                string `json:"id"`
+			Kind              string `json:"kind"`
+			Owner             string `json:"owner"`
+			Source            json.RawMessage `json:"source"`
+			Count             int    `json:"count"`
+			Destination       string `json:"destination"`
+			Output            string `json:"output"`
+			Origin            Origin `json:"origin"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
+			return nil, err
+		}
+		if !validSide(v.Owner) || v.Count < 1 || v.Count > 65535 || !oneOf(v.Destination, "hand", "deck") || v.Output != "added" {
+			return nil, fmt.Errorf("invalid copy_random shape")
+		}
+		source, err := decodeRef(v.Source)
+		if err != nil {
+			return nil, err
+		}
+		if !validCountSource(source) {
+			return nil, fmt.Errorf("invalid copy_random source")
+		}
+		return CopyRandomEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Owner: v.Owner, Source: source, Count: v.Count, Destination: v.Destination, Output: v.Output}, nil
 	case "damage", "heal", "buff_stats", "destroy", "banish", "discard", "return", "add_keyword", "remove_keyword", "remove_ability", "silent_evolve", "set_attack_limit", "set_damage_reduction", "set_life", "set_cost", "set_attack":
 		type raw struct {
 			Output                                                      string `json:"output,omitempty"`

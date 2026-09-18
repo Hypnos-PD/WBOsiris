@@ -192,9 +192,26 @@ func (e CardEffect) MarshalJSON() ([]byte, error) {
 	case "transform":
 		object["target"], object["cardId"] = e.Target, e.CardID
 		object["preserveInstanceId"], object["preserveMaterials"] = e.PreserveInstanceID, e.PreserveMaterials
+		if e.CopySource != nil {
+			object["copySource"] = e.CopySource
+		}
 	default:
 		return nil, fmt.Errorf("encode unknown card effect kind %q", e.Kind)
 	}
+	return json.Marshal(object)
+}
+
+func (e CopyRandomEffect) MarshalJSON() ([]byte, error) {
+	if !oneOf(e.Owner, "own", "oppo") || e.Source == nil || e.Count < 1 || e.Count > 65535 ||
+		!oneOf(e.Destination, "hand", "deck") || e.Output != "added" {
+		return nil, fmt.Errorf("invalid copy_random shape")
+	}
+	if !validCountSource(e.Source) {
+		return nil, fmt.Errorf("invalid copy_random source")
+	}
+	object := effectObject(e.NodeBase, e.Kind)
+	object["owner"], object["source"], object["count"] = e.Owner, e.Source, e.Count
+	object["destination"], object["output"] = e.Destination, e.Output
 	return json.Marshal(object)
 }
 

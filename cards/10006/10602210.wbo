@@ -5,7 +5,10 @@ card 10602210 {
     cost 3;
 
     effect {
-        unplayable;
+        engage 0 {
+            require target from own.hand;
+            transform target into random card from oppo.deck;
+        }
     }
 
     meta {

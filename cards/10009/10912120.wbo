@@ -6,7 +6,12 @@ card 10912120 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            add random 1 copies from oppo.hand to hand;
+        }
+        evolve {
+            add random 1 copies from oppo.hand to hand;
+        }
     }
 
     meta {

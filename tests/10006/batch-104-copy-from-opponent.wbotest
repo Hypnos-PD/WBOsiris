@@ -1,0 +1,39 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "被侵略的世界的启动把手牌变成对手牌组随机卡的复制" {
+    seed 104301;
+    state {
+        player own {
+            field { amulet source = 10602210; }
+            hand { follower mine = 10021110; }
+        }
+        player oppo {
+            deck top { follower theirs = 10001110; }
+        }
+    }
+    action { engage source; select mine; }
+    expect {
+        legal;
+        own.hand count card 10021110 == 0;
+        own.hand count card 10001110 == 1;
+        source.zone == field;
+    }
+}
+
+scenario "被侵略的世界在对手牌组为空时不变身" {
+    seed 104302;
+    state {
+        player own {
+            field { amulet source = 10602210; }
+            hand { follower mine = 10021110; }
+        }
+    }
+    action { engage source; select mine; }
+    expect {
+        legal;
+        // 抽选来源为空时不变身：抽不到卡定义，手牌保持原样。
+        mine.zone == hand;
+        own.hand count card 10021110 == 1;
+    }
+}

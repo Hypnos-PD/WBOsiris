@@ -596,10 +596,29 @@ type CardEffect struct {
 	PreserveInstanceID bool   `json:"preserveInstanceId,omitempty"`
 	PreserveMaterials  bool   `json:"preserveMaterials,omitempty"`
 	Target             Ref    `json:"target,omitempty"`
+	// CopySource 只用于 `transform`：为随机取卡定义来源（"使其变身为对手的牌组中的
+	// 随机1张卡牌的复制卡牌"），与 CardID 互斥。
+	CopySource Ref `json:"copySource,omitempty"`
 }
 
 func (e CardEffect) effectKind() string   { return e.Kind }
 func (e CardEffect) effectBase() NodeBase { return e.NodeBase }
+
+// CopyRandomEffect 从任意集合里随机抽选卡牌，按抽到的卡牌定义各复制 1 张加入手牌或牌组
+//（"将对手的手牌中的随机1张卡牌的复制卡牌以非公开形式加入自己的手牌"）。
+// 抽取只读取卡牌定义，复制体是全新的原始状态实例，也不泄露来源区的身份。
+type CopyRandomEffect struct {
+	NodeBase
+	Kind        string `json:"kind"`
+	Owner       string `json:"owner"`
+	Source      Ref    `json:"source"`
+	Count       int    `json:"count"`
+	Destination string `json:"destination"`
+	Output      string `json:"output"`
+}
+
+func (e CopyRandomEffect) effectKind() string   { return e.Kind }
+func (e CopyRandomEffect) effectBase() NodeBase { return e.NodeBase }
 
 type CountExpr struct {
 	Kind   string `json:"kind"`

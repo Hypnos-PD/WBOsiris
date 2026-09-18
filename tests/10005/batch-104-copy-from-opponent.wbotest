@@ -1,0 +1,47 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "罗弗拉德的入场曲按连击加身材" {
+    seed 104201;
+    state {
+        player own {
+            pp 2/2;
+            combo 3;
+            hand { follower source = 10514110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        // 打出的卡牌也算连击，入场曲看到连击 4。
+        own.combo == 4;
+        source.stats == 5/5;
+    }
+}
+
+scenario "罗弗拉德的进化时舍弃手牌并从对手牌组复制五张" {
+    seed 104202;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10514110; }
+            hand { follower held = 10001110; }
+        }
+        player oppo {
+            deck top {
+                follower first = 10001110;
+                follower second = 10001110;
+                follower third = 10001110;
+                follower fourth = 10001110;
+                follower fifth = 10001110;
+            }
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        held.zone == graveyard;
+        own.hand count card 10001110 == 5;
+    }
+}

@@ -715,6 +715,19 @@ AddCopies = NodeBase & {
   output: "added"
 }
 
+CopyRandom = NodeBase & {
+  kind: "copy_random",
+  owner: Side,
+  source: ValueRef | SetExpr,   (* 任意集合，例如对方手牌或牌组 *)
+  count: 1..65535,
+  destination: "hand" | "deck",
+  output: "added"
+}
+
+`copy_random` 从集合里无放回地等概率抽选 `count` 条候选（每条候选消费一次随机决策，
+只剩一条时不消费），按抽到的卡牌定义各创建 1 张新实例放进目标区域。它只读取定义：
+来源实例不移动、不修改，也不产生带来源身份的公开事件。
+
 SummonFromHand = NodeBase & {
   kind: "summon_from_hand",
   owner: Side,
@@ -743,7 +756,8 @@ Discard = NodeBase & {
 Transform = NodeBase & {
   kind: "transform",
   target: ValueRef | SetExpr,
-  cardId: CardId,
+  cardId: CardId,               (* 与 copySource 互斥 *)
+  copySource?: ValueRef | SetExpr, (* 变身为随机一张卡的复制，一次结算只抽一次 *)
   preserveInstanceId: true,
   preserveMaterials: true
 }

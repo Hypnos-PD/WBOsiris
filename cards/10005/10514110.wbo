@@ -6,7 +6,13 @@ card 10514110 {
     stats 1/1;
 
     effect {
-        unplayable;
+        fanfare {
+            buff self +own.combo/+own.combo;
+        }
+        evolve {
+            discard own.hand;
+            add random 5 copies from oppo.deck to hand;
+        }
     }
 
     meta {

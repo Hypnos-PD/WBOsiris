@@ -5,7 +5,11 @@ card 10802310 {
     cost 3;
 
     effect {
-        unplayable;
+        // 从对手手牌随机抽 1 张，按其卡牌定义复制一张加入自己手牌，再减 1 费。
+        // 复制是非公开的：只读取定义，不产生带来源身份的事件。
+        add random 1 copies from oppo.hand to hand;
+        reduce cost added 1 minimum 0;
+        draw 1;
     }
 
     meta {
