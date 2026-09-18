@@ -140,6 +140,12 @@ func (g *game) queueEventTriggersFor(kind string, event ir.RuntimeEvent, subject
 					continue
 				}
 				bindings := frame{}
+				if event.Kind == "attacked" && event.Defender != nil && event.Defender.Kind == "instance" {
+					// `defender` 指向被攻击的随从；攻击主战者时不绑定（对应条件不成立）。
+					if defender := g.instances[event.Defender.InstanceID]; defender != nil {
+						bindings["defender"] = bindEntities(defender)
+					}
+				}
 				if trigger.Event == "damaged" && !trigger.SelfOnly {
 					bindings["damaged"] = bindEntities(subject)
 				} else if binding != "" && subject != nil {

@@ -309,7 +309,11 @@ func parseEventPattern(t []syntax.Token) (int, string, bool) {
 		end += 4
 	}
 	if ok && end < len(t) && t[end].Value == "once" {
-		if t[1].Value == "self" && !survivesDamage || end+2 >= len(t) || t[end+1].Value != "per" {
+		// `self` 事件一般不能限次；但"本随从在战场上身材增加/减少时，自己的每回合中 1 次"
+		// 这类写法是卡面明写的，允许它带 once per。
+		selfLimited := t[1].Value == "self" && (survivesDamage ||
+			len(t) >= 4 && (values(t[2:4]) == "stats increased" || values(t[2:4]) == "life decreased"))
+		if t[1].Value == "self" && !selfLimited || end+2 >= len(t) || t[end+1].Value != "per" {
 			return 0, "", false
 		}
 		end += 2

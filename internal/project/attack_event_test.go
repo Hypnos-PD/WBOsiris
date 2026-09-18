@@ -39,3 +39,27 @@ func TestAttackEventCompiles(t *testing.T) {
 		t.Fatal(ds)
 	}
 }
+
+// 宣告攻击的监听除 `attacker` 外还绑定 `defender`（只在攻击随从时有值），
+// 用来表达"攻击随从时"这类条件。
+func TestAttackListenerBindsDefender(t *testing.T) {
+	pack, ds := compile(t, validCard(`when own follower attacks {
+		if count(defender) >= 1 {
+			set_attack_limit attacker 2;
+		}
+	}`))
+	if len(ds) != 0 {
+		t.Fatal(ds)
+	}
+	condition, ok := pack.Cards[0].Abilities[0].Body[0].(ir.IfEffect)
+	if !ok {
+		t.Fatalf("expected an if block: %#v", pack.Cards[0].Abilities[0].Body[0])
+	}
+	count, ok := condition.Condition.(ir.CountCondition)
+	if !ok {
+		t.Fatalf("expected a count condition: %#v", condition.Condition)
+	}
+	if ref, ok := count.Source.(ir.BindingRef); !ok || ref.Name != "defender" {
+		t.Fatalf("defender binding lost: %#v", count.Source)
+	}
+}

@@ -6,7 +6,18 @@ card 10842120 {
     stats 2/1;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from own.hand;
+            discard target;
+            draw 1;
+            heal own.leader 1;
+        }
+        evolve {
+            choose target from own.hand;
+            discard target;
+            draw 1;
+            heal own.leader 1;
+        }
     }
 
     meta {

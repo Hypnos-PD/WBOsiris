@@ -1563,7 +1563,8 @@ func decodePredicate(data []byte) (Predicate, error) {
 		if err := strict(data, &v); err != nil {
 			return nil, err
 		}
-		if !oneOf(v.CardType, "follower", "spell", "amulet") {
+		// crest / faith 只出现在主战者区域，用于"消灭所有纹章（不含信仰）"这类筛选。
+		if !oneOf(v.CardType, "follower", "spell", "amulet", "crest", "faith") {
 			return nil, fmt.Errorf("invalid predicate card type")
 		}
 		return FieldPredicate{Kind: v.Kind, CardType: v.CardType}, nil

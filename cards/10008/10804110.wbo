@@ -6,7 +6,21 @@ card 10804110 {
     stats 13/13;
 
     effect {
-        unplayable;
+        fanfare {
+            mode {
+                option 1 {
+                    banish field.followers other;
+                }
+                option 2 {
+                    banish field.amulets;
+                }
+                option 3 {
+                    // 官方 QA：这一档不会消灭「信仰」（信仰与纹章共用区域）。
+                    destroy own.crests where not type faith;
+                    destroy oppo.crests where not type faith;
+                }
+            }
+        }
     }
 
     meta {

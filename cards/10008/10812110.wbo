@@ -6,7 +6,12 @@ card 10812110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        when self stats increased once per own turn {
+            summon 1 card 90011110;
+        }
+        lastwords {
+            add 1 card 90011110 to hand;
+        }
     }
 
     meta {

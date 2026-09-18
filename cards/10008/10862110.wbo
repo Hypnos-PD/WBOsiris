@@ -6,7 +6,16 @@ card 10862110 {
     stats 6/7;
 
     effect {
-        unplayable;
+        ward;
+        aura;
+        lastwords {
+            summon 1 card 10862110;
+            remove lastwords from summoned;
+        }
+        superevolve {
+            choose target from oppo.field.followers;
+            destroy target;
+        }
     }
 
     meta {

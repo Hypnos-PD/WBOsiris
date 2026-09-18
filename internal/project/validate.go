@@ -11,6 +11,9 @@ import (
 
 var (
 	cardTypes = set("follower", "spell", "amulet")
+	// filterTypes 比卡牌声明多出 `crest` / `faith`：它们只出现在主战者区域，
+	// 用于"消灭所有纹章（但不含信仰）"这类筛选。
+	filterTypes = set("follower", "spell", "amulet", "crest", "faith")
 	abilities = set("ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "ability_target_guard", "ability_destruction_guard", "damage_taken_up", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")
 	classes   = set("neutral", "forestcraft", "swordcraft", "runecraft", "dragoncraft", "abysscraft", "havencraft", "portalcraft")
 	rarities  = set("bronze", "silver", "gold", "legendary")
@@ -232,6 +235,8 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 	}
 	if event == "attacks" {
 		bindings["attacker"] = true
+		// `defender` 只在攻击随从时存在（攻击主战者时不绑定），用于区分"攻击随从/攻击主战者"。
+		bindings["defender"] = true
 	}
 	if event == "discarded" {
 		bindings["discarded"] = true
@@ -1052,7 +1057,7 @@ func negatedWhereTerm(t []syntax.Token, i int) (int, bool) {
 			return i + 2, true
 		}
 	case "type":
-		if i+1 < len(t) && cardTypes[t[i+1].Value] {
+		if i+1 < len(t) && filterTypes[t[i+1].Value] {
 			return i + 2, true
 		}
 	case "class":
@@ -1128,7 +1133,7 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 				i += 2
 			}
 		case "type":
-			if i+1 < len(t) && cardTypes[t[i+1].Value] {
+			if i+1 < len(t) && filterTypes[t[i+1].Value] {
 				i += 2
 			}
 		case "class":

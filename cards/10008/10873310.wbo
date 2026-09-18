@@ -5,7 +5,11 @@ card 10873310 {
     cost 3;
 
     effect {
-        unplayable;
+        choose target from oppo.field.followers;
+        damage target 6;
+        if own.entered_artifacts >= 3 {
+            gain own.ep 1;
+        }
     }
 
     meta {

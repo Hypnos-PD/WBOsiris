@@ -1,0 +1,375 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "黑暗骑士的入场曲打击敌方全体与所有主战者" {
+    seed 88001;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10852120; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; victim.stats == 0/8; own.leader.life == 19; oppo.leader.life == 19; }
+}
+
+scenario "你的前辈加入解析的创造物" {
+    seed 88002;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10874120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90071130 == 1; }
+}
+
+scenario "你的前辈的进化时让其他未进化随从进化" {
+    seed 88003;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field {
+                follower source = 10874120;
+                follower ally = 10001110;
+            }
+        }
+    }
+    action { evolve source; select ally; }
+    expect { legal; ally.evolved == true; ally.stats == 4/4; }
+}
+
+scenario "太古的妖精在身材增加时每回合召唤一次妖精" {
+    seed 88004;
+    state {
+        turn own 3;
+        player own {
+            pp 2/2;
+            field { follower source = 10812110; }
+            hand { spell buffall = 10772310; }
+        }
+    }
+    action { play buffall; }
+    expect { legal; own.field count card 90011110 == 1; }
+}
+
+scenario "太古的妖精的谢幕曲把妖精加入手牌" {
+    seed 88005;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10812110; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.hand count card 90011110 == 1; }
+}
+
+scenario "狐火蜃景可以指定对手主战者并把复制加入牌组" {
+    seed 88006;
+    state {
+        player own {
+            pp 1/1;
+            hand { spell source = 10843310; }
+        }
+    }
+    action { play source; select oppo.leader; }
+    expect { legal; oppo.leader.life == 19; own.deck count card 10843310 == 1; }
+}
+
+scenario "狐火蜃景在觉醒时追加抽一张" {
+    seed 88007;
+    state {
+        player own {
+            pp 7/7;
+            hand { spell source = 10843310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    // 牌组原本是空的：加入的复制是唯一一张牌，抽牌必然抽回它。
+    expect { legal; victim.stats == 0/8; own.hand count card 10843310 == 1; }
+}
+
+scenario "威胁的残渣让低生命随从消失" {
+    seed 88008;
+    state {
+        player own {
+            pp 2/2;
+            hand { spell source = 10862310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/3; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.zone == banished; }
+}
+
+scenario "威胁的残渣爆能强化时消灭所有低生命随从" {
+    seed 88009;
+    state {
+        player own {
+            pp 5/5;
+            hand { spell source = 10862310; }
+        }
+        player oppo {
+            field {
+                follower first = 10001120 { stats 0/3; }
+                follower second = 10001110 { stats 0/2; }
+                follower big = 10001120 { stats 0/9; }
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        first.zone == banished;
+        second.zone == banished;
+        big.zone == field;
+    }
+}
+
+scenario "伏地雷击打击攻击力最大的随从与主战者并回收自己" {
+    seed 88010;
+    state {
+        player own {
+            pp 5/5;
+            field { amulet sigil = 90031210 { earthsigil 2; } }
+            hand { spell source = 10832320; }
+        }
+        player oppo {
+            field {
+                follower strong = 10001120 { stats 7/7; }
+                follower weak = 10001110;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        strong.zone == graveyard;
+        weak.stats == 2/2;
+        oppo.leader.life == 18;
+        own.hand count card 10832320 == 1;
+        sigil.earthsigil == 0;
+    }
+}
+
+scenario "森绿的恩惠的入场曲造成伤害并增幅手牌" {
+    seed 88011;
+    state {
+        player own {
+            pp 2/2;
+            hand {
+                follower source = 10831110;
+                spell boostable = 10133310;
+            }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    // 打出的是随从，不会触发魔力增幅；只有卡面效果的那 1 次。
+    expect { legal; victim.stats == 0/8; boostable.counter.x == 1; }
+}
+
+scenario "开辟未来在创造物种类达标时回复进化点" {
+    seed 88012;
+    state {
+        player own {
+            pp 3/3;
+            ep 1;
+            hand { spell source = 10873310; }
+            destroyed {
+                follower a = 90071130;
+                follower b = 90071140;
+                follower c = 90071150;
+            }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 0/3; own.ep == 2; }
+}
+
+scenario "阿尔比昂巴哈姆特的模式一消灭其他随从" {
+    seed 88013;
+    state {
+        player own {
+            pp 9/9;
+            hand { follower source = 10804110; }
+        }
+        player oppo {
+            field {
+                follower enemy = 10001110;
+                amulet relic = 10001210;
+            }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; enemy.zone == banished; relic.zone == field; }
+}
+
+scenario "阿尔比昂巴哈姆特的模式三消灭纹章但不消灭信仰" {
+    seed 88014;
+    state {
+        player own {
+            pp 9/9;
+            hand { follower source = 10804110; }
+            crests {
+                crest emblem = 10453310;
+                faith belief = 10664120 { counter value 1; }
+            }
+        }
+    }
+    action { play source; mode 3; }
+    expect { legal; own.crests count card 10453310 == 0; own.crests count card 10664120 == 1; }
+}
+
+scenario "满面笑容的烹饪舍弃手牌抽牌并回复" {
+    seed 88015;
+    state {
+        player own {
+            leader 10/20;
+            pp 2/2;
+            hand {
+                follower source = 10842120;
+                follower fodder = 10001110;
+            }
+            deck top { follower next = 10011110; }
+        }
+    }
+    action { play source; select fodder; }
+    expect {
+        legal;
+        own.graveyard count card 10001110 == 1;
+        own.hand count card 10011110 == 1;
+        own.leader.life == 11;
+    }
+}
+
+scenario "越狱者的自己使用法术时打击随机随从" {
+    seed 88016;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10822110; }
+            hand { spell cast = 10031310; }
+            deck top { follower spare = 10011110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play cast; }
+    expect { legal; victim.stats == 0/7; }
+}
+
+scenario "越狱者进化时把闪耀的金币加入手牌" {
+    seed 88017;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10822110; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.hand count card 90021350 == 1; }
+}
+
+scenario "天阳的使徒的谢幕曲召唤失去谢幕曲的自己" {
+    seed 88018;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10862110; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.field count card 10862110 == 1; }
+}
+
+scenario "天阳的使徒超进化时破坏敌方随从" {
+    seed 88019;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10862110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { superevolve source; select victim; }
+    expect { legal; victim.zone == graveyard; source has ward; }
+}
+
+scenario "圣洁驱魔人在有进化随从时进化并连打两次" {
+    seed 88020;
+    state {
+        player own {
+            pp 3/3;
+            field {
+                follower evolved = 10001110 { evolved; }
+            }
+            hand { follower source = 10863110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == true; victim.stats == 0/3; }
+}
+
+scenario "飞跃的姐妹让超进化随从攻击随从时能打两次" {
+    seed 88021;
+    state {
+        player own {
+            field { follower attacker = 10001110 { super_evolved; stats 6/6; } }
+            crests { crest emblem = 10864110; }
+        }
+        player oppo {
+            field { follower defender = 10001120 { stats 0/9; } }
+        }
+    }
+    action { attack attacker into defender; }
+    expect { legal; attacker.attack_limit == 2; }
+}
+
+scenario "飞跃的姐妹的入场曲召唤低费随从并让它超进化" {
+    seed 88022;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10864110; }
+            deck top {
+                follower cheap = 10001110;
+                follower expensive = 10021120;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 10001110 == 1;
+        own.field count card 10021120 == 0;
+        // 超进化 +3/+3：2/2 → 5/5。
+        cheap.stats == 5/5;
+    }
+}

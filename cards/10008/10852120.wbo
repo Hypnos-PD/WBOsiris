@@ -6,7 +6,14 @@ card 10852120 {
     stats 5/4;
 
     effect {
-        unplayable;
+        fanfare {
+            damage oppo.field.followers 1;
+            damage all.leaders 1;
+        }
+        evolve {
+            damage oppo.field.followers 1;
+            damage all.leaders 1;
+        }
     }
 
     meta {

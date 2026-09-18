@@ -5,7 +5,11 @@ card 10862310 {
     cost 2;
 
     effect {
-        unplayable;
+        choose target from oppo.field.followers where life <= 3;
+        banish target;
+        enhance 5 replaces {
+            banish oppo.field.followers where life <= 3;
+        }
     }
 
     meta {

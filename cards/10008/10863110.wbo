@@ -6,7 +6,18 @@ card 10863110 {
     stats 2/4;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            if count(own.field.followers where form evolved) >= 1 {
+                evolve self silent;
+            }
+        }
+        when self evolved {
+            repeat 2 {
+                random victim from oppo.field.followers;
+                damage victim 3;
+            }
+        }
     }
 
     meta {

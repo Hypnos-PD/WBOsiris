@@ -6,7 +6,16 @@ card 10831110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from oppo.field.followers;
+            damage target 1;
+            spellboost own.hand 1;
+        }
+        evolve {
+            choose target from oppo.field.followers;
+            damage target 1;
+            spellboost own.hand 1;
+        }
     }
 
     meta {

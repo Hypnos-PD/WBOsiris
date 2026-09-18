@@ -6,7 +6,13 @@ card 10822110 {
     stats 1/4;
 
     effect {
-        unplayable;
+        when own card played once per own turn where type spell {
+            random victim from oppo.field.followers;
+            damage victim 2;
+        }
+        evolve {
+            add 1 card 90021350 to hand;
+        }
     }
 
     meta {

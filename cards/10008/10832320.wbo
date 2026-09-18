@@ -5,7 +5,12 @@ card 10832320 {
     cost 5;
 
     effect {
-        unplayable;
+        random victim from oppo.field.followers highest attack;
+        damage victim 8;
+        damage oppo.leader 2;
+        earthrite 2 {
+            add 1 card 10832320 to hand;
+        }
     }
 
     meta {
