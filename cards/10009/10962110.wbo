@@ -6,7 +6,12 @@ card 10962110 {
     stats 1/4;
 
     effect {
-        unplayable;
+        fanfare {
+            add stealth to self until oppo turn ends;
+        }
+        when own turn ends {
+            heal own.leader 1;
+        }
     }
 
     meta {

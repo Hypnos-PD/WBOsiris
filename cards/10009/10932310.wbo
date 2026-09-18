@@ -5,7 +5,10 @@ card 10932310 {
     cost 3;
 
     effect {
-        unplayable;
+        summon 1 card 10931110;
+        buff summoned +1/+0;
+        add 1 card 10931110 to hand;
+        buff added +1/+0;
     }
 
     meta {

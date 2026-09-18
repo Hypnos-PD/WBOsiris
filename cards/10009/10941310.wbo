@@ -5,7 +5,11 @@ card 10941310 {
     cost 1;
 
     effect {
-        unplayable;
+        summon 1 card 90041110;
+        enhance 3 {
+            random victim from oppo.field.followers;
+            damage victim 3;
+        }
     }
 
     meta {

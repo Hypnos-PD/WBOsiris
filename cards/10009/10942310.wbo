@@ -5,7 +5,11 @@ card 10942310 {
     cost 3;
 
     effect {
-        unplayable;
+        choose targets from own.hand count 2;
+        discard targets;
+        random victim from oppo.field.followers;
+        damage victim 3;
+        damage oppo.leader 3;
     }
 
     meta {

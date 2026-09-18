@@ -6,7 +6,15 @@ card 10922120 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 2 card 90021120;
+        }
+        enhance 7 {
+            buff summoned +3/+0;
+            add rush to summoned;
+            buff self +3/+0;
+            add rush to self;
+        }
     }
 
     meta {

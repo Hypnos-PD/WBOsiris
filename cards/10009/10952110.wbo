@@ -6,7 +6,12 @@ card 10952110 {
     stats 4/6;
 
     effect {
-        unplayable;
+        ward;
+        lastwords {
+            random victim from oppo.field.followers;
+            destroy victim;
+            heal own.leader 2;
+        }
     }
 
     meta {

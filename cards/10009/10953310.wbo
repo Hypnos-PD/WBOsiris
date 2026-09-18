@@ -5,7 +5,17 @@ card 10953310 {
     cost 2;
 
     effect {
-        unplayable;
+        choose target from own.field.followers;
+        grant target {
+            label chs "【谢幕曲】召唤1个与本随从同名的随从。";
+            label eng "Last Words: Summon a copy of this follower.";
+            label jpn "【ラストワード】これと同名のフォロワー1枚を自分の場に出す。";
+            label kor "[유언] 이 추종자와 동명인 추종자 1장을 내 전장에 소환.";
+            label cht "【謝幕曲】召喚1張與這張從者卡同名的從者卡。";
+            lastwords {
+                summon copies of self;
+            }
+        }
     }
 
     meta {

@@ -6,7 +6,13 @@ card 10971110 {
     stats 1/1;
 
     effect {
-        unplayable;
+        rush;
+        fanfare {
+            if own.deck has no duplicates {
+                choose target from oppo.field.followers;
+                damage target 5;
+            }
+        }
     }
 
     meta {

@@ -1,0 +1,255 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "双子无人机少女的入场曲与进化时各召唤一个解析的创造物" {
+    seed 93001;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10971120; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.field count card 90071130 == 1; }
+}
+
+scenario "漩涡炮手召唤海盗旗并把黄金之杯加入手牌" {
+    seed 93002;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10922110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90021210 == 1; own.hand count card 90021320 == 1; source has rush; }
+}
+
+scenario "海域斥候的进化时把黄金之靴加入手牌" {
+    seed 93003;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10921110; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.hand count card 90021330 == 1; }
+}
+
+scenario "渊底上校的谢幕曲破坏随机随从并回复主战者" {
+    seed 93004;
+    state {
+        player own {
+            leader 10/20;
+            pp 1/1;
+            field { follower source = 10952110; }
+            hand { spell remover = 90074310; }
+        }
+        player oppo {
+            field { follower victim = 10001110; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; victim.zone == graveyard; own.leader.life == 12; }
+}
+
+scenario "闪烁恶魔破坏敌方随从并打击主战者" {
+    seed 93005;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10952120; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.zone == graveyard; oppo.leader.life == 18; }
+}
+
+scenario "驱逐死神给自己的随从谢幕曲同名称召唤" {
+    seed 93006;
+    state {
+        player own {
+            pp 2/2;
+            field { follower ally = 10001110; }
+            hand {
+                spell source = 10953310;
+                spell remover = 90074310;
+            }
+        }
+    }
+    action { play source; select ally; }
+    expect { legal; ally.zone == field; }
+}
+
+scenario "乌涅召唤实验体并两次打击随机随从" {
+    seed 93007;
+    state {
+        player own {
+            pp 5/5;
+            hand { spell source = 10933310; }
+        }
+        player oppo {
+            field {
+                follower first = 10001120 { stats 0/9; }
+                follower second = 10001120 { stats 0/9; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10931110 == 1; }
+}
+
+scenario "幼龙闹脾气召唤炽炎幼龙" {
+    seed 93008;
+    state {
+        player own {
+            pp 1/1;
+            hand { spell source = 10941310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90041110 == 1; }
+}
+
+scenario "幼龙闹脾气的爆能强化追加打击" {
+    seed 93009;
+    state {
+        player own {
+            pp 3/3;
+            hand { spell source = 10941310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; victim.stats == 0/6; }
+}
+
+scenario "幽冥中尉的谢幕曲召唤强化并失去谢幕曲的自己" {
+    seed 93010;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10951120; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.field count card 10951120 == 1; all own.field where card 10951120 have rush; }
+}
+
+scenario "凶猛指挥官爆能强化时强化骑士与自身" {
+    seed 93011;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10922120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90021120 == 2;
+        source.stats == 7/4;
+        source has rush;
+        all own.field where card 90021120 have rush;
+    }
+}
+
+scenario "人性的爱强化召唤与加入的实验体" {
+    seed 93012;
+    state {
+        player own {
+            pp 3/3;
+            hand { spell source = 10932310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10931110 == 1; own.hand count card 10931110 == 1; }
+}
+
+scenario "颚口之别舍弃两张手牌并打击随从与主战者" {
+    seed 93013;
+    state {
+        player own {
+            pp 3/3;
+            hand {
+                spell source = 10942310;
+                follower first = 10001110;
+                follower second = 10001120;
+            }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select first, second; }
+    expect {
+        legal;
+        own.graveyard count card 10001110 == 1;
+        own.graveyard count card 10001120 == 1;
+        victim.stats == 0/6;
+        oppo.leader.life == 17;
+    }
+}
+
+scenario "屈辱流放在牌组无重复时抽三张" {
+    seed 93014;
+    state {
+        player own {
+            pp 1/1;
+            hand {
+                spell source = 10972310;
+                follower fodder = 10001110;
+            }
+            deck top {
+                follower a = 10011110;
+                follower b = 10011120;
+                follower c = 10011130;
+            }
+        }
+    }
+    action { play source; select fodder; }
+    expect {
+        legal;
+        own.graveyard count card 10001110 == 1;
+        own.hand count card 10011110 == 1;
+        own.hand count card 10011120 == 1;
+        own.hand count card 10011130 == 1;
+    }
+}
+
+scenario "纪律间谍的入场曲让自己潜伏并在回合结束回复" {
+    seed 93015;
+    state {
+        player own {
+            leader 10/20;
+            pp 3/3;
+            hand { follower source = 10962110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has stealth; }
+}
+
+scenario "青锈小卒在牌组无重复时打击选中的随从" {
+    seed 93016;
+    state {
+        player own {
+            pp 1/1;
+            hand { follower source = 10971110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 0/4; source has rush; }
+}

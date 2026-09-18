@@ -5,7 +5,13 @@ card 10972310 {
     cost 1;
 
     effect {
-        unplayable;
+        choose target from own.hand;
+        discard target;
+        if own.deck has no duplicates {
+            draw 3;
+        } else {
+            draw 1;
+        }
     }
 
     meta {

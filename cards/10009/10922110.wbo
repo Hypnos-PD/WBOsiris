@@ -6,7 +6,11 @@ card 10922110 {
     stats 3/1;
 
     effect {
-        unplayable;
+        rush;
+        fanfare {
+            summon 1 card 90021210;
+            add 1 card 90021320 to hand;
+        }
     }
 
     meta {

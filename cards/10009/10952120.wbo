@@ -6,7 +6,11 @@ card 10952120 {
     stats 7/7;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from oppo.field.followers;
+            destroy target;
+            damage oppo.leader 2;
+        }
     }
 
     meta {
