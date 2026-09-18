@@ -161,6 +161,18 @@ func NewWithOptions(root string, paths []string, illustrationRoot, authVerifyURL
 	if err != nil {
 		return nil, err
 	}
+	return NewWithPacks(cards, tests, illustrationRoot, authVerifyURL)
+}
+
+// NewWithPacks 用已经编译好的卡池构造服务：桌面客户端把卡池嵌在二进制里，
+// 解包后编译一次，之后不再读磁盘上的 .wbo。
+func NewWithPacks(cards *ir.CardPack, tests *ir.TestPack, illustrationRoot, authVerifyURL string) (*Server, error) {
+	if cards == nil {
+		return nil, fmt.Errorf("card pack is required")
+	}
+	if tests == nil {
+		tests = &ir.TestPack{}
+	}
 	return &Server{
 		cards: cards, tests: tests, illustrationRoot: illustrationRoot,
 		lobbyAuth: newLobbyAuth(authVerifyURL),

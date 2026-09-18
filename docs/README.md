@@ -18,6 +18,8 @@
 - [网页牌组库](tooling/deck-library.md)：命名构筑、导入导出、本地保存与网络对战选牌。
 - [网络房间与恢复](tooling/network-rooms.md)：邀请对手、恢复席位、连接状态与本地凭据。
 - [对局线协议](tooling/wire-protocol.md)：状态/动作/选择/推送流，以及写外部 bot 的最小循环。
+- [部署](tooling/deployment.md)：规则服务挂在 WBA 的 `/wbo/` 前缀、账号沿用 WBArts JWT、单实例约束。
+- [桌面客户端](tooling/desktop-client.md)：Go + Wails 的客户端、素材放包内、AppImage 预处理与发布。
 
 ## 规则
 

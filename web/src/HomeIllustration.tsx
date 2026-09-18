@@ -19,6 +19,9 @@ export type HomeIllustration = {
 };
 
 export type Viewport = { x: number; y: number; width: number; height: number };
+
+// 见 computeViewport 的说明：覆盖计算出来后额外放大一点，避免播放器 Fit 出来的缝。
+const coverSafety = 1.06;
 export type BackgroundImage = { url: string; x: number; y: number; width: number; height: number };
 
 const toNum = (value: unknown, fallback: number) => {
@@ -64,6 +67,10 @@ export function computeViewport(config: HomeIllustration, aspect: number, yBiasP
     if (aspect > design) width = height * aspect;
     else height = width / aspect;
   }
+  // 安全放大：spine-player 会按"带 10% 内边距的视口"做 Fit，实测容器上下仍会剩一条
+  // 约 3% 的缝；放大 6% 把它推到画面外，构图中心不变。
+  width *= coverSafety;
+  height *= coverSafety;
   return { x: -unityX / scaleX - width / 2, y: -unityY / scaleY - height / 2, width, height };
 }
 
@@ -111,14 +118,27 @@ export function HomeIllustrationView({ config, className = "", ratio = 16 / 9, i
   const [tick, setTick] = useState(0);
   const tapIndex = useRef(0);
 
+  // 必须等元素真的有尺寸再建播放器：挂载瞬间 clientWidth/Height 可能都是 0，
+  // 那时算出来的相机比例会退回 16:9，画面就被 letterbox 出黑边。
   useEffect(() => {
+    const element = host.current;
+    if (!element) return;
     let timer: number | undefined;
-    const onResize = () => {
+    let disposed = false;
+    const schedule = () => {
+      if (disposed) return;
       window.clearTimeout(timer);
-      timer = window.setTimeout(() => setTick((value) => value + 1), 400);
+      timer = window.setTimeout(() => setTick((value) => value + 1), 250);
     };
-    window.addEventListener("resize", onResize);
-    return () => { window.clearTimeout(timer); window.removeEventListener("resize", onResize); };
+    const observer = new ResizeObserver(schedule);
+    observer.observe(element);
+    window.addEventListener("resize", schedule);
+    return () => {
+      disposed = true;
+      observer.disconnect();
+      window.removeEventListener("resize", schedule);
+      window.clearTimeout(timer);
+    };
   }, []);
 
   useEffect(() => {
@@ -130,7 +150,11 @@ export function HomeIllustrationView({ config, className = "", ratio = 16 / 9, i
       spine?: { SpinePlayer?: new (host: HTMLElement, options: Record<string, unknown>) => SpinePlayerLike };
     }).spine;
     if (!runtime?.SpinePlayer) { setFailed(true); return; }
-    const aspect = element.clientWidth && element.clientHeight ? element.clientWidth / element.clientHeight : ratio;
+    const width = element.clientWidth;
+    const height = element.clientHeight;
+    // 还没有布局就先不建，等 ResizeObserver 触发一次重建。
+    if (!width || !height) return;
+    const aspect = width / height;
     const viewport = computeViewport(config, aspect);
     const instance = new runtime.SpinePlayer(element, {
       skelUrl: config.skel,

@@ -77,7 +77,8 @@ body { background: var(--wbo-bg); color: var(--wbo-ink); font-family: 'Noto Sans
 
 /* ── 主界面：整页立绘 + 标题 + 菜单，没有侧栏，也没有状态小字 ─────────── */
 .menu-screen { position: fixed; inset: 0; overflow: hidden; background: #0b0b0b; }
-.menu-backdrop { position: absolute; inset: 0; }
+/* 比视口再大一圈，确保任何残余的播放器内边距都不会露出底色 */
+.menu-backdrop { position: absolute; inset: -3%; }
 .menu-backdrop .home-illustration { inset: 0; }
 .menu-screen::after {
   content: ""; position: absolute; inset: 0; pointer-events: none;
@@ -160,7 +161,7 @@ body { background: var(--wbo-bg); color: var(--wbo-ink); font-family: 'Noto Sans
 
 /* 整页背景：立绘铺满整个内容区（像游戏主界面那样），上面压一层纱保证可读性 */
 .page-backdrop { position: fixed; inset: 0; z-index: 0; background: #0b0b0b; overflow: hidden; }
-.page-backdrop .home-illustration { inset: 0; }
+.page-backdrop .home-illustration { inset: -3%; }
 .page-backdrop::after {
   content: ""; position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(90deg, rgba(12,12,12,.95) 0%, rgba(12,12,12,.82) 34%, rgba(12,12,12,.55) 62%, rgba(12,12,12,.35) 100%);

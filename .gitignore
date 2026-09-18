@@ -16,3 +16,10 @@ temp/
 
 # 部署时的本地构建产物
 /build/
+
+# 桌面客户端构建产物
+/desktop/frontend/dist/
+/desktop/build/bin/
+/desktop/frontend/wailsjs/
+/dist/
+/.cache/
