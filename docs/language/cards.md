@@ -956,6 +956,9 @@ fanfare {
 `until oppo turn ends`）：到期时按差量还原，"回合结束前使其费用变为 0"就用它。
 
 `raise cost T N;` 给目标的当前费用加 N（没有上限，卡牌文本没有写上限时按字面处理）；
+它和 `reduce cost` 也可以带期限：`raise cost oppo.hand 1 until oppo turn ends;`
+表示"对手的回合结束前，使对手的所有手牌的费用+1"，到期只撤销这次差量，
+不会覆盖期间发生的永久加减费。
 只做减费时继续用 `reduce cost T N minimum M`。
 `reduce countdown T X` 的增量也可以是数值引用，例如"本护符的倒计数 -X，X 为自己的纹章数"
 写作 `reduce countdown self own.crests;`。

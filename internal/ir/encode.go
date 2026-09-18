@@ -309,7 +309,13 @@ func (e AdjustEffect) MarshalJSON() ([]byte, error) {
 	case "adjust_counter":
 		object["field"], object["delta"] = e.Field, e.Delta
 	case "adjust_entity_field":
+		if e.Until != "" && (e.Field != "cost" || !oneOf(e.Until, "turn_end", "own_turn_end", "oppo_turn_end")) {
+			return nil, fmt.Errorf("invalid entity adjustment duration")
+		}
 		object["field"], object["target"], object["minimum"] = e.Field, e.Target, e.Minimum
+		if e.Until != "" {
+			object["until"] = e.Until
+		}
 		if e.DeltaExpr != nil {
 			delta, err := numericValue(0, e.DeltaExpr, true)
 			if err != nil {

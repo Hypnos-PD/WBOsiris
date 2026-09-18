@@ -798,7 +798,15 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 				// 增量可以是常量或数值引用：`reduce countdown self own.crests`。
 				if next, amountOK := parseEffectAmount(t, end); amountOK {
 					end = next
-					ok = t[1].Value == "countdown" && end == len(t) || t[1].Value == "cost" && end+2 == len(t) && t[end].Value == "minimum" && isUnsigned(t[end+1])
+					if t[1].Value == "countdown" {
+						ok = end == len(t)
+					} else if end < len(t) && t[end].Value == "until" {
+						// `reduce cost T N until ...`：临时降费，到期按差量还原。
+						end, ok = parseEffectDuration(t, end)
+						ok = ok && end == len(t)
+					} else {
+						ok = end+2 == len(t) && t[end].Value == "minimum" && isUnsigned(t[end+1])
+					}
 				}
 			}
 			checkBindingAt(t, 2, end, bindings, ds)
@@ -812,7 +820,16 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 	case "raise":
 		if len(t) >= 4 && (t[1].Value == "cost" || t[1].Value == "countdown") {
 			end, good := parseValueRef(t, 2)
-			ok = good && end+1 == len(t) && isUnsigned(t[end])
+			if good && end < len(t) && isUnsigned(t[end]) {
+				end++
+			} else {
+				good = false
+			}
+			if good && end < len(t) && t[end].Value == "until" {
+				// `raise cost T N until ...`：临时加费，到期按差量还原。
+				end, good = parseEffectDuration(t, end)
+			}
+			ok = good && end == len(t)
 			checkBindingAt(t, 2, end, bindings, ds)
 		}
 	case "double":

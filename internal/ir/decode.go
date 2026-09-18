@@ -1190,6 +1190,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		type raw struct {
 			ID                           string `json:"id"`
 			Kind, Owner, Resource, Field string
+			Until                        string          `json:"until,omitempty"`
 			Target                       json.RawMessage `json:"target,omitempty"`
 			Delta, Minimum, Times        int
 			DeltaValue                   json.RawMessage `json:"deltaValue,omitempty"`
@@ -1228,6 +1229,9 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			if v.Owner != "" || v.Resource != "" || !oneOf(v.Field, "cost", "countdown") || r == nil || v.Times != 0 {
 				return nil, fmt.Errorf("invalid entity adjustment")
 			}
+			if v.Until != "" && (v.Field != "cost" || !oneOf(v.Until, "turn_end", "own_turn_end", "oppo_turn_end")) {
+				return nil, fmt.Errorf("invalid entity adjustment duration")
+			}
 			if len(v.DeltaValue) > 0 && (v.Delta != 0 || v.Minimum != 0) {
 				return nil, fmt.Errorf("invalid dynamic entity adjustment")
 			}
@@ -1258,7 +1262,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 				deltaExpr = expr
 			}
 		}
-		return AdjustEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.Resource, v.Field, r, v.Delta, deltaExpr, v.Minimum, v.Times}, err
+		return AdjustEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.Resource, v.Field, r, v.Delta, deltaExpr, v.Minimum, v.Times, v.Until}, err
 	default:
 		return nil, fmt.Errorf("unknown executable effect kind %q", k.Kind)
 	}

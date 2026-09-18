@@ -5,7 +5,24 @@ card 90044310 {
     cost 3;
 
     effect {
-        unplayable;
+        mode {
+            option 1 {
+                label chs "破坏对手的战场上的所有受伤的随从。";
+                label eng "Destroy all damaged enemy followers.";
+                label jpn "相手の場のダメージを受けているフォロワーすべてを破壊。";
+                label kor "상대방 전장의 피해를 받은 추종자 모두를 파괴.";
+                label cht "破壞敵方戰場上所有受傷的從者卡。";
+                destroy oppo.field.followers where damaged;
+            }
+            option 2 {
+                label chs "对手的回合结束前，使对手的所有手牌的费用+1。";
+                label eng "Until the end of your opponent's turn, increase the cost of all cards in your opponent's hand by 1.";
+                label jpn "相手のターン終了まで、相手の手札すべてのコスト+1。";
+                label kor "상대방 턴 종료까지 상대방 패의 모든 코스트 +1.";
+                label cht "到敵方回合結束為止，使敵方手牌中全部的卡片消費+1。";
+                raise cost oppo.hand 1 until oppo turn ends;
+            }
+        }
     }
 
     meta {

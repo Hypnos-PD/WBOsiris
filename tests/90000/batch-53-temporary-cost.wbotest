@@ -1,0 +1,33 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "银冰吐息模式一破坏所有受伤的敌方随从" {
+    seed 53001;
+    state {
+        player own {
+            pp 3/3;
+            hand { spell source = 90044310; }
+        }
+        player oppo {
+            field {
+                follower hurt = 10001110 { stats 2/6; damage_taken 2; }
+                follower whole = 10001110 { stats 2/6; }
+            }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; hurt.zone == graveyard; whole.zone == field; }
+}
+
+scenario "银冰吐息模式二让对手手牌的费用加一" {
+    seed 53002;
+    state {
+        player own {
+            pp 3/3;
+            hand { spell source = 90044310; }
+        }
+        player oppo { hand { follower theirs = 10001110; } }
+    }
+    action { play source; mode 2; }
+    expect { legal; theirs.cost == 3; }
+}

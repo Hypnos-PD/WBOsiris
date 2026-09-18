@@ -598,6 +598,8 @@ type AdjustEffect struct {
 	DeltaExpr NumericExpr `json:"-"`
 	Minimum  int    `json:"minimum,omitempty"`
 	Times    int    `json:"times,omitempty"`
+	// Until 为空表示永久修改费用；否则记录差量并在对应回合结束时还原。
+	Until string `json:"until,omitempty"`
 }
 
 func (e AdjustEffect) effectKind() string   { return e.Kind }

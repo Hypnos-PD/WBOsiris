@@ -987,7 +987,8 @@ AdjustEntityField = NodeBase & {
   field: "cost" | "countdown",
   delta: i32,
   minimum: i32?,
-  maximum: i32?
+  maximum: i32?,
+  until: ("turn_end" | "own_turn_end" | "oppo_turn_end")?
 }
 
 HalveCost = NodeBase & {
@@ -1054,6 +1055,8 @@ Spellboost = NodeBase & {
 `reduce countdown self 2` 编译为
 `AdjustEntityField(delta=-2, minimum=0)`；`reduce cost self 1 minimum 0` 显式保留
 下限。到达上限或下限后按最终截断值继续结算。
+带 `until` 时（只允许 `field="cost"`）该修改是临时的：运行器按到期侧记录差量，
+回合结束按差量还原，因此不会吞掉期间发生的永久加减费。
 
 `evolve target silent` 与 `superevolve target silent` 只作用于场上的未进化随从，分别增加
 +2/+2、+3/+3 并改变形态，不支付 EP/SEP、不占用手动次数，也不执行目标卡面的进化关键词能力。
@@ -1101,7 +1104,7 @@ ability: Ability, labels?: map<LocaleId, string> }` 附加一个独立触发能�
 | `gain own.maxpp N`、`add combo N` | `AdjustResource` |
 | `restore own.pp` | `RestoreResource` |
 | `add N earthsigil` | `AdjustEarthSigil` |
-| `reduce countdown T N`、`reduce cost T N minimum M` | `AdjustEntityField` |
+| `reduce countdown T N`、`reduce cost T N minimum M`、`raise\|reduce cost T N until …` | `AdjustEntityField` |
 | `halve cost T` | `HalveCost`（当前费用向上取整的一半，可作用于整副牌组） |
 | `double stats T` | `DoubleStats`（按每个目标自己的当前攻击力与生命值翻倍） |
 | `spellboost S N` | `Spellboost` |

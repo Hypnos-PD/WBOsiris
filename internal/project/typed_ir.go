@@ -548,7 +548,11 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			e.DeltaExpr = &ir.NegateExpr{Kind: "negate", Value: expr}
 		}
 		if t[1].Value == "cost" {
-			e.Minimum = intToken(t[end+2])
+			if end+2 < len(t) && t[end+2].Value == "minimum" {
+				e.Minimum = intToken(t[end+3])
+			} else if end+2 < len(t) && t[end+2].Value == "until" {
+				e.Until = effectDurationIR(t, end+2)
+			}
 		}
 		return e, nil
 	case "spellboost":
@@ -561,7 +565,11 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 	case "raise":
 		// raise cost|countdown <集合> N：给目标加费或推进倒计数；与 reduce 共用同一 IR 节点。
 		end := valueRefEnd(t, 2)
-		return ir.AdjustEffect{NodeBase: base, Kind: "adjust_entity_field", Field: t[1].Value, Target: valueRefIR(t, 2), Delta: intToken(t[end])}, nil
+		e := ir.AdjustEffect{NodeBase: base, Kind: "adjust_entity_field", Field: t[1].Value, Target: valueRefIR(t, 2), Delta: intToken(t[end])}
+		if end+1 < len(t) && t[end+1].Value == "until" {
+			e.Until = effectDurationIR(t, end+1)
+		}
+		return e, nil
 	case "double":
 		// double stats <集合>：按每个目标自己的当前数值翻倍（攻击力与生命值）。
 		return ir.AdjustEffect{NodeBase: base, Kind: "double_stats", Target: valueRefIR(t, 2)}, nil

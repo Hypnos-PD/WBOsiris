@@ -20,7 +20,7 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 512 · 未实现(骨架) 9 · 未导入 383
+总计 904 · 已完成 513 · 未实现(骨架) 8 · 未导入 383
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
@@ -32,8 +32,8 @@
 10007        77       0       0      77
 10008        78       0       0      78
 10009        76       0       0      76
-90000        93      90       3       0
-未完成卡按文本复杂度：中(41–100字) 236 · 短(≤40字) 139 · 长(>100字) 15 · 白板 1
+90000        93      91       2       0
+未完成卡按文本复杂度：中(41–100字) 235 · 短(≤40字) 139 · 长(>100字) 15 · 白板 1
 ```
 
 ## 工作流
@@ -97,6 +97,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-53 | `raise countdown <集合> N` | `internal/project/validate.go`（`raise` 接受 `countdown`）、`typed_ir.go`（沿用 `adjust_entity_field` 的正增量） | Go 单测 `internal/project/binding_scalar_test.go`（`Field=countdown`、拒绝缺增量）；卡片 90064310 + 1 个场景 |
 | S-54 | `set_attack_limit <目标> N` | `internal/project/validate.go`（`set_attack_limit` 由 `self` 放宽为任意 `value_ref`） | Go 单测 `internal/project/binding_scalar_test.go`（目标保留为绑定）；卡片 90034350 + 1 个场景 |
 | S-55 | 护符固有关键词 `aura` | `internal/project/strict_validate.go`（非随从只对 `aura` 开例外） | Go 单测 `internal/project/amulet_aura_test.go`（`aura` 编入 intrinsic、护符上的 `ward` 仍被拒绝）；卡片 90064210 + 1 个场景 |
+| S-56 | `raise\|reduce cost T N until …`（带期限的费用修改） | `internal/ir/model.go`（`AdjustEffect.Until`）、`internal/ir/encode.go`/`decode.go`（形状与期限白名单）、`internal/project/validate.go`/`typed_ir.go`（解析）、`internal/runner/execute.go`（按到期侧记录差量）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/temporary_cost_test.go`（到期只撤销自己的差量）；卡片 90044310 + 2 个场景 |
 
 | S-16 | `ability_destruction_guard`（不会被能力破坏） | 新固有关键词：`internal/ir/decode.go` 的 `validKeyword`、`internal/project/validate.go` 的 `abilities`、`strict_validate.go` 的固有能力形状表、`internal/runner/runner.go`（`destroyByEffect` 受保护，必杀改走新的 `destroyByCombat` 不受保护）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/granted_ability_flow_test.go`（能力破坏被挡下、战斗破坏照样生效）；卡片 10273110 + 2 个场景 |
 | S-07 | `when own\|oppo follower evolved\|super_evolved [other]` —— 其他随从的进化事件 | `internal/ir/model.go`（`EventTrigger.ExcludeSelf`）、`internal/ir/decode.go`（校验 `other` 只用于带对象的非受伤事件）、`internal/project/strict_validate.go`（基础事件模式接受进化动词与 `other`）、`internal/project/typed_ir.go`（事件名映射与 `ExcludeSelf`）、`internal/project/validate.go`（`evolved` 绑定）、`internal/runner/runner.go`（进化事件改为把改名随从绑成 `evolved`）、`internal/runner/trigger_index.go`（按实例排除自身）；文档 `grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/evolution_event_test.go`（`other`/绑定/来源区域、拒绝重复 `other` 与 `self … other`）；卡片 10241110、10212120、10252110 + 6 个场景（含"不因普通进化触发"与"不响应自己超进化"两个反向场景） |
@@ -141,12 +142,26 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-53 | ~~给倒计数加值~~ **已解决**：`raise countdown <集合> N` | 已解锁 90064310 绝望的奔流（"使自己的所有纹章的倒计数+1"） | 原先只有 `reduce`；现在 `raise` 与 `reduce` 共用 `adjust_entity_field`，支持 `cost` 与 `countdown`。 |
 | S-54 | ~~让指定随从可以攻击两次~~ **已解决**：`set_attack_limit <目标> N` | 已解锁 90034350 宏大的回归（"选择自己的战场上的1个随从，使其获得「1回合可以攻击2次」"） | 原先只接受 `set_attack_limit self N`；IR 与运行时本来就按目标集合处理，因此只放宽了验证形状。 |
 | S-55 | ~~护符的【灵气】~~ **已解决**：护符可以声明 `aura` | 已解锁 90064210 月影指环 | 原先所有固有关键词都要求随从；现在 `aura` 例外（其余关键词仍然只允许随从）。运行时目标保护按战场实例判断，无需改动。 |
+| S-56 | ~~带期限的费用修改~~ **已解决**：`raise\|reduce cost T N until …` | 已解锁 90044310 银冰吐息（"对手的回合结束前，使对手的所有手牌的费用+1"） | 原先只有 `set cost` 接受 `until`；现在加减费同样记录差量并在到期侧还原。 |
+| S-57 | 判断选中的卡牌属于哪一方 | 90064320 天书深渊（"若选择了自己的护符，则对对手的主战者造成2点伤害"） | 谓词里有类型、职业、种族、形态等，但没有"该实例属于能力控制者"。 |
 | S-51 | 主战者临时"受到的伤害变为 0" | 10444120 世界的伙伴·佐伊（爆能强化 10：主战者直到对手回合结束"受到的1点或以上伤害变为0"） | 主战者关键词只有永久形式；`until ... turn ends` 的期限只作用于随从关键词。 |
 | S-52 | 牌组中发动与【瞬念召唤】 | 10404110 天司长的继承者·圣德芬（"在牌组中发动…【瞬念召唤】本卡牌…被瞬念召唤时获得纹章并返回手牌"） | 需要"在手牌/牌组中监听回合开始""从牌组召唤并选择是否返回手牌"的整套语义。 |
 
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 53（S-56 临时加减费 + 卡包 90000 收尾）
+
+- **S-56 `raise|reduce cost <集合> N until …`**：费用修改支持期限。`AdjustEffect` 新增
+  `Until`，`adjust_entity_field` 在到期侧记录差量（沿用 `temporaryCost`），
+  `expireTurnEffects` 按差量还原；支持 `until [own|oppo] turn ends`。原先只有 `set cost` 能写期限。
+- 完成 90044310 银冰吐息（模式一破坏对手所有受伤随从；模式二到对手回合结束前让对手手牌费用 +1）。
+- 新增 2 个场景（`tests/90000/batch-53-temporary-cost.wbotest`）与 Go 单测
+  `internal/runner/temporary_cost_test.go`（临时加费到期只撤销自己的差量，不吞掉期间的永久加费）。
+- 新登记缺口：S-57 "判断选中的卡牌属于哪一方"（90064320 天书深渊"若选择了自己的护符"）；
+  90034330 天晶深渊同时卡在 S-35（信仰值）与未导入的 10006 卡（天晶魔手）。
+- 全量回归：`check` 0 错 0 警；`test` 769 全绿；`go test ./...` 全绿；语料快照更新为 769 个场景。
 
 ### 批次 52（S-55 护符灵气 + 覆盖口径修正 + 卡包 90000）
 

@@ -7,37 +7,31 @@ import (
 	"wbo/internal/ir"
 )
 
-// 「回合结束前，使其费用变为 0」：临时费用修改在持有者回合结束时按差量还原。
-// 场景测试只能写一个动作（打牌或结束回合二选一），所以这条链路由 Go 测试覆盖。
-func TestTemporaryCostRevertsAtTurnEnd(t *testing.T) {
-	pack := loadCardsForTest(t,
-		"10003/10334120", "10001/10122310", "90000/90034310",
-		"90000/90021110", "90000/90021120")
-	sourceID, spellID := strings.Repeat("1", 32), strings.Repeat("2", 32)
-	state := testState()
-	own := state.Players["own"]
-	own.PP, own.MaxPP = 9, 9
-	own = withInstance(own, "hand", ir.TestInstance{InstanceID: sourceID, CardID: 10334120, DeclaredType: "follower"})
-	own = withInstance(own, "hand", ir.TestInstance{InstanceID: spellID, CardID: 10122310, DeclaredType: "spell"})
-	state.Players["own"] = own
-	session, err := NewSession(pack, state, 1)
-	if err != nil {
-		t.Fatal(err)
+// S-56：`raise cost T N until ...` 是临时加费——到期按差量还原，不覆盖之后的永久加减费。
+func TestTemporaryCostRaiseExpiresAtTurnEnd(t *testing.T) {
+	g := &game{}
+	card := &ir.Card{ID: 12345678, CardType: "follower", Cost: 2, Stats: &ir.Stats{Attack: 2, Life: 2}}
+	held := &instance{id: "held", zone: "hand", card: card, cost: 2, abilities: map[string]bool{}}
+	g.own.hand = []*instance{held}
+	g.instances = map[string]*instance{"held": held}
+	session := &Session{g: g, actionID: strings.Repeat("a", 32)}
+	target := ir.ZoneRef{Kind: "zone", Side: "own", Zone: "hand", Member: "card"}
+	session.g.execAdjust(ir.AdjustEffect{Kind: "adjust_entity_field", Field: "cost", Target: target, Delta: 1, Until: "oppo_turn_end"}, nil, frame{})
+	if held.cost != 3 {
+		t.Fatalf("temporary raise did not apply: cost=%d", held.cost)
 	}
-	if result := session.Begin(strings.Repeat("a", 32), ir.SourceAction{Kind: "play", Actor: "own", Source: sourceID}); result.Status != StatusCompleted {
-		t.Fatalf("playing the card failed: %#v", result)
+	if held.temporaryCost["oppo"] != 1 {
+		t.Fatalf("temporary diff not recorded: %#v", held.temporaryCost)
 	}
-	transformed := session.g.instances[spellID]
-	if transformed.card.ID != 90034310 || transformed.cost != 0 {
-		t.Fatalf("spell was not transformed and costed: card=%d cost=%d", transformed.card.ID, transformed.cost)
+	// 到期前又发生一次永久加费，到期只应撤销自己的差量。
+	session.g.execAdjust(ir.AdjustEffect{Kind: "adjust_entity_field", Field: "cost", Target: target, Delta: 2}, nil, frame{})
+	if held.cost != 5 {
+		t.Fatalf("permanent raise did not apply: cost=%d", held.cost)
 	}
-	if result := session.Begin(strings.Repeat("b", 32), ir.SourceAction{Kind: "end_turn", Actor: "own"}); result.Status != StatusCompleted {
-		t.Fatalf("ending the turn failed: %#v", result)
+	if !g.expireTurnEffects("oppo") {
+		t.Fatal("expiry was rejected")
 	}
-	if got := session.g.instances[spellID].cost; got != 4 {
-		t.Fatalf("temporary cost did not revert: %d", got)
-	}
-	if len(session.g.instances[spellID].temporaryCost) != 0 {
-		t.Fatalf("temporary cost was not cleared: %#v", session.g.instances[spellID].temporaryCost)
+	if held.cost != 4 || len(held.temporaryCost) != 0 {
+		t.Fatalf("temporary cost did not expire cleanly: cost=%d temporary=%#v", held.cost, held.temporaryCost)
 	}
 }

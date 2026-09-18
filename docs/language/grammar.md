@@ -437,9 +437,9 @@ evolve_operation  = ("evolve" | "superevolve") , value_ref , "silent" , ";" ;
 reanimate_operation = "reanimate" , integer , ";" ;
 
 reduce_operation  = "reduce" , "countdown" , value_ref , integer , ";"
-                  | "reduce" , "cost" , value_ref , integer , "minimum" , integer , ";" ;
+                  | "reduce" , "cost" , value_ref , integer , ("minimum" , integer , ";" | effect_duration , ";") ;
 halve_operation   = "halve" , "cost" , value_ref , ";" ;
-raise_operation   = "raise" , ("cost" | "countdown") , value_ref , integer , ";" ;
+raise_operation   = "raise" , ("cost" | "countdown") , value_ref , integer , [effect_duration] , ";" ;
 set_operation_tail = "set" , "cost" , value_ref , effect_amount , [effect_duration] , ";" ;
 double_operation  = "double" , "stats" , value_ref , ";" ;
 spellboost_operation = "spellboost" , value_ref , integer , ";" ;

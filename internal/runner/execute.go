@@ -851,6 +851,13 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 				if delta != 0 {
 					i.costChanged = true
 				}
+				if endingSide := g.effectEndingSide(e.Until, side); endingSide != "" {
+					// "到对手回合结束前，使其费用+1"：记录差量，到期按差量还原。
+					if i.temporaryCost == nil {
+						i.temporaryCost = map[string]int{}
+					}
+					i.temporaryCost[endingSide] += delta
+				}
 				i.cost = max(e.Minimum, i.cost+delta)
 			} else if e.Field == "countdown" {
 				i.countdown += delta
