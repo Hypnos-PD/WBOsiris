@@ -447,6 +447,9 @@ remove all abilities from targets;
 `add N card C to deck;` 把新卡以随机位置插入牌组（不视为抽牌，输出仍是 `added`）；
 `add copies of <集合> to deck` 同理。`transform <集合> other into card C;` 可以排除来源实例，
 用于"使战场上的其他所有随从变身"。
+`summon random 1 card A or card B [for own|oppo];` 从几种指定卡牌定义中随机召唤
+（每次抽取消费一次对局随机数），用于"召唤随机1个『A』或『B』"这类文本；
+推导卡不发动入场曲，池内至少两种、至多十六种互不相同的卡牌。
 `add copies of <集合> to hand;` 则按每个目标当前的卡牌定义复制一张同名卡加入手牌
 （手牌满时按过抽处理，不计入 `added`）；复制可以作用于已经消失的实例，
 因为只读取卡牌身份，所以"使其消失，将1张同名的卡牌加入自己的手牌"写作

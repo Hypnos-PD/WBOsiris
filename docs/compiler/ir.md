@@ -683,6 +683,14 @@ SummonCopies = NodeBase & {
   output: "summoned"
 }
 
+SummonPool = NodeBase & {
+  kind: "summon_random_pool",
+  owner: Side,
+  count: 1..65535,
+  pool: [CardId, CardId, ...],   (* 2..16 个互不相同的卡牌定义 *)
+  output: "summoned"
+}
+
 AddCopies = NodeBase & {
   kind: "add_copies",
   owner: Side,
@@ -1086,6 +1094,7 @@ ability: Ability, labels?: map<LocaleId, string> }` 附加一个独立触发能�
 | `add copies of S to hand` | `AddCopies` |
 | `summon N card C` | `Summon` |
 | `summon copies of S` | `SummonCopies` |
+| `summon random N card A or card B [for S]` | `SummonPool`（每次抽取消费一次随机数） |
 | `summon T`（手牌对象直接进入战场） | `SummonFromHand` |
 | `grant T { 能力 }` | `GrantAbility` |
 | `damage T N`、`heal T N` | `Damage`、`Heal` |

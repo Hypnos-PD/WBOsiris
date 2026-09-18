@@ -6,7 +6,64 @@ card 10564120 {
     stats 5/5;
 
     effect {
-        unplayable;
+        rush;
+        fanfare {
+            gain own crest 10564120;
+            random card from own.hand;
+            return card to deck;
+            random card from own.hand;
+            return card to deck;
+            draw 2;
+        }
+    }
+
+    crest {
+        when own card drawn during own turn where cost == 1 or cost == 3 or cost == 5 {
+            summon random 1 card 10061120 or card 90061110;
+        }
+        when own card drawn during own turn where cost == 2 or cost == 4 or cost == 6 {
+            summon random 1 card 10061120 or card 90061110 for oppo;
+        }
+
+        locale chs {
+            name "纹章：雾卷花·茎白";
+            text """
+自己抽到费用为1、3、5的卡牌时，若为自己的回合，则在自己的战场上召唤随机1个『<color=Keyword>纯洁白狐</color>』或『<color=Keyword>神圣猎鹰</color>』。
+自己抽到费用为2、4、6的卡牌时，若为自己的回合，则在对手的战场上召唤随机1个『<color=Keyword>纯洁白狐</color>』或『<color=Keyword>神圣猎鹰</color>』。
+""";
+        }
+
+        locale eng {
+            name "Crest: Kukishiro, Mistbloom";
+            text """
+During your turn, whenever you draw a 1-, 3-, or 5-cost card, summon a <b><i><color=Keyword>Fox of Purity</color></i></b> or <b><i><color=Keyword>Holy Falcon</color></i></b> at random.
+During your turn, whenever you draw a 2-, 4-, or 6-cost card, summon an enemy <b><i><color=Keyword>Fox of Purity</color></i></b> or <b><i><color=Keyword>Holy Falcon</color></i></b> at random.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"きりまきばな\">霧巻花</rub>・クキシロ";
+            text """
+自分がコスト1、3、5のカードを引いたとき、自分のターンなら、『<color=Keyword>清純なる白狐</color>』『<color=Keyword>ホーリーファルコン</color>』からランダム1枚を自分の場に出す。
+自分がコスト2、4、6のカードを引いたとき、自分のターンなら、『<color=Keyword>清純なる白狐</color>』『<color=Keyword>ホーリーファルコン</color>』からランダム1枚を相手の場に出す。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 무권화 쿠키시로";
+            text """
+내가 비용이 1, 3, 5인 카드를 뽑았을 때 내 턴이라면, <color=Keyword>정결한 흰여우</color>, <color=Keyword>신성한 매</color> 중 무작위로 1장을 내 전장에 소환.
+내가 비용이 2, 4, 6인 카드를 뽑았을 때 내 턴이라면, <color=Keyword>정결한 흰여우</color>, <color=Keyword>신성한 매</color> 중 무작위로 1장을 상대방 전장에 소환.
+""";
+        }
+
+        locale cht {
+            name "紋章：霧卷花‧九喜代";
+            text """
+當自己抽取消費為1、3、5的卡片時，如果是自己的回合，則會隨機將1張『<color=Keyword>純淨白狐</color>』或『<color=Keyword>神聖獵鷹</color>』召喚到自己的戰場上。
+當自己抽取消費為2、4、6的卡片時，如果是自己的回合，則會隨機將1張『<color=Keyword>純淨白狐</color>』或『<color=Keyword>神聖獵鷹</color>』召喚到敵方的戰場上。
+""";
+        }
     }
 
     meta {

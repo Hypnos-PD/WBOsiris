@@ -932,6 +932,25 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			return nil, fmt.Errorf("invalid summon_from_deck shape")
 		}
 		return DeckSummonEffect{NodeBase: v.NodeBase, Kind: v.Kind, Source: source, Count: v.Count, DistinctNames: v.DistinctNames, Output: v.Output}, nil
+	case "summon_random_pool":
+		var v struct {
+			NodeBase
+			Kind   string `json:"kind"`
+			Owner  string `json:"owner"`
+			Count  int    `json:"count"`
+			Pool   []int  `json:"pool"`
+			Output string `json:"output"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
+			return nil, err
+		}
+		if !validSide(v.Owner) || v.Output != "summoned" || !ValidSummonPool(v.Pool, v.Count) {
+			return nil, fmt.Errorf("invalid summon_random_pool shape")
+		}
+		return SummonPoolEffect{NodeBase: v.NodeBase, Kind: v.Kind, Owner: v.Owner, Count: v.Count, Pool: v.Pool, Output: v.Output}, nil
 	case "summon_from_history":
 		var v struct {
 			NodeBase
@@ -1723,6 +1742,12 @@ func validateCardRefs(c Card, cards, crests map[int]bool) error {
 				for _, entry := range x.Cards {
 					if !cards[entry.CardID] {
 						return fmt.Errorf("bad deck card ref %d", entry.CardID)
+					}
+				}
+			case SummonPoolEffect:
+				for _, id := range x.Pool {
+					if !cards[id] {
+						return fmt.Errorf("bad summon pool card ref %d", id)
 					}
 				}
 			case AdjustEffect:

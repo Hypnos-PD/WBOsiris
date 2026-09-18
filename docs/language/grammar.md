@@ -402,6 +402,7 @@ effect_duration   = "until" , [participant] , "turn" , "ends" ;
 summon_operation  = "summon" , integer , "card" , card_id , ["for" , participant] , ";"
                   | "summon" , "random" , integer , "from" , deck_summon_source , [where_clause] , ["distinct" , "names"] , ";"
                   | "summon" , "random" , integer , "from" , history_source , [where_clause] , [extremum_clause] , ";"
+                  | "summon" , "random" , integer , "card" , card_id , "or" , "card" , card_id , {"or" , "card" , card_id} , ["for" , participant] , ";"
                   | "summon" , "copies" , "of" , value_ref , [where_clause] , ";"
                   | "summon" , value_ref , ";" ;
 deck_summon_source = "own" , "." , "deck" , "." , ("followers" | "amulets") ;

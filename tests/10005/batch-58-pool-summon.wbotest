@@ -1,0 +1,47 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "雾卷花茎白的入场曲获得纹章并换手牌" {
+    seed 58001;
+    state {
+        player own {
+            pp 7/7;
+            deck top { follower first = 10001110; follower second = 10001110; }
+            hand {
+                follower source = 10564120;
+                follower other = 10001110;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; own.crests count card 10564120 == 1; source has rush; own.hand count card 10001110 == 2; }
+}
+
+scenario "抽到奇数费用卡牌时纹章在自己战场召唤" {
+    seed 58002;
+    state {
+        player own {
+            pp 1/1;
+            crests { crest kuki = 10564120; }
+            deck top { follower drew = 10012110; }
+            hand { spell source = 10571310; }
+        }
+    }
+    action { play source; }
+    // 池里是『纯洁白狐』与『神圣猎鹰』二选一：本 seed 抽到后者。
+    expect { legal; own.field count card 90061110 == 1; oppo.field count card 90061110 == 0; }
+}
+
+scenario "抽到偶数费用卡牌时纹章在对手战场召唤" {
+    seed 58003;
+    state {
+        player own {
+            pp 1/1;
+            crests { crest kuki = 10564120; }
+            deck top { follower drew = 10001110; }
+            hand { spell source = 10571310; }
+        }
+    }
+    action { play source; }
+    expect { legal; oppo.field count card 10061120 == 1; own.field count card 10061120 == 0; }
+}

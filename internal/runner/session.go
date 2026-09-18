@@ -542,6 +542,8 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 		bindings[e.Output] = bindEntities(s.g.summonFromHistory(e, self, bindings)...)
 	case ir.DeckSummonEffect:
 		bindings[e.Output] = bindEntities(s.g.summonFromDeck(e, self, bindings)...)
+	case ir.SummonPoolEffect:
+		bindings[e.Output] = bindEntities(s.g.summonFromPool(e, self)...)
 	case ir.DeckReplaceEffect:
 		s.g.replaceDeck(e, self)
 	case ir.LeaderMaxLifeEffect:

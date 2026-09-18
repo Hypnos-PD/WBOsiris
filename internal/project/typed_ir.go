@@ -371,6 +371,9 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		}
 	case "summon":
 		if t[1].Value == "random" {
+			if e, ok := summonPoolIR(t, base); ok {
+				return e, nil
+			}
 			if e, ok := historySummonIR(t, base); ok {
 				return e, nil
 			}
