@@ -6,7 +6,17 @@ card 10454110 {
     stats 5/5;
 
     effect {
-        unplayable;
+        fanfare {
+            necromancy 6 {
+                reanimate 2;
+                evolve summoned silent;
+                reanimate 1;
+                evolve summoned silent;
+            }
+        }
+        when own turn ends {
+            buff oppo.field.followers -2/-2;
+        }
     }
 
     meta {

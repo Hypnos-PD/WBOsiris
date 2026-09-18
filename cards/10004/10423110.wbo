@@ -6,7 +6,39 @@ card 10423110 {
     stats 6/6;
 
     effect {
-        unplayable;
+        fanfare {
+            mode {
+                option 1 {
+                    label chs "本随从超进化。";
+                    label eng "Super-evolve this follower.";
+                    label jpn "これは超進化する。";
+                    label kor "이 추종자는 초진화한다.";
+                    label cht "使這張卡片超進化。";
+                    superevolve self silent;
+                }
+                option 2 {
+                    label chs "对对手的战场上的所有随从造成4点伤害。";
+                    label eng "Deal 4 damage to all enemy followers.";
+                    label jpn "相手の場のフォロワーすべてに4ダメージ。";
+                    label kor "상대방 전장의 추종자 모두에게 4 피해.";
+                    label cht "給予敵方戰場上全部的從者卡4點傷害。";
+                    damage oppo.field.followers 4;
+                }
+                option 3 {
+                    label chs "回复自己的主战者4点生命值。";
+                    label eng "Restore 4 defense to your leader.";
+                    label jpn "自分のリーダーを4回復。";
+                    label kor "내 리더를 4 회복.";
+                    label cht "回復自己的主戰者4點生命值。";
+                    heal own.leader 4;
+                }
+            }
+        }
+        enhance 9 replaces {
+            superevolve self silent;
+            damage oppo.field.followers 4;
+            heal own.leader 4;
+        }
     }
 
     meta {

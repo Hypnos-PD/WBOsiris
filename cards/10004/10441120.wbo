@@ -6,7 +6,13 @@ card 10441120 {
     stats 2/2;
 
     effect {
-        unplayable;
+        when own follower super_evolved while self in hand where base.cost == 3 {
+            set cost self 0 until turn ends;
+        }
+        when own turn ends {
+            random ally from own.field.followers where form super_evolved;
+            buff ally +1/+1;
+        }
     }
 
     meta {

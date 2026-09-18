@@ -5,7 +5,28 @@ card 10463210 {
     cost 3;
 
     effect {
-        unplayable;
+        engage 0 {
+            destroy self;
+            mode {
+                option 1 {
+                    label chs "破坏对手的战场上的随机1个随从。";
+                    label eng "Destroy a random enemy follower.";
+                    label jpn "相手の場のフォロワーからランダム1枚を破壊。";
+                    label kor "상대방 전장의 추종자 중 무작위로 1장을 파괴.";
+                    label cht "隨機破壞1張敵方戰場上的從者卡。";
+                    random victim from oppo.field.followers;
+                    destroy victim;
+                }
+                option 2 {
+                    label chs "抽取2张卡牌。";
+                    label eng "Draw 2 cards.";
+                    label jpn "自分のデッキから2枚を引く。";
+                    label kor "내 덱에서 2장을 뽑는다.";
+                    label cht "由自己的牌堆中抽取2張卡片。";
+                    draw 2;
+                }
+            }
+        }
     }
 
     meta {

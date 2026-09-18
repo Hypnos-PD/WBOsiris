@@ -1,0 +1,333 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "能量外溢模式一抽牌并打击随机随从" {
+    seed 48001;
+    state {
+        player own {
+            pp 4/4;
+            deck top { follower drew = 10001110; }
+            hand { spell source = 10432310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/6; } } }
+    }
+    action { play source; mode 1; }
+    expect { legal; own.hand count card 10001110 == 1; enemy.stats == 2/2; }
+}
+
+scenario "能量外溢模式二抽两张并打击两个随机随从和自伤" {
+    seed 48002;
+    state {
+        player own {
+            pp 4/4;
+            deck top { follower first = 10001110; follower second = 10001110; }
+            hand { spell source = 10432310; }
+        }
+        player oppo {
+            field {
+                follower one = 10001110 { stats 2/6; }
+                follower two = 10001110 { stats 2/6; }
+            }
+        }
+    }
+    action { play source; mode 2; }
+    expect {
+        legal;
+        own.hand count card 10001110 == 2;
+        one.stats == 2/2;
+        two.stats == 2/2;
+        own.leader.life == 18;
+    }
+}
+
+scenario "真王之刃模式一让本随从超进化" {
+    seed 48003;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10423110; }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; source.super_evolved == true; }
+}
+
+scenario "真王之刃模式二对敌方全体造成四点伤害" {
+    seed 48004;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10423110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/8; }
+                follower second = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { play source; mode 2; }
+    expect { legal; first.stats == 2/4; second.stats == 2/4; }
+}
+
+scenario "真王之刃模式三回复主战者四点生命值" {
+    seed 48005;
+    state {
+        player own {
+            leader 14/20;
+            pp 7/7;
+            hand { follower source = 10423110; }
+        }
+    }
+    action { play source; mode 3; }
+    expect { legal; own.leader.life == 18; }
+}
+
+scenario "爆能强化九点让真王之刃发动全部能力" {
+    seed 48006;
+    state {
+        player own {
+            leader 14/20;
+            pp 9/9;
+            hand { follower source = 10423110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.super_evolved == true;
+        enemy.stats == 2/4;
+        own.leader.life == 18;
+        own.pp == 0/9;
+    }
+}
+
+scenario "天才美少女炼金术士的入场曲增加土之印并加入伟大之术" {
+    seed 48007;
+    state {
+        player own {
+            pp 4/4;
+            field { amulet sigil = 90031210; }
+            hand { follower source = 10434120; }
+        }
+    }
+    action { play source; }
+    expect { legal; sigil.earthsigil == 3; own.hand count card 90034320 == 1; }
+}
+
+scenario "奥义时天才美少女炼金术士自行进化" {
+    seed 48008;
+    state {
+        turn own 10;
+        player own {
+            pp 4/4;
+            hand { follower source = 10434120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == true; }
+}
+
+scenario "解放奥义时天才美少女炼金术士获得纹章" {
+    seed 48009;
+    state {
+        turn own 15;
+        player own {
+            pp 4/4;
+            hand { follower source = 10434120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.crests count card 10434120 == 1; }
+}
+
+scenario "天才美少女炼金术士的纹章在持有者回合开始消耗土之秘术" {
+    seed 48010;
+    state {
+        player oppo {
+            crests { crest cag = 10434120; }
+            field { amulet sigil = 90031210; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; sigil.earthsigil == 0; oppo.hand count card 90034320 == 1; }
+}
+
+scenario "缅怀之火的入场曲让敌方随从失去能力并受伤" {
+    seed 48011;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10433110; }
+        }
+        player oppo { field { follower enemy = 10001120 { stats 3/5; } } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.stats == 3/2; enemy lacks ward; }
+}
+
+scenario "缅怀之火超进化时获得纹章" {
+    seed 48012;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10433110; }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; own.crests count card 10433110 == 1; }
+}
+
+scenario "缅怀之火的纹章在持有者回合开始打击对手主战者" {
+    seed 48013;
+    state {
+        player oppo { crests { crest elmott = 10433110; } }
+    }
+    action { end_turn; }
+    expect { legal; own.leader.life == 19; }
+}
+
+scenario "蕾·菲耶的宝石启动时破坏自己并破坏随机敌方随从" {
+    seed 48014;
+    state {
+        player own { field { amulet source = 10463210; } }
+        player oppo { field { follower enemy = 10001110; } }
+    }
+    action { engage source; mode 1; }
+    expect { legal; source.zone == graveyard; enemy.zone == graveyard; }
+}
+
+scenario "蕾·菲耶的宝石模式二抽取两张" {
+    seed 48015;
+    state {
+        player own {
+            field { amulet source = 10463210; }
+            deck top { follower first = 10001110; follower second = 10001110; }
+        }
+    }
+    action { engage source; mode 2; }
+    expect { legal; source.zone == graveyard; own.hand count card 10001110 == 2; }
+}
+
+scenario "暗之法则的唤灵六点亡者召还两个随从并使其进化" {
+    seed 48016;
+    state {
+        player own {
+            pp 7/7;
+            shadows 6;
+            hand { follower source = 10454110; }
+            destroyed { follower mid = 10001110; follower low = 10012110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.shadows == 0;
+        own.field count card 10001110 == 1;
+        own.field count card 10012110 == 1;
+    }
+}
+
+scenario "暗之法则在回合结束时削弱对手全体随从" {
+    seed 48017;
+    state {
+        player own { field { follower source = 10454110; } }
+        player oppo { field { follower enemy = 10001110 { stats 3/6; } } }
+    }
+    action { end_turn; }
+    expect { legal; enemy.stats == 1/4; }
+}
+
+scenario "亚尔夫海姆模式二使全体随从加一加零并获得突进" {
+    seed 48018;
+    state {
+        player own {
+            pp 2/2;
+            field { follower ally = 10001110; }
+            hand { spell source = 10413310; }
+        }
+    }
+    action { play source; mode 2; }
+    expect { legal; ally.stats == 3/2; ally has rush; }
+}
+
+scenario "解放奥义时亚尔夫海姆发动全部能力" {
+    seed 48019;
+    state {
+        turn own 15;
+        player own {
+            leader 10/20;
+            pp 2/2;
+            deck top { follower drew = 10001110; }
+            field { follower ally = 10001110; }
+            hand { spell source = 10413310; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.leader.life == 11;
+        own.hand count card 10001110 == 1;
+        ally.stats == 3/3;
+        ally has rush;
+        ally has ward;
+    }
+}
+
+scenario "自己启动护符时骑驰天空之艇在手牌中减费" {
+    seed 48020;
+    state {
+        player own {
+            pp 2/2;
+            field { amulet sigil = 90031210; }
+            hand { amulet source = 10462210; }
+        }
+    }
+    action { engage sigil; }
+    expect { legal; source.cost == 3; }
+}
+
+scenario "骑驰天空之艇启动时破坏自己并让未进化随从进化" {
+    seed 48021;
+    state {
+        player own {
+            field {
+                amulet source = 10462210;
+                follower ally = 10001110;
+            }
+        }
+    }
+    action { engage source; select ally; }
+    expect { legal; source.zone == graveyard; ally.evolved == true; ally.stats == 4/4; }
+}
+
+scenario "原始费用三的随从超进化时梅格的挚友在手牌中费用变为零" {
+    seed 48022;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower three = 10031110; }
+            hand { follower source = 10441120; }
+        }
+    }
+    action { superevolve three; }
+    expect { legal; source.cost == 0; }
+}
+
+scenario "梅格的挚友在回合结束时强化超进化后的随从" {
+    seed 48023;
+    state {
+        player own {
+            field {
+                follower source = 10441120;
+                follower big = 10001110 { super_evolved; }
+            }
+        }
+    }
+    action { end_turn; }
+    // 状态里的 `super_evolved;` 只设形态、不加身材，因此是 2/2 + 1/1。
+    expect { legal; big.stats == 3/3; }
+}

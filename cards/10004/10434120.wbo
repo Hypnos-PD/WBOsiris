@@ -6,7 +6,59 @@ card 10434120 {
     stats 5/3;
 
     effect {
-        unplayable;
+        fanfare {
+            add 2 earthsigil;
+            add 1 card 90034320 to hand;
+            if skybound_art {
+                evolve self silent;
+            }
+            if super_skybound_art {
+                gain own crest 10434120;
+            }
+        }
+    }
+
+    crest {
+        when own turn starts {
+            earthrite 1 {
+                add 1 card 90034320 to hand;
+            }
+        }
+
+        locale chs {
+            name "纹章：天才美少女炼金术士·卡莉奥丝特罗";
+            text """
+自己的回合开始时，【<color=Keyword>土之秘术</color>_1】将1张『<color=Keyword>伟大之术</color>』加入手牌。
+""";
+        }
+
+        locale eng {
+            name "Crest: Cagliostro, Genius Alchemist";
+            text """
+At the start of your turn, <b><color=Keyword>Earth Rite</color> (1)</b> - Add an <b><i><color=Keyword>Ars Magna</color></i></b> to your hand.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：天才美少女錬金術師・カリオストロ";
+            text """
+自分のターン開始時、【<color=Keyword>土の秘術</color>_1】『<color=Keyword>アルス・マグナ</color>』1枚を自分の手札に加える。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 천재 미소녀 연금술사 칼리오스트로";
+            text """
+내 턴 시작시, [<color=Keyword>대지의 비술</color> 1] <color=Keyword>아르스 마그나</color> 1장을 내 패에 넣는다.
+""";
+        }
+
+        locale cht {
+            name "紋章：天才美少女鍊金術師‧卡莉歐斯托蘿";
+            text """
+自己的回合開始時，【<color=Keyword>土之秘術</color>_1】增加1張『<color=Keyword>魔創鍊金</color>』到自己的手牌中。
+""";
+        }
     }
 
     meta {

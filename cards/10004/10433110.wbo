@@ -6,7 +6,55 @@ card 10433110 {
     stats 2/1;
 
     effect {
-        unplayable;
+        fanfare {
+            require target from oppo.field.followers;
+            remove all abilities from target;
+            damage target 3;
+        }
+        superevolve {
+            gain own crest 10433110;
+        }
+    }
+
+    crest {
+        when own turn starts {
+            damage oppo.leader 1;
+        }
+
+        locale chs {
+            name "纹章：缅怀之火·埃尔默特";
+            text """
+自己的回合开始时，对对手的主战者造成1点伤害。
+""";
+        }
+
+        locale eng {
+            name "Crest: Elmott, Remembrance Aflame";
+            text """
+At the start of your turn, deal 1 damage to the enemy leader.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"かいきゅう\">懐旧</rub>の<rub=\"おく\">送</rub>り<rub=\"び\">火</rub>・エルモート";
+            text """
+自分のターン開始時、相手のリーダーに1ダメージ。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 회고의 등불 엘모트";
+            text """
+내 턴 시작시, 상대방 리더에게 1 피해.
+""";
+        }
+
+        locale cht {
+            name "紋章：懷舊的送火‧艾爾蒙特";
+            text """
+自己的回合開始時，給予敵方的主戰者1點傷害。
+""";
+        }
     }
 
     meta {

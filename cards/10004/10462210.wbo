@@ -5,7 +5,14 @@ card 10462210 {
     cost 4;
 
     effect {
-        unplayable;
+        when own amulet engaged while self in hand {
+            reduce cost self 1 minimum 0;
+        }
+        engage 0 {
+            require ally from own.field.followers where form unevolved;
+            destroy self;
+            evolve ally silent;
+        }
     }
 
     meta {
