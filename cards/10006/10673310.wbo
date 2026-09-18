@@ -6,7 +6,13 @@ card 10673310 {
     trait encroacher;
 
     effect {
-        unplayable;
+        when own follower summoned while self in hand where base.cost >= 5 {
+            reduce cost self 1 until turn ends;
+        }
+        random ally from own.field.followers where form unevolved and base.cost >= 5;
+        evolve ally silent;
+        random victim from oppo.field.followers;
+        damage victim 6;
     }
 
     meta {

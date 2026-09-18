@@ -20,7 +20,7 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 641 · 未实现(骨架) 32 · 未导入 231
+总计 904 · 已完成 645 · 未实现(骨架) 28 · 未导入 231
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
@@ -28,12 +28,12 @@
 10003        77      75       2       0
 10004        76      73       3       0
 10005        76      63      13       0
-10006        76      63      13       0
+10006        76      67       9       0
 10007        77       0       0      77
 10008        78       0       0      78
 10009        76       0       0      76
 90000        93      91       2       0
-未完成卡按文本复杂度：中(41–100字) 254 · 短(≤40字) 138 · 长(>100字) 18 · 白板 1
+未完成卡按文本复杂度：中(41–100字) 253 · 短(≤40字) 135 · 长(>100字) 17 · 白板 1
 ```
 
 ## 工作流
@@ -183,6 +183,19 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 68（卡包 10006 第四批，4 张）
+
+- 完成 4 张：10641310 天刀授予、10643310 断头的天刀、10673310 恶劣的天斧、
+  10674110 恶劣的纯心·卡密希拉。
+- 用到的既有原语：舍弃时按 `self.cost` 判断并把减费后的同名卡加入手牌
+  （`add 1 card … to hand; set cost added N;`）、`reduce cost self 1 until turn ends`
+  （临时减费，`until` 现在允许省略 `minimum`）、
+  `random ally … where form unevolved and base.cost >= 5`、
+  `when own follower summoned other where base.cost >= 5`、`count(own.field.followers where base.cost >= 5)`
+  作为伤害量。
+- 新增 9 个场景（`tests/10006/batch-68-discard-and-elder.wbotest`）。
+- 全量回归：`check` 0 错 0 警；`test` 965 全绿；`go test ./...` 全绿；语料快照更新为 965 个场景。
 
 ### 条件范围专项核查（配合批次 67）
 

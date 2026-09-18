@@ -1,0 +1,129 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "天刀授予让指定随从加二加二" {
+    seed 68001;
+    state {
+        player own {
+            pp 4/4;
+            field { follower ally = 10001110; }
+            hand { spell source = 10641310; }
+        }
+    }
+    action { play source; select ally; }
+    expect { legal; ally.stats == 4/4; }
+}
+
+scenario "费用为四的天刀授予被舍弃时把减费的同名卡加入手牌" {
+    seed 68002;
+    state {
+        player own {
+            pp 3/3;
+            field { amulet altar = 10143210; }
+            hand { spell mine = 10641310; }
+        }
+    }
+    action { engage altar; select mine; }
+    expect { legal; mine.zone == graveyard; own.hand count card 10641310 == 1; }
+}
+
+scenario "断头的天刀按当前费用对敌方全体造成伤害" {
+    seed 68003;
+    state {
+        player own {
+            pp 7/7;
+            hand { spell source = 10643310; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/16; }
+                follower second = 10001110 { stats 2/16; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; first.stats == 2/9; second.stats == 2/9; }
+}
+
+scenario "费用为七的断头的天刀被舍弃时加入减费的同名卡" {
+    seed 68004;
+    state {
+        player own {
+            pp 3/3;
+            field { amulet altar = 10143210; }
+            hand { spell mine = 10643310; }
+        }
+    }
+    action { engage altar; select mine; }
+    expect { legal; mine.zone == graveyard; own.hand count card 10643310 == 1; }
+}
+
+scenario "恶劣的天斧让高费进化前随从进化并重创随机随从" {
+    seed 68005;
+    state {
+        player own {
+            pp 3/3;
+            field { follower big = 10401110; }
+            hand { spell source = 10673310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/12; } } }
+    }
+    action { play source; }
+    expect { legal; big.evolved == true; enemy.stats == 2/6; }
+}
+
+scenario "高费随从进入战场时恶劣的天斧在手牌中减费" {
+    seed 68006;
+    state {
+        player own {
+            pp 9/9;
+            hand {
+                follower source = 10401110;
+                spell held = 10673310;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; held.cost == 2; }
+}
+
+scenario "恶劣的纯心召唤玩具与人偶" {
+    seed 68007;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10674110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10671110 == 1; own.field count card 10672110 == 1; }
+}
+
+scenario "高费的其他随从进入战场时恶劣的纯心使其进化" {
+    seed 68008;
+    state {
+        player own {
+            pp 9/9;
+            field { follower source = 10674110; }
+            hand { follower big = 10401110; }
+        }
+    }
+    action { play big; }
+    expect { legal; big.evolved == true; }
+}
+
+scenario "恶劣的纯心超进化时按高费随从数量打击对手主战者" {
+    seed 68009;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field {
+                follower source = 10674110;
+                follower ally = 10401110;
+            }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; oppo.leader.life == 18; }
+}

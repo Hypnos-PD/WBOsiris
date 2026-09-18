@@ -976,6 +976,8 @@ fanfare {
 表示"对手的回合结束前，使对手的所有手牌的费用+1"，到期只撤销这次差量，
 不会覆盖期间发生的永久加减费。
 只做减费时继续用 `reduce cost T N minimum M`。
+带期限的 `reduce cost` 可以省略 `minimum`（下限默认为 0）：
+`reduce cost self 1 until turn ends;`。
 `reduce countdown T X` 的增量也可以是数值引用，例如"本护符的倒计数 -X，X 为自己的纹章数"
 写作 `reduce countdown self own.crests;`。
 

@@ -6,7 +6,17 @@ card 10643310 {
     trait encroacher;
 
     effect {
-        unplayable;
+        when self discarded {
+            if self.cost == 7 {
+                add 1 card 10643310 to hand;
+                set cost added 5;
+            }
+            if self.cost == 5 {
+                add 1 card 10643310 to hand;
+                set cost added 3;
+            }
+        }
+        damage oppo.field.followers self.cost;
     }
 
     meta {

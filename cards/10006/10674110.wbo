@@ -6,7 +6,16 @@ card 10674110 {
     stats 6/6;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 10671110;
+            summon 1 card 10672110;
+        }
+        when own follower summoned other where base.cost >= 5 {
+            evolve summoned silent;
+        }
+        superevolve {
+            damage oppo.leader count(own.field.followers where base.cost >= 5);
+        }
     }
 
     meta {

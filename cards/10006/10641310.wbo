@@ -6,7 +6,14 @@ card 10641310 {
     trait encroacher;
 
     effect {
-        unplayable;
+        when self discarded {
+            if self.cost == 4 {
+                add 1 card 10641310 to hand;
+                set cost added 2;
+            }
+        }
+        require target from own.field.followers;
+        buff target +2/+2;
     }
 
     meta {
