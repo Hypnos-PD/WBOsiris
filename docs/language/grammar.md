@@ -214,7 +214,7 @@ selection_statement = selection_kind , binding_name , "from" , target_set ,
                     | selection_kind , binding_name , "from" , character_set , ["count" , integer] , ";" ;
 character_set       = "own.field.followers" , "or" , "own.leader"
                     | "oppo.field.followers" , "or" , "oppo.leader" ;
-selection_kind      = "choose" | "require" | "random" ;
+selection_kind      = "choose" | "require" | "random" | "first" ;
 extremum_clause     = ("highest" | "lowest") , ["base" , "."] , ("attack" | "life" | "cost") ;
 binding_name        = identifier ;
 

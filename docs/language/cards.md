@@ -204,6 +204,20 @@ choose targets from oppo.field.followers count 2;
 destroy targets;
 ```
 
+`first <绑定> from <集合> [where …] [count N]` 不询问玩家、也不消费随机决策，
+按集合顺序取前 N 个（`count` 省略时为 1）。集合顺序就是区域顺序：战场按入场顺序、
+手牌按获得顺序，因此它正好表达"从左起的第 N 个／前 N 张"：
+
+```wbo
+first ally from own.field.followers where class swordcraft;
+set_attack_limit ally 2;
+
+first copies from own.hand count 3;
+add copies of copies to hand;
+```
+
+候选不足 N 个时只绑定现有的那些，空集合绑定空集合；操作对象为空则什么都不做。
+
 同一方的随从和主战者可组成一次混合选择，例如触手撕咬：
 
 ```wbo

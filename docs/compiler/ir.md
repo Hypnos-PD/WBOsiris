@@ -597,6 +597,15 @@ RandomChoose = NodeBase & {
   extremum?: SelectionExtremum
 }
 
+First = NodeBase & {
+  kind: "first",
+  policy: "first",
+  source: SetExpr,
+  binding: Binding,
+  count: UInt16?,
+  extremum?: SelectionExtremum
+}
+
 SelectionExtremum = { direction: "highest" | "lowest",
                      field: "attack" | "life" | "cost" | "base_attack" | "base_life" | "base_cost" }
 
@@ -648,6 +657,8 @@ PayResource = NodeBase & {
 
 `random_choose` 从当前候选不放回抽样，每个选中实例消费一次随机决策，最多选取
 `count` 个。选择绑定保留候选顺序，不因随机抽取顺序或客户端提交顺序而变化。
+`first` 按候选顺序取前 `count` 个（省略为 1）：不产生玩家请求、不消费随机决策，
+也不受"敌方潜行/不可选中"那类目标保护影响，用于"从左起的第 N 个／前 N 张"。
 `earthrite N` 和 `necromancy N` 分别编译为 `PayResource`；资源不足时不支付并跳过
 `onPaid`，支付成功后不因后续失败退还。`Mode.options.id` 必须在能力内唯一且稳定，
 模式是否可执行不取决于其块内资源支付能否成功。

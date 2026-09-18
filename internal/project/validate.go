@@ -439,7 +439,7 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 				validateEffectBlock(b[0], ds, bindings, "")
 			}
 			continue
-		case "choose", "require", "random":
+		case "choose", "require", "random", "first":
 			end, setOK := parseTargetSet(t, 3)
 			if setOK && len(t) > 5 && t[5].Value == "destroyed" {
 				setOK = false
@@ -593,7 +593,7 @@ func producedBindings(body []*syntax.Statement) map[string]bool {
 		case "summon", "reanimate":
 			out["summoned"] = true
 			out["summoned_all"] = true
-		case "choose", "require", "random":
+		case "choose", "require", "random", "first":
 			if len(s.Tokens()) > 1 {
 				out[s.Word(1)] = true
 			}

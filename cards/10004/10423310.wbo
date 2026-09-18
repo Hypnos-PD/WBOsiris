@@ -5,7 +5,44 @@ card 10423310 {
     cost 5;
 
     effect {
-        unplayable;
+        mode {
+            option 1 {
+                label chs "使自己的战场上的从左起的1个皇家护卫·随从获得「1回合可以攻击2次」。";
+                label eng "Give the leftmost allied Swordcraft follower \"Can attack 2 times per turn.\"";
+                label jpn "自分の場のロイヤル・フォロワー左から1枚は「1ターンに2回攻撃できる。」を持つ。";
+                label kor "내 전장의 로얄 추종자 중 왼쪽부터 1장은 「1턴에 2회 공격 가능」을 갖는다.";
+                label cht "使自己的戰場上從左起的1個皇家護衛‧從者獲得「1回合可以攻擊2次」。";
+                // 「从左起第1个」：取集合顺序里的第一个，不做玩家选择、不消费随机数。
+                first ally from own.field.followers where class swordcraft;
+                set_attack_limit ally 2;
+            }
+            option 2 {
+                label chs "使自己的战场上的所有皇家护卫·随从+1/+1且获得【屏障】。";
+                label eng "Give all allied Swordcraft followers on the field +1/+1 and Barrier.";
+                label jpn "自分の場のロイヤル・フォロワーすべては+1/+1して【バリア】を持つ。";
+                label kor "내 전장의 로얄 추종자 모두는 +1/+1 및 [배리어]를 갖는다.";
+                label cht "使自己的戰場上全體皇家護衛‧從者+1/+1並獲得【屏障】。";
+                buff own.field.followers +1/+1 where class swordcraft;
+                add barrier to own.field.followers where class swordcraft;
+            }
+            option 3 {
+                label chs "回复自己2点能量点。回复自己1点进化点。";
+                label eng "Recover 2 play points and 1 evolution point.";
+                label jpn "自分のPPを2回復。自分のEPを1回復。";
+                label kor "내 PP를 2 회복. 내 EP를 1 회복.";
+                label cht "回復自己2點能量點。回復自己1點進化點。";
+                gain own.pp 2;
+                gain own.ep 1;
+            }
+            option 4 {
+                label chs "回复自己的主战者6点生命值。";
+                label eng "Restore 6 defense to your leader.";
+                label jpn "自分のリーダーを6回復。";
+                label kor "내 리더를 6 회복.";
+                label cht "回復自己的主戰者6點生命值。";
+                heal own.leader 6;
+            }
+        }
     }
 
     meta {

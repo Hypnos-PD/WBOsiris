@@ -1,0 +1,77 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "骁勇骑士模式一让最靠左的皇家护卫随从每回合攻击两次" {
+    seed 105001;
+    state {
+        player own {
+            pp 5/5;
+            field {
+                follower outsider = 10001110;
+                follower first = 10021110;
+                follower second = 10022120;
+            }
+            hand { spell source = 10423310; }
+        }
+    }
+    action { play source; mode 1; }
+    expect {
+        legal;
+        // 中立随从在更左边，但筛选只看皇家护卫。
+        outsider.attack_limit == 1;
+        first.attack_limit == 2;
+        second.attack_limit == 1;
+        // 取"最左"不消费随机决策。
+        rng.consumed == 0;
+    }
+}
+
+scenario "骁勇骑士模式二强化全体皇家护卫随从" {
+    seed 105002;
+    state {
+        player own {
+            pp 5/5;
+            field {
+                follower outsider = 10001110;
+                follower first = 10021110;
+                follower second = 10022120;
+            }
+            hand { spell source = 10423310; }
+        }
+    }
+    action { play source; mode 2; }
+    expect {
+        legal;
+        first.stats == 2/2;
+        second.stats == 4/4;
+        first has barrier;
+        second has barrier;
+        outsider.stats == 2/2;
+        outsider lacks barrier;
+    }
+}
+
+scenario "骁勇骑士模式三回复能量点与进化点" {
+    seed 105003;
+    state {
+        player own {
+            pp 5/5;
+            hand { spell source = 10423310; }
+        }
+    }
+    action { play source; mode 3; }
+    expect { legal; own.pp == 2/5; own.ep == 1; }
+}
+
+scenario "骁勇骑士模式四回复主战者六点" {
+    seed 105004;
+    state {
+        player own {
+            leader 10/20;
+            pp 5/5;
+            hand { spell source = 10423310; }
+        }
+    }
+    action { play source; mode 4; }
+    expect { legal; own.leader.life == 16; }
+}

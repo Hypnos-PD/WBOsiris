@@ -6,7 +6,13 @@ card 10502110 {
     stats 5/5;
 
     effect {
-        unplayable;
+        evolve {
+            choose holders from own.hand count 3;
+            discard holders;
+            // 「从左起的3张」：舍弃后按手牌顺序取前 3 张，各复制 1 张加入手牌。
+            first copies from own.hand count 3;
+            add copies of copies to hand;
+        }
     }
 
     meta {

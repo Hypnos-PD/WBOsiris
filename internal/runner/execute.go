@@ -276,7 +276,8 @@ func (g *game) fromRef(ref ir.Ref, self *instance, f frame) []*instance {
 // Target restrictions apply to player choices, not to set queries or random effects.
 func (g *game) selectionCandidates(e ir.SelectionEffect, self *instance, f frame) []*instance {
 	items := g.effectTargets(e.Source, self, f)
-	if e.Kind == "random_choose" {
+	if e.Kind == "random_choose" || e.Kind == "first" {
+		// 随机与"从左起"都不是玩家指定目标，不受潜行/不可选中那类保护影响。
 		return g.extremumCandidates(items, e.Extremum)
 	}
 	controller := g.sideOf(self)

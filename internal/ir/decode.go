@@ -693,7 +693,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		return nil, err
 	}
 	switch k.Kind {
-	case "choose", "require", "random_choose":
+	case "choose", "require", "random_choose", "first":
 		type raw struct {
 			ID       string             `json:"id"`
 			Kind     string             `json:"kind"`
@@ -712,7 +712,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			return nil, err
 		}
 		s, err := decodeSelectionSource(v.Source)
-		wantPolicy := map[string]string{"choose": "optional", "require": "required", "random_choose": "random"}[v.Kind]
+		wantPolicy := map[string]string{"choose": "optional", "require": "required", "random_choose": "random", "first": "first"}[v.Kind]
 		if v.Policy != wantPolicy || v.Binding == "" {
 			return nil, fmt.Errorf("invalid selection effect")
 		}

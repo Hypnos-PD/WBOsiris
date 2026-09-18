@@ -277,7 +277,7 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		times, expr := numericIR(t, 1)
 		body, err := compileEffectBlock(s.Blocks()[0], sid, id+"/body", ids)
 		return ir.RepeatEffect{NodeBase: base, Kind: "repeat", Times: times, TimesExpr: expr, Body: body}, err
-	case "choose", "require", "random":
+	case "choose", "require", "random", "first":
 		src, end := setExprIR(t, 3)
 		if end < len(t) && t[end].Value == "or" {
 			src = ir.CharacterSetRef{Kind: "characters", Side: t[3].Value}
@@ -309,7 +309,7 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		if h == "random" {
 			kind = "random_choose"
 		}
-		return ir.SelectionEffect{NodeBase: base, Kind: kind, Policy: map[string]string{"choose": "optional", "require": "required", "random": "random"}[h], Binding: t[1].Value, Source: src, Count: count, CountExpr: countExpr, Extremum: extremum}, nil
+		return ir.SelectionEffect{NodeBase: base, Kind: kind, Policy: map[string]string{"choose": "optional", "require": "required", "random": "random", "first": "first"}[h], Binding: t[1].Value, Source: src, Count: count, CountExpr: countExpr, Extremum: extremum}, nil
 	case "if":
 		blocks := s.Blocks()
 		then, err := compileEffectBlock(blocks[0], sid, id+"/then", ids)

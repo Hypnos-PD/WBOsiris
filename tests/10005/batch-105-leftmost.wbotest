@@ -1,0 +1,55 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "星辉女神进化时舍弃三张手牌并复制最左三张" {
+    seed 105101;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10502110; }
+            hand {
+                follower first = 10001110;
+                follower second = 10001120;
+                follower third = 10021110;
+                follower fourth = 10022110;
+                follower fifth = 10022120;
+                follower sixth = 10021120;
+            }
+        }
+    }
+    action { evolve source; select first, second, third; }
+    expect {
+        legal;
+        first.zone == graveyard;
+        third.zone == graveyard;
+        // 剩下的最左三张各复制 1 张回到手牌。
+        own.hand count card 10022110 == 2;
+        own.hand count card 10022120 == 2;
+        own.hand count card 10021120 == 2;
+        own.hand count card 10001110 == 0;
+    }
+}
+
+scenario "星辉女神在舍弃后不足三张时只复制剩下的" {
+    seed 105102;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10502110; }
+            hand {
+                follower first = 10001110;
+                follower second = 10001120;
+                follower third = 10021110;
+                follower fourth = 10022110;
+            }
+        }
+    }
+    action { evolve source; select first, second, third; }
+    expect {
+        legal;
+        own.hand count card 10022110 == 2;
+        own.hand count card 10001110 == 0;
+    }
+}

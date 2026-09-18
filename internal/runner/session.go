@@ -517,6 +517,14 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 			}
 			return nil
 		}
+		if e.Kind == "first" {
+			// `first <绑定> from <集合> [where …] [count N]`：按集合顺序取前 N 个，
+			// 既不询问玩家也不消费随机决策（"从左起第1个"）。
+			for n := 0; n < count && n < len(candidates); n++ {
+				bindings[e.Binding] = append(bindings[e.Binding], candidates[n])
+			}
+			return nil
+		}
 		if len(candidates) == 0 && e.Kind == "choose" {
 			return nil
 		}

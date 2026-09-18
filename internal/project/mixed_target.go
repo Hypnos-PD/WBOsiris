@@ -27,7 +27,7 @@ func validateMixedBindings(body []*syntax.Statement, inherited map[string]bool, 
 				}
 			}
 		}
-		if set("choose", "require", "random")[h] && len(t) > 1 {
+		if set("choose", "require", "random", "first")[h] && len(t) > 1 {
 			mixed[t[1].Value] = len(t) >= 12 && t[8].Value == "or"
 			continue
 		}
