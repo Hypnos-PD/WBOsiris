@@ -1079,7 +1079,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if err := strict(data, &v); err != nil {
 			return nil, err
 		}
-		if v.Output != "" && (v.Kind != "destroy" || v.Output != "destroyed") {
+		if v.Output != "" && !(v.Kind == "destroy" && v.Output == "destroyed" || v.Kind == "banish" && v.Output == "banished") {
 			return nil, fmt.Errorf("invalid target effect output")
 		}
 		if v.Until != "" && (!oneOf(v.Kind, "add_keyword", "buff_stats", "set_cost") || !oneOf(v.Until, "turn_end", "own_turn_end", "oppo_turn_end")) {

@@ -773,8 +773,14 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 	case "discard":
 		g.discardCards(targets)
 	case "banish":
+		banished := []*instance{}
 		for _, i := range targets {
 			g.move(i, "banished")
+			banished = append(banished, i)
+		}
+		if e.Output != "" {
+			// "因本能力消失的卡牌的张数"用 count(banished) 读取。
+			f[e.Output] = bindEntities(banished...)
 		}
 	case "return":
 		for _, i := range targets {

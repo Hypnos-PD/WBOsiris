@@ -488,6 +488,9 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 				e.Target = ref
 				return e, nil
 			}
+		} else if h == "banish" {
+			// 输出本次实际消失的实例，便于"因本能力消失的卡牌的张数"。
+			e.Output = "banished"
 		}
 		end := valueRefEnd(t, 1)
 		if end < len(t) && t[end].Value == "other" {

@@ -456,6 +456,8 @@ remove all abilities from targets;
 一次结算里发生的所有召唤都会累加到 `summoned_all`（`summoned` 仍然只保留最近一次），
 因此"爆能强化_7：使其获得【疾驰】"指向同一次入场曲召唤的多个衍生体时写作
 `enhance 7 { add storm to summoned_all; }`。
+`destroy` 与 `banish` 分别把本次操作实际处理的实例写入 `destroyed` 与 `banished`，
+可用 `count(banished)` 读取"因本能力消失的卡牌的张数"（例如作为分配伤害的总额）。
 `add copies of <集合> to hand;` 则按每个目标当前的卡牌定义复制一张同名卡加入手牌
 （手牌满时按过抽处理，不计入 `added`）；复制可以作用于已经消失的实例，
 因为只读取卡牌身份，所以"使其消失，将1张同名的卡牌加入自己的手牌"写作

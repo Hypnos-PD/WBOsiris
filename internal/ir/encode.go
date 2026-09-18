@@ -201,7 +201,7 @@ func (e TargetEffect) MarshalJSON() ([]byte, error) {
 		object["until"] = e.Until
 	}
 	if e.Output != "" {
-		if e.Kind != "destroy" || e.Output != "destroyed" {
+		if !(e.Kind == "destroy" && e.Output == "destroyed" || e.Kind == "banish" && e.Output == "banished") {
 			return nil, fmt.Errorf("invalid target effect output")
 		}
 		object["output"] = e.Output

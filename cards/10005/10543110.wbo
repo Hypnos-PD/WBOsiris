@@ -6,7 +6,10 @@ card 10543110 {
     stats 5/5;
 
     effect {
-        unplayable;
+        superevolve {
+            banish own.deck where cost == 1 or cost == 3 or cost == 5 or cost == 7 or cost == 9;
+            damage oppo.field.followers count(banished) distributed;
+        }
     }
 
     meta {

@@ -1,0 +1,50 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "破灭屠戮者超进化时消失奇数费用牌并按张数分配伤害" {
+    seed 62001;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10543110; }
+            deck top {
+                follower c1 = 10012110;
+                follower c2 = 10001110;
+                follower c3 = 10401110;
+                follower c4 = 10001120;
+            }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/8; }
+                follower second = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { superevolve source; }
+    // 费用 1 与 5 的牌被消失（2 点伤害按战场顺序分配）。
+    expect {
+        legal;
+        own.deck count card 10012110 == 0;
+        own.deck count card 10401110 == 0;
+        own.deck count card 10001110 == 1;
+        own.banished count card 10012110 == 1;
+        first.stats == 2/6;
+    }
+}
+
+scenario "没有奇数费用牌时破灭屠戮者不造成伤害" {
+    seed 62002;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10543110; }
+            deck top { follower even1 = 10001110; follower even2 = 10001120; }
+        }
+        player oppo { field { follower first = 10001110 { stats 2/8; } } }
+    }
+    action { superevolve source; }
+    expect { legal; first.stats == 2/8; own.banished count card 10001110 == 0; }
+}

@@ -20,20 +20,20 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 576 · 未实现(骨架) 21 · 未导入 307
+总计 904 · 已完成 577 · 未实现(骨架) 20 · 未导入 307
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
 10002        77      77       0       0
 10003        77      75       2       0
 10004        76      73       3       0
-10005        76      62      14       0
+10005        76      63      13       0
 10006        76       0       0      76
 10007        77       0       0      77
 10008        78       0       0      78
 10009        76       0       0      76
 90000        93      91       2       0
-未完成卡按文本复杂度：中(41–100字) 245 · 短(≤40字) 126 · 长(>100字) 20 · 白板 1
+未完成卡按文本复杂度：中(41–100字) 244 · 短(≤40字) 126 · 长(>100字) 20 · 白板 1
 ```
 
 ## 工作流
@@ -105,6 +105,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-58 | `own\|oppo.hand\|deck has N same cost`（同费用张数） | `internal/ir/model.go`（`SameCostCondition`）、`internal/ir/decode.go`、`internal/project/strict_validate.go`/`validate.go`/`typed_ir.go`、`internal/runner/execute.go`（按当前费用统计最多同费张数）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/same_cost_and_summoned_all_test.go`；卡片 10553310 + 2 个场景 |
 | S-71 | `when own\|oppo follower attacks [leader]`（宣告攻击事件） | `internal/ir/model.go`（`EventTrigger.TargetKind`）、`internal/ir/decode.go`（事件白名单与目标种类校验）、`internal/project/strict_validate.go`/`typed_ir.go`/`validate.go`（事件形状与 `attacker` 绑定）、`internal/runner/runner.go`（事件带上攻击方一侧、绑定名 `attacker`）、`internal/runner/trigger_index.go`（按目标种类过滤）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/attack_event_test.go`（双方、`attacks leader`、筛选与临时增益）；卡片 10474110、10544120 + 8 个场景 |
 | S-73 | `mode random N { … }`（随机模式） | `internal/ir/model.go`（`ModeEffect.Random`）、`internal/ir/decode.go`、`internal/project/validate.go`/`strict_validate.go`/`typed_ir.go`、`internal/runner/session.go`（`pushRandomMode`：随机选 N 个不同选项并按编号入栈）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/random_mode_test.go`（编译保留 `random` 与数量、拒绝 0 与单选项）；卡片 10532310 + 2 个场景 |
+| S-66 | `banish` 输出 `banished` | `internal/project/typed_ir.go`（写入输出）、`validate.go`（登记绑定）、`internal/ir/encode.go`/`decode.go`（形状白名单）、`internal/runner/execute.go`（记录实际消失的实例）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/banish_output_test.go`（输出保留、`count(banished)` 作为分配伤害量）；卡片 10543110 + 2 个场景 |
 | S-61 | `summoned_all`（一次结算的全部召唤） | `internal/runner/bindings.go`（`bindSummoned`）、`internal/runner/execute.go`/`session.go`（所有召唤类效果改为写入累计绑定）、`internal/project/validate.go`（登记 `summoned_all`）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/same_cost_and_summoned_all_test.go`；卡片 10571110 + 3 个场景 |
 
 | S-16 | `ability_destruction_guard`（不会被能力破坏） | 新固有关键词：`internal/ir/decode.go` 的 `validKeyword`、`internal/project/validate.go` 的 `abilities`、`strict_validate.go` 的固有能力形状表、`internal/runner/runner.go`（`destroyByEffect` 受保护，必杀改走新的 `destroyByCombat` 不受保护）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/granted_ability_flow_test.go`（能力破坏被挡下、战斗破坏照样生效）；卡片 10273110 + 2 个场景 |
@@ -162,7 +163,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-63 | 抽牌去重 | 10574120 尽小花·伊鞠（"抽取2种费用为1的法术"） | `draw` 没有 `distinct names`（牌组召唤才有）。 |
 | S-64 | 从破坏历史复制同名卡加入手牌 | 10572310 苏生调律（"将随机2种与本次对战中被破坏的自己的随从同名的卡牌各1张…加入手牌"） | `add copies of` 不接受破坏历史目标（`effectTargets` 过滤掉 `destroyed` 实例），也没有"同名的不同种类各1张"。 |
 | S-65 | 从手牌按位置批量选择 | 10502110 星辉女神（"将自己的手牌中从左起的3张卡牌的复制卡牌各1张…加入手牌"） | 选择只有随机、极值与玩家指定；没有"手牌从左起 N 张"。 |
-| S-66 | 本次操作的消失数量 | 10543110 破灭屠戮者（"X 为因本能力消失的卡牌的张数"） | `banish` 没有输出绑定（`destroy`/`summon`/`draw`/`add` 有）。 |
+| S-66 | ~~本次操作的消失数量~~ **已解决**：`banish` 输出 `banished` | 已解锁 10543110 破灭屠戮者 | 与 `destroyed` 同构；数量用 `count(banished)` 读取，可当伤害量或增益量。 |
 | S-67 | 主战者生命上限的增减 | 10534110 漫步的《愚者》·琳库露的纹章（"使对手的主战者的生命值的最大值-2"） | `set maxlife` 只能设为绝对值，没有增量形式。 |
 | S-68 | ~~回合窗口事件~~ **已解决**：`during own\|oppo turn` 可用于回复事件 | 已解锁 10563110 至圣威仪 | 检查器原先只允许"受到伤害时"带 `during`；运行时的回合匹配本来就通用。 |
 | S-69 | 跨方混合随机集合 | 10524110 威猛的《战车》·奥辂昂（"随机对战场上的1个其他随从或自己的主战者或对手的主战者造成7点伤害"） | 混合集合只支持"同一方的随从+该方主战者"，无法表达"双方随从+双方主战者"。 |
@@ -176,6 +177,17 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 62（S-66 消失输出 + 卡包 10005 第八批）
+
+- **S-66 `banish` 输出 `banished`**：本次实际消失的实例写入绑定 `banished`
+  （与 `destroy` 的 `destroyed` 同构），因此"因本能力消失的卡牌的张数"可以写成
+  `count(banished)`，也能用于分配伤害。
+- 完成 10543110 破灭屠戮者：超进化时让自己的牌组里费用 1/3/5/7/9 的卡牌全部消失，
+  并按消失张数对对手全体随从分配伤害。
+- 新增 2 个场景（`tests/10005/batch-62-banish-count.wbotest`）；Go 单测
+  `internal/project/banish_output_test.go`。
+- 全量回归：`check` 0 错 0 警；`test` 881 全绿；`go test ./...` 全绿；语料快照更新为 881 个场景。
 
 ### 批次 61（S-73 随机模式 + 卡包 10005 第七批）
 

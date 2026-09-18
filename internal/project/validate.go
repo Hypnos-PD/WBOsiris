@@ -518,6 +518,9 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 		if h == "destroy" {
 			bindings["destroyed"] = true
 		}
+		if h == "banish" {
+			bindings["banished"] = true
+		}
 		if h == "summon" || h == "reanimate" {
 			bindings["summoned"] = true
 			bindings["summoned_all"] = true
