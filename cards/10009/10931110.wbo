@@ -6,7 +6,14 @@ card 10931110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        when self summoned {
+            // 「本场对战中进入战场的自己的其他『沉溺的实验体』」：入场记录包含自己，
+            // 用 `other` 排除正在结算的来源实例。
+            if count(own.entered other where card 10931110) >= 5 {
+                buff self +3/+3;
+            }
+        }
+        rush;
     }
 
     meta {

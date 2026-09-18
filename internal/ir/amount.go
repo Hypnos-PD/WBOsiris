@@ -34,10 +34,12 @@ func validCountSource(source Ref) bool {
 			return false
 		}
 	case FilterRef:
-		_, zone := r.Source.(ZoneRef)
-		_, binding := r.Source.(BindingRef)
-		_, history := r.Source.(HistoryRef)
-		return r.Kind == "filter" && (zone || binding || history) && validCountSource(r.Source) && r.Predicate != nil
+		// `count(集合 other where …)` 先排除来源实例再筛选，因此这里允许
+		// 被筛选的对象是 ExcludeRef；两层筛选不合法。
+		if _, nested := r.Source.(FilterRef); nested {
+			return false
+		}
+		return r.Kind == "filter" && validCountSource(r.Source) && r.Predicate != nil
 	default:
 		return false
 	}
@@ -57,6 +59,8 @@ func validNumericExpr(expr NumericExpr, signed bool) bool {
 			e.Kind == "fusion_material_scalar" && e.Side == "" && oneOf(e.Field, "cost", "distinct"))
 	case *NegateExpr:
 		return signed && e != nil && e.Kind == "negate" && validNumericExpr(e.Value, false)
+	case *DifferenceExpr:
+		return e != nil && e.Kind == "difference" && validNumericExpr(e.Left, false) && validNumericExpr(e.Right, false)
 	default:
 		return false
 	}
@@ -80,6 +84,8 @@ func decodeNumericValue(data json.RawMessage, signed bool) (int, NumericExpr, er
 		Side   string          `json:"side"`
 		Field  string          `json:"field"`
 		Value  json.RawMessage `json:"value"`
+		Left   json.RawMessage `json:"left"`
+		Right  json.RawMessage `json:"right"`
 	}
 	if err := strict(data, &raw); err != nil {
 		return 0, nil, err
@@ -112,6 +118,22 @@ func decodeNumericValue(data json.RawMessage, signed bool) (int, NumericExpr, er
 			return 0, nil, err
 		}
 		expr = &NegateExpr{Kind: "negate", Value: value}
+	case "difference":
+		if raw.Side != "" || raw.Field != "" || len(raw.Source) > 0 || len(raw.Value) > 0 {
+			return 0, nil, fmt.Errorf("invalid difference fields")
+		}
+		_, left, err := decodeNumericValue(raw.Left, false)
+		if err != nil {
+			return 0, nil, err
+		}
+		_, right, err := decodeNumericValue(raw.Right, false)
+		if err != nil {
+			return 0, nil, err
+		}
+		if left == nil || right == nil {
+			return 0, nil, fmt.Errorf("difference operands must be numeric expressions")
+		}
+		expr = &DifferenceExpr{Kind: "difference", Left: left, Right: right}
 	default:
 		return 0, nil, fmt.Errorf("invalid effect amount kind %q", raw.Kind)
 	}

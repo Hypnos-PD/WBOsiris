@@ -402,9 +402,20 @@ type CompareCondition struct {
 	Op    string `json:"op"`
 	Left  Scalar `json:"left"`
 	Right int    `json:"right"`
+	// RightExpr 允许右值也是数值表达式（"若自己的主战者的生命值大于对手的主战者的生命值"
+	// 写作 `own.life > oppo.life`）；与 Right 互斥，求值在运行期进行。
+	RightExpr NumericExpr `json:"-"`
 }
 
 func (c CompareCondition) conditionKind() string { return c.Kind }
+
+func (c CompareCondition) MarshalJSON() ([]byte, error) {
+	right, err := numericValue(c.Right, c.RightExpr, false)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(map[string]any{"kind": c.Kind, "op": c.Op, "left": c.Left, "right": right})
+}
 
 // IsDamagedCondition 判断某个绑定实例当前是否生命值受损。
 // 目前用于【攻击时】读取本次交战对象（`opponent`）。
@@ -614,6 +625,16 @@ type NegateExpr struct {
 }
 
 func (e *NegateExpr) numericKind() string { return e.Kind }
+
+// DifferenceExpr 表示两个数值表达式的差（"X 为对手的战场上的随从数减去
+// 自己的战场上的随从数"写作 `count(oppo.field.followers) - count(own.field.followers)`）。
+type DifferenceExpr struct {
+	Kind  string      `json:"kind"`
+	Left  NumericExpr `json:"left"`
+	Right NumericExpr `json:"right"`
+}
+
+func (e *DifferenceExpr) numericKind() string { return e.Kind }
 
 type TargetEffect struct {
 	NodeBase

@@ -860,5 +860,5 @@ func ValidateRuntimePacks(cards *CardPack, tests *TestPack) error {
 
 func validSide(v string) bool { return oneOf(v, "own", "oppo") }
 func validZone(v string) bool {
-	return oneOf(v, "deck", "hand", "field", "graveyard", "banished", "destroyed", "crests")
+	return oneOf(v, "deck", "hand", "field", "graveyard", "banished", "destroyed", "crests", "entered")
 }

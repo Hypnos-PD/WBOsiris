@@ -34,6 +34,8 @@ func (g *game) numericValue(expr ir.NumericExpr, self *instance, bindings frame)
 		return len(g.fromRef(e.Source, self, bindings))
 	case *ir.NegateExpr:
 		return -g.numericValue(e.Value, self, bindings)
+	case *ir.DifferenceExpr:
+		return g.numericValue(e.Left, self, bindings) - g.numericValue(e.Right, self, bindings)
 	case *ir.Scalar:
 		if e.Kind == "self_counter" {
 			if self == nil {

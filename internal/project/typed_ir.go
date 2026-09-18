@@ -726,7 +726,9 @@ func valueRefEnd(t []syntax.Token, i int) int {
 }
 func setExprIR(t []syntax.Token, i int) (ir.Ref, int) {
 	start := i
-	end, ok := parseTargetSet(t, i)
+	// 这里允许 `entered`（"本场对战中进入过战场的卡牌"）；语句形状的校验
+	// 仍然只把它当作计数集合，见 parseCountSource。
+	end, ok := parseTargetSetWith(t, i, true)
 	if !ok {
 		return nil, start
 	}
@@ -952,17 +954,48 @@ func conditionIR(t []syntax.Token) ir.Condition {
 			}
 			return ir.EvolutionUnlockedCondition{Kind: "evolution_unlocked", Side: t[0].Value, Form: form}
 		}
+	}
+	// `左 比较 右`：右侧可以是整数，也可以是数值表达式（`own.life > oppo.life`）。
+	index := -1
+	depth := 0
+	for i, x := range t {
+		switch x.Value {
+		case "(":
+			depth++
+			continue
+		case ")":
+			depth--
+			continue
+		}
+		if depth == 0 && set("==", "!=", "<", "<=", ">", ">=")[x.Value] {
+			index = i
+			break
+		}
+	}
+	if index < 1 {
 		// `combo >= 3` 与 `rally >= 20` 都是"本方计数器 比较 整数"。
-		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "scalar", Side: "own", Field: t[0].Value}, Op: compareOp(t[1].Value), Right: intToken(t[2])}
+		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "scalar", Side: "own", Field: t[0].Value}}
 	}
-	if t[0].Value == "fused" {
-		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "fusion_material_scalar", Field: t[2].Value}, Op: compareOp(t[3].Value), Right: intToken(t[4])}
-	}
-	if t[0].Value == "self" && t[1].Value == "." {
+	right, rightExpr := numericIR(t, index+1)
+	return ir.CompareCondition{Kind: "compare", Left: conditionOperandIR(t[:index]), Op: compareOp(t[index].Value), Right: right, RightExpr: rightExpr}
+}
+
+// conditionOperandIR 把条件里的数值操作数编译成标量。
+func conditionOperandIR(t []syntax.Token) ir.Scalar {
+	switch {
+	case len(t) >= 5 && counterRef(t, 0):
+		return ir.Scalar{Kind: "self_counter", Field: t[4].Value}
+	case len(t) >= 1 && set("combo", "rally")[t[0].Value]:
+		return ir.Scalar{Kind: "scalar", Side: "own", Field: t[0].Value}
+	case len(t) >= 3 && set("own", "oppo")[t[0].Value]:
+		return ir.Scalar{Kind: "scalar", Side: t[0].Value, Field: t[2].Value}
+	case len(t) >= 3 && t[0].Value == "self":
 		// `self.cost != 2` 这类条件读来源实例自己的数值。
-		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "self_scalar", Field: t[2].Value}, Op: compareOp(t[3].Value), Right: intToken(t[4])}
+		return ir.Scalar{Kind: "self_scalar", Field: t[2].Value}
+	case len(t) >= 3 && t[0].Value == "fused":
+		return ir.Scalar{Kind: "fusion_material_scalar", Field: t[2].Value}
 	}
-	return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "scalar", Side: t[0].Value, Field: t[2].Value}, Op: compareOp(t[3].Value), Right: intToken(t[4])}
+	return ir.Scalar{}
 }
 func eventPatternIR(t []syntax.Token) ir.Trigger {
 	survivesDamage := len(t) >= 4 && values(t[:4]) == "when self survives damage"

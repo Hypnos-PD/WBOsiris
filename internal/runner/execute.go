@@ -112,19 +112,23 @@ func (g *game) condition(c ir.Condition, self *instance) bool {
 				}
 			}
 		}
+		right := x.Right
+		if x.RightExpr != nil {
+			right = g.numericValue(x.RightExpr, self, nil)
+		}
 		switch x.Op {
 		case "eq":
-			return n == x.Right
+			return n == right
 		case "ne":
-			return n != x.Right
+			return n != right
 		case "lt":
-			return n < x.Right
+			return n < right
 		case "le":
-			return n <= x.Right
+			return n <= right
 		case "gt":
-			return n > x.Right
+			return n > right
 		case "ge":
-			return n >= x.Right
+			return n >= right
 		}
 	}
 	return false
@@ -352,6 +356,8 @@ func (g *game) zone(p *player, z string) []*instance {
 		return p.banished
 	case "destroyed":
 		return historyInstances(p.destroyed, g.cards)
+	case "entered":
+		return p.entered
 	}
 	return nil
 }

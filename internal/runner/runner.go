@@ -62,6 +62,10 @@ type player struct {
 	// enteredArtifacts 记录本场对战中进入过自己战场的创造物·随从的卡牌种类
 	//（按卡牌 ID 去重，读作 `own.entered_artifacts`）。
 	enteredArtifacts                                          map[int]bool
+	// entered 按入场顺序记录本场对战中进入过自己战场的随从与护符，
+	// 读作 `count(own.entered [other] [where …])`（"本场对战中进入战场的
+	// 自己的其他『…』的张数"）。`other` 用来排除正在结算的来源实例。
+	entered                                                   []*instance
 	deck, hand, field, graveyard, banished                    []*instance
 	destroyed                                                 []DestructionRecord
 	resolving                                                 []*instance
@@ -328,6 +332,11 @@ func (g *game) loadState(s ir.State) error {
 					recordEnteredArtifact(p, c)
 				}
 				g.addToZone(p, i, zone)
+				if zone == "destroyed" {
+					// 战场上入场的实例已经由 addToZone 记进 entered；
+					// 破坏历史里的实例在这里补记，口径与 entered_artifacts 一致。
+					p.entered = append(p.entered, i)
+				}
 			}
 		}
 	}
@@ -410,6 +419,8 @@ func (g *game) addToZone(p *player, i *instance, z string) {
 		g.triggerIndex.add(i)
 	case "field":
 		p.field = append(p.field, i)
+		// "进入战场"包括打出、召唤、变身与从牌组移动，全部记进 entered。
+		p.entered = append(p.entered, i)
 		g.triggerIndex.add(i)
 	case "graveyard":
 		p.graveyard = append(p.graveyard, i)

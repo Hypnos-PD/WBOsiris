@@ -6,6 +6,24 @@ import (
 )
 
 func numericIR(t []syntax.Token, i int) (int, ir.NumericExpr) {
+	value, expr := numericOperandIR(t, i)
+	end, ok := parseEffectOperand(t, i)
+	for ok && end < len(t) && t[end].Value == "-" {
+		nextEnd, nextOK := parseEffectOperand(t, end+1)
+		if !nextOK {
+			break
+		}
+		_, right := numericOperandIR(t, end+1)
+		if expr == nil || right == nil {
+			break
+		}
+		expr = &ir.DifferenceExpr{Kind: "difference", Left: expr, Right: right}
+		end, ok = nextEnd, true
+	}
+	return value, expr
+}
+
+func numericOperandIR(t []syntax.Token, i int) (int, ir.NumericExpr) {
 	if counterRef(t, i) {
 		return 0, &ir.Scalar{Kind: "self_counter", Field: t[i+4].Value}
 	}

@@ -93,6 +93,9 @@ type ContinuationPlayer struct {
 	Rally            int                 `json:"rally"`
 	// EnteredArtifacts 是本场对战中进入过该玩家战场的创造物·随从卡牌 ID（去重）。
 	EnteredArtifacts []int               `json:"enteredArtifacts,omitempty"`
+	// Entered 是按入场顺序记录的本场对战入场实例 ID（随从与护符），
+	// 读作 `count(own.entered …)`。
+	Entered []string `json:"entered,omitempty"`
 	LeaderAbilities  []string            `json:"leaderAbilities,omitempty"`
 	AttackedThisTurn bool                `json:"attackedThisTurn"`
 	// LeaderAttackedThisTurn / LeaderAttackedLastTurn：本回合 / 上一回合攻击过主战者。
@@ -545,6 +548,7 @@ func snapshotContinuationPlayer(p player) ContinuationPlayer {
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, Rally: p.rally, LeaderAbilities: leaderAbilityNames(p), AttackedThisTurn: p.attackedThisTurn,
 		LeaderAttackedThisTurn: p.leaderAttackedThisTurn, LeaderAttackedLastTurn: p.leaderAttackedLastTurn,
 		EnteredArtifacts: sortedCardIDs(p.enteredArtifacts),
+		Entered:          instanceIDs(p.entered),
 		Deck: instanceIDs(p.deck), Hand: instanceIDs(p.hand), Field: instanceIDs(p.field), EvolvedThisTurn: p.evolvedThisTurn,
 		Graveyard: instanceIDs(p.graveyard), Banished: instanceIDs(p.banished), Destroyed: cloneDestructionHistory(p.destroyed),
 		Resolving:    instanceIDs(p.resolving),
@@ -968,7 +972,26 @@ func restorePlayer(saved ContinuationPlayer, instances map[string]*instance, car
 	if p.destroyed, err = restoreHistory(saved.Destroyed, instances, cards); err != nil {
 		return player{}, err
 	}
+	if p.entered, err = restoreEnteredList(saved.Entered, instances); err != nil {
+		return player{}, err
+	}
 	return p, nil
+}
+
+// restoreEnteredList 恢复"本场对战中进入过战场"的实例顺序。与区域列表不同，
+// 这些实例的当前区域是它们现在所在的地方，因此只校验实例存在；
+// 同一个实例可以多次进入战场（返回手牌后再打出、从破坏历史回到战场），
+// 因此这里允许重复，重复次数就是入场次数。
+func restoreEnteredList(ids []string, instances map[string]*instance) ([]*instance, error) {
+	items := make([]*instance, 0, len(ids))
+	for _, id := range ids {
+		i := instances[id]
+		if i == nil {
+			return nil, fmt.Errorf("invalid continuation entered zone")
+		}
+		items = append(items, i)
+	}
+	return items, nil
 }
 
 func restoreInstanceList(ids []string, instances map[string]*instance, zone string) ([]*instance, error) {

@@ -1,0 +1,82 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "反照的赤红在没有其他同名卡入场时保持4/4" {
+    seed 103201;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10844110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.stats == 4/4;
+        source.evolved == false;
+    }
+}
+
+scenario "反照的赤红在1个其他同名卡入场后加一加一但不进化" {
+    seed 103202;
+    state {
+        player own {
+            pp 4/4;
+            destroyed { follower gone = 10844110; }
+            hand { follower source = 10844110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.stats == 5/5;
+        source.evolved == false;
+    }
+}
+
+scenario "反照的赤红在2个其他同名卡入场后进化" {
+    seed 103203;
+    state {
+        player own {
+            pp 4/4;
+            destroyed {
+                follower first = 10844110;
+                follower second = 10844110;
+            }
+            hand { follower source = 10844110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.evolved == true;
+    }
+}
+
+scenario "反照的赤红的谢幕曲使自己获得纹章" {
+    seed 103204;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10844110; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.crests count card 10844110 == 1; }
+}
+
+scenario "反照的赤红的纹章吟唱结束时把1张同名卡加入手牌" {
+    seed 103205;
+    state {
+        player oppo {
+            crests { crest emblem = 10844110 { countdown 1; } }
+        }
+    }
+    action { end_turn; }
+    expect {
+        legal;
+        oppo.crests count card 10844110 == 0;
+        oppo.hand count card 10844110 == 1;
+    }
+}

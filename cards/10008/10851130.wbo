@@ -6,7 +6,17 @@ card 10851130 {
     stats 1/1;
 
     effect {
-        unplayable;
+        fanfare {
+            // 「若自己的主战者的生命值大于对手的主战者的生命值」：条件右值也可以是数值。
+            if own.life > oppo.life {
+                summon 2 card 90051120;
+            }
+        }
+        evolve {
+            if own.life > oppo.life {
+                summon 2 card 90051120;
+            }
+        }
     }
 
     meta {

@@ -254,12 +254,16 @@ SetExpr =
 | ExcludeSet  { kind: "exclude", source: SetExpr, value: ValueRef }
 
 Zone = "deck" | "hand" | "field" | "graveyard" | "banished" |
-       "destroyed"
+       "destroyed" | "entered"
 MemberKind = "card" | "follower" | "spell" | "amulet"
 ```
 
 `field.followers` 的 `side` 为空，表示双方战场集合。`other` 编译为
 `ExcludeSet(source, self)`，`where` 编译为 `FilterSet`。过滤谓词中的省略主语字段
+`entered` 是本场对战中的入场记录（按入场顺序的实例引用，包含打出的卡牌与召唤的
+衍生体，不因离场而移除），只在计数集合里出现：
+`count(own.entered other where card 10931110)` 先排除来源实例再筛选，
+因此 `FilterSet(ExcludeSet(ZoneSet(entered), self), …)` 是合法形状，两层筛选不是。
 统一绑定到 `CandidateRef`；例如 `where life <= 3` 比较当前候选的生命值。
 
 牌组保持从顶到底顺序，手牌和单方战场保持槽位顺序。双方集合的拼接顺序、墓场与
@@ -603,6 +607,11 @@ If = NodeBase & {
   else: [EffectNode]
 }
 
+条件里的比较（`Condition` 的 `compare` 节点）左侧是标量或集合计数，右侧既可以是整数，
+也可以是数值表达式（"若自己的主战者的生命值大于对手的主战者的生命值"编译为
+`left: PlayerScalar(own.life)` 与 `right: PlayerScalar(oppo.life)`）。集合计数作左值时
+右值仍然只接受整数：`count(A) > count(B)` 需要新的比较节点，目前会在检查阶段被拒绝。
+
 Mode = NodeBase & {
   kind: "mode",
   count?: 1..65535,          (* 玩家要选择或随机发动的选项数量，省略为 1 *)
@@ -901,6 +910,7 @@ NumericExpr = Count { kind: "count", source: ZoneSet | HistorySet | BindingRef |
             | SelfScalar { kind: "self_scalar", field: "attack" | "life" | "cost" }
             | BindingScalar { kind: "binding_scalar", side: BindingName, field: "attack" | "life" | "cost" }
             | SelfCounter { kind: "self_counter", field: CounterName }
+            | Difference { kind: "difference", left: NumericExpr, right: NumericExpr }
 EffectAmount = nonnegative_integer | NumericExpr
 AdjustCounter = NodeBase & { kind: "adjust_counter", field: CounterName, delta: nonnegative_i32 }
 StatDelta = i16 | NumericExpr | Negate { kind: "negate", value: NumericExpr }

@@ -6,7 +6,67 @@ card 10844110 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fanfare {
+            // X 为"本场对战中进入战场的自己的其他『反照的赤红』的张数"；
+            // 入场记录包含自己，用 `other` 排除正在结算的来源实例。
+            buff self +count(own.entered other where card 10844110)/+count(own.entered other where card 10844110);
+            if count(own.entered other where card 10844110) >= 2 {
+                evolve self silent;
+            }
+        }
+        ward;
+        lastwords {
+            gain own crest 10844110;
+        }
+    }
+
+    crest {
+        countdown 2;
+
+        lastwords {
+            add 1 card 10844110 to hand;
+            set cost added 2;
+        }
+
+        locale chs {
+            name "纹章：反照的赤红·德莱克&亚瑞札特";
+            text """
+【<color=Keyword>吟唱</color>_2】
+【<color=Keyword>谢幕曲</color>】将1张『<color=Keyword>反照的赤红·德莱克&亚瑞札特</color>』加入手牌，使其费用变为2。
+""";
+        }
+
+        locale eng {
+            name "Crest: Drache & Aluzard, Burning Blood";
+            text """
+<b><color=Keyword>Countdown</color> (2)</b>
+<b><color=Keyword>Last Words</color></b>: Add a <b><i><color=Keyword>Drache & Aluzard, Burning Blood</color></i></b> to your hand and set its cost to 2.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"はんしょう\">反照</rub>の<rub=\"あかべに\">赤紅</rub>・ドラーク＆アルザード";
+            text """
+【<color=Keyword>カウントダウン</color>_2】
+【<color=Keyword>ラストワード</color>】『<color=Keyword>反照の赤紅・ドラーク＆アルザード</color>』1枚を自分の手札に加え、それのコストを2にする。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 반조의 적홍 드라크&알루자드";
+            text """
+[<color=Keyword>카운트다운</color> 2]
+[<color=Keyword>유언</color>] <color=Keyword>반조의 적홍 드라크&알루자드</color> 1장을 내 패에 넣고, 그 코스트를 2로 한다.
+""";
+        }
+
+        locale cht {
+            name "紋章：返照的赤紅‧德萊克＆亞瑞札特";
+            text """
+【<color=Keyword>吟唱</color>_2】
+【<color=Keyword>謝幕曲</color>】增加1張『<color=Keyword>返照的赤紅‧德萊克＆亞瑞札特</color>』到自己的手牌中，使其消費變為2。
+""";
+        }
     }
 
     meta {

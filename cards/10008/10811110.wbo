@@ -6,7 +6,11 @@ card 10811110 {
     stats 6/6;
 
     effect {
-        unplayable;
+        fanfare {
+            // X 为「对手的战场上的随从数减去自己的战场上的随从数」；负数按 0 处理。
+            random victims from oppo.field.followers count count(oppo.field.followers) - count(own.field.followers);
+            destroy victims;
+        }
     }
 
     meta {

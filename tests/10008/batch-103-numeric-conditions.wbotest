@@ -1,0 +1,118 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "兔耳恶魔在自己主战者生命值更高时召唤2个蝙蝠" {
+    seed 103001;
+    state {
+        player own {
+            leader 20/20;
+            pp 2/2;
+            hand { follower source = 10851130; }
+        }
+        player oppo {
+            leader 10/20;
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90051120 == 2;
+    }
+}
+
+scenario "兔耳恶魔在自己主战者生命值不高于对手时不召唤" {
+    seed 103002;
+    state {
+        player own {
+            leader 10/20;
+            pp 2/2;
+            hand { follower source = 10851130; }
+        }
+        player oppo {
+            leader 10/20;
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90051120 == 0;
+    }
+}
+
+scenario "兔耳恶魔的进化时发动与入场曲相同的能力" {
+    seed 103003;
+    state {
+        turn own 7;
+        player own {
+            leader 20/20;
+            ep 1;
+            field { follower source = 10851130; }
+        }
+        player oppo {
+            leader 10/20;
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        own.field count card 90051120 == 2;
+    }
+}
+
+scenario "昔日的天秤按对手随从数减去自己随从数破坏随从" {
+    seed 103004;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10811110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110;
+                follower second = 10001110;
+                follower third = 10001110;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        // 对手 3 个随从减去自己 1 个随从（马龙自己）等于 2。
+        oppo.field count card 10001110 == 1;
+    }
+}
+
+scenario "昔日的天秤在差为负数时不破坏随从" {
+    seed 103005;
+    state {
+        player own {
+            pp 7/7;
+            field { follower ally = 10001110; }
+            hand { follower source = 10811110; }
+        }
+        player oppo {
+            field { follower victim = 10001110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        // 对手 1 个减去自己 2 个是负数，按 0 处理。
+        victim.zone == field;
+    }
+}
+
+scenario "昔日的天秤在双方随从数相同时不破坏随从" {
+    seed 103006;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10811110; }
+        }
+        player oppo {
+            field { follower victim = 10001110; }
+        }
+    }
+    action { play source; }
+    expect { legal; victim.zone == field; }
+}

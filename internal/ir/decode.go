@@ -1809,7 +1809,7 @@ func decodeCondition(data []byte) (Condition, error) {
 		Kind  string `json:"kind"`
 		Left  Scalar `json:"left"`
 		Op    string `json:"op"`
-		Right int    `json:"right"`
+		Right json.RawMessage `json:"right"`
 	}
 	if err := strict(data, &v); err != nil {
 		return nil, err
@@ -1826,7 +1826,23 @@ func decodeCondition(data []byte) (Condition, error) {
 	if v.Left.Kind == "self_scalar" && (v.Left.Side != "" || !oneOf(v.Left.Field, "cost", "attack", "life", "damage_taken")) {
 		return nil, fmt.Errorf("invalid self scalar condition")
 	}
-	return CompareCondition{v.Kind, v.Op, v.Left, v.Right}, nil
+	right, rightExpr, err := decodeNumericValue(v.Right, false)
+	if err != nil {
+		return nil, err
+	}
+	if rightExpr != nil {
+		// 右值表达式也可以是标量（`oppo.life`）或集合计数（`count(own.hand)`）。
+		switch expr := rightExpr.(type) {
+		case *CountExpr, *SumExpr, *DifferenceExpr:
+		case *Scalar:
+			if expr.Kind == "binding_scalar" {
+				return nil, fmt.Errorf("invalid condition scalar")
+			}
+		default:
+			return nil, fmt.Errorf("invalid condition scalar")
+		}
+	}
+	return CompareCondition{Kind: v.Kind, Op: v.Op, Left: v.Left, Right: right, RightExpr: rightExpr}, nil
 }
 func newNode(id string, seen map[string]bool, origins ...Origin) error {
 	if !nodeIDPattern.MatchString(id) {

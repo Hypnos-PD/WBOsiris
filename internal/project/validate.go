@@ -972,11 +972,29 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 }
 
 func parseEffectAmount(t []syntax.Token, i int) (int, bool) {
-	if counterRef(t, i) {
-		return i + 5, true
-	}
+	// 整数，或者若干数值操作数用 `-` 相连的差
+	//（"X 为对手的战场上的随从数减去自己的战场上的随从数"）。
 	if i < len(t) && isUnsigned(t[i]) {
 		return i + 1, true
+	}
+	end, ok := parseEffectOperand(t, i)
+	if !ok {
+		return end, false
+	}
+	for end < len(t) && t[end].Value == "-" {
+		next, good := parseEffectOperand(t, end+1)
+		// 差的两个操作数都必须是数值表达式；字面量请直接写数字。
+		if !good || isUnsigned(t[end+1]) {
+			return end, false
+		}
+		end = next
+	}
+	return end, true
+}
+
+func parseEffectOperand(t []syntax.Token, i int) (int, bool) {
+	if counterRef(t, i) {
+		return i + 5, true
 	}
 	if i+2 < len(t) && t[i+1].Value == "." {
 		if t[i].Value == "self" && set("attack", "life", "cost", "damage_taken")[t[i+2].Value] ||
@@ -1023,10 +1041,16 @@ func parseCountSource(t []syntax.Token, i int) (int, bool) {
 	if i < len(t) && t[i].Kind == syntax.Identifier && !set("self", "own", "oppo", "field", "all", "leaders")[t[i].Value] {
 		return i + 1, true
 	}
-	return parseTargetSet(t, i)
+	return parseTargetSetWith(t, i, true)
 }
 
 func parseTargetSet(t []syntax.Token, i int) (int, bool) {
+	return parseTargetSetWith(t, i, false)
+}
+
+// parseTargetSetWith 解析区域集合。countOnly 为真时额外允许 `entered`
+// ——"本场对战中进入过该玩家战场的卡牌"，只作为计数查询的集合。
+func parseTargetSetWith(t []syntax.Token, i int, countOnly bool) (int, bool) {
 	start := i
 	if i >= len(t) {
 		return i, false
@@ -1041,7 +1065,7 @@ func parseTargetSet(t []syntax.Token, i int) (int, bool) {
 	if t[i].Value != "own" && t[i].Value != "oppo" {
 		return i, false
 	}
-	if i+2 >= len(t) || t[i+1].Value != "." || !set("deck", "hand", "field", "graveyard", "banished", "destroyed", "crests")[t[i+2].Value] {
+	if i+2 >= len(t) || t[i+1].Value != "." || !zoneName(t[i+2].Value, countOnly) {
 		return i, false
 	}
 	i += 3
@@ -1055,6 +1079,13 @@ func parseTargetSet(t []syntax.Token, i int) (int, bool) {
 		i += 2
 	}
 	return i, true
+}
+
+func zoneName(zone string, countOnly bool) bool {
+	if set("deck", "hand", "field", "graveyard", "banished", "destroyed", "crests")[zone] {
+		return true
+	}
+	return countOnly && zone == "entered"
 }
 func parseValueRef(t []syntax.Token, i int) (int, bool) {
 	if i >= len(t) {

@@ -287,6 +287,8 @@ condition         = "overflow"
                   | participant , "." , "deck" , "has" , ["no"] , "duplicates"
                   | scalar_value , comparison_operator , integer
                   | ("count" | "sum") , effect_amount_tail , comparison_operator , integer ;
+(* 标量左值与集合计数左值的右值都可以写成 effect_amount，
+   例如 own.life > oppo.life；集合计数之间比较尚未支持。 *)
 follower_form     = "unevolved" | "evolved" | "super_evolved" ;
 evolution_unlock  = "evolve_unlocked" | "superevolve_unlocked" ;
 scalar_value      = "combo" | "rally" | player_scalar
@@ -430,9 +432,11 @@ effect_amount     = integer | counter_ref | "count" , "(" , count_source , [wher
                   | "sum" , "(" , count_source , [where_clause] , "," , ["base" , "."] , ("attack" | "life" | "cost") , ")"
                   | player_scalar
                   | "self" , "." , ("cost" | "attack" | "life")
-                  | binding_name , "." , ("attack" | "life" | "cost") ;
+                  | binding_name , "." , ("attack" | "life" | "cost")
+                  | effect_amount , "-" , effect_amount ; (* 差，操作数必须是表达式 *)
 signed_amount     = ("+" | "-") , effect_amount ;
 count_source      = target_set | binding_name ; (* binding must already be defined in this scope *)
+(* target_set 额外允许只有计数能用的 entered：participant , "." , "entered" *)
 repeat_statement  = "repeat" , effect_amount , effect_block ;
 damage_distribution = "distributed" , ["overflow" , participant , "." , "leader"] ;
 

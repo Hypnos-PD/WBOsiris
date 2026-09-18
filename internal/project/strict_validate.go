@@ -411,20 +411,71 @@ func strictCondition(t []syntax.Token, fusion bool) bool {
 		return set("overflow", "skybound_art", "super_skybound_art")[t[0].Value]
 	}
 	op := func(x string) bool { return set("==", "!=", "<", "<=", ">", ">=")[x] }
-	if len(t) == 7 && counterRef(t, 0) {
-		return op(t[5].Value) && isUnsigned(t[6])
+	// `左 比较 右`：两侧都是条件里可用的数值（整数、count/sum、玩家标量、自己标量、
+	// 计数器和融合素材标量），所以 `own.life > oppo.life` 这类比较也成立。
+	index := -1
+	depth := 0
+	for i, x := range t {
+		switch x.Value {
+		case "(":
+			depth++
+			continue
+		case ")":
+			depth--
+			continue
+		}
+		if depth == 0 && op(x.Value) {
+			index = i
+			break
+		}
 	}
-	if len(t) == 3 {
-		return set("combo", "rally")[t[0].Value] && op(t[1].Value) && isUnsigned(t[2])
+	if index < 1 {
+		return false
 	}
-	// count(集合 [where …]) 比较 整数：集合与筛选的合法性由 parseEffectAmount 负责。
-	if len(t) > 0 && (t[0].Value == "count" || t[0].Value == "sum") {
-		next, ok := parseEffectAmount(t, 0)
-		return ok && next+1 < len(t) && op(t[next].Value) && isUnsigned(t[next+1]) && next+2 == len(t)
+	left, ok := conditionOperandEnd(t, 0, fusion)
+	if !ok || left != index {
+		return false
 	}
-	return len(t) == 5 && (set("own", "oppo")[t[0].Value] && t[1].Value == "." && ir.ValidPlayerScalar(t[2].Value) ||
-		t[0].Value == "self" && t[1].Value == "." && set("cost", "attack", "life", "damage_taken")[t[2].Value] ||
-		fusion && t[0].Value == "fused" && t[1].Value == "." && set("cost", "distinct")[t[2].Value]) && op(t[3].Value) && isUnsigned(t[4])
+	right, ok := conditionOperandEnd(t, index+1, fusion)
+	if !ok || right != len(t) {
+		return false
+	}
+	// 集合计数作为左值时，右值暂时只支持整数：`count(A) 比较 count(B)`
+	// 需要新的比较节点（记在挂起登记里）。
+	if set("count", "sum")[t[0].Value] && !isUnsigned(t[index+1]) {
+		return false
+	}
+	return true
+}
+
+// conditionOperandEnd 识别条件里可用的数值操作数。
+func conditionOperandEnd(t []syntax.Token, i int, fusion bool) (int, bool) {
+	if i >= len(t) {
+		return i, false
+	}
+	if isUnsigned(t[i]) {
+		return i + 1, true
+	}
+	if set("count", "sum")[t[i].Value] {
+		return parseEffectAmount(t, i)
+	}
+	if len(t) >= i+5 && counterRef(t, i) {
+		return i + 5, true
+	}
+	if len(t) >= i+1 && set("combo", "rally")[t[i].Value] {
+		return i + 1, true
+	}
+	if len(t) >= i+3 && t[i+1].Value == "." {
+		switch {
+		case set("own", "oppo")[t[i].Value] && ir.ValidPlayerScalar(t[i+2].Value):
+			return i + 3, true
+		case t[i].Value == "self" && set("cost", "attack", "life", "damage_taken")[t[i+2].Value]:
+			return i + 3, true
+		case fusion && t[i].Value == "fused" && set("cost", "distinct")[t[i+2].Value]:
+			return i + 3, true
+		}
+	}
+	return i, false
 }
 
 func attackHistoryCondition(t []syntax.Token) bool {
@@ -735,7 +786,7 @@ func strictAssertion(s *syntax.Statement, a map[string]string, ds *[]syntax.Diag
 		end, ok = parseWhere(t, end)
 		return ok && end+2 == len(t) && t[end].Value == "have" && abilities[t[end+1].Value]
 	}
-	if (h == "own" || h == "oppo") && len(t) >= 8 && t[1].Value == "." && set("deck", "hand", "field", "graveyard", "banished", "destroyed", "crests")[t[2].Value] && t[3].Value == "count" && t[4].Value == "card" && isCardID(t[5]) && t[6].Value == "==" && isUnsigned(t[7]) && len(t) == 8 {
+	if (h == "own" || h == "oppo") && len(t) >= 8 && t[1].Value == "." && set("deck", "hand", "field", "graveyard", "banished", "destroyed", "crests", "entered")[t[2].Value] && t[3].Value == "count" && t[4].Value == "card" && isCardID(t[5]) && t[6].Value == "==" && isUnsigned(t[7]) && len(t) == 8 {
 		return true
 	}
 	if isOrderAssertion(t, a, ds) {

@@ -1,0 +1,65 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "沉溺的实验体在第5个其他同名卡入场后获得加三加三" {
+    seed 103101;
+    state {
+        player own {
+            pp 2/2;
+            field {
+                follower first = 10931110;
+                follower second = 10931110;
+                follower third = 10931110;
+                follower fourth = 10931110;
+            }
+            destroyed { follower gone = 10931110; }
+            hand { follower source = 10931110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        // 战场的 4 个加上破坏历史里的 1 个，共 5 个"其他"同名卡。
+        source.stats == 5/5;
+    }
+}
+
+scenario "沉溺的实验体在其他同名卡不足5张时只是2/2" {
+    seed 103102;
+    state {
+        player own {
+            pp 2/2;
+            field {
+                follower first = 10931110;
+                follower second = 10931110;
+                follower third = 10931110;
+            }
+            destroyed { follower gone = 10931110; }
+            hand { follower source = 10931110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.stats == 2/2; }
+}
+
+scenario "沉溺的实验体不把自己算进其他同名卡" {
+    seed 103103;
+    state {
+        player own {
+            pp 2/2;
+            field {
+                follower first = 10931110;
+                follower second = 10931110;
+                follower third = 10931110;
+                follower fourth = 10931110;
+            }
+            hand { follower source = 10931110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        // 自己以外的同名卡只有 4 个，算上自己才是 5 个。
+        source.stats == 2/2;
+    }
+}

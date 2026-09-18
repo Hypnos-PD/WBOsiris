@@ -680,6 +680,18 @@ fanfare {
 读取对应身份的卡牌定义，不计强化、伤害、进化加成或费用修正。
 省略 `base.` 的 `sum(集合, attack|life|cost)` 改为读取效果执行时的当前属性，
 包括强化、伤害、进化和费用修正；费用最低按零计算。历史集合读取破坏时保存的属性。
+两个数值表达式之间还可以相减，用于"X 为对手的战场上的随从数减去自己的战场上的随从数"：
+
+```wbo
+fanfare {
+    random victims from oppo.field.followers count count(oppo.field.followers) - count(own.field.followers);
+    destroy victims;
+}
+```
+
+减法可以连写（从左向右结合），操作数必须是数值表达式：字面量直接写数字，
+`count(A) - 1` 这样的写法会在检查阶段报错。结果可能为负，取用它的操作
+（选择数量、伤害量等）按零处理。
 例如以下入场曲读取所舍弃卡牌的当前费用；空手牌跳过选择，空绑定之和为零。
 舍弃产生的监听能力在整段入场曲结束后才执行。
 
@@ -711,6 +723,22 @@ when self summoned {
 `entered_artifacts` 是"本场对战中进入过该玩家战场的创造物·随从的**种类**数"
 （按卡牌 ID 去重，读作 `own.entered_artifacts`），用于"若本次对战中进入战场的自己的
 创造物·随从的种类为3种或以上"这类条件与伤害量；只读，也不会随随从离场而回退。
+
+`own.entered` / `oppo.entered` 是"本场对战中进入过该玩家战场的随从与护符"的**集合**
+（按入场顺序，包含打出的卡牌、召唤的衍生体与变身进场的实例，不因离场而移除），
+只能用在 `count(...)` 里：
+
+```wbo
+when self summoned {
+    if count(own.entered other where card 10931110) >= 5 { ... }
+}
+buff self +count(own.entered other where card 10844110)/+count(own.entered other where card 10844110);
+```
+
+`other` 在计数时排除正在结算的来源实例，用来表达"本次对战中进入战场的自己的**其他**
+『同名卡』的张数"。计数在入场事件派发前已经记入，因此来源实例自己一定在集合里；
+`where` 与其他集合一样支持 `card`、`type`、`class`、`trait` 等筛选。
+负值不会出现：与 `count(...)` 一样返回张数。
 
 ```wbo
 fanfare {
@@ -1337,6 +1365,9 @@ if count(oppo.hand) <= 5 { ... }
 
 支持 `where` 筛选（`form`、`type`、`class`、`trait`、`life`、`cost`、`keyword`、`card`），
 也支持 `sum(...)` 求和。判断发生在执行到该语句时，因此同一能力之前造成的变化会影响结果。
+比较的右侧同样可以是数值表达式，例如"若自己的主战者的生命值大于对手的主战者的生命值"
+写作 `if own.life > oppo.life { ... }`。左侧保持标量写法：集合计数之间的比较
+（`count(A) > count(B)`）还没有实现，写了会在检查阶段报错而不是静默按 0 结算。
 
 卡牌在入场曲结算前已经计入连击。土之秘术和唤灵会在资源充足时自动支付，
 资源不足时跳过对应代码块。支付成功后，即使后续操作失败也不会退还资源。
