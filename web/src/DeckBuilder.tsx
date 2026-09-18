@@ -13,8 +13,9 @@ type Props = {
   deck: string[];
   onChange: (deck: string[]) => void;
   onPractice: () => void;
-  onBattle: () => void;
-  onBotBattle: () => void;
+  // 开一局的入口统一放在大厅/单人模式；卡组页只负责构筑与导出。
+  onBattle?: () => void;
+  onBotBattle?: () => void;
   formats: CatalogFormat[];
   format: string;
   onFormatChange: (format: string) => void;
@@ -95,8 +96,8 @@ export function DeckBuilder({ library, cards, deck, onChange, onPractice, onBatt
         <div className="deck-summary-title"><div><h2 title={library.active.name}>{library.active.name}</h2><span>{classNames[deckClass || "neutral"]} · 平均 {deck.length ? (totalCost / deck.length).toFixed(1) : "0.0"} 费</span></div><strong className={deck.length !== 40 ? "incomplete" : ""}>{deck.length}<small>/40</small></strong><button className="deck-icon-button" title="清空牌组" aria-label="清空牌组" onClick={() => onChange([])} disabled={!deck.length}><Trash2 size={17}/></button></div>
         <div className="deck-curve" aria-label="费用分布">{curve.map((count, cost) => <div key={cost} title={`${cost === 10 ? "10+" : cost} 费：${count} 张`}><span>{count || ""}</span><i style={{ height: `${count / Math.max(1, ...curve) * 36}px` }}/><small>{cost === 10 ? "10+" : cost}</small></div>)}</div>
         <div className="deck-validation" aria-live="polite">{problems.length ? problems.map((problem) => <p key={problem}>{problem}</p>) : cards.length ? <span><Check size={15}/>可以对战</span> : <span>卡池尚未就绪</span>}</div>
-        <button className="deck-battle-button" onClick={onBattle} disabled={busy || loading || !cards.length || !!problems.length}><Swords size={17}/>{busy ? "正在创建房间" : "使用牌组创建房间"}</button>
-        <button className="deck-battle-button deck-practice-button" onClick={onBotBattle} disabled={busy || loading || !cards.length || !!problems.length}><Bot size={17}/>{busy ? "正在准备对局" : "练习对战（对 AI）"}</button>
+        {onBattle && <button className="deck-battle-button" onClick={onBattle} disabled={busy || loading || !cards.length || !!problems.length}><Swords size={17}/>{busy ? "正在创建房间" : "使用牌组创建房间"}</button>}
+        {onBotBattle && <button className="deck-battle-button deck-practice-button" onClick={onBotBattle} disabled={busy || loading || !cards.length || !!problems.length}><Bot size={17}/>{busy ? "正在准备对局" : "练习对战（对 AI）"}</button>}
         <div className="deck-rows">{rows.map(([id, count]) => { const card = byId.get(id); return <div className="deck-row" key={id}>
           <span className="deck-row-cost">{card?.cost ?? "?"}</span><button className="deck-row-name" onClick={() => card && inspect(card)}>{card?.name || `卡牌 ${id}`}<small>{card ? typeNames[card.cardType] : "不在卡池中"}</small></button><button className="deck-icon-button" aria-label={`牌组移除 ${card?.name || id}`} title="移除一张" onClick={() => remove(id)}><Minus size={14}/></button><b>{count}</b><button className="deck-icon-button" aria-label={`牌组添加 ${card?.name || id}`} title={card ? reason(card) || "添加一张" : "不在卡池中"} onClick={() => card && add(card)} disabled={!card || !!reason(card)}><Plus size={14}/></button>
         </div>; })}</div>

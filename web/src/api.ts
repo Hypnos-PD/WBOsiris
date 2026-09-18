@@ -1,5 +1,33 @@
-// 规则服务的地址与少量共享调用。默认端口与 `wbo serve` 的默认监听一致（23215）。
-export const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:23215";
+// 规则服务的地址与少量共享调用。
+//
+// 默认值与 WBArts 的取法一致：
+//   - 本地打开（localhost / 127.0.0.1）连本机的 wbo serve（默认端口 23215）；
+//   - 否则走同源，由 WBArts 站点的反向代理把 /api/* 转到规则服务。
+// 设置页可以覆盖（存在 localStorage 的 wbo-api-base），改动后重新载入页面生效。
+export const API_BASE_OVERRIDE_KEY = "wbo-api-base";
+
+function defaultApiBase(): string {
+  const host = location.hostname;
+  if (host === "localhost" || host === "127.0.0.1") return "http://127.0.0.1:23215";
+  return "";
+}
+
+export function apiBase(): string {
+  try {
+    const saved = localStorage.getItem(API_BASE_OVERRIDE_KEY);
+    if (saved !== null) return saved.trim();
+  } catch { /* 隐私模式下按默认值 */ }
+  return import.meta.env.VITE_API_BASE || defaultApiBase();
+}
+
+export function setApiBase(value: string): void {
+  try {
+    if (value.trim()) localStorage.setItem(API_BASE_OVERRIDE_KEY, value.trim());
+    else localStorage.removeItem(API_BASE_OVERRIDE_KEY);
+  } catch { /* 隐私模式下不保存 */ }
+}
+
+export const API_BASE = apiBase();
 
 export type DeckCodeResult = {
   code?: string;

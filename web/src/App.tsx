@@ -9,6 +9,7 @@ import { Bot, ChevronDown, ChevronUp, CircleHelp, Combine, DoorOpen, Eye, Film, 
 import { StatusEffects, type StatusEffect } from "./StatusEffects";
 import { DeckBuilder } from "./DeckBuilder";
 import { HomeIllustrationView } from "./HomeIllustration";
+import { FormatPicker } from "./FormatPicker";
 import { cardArt, cardText, classNames, deckProblems, typeNames, type CatalogCard, type CatalogFormat } from "./decks";
 import { useDeckLibrary } from "./useDeckLibrary";
 import { CardArt } from "./CardArt";
@@ -22,15 +23,19 @@ import { CrestZone, crestName } from "./CrestZone";
 import { decodeRemote, MatchConnection, type ConnectionStatus } from "./matchConnection";
 import { matchKey, readMatchAuth, readSavedMatches, saveMatchAuth, type SavedMatch } from "./matchStorage";
 import { RoomInvitation } from "./RoomInvitation";
-import { API_BASE, fetchIllustrations, type IllustrationEntry } from "./api";
+import { API_BASE, fetchIllustrations, setApiBase, type IllustrationEntry } from "./api";
 
 
-const validPages = new Set(["home", "battle", "decks", "replays", "rooms"]);
-const initialPage = (): "home" | "battle" | "decks" | "replays" | "rooms" => {
+type Page = "menu" | "battle" | "decks" | "solo" | "lobby" | "replays" | "settings";
+const validPages = new Set<Page>(["menu", "battle", "decks", "solo", "lobby", "replays", "settings"]);
+// 老链接里的 home/rooms 分别落到主界面与大厅。
+const legacyPages: Record<string, Page> = { home: "menu", rooms: "lobby" };
+const initialPage = (): Page => {
   const params = new URLSearchParams(location.search);
   const page = params.get("page");
-  if (page && validPages.has(page)) return page as ReturnType<typeof initialPage>;
-  return params.has("match") ? "battle" : "home";
+  if (page && validPages.has(page as Page)) return page as Page;
+  if (page && legacyPages[page]) return legacyPages[page];
+  return params.has("match") ? "battle" : "menu";
 };
 
 type Card = {
@@ -154,6 +159,23 @@ export function App() {
   const [illustrations, setIllustrations] = useState<IllustrationEntry[]>([]);
   const [illustrationId, setIllustrationId] = useState<string>(() => localStorage.getItem("wbo-illustration") || "hi_1001");
   const [pickerOpen, setPickerOpen] = useState(false);
+  // 赛制属于"这一局"：在大厅与单人模式里选，卡组页那套只用于构筑时过滤卡池。
+  const [matchFormat, setMatchFormat] = useState<string>(() => localStorage.getItem("wbo-match-format") || "rotation");
+  const changeMatchFormat = (next: string) => {
+    setMatchFormat(next);
+    try { localStorage.setItem("wbo-match-format", next); } catch { /* 隐私模式下不保存 */ }
+  };
+  // 进大厅需要登录（托管实例）。本地模式服务端返回 false，直接放行。
+  const [lobbyRequiresLogin, setLobbyRequiresLogin] = useState(false);
+  const [jwt, setJwt] = useState<string>(() => { try { return localStorage.getItem("jwt") || ""; } catch { return ""; } });
+  const [jwtUser, setJwtUser] = useState("");
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginBusy, setLoginBusy] = useState(false);
+  const [loginError, setLoginError] = useState("");
+  const [apiAddress, setApiAddress] = useState<string>(() => { try { return localStorage.getItem("wbo-api-base") || ""; } catch { return ""; } });
+  // 账号服务与规则服务同源：托管在 WBArts 下时就是站点的 /api/auth/*。
+  const authBase = API_BASE;
   const [format, setFormat] = useState<string>(() => localStorage.getItem("wbo-format") || "rotation");
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [catalogError, setCatalogError] = useState("");
@@ -163,7 +185,7 @@ export function App() {
   const [roomBusy, setRoomBusy] = useState(false);
   const roomRequest = useRef(false);
   const cardFor = (entity: Entity) => displayCardFor(entity, catalog);
-  const [activePage, setActivePage] = useState<"home" | "battle" | "decks" | "replays" | "rooms">(initialPage);
+  const [activePage, setActivePage] = useState<Page>(initialPage);
   const [remote, setRemote] = useState<Remote | null>(null);
   const connection = useRef<MatchConnection | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("connecting");
@@ -263,6 +285,65 @@ export function App() {
     return () => { cancelled = true; };
   }, []);
 
+  // 问一下规则服务：这个实例进大厅要不要登录。
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${API_BASE}/api/health`, { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((payload: { lobbyRequiresLogin?: boolean } | null) => { if (!cancelled) setLobbyRequiresLogin(Boolean(payload?.lobbyRequiresLogin)); })
+      .catch(() => { if (!cancelled) setLobbyRequiresLogin(false); });
+    return () => { cancelled = true; };
+  }, [API_BASE]);
+
+  // 已登录时顺手把用户名取回来（账号服务与 WBArts 共用 jwt）。
+  useEffect(() => {
+    if (!jwt) { setJwtUser(""); return; }
+    let cancelled = false;
+    fetch(`${authBase}/api/auth/me`, { headers: { Authorization: `Bearer ${jwt}` } })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((payload: { username?: string } | null) => { if (!cancelled) setJwtUser(payload?.username || ""); })
+      .catch(() => { /* 离线时忽略 */ });
+    return () => { cancelled = true; };
+  }, [jwt, authBase]);
+
+  const login = async () => {
+    setLoginBusy(true);
+    setLoginError("");
+    try {
+      const response = await fetch(`${authBase}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: loginEmail.trim(), password: loginPassword, language: "chs" }),
+      });
+      if (!response.ok) throw new Error((await response.text()).trim() || "登录失败");
+      const payload = (await response.json()) as { token?: string; username?: string };
+      if (!payload.token) throw new Error("登录响应缺少凭据");
+      try { localStorage.setItem("jwt", payload.token); } catch { /* 隐私模式下不保存 */ }
+      setJwt(payload.token);
+      setJwtUser(payload.username || "");
+      setLoginPassword("");
+    } catch (error) { setLoginError(error instanceof Error ? error.message : "登录失败"); }
+    finally { setLoginBusy(false); }
+  };
+
+  const logout = () => {
+    try { localStorage.removeItem("jwt"); } catch { /* ignore */ }
+    setJwt("");
+    setJwtUser("");
+  };
+
+  // 大厅动作带上 WBArts 的 jwt（服务端据此校验登录）。
+  const lobbyHeaders = (): Record<string, string> => {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    try {
+      const token = localStorage.getItem("jwt");
+      if (token) headers.Authorization = `Bearer ${token}`;
+    } catch { /* ignore */ }
+    return headers;
+  };
+  const lobbyReady = !lobbyRequiresLogin || Boolean(jwt);
+  const openLobby = () => navigate("lobby");
+
   const illustration = illustrations.find((item) => item.id === illustrationId)
     || illustrations.find((item) => item.source === "bundled")
     || null;
@@ -298,8 +379,8 @@ export function App() {
     try {
       const response = await fetch(`${API_BASE}/api/matches`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ deck: deckCards.map(Number), format, ...(mode ? { mode } : {}) }),
+      headers: lobbyHeaders(),
+      body: JSON.stringify({ deck: deckCards.map(Number), format: matchFormat, ...(mode ? { mode } : {}) }),
       });
       if (!response.ok) throw new Error(await response.text());
       const data: Remote = await response.json();
@@ -323,10 +404,10 @@ export function App() {
     if (id && code) {
       setJoinRoomId(id);
       setJoinRoomCode(code);
-      setActivePage("rooms");
+      setActivePage("lobby");
     } else if (id) {
       setRequestError("此浏览器没有该席位的有效凭据，请使用邀请链接加入或选择已保存的席位");
-      setActivePage("rooms");
+      setActivePage("lobby");
     }
   }, []);
   const refreshSavedRooms = () => {
@@ -353,7 +434,7 @@ export function App() {
     return () => { client.stop(); if (connection.current === client) connection.current = null; };
   }, [matchAuth]);
   useEffect(() => {
-    if (activePage !== "rooms") return;
+    if (activePage !== "lobby") return;
     const controller = new AbortController();
     const refreshRooms = () => fetch(`${API_BASE}/api/matches`, { signal: controller.signal }).then((r) => r.ok ? r.json() : []).then(setRoomList).catch((error) => { if (error?.name !== "AbortError") setRoomList([]); });
     refreshRooms();
@@ -656,7 +737,7 @@ export function App() {
   const pp = own?.pp ?? demoPP;
   const maxPP = own?.maxpp ?? 5;
 
-  const navigate = (page: typeof activePage) => {
+  const navigate = (page: Page) => {
     setActivePage(page);
     const params = new URLSearchParams(location.search);
     if (page === "battle") params.delete("page"); else params.set("page", page);
@@ -671,7 +752,7 @@ export function App() {
     setRequestError("");
     try {
       const response = await fetch(`${API_BASE}/api/matches/${encodeURIComponent(joinRoomId.trim())}/join?code=${encodeURIComponent(joinRoomCode.trim())}`, {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ deck: deckCards.map(Number) }),
+        method: "POST", headers: lobbyHeaders(), body: JSON.stringify({ deck: deckCards.map(Number), format: matchFormat }),
       });
       if (!response.ok) throw new Error(response.status === 401 ? "邀请码无效" : response.status === 409 ? "房间已满" : await response.text());
       const data: Remote = await response.json();
@@ -704,7 +785,7 @@ export function App() {
     setRoomBusy(true);
     setRequestError("");
     try {
-      const response = await fetch(`${API_BASE}/api/matches/${id}/spectate`, { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+      const response = await fetch(`${API_BASE}/api/matches/${id}/spectate`, { method: "POST", headers: lobbyHeaders(), body: "{}" });
       if (!response.ok) throw new Error((await response.text()).trim() || "无法观战");
       const data: Remote = await response.json();
       if (!data.playerToken) throw new Error("观战响应无效");
@@ -718,62 +799,124 @@ export function App() {
     finally { roomRequest.current = false; setRoomBusy(false); }
   };
 
-  const workspacePage = activePage === "home" ? (
-    <div className="lobby">
-      <section className="lobby-hero">
-        <em>SHADOWVERSE: WORLDS BEYOND</em>
-        <strong>WBO ARENA</strong>
-        <span>本地规则服务 + 官网同款卡组码。练习模式带 AI 陪练，房间用邀请码和朋友对战，录像可以逐帧复盘，卡组能按指定 / 无限制模式校验。</span>
-        <div className="lobby-hero-actions">
-          <button className="btn dark" onClick={() => setPickerOpen(true)}><Sparkles size={16}/>更换主界面</button>
-          {illustration && <small>当前：{illustration.name}</small>}
+  // 主界面：只有立绘 + 标题 + 菜单，没有侧栏，也没有状态小字（按约定）。
+  if (activePage === "menu") {
+    return (
+      <main className="menu-screen">
+        <div className="menu-backdrop" aria-hidden="true">
+          {illustration && illustration.skel && illustration.atlas && illustration.background
+            ? <HomeIllustrationView key={illustration.id} config={{
+                id: illustration.id,
+                name: illustration.name,
+                skeletonScale: illustration.skeletonScale,
+                prefabScale: illustration.prefabScale,
+                idleAnimation: illustration.idleAnimation,
+                tapAnimations: illustration.tapAnimations || [],
+                blendTimes: illustration.blendTimes || [],
+                defaultMix: illustration.defaultMix,
+                aspectLayouts: illustration.aspectLayouts || {},
+                skel: illustration.skel,
+                atlas: illustration.atlas,
+                background: illustration.background,
+              }}/>
+            : <img className="home-illustration-fallback" src="/assets/home/hi_1001/bg_hi_1001.png" alt=""/>}
         </div>
-      </section>
-      <div className="lobby-actions">
-        <button className="btn primary" disabled={roomBusy || catalogLoading || !!deckErrors.length} onClick={() => createMatch("bot")}><Bot size={16}/>练习对战（对 AI）</button>
-        <button className="btn" disabled={roomBusy || catalogLoading || !!deckErrors.length} onClick={() => createMatch()}><Plus size={16}/>创建房间</button>
-        <button className="btn dark" onClick={() => navigate("decks")}><Layers size={16}/>构筑卡组</button>
-        <button className="btn" onClick={() => navigate("replays")}><Film size={16}/>录像</button>
+        <div className="menu-layer">
+          <div className="menu-title"><span>SHADOWVERSE: WORLDS BEYOND</span><strong>WBO ARENA</strong></div>
+          <nav className="menu-list" aria-label="主菜单">
+            <button onClick={() => navigate("solo")}>单人模式</button>
+            <button onClick={() => openLobby()}>进入大厅</button>
+            <button onClick={() => navigate("decks")}>卡组管理</button>
+            <button onClick={() => navigate("replays")}>回放列表</button>
+            <button onClick={() => navigate("settings")}>设置</button>
+          </nav>
+        </div>
+        {requestError && <div className="network-notice" role="alert"><span>{requestError}</span><button aria-label="关闭提示" title="关闭" onClick={() => setRequestError("")}><X size={17}/></button></div>}
+      </main>
+    );
+  }
+
+  const workspacePage = activePage === "solo" ? (
+    <section className="workspace-page">
+      <div className="page-heading"><div><span className="eyebrow">SINGLE PLAYER</span><h1>单人模式</h1></div></div>
+      <div className="panel solo-panel">
+        <div className="panel-head"><h2>练习对战</h2><small>对手是内置 AI（greedy 策略），随时开一局</small></div>
+        {deckErrors.length > 0
+          ? <p className="panel-note" role="status">当前牌组还不能对战：{deckErrors[0]}<button className="btn" onClick={() => navigate("decks")}>去卡组管理</button></p>
+          : <p className="panel-note">当前牌组：{deckLibrary.active.name} · {deckCards.length}/40 · {classNames[deckClass]}</p>}
+        <FormatPicker value={matchFormat} onChange={changeMatchFormat} formats={catalogFormats}/>
+        <button className="btn primary" disabled={roomBusy || catalogLoading || !!deckErrors.length} onClick={() => createMatch("bot")}><Bot size={16}/>开始练习对战</button>
       </div>
-      {deckErrors.length > 0 && <p className="lobby-empty" role="status">当前牌组还不能对战：{deckErrors[0]}<button className="btn" onClick={() => navigate("decks")}>去修牌组</button></p>}
-      <div className="lobby-grid">
-        <section className="panel">
-          <div className="panel-head"><h2>公开房间</h2><small>{roomList.length} 个 · 每 5 秒刷新</small></div>
-          <div className="lobby-rooms">
-            {roomList.length ? roomList.map((room) => (
-              <div className="lobby-room" key={room.id}>
-                <div>
-                  <strong>{room.id}</strong>
-                  <small>{room.waiting ? "等待对手加入" : `对局进行中${room.bot ? " · 练习模式" : ""}${room.turn ? ` · 第 ${room.turn} 回合` : ""}`}</small>
-                </div>
-                <div className="lobby-room-actions">
-                  {room.waiting && !room.bot && <button className="btn" onClick={() => { setJoinRoomId(room.id); navigate("rooms"); }}>去加入</button>}
-                  {!room.waiting && room.spectatable && <button className="btn" disabled={roomBusy} onClick={() => spectate(room.id)}><Eye size={15}/>观战</button>}
-                </div>
-              </div>
-            )) : <p className="lobby-empty">还没有公开房间。先来一局练习对战，或者创建房间把邀请链接发给朋友。</p>}
+    </section>
+  ) : activePage === "lobby" ? (
+    <section className="workspace-page">
+      <div className="page-heading"><div><span className="eyebrow">ONLINE</span><h1>大厅</h1></div>{lobbyReady && <button className="primary-action" disabled={roomBusy || catalogLoading || !!deckErrors.length} onClick={() => createMatch()}><Plus size={17}/>创建房间</button>}</div>
+      {!lobbyReady ? (
+        <div className="panel login-panel">
+          <div className="panel-head"><h2>进入大厅需要登录</h2><small>{authBase ? `账号服务：${authBase || location.host}` : "使用 WBArts 账号"}</small></div>
+          <p className="panel-note">大厅使用 WBArts 的账号体系（JWT）。登录后可以创建房间、加入好友的对局与观战；单人模式与卡组管理不需要登录。</p>
+          <form className="login-form" onSubmit={(event) => { event.preventDefault(); void login(); }}>
+            <label className="field">邮箱<input aria-label="邮箱" type="email" autoComplete="username" value={loginEmail} onChange={(event) => setLoginEmail(event.target.value)}/></label>
+            <label className="field">密码<input aria-label="密码" type="password" autoComplete="current-password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)}/></label>
+            <button className="btn primary" disabled={loginBusy || !loginEmail.trim() || !loginPassword}>{loginBusy ? "登录中" : "登录"}</button>
+          </form>
+          {loginError && <p className="panel-note login-error" role="alert">{loginError}</p>}
+        </div>
+      ) : (
+        <>
+          <div className="panel">
+            <div className="panel-head"><h2>创建房间</h2><small>赛制在这里选：指定模式只用最新 6 弹 + 基础卡牌，无限制模式全卡池</small></div>
+            <FormatPicker value={matchFormat} onChange={changeMatchFormat} formats={catalogFormats}/>
+            <p className="panel-note">{deckErrors.length ? `当前牌组还不能对战：${deckErrors[0]}` : `当前牌组：${deckLibrary.active.name} · ${deckCards.length}/40 · ${classNames[deckClass]}`}<button className="btn" onClick={() => navigate("decks")}>去卡组管理</button></p>
+            <button className="btn primary" disabled={roomBusy || catalogLoading || !!deckErrors.length} onClick={() => createMatch()}><Plus size={16}/>使用当前牌组创建房间</button>
           </div>
-        </section>
-        <div className="lobby-stack">
-          <section className="panel">
-            <div className="panel-head"><h2>快速加入</h2></div>
+          {matchAuth && (
+            <div className="panel">
+              <div className="panel-head"><h2>当前房间</h2><small>{matchAuth.side === "spectator" ? "观战" : matchAuth.side === "own" ? "房主席位" : "客方席位"}</small></div>
+              <p className="panel-note"><span className="status-dot"/> {matchAuth.id} · {connectionStatus === "unavailable" ? "房间不可用" : remote?.waiting ? "等待对手加入" : remote?.state.gameOver ? "对局已结束" : "对局进行中"}</p>
+              {connectionStatus !== "unavailable" && remote?.waiting && matchAuth.side === "own" && <RoomInvitation key={matchAuth.id} id={matchAuth.id} code={remote.joinCode}/>}
+              <button className="btn" onClick={() => navigate("battle")}><DoorOpen size={15}/>进入牌桌</button>
+            </div>
+          )}
+          <div className="panel">
+            <div className="panel-head"><h2>公开房间</h2><small>{roomList.length} 个 · 每 5 秒刷新</small></div>
+            <div className="lobby-rooms">
+              {roomList.length ? roomList.map((room) => (
+                <div className="lobby-room" key={room.id}>
+                  <div>
+                    <strong>{room.id}</strong>
+                    <small>{room.waiting ? "等待对手加入" : `对局进行中${room.bot ? " · 练习模式" : ""}${room.turn ? ` · 第 ${room.turn} 回合` : ""}`}</small>
+                  </div>
+                  <div className="lobby-room-actions">
+                    {room.waiting && !room.bot && <button className="btn" onClick={() => { setJoinRoomId(room.id); }}>用邀请码加入</button>}
+                    {!room.waiting && room.spectatable && <button className="btn" disabled={roomBusy} onClick={() => spectate(room.id)}><Eye size={15}/>观战</button>}
+                  </div>
+                </div>
+              )) : <p className="lobby-empty">还没有公开房间。创建一个，把邀请链接发给朋友。</p>}
+            </div>
+          </div>
+          <div className="panel">
+            <div className="panel-head"><h2>加入房间</h2></div>
             <div className="lobby-join">
               <label className="field">房间 ID<input aria-label="房间 ID" value={joinRoomId} onChange={(e) => setJoinRoomId(e.target.value)} placeholder="a1b2c3"/></label>
               <label className="field">邀请码<input aria-label="邀请码" value={joinRoomCode} onChange={(e) => setJoinRoomCode(e.target.value)} placeholder="8 位邀请码"/></label>
-              <button className="btn primary" disabled={roomBusy || catalogLoading || !joinRoomId.trim() || !joinRoomCode.trim()} onClick={joinRoom}>加入</button>
+              <button className="btn primary" disabled={roomBusy || catalogLoading || !joinRoomId.trim() || !joinRoomCode.trim() || !!deckErrors.length} onClick={joinRoom}>加入</button>
             </div>
-          </section>
-          <div className="lobby-stat"><small>当前牌组</small><strong>{deckLibrary.active.name} · {deckCards.length}/40</strong><small>{classNames[deckClass]} · {format === "unlimited" ? "无限制模式" : "指定模式"}{deckErrors.length ? ` · ${deckErrors[0]}` : " · 可以对战"}</small><button className="btn" onClick={() => navigate("decks")}>打开卡组</button></div>
-          <div className="lobby-stat"><small>当前房间</small><strong>{matchAuth ? matchAuth.id : "尚未加入"}</strong><small>{matchAuth ? (matchAuth.side === "spectator" ? "观战中" : matchAuth.side === "own" ? "房主席位" : "客方席位") : "创建或加入房间后会显示在这里"}</small>{matchAuth && <button className="btn" onClick={() => navigate("battle")}>进入牌桌</button>}</div>
-          <div className="lobby-stat"><small>最近对局</small><strong>{events[0] ?? "暂无记录"}</strong><button className="btn" onClick={() => navigate("replays")}>查看录像</button></div>
-        </div>
-      </div>
-    </div>
+          </div>
+          <div className="panel">
+            <div className="panel-head"><h2>本机保存的房间</h2><small>恢复等待、换牌或进行中的对局</small></div>
+            {savedRoomsError && <p className="panel-note" role="alert">{savedRoomsError}<button className="btn" onClick={refreshSavedRooms}>重试</button></p>}
+            {savedRooms.map((auth) => <div className="saved-room" key={matchKey(auth)}><div><strong>{auth.id}</strong><small>{auth.side === "own" ? "房主" : auth.side === "spectator" ? "观战" : "客方"}{auth.updatedAt ? ` · ${new Date(auth.updatedAt).toLocaleString()}` : ""}</small></div><button disabled={roomBusy} onClick={() => resumeRoom(auth)}>恢复席位</button></div>)}
+            {!savedRooms.length && !savedRoomsError && <p className="panel-note">暂无本机房间记录</p>}
+          </div>
+        </>
+      )}
+    </section>
   ) : activePage === "decks" ? (
-    <DeckBuilder library={deckLibrary} cards={catalogCards} deck={deckCards} onChange={changeDeck} onPractice={fillPracticeDeck} onBattle={() => createMatch()} onBotBattle={() => createMatch("bot")} formats={catalogFormats} format={format} onFormatChange={changeFormat} loading={catalogLoading} busy={roomBusy} error={catalogError} onRetry={() => setCatalogVersion((version) => version + 1)}/>
+    <DeckBuilder library={deckLibrary} cards={catalogCards} deck={deckCards} onChange={changeDeck} onPractice={fillPracticeDeck} formats={catalogFormats} format={format} onFormatChange={changeFormat} loading={catalogLoading} busy={roomBusy} error={catalogError} onRetry={() => setCatalogVersion((version) => version + 1)}/>
   ) : activePage === "replays" ? (
     <section className="workspace-page replay-page">
-      <div className="page-heading"><div><span className="eyebrow">MATCH LOG</span><h1>录像</h1></div></div>
+      <div className="page-heading"><div><span className="eyebrow">MATCH LOG</span><h1>回放列表</h1></div></div>
       {replayError && <p role="alert">{replayError} <button onClick={() => setReplayRetry((value) => value + 1)}>重试</button></p>}
       {replayStorageError && <p role="alert">本地存储空间不足或不可用，新录像仅保留在当前页面。</p>}
       {replaySelection ? (() => {
@@ -786,14 +929,28 @@ export function App() {
         </div><button onClick={() => setReplaySelection(record.id)}><Play size={15}/>查看</button>
       </article>) : <p className="empty-state">暂无录像</p>}</div>}
     </section>
-  ) : activePage === "rooms" ? (
+  ) : activePage === "settings" ? (
     <section className="workspace-page">
-      <div className="page-heading"><div><span className="eyebrow">NETWORK</span><h1>房间</h1></div><button className="primary-action" disabled={roomBusy || catalogLoading} onClick={() => createMatch()}><Plus size={17}/>创建房间</button></div>
-      <div className="room-deck-status">当前牌组：{deckLibrary.active.name} · {deckCards.length}/40 · {deckErrors.length ? deckErrors[0] : "可用于对战"}<button onClick={() => navigate("decks")}>选择或编辑牌组</button>{matchAuth && <p>更换牌组用于下一次建房或加入房间。</p>}</div>
-      <div className="room-panel">{matchAuth ? <><span className="status-dot"/>当前房间 <strong>{matchAuth.id}</strong><small>{connectionStatus === "unavailable" ? "房间不可用" : remote?.waiting ? "等待对手加入" : remote?.state.gameOver ? "对局已结束" : "对局进行中"}</small>{connectionStatus !== "unavailable" && remote?.waiting && matchAuth.side === "own" && <RoomInvitation key={matchAuth.id} id={matchAuth.id} code={remote.joinCode}/>}<button onClick={() => navigate("battle")}><DoorOpen size={15}/>进入牌桌</button></> : <p className="empty-state">暂无活动房间</p>}</div>
-      <div className="join-panel"><h2>加入房间</h2><input aria-label="房间 ID" value={joinRoomId} onChange={(e) => setJoinRoomId(e.target.value)} placeholder="房间 ID"/><input aria-label="邀请码" value={joinRoomCode} onChange={(e) => setJoinRoomCode(e.target.value)} placeholder="邀请码"/><button disabled={roomBusy || catalogLoading || !joinRoomId.trim() || !joinRoomCode.trim()} onClick={joinRoom}><DoorOpen size={15}/>{roomBusy ? "连接中" : "使用牌组加入"}</button></div>
-      <div className="room-directory"><h2>公开房间</h2>{roomList.length ? roomList.map((room) => <div className="room-entry" key={room.id}><span>{room.id}</span><small>{room.waiting ? "等待加入" : "对局进行中"}</small></div>) : <p className="empty-state">暂无公开房间</p>}</div>
-      <div className="saved-rooms"><h2>本机保存的房间</h2><p>选择已保存的席位，恢复等待、换牌或进行中的对局。</p>{savedRoomsError && <p role="alert">{savedRoomsError}<button onClick={refreshSavedRooms}>重试</button></p>}{savedRooms.map((auth) => <div className="saved-room" key={matchKey(auth)}><div><strong>{auth.id}</strong><small>{auth.side === "own" ? "房主" : auth.side === "spectator" ? "观战" : "客方"}{auth.updatedAt ? ` · ${new Date(auth.updatedAt).toLocaleString()}` : ""}</small></div><button disabled={roomBusy} onClick={() => resumeRoom(auth)}>恢复{auth.side === "own" ? "房主" : auth.side === "spectator" ? "观战" : "客方"}席位</button></div>)}{!savedRooms.length && !savedRoomsError && <p>暂无本机房间记录</p>}</div>
+      <div className="page-heading"><div><span className="eyebrow">SETTINGS</span><h1>设置</h1></div></div>
+      <div className="panel">
+        <div className="panel-head"><h2>主界面</h2><small>选择后作为整个客户端的背景</small></div>
+        <div className="setting-row"><button className="btn" onClick={() => setPickerOpen(true)}><Sparkles size={16}/>选择主界面立绘</button><span className="panel-note">{illustration ? `当前：${illustration.name}（${illustration.id}）` : "尚未加载插图"}</span></div>
+        <p className="panel-note">{illustrations.length} 张可用{illustrations.some((item) => item.source === "wbarts") ? "（含 WBArts 素材库）" : "（内置素材）"}。把 WBA 的全部主界面打包进来：<code>node scripts/bundle_illustrations.mjs</code></p>
+      </div>
+      <div className="panel">
+        <div className="panel-head"><h2>规则服务</h2><small>本地默认 http://127.0.0.1:23215；线上默认同源</small></div>
+        <form className="setting-row" onSubmit={(event) => { event.preventDefault(); setApiBase(apiAddress); location.reload(); }}>
+          <label className="field">服务地址<input aria-label="规则服务地址" value={apiAddress} placeholder="留空 = 同源" onChange={(event) => setApiAddress(event.target.value)}/></label>
+          <button className="btn primary">保存并重新连接</button>
+        </form>
+        <p className="panel-note">当前连接：{API_BASE || location.origin} · {catalogError ? "不可用" : catalogLoading ? "连接中" : "已连接"}{lobbyRequiresLogin ? " · 大厅需要登录" : " · 本地模式"}</p>
+      </div>
+      <div className="panel">
+        <div className="panel-head"><h2>账号</h2><small>大厅使用 WBArts 账号</small></div>
+        {jwt
+          ? <div className="setting-row"><span className="panel-note">已登录{jwtUser ? `：${jwtUser}` : ""}</span><button className="btn danger" onClick={logout}>退出登录</button></div>
+          : <p className="panel-note">未登录。进入大厅时会要求登录（本地模式不需要）。</p>}
+      </div>
     </section>
   ) : null;
 
@@ -803,7 +960,7 @@ export function App() {
 
   // 非牌桌页面：走"左侧导航 + 内容区"的外壳，和牌桌完全分开渲染，
   // 不再把牌桌压在页面底下（这是之前 GUI 显得乱的主要原因）。
-  const pages = ([["home", Home, "大厅"], ["decks", Layers, "卡组"], ["replays", Film, "录像"], ["rooms", DoorOpen, "房间"]] as const);
+  const pages = ([["lobby", DoorOpen, "大厅"], ["solo", Bot, "单人模式"], ["decks", Layers, "卡组"], ["replays", Film, "回放"], ["settings", Sparkles, "设置"]] as const);
   if (activePage !== "battle") {
     return (
       <div className="app-shell">
@@ -823,11 +980,12 @@ export function App() {
                 atlas: illustration.atlas,
                 background: illustration.background,
               }}/>
-            : <img className="home-illustration-fallback" src="/assets/home/hi_1001-bg.webp" alt=""/>}
+            : <img className="home-illustration-fallback" src="/assets/home/hi_1001/bg_hi_1001.png" alt=""/>}
         </div>
         <aside className="app-sidebar">
           <div className="app-brand"><strong>WBO ARENA</strong><span>影之诗：超凡世界 · 规则沙盒</span></div>
           <nav className="app-nav" aria-label="主导航">
+            <button onClick={() => navigate("menu")}><Home size={16}/><span>主界面</span></button>
             {pages.map(([page, Icon, label]) => (
               <button key={page} className={activePage === page ? "active" : ""} onClick={() => navigate(page)}>
                 <Icon size={16}/><span>{label}</span>
@@ -879,12 +1037,12 @@ export function App() {
       {requestError && <div className="network-notice" role="alert"><span>{requestError}</span><button aria-label="关闭提示" title="关闭" onClick={() => setRequestError("")}><X size={17}/></button></div>}
       {matchAuth && activePage === "battle" && connectionStatus !== "connected" && (
         <div className={`match-connection ${connectionStatus}`} role="status">
-          {connectionStatus === "unavailable" ? <>房间不可用 <button onClick={() => navigate("rooms")}>返回房间页</button></> : connectionStatus === "sending" ? "正在提交" : connectionStatus === "connecting" ? "正在连接对局" : "连接中断，正在同步"}
+          {connectionStatus === "unavailable" ? <>房间不可用 <button onClick={() => navigate("lobby")}>返回房间页</button></> : connectionStatus === "sending" ? "正在提交" : connectionStatus === "connecting" ? "正在连接对局" : "连接中断，正在同步"}
         </div>
       )}
       <header className="battle-topbar">
         <nav className="main-nav">
-          <button onClick={() => navigate("home")} title="返回大厅"><DoorOpen size={17}/><span>返回大厅</span></button>
+          <button onClick={() => navigate("menu")} title="返回主界面"><Home size={17}/><span>主界面</span></button>
           {remote?.bot && <span className="battle-badge">练习模式 · AI</span>}
           {matchAuth?.side === "spectator" && <span className="battle-badge">观战 · 只读</span>}
         </nav>

@@ -20,12 +20,14 @@ import (
 )
 
 type Server struct {
-	matchSetup  func() (uint64, string, error)
-	cards       *ir.CardPack
-	tests       *ir.TestPack
+	matchSetup func() (uint64, string, error)
+	cards      *ir.CardPack
+	tests      *ir.TestPack
 	// illustrationRoot 指向 WBArts 的 data 目录；为空时只用内置主界面插图。
 	illustrationRoot string
 	illustrations    illustrationCache
+	// lobbyAuth 是"进入大厅需要登录"的校验（复用 WBArts 的账号）。
+	lobbyAuth   lobbyAuth
 	sessions    map[string]*runner.Session
 	matches     map[string]*match
 	mu          sync.Mutex
@@ -50,8 +52,8 @@ type match struct {
 	botError  string
 	// spectators 是只读观众凭据：只能读状态、事件与推送流。
 	spectators map[string]bool
-	mu                sync.Mutex
-	replay            []replayFrame
+	mu         sync.Mutex
+	replay     []replayFrame
 }
 
 type replayFrame struct {
@@ -121,11 +123,11 @@ type replayResponse struct {
 }
 
 func New(root string, paths []string) (*Server, error) {
-	return NewWithIllustrations(root, paths, defaultIllustrationRoot(root))
+	return NewWithIllustrations(root, paths, DefaultIllustrationRoot(root))
 }
 
-// defaultIllustrationRoot 找同级的 WBArts 数据目录（有 home_illust_index.json 才算）。
-func defaultIllustrationRoot(root string) string {
+// DefaultIllustrationRoot 找同级的 WBArts 数据目录（有 home_illust_index.json 才算）。
+func DefaultIllustrationRoot(root string) string {
 	candidates := []string{
 		filepath.Join(root, "..", "WBArts", "data"),
 		filepath.Join(root, "..", "..", "WBArts", "data"),
@@ -144,6 +146,11 @@ func defaultIllustrationRoot(root string) string {
 
 // NewWithIllustrations 允许显式指定主界面插图的数据目录（传空字符串表示只用内置素材）。
 func NewWithIllustrations(root string, paths []string, illustrationRoot string) (*Server, error) {
+	return NewWithOptions(root, paths, illustrationRoot, "")
+}
+
+// NewWithOptions 额外指定大厅登录校验地址（WBArts 的 /api/auth/me；空字符串=本地模式不校验）。
+func NewWithOptions(root string, paths []string, illustrationRoot, authVerifyURL string) (*Server, error) {
 	loaded := project.LoadWithRoot(paths, true, root)
 	if loaded.HasErrors() {
 		return nil, fmt.Errorf("load simulator sources: %v", loaded.Diagnostics)
@@ -154,7 +161,8 @@ func NewWithIllustrations(root string, paths []string, illustrationRoot string) 
 	}
 	return &Server{
 		cards: cards, tests: tests, illustrationRoot: illustrationRoot,
-		sessions: map[string]*runner.Session{}, matches: map[string]*match{},
+		lobbyAuth: newLobbyAuth(authVerifyURL),
+		sessions:  map[string]*runner.Session{}, matches: map[string]*match{},
 	}, nil
 }
 
@@ -204,6 +212,10 @@ func (s *Server) matchesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	// 建房属于大厅动作：托管在线上的实例要求先登录（本地模式不需要）。
+	if !s.requireLobbyLogin(w, r) {
 		return
 	}
 	var input createRequest
@@ -424,6 +436,9 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "match is full", http.StatusConflict)
 			return
 		}
+		if !s.requireLobbyLogin(w, r) {
+			return
+		}
 		var input createRequest
 		if r.Body != nil {
 			if err := json.NewDecoder(r.Body).Decode(&input); err != nil && err != io.EOF {
@@ -625,7 +640,11 @@ func randomID(bytes int) string {
 
 func (s *Server) health(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Cache-Control", "no-store")
-	writeJSON(w, map[string]any{"ok": true, "ruleset": "wbo-standard-0.3.0"})
+	writeJSON(w, map[string]any{
+		"ok": true, "ruleset": "wbo-standard-0.3.0",
+		// 客户端据此决定进大厅是否需要登录（本地开发/离线时是 false）。
+		"lobbyRequiresLogin": s.lobbyAuth.required,
+	})
 }
 
 func (s *Server) scenarios(w http.ResponseWriter, _ *http.Request) {

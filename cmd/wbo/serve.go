@@ -16,7 +16,10 @@ func runServe(args []string) int {
 	// 默认端口刻意避开 8080/8000/3000 这类常见值，免得和本地其它服务抢端口；
 	// 数字取自 WBO（W=23、B=2、O=15）。
 	listen := fs.String("listen", ":23215", "监听地址")
-	illustrations := fs.String("illustration-root", "", "主界面插图素材目录（默认自动找 ../WBArts/data；传空目录名 --illustration-root=none 可禁用）")
+	illustrations := fs.String("illustration-root", "", "主界面插图素材目录（默认自动找 ../WBArts/data；传 --illustration-root=none 可禁用）")
+	// 托管在线上时要求"进大厅先登录"，校验复用 WBArts 的账号（/api/auth/me）。
+	// 本地开发默认不校验，直接传 --auth-verify-url 即可打开。
+	authVerify := fs.String("auth-verify-url", "", "大厅登录校验地址，例如 https://sva.hypd.asia/api/auth/me；留空表示本地模式不要求登录")
 	if fs.Parse(args) != nil {
 		return 2
 	}
@@ -25,19 +28,16 @@ func runServe(args []string) int {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
-	var newServer func(string, []string) (*server.Server, error)
-	if *illustrations == "none" {
-		newServer = func(root string, paths []string) (*server.Server, error) {
-			return server.NewWithIllustrations(root, paths, "")
-		}
-	} else if *illustrations != "" {
-		newServer = func(root string, paths []string) (*server.Server, error) {
-			return server.NewWithIllustrations(root, paths, *illustrations)
-		}
-	} else {
-		newServer = server.New
+	illustrationRoot := ""
+	switch *illustrations {
+	case "none":
+		illustrationRoot = ""
+	case "":
+		illustrationRoot = server.DefaultIllustrationRoot(base)
+	default:
+		illustrationRoot = *illustrations
 	}
-	h, err := newServer(base, []string{filepath.Join(base, "cards"), filepath.Join(base, "tests")})
+	h, err := server.NewWithOptions(base, []string{filepath.Join(base, "cards"), filepath.Join(base, "tests")}, illustrationRoot, *authVerify)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
