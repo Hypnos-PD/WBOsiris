@@ -663,6 +663,11 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 			}
 		}
 	case "add":
+		if len(t) >= 9 && t[1].Value == "random" && t[3].Value == "copies" && t[4].Value == "from" {
+			// `add random N copies from <破坏历史> … to hand|deck;`
+			_, ok = historySummonIR(t, ir.NodeBase{})
+			break
+		}
 		if len(t) == 4 && isUnsigned(t[1]) && t[2].Value == "counter" && t[3].Kind == syntax.Identifier && ir.ValidCounterName(t[3].Value) {
 			ok = true
 		}

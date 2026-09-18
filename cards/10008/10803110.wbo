@@ -6,7 +6,12 @@ card 10803110 {
     stats 2/1;
 
     effect {
-        unplayable;
+        fanfare {
+            add random 1 copies from own.destroyed.followers to hand;
+        }
+        evolve {
+            add random 1 copies from own.destroyed.followers to hand;
+        }
     }
 
     meta {

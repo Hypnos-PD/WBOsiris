@@ -5,7 +5,9 @@ card 10572310 {
     cost 1;
 
     effect {
-        unplayable;
+        choose target from own.hand;
+        discard target;
+        add random 2 copies from own.destroyed.followers distinct names to hand;
     }
 
     meta {

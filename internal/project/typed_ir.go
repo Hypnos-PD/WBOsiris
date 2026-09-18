@@ -383,6 +383,12 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		}
 		return e, nil
 	case "add":
+		if len(t) >= 9 && t[1].Value == "random" && t[3].Value == "copies" && t[4].Value == "from" {
+			// `add random N copies from <破坏历史> … to hand|deck;`
+			if e, ok := historySummonIR(t, base); ok {
+				return e, nil
+			}
+		}
 		if len(t) == 4 && t[2].Value == "counter" {
 			return ir.AdjustEffect{NodeBase: base, Kind: "adjust_counter", Field: t[3].Value, Delta: intToken(t[1])}, nil
 		}

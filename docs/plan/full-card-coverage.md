@@ -20,18 +20,18 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 851 · 未实现(骨架) 53 · 未导入 0
+总计 904 · 已完成 855 · 未实现(骨架) 49 · 未导入 0
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
 10002        77      77       0       0
 10003        77      75       2       0
 10004        76      73       3       0
-10005        76      66      10       0
+10005        76      67       9       0
 10006        76      74       2       0
 10007        77      77       0       0
-10008        78      72       6       0
-10009        76      46      30       0
+10008        78      74       4       0
+10009        76      47      29       0
 90000        93      93       0       0
 未完成卡按文本复杂度：中(41–100字) 162 · 短(≤40字) 65 · 长(>100字) 10
 ```
@@ -171,7 +171,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-72 | 返回张数与按返回张数抽牌 | 10554120 奥夜花·释藤（"使自己的所有手牌返回牌组。抽取X张卡牌。X为因本能力返回牌组的张数"） | `return` 没有输出绑定或返回数量；`draw` 的数量也不能引用"本次操作的计数"。 |
 | S-62 | ~~抽牌事件~~ **已解决**：`when own\|oppo card drawn [during … turn]` 与 `when self drawn` | 已解锁 10561120 连结的使徒、10522110 迅猛的武术家、10562120 穷途末路的巫女 | 绑定 `drawn` 指向被抽到的实例；运行时按每张抽到的卡派发监听（公开事实仍是聚合事件），`during` 回合窗口同时扩展到此事件。 |
 | S-63 | ~~抽牌去重~~ **已解决**：`draw N from deck where … distinct names` | 已解锁 10574120 尽小花·伊鞠 | 与牌组召唤同义：每抽中一张就排除同卡名的其余候选，张数上限是候选里不同卡名的数量；只允许与筛选搭配（不能配 `draw all` 或裸 `draw N`）。`DrawEffect.DistinctNames` 参与编解码，`internal/project/draw_owner_test.go` 覆盖编译、解码回填与错误形状。 |
-| S-64 | 从破坏历史复制同名卡加入手牌 | 10572310 苏生调律（"将随机2种与本次对战中被破坏的自己的随从同名的卡牌各1张…加入手牌"） | `add copies of` 不接受破坏历史目标（`effectTargets` 过滤掉 `destroyed` 实例），也没有"同名的不同种类各1张"。 |
+| S-64 | ~~从破坏历史复制同名卡~~ **已解决**：`add random N copies from 破坏历史 [where …] [highest\|lowest 属性] [distinct names] to hand\|deck;` | 已解锁 10572310 苏生调律、10803110 遗忘的纯真·爱卡、10871130 器械操纵者·吉尔克、10901310 轮回转冲 | 复用 `HistorySummonEffect`：`Destination` 为空时照旧召唤到战场，为 `hand`/`deck` 时按记录复制新实例放进目标区域（输出绑定 `added`）。抽选逻辑与历史召唤一致，`distinct names` 用于"随机 2 种各 1 张"。 |
 | S-65 | 从手牌按位置批量选择 | 10502110 星辉女神（"将自己的手牌中从左起的3张卡牌的复制卡牌各1张…加入手牌"） | 选择只有随机、极值与玩家指定；没有"手牌从左起 N 张"。 |
 | S-66 | ~~本次操作的消失数量~~ **已解决**：`banish` 输出 `banished` | 已解锁 10543110 破灭屠戮者 | 与 `destroyed` 同构；数量用 `count(banished)` 读取，可当伤害量或增益量。 |
 | S-67 | ~~主战者生命上限的增减~~ **已解决**：`raise maxlife own\|oppo.leader N` / `reduce maxlife …` | 已解锁 10534110 漫步的《愚者》·琳库露的纹章 | 增量形式 `kind: "adjust_leader_max_life"`（`delta=true`），上限夹在 1..65535，当前生命高于新上限时降到上限——与既有 `set maxlife` 及 SWB-RL 的 `change_leader_max_health` 同一口径。 |
@@ -196,6 +196,18 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 96（S-64 破坏历史复制 + 4 张）
+
+- **S-64 `add random N copies from <破坏历史> … to hand|deck`**：按破坏记录复制同名卡。
+  复用 `HistorySummonEffect` 并新增 `Destination`：为空时照旧召唤到战场，
+  为 `hand`/`deck` 时把记录里的卡面复制成新实例放进目标区域（输出绑定 `added`）。
+  抽选方式与历史召唤完全一致（每次消费一次随机数、支持 `where`、`highest|lowest 属性`
+  与 `distinct names`）。Go 单测 `internal/project/history_summon_test.go` 覆盖形状与错误写法。
+- 完成 4 张：10572310 苏生调律（随机 2 种各 1 张）、10803110 遗忘的纯真·爱卡、
+  10871130 器械操纵者·吉尔克（限定创造物）、10901310 轮回转冲（按原始费用最高复制到牌组后抽 1）。
+- 新增 5 个场景（`tests/10005/batch-96-history-copies.wbotest`）。
+- 全量回归：`check` 0 错 0 警；`test` 1290 全绿；`go test ./...` 全绿；语料快照更新为 1290 个场景。
 
 ### 批次 95（S-87 上一回合攻击历史 + 10009 四张）
 

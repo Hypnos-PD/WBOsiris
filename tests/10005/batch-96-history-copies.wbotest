@@ -1,0 +1,97 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+// S-64：`add random N copies from <破坏历史> … to hand|deck` 按破坏记录复制同名卡。
+
+scenario "苏生调律舍弃手牌后按破坏历史复制两种随从" {
+    seed 96001;
+    state {
+        player own {
+            pp 1/1;
+            hand {
+                spell source = 10572310;
+                follower fodder = 10001110;
+            }
+            destroyed {
+                follower first = 10011110;
+                follower second = 10011120;
+            }
+        }
+    }
+    action { play source; select fodder; }
+    expect {
+        legal;
+        own.graveyard count card 10001110 == 1;
+        own.hand count card 10011110 == 1;
+        own.hand count card 10011120 == 1;
+    }
+}
+
+scenario "苏生调律在只有一种被破坏随从时只复制一张" {
+    seed 96002;
+    state {
+        player own {
+            pp 1/1;
+            hand {
+                spell source = 10572310;
+                follower fodder = 10001110;
+            }
+            destroyed {
+                follower first = 10011110;
+                follower second = 10011110;
+            }
+        }
+    }
+    action { play source; select fodder; }
+    expect { legal; own.hand count card 10011110 == 1; }
+}
+
+scenario "遗忘的纯真按破坏历史复制随机随从" {
+    seed 96003;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10803110; }
+            destroyed { follower fallen = 10011110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10011110 == 1; }
+}
+
+scenario "器械操纵者只从被破坏的创造物里复制" {
+    seed 96004;
+    state {
+        player own {
+            pp 1/1;
+            hand { follower source = 10871130; }
+            destroyed {
+                follower artifact = 90071140;
+                follower plain = 10011110;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90071140 == 1; own.hand count card 10011110 == 0; }
+}
+
+scenario "轮回转冲按原始费用最高的破坏记录复制到牌组并抽牌" {
+    seed 96005;
+    state {
+        player own {
+            pp 2/2;
+            hand { spell source = 10901310; }
+            destroyed {
+                follower cheap = 10011110;
+                follower pricey = 10042110;
+            }
+        }
+    }
+    action { play source; }
+    // 牌组原本是空的：复制进去的唯一一张牌必然被随后的抽牌抽到手。
+    expect {
+        legal;
+        own.hand count card 10042110 == 1;
+        own.hand count card 10011110 == 0;
+    }
+}

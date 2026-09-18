@@ -24,7 +24,18 @@ func parseExtremum(t []syntax.Token, i int) (*ir.SelectionExtremum, int, bool) {
 
 func historySummonIR(t []syntax.Token, base ir.NodeBase) (ir.HistorySummonEffect, bool) {
 	e := ir.HistorySummonEffect{NodeBase: base, Kind: "summon_from_history", Owner: "own", Output: "summoned"}
-	if len(t) < 7 || t[1].Value != "random" || !isUnsigned(t[2]) || t[3].Value != "from" {
+	offset := 0
+	switch {
+	case len(t) >= 7 && t[1].Value == "random" && isUnsigned(t[2]) && t[3].Value == "from":
+		offset = 4
+	case len(t) >= 9 && t[1].Value == "random" && isUnsigned(t[2]) && t[3].Value == "copies" && t[4].Value == "from":
+		// `add random N copies from <历史> … to hand|deck;`：按破坏历史复制同名卡。
+		offset = 5
+		e.Output = "added"
+	default:
+		return e, false
+	}
+	if offset == 5 && t[0].Value != "add" {
 		return e, false
 	}
 	e.Count = intToken(t[2])
@@ -32,7 +43,7 @@ func historySummonIR(t []syntax.Token, base ir.NodeBase) (ir.HistorySummonEffect
 		return e, false
 	}
 	var end int
-	e.Source, end = setExprIR(t, 4)
+	e.Source, end = setExprIR(t, offset)
 	if !ir.ValidHistorySummonSource(e.Source) {
 		return e, false
 	}
@@ -47,9 +58,16 @@ func historySummonIR(t []syntax.Token, base ir.NodeBase) (ir.HistorySummonEffect
 	}
 	var ok bool
 	e.Extremum, end, ok = parseExtremum(t, end)
-	if ok && end+2 == len(t) && t[end].Value == "distinct" && t[end+1].Value == "names" {
+	if ok && end+2 <= len(t) && t[end].Value == "distinct" && t[end+1].Value == "names" {
 		e.DistinctNames = true
 		end += 2
+	}
+	if ok && offset == 5 && end+2 == len(t) && t[end].Value == "to" && set("hand", "deck")[t[end+1].Value] {
+		e.Destination = t[end+1].Value
+		end += 2
+	}
+	if offset == 5 && e.Destination == "" {
+		return e, false
 	}
 	return e, ok && end == len(t)
 }

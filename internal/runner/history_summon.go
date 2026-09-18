@@ -1,9 +1,16 @@
 package runner
 
-import "wbo/internal/ir"
+import (
+	"fmt"
+
+	"wbo/internal/ir"
+)
 
 func (g *game) summonFromHistory(e ir.HistorySummonEffect, self *instance, bindings frame) []*instance {
 	owner, _ := g.playerForSide(self, e.Owner)
+	if e.Destination != "" {
+		return g.copyFromHistory(e, owner, self, bindings)
+	}
 	if len(owner.field) >= fieldLimit {
 		return nil
 	}
@@ -29,6 +36,51 @@ func (g *game) summonFromHistory(e ir.HistorySummonEffect, self *instance, bindi
 		}
 		candidates = remaining
 		out = append(out, g.summonFor(self, e.Owner, 1, cardID, false)...)
+	}
+	return out
+}
+
+// copyFromHistory 按破坏历史复制同名卡加入手牌或牌组：每次抽选消费一次随机数，
+// `distinctNames` 抽到后排除同名记录。复制体是全新的实例（原始卡面状态）。
+func (g *game) copyFromHistory(e ir.HistorySummonEffect, owner *player, self *instance, bindings frame) []*instance {
+	candidates := g.extremumCandidates(g.fromRef(e.Source, self, bindings), e.Extremum)
+	if g.budget != nil && (g.budget.exceeded || !g.budget.chargeCandidates(uint64(len(candidates)))) {
+		return nil
+	}
+	var out []*instance
+	for n := 0; n < e.Count && len(candidates) > 0; n++ {
+		if !g.chargeQueryVisits(1) {
+			break
+		}
+		index := 0
+		if len(candidates) > 1 {
+			index = g.rng.Index(len(candidates))
+		}
+		picked := candidates[index]
+		remaining := candidates[:0]
+		for _, candidate := range candidates {
+			if candidate != picked && (!e.DistinctNames || candidate.card.ID != picked.card.ID) {
+				remaining = append(remaining, candidate)
+			}
+		}
+		candidates = remaining
+		if picked.card == nil || picked.card.CardType == "crest" || !g.reserveCreatedInstance() {
+			continue
+		}
+		g.serial++
+		i := g.newInstance(picked.card, fmt.Sprintf("added-%d", g.serial), fmt.Sprintf("@added%d", g.serial), e.Destination)
+		if e.Destination == "deck" {
+			pos := g.rng.Index(len(owner.deck) + 1)
+			owner.deck = append(owner.deck, nil)
+			copy(owner.deck[pos+1:], owner.deck[pos:])
+			owner.deck[pos] = i
+			out = append(out, i)
+			continue
+		}
+		g.putInHandOrOverdraw(owner, i)
+		if i.zone == "hand" {
+			out = append(out, i)
+		}
 	}
 	return out
 }

@@ -9,6 +9,8 @@ type HistorySummonEffect struct {
 	Count    int                `json:"count"`
 	// DistinctNames 让每次抽取后排除同名（同一卡牌定义）的候选："随机2种…各1张"。
 	DistinctNames bool               `json:"distinctNames,omitempty"`
+	// Destination 为空时按记录召唤到战场；为 hand/deck 时改为"按记录复制一张卡"放进目标区域。
+	Destination string `json:"destination,omitempty"`
 	Extremum *SelectionExtremum `json:"extremum,omitempty"`
 	Output   string             `json:"output"`
 }

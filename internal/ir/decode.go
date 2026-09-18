@@ -1028,6 +1028,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			Count    int                `json:"count"`
 			DistinctNames bool          `json:"distinctNames,omitempty"`
 			Extremum *SelectionExtremum `json:"extremum,omitempty"`
+			Destination string          `json:"destination,omitempty"`
 			Output   string             `json:"output"`
 		}
 		if err := strict(data, &v); err != nil {
@@ -1040,10 +1041,11 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if err != nil {
 			return nil, err
 		}
-		if !validSide(v.Owner) || !ValidHistorySummonSource(source) || v.Count < 1 || v.Count > 65535 || !ValidSelectionExtremum(v.Extremum) || v.Output != "summoned" {
+		if !validSide(v.Owner) || !ValidHistorySummonSource(source) || v.Count < 1 || v.Count > 65535 || !ValidSelectionExtremum(v.Extremum) ||
+			(v.Destination == "" && v.Output != "summoned") || (v.Destination != "" && (!oneOf(v.Destination, "hand", "deck") || v.Output != "added")) {
 			return nil, fmt.Errorf("invalid summon_from_history shape")
 		}
-		return HistorySummonEffect{NodeBase: v.NodeBase, Kind: v.Kind, Owner: v.Owner, Source: source, Count: v.Count, DistinctNames: v.DistinctNames, Extremum: v.Extremum, Output: v.Output}, nil
+		return HistorySummonEffect{NodeBase: v.NodeBase, Kind: v.Kind, Owner: v.Owner, Source: source, Count: v.Count, DistinctNames: v.DistinctNames, Extremum: v.Extremum, Destination: v.Destination, Output: v.Output}, nil
 	case "summon_copies":
 		var v struct {
 			NodeBase

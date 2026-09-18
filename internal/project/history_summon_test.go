@@ -81,3 +81,35 @@ func TestRejectMalformedHistorySummons(t *testing.T) {
 		}
 	}
 }
+
+// S-64：`add random N copies from <破坏历史> … to hand|deck` 按记录复制同名卡。
+func TestHistoryCopyCompilesAndKeepsDestination(t *testing.T) {
+	body := compiledFanfare(t, `fanfare {
+		add random 2 copies from own.destroyed.followers where trait artifact distinct names to hand;
+		add random 1 copies from own.destroyed.followers highest base.cost to deck;
+	}`)
+	if len(body) != 2 {
+		t.Fatalf("expected two effects, got %d", len(body))
+	}
+	toHand, ok := body[0].(ir.HistorySummonEffect)
+	if !ok || toHand.Destination != "hand" || toHand.Output != "added" || toHand.Count != 2 || !toHand.DistinctNames {
+		t.Fatalf("history copy to hand lost its shape: %#v", body[0])
+	}
+	toDeck, ok := body[1].(ir.HistorySummonEffect)
+	if !ok || toDeck.Destination != "deck" || toDeck.Extremum == nil || toDeck.Extremum.Field != "base_cost" {
+		t.Fatalf("history copy to deck lost its shape: %#v", body[1])
+	}
+}
+
+func TestHistoryCopyRejectsBadShapes(t *testing.T) {
+	for _, effect := range []string{
+		"add random 1 copies from own.destroyed.followers;",
+		"add random 0 copies from own.destroyed.followers to hand;",
+		"add random 1 copies from own.hand to hand;",
+		"add random 1 copies from own.destroyed.followers to graveyard;",
+	} {
+		if _, ds := compile(t, validCard(effect)); len(ds) == 0 {
+			t.Fatalf("%q must not compile", effect)
+		}
+	}
+}

@@ -5,7 +5,8 @@ card 10901310 {
     cost 2;
 
     effect {
-        unplayable;
+        add random 1 copies from own.destroyed.followers highest base.cost to deck;
+        draw 1;
     }
 
     meta {
