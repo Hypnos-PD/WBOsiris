@@ -120,11 +120,11 @@ func (d *Driver) RunUntilBlocked(session *runner.Session) (int, error) {
 
 // MatchResult 是一局自对弈的结果。Fault 非空表示这一局以异常结束。
 type MatchResult struct {
-	Winner    string
-	Turns     int
-	Actions   int
-	Choices   int
-	Fault     string
+	Winner      string
+	Turns       int
+	Actions     int
+	Choices     int
+	Fault       string
 	FirstPlayer string
 }
 
