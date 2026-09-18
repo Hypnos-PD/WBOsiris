@@ -651,7 +651,8 @@ func (g *game) preflightAttack(a ir.AttackAction) string {
 		if attacker.summoningSick && (attacker.abilities["rush"] || attacker.evolved) && !attacker.abilities["storm"] {
 			return "rush_cannot_attack_leader"
 		}
-		if hasAttackableWard(opponent) {
+		// 「无视【守护】进行攻击」：带 ignore_ward 的随从可以直接攻击主战者。
+		if !attacker.abilities["ignore_ward"] && hasAttackableWard(opponent) {
 			return "ward_required"
 		}
 		if a.Defender != oppositeSide(a.Actor) {
@@ -675,7 +676,8 @@ func (g *game) preflightAttack(a ir.AttackAction) string {
 	if defender.abilities["intimidate"] {
 		return "intimidate_target"
 	}
-	if hasAttackableWard(opponent) && !defender.abilities["ward"] {
+	// 「无视【守护】进行攻击」：本体带 ignore_ward 时可以越过对方的守护。
+	if !attacker.abilities["ignore_ward"] && hasAttackableWard(opponent) && !defender.abilities["ward"] {
 		return "ward_required"
 	}
 	return ""

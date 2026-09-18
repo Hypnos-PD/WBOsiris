@@ -14,7 +14,7 @@ var (
 	// filterTypes 比卡牌声明多出 `crest` / `faith`：它们只出现在主战者区域，
 	// 用于"消灭所有纹章（但不含信仰）"这类筛选。
 	filterTypes = set("follower", "spell", "amulet", "crest", "faith")
-	abilities = set("ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "ability_target_guard", "ability_destruction_guard", "damage_taken_up", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")
+	abilities = set("ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "ignore_ward", "ability_target_guard", "ability_destruction_guard", "damage_taken_up", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader")
 	classes   = set("neutral", "forestcraft", "swordcraft", "runecraft", "dragoncraft", "abysscraft", "havencraft", "portalcraft")
 	rarities  = set("bronze", "silver", "gold", "legendary")
 	locales   = []string{"chs", "eng", "jpn", "kor", "cht"}

@@ -1,0 +1,42 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "通透的信念自带疾驰与无视守护" {
+    seed 91001;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10851110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has storm; source has ignore_ward; }
+}
+
+scenario "通透的信念可以越过守护攻击主战者" {
+    seed 91002;
+    state {
+        player own {
+            field { follower source = 10851110; }
+        }
+        player oppo {
+            field { follower guardian = 10001110 { stats 2/9; ward; } }
+        }
+    }
+    action { attack source into oppo.leader; }
+    expect { legal; oppo.leader.life == 18; guardian.stats == 2/9; }
+}
+
+scenario "没有无视守护的随从必须先攻击守护随从" {
+    seed 91003;
+    state {
+        player own {
+            field { follower plain = 10001110; }
+        }
+        player oppo {
+            field { follower guardian = 10001110 { stats 2/9; ward; } }
+        }
+    }
+    action { attack plain into oppo.leader; }
+    expect { illegal ward_required; unchanged; }
+}

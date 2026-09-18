@@ -6,7 +6,9 @@ card 10851110 {
     stats 2/3;
 
     effect {
-        unplayable;
+        storm;
+        // 「可以无视【守护】进行攻击」：攻击合法性检查会跳过对方的守护限制。
+        ignore_ward;
     }
 
     meta {
