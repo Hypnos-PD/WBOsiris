@@ -1008,11 +1008,11 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 				return nil, fmt.Errorf("invalid banish duplicates shape")
 			}
 		case "add_card":
-			if !validSide(v.Owner) || v.Destination != "hand" || v.Count < 0 || !validCardID(v.CardID) || v.Output != "added" || v.TieBreak != "" || v.MaxCost != 0 || r != nil || v.PreserveInstanceID || v.PreserveMaterials {
+			if !validSide(v.Owner) || !oneOf(v.Destination, "hand", "deck") || v.Count < 0 || !validCardID(v.CardID) || v.Output != "added" || v.TieBreak != "" || v.MaxCost != 0 || r != nil || v.PreserveInstanceID || v.PreserveMaterials {
 				return nil, fmt.Errorf("invalid add_card shape")
 			}
 		case "add_copies":
-			if !validSide(v.Owner) || v.Destination != "hand" || r == nil || v.Count != 0 || v.CardID != 0 || v.Output != "added" || v.TieBreak != "" || v.MaxCost != 0 || v.PreserveInstanceID || v.PreserveMaterials {
+			if !validSide(v.Owner) || !oneOf(v.Destination, "hand", "deck") || r == nil || v.Count != 0 || v.CardID != 0 || v.Output != "added" || v.TieBreak != "" || v.MaxCost != 0 || v.PreserveInstanceID || v.PreserveMaterials {
 				return nil, fmt.Errorf("invalid add_copies shape")
 			}
 		case "summon_from_hand":

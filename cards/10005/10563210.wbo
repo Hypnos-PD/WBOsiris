@@ -5,7 +5,18 @@ card 10563210 {
     cost 3;
 
     effect {
-        unplayable;
+        fanfare {
+            require target from oppo.field.followers;
+            damage target 5;
+        }
+        engage 0 {
+            destroy self;
+            random card from own.hand;
+            return card to deck;
+            random card from own.hand;
+            return card to deck;
+            draw 2;
+        }
     }
 
     meta {

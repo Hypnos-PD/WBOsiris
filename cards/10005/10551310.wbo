@@ -5,7 +5,9 @@ card 10551310 {
     cost 2;
 
     effect {
-        unplayable;
+        require target from oppo.field.followers;
+        damage target 5;
+        add 1 card 10551310 to deck;
     }
 
     meta {

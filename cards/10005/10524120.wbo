@@ -6,7 +6,62 @@ card 10524120 {
     stats 2/4;
 
     effect {
-        unplayable;
+        fanfare {
+            require target from oppo.field.followers;
+            banish target;
+            add 1 card 90021350 to hand;
+        }
+        superevolve {
+            gain own crest 10524120;
+        }
+    }
+
+    crest {
+        countdown 4;
+
+        when own turn ends {
+            add 1 card 90021350 to hand;
+        }
+
+        locale chs {
+            name "纹章：丽金花·云庆";
+            text """
+【<color=Keyword>吟唱</color>_4】
+自己的回合结束时，将1张『<color=Keyword>闪耀的金币</color>』加入手牌。
+""";
+        }
+
+        locale eng {
+            name "Crest: Goldflower, Cloud Celebrant";
+            text """
+<b><color=Keyword>Countdown</color> (4)</b>
+At the end of your turn, add a <b><i><color=Keyword>Glittering Gold</color></i></b> to your hand.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"れいきんか\">麗金花</rub>・うんけい";
+            text """
+【<color=Keyword>カウントダウン</color>_4】
+自分のターン終了時、『<color=Keyword>きらめく金貨</color>』1枚を自分の手札に加える。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 여금화·운경";
+            text """
+[<color=Keyword>카운트다운</color> 4]
+내 턴 종료시, 「<color=Keyword>빛나는 금화</color>」 1장을 내 패에 넣는다.
+""";
+        }
+
+        locale cht {
+            name "紋章：麗金花‧雲慶";
+            text """
+【<color=Keyword>倒數</color>_4】
+自己的回合結束時，增加1張『<color=Keyword>閃耀的金幣</color>』到自己的手牌中。
+""";
+        }
     }
 
     meta {

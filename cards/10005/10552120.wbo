@@ -6,7 +6,16 @@ card 10552120 {
     stats 3/5;
 
     effect {
-        unplayable;
+        fanfare {
+            require target from oppo.field.followers;
+            add cannot_attack to target until oppo turn ends;
+            draw 1;
+        }
+        evolve {
+            require target from oppo.field.followers;
+            add cannot_attack to target until oppo turn ends;
+            draw 1;
+        }
     }
 
     meta {

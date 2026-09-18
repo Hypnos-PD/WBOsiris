@@ -6,7 +6,15 @@ card 10513110 {
     stats 4/3;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 3 card 90011110;
+        }
+        evolve {
+            summon 3 card 90011110;
+        }
+        superevolve {
+            add bane to own.field.followers where trait pixie;
+        }
     }
 
     meta {

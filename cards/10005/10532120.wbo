@@ -6,7 +6,15 @@ card 10532120 {
     stats 2/1;
 
     effect {
-        unplayable;
+        spellboost {
+            reduce cost self 1 minimum 0;
+        }
+        fanfare {
+            draw 1;
+        }
+        lastwords {
+            spellboost own.hand 1;
+        }
     }
 
     meta {

@@ -20,20 +20,20 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 540 · 未实现(骨架) 57 · 未导入 307
+总计 904 · 已完成 562 · 未实现(骨架) 35 · 未导入 307
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
 10002        77      77       0       0
 10003        77      75       2       0
 10004        76      72       4       0
-10005        76      27      49       0
+10005        76      49      27       0
 10006        76       0       0      76
 10007        77       0       0      77
 10008        78       0       0      78
 10009        76       0       0      76
 90000        93      91       2       0
-未完成卡按文本复杂度：中(41–100字) 254 · 短(≤40字) 149 · 长(>100字) 21 · 白板 1
+未完成卡按文本复杂度：中(41–100字) 254 · 短(≤40字) 131 · 长(>100字) 21 · 白板 1
 ```
 
 ## 工作流
@@ -98,6 +98,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-54 | `set_attack_limit <目标> N` | `internal/project/validate.go`（`set_attack_limit` 由 `self` 放宽为任意 `value_ref`） | Go 单测 `internal/project/binding_scalar_test.go`（目标保留为绑定）；卡片 90034350 + 1 个场景 |
 | S-55 | 护符固有关键词 `aura` | `internal/project/strict_validate.go`（非随从只对 `aura` 开例外） | Go 单测 `internal/project/amulet_aura_test.go`（`aura` 编入 intrinsic、护符上的 `ward` 仍被拒绝）；卡片 90064210 + 1 个场景 |
 | S-56 | `raise\|reduce cost T N until …`（带期限的费用修改） | `internal/ir/model.go`（`AdjustEffect.Until`）、`internal/ir/encode.go`/`decode.go`（形状与期限白名单）、`internal/project/validate.go`/`typed_ir.go`（解析）、`internal/runner/execute.go`（按到期侧记录差量）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/temporary_cost_test.go`（到期只撤销自己的差量）；卡片 90044310 + 2 个场景 |
+| S-59 | `add N card C to deck`（加入牌组） | `internal/project/validate.go`/`typed_ir.go`（目的地放宽到 `deck`）、`internal/ir/decode.go`（`add_card`/`add_copies` 允许 `deck`）、`internal/runner/execute.go`（随机位置插入牌组）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/add_to_deck_test.go`（目的地与 `added` 输出、拒绝未知目的地）；卡片 10551310 + 1 个场景 |
 
 | S-16 | `ability_destruction_guard`（不会被能力破坏） | 新固有关键词：`internal/ir/decode.go` 的 `validKeyword`、`internal/project/validate.go` 的 `abilities`、`strict_validate.go` 的固有能力形状表、`internal/runner/runner.go`（`destroyByEffect` 受保护，必杀改走新的 `destroyByCombat` 不受保护）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/granted_ability_flow_test.go`（能力破坏被挡下、战斗破坏照样生效）；卡片 10273110 + 2 个场景 |
 | S-07 | `when own\|oppo follower evolved\|super_evolved [other]` —— 其他随从的进化事件 | `internal/ir/model.go`（`EventTrigger.ExcludeSelf`）、`internal/ir/decode.go`（校验 `other` 只用于带对象的非受伤事件）、`internal/project/strict_validate.go`（基础事件模式接受进化动词与 `other`）、`internal/project/typed_ir.go`（事件名映射与 `ExcludeSelf`）、`internal/project/validate.go`（`evolved` 绑定）、`internal/runner/runner.go`（进化事件改为把改名随从绑成 `evolved`）、`internal/runner/trigger_index.go`（按实例排除自身）；文档 `grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/evolution_event_test.go`（`other`/绑定/来源区域、拒绝重复 `other` 与 `self … other`）；卡片 10241110、10212120、10252110 + 6 个场景（含"不因普通进化触发"与"不响应自己超进化"两个反向场景） |
@@ -145,14 +146,39 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-56 | ~~带期限的费用修改~~ **已解决**：`raise\|reduce cost T N until …` | 已解锁 90044310 银冰吐息（"对手的回合结束前，使对手的所有手牌的费用+1"） | 原先只有 `set cost` 接受 `until`；现在加减费同样记录差量并在到期侧还原。 |
 | S-57 | 判断选中的卡牌属于哪一方 | 90064320 天书深渊（"若选择了自己的护符，则对对手的主战者造成2点伤害"） | 谓词里有类型、职业、种族、形态等，但没有"该实例属于能力控制者"。 |
 | S-58 | 手牌中同费用的张数 | 10553310 严酷的奥夜花的纹章（"若自己的手牌中有4张或以上费用相同的卡牌"） | 谓词能按费用比较，但没有"按费用分组后存在 N 张同费"的判断；`count` 也不能表达分组。 |
-| S-59 | 把卡牌加入牌组 | 10551310 奥夜花的开战（"将1张『奥夜花的开战』加入牌组"） | `add N card C to hand` 只支持手牌；`add_copies` 的运行时也固定进手牌，需要补牌组插入（随机位置）。 |
+| S-59 | ~~把卡牌加入牌组~~ **已解决**：`add N card C to deck;`（`add copies of … to deck` 同样可用） | 已解锁 10551310 奥夜花的开战 | 新卡在随机位置插入牌组，不视为抽牌；仍然输出 `added`。 |
 | S-60 | 按牌组随机随从变身并复制 | 10533310 壮美的明越花（"使自己的战场上的所有随从分别变身为自己的牌组中的随机1张随从的复制随从"） | 需要"从牌组随机取一张随从的定义并让每个己方随从变成它的复制"的组合操作。 |
+| S-61 | 同一次打出的多个召唤输出 | 10571110 舞台缔造者（爆能强化 7"使其获得【疾驰】"指同一次入场曲召唤的两个傀儡） | `summoned` 只保留最后一次召唤；需要"本次结算召唤的全部实例"这样的集合输出。 |
+| S-62 | 抽牌事件 | 10564120 雾卷花·茎白与 10544120 波摇花·夕夜的纹章、10561120 连结的使徒、10522110 迅猛的武术家（"抽到本卡牌时"）、10562120 穷途末路的巫女 | 没有 `when … card drawn`（含"抽到本卡牌时"）的监听语法。 |
+| S-63 | 抽牌去重 | 10574120 尽小花·伊鞠（"抽取2种费用为1的法术"） | `draw` 没有 `distinct names`（牌组召唤才有）。 |
+| S-64 | 从破坏历史复制同名卡加入手牌 | 10572310 苏生调律（"将随机2种与本次对战中被破坏的自己的随从同名的卡牌各1张…加入手牌"） | `add copies of` 不接受破坏历史目标（`effectTargets` 过滤掉 `destroyed` 实例），也没有"同名的不同种类各1张"。 |
+| S-65 | 从手牌按位置批量选择 | 10502110 星辉女神（"将自己的手牌中从左起的3张卡牌的复制卡牌各1张…加入手牌"） | 选择只有随机、极值与玩家指定；没有"手牌从左起 N 张"。 |
 | S-51 | 主战者临时"受到的伤害变为 0" | 10444120 世界的伙伴·佐伊（爆能强化 10：主战者直到对手回合结束"受到的1点或以上伤害变为0"） | 主战者关键词只有永久形式；`until ... turn ends` 的期限只作用于随从关键词。 |
 | S-52 | 牌组中发动与【瞬念召唤】 | 10404110 天司长的继承者·圣德芬（"在牌组中发动…【瞬念召唤】本卡牌…被瞬念召唤时获得纹章并返回手牌"） | 需要"在手牌/牌组中监听回合开始""从牌组召唤并选择是否返回手牌"的整套语义。 |
 
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 55（S-59 加入牌组 + 卡包 10005 第二批）
+
+- **S-59 `add N card C to deck;`**：新卡在随机位置插入牌组（不视为抽牌，仍输出 `added`）；
+  `add_copies` 也支持 `to deck`。
+- 顺带修好 `other` 的解析边界：`transform … other into card C` 之前会把 `into` 当成绑定名，
+  现在 `otherFollowers` 关键词集合包含 `into`、`preserving`、`minimum`、`to`、`from`、`for`。
+- 完成 22 张：10551310 奥夜花的开战、10541310 波摇花的裁决（伤害量取 `drawn.cost`）、
+  10533110 元素支配者、10541120 水滴打拍者、10521310 丽金花的挥霍、10542120 水母舞姬、
+  10573110 神经遮蔽者（`repeat count(…) { gain own.pp 1; }`）、10543310 懒惰的波摇花、
+  10532120 余韵俳谐师、10561110 先见的神官、10522120 吉祥蛙、10552120 牵线搭桥的青鬼、
+  10553110 致命掠夺者（`transform field.followers other into card 90051110`）、
+  10503310 《世界》的呈现、10523110 不动如山的将校、10504110 八界花·下天央、
+  10521120 烟管美玉、10511120 森林羽子板工匠、10513110 引路船工、10563210 坚固的雾卷花、
+  10572110 新时代地理学者、10524120 丽金花·云庆（纹章）。
+- 新增 34 个场景（`tests/10005/batch-55-effects.wbotest`）；Go 单测
+  `internal/project/add_to_deck_test.go`。
+- 新登记缺口：S-61 同一次打出的多个召唤输出、S-62 抽牌事件、S-63 抽牌去重（"抽取2种…"）、
+  S-64 从破坏历史复制同名卡加入手牌、S-65 从手牌按位置批量选择。
+- 全量回归：`check` 0 错 0 警；`test` 838 全绿；`go test ./...` 全绿；语料快照更新为 838 个场景。
 
 ### 批次 54（导入卡包 10005 + 首批 27 张）
 

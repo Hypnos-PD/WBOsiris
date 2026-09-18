@@ -392,6 +392,7 @@ add_operation     = "add" , integer , "card" , card_id , "to" , "hand" , ";"
                   | "add" , "combo" , integer , ";"
                   | "add" , integer , "earthsigil" , ";"
                   | "add" , integer , "counter" , counter_name , ";"
+                  | "add" , integer , "card" , card_id , "to" , ("hand" | "deck") , ";"
                   | "add" , "copies" , "of" , value_ref , "to" , ("hand" | "deck") , ";"
                   | "add" , ability , "to" , value_ref , ["other" , [binding_name]] , [where_clause] , [effect_duration] , ";" ;
 effect_duration   = "until" , [participant] , "turn" , "ends" ;

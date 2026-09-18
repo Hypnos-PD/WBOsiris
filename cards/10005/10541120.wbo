@@ -6,7 +6,12 @@ card 10541120 {
     stats 5/5;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90041130;
+        }
+        when own follower summoned where trait marine {
+            heal own.leader 2;
+        }
     }
 
     meta {

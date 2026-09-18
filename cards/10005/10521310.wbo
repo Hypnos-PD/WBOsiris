@@ -5,7 +5,12 @@ card 10521310 {
     cost 2;
 
     effect {
-        unplayable;
+        require target from own.hand.spells;
+        discard target;
+        repeat 2 {
+            random victim from oppo.field.followers;
+            damage victim 3;
+        }
     }
 
     meta {

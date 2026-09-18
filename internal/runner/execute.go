@@ -544,6 +544,16 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 				break
 			}
 			g.serial++
+			if e.Destination == "deck" {
+				// "将一张卡加入牌组"：在随机位置插入，不视为抽牌。
+				i := g.newInstance(c, fmt.Sprintf("added-%d", g.serial), fmt.Sprintf("@added%d", g.serial), "deck")
+				pos := g.rng.Index(len(own.deck) + 1)
+				own.deck = append(own.deck, nil)
+				copy(own.deck[pos+1:], own.deck[pos:])
+				own.deck[pos] = i
+				added = append(added, i)
+				continue
+			}
 			i := g.newInstance(c, fmt.Sprintf("added-%d", g.serial), fmt.Sprintf("@added%d", g.serial), "hand")
 			g.putInHandOrOverdraw(own, i)
 			if i.zone == "hand" {
@@ -564,6 +574,15 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 				break
 			}
 			g.serial++
+			if e.Destination == "deck" {
+				i := g.newInstance(target.card, fmt.Sprintf("added-%d", g.serial), fmt.Sprintf("@added%d", g.serial), "deck")
+				pos := g.rng.Index(len(own.deck) + 1)
+				own.deck = append(own.deck, nil)
+				copy(own.deck[pos+1:], own.deck[pos:])
+				own.deck[pos] = i
+				added = append(added, i)
+				continue
+			}
 			i := g.newInstance(target.card, fmt.Sprintf("added-%d", g.serial), fmt.Sprintf("@added%d", g.serial), "hand")
 			g.putInHandOrOverdraw(own, i)
 			if i.zone == "hand" {

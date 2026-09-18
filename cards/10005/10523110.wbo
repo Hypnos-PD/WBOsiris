@@ -6,7 +6,13 @@ card 10523110 {
     stats 5/6;
 
     effect {
-        unplayable;
+        cannot_attack;
+        when own turn ends {
+            summon 1 card 90021120;
+        }
+        superevolve {
+            buff own.field.followers other +3/+3;
+        }
     }
 
     meta {

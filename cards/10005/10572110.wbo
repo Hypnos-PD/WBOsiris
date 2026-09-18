@@ -6,7 +6,13 @@ card 10572110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 90073120 to hand;
+        }
+        superevolve {
+            choose target from own.hand.followers where trait artifact and cost <= 5;
+            summon copies of target;
+        }
     }
 
     meta {

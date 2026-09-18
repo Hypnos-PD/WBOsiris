@@ -6,7 +6,15 @@ card 10573110 {
     stats 4/2;
 
     effect {
-        unplayable;
+        rush;
+        fanfare {
+            repeat count(own.field.followers other) {
+                gain own.pp 1;
+            }
+        }
+        lastwords {
+            draw 2;
+        }
     }
 
     meta {

@@ -5,7 +5,13 @@ card 10543310 {
     cost 2;
 
     effect {
-        unplayable;
+        repeat 2 {
+            random victim from oppo.field.followers;
+            damage victim 2;
+        }
+        if overflow {
+            damage oppo.leader 2;
+        }
     }
 
     meta {

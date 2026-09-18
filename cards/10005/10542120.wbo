@@ -6,7 +6,13 @@ card 10542120 {
     stats 2/1;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 90041130 to hand;
+        }
+        when own follower summoned where trait marine {
+            add rush to self;
+            add bane to self;
+        }
     }
 
     meta {

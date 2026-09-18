@@ -6,7 +6,15 @@ card 10511120 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90011110;
+        }
+        when own follower summoned where trait pixie {
+            damage oppo.leader 1;
+        }
+        evolve {
+            summon 1 card 90011110;
+        }
     }
 
     meta {

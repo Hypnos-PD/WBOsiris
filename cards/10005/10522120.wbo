@@ -6,7 +6,14 @@ card 10522120 {
     stats 5/5;
 
     effect {
-        unplayable;
+        when own turn ends {
+            if count(own.hand.spells) >= 2 {
+                damage oppo.field.followers 5;
+            }
+        }
+        evolve {
+            add 2 card 90021350 to hand;
+        }
     }
 
     meta {

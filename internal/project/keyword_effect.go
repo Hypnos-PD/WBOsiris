@@ -42,6 +42,7 @@ func otherExclusion(t []syntax.Token, i int) (ir.Ref, int) {
 // otherFollowers 是 `other` 之后可能出现的关键词，不算绑定名。
 var otherFollowers = map[string]bool{
 	"where": true, "highest": true, "lowest": true, "count": true, "until": true, "other": true,
+	"into": true, "preserving": true, "minimum": true, "to": true, "from": true, "for": true,
 }
 
 // removeAbilityIR 解析 remove lastwords from … / remove all abilities from …：

@@ -6,7 +6,15 @@ card 10561110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            require target from oppo.field.followers;
+            damage target 2;
+        }
+        evolve {
+            require target from oppo.field.followers;
+            damage target 2;
+        }
     }
 
     meta {

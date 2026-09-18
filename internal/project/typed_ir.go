@@ -357,7 +357,11 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		}
 		if t[1].Kind == syntax.Integer && t[2].Value == "card" {
 			// 加入手牌的成功实例绑定为 added，便于"加入后立即修改"的文本。
-			return ir.CardEffect{NodeBase: base, Kind: "add_card", Owner: "own", Count: intAt(s, 1), CardID: intToken(t[3]), Destination: "hand", Output: "added"}, nil
+			destination := "hand"
+			if len(t) >= 6 {
+				destination = t[5].Value
+			}
+			return ir.CardEffect{NodeBase: base, Kind: "add_card", Owner: "own", Count: intAt(s, 1), CardID: intToken(t[3]), Destination: destination, Output: "added"}, nil
 		} else if t[1].Value == "combo" {
 			return ir.AdjustEffect{NodeBase: base, Kind: "adjust_resource", Owner: "own", Resource: "combo", Delta: intToken(t[2])}, nil
 		} else if t[2].Value == "earthsigil" {
@@ -575,7 +579,14 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		return ir.AdjustEffect{NodeBase: base, Kind: "double_stats", Target: valueRefIR(t, 2)}, nil
 	case "transform":
 		end := valueRefEnd(t, 1)
-		e := ir.CardEffect{NodeBase: base, Kind: "transform", Target: valueRefIR(t, 1), CardID: intToken(t[end+2]), PreserveInstanceID: true, PreserveMaterials: true}
+		target := valueRefIR(t, 1)
+		if end < len(t) && t[end].Value == "other" {
+			// `transform 集合 other into card C`：排除来源实例自身。
+			value, next := otherExclusion(t, end)
+			target = ir.ExcludeRef{Kind: "exclude", Source: target, Value: value}
+			end = next
+		}
+		e := ir.CardEffect{NodeBase: base, Kind: "transform", Target: target, CardID: intToken(t[end+2]), PreserveInstanceID: true, PreserveMaterials: true}
 		end += 3
 		if end < len(t) && t[end].Value == "preserving" {
 			end += 2

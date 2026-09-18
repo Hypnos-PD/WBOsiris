@@ -6,7 +6,18 @@ card 10553110 {
     stats 7/7;
 
     effect {
-        unplayable;
+        fanfare {
+            transform field.followers other into card 90051110;
+        }
+        when own follower destroyed where card 90051110 {
+            heal own.leader 1;
+        }
+        when oppo follower destroyed where card 90051110 {
+            heal own.leader 1;
+        }
+        evolve {
+            damage field.followers other 1;
+        }
     }
 
     meta {

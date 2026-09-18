@@ -5,7 +5,13 @@ card 10503310 {
     cost 5;
 
     effect {
-        unplayable;
+        draw 2;
+        random victim from oppo.field.followers highest attack;
+        destroy victim;
+        enhance 10 {
+            damage oppo.field.followers 4;
+            damage oppo.leader 4;
+        }
     }
 
     meta {

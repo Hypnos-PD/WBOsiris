@@ -620,7 +620,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 				ok = true
 			}
 		}
-		if len(t) == 6 && isUnsigned(t[1]) && t[2].Value == "card" && isCardID(t[3]) && t[4].Value == "to" && t[5].Value == "hand" {
+		if len(t) == 6 && isUnsigned(t[1]) && t[2].Value == "card" && isCardID(t[3]) && t[4].Value == "to" && set("hand", "deck")[t[5].Value] {
 			ok = true
 		}
 		if len(t) == 3 && t[1].Value == "combo" && isUnsigned(t[2]) {
@@ -845,6 +845,10 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 	case "transform":
 		end, good := parseValueRef(t, 1)
 		checkBindingAt(t, 1, end, bindings, ds)
+		if good && end < len(t) && t[end].Value == "other" {
+			// `transform 集合 other into card C`：排除来源实例自身。
+			end = otherExclusionEnd(t, end)
+		}
 		good = good && ir.ValidTransformTarget(valueRefIR(t, 1)) && end+3 <= len(t) && t[end].Value == "into" && t[end+1].Value == "card" && isCardID(t[end+2])
 		if good {
 			end += 3

@@ -6,7 +6,15 @@ card 10521120 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            if count(own.hand.spells) >= 2 {
+                buff self +1/+1;
+                add ward to self;
+            }
+        }
+        evolve {
+            add 1 card 90021350 to hand;
+        }
     }
 
     meta {

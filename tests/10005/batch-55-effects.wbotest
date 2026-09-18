@@ -1,0 +1,488 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "奥夜花的开战造成五点伤害并把自身加入牌组" {
+    seed 55001;
+    state {
+        player own {
+            pp 2/2;
+            hand { spell source = 10551310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/9; } } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.stats == 2/4; own.deck count card 10551310 == 1; }
+}
+
+scenario "波摇花的裁决按抽到的随从费用造成伤害" {
+    seed 55002;
+    state {
+        player own {
+            pp 3/3;
+            deck top { follower drew = 10001110; }
+            hand { spell source = 10541310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/9; } } }
+    }
+    action { play source; }
+    // 抽到的 10001110 费用为 2。
+    expect { legal; own.hand count card 10001110 == 1; enemy.stats == 2/7; }
+}
+
+scenario "元素支配者召唤两个巨像并消耗土之秘术使其进化" {
+    seed 55003;
+    state {
+        player own {
+            pp 7/7;
+            field { amulet sigil = 90031210 { earthsigil 2; } }
+            hand { follower source = 10533110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90031120 == 2;
+        sigil.earthsigil == 0;
+        all own.field where card 90031120 have ward;
+    }
+}
+
+scenario "水滴打拍者召唤大海虎鲸并回复主战者" {
+    seed 55004;
+    state {
+        player own {
+            leader 10/20;
+            pp 6/6;
+            hand { follower source = 10541120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90041130 == 1; own.leader.life == 12; }
+}
+
+scenario "丽金花的挥霍舍弃手牌中的法术并打动随机随从两次" {
+    seed 55005;
+    state {
+        player own {
+            pp 2/2;
+            hand {
+                spell source = 10521310;
+                spell fuel = 90054330;
+            }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/12; } } }
+    }
+    action { play source; select fuel; }
+    expect { legal; fuel.zone == graveyard; enemy.stats == 2/6; }
+}
+
+scenario "水母舞姬的入场曲把大海虎鲸加入手牌" {
+    seed 55006;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10542120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90041130 == 1; }
+}
+
+scenario "海洋随从进入战场时水母舞姬获得突进与毁灭" {
+    seed 55007;
+    state {
+        player own {
+            pp 6/6;
+            field { follower jelly = 10542120; }
+            hand { follower drummer = 10541120; }
+        }
+    }
+    action { play drummer; }
+    expect { legal; jelly has rush; jelly has bane; }
+}
+
+scenario "神经遮蔽者按其他随从数量回复能量点" {
+    seed 55008;
+    state {
+        player own {
+            pp 5/5;
+            field {
+                follower first = 10001110;
+                follower second = 10001110;
+            }
+            hand { follower source = 10573110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.pp == 2/5; source has rush; }
+}
+
+scenario "神经遮蔽者的谢幕曲抽两张" {
+    seed 55009;
+    state {
+        player own {
+            field { follower source = 10573110; }
+            deck top { follower first = 10001110; follower second = 10001110; }
+        }
+        player oppo { field { follower big = 10001110 { stats 5/5; } } }
+    }
+    action { attack source into big; }
+    expect { legal; source.zone == graveyard; own.hand count card 10001110 == 2; }
+}
+
+scenario "觉醒时懒惰的波摇花追加打击主战者" {
+    seed 55010;
+    state {
+        player own {
+            pp 7/7;
+            hand { spell source = 10543310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/12; } } }
+    }
+    action { play source; }
+    expect { legal; enemy.stats == 2/8; oppo.leader.life == 18; }
+}
+
+scenario "未觉醒时懒惰的波摇花只打随机随从" {
+    seed 55011;
+    state {
+        player own {
+            pp 2/2;
+            hand { spell source = 10543310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/12; } } }
+    }
+    action { play source; }
+    expect { legal; enemy.stats == 2/8; oppo.leader.life == 20; }
+}
+
+scenario "余韵俳谐师的入场曲抽一张" {
+    seed 55012;
+    state {
+        player own {
+            pp 6/6;
+            deck top { follower drew = 10001110; }
+            hand { follower source = 10532120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10001110 == 1; }
+}
+
+scenario "余韵俳谐师的谢幕曲强化手牌" {
+    seed 55013;
+    state {
+        player own {
+            field { follower source = 10532120; }
+            hand { follower held = 10032120; }
+        }
+        player oppo { field { follower big = 10001110 { stats 5/5; } } }
+    }
+    action { attack source into big; }
+    expect { legal; source.zone == graveyard; held.cost == 9; }
+}
+
+scenario "先见的神官的入场曲与进化时都能造成两点伤害" {
+    seed 55014;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            pp 3/3;
+            field { follower source = 10561110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/9; } } }
+    }
+    action { evolve source; select enemy; }
+    expect { legal; enemy.stats == 2/7; source has ward; }
+}
+
+scenario "吉祥蛙在手牌有两张法术时于回合结束打击敌方全体" {
+    seed 55015;
+    state {
+        player own {
+            field { follower frog = 10522120; }
+            hand {
+                spell first = 90054330;
+                spell second = 90054330;
+            }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { end_turn; }
+    expect { legal; enemy.stats == 2/3; }
+}
+
+scenario "牵线搭桥的青鬼让敌方随从在对手回合结束前无法攻击" {
+    seed 55016;
+    state {
+        player own {
+            pp 5/5;
+            deck top { follower drew = 10001110; }
+            hand { follower source = 10552120; }
+        }
+        player oppo { field { follower enemy = 10001110; } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy has cannot_attack; own.hand count card 10001110 == 1; }
+}
+
+scenario "致命掠夺者把其他随从都变成骸骨士兵" {
+    seed 55017;
+    state {
+        player own {
+            pp 9/9;
+            field { follower ally = 10001110 { stats 2/5; } }
+            hand { follower source = 10553110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 3/6; } } }
+    }
+    action { play source; }
+    expect { legal; ally.stats == 1/1; enemy.stats == 1/1; }
+}
+
+scenario "骸骨士兵被破坏时回复主战者" {
+    seed 55018;
+    state {
+        turn own 5;
+        player own {
+            leader 10/20;
+            ep 1;
+            field {
+                follower source = 10553110;
+                follower skel = 90051110;
+            }
+        }
+    }
+    action { evolve source; }
+    expect { legal; skel.zone == graveyard; own.leader.life == 11; }
+}
+
+scenario "世界的呈现破坏攻击力最大的敌方随从" {
+    seed 55019;
+    state {
+        player own {
+            pp 5/5;
+            deck top { follower first = 10001110; follower second = 10001110; }
+            hand { spell source = 10503310; }
+        }
+        player oppo {
+            field {
+                follower strong = 10001110 { stats 5/5; }
+                follower weak = 10001110 { stats 1/5; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; strong.zone == graveyard; weak.zone == field; }
+}
+
+scenario "爆能强化十点让世界的呈现打击敌方全体与主战者" {
+    seed 55020;
+    state {
+        player own {
+            pp 10/10;
+            deck top { follower first = 10001110; follower second = 10001110; }
+            hand { spell source = 10503310; }
+        }
+        player oppo {
+            field {
+                follower strong = 10001110 { stats 5/5; }
+                follower enemy = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; strong.zone == graveyard; enemy.stats == 2/4; oppo.leader.life == 16; }
+}
+
+scenario "不动如山的将校无法攻击并在回合结束召唤铁甲骑士" {
+    seed 55021;
+    state {
+        player own { field { follower source = 10523110; } }
+    }
+    action { end_turn; }
+    expect { legal; source has cannot_attack; own.field count card 90021120 == 1; }
+}
+
+scenario "不动如山的将校超进化时强化其他随从" {
+    seed 55022;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field {
+                follower source = 10523110;
+                follower ally = 10001110;
+            }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; ally.stats == 5/5; }
+}
+
+scenario "八界花舍弃手牌后按模式抽取八张" {
+    seed 55023;
+    state {
+        player own {
+            pp 8/8;
+            deck top {
+                follower first = 10001110;
+                follower second = 10001110;
+                follower third = 10001110;
+                follower fourth = 10001110;
+                follower fifth = 10001110;
+                follower sixth = 10001110;
+                follower seventh = 10001110;
+                follower eighth = 10001110;
+            }
+            hand {
+                follower source = 10504110;
+                follower discarded = 10001110;
+            }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; discarded.zone == graveyard; own.hand count card 10001110 == 8; }
+}
+
+scenario "八界花模式二抽取两张并把费用降到最低" {
+    seed 55024;
+    state {
+        player own {
+            pp 8/8;
+            deck top { follower first = 10032120; follower second = 10032120; }
+            hand { follower source = 10504110; }
+        }
+    }
+    action { play source; mode 2; }
+    expect { legal; own.hand count card 10032120 == 2; }
+}
+
+scenario "烟管美玉在手牌有两张法术时加身材并获得守护" {
+    seed 55025;
+    state {
+        player own {
+            pp 3/3;
+            hand {
+                follower source = 10521120;
+                spell first = 90054330;
+                spell second = 90054330;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; source.stats == 4/4; source has ward; }
+}
+
+scenario "森林羽子板工匠召唤妖精并打击对手主战者" {
+    seed 55026;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10511120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90011110 == 1; oppo.leader.life == 19; }
+}
+
+scenario "引路船工召唤三个妖精并在超进化时给予毁灭" {
+    seed 55027;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10513110; }
+            hand { follower fairy = 90011110; }
+        }
+    }
+    action { superevolve source; }
+    // 手动超进化同时触发普通的【进化时】，因此召唤 3 个妖精并获得毁灭。
+    expect { legal; own.field count card 90011110 == 3; all own.field where card 90011110 have bane; }
+}
+
+scenario "坚固的雾卷花的入场曲造成五点伤害" {
+    seed 55028;
+    state {
+        player own {
+            pp 3/3;
+            hand { amulet source = 10563210; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/9; } } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.stats == 2/4; }
+}
+
+scenario "坚固的雾卷花启动时破坏自己并换手牌" {
+    seed 55029;
+    state {
+        player own {
+            field { amulet source = 10563210; }
+            deck top { follower first = 10001110; follower second = 10001110; }
+            hand { follower other = 10001110; }
+        }
+    }
+    action { engage source; }
+    expect { legal; source.zone == graveyard; own.hand count card 10001110 == 2; }
+}
+
+scenario "新时代地理学者把毁灭创造物β加入手牌" {
+    seed 55030;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10572110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90073120 == 1; }
+}
+
+scenario "新时代地理学者超进化时召唤创造物随从的复制" {
+    seed 55031;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10572110; }
+            hand { follower relic = 90073120; }
+        }
+    }
+    action { superevolve source; select relic; }
+    expect { legal; own.hand count card 90073120 == 1; own.field count card 90073120 == 1; }
+}
+
+scenario "丽金花云庆让敌方随从消失并把闪耀的金币加入手牌" {
+    seed 55032;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10524120; }
+        }
+        player oppo { field { follower enemy = 10001110; } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.zone == banished; own.hand count card 90021350 == 1; }
+}
+
+scenario "丽金花云庆超进化时获得纹章" {
+    seed 55033;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10524120; }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; own.crests count card 10524120 == 1; }
+}
+
+scenario "丽金花云庆的纹章在回合结束时加入闪耀的金币" {
+    seed 55034;
+    state { player own { crests { crest cloud = 10524120; } } }
+    action { end_turn; }
+    expect { legal; own.hand count card 90021350 == 1; }
+}

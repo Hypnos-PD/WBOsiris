@@ -444,6 +444,9 @@ remove all abilities from targets;
 `summon <绑定>;` 把已经存在于手牌中的对象直接放到战场：它不发动入场曲，随从获得入场等待，
 仍然发出 `summoned` 事件并消耗一个战场空位。典型写法是
 `choose target from own.hand.followers; summon target;`（"召唤手牌中的该随从"）。
+`add N card C to deck;` 把新卡以随机位置插入牌组（不视为抽牌，输出仍是 `added`）；
+`add copies of <集合> to deck` 同理。`transform <集合> other into card C;` 可以排除来源实例，
+用于"使战场上的其他所有随从变身"。
 `add copies of <集合> to hand;` 则按每个目标当前的卡牌定义复制一张同名卡加入手牌
 （手牌满时按过抽处理，不计入 `added`）；复制可以作用于已经消失的实例，
 因为只读取卡牌身份，所以"使其消失，将1张同名的卡牌加入自己的手牌"写作

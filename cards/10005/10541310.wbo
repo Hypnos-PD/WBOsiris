@@ -5,7 +5,9 @@ card 10541310 {
     cost 3;
 
     effect {
-        unplayable;
+        draw 1 from deck where type follower;
+        random victim from oppo.field.followers;
+        damage victim drawn.cost;
     }
 
     meta {
