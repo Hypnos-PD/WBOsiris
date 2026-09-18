@@ -492,6 +492,8 @@ type ModeEffect struct {
 	Kind    string       `json:"kind"`
 	// Count 是玩家要选择的选项数量，默认 1（【模式】选择 N 个能力发动）。
 	Count   int          `json:"count,omitempty"`
+	// Random 为真时由引擎随机选出 Count 个不同选项（"随机发动2个能力"），不向玩家提问。
+	Random  bool         `json:"random,omitempty"`
 	Options []ModeOption `json:"options"`
 }
 

@@ -521,6 +521,10 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 		}
 		s.pushFrame(execFrame{body: body, blockID: nestedBlockID(e.ID, branch), self: self, bindings: bindings})
 	case ir.ModeEffect:
+		if e.Random {
+			s.pushRandomMode(e, bindings, self)
+			return nil
+		}
 		return s.modeRequest(e, bindings, self)
 	case ir.PayResourceEffect:
 		paid := false
@@ -591,6 +595,39 @@ func (s *Session) targetRequest(e ir.SelectionEffect, candidates []ir.EventTarge
 	}
 	request := s.newRequest(e.ID, "target", count, count, items, s.g.sideOf(self))
 	return &pendingChoice{request: request, binding: e.Binding, bindings: bindings, self: self}
+}
+
+// pushRandomMode 随机选出 Count 个互不相同的选项（不向玩家提问），
+// 按选项编号顺序入栈结算——与玩家选择多条能力的结算顺序保持一致。
+func (s *Session) pushRandomMode(e ir.ModeEffect, bindings frame, self *instance) {
+	if !s.budget.chargeCandidates(uint64(len(e.Options))) {
+		return
+	}
+	candidates := append([]ir.ModeOption(nil), e.Options...)
+	count := max(e.Count, 1)
+	count = min(count, len(candidates))
+	chosen := make([]int, 0, count)
+	for len(chosen) < count && len(candidates) > 0 {
+		if !s.g.chargeQueryVisits(len(candidates)) {
+			return
+		}
+		index := 0
+		if len(candidates) > 1 {
+			index = s.g.rng.Index(len(candidates))
+		}
+		chosen = append(chosen, candidates[index].ID)
+		candidates = append(candidates[:index], candidates[index+1:]...)
+	}
+	sort.Ints(chosen)
+	for _, id := range chosen {
+		for _, option := range e.Options {
+			if option.ID != id {
+				continue
+			}
+			s.pushFrame(execFrame{body: option.Body, blockID: nestedBlockID(e.ID, fmt.Sprintf("option:%d", id)), self: self, bindings: bindings})
+			break
+		}
+	}
 }
 
 func (s *Session) modeRequest(e ir.ModeEffect, bindings frame, self *instance) *pendingChoice {

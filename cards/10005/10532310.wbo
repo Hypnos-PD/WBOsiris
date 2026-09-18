@@ -5,7 +5,34 @@ card 10532310 {
     cost 1;
 
     effect {
-        unplayable;
+        earthrite 2 {
+            mode random 2 {
+                option 1 {
+                    label chs "召唤1个『泥尘巨像』。";
+                    label eng "Summon a Clay Golem.";
+                    label jpn "『クレイゴーレム』1枚を自分の場に出す。";
+                    label kor "「진흙 골렘」 1장을 내 전장에 소환.";
+                    label cht "召喚1張『泥塵巨像』到自己的戰場上。";
+                    summon 1 card 90031110;
+                }
+                option 2 {
+                    label chs "回复自己的主战者2点生命值。";
+                    label eng "Restore 2 defense to your leader.";
+                    label jpn "自分のリーダーを2回復。";
+                    label kor "내 리더를 2 회복.";
+                    label cht "回復自己的主戰者2點生命值。";
+                    heal own.leader 2;
+                }
+                option 3 {
+                    label chs "使自己的战场上的土之印+3。";
+                    label eng "Gain 3 earth sigils.";
+                    label jpn "自分の場の土の印を+3する。";
+                    label kor "내 전장의 대지의 인장을 +3.";
+                    label cht "使自己戰場上的土之印+3。";
+                    add 3 earthsigil;
+                }
+            }
+        }
     }
 
     meta {

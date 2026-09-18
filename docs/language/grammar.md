@@ -297,7 +297,8 @@ fusion_scalar_field = "cost" | "distinct" ;
 resource_block    = resource_name , integer , effect_block ;
 resource_name     = "earthrite" | "necromancy" ;
 
-mode_block        = "mode" , [positive_integer] , "{" , option_decl , option_decl , {option_decl} , "}" ;
+mode_block        = "mode" , [positive_integer] , "{" , option_decl , option_decl , {option_decl} , "}"
+                  | "mode" , "random" , positive_integer , "{" , option_decl , option_decl , {option_decl} , "}" ;
 option_decl       = "option" , integer , "{" , {option_label} , {effect_statement} , "}" ;
 option_label      = "label" , locale_id , string , ";" ;
 ```

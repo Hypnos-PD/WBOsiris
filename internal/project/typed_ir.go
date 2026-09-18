@@ -308,7 +308,11 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		return ir.IfEffect{NodeBase: base, Kind: "if", Condition: conditionIR(t[1:]), Then: then, Else: els}, nil
 	case "mode":
 		count := 0
-		if len(t) > 1 {
+		random := false
+		if len(t) == 3 && t[1].Value == "random" {
+			random = true
+			count = intToken(t[2])
+		} else if len(t) > 1 {
 			count = intToken(t[1])
 		}
 		opts := []ir.ModeOption{}
@@ -323,7 +327,7 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			}
 			opts = append(opts, ir.ModeOption{ID: intAt(o, 1), Body: body, Origin: originIR(o.Span, sid), Labels: labels})
 		}
-		return ir.ModeEffect{NodeBase: base, Kind: "mode", Count: count, Options: opts}, nil
+		return ir.ModeEffect{NodeBase: base, Kind: "mode", Count: count, Random: random, Options: opts}, nil
 	case "earthrite", "necromancy":
 		resource := "shadows"
 		if h == "earthrite" {

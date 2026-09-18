@@ -179,8 +179,9 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 			}
 			continue
 		case "mode":
-			if len(t) < 1 || len(t) > 2 || len(b) != 1 || len(b[0]) < 2 || s.Terminated {
-				shapeError(ds, s, "mode [数量] { 至少两个合法 option }")
+			randomMode := len(t) == 3 && t[1].Value == "random" && isUnsigned(t[2])
+			if (!randomMode && (len(t) < 1 || len(t) > 2)) || len(b) != 1 || len(b[0]) < 2 || s.Terminated {
+				shapeError(ds, s, "mode [random 数量] { 至少两个合法 option }")
 				continue
 			}
 			want := 0

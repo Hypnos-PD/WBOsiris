@@ -1,0 +1,36 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "魔猫戏法消耗两层土之秘术并随机发动两个能力" {
+    seed 61001;
+    state {
+        player own {
+            leader 10/20;
+            pp 1/1;
+            field { amulet sigil = 90031210 { earthsigil 5; } }
+            hand { spell source = 10532310; }
+        }
+    }
+    action { play source; }
+    // 三个候选中随机两个：本 seed 抽到（1）召唤泥尘巨像与（2）回复主战者。
+    expect {
+        legal;
+        sigil.earthsigil == 3;
+        own.field count card 90031110 == 1;
+        own.leader.life == 12;
+    }
+}
+
+scenario "土之秘术不足时魔猫戏法整段不发动" {
+    seed 61002;
+    state {
+        player own {
+            leader 10/20;
+            pp 1/1;
+            field { amulet sigil = 90031210 { earthsigil 1; } }
+            hand { spell source = 10532310; }
+        }
+    }
+    action { play source; }
+    expect { legal; sigil.earthsigil == 1; own.field count card 90031110 == 0; own.leader.life == 10; }
+}
