@@ -1383,6 +1383,9 @@ when own turn ends {
 事件头部可以加 `during own turn` / `during oppo turn` 把监听限制在特定玩家的回合
 （`self survives damage during own turn`、`when own leader healed during own turn`），
 用于"若为自己的回合"这类条件。
+入场监听也能带回合限制：`when own follower summoned during own turn where trait departed { … }`
+对应"自己的亡者·随从进入战场时，若为自己的回合…"；`during own turn` 只在自己的回合触发，
+`during oppo turn` 只在对方回合触发。
 
 抽牌事件写作 `when own card drawn [during own turn] { … }`，绑定名 `drawn` 指向被抽到的实例
 （可以当数值用，例如 `damage oppo.field.followers drawn.cost;`）。

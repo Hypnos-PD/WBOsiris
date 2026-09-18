@@ -20,7 +20,7 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 700 · 未实现(骨架) 50 · 未导入 154
+总计 904 · 已完成 711 · 未实现(骨架) 39 · 未导入 154
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
@@ -29,7 +29,7 @@
 10004        76      73       3       0
 10005        76      66      10       0
 10006        76      74       2       0
-10007        77      44      33       0
+10007        77      55      22       0
 10008        78       0       0      78
 10009        76       0       0      76
 90000        93      93       0       0
@@ -112,6 +112,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-80 | 非法术卡的选择不该阻塞打出／进化：`require` → `choose` | 29 张随从/护符卡的 34 处 `require`（入场曲、爆能强化、进化时、超进化时）改写为 `choose`；`engage`（启动能力）与法术顶层的 `require` 保留；文档 `cards.md` 写明适用边界 | 官方 QA：[随从/护符没有可选择的手牌也能使用、能力也发动，法术不能](https://shadowverse-wb.com/chs/usersupport/?tab=2#q2lo-vv80cvw)、[卡西乌斯没有创造物随从时照样打出并造成 0 点伤害](https://shadowverse-wb.com/chs/usersupport/?tab=2#49odoxq3_z)。新增 `tests/10004/batch-73-target-availability.wbotest` 7 个场景（打出、进化、抽牌、破坏、启动能力仍不可用） |
 | S-63 | `draw N from deck where … distinct names`（抽取 N 种） | `internal/ir/model.go`（`DrawEffect.DistinctNames`）、`internal/ir/encode.go`/`decode.go`（编解码与形状校验）、`internal/project/typed_ir.go`/`validate.go`（解析与形状）、`internal/runner/execute.go`（每抽一张排除同名候选，张数上限取不同卡名数）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/draw_owner_test.go`（编译保留标记、编码解码后仍在、拒绝无筛选/`all`/缺 `names`）；卡片 10574120 + 4 个场景 |
 | S-67 | `raise maxlife` / `reduce maxlife`（主战者生命上限增减） | `internal/ir/deck_replace.go`（`Delta`）、`internal/ir/decode.go`（新 kind 与增量范围校验）、`internal/project/deck_replace.go`（`raise|reduce maxlife` 解析）、`typed_ir.go`/`validate.go`（语句分发）、`internal/runner/deck_replace.go`（夹在 1..65535 并把当前生命降到上限）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/deck_replace_test.go`（增量编译、编解码保留、拒绝负数/越界/绑定量）；卡片 10534110 + 4 个场景 |
+| S-84 | 入场监听加回合窗口：`when own follower summoned during own turn` | `internal/ir/decode.go`（`duringTurn` 允许 `follower_summoned`；运行时的 `triggerTurnMatches` 本来就通用，项目校验也早已接受这种写法，只有解码白名单没跟上）；文档 `cards.md` | 卡片 10754120 + 2 个场景（三个僵尸各触发一次"入场时打击对手主战者1点"，以及 10724110 后续直接可用） |
 | S-57 | 归属判断（`count(own.<区域> where card <绑定>)`） | 无需新节点：`same_card` 谓词 + 区域计数；但修好了 `conditionIn` 里 `CountCondition` 丢帧的问题（`internal/runner/execute.go`） | 卡片 90064320 + 2 个场景（敌方随从时不加牌、自己的护符时追加 2 点伤害并加牌） |
 | S-66 | `banish` 输出 `banished` | `internal/project/typed_ir.go`（写入输出）、`validate.go`（登记绑定）、`internal/ir/encode.go`/`decode.go`（形状白名单）、`internal/runner/execute.go`（记录实际消失的实例）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/banish_output_test.go`（输出保留、`count(banished)` 作为分配伤害量）；卡片 10543110 + 2 个场景 |
 | S-61 | `summoned_all`（一次结算的全部召唤） | `internal/runner/bindings.go`（`bindSummoned`）、`internal/runner/execute.go`/`session.go`（所有召唤类效果改为写入累计绑定）、`internal/project/validate.go`（登记 `summoned_all`）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/same_cost_and_summoned_all_test.go`；卡片 10571110 + 3 个场景 |
@@ -191,6 +192,25 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 79（卡包 10007 第五批 11 张）
+
+- 完成 11 张：10762110 新约白之章、10762120 新约黑之章、10763110 审理的守卫、
+  10764120 安息的白翼、10723110 三连骑士、10723310 决死的猛击、10742120 成熟的佣兵、
+  10743110 贪食的魔龙、10753110 骸骨驯兽师、10754120 死亡主持人·马克米朗、
+  10773110 创造物长枪兵。
+- **S-84**：`during own turn` 现在也能修饰入场监听（`when own follower summoned during
+  own turn where trait departed`）。运行时的回合匹配本来就是通用的，项目校验也早已接受，
+  只有 IR 解码白名单没跟上——这属于"编码器/解码器/校验器三处必须同时改"的又一个实例。
+- **条件范围专项核查落地**：10763110 审理的守卫按批次 67 记下的口径实现（英文把
+  "获得【屏障】"并进"护符≥3"条件句，所以屏障也在条件内）。
+- **10754120 死亡主持人**：把"对对手的主战者造成1点伤害"放进入场监听里——
+  官方英文与 SWB-RL 都把这一句并进"自己的亡者·随从在自己回合进入战场时"，
+  因此三只僵尸各触发一次，共 3 点伤害（场景测试固定了这一点）。
+- 写卡时又踩到一次顺序问题：`【入场曲】【模式】`必须把 `mode` **嵌在 `fanfare` 里**
+  （10351110 等既有卡就是这么写的）；平铺写会让模式先结算，晚召唤的随从吃不到增益。
+- 新增 19 个场景（`tests/10007/batch-79-basics.wbotest`）。
+- 全量回归：`check` 0 错 0 警；`test` 1086 全绿；`go test ./...` 全绿；语料快照更新为 1086 个场景。
 
 ### 批次 78（卡包 10007 第四批 10 张）
 

@@ -6,7 +6,18 @@ card 10742120 {
     stats 1/3;
 
     effect {
-        unplayable;
+        fanfare {
+            if own.maxpp == 10 {
+                evolve self silent;
+            }
+        }
+        when own turn ends {
+            if self form evolved {
+                heal own.leader 2;
+            } else {
+                heal own.leader 1;
+            }
+        }
     }
 
     meta {

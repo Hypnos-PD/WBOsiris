@@ -6,7 +6,18 @@ card 10743110 {
     stats 2/3;
 
     effect {
-        unplayable;
+        fanfare {
+            random victim from oppo.field.followers highest attack;
+            destroy victim;
+            mode {
+                option 1 {
+                    evolve self silent;
+                }
+                option 2 {
+                    add stealth to self;
+                }
+            }
+        }
     }
 
     meta {

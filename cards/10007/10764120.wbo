@@ -6,7 +6,22 @@ card 10764120 {
     stats 4/7;
 
     effect {
-        unplayable;
+        ward;
+        aura;
+        fanfare {
+            choose target from oppo.field.followers;
+            banish target;
+            if count(own.field.amulets) >= 3 {
+                heal own.leader 3;
+            }
+        }
+        superevolve {
+            choose target from oppo.field.followers;
+            banish target;
+            if count(own.field.amulets) >= 3 {
+                heal own.leader 3;
+            }
+        }
     }
 
     meta {

@@ -6,7 +6,19 @@ card 10754120 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fanfare {
+            necromancy 10 {
+                summon 3 card 90051140;
+            }
+        }
+        // 英文与 SWB-RL 都把"对对手主战者造成1点伤害"放进入场监听里：
+        // 每有一张自己的亡者·随从在自己回合进入战场就追加 1 点伤害。
+        when own follower summoned during own turn where trait departed {
+            buff summoned +1/+0;
+            add rush to summoned;
+            add ward to summoned;
+            damage oppo.leader 1;
+        }
     }
 
     meta {

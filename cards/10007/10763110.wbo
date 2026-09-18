@@ -6,7 +6,17 @@ card 10763110 {
     stats 4/6;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            // 条件范围专项核查：英文把「获得【屏障】」并进条件句，按同一口径处理。
+            if count(own.field.amulets) >= 3 {
+                evolve self silent;
+                add barrier to self;
+            }
+        }
+        lastwords {
+            heal own.leader 3;
+        }
     }
 
     meta {

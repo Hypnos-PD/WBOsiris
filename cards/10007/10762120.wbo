@@ -6,7 +6,14 @@ card 10762120 {
     stats 4/3;
 
     effect {
-        unplayable;
+        storm;
+        fanfare {
+            choose target from oppo.field.followers;
+            banish target;
+            if count(own.field.amulets) >= 3 {
+                heal own.leader 3;
+            }
+        }
     }
 
     meta {

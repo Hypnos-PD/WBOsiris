@@ -6,7 +6,19 @@ card 10753110 {
     stats 3/4;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90051140;
+            summon 1 card 90051110;
+        }
+        when own follower summoned where trait departed {
+            add storm to summoned;
+        }
+        superevolve {
+            choose target from own.field.followers other;
+            destroy target;
+            random victim from oppo.field.followers;
+            destroy victim;
+        }
     }
 
     meta {

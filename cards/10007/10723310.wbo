@@ -6,7 +6,11 @@ card 10723310 {
     trait anathema;
 
     effect {
-        unplayable;
+        choose target from oppo.field.followers;
+        damage target 6;
+        if rally >= 10 {
+            damage oppo.field.followers count(own.field.followers);
+        }
     }
 
     meta {

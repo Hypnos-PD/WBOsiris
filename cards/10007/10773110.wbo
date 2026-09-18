@@ -6,7 +6,15 @@ card 10773110 {
     stats 1/1;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90071110;
+        }
+        enhance 5 {
+            summon 1 card 90071150;
+        }
+        when own follower summoned where trait artifact {
+            add rush to summoned;
+        }
     }
 
     meta {

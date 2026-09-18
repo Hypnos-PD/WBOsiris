@@ -6,7 +6,20 @@ card 10723110 {
     stats 3/2;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 3 card 90021110;
+            // 【模式】是入场曲的一部分：必须嵌在 fanfare 里，先召唤再选模式。
+            mode {
+                option 1 {
+                    buff own.field.followers other +1/+0;
+                    add rush to own.field.followers other;
+                }
+                option 2 {
+                    buff own.field.followers other +0/+1;
+                    add ward to own.field.followers other;
+                }
+            }
+        }
     }
 
     meta {

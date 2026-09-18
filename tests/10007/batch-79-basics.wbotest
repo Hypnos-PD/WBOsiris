@@ -1,0 +1,329 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "三张护符时新约白之章打击五点的随从" {
+    seed 79001;
+    state {
+        player own {
+            pp 2/2;
+            field {
+                amulet one = 10001210;
+                amulet two = 10061210;
+                amulet three = 90021210;
+            }
+            hand { follower source = 10762110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 0/4; }
+}
+
+scenario "护符不足三张时新约白之章没有入场曲效果" {
+    seed 79002;
+    state {
+        player own {
+            pp 2/2;
+            field {
+                amulet one = 10001210;
+                amulet two = 10061210;
+            }
+            hand { follower source = 10762110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; victim.stats == 0/9; }
+}
+
+scenario "三张护符时新约黑之章让随从消失并回复主战者" {
+    seed 79003;
+    state {
+        player own {
+            leader 10/20;
+            pp 8/8;
+            field {
+                amulet one = 10001210;
+                amulet two = 10061210;
+                amulet three = 90021210;
+            }
+            hand { follower source = 10762120; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.zone == banished; own.leader.life == 13; source has storm; }
+}
+
+scenario "审理的守卫在三张护符时进化并获得屏障" {
+    seed 79004;
+    state {
+        player own {
+            pp 6/6;
+            field {
+                amulet one = 10001210;
+                amulet two = 10061210;
+                amulet three = 90021210;
+            }
+            hand { follower source = 10763110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == true; source has barrier; source has ward; }
+}
+
+scenario "审理的守卫在护符不足时不进化也没有屏障" {
+    seed 79005;
+    state {
+        player own {
+            pp 6/6;
+            field {
+                amulet one = 10001210;
+                amulet two = 10061210;
+            }
+            hand { follower source = 10763110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == false; source lacks barrier; source has ward; }
+}
+
+scenario "审理的守卫的谢幕曲回复主战者三点" {
+    seed 79006;
+    state {
+        player own {
+            leader 10/20;
+            pp 1/1;
+            field { follower source = 10763110; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.leader.life == 13; }
+}
+
+scenario "安息的白翼超进化时让敌方随从消失并回复" {
+    seed 79007;
+    state {
+        turn own 7;
+        player own {
+            leader 10/20;
+            sep 1;
+            field {
+                follower source = 10764120;
+                amulet one = 10001210;
+                amulet two = 10061210;
+                amulet three = 90021210;
+            }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { superevolve source; select victim; }
+    expect { legal; victim.zone == banished; own.leader.life == 13; source has aura; }
+}
+
+scenario "三连骑士的模式一让其他随从加攻并获得突进" {
+    seed 79008;
+    state {
+        player own {
+            pp 5/5;
+            field { follower ally = 10001110; }
+            hand { follower source = 10723110; }
+        }
+    }
+    action { play source; mode 1; }
+    expect {
+        legal;
+        own.field count card 90021110 == 3;
+        ally.stats == 3/2;
+        ally has rush;
+        all own.field where card 90021110 have rush;
+    }
+}
+
+scenario "三连骑士的模式二让其他随从加生命并获得守护" {
+    seed 79009;
+    state {
+        player own {
+            pp 5/5;
+            field { follower ally = 10001110; }
+            hand { follower source = 10723110; }
+        }
+    }
+    action { play source; mode 2; }
+    expect {
+        legal;
+        ally.stats == 2/3;
+        ally has ward;
+        all own.field where card 90021110 have ward;
+    }
+}
+
+scenario "决死的猛击只打击选定随从六点" {
+    seed 79010;
+    state {
+        player own {
+            pp 3/3;
+            rally 9;
+            hand { spell source = 10723310; }
+        }
+        player oppo {
+            field {
+                follower other = 10001120 { stats 0/9; }
+                follower victim = 10001120 { stats 0/9; }
+            }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 0/3; other.stats == 0/9; }
+}
+
+scenario "决死的猛击在协作达标时按己方随从数打击敌方全体" {
+    seed 79011;
+    state {
+        player own {
+            pp 3/3;
+            rally 10;
+            field { follower one = 10001110; follower two = 10001120; }
+            hand { spell source = 10723310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 0/1; }
+}
+
+scenario "能量点上限十点时成熟的佣兵自己进化并在回合结束回复两点" {
+    seed 79012;
+    state {
+        player own {
+            leader 10/20;
+            pp 10/10;
+            hand { follower source = 10742120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == true; }
+}
+
+scenario "未到十点上限时不进化且回合结束只回复一点" {
+    seed 79013;
+    state {
+        player own {
+            leader 10/20;
+            field { follower source = 10742120; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; own.leader.life == 11; }
+}
+
+scenario "贪食的魔龙破坏攻击力最高的敌方随从并选择模式" {
+    seed 79014;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10743110; }
+        }
+        player oppo {
+            field {
+                follower strong = 10001120 { stats 7/7; }
+                follower weak = 10001110;
+            }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; strong.zone == graveyard; weak.zone == field; source.evolved == true; }
+}
+
+scenario "贪食的魔龙可以选择获得潜行" {
+    seed 79015;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10743110; }
+        }
+        player oppo {
+            field { follower strong = 10001120 { stats 7/7; } }
+        }
+    }
+    action { play source; mode 2; }
+    expect { legal; strong.zone == graveyard; source has stealth; source.evolved == false; }
+}
+
+scenario "骸骨驯兽师让自己召唤的亡者随从获得疾驰" {
+    seed 79016;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10753110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90051140 == 1;
+        own.field count card 90051110 == 1;
+        all own.field where card 90051140 have storm;
+        all own.field where card 90051110 have storm;
+    }
+}
+
+scenario "死亡主持人召唤三个僵尸并各自打击对手主战者一点" {
+    seed 79017;
+    state {
+        player own {
+            pp 9/9;
+            shadows 10;
+            hand { follower source = 10754120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90051140 == 3;
+        own.shadows == 0;
+        oppo.leader.life == 17;
+        all own.field where card 90051140 have rush;
+        all own.field where card 90051140 have ward;
+    }
+}
+
+scenario "创造物长枪兵让自己召唤的创造物获得突进" {
+    seed 79018;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10773110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90071110 == 1; own.field count card 90071150 == 0; all own.field where card 90071110 have rush; }
+}
+
+scenario "创造物长枪兵爆能强化时再召唤神秘的创造物" {
+    seed 79019;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10773110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90071110 == 1;
+        own.field count card 90071150 == 1;
+        all own.field where card 90071150 have rush;
+    }
+}

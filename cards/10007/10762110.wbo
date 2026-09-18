@@ -6,7 +6,12 @@ card 10762110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        fanfare {
+            if count(own.field.amulets) >= 3 {
+                choose target from oppo.field.followers;
+                damage target 5;
+            }
+        }
     }
 
     meta {
