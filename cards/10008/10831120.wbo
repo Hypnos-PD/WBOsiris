@@ -7,7 +7,9 @@ card 10831120 {
     trait mysteria;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 90031310 to hand;
+        }
     }
 
     meta {

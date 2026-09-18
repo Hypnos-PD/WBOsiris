@@ -6,7 +6,10 @@ card 10841120 {
     stats 7/11;
 
     effect {
-        unplayable;
+        ward;
+        lastwords {
+            draw 3;
+        }
     }
 
     meta {

@@ -6,7 +6,9 @@ card 10801110 {
     stats 1/1;
 
     effect {
-        unplayable;
+        evolve {
+            buff self +5/+5;
+        }
     }
 
     meta {

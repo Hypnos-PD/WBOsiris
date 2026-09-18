@@ -6,7 +6,9 @@ card 10872120 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 90071160 to hand;
+        }
     }
 
     meta {

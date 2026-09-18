@@ -6,7 +6,10 @@ card 10872110 {
     stats 6/4;
 
     effect {
-        unplayable;
+        rush;
+        lastwords {
+            add 1 card 90071140 to hand;
+        }
     }
 
     meta {

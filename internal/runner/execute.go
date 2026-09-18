@@ -929,9 +929,10 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 				own.maxpp = 10
 			}
 		} else if e.Resource == "ep" {
-			own.ep = max(0, own.ep+e.Delta)
+			// 官方 QA：回复进化点/超进化点不会超过上限（都是 2 点）。
+			own.ep = min(2, max(0, own.ep+e.Delta))
 		} else if e.Resource == "sep" {
-			own.sep = max(0, own.sep+e.Delta)
+			own.sep = min(2, max(0, own.sep+e.Delta))
 		} else if e.Resource == "rally" {
 			own.rally = max(0, own.rally+e.Delta)
 		}

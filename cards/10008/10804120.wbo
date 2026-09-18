@@ -6,7 +6,10 @@ card 10804120 {
     stats 7/7;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            gain own.sep 2;
+        }
     }
 
     meta {

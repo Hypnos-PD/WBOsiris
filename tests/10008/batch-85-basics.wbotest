@@ -1,0 +1,208 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "自律的圣鸟进化时获得五点强化" {
+    seed 85001;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10801110; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; source.stats == 8/8; }
+}
+
+scenario "无尽旅途的入场曲回复一点进化点且不溢出上限" {
+    seed 85002;
+    state {
+        player own {
+            pp 5/5;
+            ep 1;
+            hand { follower source = 10801120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.ep == 2; }
+}
+
+scenario "高洁的黑翼回复超进化点且上限为二" {
+    seed 85003;
+    state {
+        player own {
+            pp 9/9;
+            sep 1;
+            hand { follower source = 10804120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.sep == 2; source has ward; }
+}
+
+scenario "沙尘守宝龙的谢幕曲抽三张牌" {
+    seed 85004;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10841120; }
+            hand { spell remover = 90074310; }
+            deck top {
+                follower a = 10011110;
+                follower b = 10011120;
+                follower c = 10011130;
+            }
+        }
+    }
+    action { play remover; select source; }
+    expect {
+        legal;
+        own.hand count card 10011110 == 1;
+        own.hand count card 10011120 == 1;
+        own.hand count card 10011130 == 1;
+    }
+}
+
+scenario "玛纳利亚书记官把魔弹加入手牌" {
+    seed 85005;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10831120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90031310 == 1; }
+}
+
+scenario "门扉接续者把绚烂的创造物加入手牌" {
+    seed 85006;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10872120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90071160 == 1; }
+}
+
+scenario "人造的馈赠的谢幕曲把古老的创造物加入手牌" {
+    seed 85007;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10872110; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.hand count card 90071140 == 1; }
+}
+
+scenario "织田信长的入场曲打击敌方全体并自带威慑" {
+    seed 85008;
+    state {
+        player own {
+            pp 10/10;
+            hand { follower source = 10822120; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; victim.stats == 0/3; source has intimidate; }
+}
+
+scenario "情念的毒荆召唤读心者并自带突进毁灭" {
+    seed 85009;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10812120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 10813110 == 1;
+        source has rush;
+        source has bane;
+    }
+}
+
+scenario "勤劳的女祭司召唤修女并强化" {
+    seed 85010;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10861120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 10061110 == 1;
+        all own.field where card 10061110 have storm;
+    }
+}
+
+scenario "异端隐士的入场曲召唤两个妖精" {
+    seed 85011;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10811120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90011110 == 2; }
+}
+
+scenario "异端隐士的进化时重复入场曲" {
+    seed 85012;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10811120; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.field count card 90011110 == 2; }
+}
+
+scenario "忧郁少女的入场曲把手牌放回牌组再抽一张" {
+    seed 85013;
+    state {
+        player own {
+            pp 1/1;
+            hand {
+                follower source = 10811130;
+                follower fodder = 10001110;
+            }
+        }
+    }
+    action { play source; select fodder; }
+    // 牌组原本是空的：必须先放回牌组才可能再被抽回手牌。
+    expect { legal; source has ward; own.hand count card 10001110 == 1; own.deck count card 10001110 == 0; }
+}
+
+scenario "其乐融融的团聚回复主战者并给手牌一次魔力增幅" {
+    seed 85014;
+    state {
+        player own {
+            leader 10/20;
+            pp 2/2;
+            hand {
+                spell source = 10832310;
+                // 10133310 声明了计数器 x，用来观测这次魔力增幅。
+                spell boostable = 10133310;
+            }
+        }
+    }
+    action { play source; }
+    // 打出这张法术本身会让手牌增幅 1 次，再加上卡面效果里的 1 次，共 2 次。
+    expect { legal; own.leader.life == 12; boostable.counter.x == 2; }
+}

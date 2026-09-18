@@ -5,7 +5,8 @@ card 10832310 {
     cost 2;
 
     effect {
-        unplayable;
+        heal own.leader 2;
+        spellboost own.hand 1;
     }
 
     meta {

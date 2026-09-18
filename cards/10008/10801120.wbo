@@ -6,7 +6,9 @@ card 10801120 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fanfare {
+            gain own.ep 1;
+        }
     }
 
     meta {
