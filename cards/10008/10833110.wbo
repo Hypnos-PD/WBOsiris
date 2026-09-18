@@ -7,7 +7,56 @@ card 10833110 {
     trait mysteria;
 
     effect {
-        unplayable;
+        fanfare {
+            add 2 card 90031310 to hand;
+        }
+        evolve {
+            reduce cost own.hand.spells where trait mysteria 1 minimum 0;
+        }
+        superevolve {
+            gain own crest 10833110;
+        }
+    }
+
+    crest {
+        when own card played where type spell and trait mysteria {
+            damage oppo.leader 1;
+        }
+
+        locale chs {
+            name "纹章：玛纳利亚文书官·琪可";
+            text """
+自己使用玛纳利亚·法术时，对对手的主战者造成1点伤害。
+""";
+        }
+
+        locale eng {
+            name "Crest: Cico, Mysterian Archivist";
+            text """
+Whenever you play a Mysteria spell, deal 1 damage to the enemy leader.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：マナリアの<rub=\"ぶんしょ\">文書</rub><rub=\"かん\">官</rub>・チコ";
+            text """
+自分がマナリア・スペルをプレイしたとき、相手のリーダーに1ダメージ。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 마나리아의 문서관 치코";
+            text """
+내가 마나리아 주문을 사용했을 때, 상대방 리더에게 1 피해.
+""";
+        }
+
+        locale cht {
+            name "紋章：瑪納利亞文書官‧琪可";
+            text """
+自己使用瑪納利亞‧法術卡時，給予敵方的主戰者1點傷害。
+""";
+        }
     }
 
     meta {

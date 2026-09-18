@@ -1,0 +1,292 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "冰晶剑士的爆能强化强化全体并自带突进" {
+    seed 90001;
+    state {
+        player own {
+            pp 4/4;
+            field { follower ally = 10001110; }
+            hand { follower source = 10814120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has rush; ally.stats == 3/3; }
+}
+
+scenario "本随从身材增加时加入冰晶剑士伊芙" {
+    seed 90002;
+    state {
+        turn own 3;
+        player own {
+            pp 2/2;
+            field { follower source = 10814120; }
+            hand { spell buffall = 10772310; }
+        }
+    }
+    action { play buffall; }
+    expect { legal; own.hand count card 90014110 == 1; }
+}
+
+scenario "冲田总司在解禁回合入场即进化" {
+    seed 90003;
+    state {
+        turn own 7;
+        player own {
+            pp 3/3;
+            hand { follower source = 10823110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == true; }
+}
+
+scenario "进化后的冲田总司攻击随从连打三次" {
+    seed 90004;
+    state {
+        player own {
+            field { follower source = 10823110 { evolved; } }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/12; } }
+        }
+    }
+    action { attack source into victim; }
+    // 交战 2 点 + 能力 3 次 ×3。
+    expect { legal; victim.stats == 0/1; }
+}
+
+scenario "未进化的冲田总司攻击随从只打一次" {
+    seed 90019;
+    state {
+        player own {
+            field { follower source = 10823110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/12; } }
+        }
+    }
+    action { attack source into victim; }
+    // 交战 2 点 + 能力 1 次 ×3。
+    expect { legal; victim.stats == 0/7; }
+}
+
+scenario "盛大演出在战场有两张牌时发动所有模式" {
+    seed 90005;
+    state {
+        player own {
+            leader 10/20;
+            pp 2/2;
+            field {
+                follower ally = 10001110;
+                follower second = 10001120;
+            }
+            hand { spell source = 10823310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; victim.stats == 0/5; own.leader.life == 12; }
+}
+
+scenario "盛大演出在战场只有一张牌时只发动选中的模式" {
+    seed 90006;
+    state {
+        player own {
+            leader 10/20;
+            pp 2/2;
+            hand { spell source = 10823310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; victim.stats == 0/5; own.leader.life == 10; }
+}
+
+scenario "荣光的继承者召唤三个骑士并强化后续士兵" {
+    seed 90007;
+    state {
+        player own {
+            pp 8/8;
+            hand {
+                follower source = 10824120;
+                follower soldier = 10121130;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90021110 == 3;
+        source has storm;
+        source has bane;
+        // 三张骑士各触发一次监听：本体+3/+0。
+        source.stats == 4/5;
+    }
+}
+
+scenario "玛纳利亚文书官入场加入两张魔弹" {
+    seed 90008;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10833110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90031310 == 2; }
+}
+
+scenario "玛纳利亚文书官进化时给手牌玛纳利亚法术减费" {
+    seed 90009;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10833110; }
+            hand { spell bomb = 90031310; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; bomb.cost == 0; }
+}
+
+scenario "玛纳利亚文书官的纹章在使用玛纳利亚法术时打击主战者" {
+    seed 90010;
+    state {
+        player own {
+            pp 1/1;
+            hand { spell bomb = 90031310; }
+            crests { crest emblem = 10833110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play bomb; }
+    expect { legal; oppo.leader.life == 19; }
+}
+
+scenario "苍奏的继承者在增幅不足时不加入法术" {
+    seed 90011;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10834110 { counter x 9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; source has storm; own.hand count card 90034340 == 0; own.hand count card 90034350 == 0; }
+}
+
+scenario "苍奏的继承者在增幅达标时加入苍奏之四与宏大的回归" {
+    seed 90012;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10834110 { counter x 20; } }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90034340 == 1; own.hand count card 90034350 == 1; }
+}
+
+scenario "四重惊喜可以让玩家一次选择两个模式" {
+    seed 90013;
+    state {
+        player own {
+            leader 10/20;
+            pp 3/3;
+            hand { spell source = 10852310; }
+        }
+    }
+    action { play source; mode 2, 4; }
+    // 法术自身进入墓场并增加 1 点墓场资源。
+    expect { legal; own.leader.life == 12; own.shadows == 5; oppo.leader.life == 20; }
+}
+
+scenario "欢乐的炼金术士模式二打击敌方全体并回复进化点" {
+    seed 90014;
+    state {
+        player own {
+            pp 8/8;
+            ep 1;
+            hand { follower source = 10854110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; mode 2; }
+    expect { legal; victim.stats == 0/4; own.ep == 2; }
+}
+
+scenario "祥和的教会回合结束抽牌并按进化状态回复" {
+    seed 90015;
+    state {
+        player own {
+            leader 10/20;
+            field {
+                amulet source = 10863210;
+                follower evolved = 10001110 { evolved; }
+            }
+            deck top { follower next = 10011110; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; own.hand count card 10011110 == 1; own.leader.life == 11; }
+}
+
+scenario "希望的光彩入场自伤并选择模式" {
+    seed 90016;
+    state {
+        player own {
+            leader 10/20;
+            pp 5/5;
+            hand { follower source = 10864120; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; mode 3; }
+    expect { legal; source.stats == 2/1; own.leader.life == 13; }
+}
+
+scenario "希望的光彩的纹章谢幕曲召唤并进化自己" {
+    seed 90017;
+    state {
+        // 纹章在控制者回合开始时减吟唱；让对手持有它，`end_turn` 就能触发到期。
+        player oppo { crests { crest emblem = 10864120 { countdown 1; } } }
+    }
+    action { end_turn; }
+    expect { legal; oppo.crests count card 10864120 == 0; oppo.field count card 10864120 == 1; }
+}
+
+scenario "决断的交错入场给敌方随从守护并在爆能强化时进化" {
+    seed 90018;
+    state {
+        player own {
+            pp 9/9;
+            hand { follower source = 10874110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001120 { stats 0/9; }
+                follower second = 10001110;
+            }
+        }
+    }
+    action { play source; select first; }
+    expect {
+        legal;
+        first has ward;
+        source.evolved == true;
+        source has storm;
+        first.zone == graveyard;
+    }
+}

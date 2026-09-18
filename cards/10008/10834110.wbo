@@ -6,7 +6,19 @@ card 10834110 {
     stats 5/5;
 
     effect {
-        unplayable;
+        counter x 0;
+        spellboost {
+            add 1 counter x;
+        }
+        storm;
+        fanfare {
+            if self.counter.x >= 10 {
+                add 1 card 90034340 to hand;
+            }
+            if self.counter.x >= 20 {
+                add 1 card 90034350 to hand;
+            }
+        }
     }
 
     meta {

@@ -6,7 +6,18 @@ card 10874110 {
     stats 5/5;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from oppo.field.followers;
+            add ward to target;
+        }
+        enhance 9 {
+            evolve self silent;
+            add storm to self;
+        }
+        when self evolved {
+            random victims from oppo.field.followers where keyword ward count 2;
+            destroy victims;
+        }
     }
 
     meta {

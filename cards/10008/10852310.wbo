@@ -5,7 +5,21 @@ card 10852310 {
     cost 3;
 
     effect {
-        unplayable;
+        mode 2 {
+            option 1 {
+                damage oppo.leader 1;
+            }
+            option 2 {
+                heal own.leader 2;
+            }
+            option 3 {
+                random victim from oppo.field.followers;
+                damage victim 3;
+            }
+            option 4 {
+                gain own.shadows 4;
+            }
+        }
     }
 
     meta {

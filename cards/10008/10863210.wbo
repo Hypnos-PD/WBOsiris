@@ -5,7 +5,17 @@ card 10863210 {
     cost 2;
 
     effect {
-        unplayable;
+        countdown 2;
+        when own turn ends {
+            draw 1;
+            if count(own.field.followers where form super_evolved) >= 1 {
+                heal own.leader 2;
+            } else {
+                if count(own.field.followers where form evolved) >= 1 {
+                    heal own.leader 1;
+                }
+            }
+        }
     }
 
     meta {

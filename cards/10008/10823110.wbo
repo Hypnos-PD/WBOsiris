@@ -6,7 +6,24 @@ card 10823110 {
     stats 2/1;
 
     effect {
-        unplayable;
+        rush;
+        fanfare {
+            if own.superevolve_unlocked {
+                evolve self silent;
+            }
+        }
+        attack {
+            // "攻击随从时"：`opponent` 只在交战对象是随从时有值。
+            if count(opponent) >= 1 {
+                if self form evolved {
+                    repeat 3 {
+                        damage opponent 3;
+                    }
+                } else {
+                    damage opponent 3;
+                }
+            }
+        }
     }
 
     meta {

@@ -6,7 +6,13 @@ card 10814120 {
     stats 2/2;
 
     effect {
-        unplayable;
+        rush;
+        enhance 4 {
+            buff own.field.followers +1/+1;
+        }
+        when self stats increased once per own turn {
+            add 1 card 90014110 to hand;
+        }
     }
 
     meta {

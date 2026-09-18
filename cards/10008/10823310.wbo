@@ -5,7 +5,22 @@ card 10823310 {
     cost 2;
 
     effect {
-        unplayable;
+        // 若自己战场上的卡牌张数为 2 或以上，改为发动所有模式。
+        if count(own.field) >= 2 {
+            random victim from oppo.field.followers;
+            damage victim 4;
+            heal own.leader 2;
+        } else {
+            mode {
+                option 1 {
+                    random victim from oppo.field.followers;
+                    damage victim 4;
+                }
+                option 2 {
+                    heal own.leader 2;
+                }
+            }
+        }
     }
 
     meta {

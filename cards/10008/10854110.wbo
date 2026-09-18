@@ -6,7 +6,28 @@ card 10854110 {
     stats 6/5;
 
     effect {
-        unplayable;
+        fanfare {
+            mode {
+                option 1 {
+                    damage oppo.leader 4;
+                    heal own.leader 4;
+                }
+                option 2 {
+                    damage oppo.field.followers 5;
+                    gain own.ep 1;
+                }
+            }
+        }
+        evolve {
+            mode {
+                option 1 {
+                    draw 2;
+                }
+                option 2 {
+                    gain own.pp 2;
+                }
+            }
+        }
     }
 
     meta {

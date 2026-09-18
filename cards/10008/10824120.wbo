@@ -6,7 +6,19 @@ card 10824120 {
     stats 1/5;
 
     effect {
-        unplayable;
+        storm;
+        bane;
+        fanfare {
+            summon 3 card 90021110;
+        }
+        when own follower summoned where trait officer {
+            buff summoned +2/+0;
+            add rush to summoned;
+            buff self +1/+0;
+        }
+        superevolve {
+            summon 1 card 90021110;
+        }
     }
 
     meta {
