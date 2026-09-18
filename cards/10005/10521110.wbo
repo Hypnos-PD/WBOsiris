@@ -6,7 +6,16 @@ card 10521110 {
     stats 4/6;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from own.hand;
+            discard target;
+            // 「若选择了法术，则改为回复6点」：判定的是刚舍弃的那张牌的类型。
+            if count(target where type spell) >= 1 {
+                heal own.leader 6;
+            } else {
+                heal own.leader 3;
+            }
+        }
     }
 
     meta {

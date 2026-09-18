@@ -648,6 +648,10 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		if ok && len(t) > offset {
 			if len(t) >= offset+2 && t[offset].Value == "from" && t[offset+1].Value == "deck" {
 				end, good := parseWhere(t, offset+2)
+				// `draw N from deck where … distinct names`：只允许带筛选的随机抽选。
+				if good && end+2 == len(t) && values(t[end:]) == "distinct names" && t[1].Value != "all" {
+					end += 2
+				}
 				ok = good && end == len(t)
 			} else {
 				ok = false
@@ -841,6 +845,10 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 	case "reanimate":
 		ok = len(t) == 2 && isUnsigned(t[1])
 	case "reduce":
+		if t[1].Value == "maxlife" {
+			_, ok = leaderMaxLifeIR(t, ir.NodeBase{})
+			break
+		}
 		if len(t) >= 4 && (t[1].Value == "countdown" || t[1].Value == "cost") {
 			end, good := parseValueRef(t, 2)
 			if good {
@@ -867,6 +875,10 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 			checkBindingAt(t, 2, end, bindings, ds)
 		}
 	case "raise":
+		if t[1].Value == "maxlife" {
+			_, ok = leaderMaxLifeIR(t, ir.NodeBase{})
+			break
+		}
 		if len(t) >= 4 && (t[1].Value == "cost" || t[1].Value == "countdown") {
 			end, good := parseValueRef(t, 2)
 			if good && end < len(t) && isUnsigned(t[end]) {

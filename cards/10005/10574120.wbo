@@ -6,7 +6,19 @@ card 10574120 {
     stats 2/2;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from own.hand;
+            discard target;
+            draw 1 from deck where type spell;
+        }
+        when own card played where type spell {
+            if self form evolved {
+                summon 1 card 90074140;
+            }
+        }
+        superevolve {
+            draw 2 from deck where type spell and cost == 1 distinct names;
+        }
     }
 
     meta {

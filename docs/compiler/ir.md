@@ -658,6 +658,7 @@ Draw = NodeBase & {
   all: bool,
   sourceZone: "deck",
   predicate: BoolExpr?,
+  distinctNames?: bool,
   output: Binding
 }
 
@@ -769,6 +770,8 @@ Reanimate = NodeBase & {
 普通 `draw N` 使用牌组顶部且无筛选；`draw N from deck where P` 等概率、不放回地
 抽取最多 N 个匹配实例，按抽中顺序处理，每张消费一次 RNG 决策。同名副本不合并为
 单个候选；未抽中的实例保持牌组顺序。`draw all` 按牌组顺序取所有匹配项，不消费 RNG。
+`distinctNames=true`（`draw … distinct names`）在每抽中一张后同时排除与它同卡牌 ID 的
+其余候选，因此张数上限是候选里不同卡名的数量；它只允许与筛选一起使用，不能配 `all`。
 候选查询、候选预算和事件预算校验发生在抽选之前；失败时不消费 RNG 或移动卡牌。
 筛选抽牌也发出公开的 `card_drawn` 数量事件，不附带身份；无候选时数量为零。
 仅普通定量抽牌不足时产生牌组耗尽败北，筛选不足不产生败北。手牌或战场空间不足
@@ -841,9 +844,10 @@ DeckReplace = NodeBase & {
   cards: [{ cardId: CardId, count: UInt16 }]
 }
 LeaderMaxLife = NodeBase & {
-  kind: "set_leader_max_life",
+  kind: "set_leader_max_life",        // 绝对值
   side: Side,
-  amount: UInt16
+  amount: UInt16,
+  delta?: bool                       // true 时是增减量（kind: "adjust_leader_max_life"）
 }
 ```
 
@@ -855,7 +859,10 @@ LeaderMaxLife = NodeBase & {
 既有破坏记录不变。公开事件 `deck_replaced` 仅含所属侧和 `Count=新数量`，
 不含任何牌组身份、顺序或目标。运行时没有输出绑定。
 
-主战者上限节点要求 `amount` 为 1..65535，更新上限并将当前生命取与新上限的最小值。
+主战者上限节点在绝对值形态要求 `amount` 为 1..65535；增量形态
+（`adjust_leader_max_life`，来自 `raise|reduce maxlife`）要求 `delta=true` 且
+`amount` 是非零的 −65535..65535，结算时把上限夹在 1..65535。两种形态都把当前生命
+取与新上限的最小值。
 它不产生伤害或回复，也不会通过提高上限回复生命。公开事件 `leader_max_life_set`
 使用 `Count=新上限`、`Actual=截断后的当前生命`，恢复时核验所属侧和数值范围。
 
@@ -1095,7 +1102,7 @@ ability: Ability, labels?: map<LocaleId, string> }` 附加一个独立触发能�
 | `if C { A } else { B }` | `If` |
 | `mode`、`option N` | `Mode` |
 | `earthrite N`、`necromancy N` | `PayResource` |
-| `draw N`、`draw all from deck where P` | `Draw` |
+| `draw N`、`draw all from deck where P [distinct names]` | `Draw` |
 | `add N card C to hand` | `AddCard` |
 | `add copies of S to hand` | `AddCopies` |
 | `summon N card C` | `Summon` |
@@ -1106,7 +1113,7 @@ ability: Ability, labels?: map<LocaleId, string> }` 附加一个独立触发能�
 | `damage T N`、`heal T N` | `Damage`、`Heal` |
 | `set life T N` | `SetLife` |
 | `set_damage_reduction T N` | `SetDamageReduction` |
-| `set maxlife own.leader N` | `LeaderMaxLife` |
+| `set maxlife own.leader N`、`raise\|reduce maxlife own.leader N` | `LeaderMaxLife`（增量形态 `kind: "adjust_leader_max_life"`） |
 | `replace own.deck with shuffled N card C, ...` | `DeckReplace` |
 | `buff T +A/+L [where P] [until [own/oppo] turn ends]` | `BuffStats`，可带 `predicate` 和 `until` |
 | `destroy T`、`banish T`、`discard T` | `Destroy`、`Banish`、`Discard` |

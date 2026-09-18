@@ -391,7 +391,7 @@ operation         = draw_operation
                   | set_damage_reduction_operation
                   | transform_operation ;
 
-draw_operation    = "draw" , draw_amount , ["for" , ("own" | "oppo")] , ["from" , "deck" , where_clause] , ";" ;
+draw_operation    = "draw" , draw_amount , ["for" , ("own" | "oppo")] , ["from" , "deck" , where_clause] , ["distinct" , "names"] , ";" ;
 deck_replace_operation = "replace" , participant , "." , "deck" , "with" , "shuffled" , deck_entry , {"," , deck_entry} , ";" ;
 deck_entry        = integer , "card" , card_id ;
 draw_amount       = integer | "all" ;
@@ -419,6 +419,7 @@ numeric_operation = "damage" , value_ref , ["other" , [binding_name]] , effect_a
                   | set_operation_tail
                   | "set" , "attack" , value_ref , effect_amount , ";"
                   | "set" , "maxlife" , participant , "." , "leader" , integer , ";"
+                  | ("raise" | "reduce") , "maxlife" , participant , "." , "leader" , integer , ";"
                   | "buff" , value_ref , ["other" , [binding_name]] , signed_amount , "/" , signed_amount , [where_clause] , [effect_duration] , ";"
                   | "gain" , scalar_ref , integer , ";"
                   | "gain" , participant , "crest" , card_id , ";"
@@ -487,6 +488,12 @@ scalar_ref        = participant , "." , scalar_field ;
 没有该子句时只排除选中的实体。未选中的卡保留原牌组顺序，不公开身份。
 不支持对方牌组、法术、极值子句或回合窗口。单候选与空结果不消费随机数；
 输出 `summoned` 按成功入场顺序覆盖，入场监听在当前效果块后结算，不发动入场曲。
+
+`draw N from deck where P distinct names` 的 `distinct names` 与牌组召唤同义：
+这次抽到的卡名两两不同，每抽中一张就排除同名的其余候选（同名副本不重复抽取），
+因此实际张数上限是候选里不同卡名的数量。它只用于带筛选的定量抽牌，不能与
+`draw all` 或裸 `draw N` 组合；`raise maxlife` / `reduce maxlife` 按增量修改主战者
+生命上限（最低 1），当前生命高于新上限时降到上限。
 `destroy` 覆盖 `destroyed`，只记录本条操作实际破坏的目标；空结果也覆盖。
 `count(destroyed)` 统计该结果，其他伤害或独立触发能力不会改写它。
 

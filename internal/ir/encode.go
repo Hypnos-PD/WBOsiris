@@ -160,6 +160,9 @@ func (e DrawEffect) MarshalJSON() ([]byte, error) {
 	if e.Predicate != nil {
 		object["predicate"] = e.Predicate
 	}
+	if e.DistinctNames {
+		object["distinctNames"] = true
+	}
 	return json.Marshal(object)
 }
 

@@ -1,0 +1,138 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "漫步的愚者入场获得纹章与突进，第一张不会触发自己的纹章" {
+    seed 74001;
+    state {
+        player own {
+            pp 1/1;
+            hand { follower source = 10534110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == field;
+        source has rush;
+        own.crests count card 10534110 == 1;
+        oppo.leader.maxlife == 20;
+    }
+}
+
+scenario "已有纹章时漫步的愚者入场把对手生命上限降低两点" {
+    seed 74002;
+    state {
+        player own {
+            pp 1/1;
+            hand { follower source = 10534110; }
+            crests { crest emblem = 10534110; }
+        }
+    }
+    action { play source; }
+    expect { legal; oppo.leader.maxlife == 18; oppo.leader.life == 18; }
+}
+
+scenario "生命上限已经很高时降低上限不会扣掉当前生命" {
+    seed 74003;
+    state {
+        player own {
+            pp 1/1;
+            hand { follower source = 10534110; }
+            crests { crest emblem = 10534110; }
+        }
+        player oppo {
+            leader 5/20;
+        }
+    }
+    action { play source; }
+    expect { legal; oppo.leader.maxlife == 18; oppo.leader.life == 5; }
+}
+
+scenario "漫步的愚者超进化时把十张自己加入牌组" {
+    seed 74004;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10534110; }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; source.super_evolved == true; own.deck count card 10534110 == 10; }
+}
+
+scenario "尽小花入场舍弃一张手牌并抽取一张法术" {
+    seed 74005;
+    state {
+        player own {
+            pp 2/2;
+            hand {
+                follower source = 10574120;
+                follower fodder = 10001110;
+            }
+            deck top {
+                follower blocked = 10021110;
+                spell only = 10031310;
+            }
+        }
+    }
+    action { play source; select fodder; }
+    expect {
+        legal;
+        own.graveyard count card 10001110 == 1;
+        own.hand count card 10031310 == 1;
+        own.deck count card 10021110 == 1;
+    }
+}
+
+scenario "进化后的尽小花在使用法术时召唤伊鞠的小鬼" {
+    seed 74006;
+    state {
+        player own {
+            pp 3/3;
+            field { follower source = 10574120 { evolved; } }
+            hand { spell cast = 10031310; }
+            deck top { follower spare = 10021110; }
+        }
+    }
+    action { play cast; }
+    expect { legal; own.field count card 90074140 == 1; }
+}
+
+scenario "未进化的尽小花在使用法术时不召唤伊鞠的小鬼" {
+    seed 74007;
+    state {
+        player own {
+            pp 3/3;
+            field { follower source = 10574120; }
+            hand { spell cast = 10031310; }
+            deck top { follower spare = 10021110; }
+        }
+    }
+    action { play cast; }
+    expect { legal; own.field count card 90074140 == 0; }
+}
+
+scenario "尽小花超进化时抽取两张不同名的1费法术" {
+    seed 74008;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10574120; }
+            deck top {
+                spell first = 10031310;
+                spell duplicate = 10031310;
+                spell second = 10532310;
+            }
+        }
+    }
+    action { superevolve source; }
+    expect {
+        legal;
+        own.hand count card 10031310 == 1;
+        own.hand count card 10532310 == 1;
+        own.deck count card 10031310 == 1;
+        own.deck count card 10532310 == 0;
+    }
+}

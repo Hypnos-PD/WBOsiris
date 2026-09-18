@@ -500,6 +500,10 @@ func (g *game) draw(e ir.DrawEffect, self *instance, f frame) {
 		return
 	}
 	count := min(max(0, e.Count), len(candidates))
+	if e.DistinctNames {
+		// "抽取 N 种…"：每种卡名最多抽一张，所以张数上限是候选里不同卡名的数量。
+		count = min(count, distinctNameCount(candidates))
+	}
 	if e.All {
 		count = len(candidates)
 	}
@@ -512,10 +516,21 @@ func (g *game) draw(e ir.DrawEffect, self *instance, f frame) {
 	}
 	var drawn []*instance
 	if e.Predicate != nil && !e.All {
-		for n := 0; n < count; n++ {
+		for n := 0; n < count && len(candidates) > 0; n++ {
 			index := g.rng.Index(len(candidates))
-			drawn = append(drawn, candidates[index])
-			candidates = append(candidates[:index], candidates[index+1:]...)
+			picked := candidates[index]
+			drawn = append(drawn, picked)
+			if e.DistinctNames {
+				remaining := candidates[:0]
+				for _, candidate := range candidates {
+					if candidate != picked && candidate.card.ID != picked.card.ID {
+						remaining = append(remaining, candidate)
+					}
+				}
+				candidates = remaining
+			} else {
+				candidates = append(candidates[:index], candidates[index+1:]...)
+			}
 		}
 	} else {
 		drawn = candidates[:count]
@@ -540,6 +555,17 @@ func (g *game) draw(e ir.DrawEffect, self *instance, f frame) {
 	if g.firstPlayer != "" && e.Predicate == nil && !e.All && count < e.Count {
 		g.finishGame(oppositeSide(ownSide))
 	}
+}
+
+// distinctNameCount 返回候选里不同卡牌定义的数量，用于"抽取 N 种…"的张数上限。
+func distinctNameCount(cards []*instance) int {
+	seen := make(map[int]bool, len(cards))
+	for _, card := range cards {
+		if card != nil {
+			seen[card.card.ID] = true
+		}
+	}
+	return len(seen)
 }
 
 // triggerDrawn 按"抽到的每一张卡"派发抽牌监听（公开事实仍然只记一次聚合事件）。

@@ -25,9 +25,24 @@ func deckReplaceIR(t []syntax.Token, base ir.NodeBase) (ir.DeckReplaceEffect, bo
 
 func leaderMaxLifeIR(t []syntax.Token, base ir.NodeBase) (ir.LeaderMaxLifeEffect, bool) {
 	e := ir.LeaderMaxLifeEffect{NodeBase: base, Kind: "set_leader_max_life"}
-	if len(t) != 6 || values(t[:2]) != "set maxlife" || !set("own", "oppo")[t[2].Value] || values(t[3:5]) != ". leader" || !isUnsigned(t[5]) {
+	if len(t) != 6 || !set("own", "oppo")[t[2].Value] || values(t[3:5]) != ". leader" || !isUnsigned(t[5]) {
 		return e, false
 	}
-	e.Side, e.Amount = t[2].Value, intToken(t[5])
-	return e, e.Amount >= 1 && e.Amount <= 65535
+	amount := intToken(t[5])
+	if amount < 1 || amount > 65535 {
+		return e, false
+	}
+	e.Side, e.Amount = t[2].Value, amount
+	switch values(t[:2]) {
+	case "set maxlife":
+		return e, true
+	case "raise maxlife":
+		e.Kind, e.Delta = "adjust_leader_max_life", true
+		return e, true
+	case "reduce maxlife":
+		// `reduce maxlife own|oppo.leader N`：把生命上限降低 N，最低为 1。
+		e.Kind, e.Amount, e.Delta = "adjust_leader_max_life", -amount, true
+		return e, true
+	}
+	return e, false
 }

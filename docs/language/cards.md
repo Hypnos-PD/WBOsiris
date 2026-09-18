@@ -449,6 +449,17 @@ draw 1;
 每抽中一张消费一次随机决策，空集合不消费；`draw all` 按牌组顺序取全部匹配项，
 不消费随机决策。普通 `draw N` 仍从牌组顶部抽取。
 
+末尾加 `distinct names` 表示"抽取 N 种…"：每抽中一张就排除同卡名的其余候选，
+同名副本不会被抽第二次，因此实际张数上限是候选里不同卡名的数量。
+
+```wbo
+superevolve {
+    draw 2 from deck where type spell and cost == 1 distinct names;
+}
+```
+
+它只能与筛选搭配（不能写 `draw all … distinct names` 或裸 `draw 2 distinct names`）。
+
 `draw N for oppo` 让对方抽 N 张，从对方的牌组顶部抽取并产生对方的抽牌事件；
 省略 `for` 时等价于 `for own`。"让对方抽牌"必须用这条语句表达：`add ... to hand`
 创建实例但不产生抽牌，两者的触发与牌组耗尽行为不同。
@@ -1000,6 +1011,10 @@ trait departed;
 当前生命高于新上限时降至上限；提高上限不会增加当前生命。这不是伤害或回复，不触发
 对应监听，也不导致主战者在上限变为 1 时直接败北。之后的回复仍受新上限约束。
 例如阿斯塔罗特的宣判写作 `set maxlife oppo.leader 1;`。
+
+`raise maxlife own|oppo.leader N;` 与 `reduce maxlife own|oppo.leader N;` 按增量修改
+生命上限，N 为 1..65535；上限夹在 1..65535，当前生命高于新上限时同样降至上限。
+例如纹章『漫步的《愚者》·琳库露』写作 `reduce maxlife oppo.leader 2;`。
 
 `set life T N;` 将目标随从的当前生命值设为 N，数值也可使用 `self.life`、
 `count(...)` 等数值表达式。所有目标使用操作开始时读取的同一个值，负的计算结果按零处理。

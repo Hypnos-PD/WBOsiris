@@ -110,6 +110,8 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-78 | `where lastwords`（拥有【谢幕曲】筛选） | `internal/project/validate.go`（`parseWhere`/`negatedWhereTerm` 接受 `lastwords`）、`typed_ir.go`（`has_lastwords` 谓词）、`internal/ir/decode.go`/`encode.go`（谓词白名单）、`internal/runner/execute.go`（按卡牌定义的 `lastwords` 触发判定）；文档 `cards.md`/`grammar.md` | 卡片 10663210、10664110 + 3 个场景（含"只破坏过同一种护符时只召唤一张"）。局限：只看卡牌定义的固有能力，`grant` 临时获得的【谢幕曲】不算 |
 | S-79 | 破坏历史召唤的 `distinct names`（随机 N 种各 1 张） | `internal/ir/history_summon.go`（`DistinctNames`）、`internal/ir/decode.go`（解码并写回效果）、`internal/project/history_summon.go`（解析 `distinct names`）、`internal/runner/history_summon.go`（每抽一张后按卡牌 ID 排除同名候选）；文档 `cards.md` | Go 单测 + 卡片 10664110 + 2 个场景。解码器最初漏了 `DistinctNames` 回填，运行期恒为 `false`，被"只有一种护符时只召唤一张"的场景抓住 |
 | S-80 | 非法术卡的选择不该阻塞打出／进化：`require` → `choose` | 29 张随从/护符卡的 34 处 `require`（入场曲、爆能强化、进化时、超进化时）改写为 `choose`；`engage`（启动能力）与法术顶层的 `require` 保留；文档 `cards.md` 写明适用边界 | 官方 QA：[随从/护符没有可选择的手牌也能使用、能力也发动，法术不能](https://shadowverse-wb.com/chs/usersupport/?tab=2#q2lo-vv80cvw)、[卡西乌斯没有创造物随从时照样打出并造成 0 点伤害](https://shadowverse-wb.com/chs/usersupport/?tab=2#49odoxq3_z)。新增 `tests/10004/batch-73-target-availability.wbotest` 7 个场景（打出、进化、抽牌、破坏、启动能力仍不可用） |
+| S-63 | `draw N from deck where … distinct names`（抽取 N 种） | `internal/ir/model.go`（`DrawEffect.DistinctNames`）、`internal/ir/encode.go`/`decode.go`（编解码与形状校验）、`internal/project/typed_ir.go`/`validate.go`（解析与形状）、`internal/runner/execute.go`（每抽一张排除同名候选，张数上限取不同卡名数）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/draw_owner_test.go`（编译保留标记、编码解码后仍在、拒绝无筛选/`all`/缺 `names`）；卡片 10574120 + 4 个场景 |
+| S-67 | `raise maxlife` / `reduce maxlife`（主战者生命上限增减） | `internal/ir/deck_replace.go`（`Delta`）、`internal/ir/decode.go`（新 kind 与增量范围校验）、`internal/project/deck_replace.go`（`raise|reduce maxlife` 解析）、`typed_ir.go`/`validate.go`（语句分发）、`internal/runner/deck_replace.go`（夹在 1..65535 并把当前生命降到上限）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/deck_replace_test.go`（增量编译、编解码保留、拒绝负数/越界/绑定量）；卡片 10534110 + 4 个场景 |
 | S-57 | 归属判断（`count(own.<区域> where card <绑定>)`） | 无需新节点：`same_card` 谓词 + 区域计数；但修好了 `conditionIn` 里 `CountCondition` 丢帧的问题（`internal/runner/execute.go`） | 卡片 90064320 + 2 个场景（敌方随从时不加牌、自己的护符时追加 2 点伤害并加牌） |
 | S-66 | `banish` 输出 `banished` | `internal/project/typed_ir.go`（写入输出）、`validate.go`（登记绑定）、`internal/ir/encode.go`/`decode.go`（形状白名单）、`internal/runner/execute.go`（记录实际消失的实例）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/banish_output_test.go`（输出保留、`count(banished)` 作为分配伤害量）；卡片 10543110 + 2 个场景 |
 | S-61 | `summoned_all`（一次结算的全部召唤） | `internal/runner/bindings.go`（`bindSummoned`）、`internal/runner/execute.go`/`session.go`（所有召唤类效果改为写入累计绑定）、`internal/project/validate.go`（登记 `summoned_all`）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/same_cost_and_summoned_all_test.go`；卡片 10571110 + 3 个场景 |
@@ -166,11 +168,12 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 
 | S-72 | 返回张数与按返回张数抽牌 | 10554120 奥夜花·释藤（"使自己的所有手牌返回牌组。抽取X张卡牌。X为因本能力返回牌组的张数"） | `return` 没有输出绑定或返回数量；`draw` 的数量也不能引用"本次操作的计数"。 |
 | S-62 | ~~抽牌事件~~ **已解决**：`when own\|oppo card drawn [during … turn]` 与 `when self drawn` | 已解锁 10561120 连结的使徒、10522110 迅猛的武术家、10562120 穷途末路的巫女 | 绑定 `drawn` 指向被抽到的实例；运行时按每张抽到的卡派发监听（公开事实仍是聚合事件），`during` 回合窗口同时扩展到此事件。 |
-| S-63 | 抽牌去重 | 10574120 尽小花·伊鞠（"抽取2种费用为1的法术"） | `draw` 没有 `distinct names`（牌组召唤才有）。 |
+| S-63 | ~~抽牌去重~~ **已解决**：`draw N from deck where … distinct names` | 已解锁 10574120 尽小花·伊鞠 | 与牌组召唤同义：每抽中一张就排除同卡名的其余候选，张数上限是候选里不同卡名的数量；只允许与筛选搭配（不能配 `draw all` 或裸 `draw N`）。`DrawEffect.DistinctNames` 参与编解码，`internal/project/draw_owner_test.go` 覆盖编译、解码回填与错误形状。 |
 | S-64 | 从破坏历史复制同名卡加入手牌 | 10572310 苏生调律（"将随机2种与本次对战中被破坏的自己的随从同名的卡牌各1张…加入手牌"） | `add copies of` 不接受破坏历史目标（`effectTargets` 过滤掉 `destroyed` 实例），也没有"同名的不同种类各1张"。 |
 | S-65 | 从手牌按位置批量选择 | 10502110 星辉女神（"将自己的手牌中从左起的3张卡牌的复制卡牌各1张…加入手牌"） | 选择只有随机、极值与玩家指定；没有"手牌从左起 N 张"。 |
 | S-66 | ~~本次操作的消失数量~~ **已解决**：`banish` 输出 `banished` | 已解锁 10543110 破灭屠戮者 | 与 `destroyed` 同构；数量用 `count(banished)` 读取，可当伤害量或增益量。 |
-| S-67 | 主战者生命上限的增减 | 10534110 漫步的《愚者》·琳库露的纹章（"使对手的主战者的生命值的最大值-2"） | `set maxlife` 只能设为绝对值，没有增量形式。 |
+| S-67 | ~~主战者生命上限的增减~~ **已解决**：`raise maxlife own\|oppo.leader N` / `reduce maxlife …` | 已解锁 10534110 漫步的《愚者》·琳库露的纹章 | 增量形式 `kind: "adjust_leader_max_life"`（`delta=true`），上限夹在 1..65535，当前生命高于新上限时降到上限——与既有 `set maxlife` 及 SWB-RL 的 `change_leader_max_health` 同一口径。 |
+| S-81 | 取前 N 张的求和与求和比较 | 10502120 手持军配团扇的伟丈夫（"自己的手牌中原始费用最大的3张卡牌的费用合计 大于 对手…则破坏对手的战场上的所有随从"） | `sum(集合, 字段)` 不支持"最大的 N 张"；条件只有 `count(...) 比较 整数`，没有 `sum(...) 比较 sum(...)`。需要给求和加极值/张数上限，并新增求和之间的比较条件。 |
 | S-68 | ~~回合窗口事件~~ **已解决**：`during own\|oppo turn` 可用于回复事件 | 已解锁 10563110 至圣威仪 | 检查器原先只允许"受到伤害时"带 `during`；运行时的回合匹配本来就通用。 |
 | S-69 | 跨方混合随机集合 | 10524110 威猛的《战车》·奥辂昂（"随机对战场上的1个其他随从或自己的主战者或对手的主战者造成7点伤害"） | 混合集合只支持"同一方的随从+该方主战者"，无法表达"双方随从+双方主战者"。 |
 | S-70 | ~~从两种指定卡中随机召唤~~ **已解决**：`summon random N card A or card B [...] [for own\|oppo];` | 已解锁 10564120 雾卷花·茎白 | 新 IR 节点 `SummonPoolEffect`：每次抽取消费一次对局随机数，池内卡牌定义必须互不相同（2..16 种）。 |
@@ -186,6 +189,25 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 74（S-63 抽取同名去重 + S-67 生命上限增减 + 卡包 10005）
+
+- **S-63 `draw N from deck where … distinct names`**：用于"抽取 2 种费用为 1 的法术"。
+  与牌组召唤同义——每抽中一张就排除同卡名的其余候选，所以张数上限是候选里不同卡名的
+  数量（先按不同卡名数收窄 `count`，再逐次随机抽选）。只允许与筛选搭配。
+- **S-67 `raise maxlife` / `reduce maxlife`**：主战者生命上限的增减。增量形式把上限夹在
+  1..65535，当前生命高于新上限时降到上限——与既有 `set maxlife`（阿斯塔罗特的宣判）
+  和 SWB-RL 的 `change_leader_max_health` 同一口径。顺带核过 10534110 纹章的
+  [官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#7wzi4bb1a)：变身进入战场
+  不触发"进入战场时"的能力，所以纹章写 `when own follower summoned where card 10534110`。
+- 完成 3 张：10534110 漫步的《愚者》·琳库露（纹章：自己的琳库露入场时对手生命上限 -2；
+  突进；超进化时把 10 张自己加入牌组）、10521110 好施的名人（舍弃 1 张手牌后回复
+  3 点，舍弃的是法术则改为 6 点）、10574120 尽小花·伊鞠（舍弃 1 张手牌并抽取 1 张法术；
+  使用法术时若已进化则召唤『伊鞠的小鬼』；超进化时抽取 2 种费用为 1 的法术）。
+- 新登记缺口：S-81 取前 N 张的求和与求和比较（10502120 仍挂起）。
+- 新增 11 个场景（`tests/10005/batch-74-maxlife-and-draw.wbotest`、
+  `tests/10005/batch-74-discard-and-heal.wbotest`）。
+- 全量回归：`check` 0 错 0 警；`test` 1002 全绿；`go test ./...` 全绿；语料快照更新为 1002 个场景。
 
 ### 批次 73（条件范围专项核查：S-80 选择不该阻塞打出）
 

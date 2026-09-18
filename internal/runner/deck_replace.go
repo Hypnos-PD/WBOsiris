@@ -44,7 +44,13 @@ func (g *game) replaceDeck(e ir.DeckReplaceEffect, self *instance) {
 
 func (g *game) setLeaderMaxLife(e ir.LeaderMaxLifeEffect, self *instance) {
 	p, side := g.playerForSide(self, e.Side)
-	p.leaderMax = e.Amount
+	if e.Delta {
+		// `raise|reduce maxlife`：上限按增量变化并夹在 1..65535；
+		// 当前生命高于新上限时降到上限（与 `set maxlife` 同一条规则）。
+		p.leaderMax = min(65535, max(1, p.leaderMax+e.Amount))
+	} else {
+		p.leaderMax = e.Amount
+	}
 	p.leaderLife = min(p.leaderLife, p.leaderMax)
 	g.emit(ir.RuntimeEvent{Kind: "leader_max_life_set", Side: side, Count: p.leaderMax, Actual: p.leaderLife})
 }

@@ -376,6 +376,10 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		}
 		if len(t) > offset {
 			e.Predicate, _ = filterIR(t, offset+2)
+			// `draw N from deck where … distinct names`：抽到的卡名两两不同。
+			if len(t) >= offset+2 && values(t[len(t)-2:]) == "distinct names" {
+				e.DistinctNames = true
+			}
 		}
 		return e, nil
 	case "add":
@@ -581,6 +585,10 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 	case "reanimate":
 		return ir.CardEffect{NodeBase: base, Kind: "reanimate", Owner: "own", MaxCost: intAt(s, 1), TieBreak: "random", Output: "summoned"}, nil
 	case "reduce":
+		if len(t) > 1 && t[1].Value == "maxlife" {
+			e, _ := leaderMaxLifeIR(t, base)
+			return e, nil
+		}
 		end := valueRefEnd(t, 2)
 		amount, expr := numericIR(t, end)
 		e := ir.AdjustEffect{NodeBase: base, Kind: "adjust_entity_field", Field: t[1].Value, Target: valueRefIR(t, 2), Delta: -amount}
@@ -604,6 +612,10 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		// halve cost <集合>：把目标的当前费用变为向上取整的一半（官方 FAQ：9 → 5）。
 		return ir.AdjustEffect{NodeBase: base, Kind: "halve_cost", Field: "cost", Target: valueRefIR(t, 2)}, nil
 	case "raise":
+		if len(t) > 1 && t[1].Value == "maxlife" {
+			e, _ := leaderMaxLifeIR(t, base)
+			return e, nil
+		}
 		// raise cost|countdown <集合> N：给目标加费或推进倒计数；与 reduce 共用同一 IR 节点。
 		end := valueRefEnd(t, 2)
 		e := ir.AdjustEffect{NodeBase: base, Kind: "adjust_entity_field", Field: t[1].Value, Target: valueRefIR(t, 2), Delta: intToken(t[end])}

@@ -35,6 +35,9 @@ type LeaderMaxLifeEffect struct {
 	Kind   string `json:"kind"`
 	Side   string `json:"side"`
 	Amount int    `json:"amount"`
+	// Delta 为真时 Amount 是增减量（`raise|reduce maxlife …`），
+	// 为假时是绝对值（`set maxlife …`）。两者都按"当前生命高于上限时降到上限"结算。
+	Delta bool `json:"delta,omitempty"`
 }
 
 func (e LeaderMaxLifeEffect) effectKind() string   { return e.Kind }

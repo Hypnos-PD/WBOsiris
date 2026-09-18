@@ -12,7 +12,7 @@ import (
 
 func TestCompileDeckReplaceAndLeaderMaxLife(t *testing.T) {
 	for _, cardType := range []string{"follower", "spell"} {
-		body := `replace oppo.deck with shuffled 3 card 12345678, 1 card 12345678; set maxlife own.leader 30;`
+		body := `replace oppo.deck with shuffled 3 card 12345678, 1 card 12345678; set maxlife own.leader 30; raise maxlife own.leader 5; reduce maxlife oppo.leader 2;`
 		source := validCard("fanfare {" + body + "}")
 		if cardType == "spell" {
 			source = strings.Replace(validCard(body), "type follower; cost 1; stats 1/1;", "type spell; cost 1;", 1)
@@ -53,7 +53,12 @@ func TestCompileDeckReplaceAndLeaderMaxLife(t *testing.T) {
 		}
 		recipe := effects[0].(ir.DeckReplaceEffect)
 		life := effects[1].(ir.LeaderMaxLifeEffect)
-		if recipe.Owner != "oppo" || len(recipe.Cards) != 2 || recipe.Cards[0].Count != 3 || life.Side != "own" || life.Amount != 30 {
+		raise := effects[2].(ir.LeaderMaxLifeEffect)
+		cut := effects[3].(ir.LeaderMaxLifeEffect)
+		if recipe.Owner != "oppo" || len(recipe.Cards) != 2 || recipe.Cards[0].Count != 3 ||
+			life.Side != "own" || life.Amount != 30 || life.Delta ||
+			raise.Side != "own" || raise.Amount != 5 || !raise.Delta || raise.Kind != "adjust_leader_max_life" ||
+			cut.Side != "oppo" || cut.Amount != -2 || !cut.Delta {
 			t.Fatal(recipe, life)
 		}
 	}
@@ -68,6 +73,9 @@ func TestRejectMalformedDeckReplaceAndLeaderMaxLife(t *testing.T) {
 		"replace own.deck with shuffled 1 card 12345678 {}", "replace own.deck with shuffled 1 card 12345678",
 		"set maxlife self 1;", "set maxlife own.leader 0;", "set maxlife own.leader 65536;",
 		"set maxlife all.leaders 1;", "set maxlife own.leader 1 extra;", "set maxlife own.leader count(own.hand);",
+		"raise maxlife self 1;", "raise maxlife own.leader 0;", "raise maxlife own.leader 65536;",
+		"reduce maxlife all.leaders 2;", "reduce maxlife own.leader -2;", "reduce maxlife own.leader count(own.hand);",
+		"reduce maxlife own.leader 2 extra;",
 	} {
 		f, ds := syntax.Parse("12345678.wbo", []byte(validCard("fanfare {"+op+"}")))
 		if len(ds) == 0 && !hasErrors(ValidateFile(f)) {

@@ -895,6 +895,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			Count                           *int            `json:"count,omitempty"`
 			All                             bool            `json:"all"`
 			Predicate                       json.RawMessage `json:"predicate,omitempty"`
+			DistinctNames                   bool            `json:"distinctNames,omitempty"`
 			Origin                          Origin          `json:"origin"`
 		}
 		var v raw
@@ -912,11 +913,14 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if !validSide(v.Owner) || v.SourceZone != "deck" || v.Output != "drawn" || v.All && v.Count != nil || !v.All && (v.Count == nil || *v.Count < 0) {
 			return nil, fmt.Errorf("invalid draw shape")
 		}
+		if v.DistinctNames && (v.All || len(v.Predicate) == 0) {
+			return nil, fmt.Errorf("invalid draw shape")
+		}
 		count := 0
 		if v.Count != nil {
 			count = *v.Count
 		}
-		return DrawEffect{NodeBase{v.ID, v.Origin}, v.Kind, v.Owner, v.SourceZone, v.Output, count, v.All, p}, err
+		return DrawEffect{NodeBase: NodeBase{v.ID, v.Origin}, Kind: v.Kind, Owner: v.Owner, SourceZone: v.SourceZone, Output: v.Output, Count: count, All: v.All, Predicate: p, DistinctNames: v.DistinctNames}, err
 	case "grant_ability":
 		var v struct {
 			NodeBase
@@ -954,7 +958,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 			return nil, fmt.Errorf("invalid replace_deck shape")
 		}
 		return e, nil
-	case "set_leader_max_life":
+	case "set_leader_max_life", "adjust_leader_max_life":
 		var e LeaderMaxLifeEffect
 		if err := strict(data, &e); err != nil {
 			return nil, err
@@ -962,7 +966,14 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if err := newNode(e.ID, nodeIDs, e.Origin); err != nil {
 			return nil, err
 		}
-		if !validSide(e.Side) || e.Amount < 1 || e.Amount > 65535 {
+		if !validSide(e.Side) || e.Delta != (e.Kind == "adjust_leader_max_life") {
+			return nil, fmt.Errorf("invalid leader maximum life")
+		}
+		if e.Delta {
+			if e.Amount == 0 || e.Amount < -65535 || e.Amount > 65535 {
+				return nil, fmt.Errorf("invalid leader maximum life")
+			}
+		} else if e.Amount < 1 || e.Amount > 65535 {
 			return nil, fmt.Errorf("invalid leader maximum life")
 		}
 		return e, nil

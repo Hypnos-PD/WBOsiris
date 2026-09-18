@@ -6,7 +6,55 @@ card 10534110 {
     stats 1/1;
 
     effect {
-        unplayable;
+        fanfare {
+            gain own crest 10534110;
+        }
+        rush;
+        superevolve {
+            add 10 card 10534110 to deck;
+        }
+    }
+
+    crest {
+        when own follower summoned where card 10534110 {
+            // 官方 QA：变身进入战场不触发"进入战场时"的能力，因此这里只监听入场事件。
+            reduce maxlife oppo.leader 2;
+        }
+
+        locale chs {
+            name "纹章：漫步的《愚者》·琳库露";
+            text """
+自己的『<color=Keyword>漫步的《愚者》·琳库露</color>』进入战场时，使对手的主战者的生命值的最大值-2。
+""";
+        }
+
+        locale eng {
+            name "Crest: Lhynkal, Wandering Fool";
+            text """
+Whenever an allied <b><i><color=Keyword>Lhynkal, Wandering Fool</color></i></b> enters the field, reduce the enemy leader's max defense by 2.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"あゆ\">歩</rub>む《<rub=\"ぐしゃ\">愚者</rub>》・リンクル";
+            text """
+自分の『<color=Keyword>歩む《愚者》・リンクル</color>』が場に出たとき、相手のリーダーの体力の最大値を-2する。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 걸어 나가는 《광대》 링클";
+            text """
+내 <color=Keyword>걸어 나가는 《광대》 링클</color>이 전장에 소환되었을 때, 상대방 리더의 체력 최대치를 -2.
+""";
+        }
+
+        locale cht {
+            name "紋章：步履《愚者》‧琳庫露";
+            text """
+當自己的『<color=Keyword>步履《愚者》‧琳庫露</color>』進入戰場時，使敵方主戰者生命值的最大值-2。
+""";
+        }
     }
 
     meta {

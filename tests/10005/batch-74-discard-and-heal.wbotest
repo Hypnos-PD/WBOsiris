@@ -1,0 +1,47 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "好施的名人舍弃法术时回复六点生命值" {
+    seed 74101;
+    state {
+        player own {
+            leader 10/20;
+            pp 6/6;
+            hand {
+                follower source = 10521110;
+                spell spellcard = 10031310;
+            }
+        }
+    }
+    action { play source; select spellcard; }
+    expect { legal; own.leader.life == 16; own.graveyard count card 10031310 == 1; }
+}
+
+scenario "好施的名人舍弃随从时回复三点生命值" {
+    seed 74102;
+    state {
+        player own {
+            leader 10/20;
+            pp 6/6;
+            hand {
+                follower source = 10521110;
+                follower other = 10001110;
+            }
+        }
+    }
+    action { play source; select other; }
+    expect { legal; own.leader.life == 13; own.graveyard count card 10001110 == 1; }
+}
+
+scenario "手牌为空时好施的名人照样能打出并回复三点" {
+    seed 74103;
+    state {
+        player own {
+            leader 10/20;
+            pp 6/6;
+            hand { follower source = 10521110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.zone == field; own.leader.life == 13; }
+}

@@ -69,6 +69,57 @@ func TestDrawForOpponentFormatsStably(t *testing.T) {
 	}
 }
 
+// `draw N from deck where … distinct names`：抽取 N 种不同卡名的卡牌，
+// 编码/解码必须保留这个标记（运行期靠它排除同名候选）。
+func TestDrawDistinctNamesCompilesAndSurvivesDecoding(t *testing.T) {
+	body := compiledFanfare(t, `fanfare {
+		draw 2 from deck where type spell and cost == 1 distinct names;
+	}`)
+	if len(body) != 1 {
+		t.Fatalf("expected one effect, got %d", len(body))
+	}
+	draw, ok := body[0].(ir.DrawEffect)
+	if !ok || !draw.DistinctNames || draw.Count != 2 || draw.Predicate == nil {
+		t.Fatalf("distinct names must survive compilation: %+v", body[0])
+	}
+}
+
+func TestDrawRejectsDistinctNamesWithoutFilterOrWithAll(t *testing.T) {
+	for _, line := range []string{
+		"draw 2 distinct names;",
+		"draw 2 from deck where type spell and distinct names;",
+		"draw all from deck where type spell distinct names;",
+		"draw 2 from deck where type spell distinct;",
+		"draw 2 from deck where type spell names;",
+	} {
+		source := validCard("fanfare { " + line + " }")
+		if _, ds := compile(t, source); len(ds) == 0 {
+			t.Fatalf("%q must not compile", line)
+		}
+	}
+}
+
+// 解码器必须把 distinctNames 真的写回效果结构体——牌组召唤的同一处曾漏回填，
+// 运行期因此恒为 false。
+func TestDrawDistinctNamesSurvivesEncoding(t *testing.T) {
+	pack, ds := compile(t, validCard("fanfare { draw 2 from deck where type spell and cost == 1 distinct names; }"))
+	if len(ds) != 0 {
+		t.Fatal(ds)
+	}
+	data, err := ir.EncodeCardPack(*pack)
+	if err != nil {
+		t.Fatal(err)
+	}
+	decoded, err := ir.DecodeCardPack(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	draw, ok := decoded.Cards[0].Abilities[0].Body[0].(ir.DrawEffect)
+	if !ok || !draw.DistinctNames || draw.Count != 2 || draw.Predicate == nil {
+		t.Fatalf("distinct names lost in codec: %+v", decoded.Cards[0].Abilities[0].Body[0])
+	}
+}
+
 func compiledFanfare(t *testing.T, effectBlock string) []ir.Effect {
 	t.Helper()
 	pack, ds := compile(t, validCard(effectBlock))

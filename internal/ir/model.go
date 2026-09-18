@@ -556,6 +556,9 @@ type DrawEffect struct {
 	Count      int       `json:"count,omitempty"`
 	All        bool      `json:"all"`
 	Predicate  Predicate `json:"predicate,omitempty"`
+	// DistinctNames 要求本次抽到的卡牌卡名两两不同（"抽取 2 种…"），
+	// 只用于带筛选的随机抽选。
+	DistinctNames bool `json:"distinctNames,omitempty"`
 }
 
 func (e DrawEffect) effectKind() string   { return e.Kind }
