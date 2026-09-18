@@ -6,7 +6,13 @@ card 10571110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90071120;
+            summon 1 card 90071110;
+        }
+        enhance 7 {
+            add storm to summoned_all;
+        }
     }
 
     meta {

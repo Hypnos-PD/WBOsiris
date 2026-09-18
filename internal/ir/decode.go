@@ -1659,6 +1659,21 @@ func decodeCondition(data []byte) (Condition, error) {
 		}
 		return DeckDuplicatesCondition{Kind: v.Kind, Side: v.Side, Unique: v.Unique}, nil
 	}
+	if k.Kind == "same_cost" {
+		var v struct {
+			Kind  string `json:"kind"`
+			Side  string `json:"side"`
+			Zone  string `json:"zone"`
+			Count int    `json:"count"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if !validSide(v.Side) || !oneOf(v.Zone, "hand", "deck") || v.Count < 2 || v.Count > 65535 {
+			return nil, fmt.Errorf("invalid same cost condition")
+		}
+		return SameCostCondition{Kind: v.Kind, Side: v.Side, Zone: v.Zone, Count: v.Count}, nil
+	}
 	if k.Kind == "is_damaged" {
 		var v struct {
 			Kind string `json:"kind"`

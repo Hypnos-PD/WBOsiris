@@ -691,6 +691,9 @@ SummonPool = NodeBase & {
   output: "summoned"
 }
 
+所有召唤类节点在写入各自的 `output`（通常是 `summoned`，只保留最近一次操作）之外，
+还会把本次结算里成功入场的实例累加到绑定 `summoned_all`。
+
 AddCopies = NodeBase & {
   kind: "add_copies",
   owner: Side,

@@ -383,6 +383,9 @@ func strictCondition(t []syntax.Token, fusion bool) bool {
 	if deckDuplicatesCondition(t) {
 		return true
 	}
+	if sameCostCondition(t) {
+		return true
+	}
 	if len(t) == 1 {
 		return set("overflow", "skybound_art", "super_skybound_art")[t[0].Value]
 	}
@@ -419,6 +422,14 @@ func deckDuplicatesCondition(t []syntax.Token) bool {
 		return values(t[3:6]) == "has no duplicates"
 	}
 	return false
+}
+
+// sameCostCondition 匹配 `own|oppo.hand|deck has N same cost`
+// （"自己的手牌中有4张或以上费用相同的卡牌"）。
+func sameCostCondition(t []syntax.Token) bool {
+	return len(t) == 7 && set("own", "oppo")[t[0].Value] && t[1].Value == "." &&
+		set("hand", "deck")[t[2].Value] && t[3].Value == "has" && isUnsigned(t[4]) &&
+		t[5].Value == "same" && t[6].Value == "cost"
 }
 
 // damagedBindingCondition 匹配 `<绑定> damaged`，例如【攻击时】里的 `opponent damaged`。

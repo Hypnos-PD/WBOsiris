@@ -400,6 +400,17 @@ type DeckDuplicatesCondition struct {
 
 func (c DeckDuplicatesCondition) conditionKind() string { return c.Kind }
 
+// SameCostCondition 判断指定玩家的某个区域里是否存在 `Count` 张以上费用相同的卡牌
+// （"自己的手牌中有4张或以上费用相同的卡牌"）。费用按当前值比较。
+type SameCostCondition struct {
+	Kind  string `json:"kind"`
+	Side  string `json:"side"`
+	Zone  string `json:"zone"`
+	Count int    `json:"count"`
+}
+
+func (c SameCostCondition) conditionKind() string { return c.Kind }
+
 // SkyboundArtCondition 判断来源卡牌的奥义槽是否达到阈值：10 是【奥义】，15 是【解放奥义】。
 type SkyboundArtCondition struct {
 	Kind  string `json:"kind"`

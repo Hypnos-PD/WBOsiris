@@ -19,6 +19,19 @@ func bindEntities(instances ...*instance) []ir.EventTarget {
 	return values
 }
 
+// bindSummoned 记录召唤输出：`summoned` 仍只保留最近一次操作的结果，
+// `summoned_all` 则累计本次结算里由各次召唤成功入场的全部实例
+// （用于"爆能强化使其获得【疾驰】"这类同时指向多个衍生体的文本）。
+func bindSummoned(f frame, output string, batch []*instance) {
+	entities := bindEntities(batch...)
+	if output != "" {
+		f[output] = entities
+	}
+	if len(entities) > 0 {
+		f["summoned_all"] = append(f["summoned_all"], entities...)
+	}
+}
+
 func (g *game) boundInstances(values []ir.EventTarget) []*instance {
 	var instances []*instance
 	for _, value := range values {

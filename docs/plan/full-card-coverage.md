@@ -20,20 +20,20 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 571 · 未实现(骨架) 26 · 未导入 307
+总计 904 · 已完成 573 · 未实现(骨架) 24 · 未导入 307
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
 10002        77      77       0       0
 10003        77      75       2       0
 10004        76      72       4       0
-10005        76      58      18       0
+10005        76      60      16       0
 10006        76       0       0      76
 10007        77       0       0      77
 10008        78       0       0      78
 10009        76       0       0      76
 90000        93      91       2       0
-未完成卡按文本复杂度：中(41–100字) 248 · 短(≤40字) 128 · 长(>100字) 20 · 白板 1
+未完成卡按文本复杂度：中(41–100字) 246 · 短(≤40字) 128 · 长(>100字) 20 · 白板 1
 ```
 
 ## 工作流
@@ -102,6 +102,8 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-68 | `during own\|oppo turn` 用于回复事件 | `internal/project/strict_validate.go`（事件模式放宽到玩家侧事件）、`internal/ir/decode.go`（`duringTurn` 允许 `healed`） | Go 单测 `internal/project/healed_turn_event_test.go`（回复事件带上回合窗口、`self survives damage during …` 未回归）；卡片 10563110 + 2 个场景 |
 | S-62 | 抽牌事件 `card_drawn` | `internal/project/strict_validate.go`（`card drawn` / `self drawn` 事件形状）、`typed_ir.go`（映射到 `card_drawn`、`self drawn` 隐式 `sourceZone=hand`）、`validate.go`（登记 `drawn` 绑定）、`internal/ir/decode.go`（事件白名单与自身监听的形状）、`internal/runner/execute.go`（`triggerDrawn` 按每张抽到的卡派发）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/drawn_event_test.go`（双方抽牌、`during` 窗口、`self drawn`、`drawn.cost` 作为数值）；卡片 10561120、10522110、10562120 + 8 个场景 |
 | S-70 | `summon random N card A or card B [for own\|oppo]`（随机池召唤） | `internal/ir/summon_pool.go`（新节点与池校验）、`internal/ir/decode.go`（解码与卡牌引用检查）、`internal/project/summon_pool.go`/`typed_ir.go`/`validate.go`（解析与形状）、`internal/runner/summon_pool.go` + `session.go`（随机抽取并召唤）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/summon_pool_test.go`（池内容、`for oppo`、拒绝单卡池）；卡片 10564120 + 3 个场景 |
+| S-58 | `own\|oppo.hand\|deck has N same cost`（同费用张数） | `internal/ir/model.go`（`SameCostCondition`）、`internal/ir/decode.go`、`internal/project/strict_validate.go`/`validate.go`/`typed_ir.go`、`internal/runner/execute.go`（按当前费用统计最多同费张数）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/same_cost_and_summoned_all_test.go`；卡片 10553310 + 2 个场景 |
+| S-61 | `summoned_all`（一次结算的全部召唤） | `internal/runner/bindings.go`（`bindSummoned`）、`internal/runner/execute.go`/`session.go`（所有召唤类效果改为写入累计绑定）、`internal/project/validate.go`（登记 `summoned_all`）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/same_cost_and_summoned_all_test.go`；卡片 10571110 + 3 个场景 |
 
 | S-16 | `ability_destruction_guard`（不会被能力破坏） | 新固有关键词：`internal/ir/decode.go` 的 `validKeyword`、`internal/project/validate.go` 的 `abilities`、`strict_validate.go` 的固有能力形状表、`internal/runner/runner.go`（`destroyByEffect` 受保护，必杀改走新的 `destroyByCombat` 不受保护）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/granted_ability_flow_test.go`（能力破坏被挡下、战斗破坏照样生效）；卡片 10273110 + 2 个场景 |
 | S-07 | `when own\|oppo follower evolved\|super_evolved [other]` —— 其他随从的进化事件 | `internal/ir/model.go`（`EventTrigger.ExcludeSelf`）、`internal/ir/decode.go`（校验 `other` 只用于带对象的非受伤事件）、`internal/project/strict_validate.go`（基础事件模式接受进化动词与 `other`）、`internal/project/typed_ir.go`（事件名映射与 `ExcludeSelf`）、`internal/project/validate.go`（`evolved` 绑定）、`internal/runner/runner.go`（进化事件改为把改名随从绑成 `evolved`）、`internal/runner/trigger_index.go`（按实例排除自身）；文档 `grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/evolution_event_test.go`（`other`/绑定/来源区域、拒绝重复 `other` 与 `self … other`）；卡片 10241110、10212120、10252110 + 6 个场景（含"不因普通进化触发"与"不响应自己超进化"两个反向场景） |
@@ -148,10 +150,12 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-55 | ~~护符的【灵气】~~ **已解决**：护符可以声明 `aura` | 已解锁 90064210 月影指环 | 原先所有固有关键词都要求随从；现在 `aura` 例外（其余关键词仍然只允许随从）。运行时目标保护按战场实例判断，无需改动。 |
 | S-56 | ~~带期限的费用修改~~ **已解决**：`raise\|reduce cost T N until …` | 已解锁 90044310 银冰吐息（"对手的回合结束前，使对手的所有手牌的费用+1"） | 原先只有 `set cost` 接受 `until`；现在加减费同样记录差量并在到期侧还原。 |
 | S-57 | 判断选中的卡牌属于哪一方 | 90064320 天书深渊（"若选择了自己的护符，则对对手的主战者造成2点伤害"） | 谓词里有类型、职业、种族、形态等，但没有"该实例属于能力控制者"。 |
-| S-58 | 手牌中同费用的张数 | 10553310 严酷的奥夜花的纹章（"若自己的手牌中有4张或以上费用相同的卡牌"） | 谓词能按费用比较，但没有"按费用分组后存在 N 张同费"的判断；`count` 也不能表达分组。 |
+| S-58 | ~~手牌中同费用的张数~~ **已解决**：`own\|oppo.hand\|deck has N same cost` | 已解锁 10553310 严酷的奥夜花 | 新增 `SameCostCondition`：按**当前费用**统计区域里出现次数最多的费用是否达到 N。 |
 | S-59 | ~~把卡牌加入牌组~~ **已解决**：`add N card C to deck;`（`add copies of … to deck` 同样可用） | 已解锁 10551310 奥夜花的开战 | 新卡在随机位置插入牌组，不视为抽牌；仍然输出 `added`。 |
 | S-60 | 按牌组随机随从变身并复制 | 10533310 壮美的明越花（"使自己的战场上的所有随从分别变身为自己的牌组中的随机1张随从的复制随从"） | 需要"从牌组随机取一张随从的定义并让每个己方随从变成它的复制"的组合操作。 |
-| S-61 | 同一次打出的多个召唤输出 | 10571110 舞台缔造者（爆能强化 7"使其获得【疾驰】"指同一次入场曲召唤的两个傀儡） | `summoned` 只保留最后一次召唤；需要"本次结算召唤的全部实例"这样的集合输出。 |
+| S-61 | ~~同一次打出的多个召唤输出~~ **已解决**：`summoned_all` | 已解锁 10571110 舞台缔造者 | 所有召唤类效果都会把成功入场的实例累加进 `summoned_all`；`summoned` 语义不变（最近一次）。 |
+
+| S-72 | 返回张数与按返回张数抽牌 | 10554120 奥夜花·释藤（"使自己的所有手牌返回牌组。抽取X张卡牌。X为因本能力返回牌组的张数"） | `return` 没有输出绑定或返回数量；`draw` 的数量也不能引用"本次操作的计数"。 |
 | S-62 | ~~抽牌事件~~ **已解决**：`when own\|oppo card drawn [during … turn]` 与 `when self drawn` | 已解锁 10561120 连结的使徒、10522110 迅猛的武术家、10562120 穷途末路的巫女 | 绑定 `drawn` 指向被抽到的实例；运行时按每张抽到的卡派发监听（公开事实仍是聚合事件），`during` 回合窗口同时扩展到此事件。 |
 | S-63 | 抽牌去重 | 10574120 尽小花·伊鞠（"抽取2种费用为1的法术"） | `draw` 没有 `distinct names`（牌组召唤才有）。 |
 | S-64 | 从破坏历史复制同名卡加入手牌 | 10572310 苏生调律（"将随机2种与本次对战中被破坏的自己的随从同名的卡牌各1张…加入手牌"） | `add copies of` 不接受破坏历史目标（`effectTargets` 过滤掉 `destroyed` 实例），也没有"同名的不同种类各1张"。 |
@@ -168,6 +172,20 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 59（S-58 同费用手牌判断 + S-61 召唤累计输出 + 卡包 10005 第六批）
+
+- **S-58 `own|oppo.hand|deck has N same cost`**：判断区域里是否存在 N 张以上**当前费用**
+  相同的卡牌。新增 `SameCostCondition`（IR、解码、条件编译、运行时统计与形状校验）。
+- **S-61 `summoned_all`**：在一次结算里累计各次召唤成功入场的全部实例；
+  `summoned` 仍然只保留最近一次操作的结果。所有召唤类效果（普通召唤、复制、手牌召唤、
+  亡者召还、牌组/历史/随机池召唤）都会写入这个绑定。
+- 完成 2 张：10553310 严酷的奥夜花（纹章：回合结束抽 1 张，若手牌有 4 张以上同费卡牌则召唤带【守护】的骸骨士兵）、
+  10571110 舞台缔造者（入场曲召唤改良型·悬丝傀儡与悬丝傀儡；爆能强化 7 让这两个傀儡都获得【疾驰】）。
+- 新增 5 个场景（`tests/10005/batch-59-same-cost-and-puppets.wbotest`）；Go 单测
+  `internal/project/same_cost_and_summoned_all_test.go`。
+- 新登记缺口：S-72 "返回张数/按返回张数抽牌"（10554120 奥夜花·释藤的入场曲）。
+- 全量回归：`check` 0 错 0 警；`test` 869 全绿；`go test ./...` 全绿；语料快照更新为 869 个场景。
 
 ### 批次 58（S-70 随机池召唤 + 卡包 10005 第五批）
 

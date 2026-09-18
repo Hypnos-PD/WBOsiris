@@ -539,11 +539,11 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 	case ir.CardEffect:
 		s.g.execCardEffect(e, self, bindings)
 	case ir.HistorySummonEffect:
-		bindings[e.Output] = bindEntities(s.g.summonFromHistory(e, self, bindings)...)
+		bindSummoned(bindings, e.Output, s.g.summonFromHistory(e, self, bindings))
 	case ir.DeckSummonEffect:
-		bindings[e.Output] = bindEntities(s.g.summonFromDeck(e, self, bindings)...)
+		bindSummoned(bindings, e.Output, s.g.summonFromDeck(e, self, bindings))
 	case ir.SummonPoolEffect:
-		bindings[e.Output] = bindEntities(s.g.summonFromPool(e, self)...)
+		bindSummoned(bindings, e.Output, s.g.summonFromPool(e, self))
 	case ir.DeckReplaceEffect:
 		s.g.replaceDeck(e, self)
 	case ir.LeaderMaxLifeEffect:

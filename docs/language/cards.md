@@ -212,6 +212,9 @@ require target from own.field.followers;
 筛选（回合开始时清零），用于"本回合中没有进行过攻击的进化前随从"这类文本。
 `not` 目前只在这个词组里可用，其它否定写法仍会被检查器拒绝。
 
+`if own.hand has 4 same cost { … }` 判断某区域里是否存在 4 张以上**当前费用**相同的卡牌
+（`hand` 与 `deck` 可用），用于"若自己的手牌中有4张或以上费用相同的卡牌"。
+
 数值位置除了 `self.attack`、`count(...)`、`sum(...)` 与玩家数值，还可以写
 `<绑定>.attack|life|cost`，读取该绑定里第一个实例的当前数值，例如
 "X 为选择的随从的攻击力"写作 `require target from own.hand.followers where trait artifact;
@@ -450,6 +453,9 @@ remove all abilities from targets;
 `summon random 1 card A or card B [for own|oppo];` 从几种指定卡牌定义中随机召唤
 （每次抽取消费一次对局随机数），用于"召唤随机1个『A』或『B』"这类文本；
 推导卡不发动入场曲，池内至少两种、至多十六种互不相同的卡牌。
+一次结算里发生的所有召唤都会累加到 `summoned_all`（`summoned` 仍然只保留最近一次），
+因此"爆能强化_7：使其获得【疾驰】"指向同一次入场曲召唤的多个衍生体时写作
+`enhance 7 { add storm to summoned_all; }`。
 `add copies of <集合> to hand;` 则按每个目标当前的卡牌定义复制一张同名卡加入手牌
 （手牌满时按过抽处理，不计入 `added`）；复制可以作用于已经消失的实例，
 因为只读取卡牌身份，所以"使其消失，将1张同名的卡牌加入自己的手牌"写作

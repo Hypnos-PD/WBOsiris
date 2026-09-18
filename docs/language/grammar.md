@@ -280,6 +280,7 @@ condition         = "overflow"
                   | "self" , "." , ("cost" | "attack" | "life") , comparison_operator , integer
                   | participant , "." , evolution_unlock
                   | ["not"] , participant , "." , "attacked_this_turn"
+                  | participant , "." , ("hand" | "deck") , "has" , integer , "same" , "cost"
                   | binding_name , "damaged"
                   | participant , "." , "deck" , "has" , ["no"] , "duplicates"
                   | scalar_value , comparison_operator , integer

@@ -777,6 +777,9 @@ func conditionIR(t []syntax.Token) ir.Condition {
 	if deckDuplicatesCondition(t) {
 		return ir.DeckDuplicatesCondition{Kind: "deck_duplicates", Side: t[0].Value, Unique: len(t) == 6}
 	}
+	if sameCostCondition(t) {
+		return ir.SameCostCondition{Kind: "same_cost", Side: t[0].Value, Zone: t[2].Value, Count: intToken(t[4])}
+	}
 	if t[0].Value == "count" || t[0].Value == "sum" {
 		source := valueRefIR(t, 2)
 		next, _ := parseCountSource(t, 2)

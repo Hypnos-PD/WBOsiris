@@ -39,6 +39,23 @@ func (g *game) condition(c ir.Condition, self *instance) bool {
 			seen[card.card.ID] = true
 		}
 		return x.Unique
+	case ir.SameCostCondition:
+		p, _ := g.playerForSide(self, x.Side)
+		zone := p.hand
+		if x.Zone == "deck" {
+			zone = p.deck
+		}
+		counts := map[int]int{}
+		for _, card := range zone {
+			if !g.chargeQueryVisits(1) {
+				return false
+			}
+			counts[card.cost]++
+			if counts[card.cost] >= x.Count {
+				return true
+			}
+		}
+		return false
 	case ir.SelfFormCondition:
 		return self != nil && g.matches(self, ir.FieldPredicate{Kind: "has_form", Form: x.Form}, self, nil)
 	case ir.EvolutionUnlockedCondition:
@@ -604,7 +621,7 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 			f[e.Output] = bindEntities(added...)
 		}
 	case "summon":
-		f[e.Output] = bindEntities(g.summonFor(self, e.Owner, e.Count, e.CardID, false)...)
+		bindSummoned(f, e.Output, g.summonFor(self, e.Owner, e.Count, e.CardID, false))
 	case "summon_from_hand":
 		// `summon target`：把已经存在于手牌的对象直接放到战场，不发动入场曲。
 		batch := []*instance{}
@@ -621,11 +638,9 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 			batch = append(batch, target)
 			g.triggerSummoned(target)
 		}
-		if e.Output != "" {
-			f[e.Output] = bindEntities(batch...)
-		}
+		bindSummoned(f, e.Output, batch)
 	case "summon_copies":
-		f[e.Output] = bindEntities(g.summonCopies(self, e.Owner, g.effectTargets(e.Target, self, f))...)
+		bindSummoned(f, e.Output, g.summonCopies(self, e.Owner, g.effectTargets(e.Target, self, f)))
 	case "reanimate":
 		f[e.Output] = nil
 		if len(own.field) >= fieldLimit {
@@ -655,7 +670,7 @@ func (g *game) execCardEffect(e ir.CardEffect, self *instance, f frame) {
 		if len(candidates) > 1 {
 			selected = g.rng.Index(len(candidates))
 		}
-		f[e.Output] = bindEntities(g.summonFor(self, e.Owner, 1, candidates[selected].ID, true)...)
+		bindSummoned(f, e.Output, g.summonFor(self, e.Owner, 1, candidates[selected].ID, true))
 	case "transform":
 		targets := g.effectTargets(e.Target, self, f)
 		if g.budget != nil && g.budget.exceeded {

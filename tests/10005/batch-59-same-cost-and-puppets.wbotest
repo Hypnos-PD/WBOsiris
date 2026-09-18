@@ -1,0 +1,82 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "严酷的奥夜花的纹章在回合结束抽牌并召唤骸骨士兵" {
+    seed 59001;
+    state {
+        player own {
+            crests { crest rigor = 10553310; }
+            deck top {
+                follower first = 10001110;
+                follower second = 10001110;
+                follower third = 10001110;
+            }
+            hand {
+                follower a = 10001110;
+                follower b = 10001110;
+                follower c = 10001110;
+            }
+        }
+    }
+    action { end_turn; }
+    // 抽到的也是 2 费，因此手牌里有 4 张 2 费卡牌 → 召唤带守护的骸骨士兵。
+    expect { legal; own.field count card 90051110 == 1; all own.field where card 90051110 have ward; }
+}
+
+scenario "手牌里没有四张同费卡牌时不召唤" {
+    seed 59002;
+    state {
+        player own {
+            crests { crest rigor = 10553310; }
+            deck top { follower drew = 10001110; }
+            hand { follower a = 10001110; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; own.field count card 90051110 == 0; }
+}
+
+scenario "舞台缔造者召唤两个傀儡" {
+    seed 59003;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10571110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90071120 == 1; own.field count card 90071110 == 1; }
+}
+
+scenario "爆能强化七点让两个傀儡都获得疾驰" {
+    seed 59004;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10571110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        all own.field where card 90071120 have storm;
+        all own.field where card 90071110 have storm;
+        own.pp == 0/7;
+    }
+}
+
+scenario "未爆能强化时傀儡没有疾驰" {
+    seed 59005;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10571110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.pp == 0/4;
+        own.field count card 90071120 == 1;
+    }
+}

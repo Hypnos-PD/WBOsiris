@@ -514,6 +514,7 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 		}
 		if h == "summon" || h == "reanimate" {
 			bindings["summoned"] = true
+			bindings["summoned_all"] = true
 		}
 	}
 }
@@ -530,6 +531,7 @@ func producedBindings(body []*syntax.Statement) map[string]bool {
 		out["destroyed"] = true
 		case "summon", "reanimate":
 			out["summoned"] = true
+			out["summoned_all"] = true
 		case "choose", "require", "random":
 			if len(s.Tokens()) > 1 {
 				out[s.Word(1)] = true
@@ -1100,6 +1102,9 @@ func validateCondition(t []syntax.Token, ds *[]syntax.Diagnostic) {
 		return
 	}
 	if deckDuplicatesCondition(t) {
+		return
+	}
+	if sameCostCondition(t) {
 		return
 	}
 	if len(t) > 0 && (t[0].Value == "count" || t[0].Value == "sum") {
