@@ -13,10 +13,8 @@ card 10204120 {
     }
 
     crest {
-        when own turn ends {
-            if count(own.field.followers where form super_evolved) >= 1 {
-                damage oppo.field.followers 2;
-            }
+        when own turn ends if count(own.field.followers where form super_evolved) >= 1 {
+            damage oppo.field.followers 2;
         }
 
         locale chs {

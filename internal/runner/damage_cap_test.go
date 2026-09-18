@@ -47,3 +47,28 @@ func TestLeaderDamageTakenUpIsNeutralizedByBarrier(t *testing.T) {
 		t.Fatalf("second hit = %d, life=%d; want 6/14", got, g.own.leaderLife)
 	}
 }
+
+// 官方 QA（js2aw5l126-8）：『唯一王者·别西卜』的「受到的伤害 +1」重复获得时也重复生效。
+func TestLeaderDamageTakenUpStacks(t *testing.T) {
+	g := &game{}
+	g.oppo.leaderLife = 20
+	g.setLeaderKeyword([]string{"oppo"}, "damage_taken_up", true, "")
+	g.setLeaderKeyword([]string{"oppo"}, "damage_taken_up", true, "")
+	if got := g.damageLeaderFrom(nil, &g.oppo, "oppo", 4); got != 6 || g.oppo.leaderLife != 14 {
+		t.Fatalf("stacked leader damage = %d, life=%d; want 6/14", got, g.oppo.leaderLife)
+	}
+	// 双方同时受伤时走另一条路径（damageLeaders），叠加同样生效。
+	g.own.leaderLife = 20
+	g.setLeaderKeyword([]string{"own"}, "damage_taken_up", true, "")
+	g.setLeaderKeyword([]string{"own"}, "damage_taken_up", true, "")
+	g.damageLeaders(nil, 1)
+	if g.own.leaderLife != 17 || g.oppo.leaderLife != 11 {
+		t.Fatalf("damageLeaders ignored the stack: own=%d oppo=%d; want 17/11", g.own.leaderLife, g.oppo.leaderLife)
+	}
+	// 移除关键词时层数一并清零（给主战者加屏障这类"洗掉状态"的写法仍走同一条路径）。
+	g.setLeaderKeyword([]string{"own"}, "damage_taken_up", false, "")
+	g.damageLeaders(nil, 1)
+	if g.own.leaderLife != 16 {
+		t.Fatalf("removal kept the stack: own=%d; want 16", g.own.leaderLife)
+	}
+}

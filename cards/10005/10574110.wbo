@@ -37,11 +37,9 @@ card 10574110 {
             }
         }
         // 自己的回合结束时：若本随从已进化，则使对手获得纹章并消失。
-        when own turn ends {
-            if self form evolved {
-                gain oppo crest 10574110;
-                banish self;
-            }
+        when own turn ends if self form evolved {
+            gain oppo crest 10574110;
+            banish self;
         }
     }
 

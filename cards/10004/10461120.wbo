@@ -6,10 +6,8 @@ card 10461120 {
     stats 1/4;
 
     effect {
-        when own turn ends {
-            if self form evolved {
-                damage field.followers 2;
-            }
+        when own turn ends if self form evolved {
+            damage field.followers 2;
         }
         evolve {
             add cannot_attack to self until turn ends;

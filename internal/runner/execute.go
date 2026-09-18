@@ -1022,6 +1022,10 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 		}
 		for _, i := range targets {
 			if e.Field == "cost" {
+				if i.zone == "deck" && i.deckCostBase == 0 {
+					// 牌组中的改费只对"还在牌组里"的卡生效（瞬念召唤时还原，见 invokeInstance）。
+					i.deckCostBase = i.cost
+				}
 				if delta != 0 {
 					i.costChanged = true
 				}
@@ -1049,6 +1053,9 @@ func (g *game) execAdjust(e ir.AdjustEffect, self *instance, f frame) {
 		// 当前费用向上取整的一半；重复发动基于已经改变的费用（官方 FAQ：9 → 5）。
 		for _, i := range g.effectTargets(e.Target, self, f) {
 			if i != nil && i.cost > 0 {
+				if i.zone == "deck" && i.deckCostBase == 0 {
+					i.deckCostBase = i.cost
+				}
 				i.cost = (i.cost + 1) / 2
 				i.costChanged = true
 			}
@@ -1240,6 +1247,11 @@ func (g *game) invokeInstance(i *instance) {
 	if i.zone != "deck" {
 		return
 	}
+	if i.deckCostBase > 0 {
+		// 官方 QA（eilph_9kmewn）：瞬念召唤把牌组中的这张卡按原始费用移到战场。
+		i.cost, i.deckCostBase = i.deckCostBase, 0
+		i.costChanged = i.cost != i.card.Cost
+	}
 	g.detachEventSource(i)
 	g.addToZone(p, i, "field")
 	i.summoningSick = i.card.CardType == "follower"
@@ -1264,6 +1276,9 @@ func (g *game) setLeaderKeyword(sides []string, keyword string, enabled bool, en
 				p.leaderAbilities = map[string]bool{}
 			}
 			p.leaderAbilities[keyword] = true
+			if keyword == "damage_taken_up" {
+				p.leaderDamageTakenUp++
+			}
 			if endingSide != "" {
 				expiry := p.leaderTemporary[keyword]
 				expiry.Permanent = false
@@ -1280,6 +1295,9 @@ func (g *game) setLeaderKeyword(sides []string, keyword string, enabled bool, en
 		} else if p.leaderAbilities != nil {
 			delete(p.leaderAbilities, keyword)
 			delete(p.leaderTemporary, keyword)
+			if keyword == "damage_taken_up" {
+				p.leaderDamageTakenUp = 0
+			}
 		}
 	}
 }
@@ -1429,7 +1447,8 @@ func (g *game) resolveDeathBatch(explicit []*instance) []*instance {
 	}
 	for _, death := range deaths {
 		for _, ability := range death.abilities {
-			g.triggers = append(g.triggers, triggerInvocation{body: ability.Body, blockID: ability.blockID, self: death.instance, bindings: frame{}})
+			// 谢幕曲在破坏之后入队，所以不做区域检查（zone 留空）。
+			g.appendTrigger(triggerInvocation{body: ability.Body, blockID: ability.blockID, self: death.instance, bindings: frame{}})
 		}
 	}
 	destroyed := make([]*instance, 0, len(deaths))

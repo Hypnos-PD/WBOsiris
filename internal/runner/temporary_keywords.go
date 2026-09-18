@@ -95,6 +95,9 @@ func (g *game) expireTurnEffects(side string) bool {
 			}
 			delete(p.leaderTemporary, keyword)
 			delete(p.leaderAbilities, keyword)
+			if keyword == "damage_taken_up" {
+				p.leaderDamageTakenUp = 0
+			}
 		}
 		if len(p.leaderTemporary) == 0 {
 			p.leaderTemporary = nil

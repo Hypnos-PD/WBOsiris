@@ -90,3 +90,58 @@ scenario "圣德芬的纹章在回合结束回复全体随从与主战者各一�
         hurt.stats == 2/2;
     }
 }
+
+scenario "倒计数破坏的谢幕曲排在牌组中发动的瞬念召唤之后" {
+    seed 108006;
+    state {
+        turn own 6;
+        player own { }
+        player oppo {
+            evolutions 6;
+            deck top {
+                follower source = 10404110;
+                follower first = 10001110;
+                follower second = 10001110;
+                follower third = 10001110;
+                follower fourth = 10001110;
+            }
+            field { amulet sanctuary = 10161210 { countdown 1; } }
+        }
+    }
+    // 结束自己的回合，让对手的回合通过正常的回合开始流程开始（倒计数 → 牌组中发动 → 谢幕曲 → 抽牌）。
+    action { end_turn; }
+    expect {
+        legal;
+        // 官方 QA（hz0p-10ss）：倒计数破坏 → 瞬念召唤 → 谢幕曲抽 2 张 → 返回手牌 → 回合开始的抽牌。
+        // 若谢幕曲排在瞬念召唤之前，它会把牌组顶的圣德芬抽走，瞬念召唤就不会发生。
+        oppo.crests count card 10404110 == 1;
+        oppo.hand count card 10404110 == 1;
+        // 手牌顺序也固定：谢幕曲抽 2 张 → 圣德芬返回手牌 → 回合开始的抽牌。
+        oppo.hand contains [first, second, source, third] ordered;
+        sanctuary.zone == graveyard;
+    }
+}
+
+scenario "纹章的回合开始能力先于瞬念召唤" {
+    seed 108007;
+    state {
+        turn own 6;
+        player own { }
+        player oppo {
+            evolutions 6;
+            crests { crest titania = 10214110; }
+            deck top {
+                follower source = 10404110;
+                follower next = 10001110;
+            }
+        }
+    }
+    action { end_turn; }
+    expect {
+        legal;
+        // 官方 QA（494pxxx2n）：纹章先加入妖精，然后瞬念召唤并返回手牌，最后回合开始的抽牌。
+        oppo.hand count card 90011110 == 1;
+        oppo.hand count card 10404110 == 1;
+        oppo.crests count card 10404110 == 1;
+    }
+}

@@ -114,6 +114,10 @@ type triggerInvocation struct {
 	blockID  string
 	self     *instance
 	bindings frame
+	// zone 是入队时来源实例所在的区域。官方 QA（2hv4yt1j8）：能力结算时已经
+	// 离开战场的卡牌的能力不会发动，所以来源离开该区域后这条触发被丢弃。
+	// 空字符串表示不做区域检查（谢幕曲在破坏之后才入队，属于这一类）。
+	zone string
 }
 
 type Session struct {
@@ -355,12 +359,13 @@ func (s *Session) Resume(response ChoiceResponse) StepResult {
 		}
 		// 多个能力按选项编号顺序结算，保证回放确定。
 		sort.Ints(chosen)
+		// 官方 QA（qrpt1xyqmvgf）："自己选择【模式】时"按"选择【模式】"这个动作计一次，
+		// 一次选择多个【模式】也只派发一条事件。
+		event := ir.RuntimeEvent{Kind: "mode_selected", Side: s.g.sideOf(p.self), Count: 1}
+		if s.g.emit(event) {
+			s.g.queueEventTriggers(event, p.self, "")
+		}
 		for _, id := range chosen {
-			// 「自己选择【模式】时」：每个被选中的选项各派发一次事件。
-			event := ir.RuntimeEvent{Kind: "mode_selected", Side: s.g.sideOf(p.self), Count: 1}
-			if s.g.emit(event) {
-				s.g.queueEventTriggers(event, p.self, "")
-			}
 			s.pushFrame(execFrame{body: p.options[id], blockID: p.optionBlockIDs[id], self: p.self, bindings: p.bindings})
 		}
 	} else {
@@ -427,6 +432,10 @@ func (s *Session) run() StepResult {
 		if !s.drainingTrigger && !s.insideRepeat() && len(s.g.triggers) > 0 {
 			t := s.g.triggers[0]
 			s.g.triggers = s.g.triggers[1:]
+			if t.zone != "" && (t.self == nil || t.self.zone != t.zone) {
+				// 官方 QA（2hv4yt1j8）：能力结算时已经离开战场的卡牌的能力不会发动。
+				continue
+			}
 			s.triggerBase = len(s.stack)
 			s.drainingTrigger = true
 			s.pushFrame(execFrame{body: t.body, blockID: t.blockID, self: t.self, bindings: t.bindings})

@@ -154,6 +154,9 @@ Keyword = "ward" | "storm" | "rush" | "bane" | "drain" | "intimidate"
         | "ability_destruction_guard" | "damage_taken_up"
         | "cannot_attack" | "cannot_attack_follower" | "cannot_attack_leader"
 
+(* 主战者上的 damage_taken_up 是层数：重复获得会重复生效（官方 QA js2aw5l126-8），
+   随连击快照保存在 ContinuationPlayer.leaderDamageTakenUp 里。 *)
+
 CardRestriction =
   Unplayable { kind: "unplayable" }
 
@@ -801,7 +804,16 @@ ReplayFanfare = NodeBase & {
 }
 
 `replay_fanfare` 按实例当前的卡牌定义查找 `fanfare` 能力并作为新的效果帧执行；
-同一实例最多重发 12 次（`fanfareReplays` 随实例快照保存），避免随机自引用无限递归。
+同一实例最多重发 20 次（`fanfareReplays` 随实例快照保存；官方 QA 0vrc9nkxfkx1 给出
+入场曲最多 21 次、`+4/+4` 最多 21 次，这个上限同时避免随机自引用无限递归）。
+
+触发入队时记录来源实例当时所在的区域：结算时来源已经离开该区域的触发被丢弃
+（官方 QA 2hv4yt1j8）。谢幕曲在破坏之后入队，因此不做该检查。失去能力
+（`remove_ability`）不会剔除队列里已经排好的触发（官方 QA mxtwkh_pd）。
+
+回合开始时，倒计数归零的破坏会先发生（场地先空出来），但它产生的触发——已破坏监听与
+谢幕曲——排在牌组/手牌/战场的"回合开始时"能力之后入队（官方 QA et1amf0xg7k、hz0p-10ss）：
+顺序是 破坏 → 牌组中发动（瞬念召唤）→ 谢幕曲 → 返回手牌 → 回合开始的抽牌。
 
 GrantFaithModes = NodeBase & {
   kind: "grant_faith_modes",
@@ -815,7 +827,8 @@ EmptyDeckOutcome = NodeBase & {
   outcome: "defeat" | "victory"  (* 牌组耗尽（抽不到牌）时的结果；跨续局保存 *)
 }
 
-`mode_selected` 事件在玩家确认模式选择后按每个选中的选项各派发一次（`random` 模式不派发），
+`mode_selected` 事件在玩家确认模式选择后派发一次（一次选择动作一条，即使同时选中多个选项，
+官方 QA qrpt1xyqmvgf；`random` 模式不派发），
 供 `when own|oppo mode selected` 使用；模式请求的数量会加上该玩家信仰的
 `mode_bonus` 合计，再按选项数截断。
 

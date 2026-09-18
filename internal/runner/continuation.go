@@ -43,6 +43,8 @@ type ContinuationTrigger struct {
 	BlockID        string `json:"blockId"`
 	SelfInstanceID string `json:"selfInstanceId,omitempty"`
 	BindingFrameID string `json:"bindingFrameId"`
+	// Zone 是入队时来源实例所在的区域（来源离开后这条触发被丢弃，见 triggerInvocation.zone）。
+	Zone string `json:"zone,omitempty"`
 }
 
 type ContinuationGame struct {
@@ -104,6 +106,8 @@ type ContinuationPlayer struct {
 	// DeckOutcome 是"牌组耗尽时的结果"（"victory" 表示胜利的卡牌）。
 	DeckOutcome string `json:"deckOutcome,omitempty"`
 	LeaderAbilities  []string            `json:"leaderAbilities,omitempty"`
+	// LeaderDamageTakenUp 是"受到的伤害 +1"的层数（可叠加，官方 QA js2aw5l126-8）。
+	LeaderDamageTakenUp int `json:"leaderDamageTakenUp,omitempty"`
 	// LeaderTemporary 是主战者级关键词的到期时点（"到对手的回合结束为止"）。
 	LeaderTemporary map[string]KeywordExpiry `json:"leaderTemporary,omitempty"`
 	AttackedThisTurn bool                `json:"attackedThisTurn"`
@@ -140,6 +144,8 @@ type ContinuationEntity struct {
 	Earthsigil        int                      `json:"earthsigil"`
 	DamageReduction   int                      `json:"damageReduction"`
 	DamageCap         int                      `json:"damageCap,omitempty"`
+	// DeckCostBase 是"在牌组中改费"之前的费用（瞬念召唤时还原，官方 QA eilph_9kmewn）。
+	DeckCostBase int `json:"deckCostBase,omitempty"`
 	Countdown         int                      `json:"countdown"`
 	AttacksUsed       int                      `json:"attacksUsed"`
 	AttackLimit       int                      `json:"attackLimit"`
@@ -406,7 +412,7 @@ func RestoreSession(cards *ir.CardPack, c *Continuation) (*Session, error) {
 				}
 			}
 		}
-		s.g.triggers = append(s.g.triggers, triggerInvocation{body: body, blockID: saved.BlockID, self: self, bindings: bindingFrame})
+		s.g.triggers = append(s.g.triggers, triggerInvocation{body: body, blockID: saved.BlockID, self: self, bindings: bindingFrame, zone: saved.Zone})
 	}
 	g.budget = &s.budget
 	return s, nil
@@ -459,7 +465,7 @@ func (s *Session) makeContinuation() *Continuation {
 		c.Pending.OptionBlockIDs = append(c.Pending.OptionBlockIDs, ContinuationOption{OptionID: optionID, BlockID: s.pending.optionBlockIDs[optionID]})
 	}
 	for _, trigger := range s.g.triggers {
-		c.Triggers = append(c.Triggers, ContinuationTrigger{BlockID: trigger.blockID, SelfInstanceID: instanceID(trigger.self), BindingFrameID: addBindings(trigger.bindings)})
+		c.Triggers = append(c.Triggers, ContinuationTrigger{BlockID: trigger.blockID, SelfInstanceID: instanceID(trigger.self), BindingFrameID: addBindings(trigger.bindings), Zone: trigger.zone})
 	}
 	return c
 }
@@ -496,6 +502,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 			TemporaryCost:     maps.Clone(i.temporaryCost),
 			ID:                i.id, Alias: i.alias, Zone: i.zone, CardID: i.card.ID, Cost: i.cost, Attack: i.attack, Life: i.life, DamageTaken: i.damageTaken,
 			Earthsigil: i.earthsigil, Countdown: i.countdown, AttacksUsed: i.attacksUsed, AttackLimit: attackLimit(i), DamageCap: i.damageCap,
+			DeckCostBase: i.deckCostBase,
 			Engaged: i.engaged, SummoningSick: i.summoningSick, Evolved: i.evolved,
 			SuperEvolved: i.superEvolved, Departed: i.departed, FusedThisTurn: i.fusedThisTurn, DamageReduction: i.damageReduction, Abilities: abilities, Materials: instanceIDs(i.materials), Grants: grantIDs(i),
 			Suppressed: suppressedAbilities(i), SuppressAll: i.suppressAll, CostChanged: i.costChanged, Skybound: i.skybound,
@@ -598,7 +605,7 @@ func snapshotContinuationPlayer(p player) ContinuationPlayer {
 		RetiredDeck: instanceIDs(p.retiredDeck),
 		Crests:      instanceIDs(p.crests), RetiredCrests: instanceIDs(p.retiredCrests),
 		PP: p.pp, MaxPP: p.maxpp, LeaderLife: p.leaderLife, LeaderMax: p.leaderMax,
-		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, Rally: p.rally, LeaderAbilities: leaderAbilityNames(p), AttackedThisTurn: p.attackedThisTurn,
+		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, Rally: p.rally, LeaderAbilities: leaderAbilityNames(p), LeaderDamageTakenUp: p.leaderDamageTakenUp, AttackedThisTurn: p.attackedThisTurn,
 		LeaderAttackedThisTurn: p.leaderAttackedThisTurn, LeaderAttackedLastTurn: p.leaderAttackedLastTurn,
 		EnteredArtifacts: sortedCardIDs(p.enteredArtifacts),
 		LeaderTemporary:  maps.Clone(p.leaderTemporary),
@@ -623,7 +630,7 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 		return nil, fmt.Errorf("invalid continuation instance serial")
 	}
 	validTransition := saved.Turn.Active == "own" || saved.Turn.Active == "oppo"
-	if saved.TurnTransition != "" && saved.TurnTransition != "ending" && saved.TurnTransition != "starting" && saved.TurnTransition != "starting_triggers" && saved.TurnTransition != "starting_crests" && saved.TurnTransition != "starting_draw" {
+	if saved.TurnTransition != "" && saved.TurnTransition != "ending" && saved.TurnTransition != "starting" && saved.TurnTransition != "starting_crests" && saved.TurnTransition != "starting_draw" {
 		validTransition = false
 	}
 	if saved.EndingSide != "" && saved.EndingSide != "own" && saved.EndingSide != "oppo" ||
@@ -671,7 +678,7 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 			id:           entity.ID, alias: entity.Alias, zone: entity.Zone, card: card,
 			attack: entity.Attack, life: entity.Life, damageTaken: entity.DamageTaken, cost: entity.Cost, earthsigil: entity.Earthsigil, countdown: entity.Countdown,
 			attacksUsed: entity.AttacksUsed, attackLimitValue: limit, engaged: entity.Engaged, summoningSick: entity.SummoningSick,
-			evolved: entity.Evolved, superEvolved: entity.SuperEvolved, departed: entity.Departed, fusedThisTurn: entity.FusedThisTurn, damageReduction: entity.DamageReduction, damageCap: entity.DamageCap, costChanged: entity.CostChanged, skybound: entity.Skybound, fanfareReplays: entity.FanfareReplays, modeHistory: modeHistorySet(entity.ModeHistory), abilities: map[string]bool{},
+			evolved: entity.Evolved, superEvolved: entity.SuperEvolved, departed: entity.Departed, fusedThisTurn: entity.FusedThisTurn, damageReduction: entity.DamageReduction, damageCap: entity.DamageCap, deckCostBase: entity.DeckCostBase, costChanged: entity.CostChanged, skybound: entity.Skybound, fanfareReplays: entity.FanfareReplays, modeHistory: modeHistorySet(entity.ModeHistory), abilities: map[string]bool{},
 		}
 		for _, id := range entity.Grants {
 			grant, ok := grants[id]
@@ -977,7 +984,7 @@ func generatedInstanceSerial(instances []ContinuationEntity) int {
 }
 
 func restorePlayer(saved ContinuationPlayer, instances map[string]*instance, cards map[int]*ir.Card) (player, error) {
-	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, rally: saved.Rally, leaderAbilities: leaderAbilitySet(saved.LeaderAbilities), attackedThisTurn: saved.AttackedThisTurn,
+	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, rally: saved.Rally, leaderAbilities: leaderAbilitySet(saved.LeaderAbilities), leaderDamageTakenUp: saved.LeaderDamageTakenUp, attackedThisTurn: saved.AttackedThisTurn,
 		leaderTemporary: maps.Clone(saved.LeaderTemporary),
 		leaderAttackedThisTurn: saved.LeaderAttackedThisTurn, leaderAttackedLastTurn: saved.LeaderAttackedLastTurn, evolvedThisTurn: saved.EvolvedThisTurn, extraPPEarly: saved.ExtraPPEarly, extraPPLate: saved.ExtraPPLate, extraPPActive: saved.ExtraPPActive}
 	if len(saved.EnteredArtifacts) > 0 {

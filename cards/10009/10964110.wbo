@@ -16,11 +16,9 @@ card 10964110 {
     }
 
     crest {
-        when own turn ends {
-            if count(own.field where base.cost >= 6) >= 1 {
-                damage oppo.leader 1;
-                heal own.leader 1;
-            }
+        when own turn ends if count(own.field where base.cost >= 6) >= 1 {
+            damage oppo.leader 1;
+            heal own.leader 1;
         }
 
         locale chs {

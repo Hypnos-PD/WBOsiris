@@ -71,6 +71,19 @@ scenario "拙劣的人偶激奏召唤两个自己" {
     expect { legal; own.field count card 10672110 == 2; source.zone == graveyard; own.pp == 0/5; }
 }
 
+scenario "剩余能量点够付原费用时不能激奏" {
+    seed 98006;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10672110; }
+        }
+    }
+    // 官方 QA（npml0tn71d）：有 5 点能量点（够付 5 费本体）时不能用【激奏_3】。
+    action { accelerate source; }
+    expect { illegal cost; unchanged; source.zone == hand; own.field count card 10672110 == 0; }
+}
+
 scenario "愚劣的兵器激奏只召唤一个且不触发回合结束伤害" {
     seed 98005;
     state {

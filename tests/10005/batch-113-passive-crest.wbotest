@@ -138,3 +138,21 @@ scenario "没有纹章时佐伊的入场曲与爆能强化照常发动" {
         source.evolved == false;
     }
 }
+
+scenario "纹章压制爆能强化时按基础费用支付" {
+    seed 113008;
+    state {
+        player own {
+            pp 4/4;
+            crests { crest milteo = 10554110; }
+            hand { follower source = 10152110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        // 官方 QA（4gt8z-3dnxk）：【爆能强化_4】不发动，所以只消耗 2 点能量点。
+        own.pp == 2/4;
+        source.evolved == true;
+    }
+}

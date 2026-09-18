@@ -18,13 +18,11 @@ card 10954110 {
     }
 
     crest {
-        when own turn ends {
-            if count(own.field where lastwords) >= 1 {
-                random victim from own.field where lastwords;
-                destroy victim;
-                random foe from oppo.field.followers;
-                destroy foe;
-            }
+        when own turn ends if count(own.field where lastwords) >= 1 {
+            random victim from own.field where lastwords;
+            destroy victim;
+            random foe from oppo.field.followers;
+            destroy foe;
         }
 
         locale chs {

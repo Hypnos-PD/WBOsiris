@@ -378,7 +378,7 @@ func parseBaseEventPattern(t []syntax.Token) (int, string, bool) {
 		return 3, "", true
 	}
 	if t[2].Value == "mode" && t[3].Value == "selected" {
-		// `when own|oppo mode selected`：玩家选择【模式】时（每个选中的选项各一次）。
+		// `when own|oppo mode selected`：玩家选择【模式】时（一次选择动作一次，官方 QA qrpt1xyqmvgf）。
 		return 4, "", true
 	}
 	if set("follower", "amulet")[t[2].Value] && set("summoned", "engaged", "destroyed")[t[3].Value] {

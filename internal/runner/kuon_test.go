@@ -174,7 +174,9 @@ func TestNobleHistoryWindowDuringPausedTurnStart(t *testing.T) {
 	}
 	s.g.destroyByEffect([]*instance{s.g.instances[strings.Repeat("3", 32)]})
 	step := s.Submit(strings.Repeat("e", 32), SimulatorCommand{Kind: "end_turn"})
-	if step.Status != StatusSuspended || s.g.turnTransition != "starting_triggers" {
+	// 回合开始阶段已经把所有触发入队（倒计数破坏的谢幕曲排在牌组/手牌/战场的
+	// 回合开始能力之后），所以暂停时停在"即将抽牌"的这一步。
+	if step.Status != StatusSuspended || s.g.turnTransition != "starting_draw" {
 		t.Fatal(step, s.g.turnTransition)
 	}
 	data, err := s.EncodeContinuation()

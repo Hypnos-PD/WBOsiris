@@ -8,11 +8,9 @@ card 10464110 {
     effect {
         ward;
         cannot_attack;
-        when own turn ends {
-            if own.superevolve_unlocked {
-                random ally from own.field.followers where form unevolved and not attacked this turn;
-                evolve ally silent;
-            }
+        when own turn ends if own.superevolve_unlocked {
+            random ally from own.field.followers where form unevolved and not attacked this turn;
+            evolve ally silent;
         }
     }
 

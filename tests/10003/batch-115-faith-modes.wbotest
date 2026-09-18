@@ -71,7 +71,30 @@ scenario "信仰的模式选择加成让玩家多选一个模式" {
         // 模式（3）回复 2 点能量点、模式（4）回复主战者 6 点，需要加成才能同时选中。
         own.pp == 2/5;
         own.leader.life == 16;
-        // 选择两个模式让信仰值 +2。
-        karma.counter.value == 2;
+        // 官方 QA（qrpt1xyqmvgf）：一次选择【模式】只算一次，即使同时选中两个模式信仰值也只 +1。
+        karma.counter.value == 1;
+    }
+}
+
+scenario "一次选择两个模式只让信仰值加一" {
+    seed 115005;
+    state {
+        player own {
+            pp 5/5;
+            crests { faith karma = 10354110; }
+            hand { spell source = 10353310; }
+        }
+        player oppo {
+            leader 20/20;
+            field { follower enemy = 10001110 { stats 2/12; } }
+        }
+    }
+    action { play source; mode 1, 4; }
+    expect {
+        legal;
+        // 官方 QA（qrpt1xyqmvgf）：『叫唤与憎恶』一次选中两个模式，信仰值只 +1。
+        karma.counter.value == 1;
+        own.pp == 3/5;
+        enemy.stats == 2/8;
     }
 }

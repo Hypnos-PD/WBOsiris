@@ -486,3 +486,23 @@ scenario "丽金花云庆的纹章在回合结束时加入闪耀的金币" {
     action { end_turn; }
     expect { legal; own.hand count card 90021350 == 1; }
 }
+
+scenario "回合结束时加入的法术不参与同一次回合结束的条件判定" {
+    seed 55035;
+    state {
+        player own {
+            crests { crest cloud = 10524120; }
+            field { follower frog = 10522120; }
+            hand { spell only = 90054330; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { end_turn; }
+    expect {
+        legal;
+        // 官方 QA（75wdwp8ysf）：按下回合结束时手牌里的法术只有 1 张，
+        // 之后纹章加入的闪耀的金币不会让吉祥蛙的能力补发。
+        enemy.stats == 2/8;
+        own.hand count card 90021350 == 1;
+    }
+}

@@ -111,3 +111,27 @@ scenario "未解禁超进化时土之法则不进化随从" {
     action { end_turn; }
     expect { legal; source.evolved == false; }
 }
+
+scenario "回合结束时的进化不满足同一时点锁定的条件" {
+    seed 50009;
+    state {
+        turn own 7;
+        player own {
+            field {
+                // 伽莱翁自己也已进化，回合结束能力只能选中还没进化的拉姆蕾达，结果确定。
+                follower galmieux = 10464110 { evolved; }
+                follower ram = 10461120 { stats 1/4; }
+            }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { end_turn; }
+    expect {
+        legal;
+        // 官方 QA（zov-4dbr6tlx、0stcr3cyb）："回合结束时"的条件在按下回合结束按钮时
+        // 就已经判定，所以被伽莱翁进化后的拉姆蕾达不会补发"对战场上的所有随从造成2点伤害"。
+        ram.evolved == true;
+        ram.stats == 3/6;
+        enemy.stats == 2/8;
+    }
+}

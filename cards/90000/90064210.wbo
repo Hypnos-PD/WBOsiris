@@ -8,11 +8,9 @@ card 90064210 {
     effect {
         countdown 1;
         aura;
-        when own turn ends {
-            if count(own.field.amulets) >= 3 {
-                damage oppo.field.followers 3;
-                damage oppo.leader 3;
-            }
+        when own turn ends if count(own.field.amulets) >= 3 {
+            damage oppo.field.followers 3;
+            damage oppo.leader 3;
         }
     }
 

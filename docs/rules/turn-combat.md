@@ -95,9 +95,15 @@ turn_start <side>;
 暂停的回合动作必须在 Continuation 中额外保存：
 
 ```text
-turnTransition: "" | "ending" | "starting" | "starting_crests" | "starting_triggers" | "starting_draw"
+turnTransition: "" | "ending" | "starting" | "starting_crests" | "starting_draw"
 transitionSide: "own" | "oppo"
 ```
+
+`starting_crests` 这一步同时完成"场上吟唱护符的倒计数与破坏"和"牌组/手牌/战场的回合开始
+能力入队"：破坏产生的触发（已破坏监听与谢幕曲）收集到临时列表里，追加在回合开始能力
+之后，因此顺序是 倒计数破坏 → 牌组中发动（瞬念召唤）→ 谢幕曲 → 返回手牌 → 抽牌
+（官方 QA et1amf0xg7k、hz0p-10ss）。续局不需要向后兼容，因此不再保留旧的
+`starting_triggers` 阶段名。
 
 恢复时不得根据当前 `Turn` 猜测是否已经切换。`ending` 只能继续结束当前行动方，
 `starting` 只能继续准备已记录的下一行动方；非法组合必须在状态改变前拒绝。

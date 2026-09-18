@@ -21,10 +21,8 @@ card 10714120 {
     crest {
         countdown 3;
 
-        when own turn ends {
-            if combo >= 3 {
-                add 1 card 90011310 to hand;
-            }
+        when own turn ends if combo >= 3 {
+            add 1 card 90011310 to hand;
         }
 
         locale chs {

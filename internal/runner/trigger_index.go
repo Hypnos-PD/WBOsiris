@@ -157,7 +157,7 @@ func (g *game) queueEventTriggersFor(kind string, event ir.RuntimeEvent, subject
 				} else if binding == "healed" && event.Target != nil && event.Target.Kind == "leader" {
 					bindings[binding] = []ir.EventTarget{*event.Target}
 				}
-				if !g.queueTrigger(triggerInvocation{body: ability.Body, blockID: ability.blockID, self: source, bindings: bindings}) {
+				if !g.queueTrigger(triggerInvocation{body: ability.Body, blockID: ability.blockID, self: source, bindings: bindings, zone: source.zone}) {
 					return false
 				}
 				if trigger.OncePerTurn != "" {

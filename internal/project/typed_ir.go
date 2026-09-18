@@ -1143,7 +1143,7 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 		// "自己发动【土之秘术】时"：监听土之印支付成功的那一刻。
 		m.Event = "earthrite"
 	} else if t[2].Value == "mode" && t[3].Value == "selected" {
-		// "自己选择【模式】时"：每选中一个模式各派发一次。
+		// "自己选择【模式】时"：一次"选择【模式】"的动作派发一次（官方 QA qrpt1xyqmvgf）。
 		m.Event = "mode_selected"
 	} else {
 		m.SubjectType = t[2].Value

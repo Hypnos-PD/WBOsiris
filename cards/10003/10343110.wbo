@@ -9,10 +9,8 @@ card 10343110 {
         fanfare {
             damage field.followers 3;
         }
-        when own turn ends {
-            if self.life <= 3 {
-                buff own.hand.followers +1/+1 where class dragoncraft;
-            }
+        when own turn ends if self.life <= 3 {
+            buff own.hand.followers +1/+1 where class dragoncraft;
         }
     }
 

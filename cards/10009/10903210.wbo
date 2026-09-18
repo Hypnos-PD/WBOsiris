@@ -6,10 +6,8 @@ card 10903210 {
 
     effect {
         // 回合结束时，本场对战中自己使用过的卡牌的原始费用涵盖 1..8 就破坏自己。
-        when own turn ends {
-            if own.played has costs 1 to 8 {
-                destroy self;
-            }
+        when own turn ends if own.played has costs 1 to 8 {
+            destroy self;
         }
         lastwords {
             summon random 4 from own.destroyed.followers distinct names;

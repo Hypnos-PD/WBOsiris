@@ -20,10 +20,8 @@ card 10714110 {
     crest {
         countdown 3;
 
-        when own turn ends {
-            if combo >= 3 {
-                buff own.deck.followers +1/+1;
-            }
+        when own turn ends if combo >= 3 {
+            buff own.deck.followers +1/+1;
         }
 
         locale chs {

@@ -55,22 +55,15 @@ func (i *instance) suppresses(kind string) bool {
 
 // removeAbility 让实例失去一类触发能力；all 表示"失去所有能力"。
 // 失去的能力不会因为重新索引或能力查询而恢复，离开战场后随实例一起消失。
+//
+// 官方 QA（mxtwkh_pd）：失去能力只影响之后的能力查询，已经进入队列的触发
+// 不受影响，仍然会结算完（『唯一王者·别西卜』的【入场曲】让『雷维翁超越者·尤里乌斯』
+// 失去所有能力后，尤里乌斯的能力依旧完成结算）。
 func (g *game) removeAbility(i *instance, ability string) {
 	if i == nil || i.card.CardType != "follower" && i.card.CardType != "amulet" {
 		return
 	}
-	dropped := map[string]bool{}
 	if ability == "all" {
-		for _, a := range i.card.Abilities {
-			if _, ok := a.Trigger.(ir.EventTrigger); ok {
-				dropped[abilityBlockID(i.card.ID, a.ID)] = true
-			}
-		}
-		for _, grant := range i.grants {
-			if _, ok := grant.Ability.Trigger.(ir.EventTrigger); ok {
-				dropped[nestedBlockID(grant.ID, "granted")] = true
-			}
-		}
 		i.suppressAll = true
 		i.abilities = map[string]bool{}
 		i.temporaryKeywords = nil
@@ -80,19 +73,7 @@ func (g *game) removeAbility(i *instance, ability string) {
 			i.suppressed = map[string]bool{}
 		}
 		i.suppressed[ability] = true
-		for _, a := range i.card.Abilities {
-			if ir.TriggerKind(a.Trigger) == ability {
-				dropped[abilityBlockID(i.card.ID, a.ID)] = true
-			}
-		}
 	}
-	kept := g.triggers[:0]
-	for _, trigger := range g.triggers {
-		if trigger.self != i || !dropped[trigger.blockID] {
-			kept = append(kept, trigger)
-		}
-	}
-	g.triggers = kept
 	g.triggerIndex.remove(i)
 	g.triggerIndex.add(i)
 }

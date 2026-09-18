@@ -50,6 +50,10 @@ type instance struct {
 	skybound                                                                    int
 	// fanfareReplays 记录本实例被"重新发动入场曲"的次数（防止随机自引用无限递归）。
 	fanfareReplays                                                              int
+	// deckCostBase 记录"在牌组中受到的改费"之前的费用，瞬念召唤时用它还原
+	//（官方 QA eilph_9kmewn：被『绚丽凤凰·小凤』减费的『天司长的继承者·圣德芬』
+	// 瞬念召唤后返回手牌，费用回到 6）。
+	deckCostBase int
 	// modeHistory 记录"从尚未发动的能力中随机发动"已经发动过的选项（按记录名分组）。
 	modeHistory                                                                 map[string]map[int]bool
 }
@@ -59,6 +63,9 @@ type player struct {
 	pp, maxpp, leaderLife, leaderMax, ep, sep, combo, shadows int
 	// leaderAbilities 记录主战者级别的关键词（例如"使自己的主战者获得【屏障】"）。
 	leaderAbilities map[string]bool
+	// leaderDamageTakenUp 是"受到的伤害 +1"的层数。官方 QA（js2aw5l126-8）：
+	// 重复获得会重复生效（+2、+3…）。
+	leaderDamageTakenUp int
 	// leaderTemporary 记录主战者级关键词的到期时点（"到对手的回合结束为止"）。
 	leaderTemporary map[string]KeywordExpiry
 	// rally（协作）统计本场对战中进入过自己战场的随从数量。
@@ -115,6 +122,8 @@ type game struct {
 	eventSequence, deathBatchSerial uint64
 	revision                        uint64
 	triggers                        []triggerInvocation
+	// triggerSink 非空时，新入队的触发被收集到这里而不是直接进入 g.triggers。
+	triggerSink *[]triggerInvocation
 	triggerIndex                    triggerIndex
 	budget                          *budgetTracker
 	turn                            ir.Turn
@@ -413,8 +422,19 @@ func (g *game) queueTrigger(trigger triggerInvocation) bool {
 	if g.budget != nil && !g.budget.chargeTriggers(1) {
 		return false
 	}
-	g.triggers = append(g.triggers, trigger)
+	g.appendTrigger(trigger)
 	return true
+}
+
+// appendTrigger 把触发放进队列；triggerSink 非空时改放进临时的收集器，
+// 用于"某个阶段产生的触发要排到后面阶段产生的触发之后再入队"的场合
+// （回合开始时倒计数破坏的谢幕曲，见 advanceTurn）。
+func (g *game) appendTrigger(trigger triggerInvocation) {
+	if g.triggerSink != nil {
+		*g.triggerSink = append(*g.triggerSink, trigger)
+		return
+	}
+	g.triggers = append(g.triggers, trigger)
 }
 
 func (g *game) chargeQueryVisits(amount int) bool {
@@ -557,9 +577,11 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 		return sandbox.preflightRequirements(a.Body, sandboxSource, frame{}, true)
 	case "accelerate":
 		// 【激奏】：以激奏费用打出，只结算激奏能力，不进入战场、不发动入场曲。
+		// 官方 QA（npml0tn71d）：只有"没有足够的能量点使用本卡牌"时才能用激奏，
+		// 剩余能量点够付原费用时不能激奏。
 		a := findCostAbility(i.card, "accelerate")
 		actor := g.player(x.Actor)
-		if i.zone != "hand" || !contains(actor.hand, i) || a == nil || actor.pp < a.Trigger.(ir.CostTrigger).Cost {
+		if i.zone != "hand" || !contains(actor.hand, i) || a == nil || actor.pp < a.Trigger.(ir.CostTrigger).Cost || actor.pp >= i.cost {
 			return "cost"
 		}
 		for _, restriction := range i.card.Restrictions {
@@ -925,9 +947,10 @@ func (g *game) damageLeaderFrom(source *instance, target *player, side string, a
 	if amount < 0 {
 		amount = 0
 	}
-	if target.leaderAbilities["damage_taken_up"] {
+	if target.leaderDamageTakenUp > 0 {
 		// 「受到的伤害 +1」：先加一，再让【屏障】把这次伤害整体降为 0（官方 QA）。
-		amount++
+		// 该状态可叠加（官方 QA js2aw5l126-8）。
+		amount += target.leaderDamageTakenUp
 	}
 	if target.leaderAbilities["damage_to_zero"] && amount > 0 {
 		// 「受到的1点或以上的伤害变为0点」：最终伤害归零，也不消耗【屏障】。
@@ -964,9 +987,9 @@ func (g *game) damageLeaders(source *instance, amount int) {
 		{&g.oppo, "oppo"},
 	} {
 		damage := amount
-		if target.player.leaderAbilities["damage_taken_up"] {
+		if target.player.leaderDamageTakenUp > 0 {
 			// 「受到的伤害 +1」：先加一，再让【屏障】把这次伤害整体降为 0（官方 QA）。
-			damage++
+			damage += target.player.leaderDamageTakenUp
 		}
 		if target.player.leaderAbilities["damage_to_zero"] && damage > 0 {
 			// 「受到的1点或以上的伤害变为0点」：最终伤害归零，也不消耗【屏障】。
@@ -1158,8 +1181,14 @@ func (g *game) emitDamage(amount int, target *ir.EventTarget, subject *instance)
 func (g *game) commitPlay(i *instance) []execFrame {
 	enhanceCost := g.enhanceCost(i, g.owner(i).pp)
 	// 纹章/信仰的持续性规则改动："自己的随从的【入场曲】/【爆能强化】不发动"。
-	suppressFanfare := g.playerPassive(g.owner(i), "suppress_fanfare")
-	suppressEnhance := g.playerPassive(g.owner(i), "suppress_enhance")
+	// 官方文本只覆盖随从，法术与护符的爆能强化不受影响。
+	suppressFanfare := i.card.CardType == "follower" && g.playerPassive(g.owner(i), "suppress_fanfare")
+	suppressEnhance := i.card.CardType == "follower" && g.playerPassive(g.owner(i), "suppress_enhance")
+	if suppressEnhance {
+		// 官方 QA（4gt8z-3dnxk）：爆能强化不发动时按基础费用支付——有 4 点能量点时打出
+		// 2 费的『干练的死神·蜜诺』只消耗 2 点。
+		enhanceCost = -1
+	}
 	// 爆能强化的“改为”档会替换本次打出的基础效果与入场曲，而不是追加。
 	replacing := false
 	for _, a := range i.card.Abilities {
@@ -1235,6 +1264,10 @@ func (g *game) playerPassive(p *player, name string) bool {
 }
 
 func (g *game) playCost(i *instance, pp int) int {
+	// 官方 QA（4gt8z-3dnxk）：爆能强化被纹章压制时按基础费用支付。
+	if i.card.CardType == "follower" && g.playerPassive(g.owner(i), "suppress_enhance") {
+		return i.cost
+	}
 	if enhance := g.enhanceCost(i, pp); enhance >= 0 {
 		return enhance
 	}
@@ -1513,13 +1546,17 @@ func (g *game) advanceTurn() {
 				}
 			}
 		}
-		g.resolveDeathBatch(expired)
-		g.turnTransition = "starting_triggers"
-		return
-	}
-	if g.turnTransition == "starting_triggers" {
 		g.turnTransition = "starting_draw"
+		// 官方 QA（et1amf0xg7k、hz0p-10ss、494pxxx2n）：倒计数的破坏发生在牌组中
+		// 的"回合开始时"能力之前，但破坏引发的触发（已破坏监听与谢幕曲）要排到它们之后。
+		// 于是：先结算破坏本身（触发收进 sink），再入队牌组/手牌/战场的回合开始能力，
+		// 最后追加被破坏卡牌的触发。这样瞬念召唤先发生，返回手牌排在谢幕曲之后。
+		var deferred []triggerInvocation
+		g.triggerSink = &deferred
+		g.resolveDeathBatch(expired)
+		g.triggerSink = nil
 		g.queueEventTriggersFor("turn_started", ir.RuntimeEvent{Kind: "turn_started", Side: g.turn.Active}, nil, "", "cards")
+		g.triggers = append(g.triggers, deferred...)
 		return
 	}
 	g.turnTransition = ""
@@ -1530,9 +1567,11 @@ func (g *game) advanceTurn() {
 	g.emit(ir.RuntimeEvent{Kind: "turn_started", Side: g.turn.Active})
 }
 
-// fanfareReplayLimit 限制同一实例"重新发动入场曲"的次数：卡牌可以用随机模式自引用，
-// 真实对局里概率极低的长链会收敛，引擎需要一个确定性上限避免无限递归。
-const fanfareReplayLimit = 12
+// fanfareReplayLimit 限制同一实例"发动本随从的【入场曲】"的次数。
+// 官方 QA（0vrc9nkxfkx1）：『恐惧的象征·欧米伽奥提普』的（4）连续被选中时，
+// "发动本随从的【入场曲】"最多 20 次、"+4/+4"最多 21 次（含最初的 1 次），
+// 第 21 次入场曲再选中（4）时只结算 +4/+4、不再发动入场曲。
+const fanfareReplayLimit = 20
 
 func findAbility(card *ir.Card, kind string) *ir.Ability {
 	for n := range card.Abilities {
