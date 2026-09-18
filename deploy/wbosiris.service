@@ -1,0 +1,18 @@
+[Unit]
+Description=WBOsiris Rule Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/1panel/www/sites/sva.hypd.asia/wbosiris
+ExecStart=/opt/1panel/www/sites/sva.hypd.asia/wbosiris/wbosiris-server serve \
+  --source-root /opt/1panel/www/sites/sva.hypd.asia/wbosiris \
+  --listen 127.0.0.1:23216 \
+  --illustration-root /opt/1panel/www/sites/sva.hypd.asia/index/data \
+  --auth-verify-url http://127.0.0.1:4864/api/auth/me
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

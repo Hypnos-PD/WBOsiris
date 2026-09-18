@@ -7,9 +7,15 @@
 export const API_BASE_OVERRIDE_KEY = "wbo-api-base";
 
 function defaultApiBase(): string {
+  // 桌面客户端（Wails 壳）会把地址注入到 window.WBO_API_BASE。
+  const injected = (window as unknown as { WBO_API_BASE?: unknown }).WBO_API_BASE;
+  if (typeof injected === "string" && injected.trim()) return injected.trim();
   const host = location.hostname;
   if (host === "localhost" || host === "127.0.0.1") return "http://127.0.0.1:23215";
-  return "";
+  // Wails 的本地页面（wails:// 或 http://wails.localhost）不是站点，走线上服务。
+  if (location.protocol.startsWith("wails") || host === "wails.localhost") return "https://sva.hypd.asia/wbo";
+  // 站点上的网页版（仅供开发调试）走同源 /wbo，由 OpenResty 反代到规则服务。
+  return `${location.origin}/wbo`;
 }
 
 export function apiBase(): string {

@@ -8,7 +8,8 @@ ocgcore / 客户端 / WindBot 三分结构学的）。
 约定：
 
 - 传输是 HTTP + JSON；长连接用 Server-Sent Events。默认地址 `http://127.0.0.1:23215`
-  （端口刻意避开 8080 这类常见值；数字取自 WBO：W=23、B=2、O=15）。
+  （端口刻意避开 8080 这类常见值；数字取自 WBO：W=23、B=2、O=15）；
+  线上部署在 `https://sva.hypd.asia/wbo`，见[部署说明](deployment.md)。
 - 所有响应都带 `Cache-Control: no-store`；状态里的 `revision` 单调递增。
 - 凭据用 `Authorization: Bearer <token>`，玩家与观众都用这个头。
 - 未实现的动作必须被明确拒绝（`400/403/409` 或 `result.status = "rejected"`），

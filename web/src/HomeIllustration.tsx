@@ -44,7 +44,8 @@ export function layoutFor(config: HomeIllustration, aspect: number) {
 }
 
 // 相机窗口：Unity 世界单位 19.2×10.8 除以 skeletonScale × prefabScale × 布局缩放，
-// 再按布局位移居中。
+// 再按布局位移居中；最后按容器比例把窗口**扩到铺满**（cover），
+// 这样窄屏/带鱼屏都不会出现黑边（WBArts 的页面容器固定 16:9，所以那边看不出差别）。
 // hi_1001 在 16:9 + 默认布局下的结果（与 WBArts 的计算一致，可用来对表）：
 //   viewport   { x: -1546.84, y: -870.10, width: 3093.68, height: 1740.20 }
 //   background { x: -1856.21, y: -1856.21, width: 3712.42, height: 3712.42 }
@@ -56,22 +57,32 @@ export function computeViewport(config: HomeIllustration, aspect: number, yBiasP
   const scaleY = toNum(config.skeletonScale, 0.01) * toNum(config.prefabScale, 1) * sy;
   const unityX = toNum(layout?.x, 0);
   const unityY = toNum(layout?.y, 0) + toNum(yBiasPx, 0) / 100;
-  const width = 19.2 / scaleX;
-  const height = 10.8 / scaleY;
+  let width = 19.2 / scaleX;
+  let height = 10.8 / scaleY;
+  const design = height > 0 ? width / height : 16 / 9;
+  if (aspect > 0 && Number.isFinite(aspect)) {
+    if (aspect > design) width = height * aspect;
+    else height = width / aspect;
+  }
   return { x: -unityX / scaleX - width / 2, y: -unityY / scaleY - height / 2, width, height };
 }
 
 // 背景贴图：1:1 的图按"填满相机（含 spine-player 默认 10% 内边距）"换算成
-// spine 世界坐标，和 WBArts 的做法一致。
+// spine 世界坐标；图是方的，所以边长取相机长短边里更大的那个，保证两个方向都盖住。
 export function computeBackgroundImage(config: HomeIllustration, viewport: Viewport): BackgroundImage {
   const pad = 0.1;
   const camW = viewport.width * (1 + 2 * pad);
   const camH = viewport.height * (1 + 2 * pad);
   const camX = viewport.x - viewport.width * pad;
   const camY = viewport.y - viewport.height * pad;
-  const bgW = camW;
-  const bgH = bgW;
-  return { url: config.background, x: camX, y: camY - (bgH - camH) / 2, width: bgW, height: bgH };
+  const side = Math.max(camW, camH);
+  return {
+    url: config.background,
+    x: camX + camW / 2 - side / 2,
+    y: camY + camH / 2 - side / 2,
+    width: side,
+    height: side,
+  };
 }
 
 type SpinePlayerLike = {
@@ -131,6 +142,8 @@ export function HomeIllustrationView({ config, className = "", ratio = 16 / 9, i
       showControls: false,
       premultipliedAlpha: true,
       backgroundColor: "#00000000",
+      // 相机窗口已经按容器比例算好，这里让它铺满画布（不要 Fit 的黑边）。
+      resizeMode: "Stretch",
       viewport: { x: viewport.x, y: viewport.y, width: viewport.width, height: viewport.height },
       success: (created: SpinePlayerLike) => {
         if (disposed) return;

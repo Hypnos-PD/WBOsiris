@@ -13,3 +13,6 @@ temp/
 !/web/public/assets/home/hi_1001/
 # 清单由同一个脚本生成（列出的素材多数不在仓库里），内置默认那张用 hi_1001.json。
 /web/public/assets/home/index.json
+
+# 部署时的本地构建产物
+/build/

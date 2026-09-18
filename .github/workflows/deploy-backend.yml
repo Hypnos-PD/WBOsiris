@@ -1,0 +1,65 @@
+name: Deploy rule server
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'cmd/**'
+      - 'internal/**'
+      - 'cards/**'
+      - 'scripts/deploy-backend.sh'
+      - '.github/workflows/deploy-backend.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wbosiris-production
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - name: Compile and test the rule pack
+        run: |
+          go build ./...
+          go run ./cmd/wbo check --strict-references --source-root . cards tests
+      - name: Scenario regression
+        run: go run ./cmd/wbo test --ruleset wbo-standard-0.3.0 --source-root . tests
+      - name: Unit tests
+        run: go test -count=1 ./...
+
+  deploy:
+    needs: test
+    if: vars.WBO_DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    environment: wbosiris-production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - name: Install the deploy key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.WBO_DEPLOY_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          : "${DEPLOY_SSH_KEY:?WBO_DEPLOY_SSH_KEY is required}"
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ vars.WBO_DEPLOY_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+      - name: Deploy
+        env:
+          DEPLOY_HOST: ${{ vars.WBO_DEPLOY_HOST }}
+        run: scripts/deploy-backend.sh --skip-tests --host "$DEPLOY_HOST"
