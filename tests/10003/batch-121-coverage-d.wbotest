@@ -1,0 +1,34 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "不弑的继承者在对手超进化时于手牌中获得毁灭" {
+    seed 121101;
+    state {
+        turn oppo 6;
+        player own {
+            hand { follower source = 10302110; }
+        }
+        player oppo {
+            sep 1;
+            field { follower theirs = 10001110; }
+        }
+    }
+    action { superevolve theirs; }
+    expect { legal; source has bane; }
+}
+
+scenario "憎恶的继承者在对手超进化时于手牌中获得疾驰" {
+    seed 121102;
+    state {
+        turn oppo 6;
+        player own {
+            hand { follower source = 10303110; }
+        }
+        player oppo {
+            sep 1;
+            field { follower theirs = 10001110; }
+        }
+    }
+    action { superevolve theirs; }
+    expect { legal; source has storm; }
+}

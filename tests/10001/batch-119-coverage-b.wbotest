@@ -1,0 +1,211 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "见习骑士的入场曲召唤骑士" {
+    seed 119001;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10122130; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90021110 == 1; }
+}
+
+scenario "猛虎骑士一回合可以攻击两次" {
+    seed 119002;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10123110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has rush; source.attack_limit == 2; }
+}
+
+scenario "斩击剑士的入场曲打击选中的敌方随从" {
+    seed 119003;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10123120; }
+        }
+        player oppo {
+            field { follower victim = 10001110 { stats 2/12; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 2/7; }
+}
+
+scenario "圣剑骑士的爆能强化打击对手全体并可以攻击两次" {
+    seed 119004;
+    state {
+        player own {
+            pp 9/9;
+            hand { follower source = 10124110; }
+        }
+        player oppo {
+            field { follower victim = 10001110 { stats 2/12; } }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source has storm;
+        source.attack_limit == 2;
+        victim.stats == 2/9;
+    }
+}
+
+scenario "大地术士把手牌洗回牌组并增加土之印" {
+    seed 119005;
+    state {
+        player own {
+            pp 2/2;
+            hand {
+                follower source = 10131120;
+                follower other = 10001110;
+            }
+        }
+    }
+    action { play source; select other; }
+    expect {
+        legal;
+        // 没有既有土之印时新增 1 个带 1 层的土之印护符。
+        own.earthsigils == 1;
+        own.hand count card 10001110 == 1;
+    }
+}
+
+scenario "图书管理员的入场曲抽两张" {
+    seed 119006;
+    state {
+        player own {
+            pp 4/4;
+            deck top {
+                follower first = 10001110;
+                follower second = 10001120;
+            }
+            hand { follower source = 10131140; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.hand count card 10001110 == 1;
+        own.hand count card 10001120 == 1;
+    }
+}
+
+scenario "土之巨人入场增加两点土之印" {
+    seed 119007;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10133120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.earthsigils == 2; }
+}
+
+scenario "守护巨龙的谢幕曲召唤巨翼飞龙" {
+    seed 119008;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10141110; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.field count card 90041120 == 1; }
+}
+
+scenario "觉醒的巨龙在觉醒时获得疾驰" {
+    seed 119009;
+    state {
+        player own {
+            pp 5/7;
+            hand { follower source = 10141120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has storm; }
+}
+
+scenario "炽炎幼龙训练师入场召唤炽炎幼龙" {
+    seed 119010;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10141140; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90041110 == 1; }
+}
+
+scenario "觉醒的巨龙祭祀在觉醒时回复主战者四点" {
+    seed 119011;
+    state {
+        player own {
+            leader 10/20;
+            pp 4/7;
+            hand { follower source = 10141150; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 14; }
+}
+
+scenario "炽热风暴对战场上的所有随从造成五点" {
+    seed 119012;
+    state {
+        player own {
+            pp 6/6;
+            field { follower ally = 10001110 { stats 2/12; } }
+            hand { spell source = 10141310; }
+        }
+        player oppo {
+            field { follower victim = 10001110 { stats 2/12; } }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        ally.stats == 2/7;
+        victim.stats == 2/7;
+    }
+}
+
+scenario "觉醒的疾风骑士在觉醒时获得威慑" {
+    seed 119013;
+    state {
+        player own {
+            pp 3/7;
+            hand { follower source = 10142120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has storm; source has intimidate; }
+}
+
+scenario "疾风使者超进化时给其他随从疾驰" {
+    seed 119014;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field {
+                follower source = 10142130;
+                follower ally = 10001110;
+            }
+        }
+    }
+    action { superevolve source; select ally; }
+    expect { legal; ally has storm; }
+}

@@ -1,0 +1,232 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "露比把一张手牌洗回牌组再抽一张" {
+    seed 118001;
+    state {
+        player own {
+            pp 2/2;
+            hand {
+                follower source = 10101110;
+                follower other = 10001110;
+            }
+        }
+    }
+    action { play source; select other; }
+    expect {
+        legal;
+        // 牌组原本为空：洗回的这张必然被抽回。
+        own.hand count card 10001110 == 1;
+        own.deck count card 10001110 == 0;
+    }
+}
+
+scenario "侦探的放大镜随随从的谢幕曲加入手牌" {
+    seed 118002;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10101120; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.hand count card 10001210 == 1; }
+}
+
+scenario "哥布林军团召唤五个哥布林" {
+    seed 118003;
+    state {
+        player own {
+            pp 5/5;
+            hand { spell source = 10101310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90001110 == 5; }
+}
+
+scenario "烈焰吐息入场打击对手全体随从一点" {
+    seed 118004;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10102110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/9; }
+                follower second = 10001110 { stats 2/9; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; first.stats == 2/8; second.stats == 2/8; }
+}
+
+scenario "占卜抽两张牌" {
+    seed 118005;
+    state {
+        player own {
+            pp 3/3;
+            deck top {
+                follower first = 10001110;
+                follower second = 10001120;
+            }
+            hand { spell source = 10102310; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.hand count card 10001110 == 1;
+        own.hand count card 10001120 == 1;
+    }
+}
+
+scenario "刺客的进化时破坏选中的敌方随从" {
+    seed 118006;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10103110; }
+        }
+        player oppo {
+            field { follower victim = 10001110 { stats 2/12; } }
+        }
+    }
+    action { evolve source; select victim; }
+    expect { legal; victim.zone == graveyard; }
+}
+
+scenario "森林的引导者召唤妖精并把妖精加入手牌" {
+    seed 118007;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10111120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90011110 == 1;
+        own.hand count card 90011110 == 1;
+    }
+}
+
+scenario "妖精的羽翼把两张妖精加入手牌" {
+    seed 118008;
+    state {
+        player own {
+            pp 1/1;
+            hand { spell source = 10111310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90011110 == 2; }
+}
+
+scenario "妖精骑士的入场曲破坏选中的敌方随从并回复主战者" {
+    seed 118009;
+    state {
+        player own {
+            leader 10/20;
+            pp 7/7;
+            hand { follower source = 10112110; }
+        }
+        player oppo {
+            field { follower victim = 10001110 { stats 2/12; } }
+        }
+    }
+    action { play source; select victim; }
+    expect {
+        legal;
+        victim.zone == graveyard;
+        own.leader.life == 12;
+        source has ward;
+    }
+}
+
+scenario "妖精通灵者的谢幕曲把妖精加入手牌" {
+    seed 118010;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10112120; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.hand count card 90011110 == 1; }
+}
+
+scenario "森之神秘加入手牌并抽一张" {
+    seed 118011;
+    state {
+        player own {
+            pp 3/3;
+            deck top { follower drawn = 10001110; }
+            hand { spell source = 10112310; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.hand count card 90011310 == 1;
+        own.hand count card 10001110 == 1;
+    }
+}
+
+scenario "骑士旗手入场强化一个其他随从并自带守护" {
+    seed 118012;
+    state {
+        player own {
+            pp 3/3;
+            field { follower ally = 10001110; }
+            hand { follower source = 10121110; }
+        }
+    }
+    action { play source; select ally; }
+    expect {
+        legal;
+        ally.stats == 3/3;
+        source has ward;
+    }
+}
+
+scenario "猎犬训练师在爆能强化时召唤两只军犬" {
+    seed 118013;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10121140; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source has rush;
+        own.field count card 10121140 == 3;
+    }
+}
+
+scenario "铁甲骑士召唤者破坏敌方随从并召唤铁甲骑士" {
+    seed 118014;
+    state {
+        player own {
+            pp 4/4;
+            hand { spell source = 10121310; }
+        }
+        player oppo {
+            field { follower victim = 10001110 { stats 2/12; } }
+        }
+    }
+    action { play source; select victim; }
+    expect {
+        legal;
+        victim.zone == graveyard;
+        own.field count card 90021120 == 1;
+    }
+}

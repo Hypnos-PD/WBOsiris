@@ -1251,7 +1251,7 @@ func compileTypedScenario(s *syntax.Statement, sid string, ids map[string]bool) 
 	b := s.Blocks()[0]
 	seed, _ := strconv.ParseUint(b[0].Word(1), 10, 64)
 	state, aliases := compileInitialState(b[1], id)
-	actions, err := compileActions(b[2], aliases)
+	actions, err := compileActions(b[2], aliases, instanceOwners(state))
 	if err != nil {
 		return ir.Scenario{}, err
 	}
@@ -1370,16 +1370,39 @@ func compilePlayerState(s *syntax.Statement, p *ir.PlayerState, a map[string]str
 		}
 	}
 }
-func compileActions(s *syntax.Statement, a map[string]string) ([]ir.Action, error) {
+// instanceOwners 把实例别名映射到持有它的玩家。测试动作用它决定由哪一方执行：
+// 例如把随从放在对手战场，就可以在对手的回合让对手超进化它，
+// 以触发"对手的随从超进化时"这类手牌监听。
+func instanceOwners(state ir.State) map[string]string {
+	owners := map[string]string{}
+	for side, p := range state.Players {
+		for _, items := range p.Zones {
+			for _, item := range items {
+				if item.Alias != "" {
+					owners[item.Alias] = side
+				}
+			}
+		}
+	}
+	return owners
+}
+
+func compileActions(s *syntax.Statement, a map[string]string, owners map[string]string) ([]ir.Action, error) {
 	out := []ir.Action{}
+	actor := func(alias string) string {
+		if side := owners[alias]; side != "" {
+			return side
+		}
+		return "own"
+	}
 	for _, x := range s.Blocks()[0] {
 		t := x.Tokens()
 		var action ir.Action
 		switch x.Word(0) {
 		case "play", "engage", "evolve", "superevolve", "accelerate", "crystallize":
-			action = ir.SourceAction{Kind: x.Word(0), Actor: "own", Source: a[t[1].Value]}
+			action = ir.SourceAction{Kind: x.Word(0), Actor: actor(t[1].Value), Source: a[t[1].Value]}
 		case "fuse":
-			action = ir.FusionAction{Kind: "fusion", Actor: "own", Source: a[t[1].Value]}
+			action = ir.FusionAction{Kind: "fusion", Actor: actor(t[1].Value), Source: a[t[1].Value]}
 		case "select":
 			selection := ir.SelectAction{Kind: "select"}
 			entities, leaders, _ := parseSelectionResponse(t)

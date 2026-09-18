@@ -51,7 +51,10 @@ go run ./cmd/wbo test --ruleset wbo-standard-0.3.0 --source-root . tests
 # 4. 条件范围候选必须有核对结论（缺一条就退出 1，见条件范围专项核查）
 node scripts/card_scope_screen.mjs --verify
 
-# 5. 进度与下一批候选
+# 5. 每张卡都必须出现在至少一个场景里（缺一张就退出 1）
+node scripts/card_scenario_coverage.mjs
+
+# 6. 进度与下一批候选
 node scripts/card_worklist.mjs --pack 10002 --limit 20
 ```
 
@@ -209,6 +212,25 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 117–121（补齐场景覆盖：全卡政策第 2 条）
+
+全卡写完后用新工具 `scripts/card_scenario_coverage.mjs` 核对"每张卡都至少有一个场景"，
+发现 **74 张早期卡牌没有出现在任何场景里**（当时只保证了新批次卡牌的覆盖）。按卡包补了
+74 个场景（`tests/10000/batch-117-coverage-10000.wbotest`、
+`tests/10001/batch-118-coverage-a.wbotest`、`batch-119-coverage-b.wbotest`、
+`batch-120-coverage-c.wbotest`、`batch-121-coverage-d.wbotest`、
+`tests/10003/batch-121-coverage-d.wbotest`、`tests/10009/batch-121-coverage-d.wbotest`），
+覆盖入场曲、谢幕曲、进化时、爆能强化、土之印、觉醒条件、爆能与超进化监听等形态。
+
+- **工具**：`scripts/card_scenario_coverage.mjs`（含 `node --test` 单测）对照卡表与
+  `tests/**.wbotest` 里出现的八位卡牌 ID，列出漏掉的卡并以退出码 1 结束；
+  已写进上面的工作流第 5 步。
+- **测试 DSL 小扩展**：动作的 actor 现在按**实例的持有者**推断（此前固定为 `own`），
+  因此可以写"在对手的回合让对手超进化它的随从"，用于覆盖
+  `when oppo follower super_evolved while self in hand`（10302110、10303110）。
+- 结果：`node scripts/card_scenario_coverage.mjs` 显示 **904 张 · 未覆盖 0 张**。
+- 全量回归：`check` 0 错 0 警；`test` 1489 全绿；`go test ./...` 全绿；语料快照更新为 1489 个场景。
 
 ### 批次 116（S-30 收尾：麦哲佩恩牌组与胜利的卡牌）**——全卡完成**
 

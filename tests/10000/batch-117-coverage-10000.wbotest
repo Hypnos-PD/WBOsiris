@@ -1,0 +1,232 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "白板巨兽打出后就在战场上" {
+    seed 117001;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10002120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.zone == field; source.stats == 10/10; }
+}
+
+scenario "疾驰的先导巨龙可以立刻攻击主战者" {
+    seed 117002;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10021130; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has storm; source.stats == 7/5; }
+}
+
+scenario "石之巨像的入场曲消耗土之印召唤守护者巨像" {
+    seed 117003;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10032110; }
+            field { amulet rock = 90031210; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90031120 == 1;
+        rock.zone == graveyard;
+    }
+}
+
+scenario "岩之秘术对全体造成两点并在土之印充足时抽牌" {
+    seed 117004;
+    state {
+        player own {
+            pp 4/4;
+            field { amulet rock = 90031210; }
+            hand { spell source = 10032310; }
+            deck top { follower drawn = 10001110; }
+        }
+        player oppo {
+            field { follower victim = 10001110 { stats 2/9; } }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        victim.stats == 2/7;
+        own.hand count card 10001110 == 1;
+    }
+}
+
+scenario "守护巨人入场即拥有守护" {
+    seed 117005;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10041120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has ward; source.stats == 5/10; }
+}
+
+scenario "灼热巨龙入场打击对手主战者六点" {
+    seed 117006;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10041130; }
+        }
+    }
+    action { play source; }
+    expect { legal; oppo.leader.life == 14; }
+}
+
+scenario "熔岩的怒号在觉醒时打四点" {
+    seed 117007;
+    state {
+        player own {
+            pp 1/7;
+            hand { spell source = 10041310; }
+        }
+        player oppo {
+            field { follower victim = 10001110 { stats 2/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 2/5; }
+}
+
+scenario "巨翼飞龙的爆能强化召唤自己以外的高费随从" {
+    seed 117008;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10042120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == field;
+        own.field count card 90041120 == 1;
+    }
+}
+
+scenario "嗜血魔女的入场曲反而伤害自己主战者" {
+    seed 117009;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10051120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 19; }
+}
+
+scenario "骸骨战士的谢幕曲把蝙蝠加入手牌" {
+    seed 117010;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10052110; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.hand count card 90051120 == 1; }
+}
+
+scenario "血之契约破坏自己的随从并抽两张" {
+    seed 117011;
+    state {
+        player own {
+            pp 2/2;
+            field { follower sacrifice = 10001110; }
+            deck top {
+                follower first = 10001120;
+                follower second = 10021110;
+            }
+            hand { spell source = 10052310; }
+        }
+    }
+    action { play source; select sacrifice; }
+    expect {
+        legal;
+        sacrifice.zone == graveyard;
+        own.hand count card 10001120 == 1;
+        own.hand count card 10021110 == 1;
+    }
+}
+
+scenario "魔钢骑兵在自己启动护符时获得疾驰" {
+    seed 117012;
+    state {
+        player own {
+            pp 8/8;
+            field { follower source = 10062120; amulet sigil = 90031210; }
+        }
+    }
+    action { engage sigil; }
+    expect { legal; source has storm; }
+}
+
+scenario "悬丝傀儡大师的入场曲把改良型悬丝傀儡加入手牌" {
+    seed 117013;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10071120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90071120 == 1; }
+}
+
+scenario "过往核心的探索者把过往核心加入手牌" {
+    seed 117014;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10072110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90071220 == 1; }
+}
+
+scenario "钢之骑士的进化时召唤一个自己" {
+    seed 117015;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10072120; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.field count card 10072120 == 2; }
+}
+
+scenario "悬丝傀儡工房的吟唱结束时加入悬丝傀儡" {
+    seed 117016;
+    state {
+        player own {
+            pp 2/2;
+            hand { amulet source = 10072210; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        // 入场曲加入 1 张；回合结束的再加 1 张由吟唱监听负责。
+        own.hand count card 90071110 == 1;
+        source.countdown == 2;
+    }
+}

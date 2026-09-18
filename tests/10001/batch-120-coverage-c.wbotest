@@ -1,0 +1,230 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "觉醒的巨龙骑士在觉醒时给其他随从加三加三" {
+    seed 120001;
+    state {
+        player own {
+            pp 4/7;
+            field { follower ally = 10001110; }
+            hand { follower source = 10142140; }
+        }
+    }
+    action { play source; select ally; }
+    expect { legal; ally.stats == 5/5; }
+}
+
+scenario "觉醒的智慧抽两张并回复主战者两点" {
+    seed 120002;
+    state {
+        player own {
+            leader 10/20;
+            pp 3/7;
+            deck top {
+                follower first = 10001110;
+                follower second = 10001120;
+            }
+            hand { spell source = 10142310; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.leader.life == 12;
+        own.hand count card 10001110 == 1;
+        own.hand count card 10001120 == 1;
+    }
+}
+
+scenario "龙之斗士入场即拥有疾驰" {
+    seed 120003;
+    state {
+        player own {
+            pp 10/10;
+            hand { follower source = 10143110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has storm; }
+}
+
+scenario "巨翼飞龙骑士的入场曲召唤巨翼飞龙并自带守护" {
+    seed 120004;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10143130; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90041120 == 1; source has ward; }
+}
+
+scenario "雷霆巨龙同时拥有疾驰与威慑" {
+    seed 120005;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10144120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has storm; source has intimidate; }
+}
+
+scenario "蝙蝠女王的入场曲召唤蝙蝠" {
+    seed 120006;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10151110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90051120 == 1; }
+}
+
+scenario "吸血鬼公主的进化时召唤两个蝙蝠" {
+    seed 120007;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10151120; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.field count card 90051120 == 2; }
+}
+
+scenario "死灵法师的入场曲发动亡者召还四" {
+    seed 120008;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10151140; }
+            destroyed { follower gone = 10021110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10021110 == 1; }
+}
+
+scenario "血腥盛宴抽两张并伤害自己的主战者" {
+    seed 120009;
+    state {
+        player own {
+            pp 5/5;
+            deck top {
+                follower first = 10001110;
+                follower second = 10001120;
+            }
+            hand { follower source = 10151150; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.leader.life == 18;
+        own.hand count card 10001110 == 1;
+        own.hand count card 10001120 == 1;
+    }
+}
+
+scenario "骸骨骑士在爆能强化时获得突进与毁灭" {
+    seed 120010;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10152110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has rush; source has bane; }
+}
+
+scenario "亡灵法师的谢幕曲把怨灵与蝙蝠加入手牌" {
+    seed 120011;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10152130; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect {
+        legal;
+        own.hand count card 90051130 == 1;
+        own.hand count card 90051120 == 1;
+    }
+}
+
+scenario "血之贵族的入场曲打击敌方随从并回复主战者" {
+    seed 120012;
+    state {
+        player own {
+            leader 10/20;
+            pp 8/8;
+            hand { follower source = 10152140; }
+        }
+        player oppo {
+            field { follower victim = 10001110 { stats 2/12; } }
+        }
+    }
+    action { play source; select victim; }
+    expect {
+        legal;
+        victim.stats == 2/7;
+        own.leader.life == 15;
+    }
+}
+
+scenario "圣盾天使同时拥有守护与屏障" {
+    seed 120013;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10161120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has ward; source has barrier; }
+}
+
+scenario "祈愿天使的入场曲抽两张并回复主战者" {
+    seed 120014;
+    state {
+        player own {
+            leader 10/20;
+            pp 5/5;
+            deck top {
+                follower first = 10001110;
+                follower second = 10001120;
+            }
+            hand { follower source = 10161130; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.leader.life == 12;
+        own.hand count card 10001110 == 1;
+        own.hand count card 10001120 == 1;
+    }
+}
+
+scenario "圣骑士的交战时能力打击对手主战者" {
+    seed 120015;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10162120; }
+        }
+        player oppo {
+            field { follower victim = 10001110 { stats 2/9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; oppo.leader.life == 20; }
+}

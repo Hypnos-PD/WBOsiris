@@ -1,0 +1,189 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "圣光的祭坛启动破坏自己并打击敌方随从" {
+    seed 121001;
+    state {
+        player own {
+            leader 10/20;
+            field { amulet source = 10162220; }
+        }
+        player oppo {
+            field { follower victim = 10001110 { stats 2/12; } }
+        }
+    }
+    action { engage source; select victim; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        victim.stats == 2/8;
+        own.leader.life == 11;
+    }
+}
+
+scenario "潜行的刺客进化时破坏敌方随从" {
+    seed 121002;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10163120; }
+        }
+        player oppo {
+            field { follower victim = 10001110 { stats 2/12; } }
+        }
+    }
+    action { evolve source; select victim; }
+    expect {
+        legal;
+        source has stealth;
+        victim.zone == graveyard;
+    }
+}
+
+scenario "悬丝傀儡师的谢幕曲把过往核心加入手牌" {
+    seed 121003;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10171110; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.hand count card 90071220 == 1; }
+}
+
+scenario "城堡创造物召唤者的入场曲召唤城堡创造物" {
+    seed 121004;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10171120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90072120 == 1; }
+}
+
+scenario "未来核心的探索者把未来核心加入手牌" {
+    seed 121005;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10171130; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90071210 == 1; }
+}
+
+scenario "悬丝傀儡的召唤术召唤两个改良型悬丝傀儡" {
+    seed 121006;
+    state {
+        player own {
+            pp 3/3;
+            hand { spell source = 10171310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90071120 == 2; }
+}
+
+scenario "未来的秘术把未来核心与过往核心各加入一张" {
+    seed 121007;
+    state {
+        player own {
+            pp 1/1;
+            hand { spell source = 10171320; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.hand count card 90071210 == 1;
+        own.hand count card 90071220 == 1;
+    }
+}
+
+scenario "创造物机械师的入场曲加入两枚核心并进化时召唤攻击创造物" {
+    seed 121008;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10172110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.hand count card 90071210 == 1;
+        own.hand count card 90071220 == 1;
+    }
+}
+
+scenario "悬丝傀儡工匠的入场曲把悬丝傀儡加入手牌" {
+    seed 121009;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10172120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90071110 == 1; }
+}
+
+scenario "人偶大师的入场曲加入三张悬丝傀儡并强化人偶随从" {
+    seed 121010;
+    state {
+        player own {
+            pp 6/6;
+            hand {
+                follower source = 10172130;
+                follower puppet = 90071110;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.hand count card 90071110 == 4;
+        puppet.stats == 2/1;
+    }
+}
+
+scenario "傀儡兵器的法术打击敌方随从并加入过往核心" {
+    seed 121011;
+    state {
+        player own {
+            pp 2/2;
+            hand { spell source = 10172310; }
+        }
+        player oppo {
+            field { follower victim = 10001110 { stats 2/12; } }
+        }
+    }
+    action { play source; select victim; }
+    expect {
+        legal;
+        victim.stats == 2/9;
+        own.hand count card 90071220 == 1;
+    }
+}
+
+scenario "核心学者的入场曲与进化时各加入两枚核心" {
+    seed 121012;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10173110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.hand count card 90071210 == 1;
+        own.hand count card 90071220 == 1;
+    }
+}

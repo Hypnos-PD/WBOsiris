@@ -1,0 +1,26 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "伊斯坦戴德对玛尔奇盖特发动三次亡者召还二并打击对手全体" {
+    seed 121201;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10954110; }
+            destroyed {
+                follower first = 10021110;
+                follower second = 10021110;
+                follower third = 10021110;
+            }
+        }
+        player oppo {
+            field { follower victim = 10001110 { stats 2/9; } }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 10021110 == 3;
+        victim.stats == 2/7;
+    }
+}
