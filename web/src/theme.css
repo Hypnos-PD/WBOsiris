@@ -26,6 +26,11 @@
 html, body, #root { height: 100%; margin: 0; }
 body { background: var(--wbo-bg); color: var(--wbo-ink); font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
+/* 页面外壳需要整页滚动；牌桌页仍然由 .battle-screen 自己撑满并裁切。
+   styles.css 里给 #root 设了 overflow:hidden，这里用更高优先级让外壳可以滚动。 */
+#root:has(.app-shell) { height: auto; min-height: 100%; overflow: visible; }
+html:has(.app-shell), body:has(.app-shell) { height: auto; overflow: auto; }
+
 /* ── 外壳：左侧深色导航 + 右侧内容，页面之间互不叠放 ─────────────────── */
 .app-shell { display: flex; min-height: 100dvh; background: var(--wbo-bg); color: var(--wbo-ink); }
 .app-sidebar {
@@ -115,6 +120,11 @@ body { background: var(--wbo-bg); color: var(--wbo-ink); font-family: 'Noto Sans
 }
 
 /* ── 工作区页面重绘：卡组 / 房间 / 录像原本是深色主题，统一到 WBArts 风格 ── */
+/* 组合页面类（.deck-workspace / .replay-page）在 decks.css、replays.css 里也是两段选择器，
+   所以这里刻意写到三段，保证覆盖它们的位置与配色。 */
+.app-main .workspace-page.deck-workspace,
+.app-main .workspace-page.replay-page,
+.app-main .workspace-page.home-page { position: static; inset: auto; padding: 0; background: none; border: 0; box-shadow: none; color: var(--wbo-ink); overflow: visible; }
 .app-main .workspace-page { position: static; inset: auto; padding: 0; background: none; border: 0; box-shadow: none; color: var(--wbo-ink); overflow: visible; }
 .app-main .workspace-page h1 { margin: 0; font: 900 30px 'Noto Sans SC', sans-serif; color: var(--wbo-ink); }
 .app-main .workspace-page p { color: var(--wbo-ink2); }
