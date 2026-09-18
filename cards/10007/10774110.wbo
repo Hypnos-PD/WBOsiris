@@ -7,7 +7,11 @@ card 10774110 {
     trait anathema;
 
     effect {
-        unplayable;
+        storm;
+        ward;
+        fanfare {
+            damage oppo.field.followers own.entered_artifacts;
+        }
     }
 
     meta {

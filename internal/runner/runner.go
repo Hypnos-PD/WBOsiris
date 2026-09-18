@@ -59,6 +59,9 @@ type player struct {
 	// 手牌打出的随从在本次结算结束后才计入，见 creditRally。
 	rally                                                     int
 	pendingRally                                              []*instance
+	// enteredArtifacts 记录本场对战中进入过自己战场的创造物·随从的卡牌种类
+	//（按卡牌 ID 去重，读作 `own.entered_artifacts`）。
+	enteredArtifacts                                          map[int]bool
 	deck, hand, field, graveyard, banished                    []*instance
 	destroyed                                                 []DestructionRecord
 	resolving                                                 []*instance
@@ -315,6 +318,11 @@ func (g *game) loadState(s ir.State) error {
 				}
 				for _, k := range o.Keywords {
 					i.abilities[k] = true
+				}
+				// 初始状态里已经站在战场上或进入破坏历史的创造物·随从，
+				// 视作"本场对战中进入过战场"（存档恢复同理）。
+				if zone == "field" || zone == "destroyed" {
+					recordEnteredArtifact(p, c)
 				}
 				g.addToZone(p, i, zone)
 			}

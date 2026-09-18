@@ -7,7 +7,7 @@ card 10773110 {
 
     effect {
         fanfare {
-            summon 1 card 90071110;
+            summon 1 card 90071130;
         }
         enhance 5 {
             summon 1 card 90071150;

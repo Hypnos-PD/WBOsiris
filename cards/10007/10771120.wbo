@@ -6,7 +6,15 @@ card 10771120 {
     stats 5/4;
 
     effect {
-        unplayable;
+        rush;
+        fanfare {
+            // 本次对战中进入过战场的创造物·随从种类达到 3 时改为召唤 2 个。
+            if own.entered_artifacts >= 3 {
+                summon 2 card 10771120;
+            } else {
+                summon 1 card 10771120;
+            }
+        }
     }
 
     meta {

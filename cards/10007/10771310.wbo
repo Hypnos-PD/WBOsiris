@@ -6,7 +6,20 @@ card 10771310 {
     trait anathema;
 
     effect {
-        unplayable;
+        // 【模式】通常在打出时选择；种类达到 3 时"改为发动所有能力"，因此两个效果都结算。
+        if own.entered_artifacts >= 3 {
+            add 1 card 90071130 to hand;
+            add 1 card 90071140 to hand;
+        } else {
+            mode {
+                option 1 {
+                    add 1 card 90071130 to hand;
+                }
+                option 2 {
+                    add 1 card 90071140 to hand;
+                }
+            }
+        }
     }
 
     meta {

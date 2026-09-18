@@ -1,0 +1,188 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+// 「本次对战中进入战场的自己的创造物·随从的种类」= `own.entered_artifacts`。
+// 测试里用 `destroyed { … }` 预置本场已经入场过的创造物（它们不占战场位置）。
+
+scenario "炫酷舞者在创造物种类不足三种时只召唤一个自己" {
+    seed 80001;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10771120; }
+            destroyed {
+                follower a = 90071130;
+                follower b = 90071140;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10771120 == 2; source has rush; }
+}
+
+scenario "炫酷舞者在创造物种类达到三种时改为召唤两个自己" {
+    seed 80002;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10771120; }
+            destroyed {
+                follower a = 90071130;
+                follower b = 90071140;
+                follower c = 90071150;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10771120 == 3; }
+}
+
+scenario "跑酷在创造物种类不足时只发动选中的模式" {
+    seed 80003;
+    state {
+        player own {
+            pp 1/1;
+            hand { spell source = 10771310; }
+            destroyed {
+                follower a = 90071130;
+                follower b = 90071140;
+            }
+        }
+    }
+    action { play source; mode 1; }
+    expect {
+        legal;
+        own.hand count card 90071130 == 1;
+        own.hand count card 90071140 == 0;
+    }
+}
+
+scenario "跑酷在创造物种类达到三种时发动所有模式" {
+    seed 80004;
+    state {
+        player own {
+            pp 1/1;
+            hand { spell source = 10771310; }
+            destroyed {
+                follower a = 90071130;
+                follower b = 90071140;
+                follower c = 90071150;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.hand count card 90071130 == 1;
+        own.hand count card 90071140 == 1;
+    }
+}
+
+scenario "大胆的涂鸦师在创造物种类达到三种时追加召唤两个创造物" {
+    seed 80005;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10772120; }
+            destroyed {
+                follower a = 90071130;
+                follower b = 90071140;
+                follower c = 90071150;
+            }
+        }
+        player oppo {
+            field { follower victim = 10001110; }
+        }
+    }
+    action { play source; select victim; }
+    expect {
+        legal;
+        victim.zone == graveyard;
+        own.field count card 90071140 == 1;
+        own.field count card 90071150 == 1;
+    }
+}
+
+scenario "瞬移斩击按创造物种类数打击敌方全体" {
+    seed 80006;
+    state {
+        player own {
+            pp 3/3;
+            hand { spell source = 10773310; }
+            destroyed {
+                follower a = 90071130;
+                follower b = 90071140;
+                follower c = 90071150;
+            }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; victim.stats == 0/6; oppo.leader.life == 19; }
+}
+
+scenario "虚刻的安纳提玛按创造物种类数打击敌方全体并自带疾驰守护" {
+    seed 80007;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10774110; }
+            destroyed {
+                follower a = 90071130;
+                follower b = 90071140;
+                follower c = 90071150;
+                follower d = 90071160;
+            }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        victim.stats == 0/5;
+        source has storm;
+        source has ward;
+    }
+}
+
+scenario "奋厉追赶在自己的创造物入场时打击随机敌方随从" {
+    seed 80008;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10774120; }
+            hand { follower artifact = 90071130; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play artifact; }
+    expect { legal; victim.stats == 0/6; }
+}
+
+scenario "奋厉追赶进化时召唤古老的创造物并让种类数达标后获得疾驰" {
+    seed 80009;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10774120; }
+            destroyed {
+                follower a = 90071130;
+                follower b = 90071150;
+            }
+        }
+    }
+    action { superevolve source; }
+    expect {
+        legal;
+        own.field count card 90071140 == 1;
+        source has storm;
+        source.super_evolved == true;
+    }
+}

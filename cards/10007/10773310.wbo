@@ -6,7 +6,8 @@ card 10773310 {
     trait anathema;
 
     effect {
-        unplayable;
+        damage oppo.field.followers own.entered_artifacts;
+        damage oppo.leader 1;
     }
 
     meta {

@@ -71,6 +71,8 @@ func (g *game) assertCompare(a ir.CompareAssertion) string {
 				total += i.earthsigil
 			}
 			got = total
+		case "entered_artifacts":
+			got = len(p.enteredArtifacts)
 		}
 	case "instance_counter":
 		i := g.instances[a.Left.InstanceID]

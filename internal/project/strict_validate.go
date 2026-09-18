@@ -740,7 +740,7 @@ func strictAssertion(s *syntax.Statement, a map[string]string, ds *[]syntax.Diag
 	return assertionRef(t[:eq], a, ds) && assertionValue(t[eq+1:])
 }
 func assertionRef(t []syntax.Token, a map[string]string, ds *[]syntax.Diagnostic) bool {
-	if len(t) == 3 && set("own", "oppo")[t[0].Value] && t[1].Value == "." && set("life", "pp", "maxpp", "ep", "sep", "combo", "shadows", "rally", "earthsigils")[t[2].Value] {
+	if len(t) == 3 && set("own", "oppo")[t[0].Value] && t[1].Value == "." && set("life", "pp", "maxpp", "ep", "sep", "combo", "shadows", "rally", "earthsigils", "entered_artifacts")[t[2].Value] {
 		return true
 	}
 	if len(t) == 5 && set("own", "oppo")[t[0].Value] && values(t[1:4]) == ". leader ." && set("life", "maxlife")[t[4].Value] {

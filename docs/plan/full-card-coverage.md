@@ -20,7 +20,7 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 711 · 未实现(骨架) 39 · 未导入 154
+总计 904 · 已完成 717 · 未实现(骨架) 33 · 未导入 154
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
@@ -29,7 +29,7 @@
 10004        76      73       3       0
 10005        76      66      10       0
 10006        76      74       2       0
-10007        77      55      22       0
+10007        77      61      16       0
 10008        78       0       0      78
 10009        76       0       0      76
 90000        93      93       0       0
@@ -113,6 +113,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-63 | `draw N from deck where … distinct names`（抽取 N 种） | `internal/ir/model.go`（`DrawEffect.DistinctNames`）、`internal/ir/encode.go`/`decode.go`（编解码与形状校验）、`internal/project/typed_ir.go`/`validate.go`（解析与形状）、`internal/runner/execute.go`（每抽一张排除同名候选，张数上限取不同卡名数）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/draw_owner_test.go`（编译保留标记、编码解码后仍在、拒绝无筛选/`all`/缺 `names`）；卡片 10574120 + 4 个场景 |
 | S-67 | `raise maxlife` / `reduce maxlife`（主战者生命上限增减） | `internal/ir/deck_replace.go`（`Delta`）、`internal/ir/decode.go`（新 kind 与增量范围校验）、`internal/project/deck_replace.go`（`raise|reduce maxlife` 解析）、`typed_ir.go`/`validate.go`（语句分发）、`internal/runner/deck_replace.go`（夹在 1..65535 并把当前生命降到上限）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/deck_replace_test.go`（增量编译、编解码保留、拒绝负数/越界/绑定量）；卡片 10534110 + 4 个场景 |
 | S-84 | 入场监听加回合窗口：`when own follower summoned during own turn` | `internal/ir/decode.go`（`duringTurn` 允许 `follower_summoned`；运行时的 `triggerTurnMatches` 本来就通用，项目校验也早已接受这种写法，只有解码白名单没跟上）；文档 `cards.md` | 卡片 10754120 + 2 个场景（三个僵尸各触发一次"入场时打击对手主战者1点"，以及 10724110 后续直接可用） |
+| S-83 | `entered_artifacts`（本场对战中进入过战场的创造物·随从种类数） | `internal/runner/runner.go`（`player.enteredArtifacts`、初始状态记录）、`internal/runner/execute.go`（`triggerSummoned` 里 `recordEnteredArtifact`）、`internal/runner/numeric.go`/`assert.go`（数值与断言）、`internal/ir/amount.go`/`test_decode.go`、`internal/project/strict_validate.go`、`internal/runner/session.go`/`continuation.go`（克隆与存档）；文档 `cards.md`/`tests.md` | 卡片 10771120、10771310、10772120、10773310、10774110、10774120 + 9 个场景（含"种类不足/达标"两侧与超进化后检查顺序） |
 | S-57 | 归属判断（`count(own.<区域> where card <绑定>)`） | 无需新节点：`same_card` 谓词 + 区域计数；但修好了 `conditionIn` 里 `CountCondition` 丢帧的问题（`internal/runner/execute.go`） | 卡片 90064320 + 2 个场景（敌方随从时不加牌、自己的护符时追加 2 点伤害并加牌） |
 | S-66 | `banish` 输出 `banished` | `internal/project/typed_ir.go`（写入输出）、`validate.go`（登记绑定）、`internal/ir/encode.go`/`decode.go`（形状白名单）、`internal/runner/execute.go`（记录实际消失的实例）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/banish_output_test.go`（输出保留、`count(banished)` 作为分配伤害量）；卡片 10543110 + 2 个场景 |
 | S-61 | `summoned_all`（一次结算的全部召唤） | `internal/runner/bindings.go`（`bindSummoned`）、`internal/runner/execute.go`/`session.go`（所有召唤类效果改为写入累计绑定）、`internal/project/validate.go`（登记 `summoned_all`）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/same_cost_and_summoned_all_test.go`；卡片 10571110 + 3 个场景 |
@@ -176,7 +177,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-67 | ~~主战者生命上限的增减~~ **已解决**：`raise maxlife own\|oppo.leader N` / `reduce maxlife …` | 已解锁 10534110 漫步的《愚者》·琳库露的纹章 | 增量形式 `kind: "adjust_leader_max_life"`（`delta=true`），上限夹在 1..65535，当前生命高于新上限时降到上限——与既有 `set maxlife` 及 SWB-RL 的 `change_leader_max_health` 同一口径。 |
 | S-81 | 取前 N 张的求和与求和比较 | 10502120 手持军配团扇的伟丈夫（"自己的手牌中原始费用最大的3张卡牌的费用合计 大于 对手…则破坏对手的战场上的所有随从"） | `sum(集合, 字段)` 不支持"最大的 N 张"；条件只有 `count(...) 比较 整数`，没有 `sum(...) 比较 sum(...)`。需要给求和加极值/张数上限，并新增求和之间的比较条件。 |
 | S-82 | "自己发动【土之秘术】时"事件 | 10731310 召唤仆从（"在手牌中发动。自己发动【土之秘术】时，使本卡牌的费用-1"） | 引擎没有为"支付土之秘术"派发事件；需要一条土之秘术发动事件，并允许手牌中的卡牌以此监听（`while self in hand` 已支持其他事件）。 |
-| S-83 | "本次对战中进入战场的自己的创造物·随从的种类数" | 10771120 炫酷舞者、10773310 瞬移斩击、10774110 虚刻的安纳提玛·斯卡雷特 | 只有破坏/召唤的实时集合，没有"本场对战中进入过战场的卡牌定义种类"这类跨回合累计；需要按卡牌 ID 去重的入场历史计数。 |
+| S-83 | ~~"本次对战中进入战场的自己的创造物·随从的种类数"~~ **已解决**：`own\|oppo.entered_artifacts` | 已解锁 10771120 炫酷舞者、10771310 跑酷、10772120 大胆的涂鸦师、10773310 瞬移斩击、10774110 虚刻的安纳提玛·斯卡雷特、10774120 奋厉追赶·米乌；10008 的 10873310 直接可用 | 新玩家标量：随从进入战场时按卡牌 ID 去重记录"创造物·随从"种类（`internal/runner/execute.go` 的 `triggerSummoned`/`recordEnteredArtifact`），数值、断言、存档快照都接上；测试状态里 `field`/`destroyed` 中已存在的创造物视作本场入场过。 |
 | S-68 | ~~回合窗口事件~~ **已解决**：`during own\|oppo turn` 可用于回复事件 | 已解锁 10563110 至圣威仪 | 检查器原先只允许"受到伤害时"带 `during`；运行时的回合匹配本来就通用。 |
 | S-69 | 跨方混合随机集合 | 10524110 威猛的《战车》·奥辂昂（"随机对战场上的1个其他随从或自己的主战者或对手的主战者造成7点伤害"） | 混合集合只支持"同一方的随从+该方主战者"，无法表达"双方随从+双方主战者"。 |
 | S-70 | ~~从两种指定卡中随机召唤~~ **已解决**：`summon random N card A or card B [...] [for own\|oppo];` | 已解锁 10564120 雾卷花·茎白 | 新 IR 节点 `SummonPoolEffect`：每次抽取消费一次对局随机数，池内卡牌定义必须互不相同（2..16 种）。 |
@@ -192,6 +193,22 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 80（S-83 创造物种类数 + 卡包 10007 第六批 6 张）
+
+- **S-83 `own|oppo.entered_artifacts`**：本场对战中进入过自己战场的创造物·随从**种类**数
+  （按卡牌 ID 去重）。随从进入战场时在 `triggerSummoned` 里登记，数值、断言、
+  沙盒克隆与存档快照都接上；测试状态里 `field`/`destroyed` 中已经存在的创造物
+  视作本场入场过，这样单动作场景也能摆出"已经入场过 3 种"的盘面。
+- 完成 6 张：10771120 炫酷舞者、10771310 跑酷（种类达标时"发动所有模式"直接展开两个效果）、
+  10772120 大胆的涂鸦师、10773310 瞬移斩击、10774110 虚刻的安纳提玛·斯卡雷特、
+  10774120 奋厉追赶·米乌（超进化会先执行 evolve 块召唤古老的创造物，之后才检查种类数，
+  所以刚好凑满第三种时能拿到【疾驰】——场景测试固定了这个顺序）。
+- **修正批次 79 的令牌 ID 错误**：10773110 创造物长枪兵召唤的『解析的创造物』
+  是 90071130，不是 90071110（那是悬丝傀儡）。新场景用真实创造物重写了断言，
+  所以这次错误立刻暴露；写测试时遇到的"监听不触发"正是它。
+- 新增 9 个场景（`tests/10007/batch-80-artifact-kinds.wbotest`）。
+- 全量回归：`check` 0 错 0 警；`test` 1095 全绿；`go test ./...` 全绿；语料快照更新为 1095 个场景。
 
 ### 批次 79（卡包 10007 第五批 11 张）
 

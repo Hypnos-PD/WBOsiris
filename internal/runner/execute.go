@@ -1038,6 +1038,7 @@ func (g *game) triggerSummoned(s *instance) {
 	}
 	if s.card.CardType == "follower" {
 		g.countRally(s)
+		g.trackEnteredArtifact(s)
 	}
 	event := ir.RuntimeEvent{Kind: "follower_summoned", Side: g.sideOf(s), InstanceID: s.id, CardID: s.card.ID, Count: 1}
 	if s.card.CardType == "amulet" {
@@ -1047,6 +1048,36 @@ func (g *game) triggerSummoned(s *instance) {
 		return
 	}
 	g.queueEventTriggers(event, s, "summoned")
+}
+
+// trackEnteredArtifact 记录"本场对战中进入过战场的创造物·随从"的卡牌种类，
+// 读作 `own|oppo.entered_artifacts`（"X 为本次对战中进入战场的自己的创造物·随从的种类"）。
+func (g *game) trackEnteredArtifact(s *instance) {
+	if s == nil {
+		return
+	}
+	recordEnteredArtifact(g.owner(s), s.card)
+}
+
+// recordEnteredArtifact 按卡牌定义记录种类；同一卡牌只算一种。
+func recordEnteredArtifact(p *player, card *ir.Card) {
+	if p == nil || card == nil || card.CardType != "follower" {
+		return
+	}
+	artifact := false
+	for _, trait := range card.Traits {
+		if trait == "artifact" {
+			artifact = true
+			break
+		}
+	}
+	if !artifact {
+		return
+	}
+	if p.enteredArtifacts == nil {
+		p.enteredArtifacts = map[int]bool{}
+	}
+	p.enteredArtifacts[card.ID] = true
 }
 
 // countRally 记录随从进入战场：打出的随从先挂起，其它召唤立即计入。

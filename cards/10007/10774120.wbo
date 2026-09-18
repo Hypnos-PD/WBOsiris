@@ -6,7 +6,19 @@ card 10774120 {
     stats 3/5;
 
     effect {
-        unplayable;
+        when own follower summoned where trait artifact {
+            random victim from oppo.field.followers;
+            damage victim 3;
+        }
+        evolve {
+            summon 1 card 90071140;
+        }
+        superevolve {
+            // 超进化会先执行 evolve 块（召唤古老的创造物），"その後"再检查种类数。
+            if own.entered_artifacts >= 3 {
+                add storm to self;
+            }
+        }
     }
 
     meta {

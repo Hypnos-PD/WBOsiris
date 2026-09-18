@@ -107,7 +107,8 @@ player own {
 `pp 3/10` 的左值是当前可用能量点，右值是最大能量点。断言中分别使用
 `own.pp` 和 `own.maxpp`；组合形式 `own.pp == 3/10` 会同时比较两者。
 玩家标量断言还支持 `own.ep`、`own.sep`、`own.combo`、`own.shadows`、`own.rally`
-与 `own.earthsigils`（土之印总层数，不是土之印实例数）。
+、`own.earthsigils`（土之印总层数，不是土之印实例数）与 `own.entered_artifacts`
+（本场对战中进入过该玩家战场的创造物·随从种类数）。
 
 牌组在 `deck top` 中按照从牌组顶部到底部的顺序排列。`destroyed` 是本局已被
 破坏随从的历史，不等同于当前墓场内容，亡者召还读取该历史。

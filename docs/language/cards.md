@@ -689,12 +689,15 @@ when self summoned {
 其他随从入场以及战场上的变身都不会触发。两项增量在本条强化操作开始时分别读取，
 暂停恢复保留破坏记录的回合归属。测试初始历史不计入本回合。
 计数不消耗随机决策；查询预算耗尽时不使用部分结果执行效果。
-数值也可直接读取 `own`/`oppo` 的 `combo`、`rally`、`crests`、`pp`、`maxpp`、`life`、`ep`、`sep`、`shadows`、`hand_count`、`earthsigils`，
+数值也可直接读取 `own`/`oppo` 的 `combo`、`rally`、`crests`、`pp`、`maxpp`、`life`、`ep`、`sep`、`shadows`、`hand_count`、`earthsigils`、`entered_artifacts`，
 或者读取 `self.cost`；随从还可读取 `self.attack` 和 `self.life`。
 `own` 始终相对能力控制者，`self` 为发动能力的卡牌实例。费用支付和使用卡牌的连击计数
 在入场曲之前发生，因此入场曲中的 `own.pp` 已扣除费用，`own.combo` 包含本卡牌。
 `hand_count` 是手牌张数；`earthsigils` 是己方或对方战场上土之印的总层数，
 不是土之印实例数。二者均只读，不能用 `gain` 修改；读取土之印层数不会消耗土之印。
+`entered_artifacts` 是"本场对战中进入过该玩家战场的创造物·随从的**种类**数"
+（按卡牌 ID 去重，读作 `own.entered_artifacts`），用于"若本次对战中进入战场的自己的
+创造物·随从的种类为3种或以上"这类条件与伤害量；只读，也不会随随从离场而回退。
 
 ```wbo
 fanfare {

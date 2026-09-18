@@ -308,7 +308,7 @@ scenario "创造物长枪兵让自己召唤的创造物获得突进" {
         }
     }
     action { play source; }
-    expect { legal; own.field count card 90071110 == 1; own.field count card 90071150 == 0; all own.field where card 90071110 have rush; }
+    expect { legal; own.field count card 90071130 == 1; own.field count card 90071150 == 0; all own.field where card 90071130 have rush; }
 }
 
 scenario "创造物长枪兵爆能强化时再召唤神秘的创造物" {
@@ -322,7 +322,7 @@ scenario "创造物长枪兵爆能强化时再召唤神秘的创造物" {
     action { play source; }
     expect {
         legal;
-        own.field count card 90071110 == 1;
+        own.field count card 90071130 == 1;
         own.field count card 90071150 == 1;
         all own.field where card 90071150 have rush;
     }

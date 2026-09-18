@@ -6,7 +6,14 @@ card 10772120 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from oppo.field.followers;
+            destroy target;
+            if own.entered_artifacts >= 3 {
+                summon 1 card 90071140;
+                summon 1 card 90071150;
+            }
+        }
     }
 
     meta {

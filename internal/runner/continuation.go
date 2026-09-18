@@ -91,6 +91,8 @@ type ContinuationPlayer struct {
 	Combo            int                 `json:"combo"`
 	Shadows          int                 `json:"shadows"`
 	Rally            int                 `json:"rally"`
+	// EnteredArtifacts 是本场对战中进入过该玩家战场的创造物·随从卡牌 ID（去重）。
+	EnteredArtifacts []int               `json:"enteredArtifacts,omitempty"`
 	LeaderAbilities  []string            `json:"leaderAbilities,omitempty"`
 	AttackedThisTurn bool                `json:"attackedThisTurn"`
 	EvolvedThisTurn  bool                `json:"evolvedThisTurn"`
@@ -503,6 +505,21 @@ func leaderAbilityNames(p player) []string {
 	return names
 }
 
+// sortedCardIDs 把"卡牌 ID 集合"稳定地写进存档（顺序与内容都要可复现）。
+func sortedCardIDs(set map[int]bool) []int {
+	if len(set) == 0 {
+		return nil
+	}
+	ids := make([]int, 0, len(set))
+	for id, on := range set {
+		if on {
+			ids = append(ids, id)
+		}
+	}
+	sort.Ints(ids)
+	return ids
+}
+
 func leaderAbilitySet(names []string) map[string]bool {
 	if len(names) == 0 {
 		return nil
@@ -523,6 +540,7 @@ func snapshotContinuationPlayer(p player) ContinuationPlayer {
 		Crests:      instanceIDs(p.crests), RetiredCrests: instanceIDs(p.retiredCrests),
 		PP: p.pp, MaxPP: p.maxpp, LeaderLife: p.leaderLife, LeaderMax: p.leaderMax,
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, Rally: p.rally, LeaderAbilities: leaderAbilityNames(p), AttackedThisTurn: p.attackedThisTurn,
+		EnteredArtifacts: sortedCardIDs(p.enteredArtifacts),
 		Deck: instanceIDs(p.deck), Hand: instanceIDs(p.hand), Field: instanceIDs(p.field), EvolvedThisTurn: p.evolvedThisTurn,
 		Graveyard: instanceIDs(p.graveyard), Banished: instanceIDs(p.banished), Destroyed: cloneDestructionHistory(p.destroyed),
 		Resolving:    instanceIDs(p.resolving),
@@ -895,6 +913,12 @@ func generatedInstanceSerial(instances []ContinuationEntity) int {
 
 func restorePlayer(saved ContinuationPlayer, instances map[string]*instance, cards map[int]*ir.Card) (player, error) {
 	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, rally: saved.Rally, leaderAbilities: leaderAbilitySet(saved.LeaderAbilities), attackedThisTurn: saved.AttackedThisTurn, evolvedThisTurn: saved.EvolvedThisTurn, extraPPEarly: saved.ExtraPPEarly, extraPPLate: saved.ExtraPPLate, extraPPActive: saved.ExtraPPActive}
+	if len(saved.EnteredArtifacts) > 0 {
+		p.enteredArtifacts = make(map[int]bool, len(saved.EnteredArtifacts))
+		for _, id := range saved.EnteredArtifacts {
+			p.enteredArtifacts[id] = true
+		}
+	}
 	if p.leaderMax < 1 || p.leaderMax > 65535 || p.leaderLife < 0 || p.leaderLife > p.leaderMax {
 		return player{}, fmt.Errorf("invalid continuation leader life")
 	}

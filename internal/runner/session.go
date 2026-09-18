@@ -918,6 +918,7 @@ func clonePlayer(original player, instances map[string]*instance) player {
 		resolving:        cloneInstances(original.resolving, instances),
 		attackedThisTurn: original.attackedThisTurn, evolvedThisTurn: original.evolvedThisTurn,
 		extraPPEarly: original.extraPPEarly, extraPPLate: original.extraPPLate, extraPPActive: original.extraPPActive,
+		enteredArtifacts: maps.Clone(original.enteredArtifacts),
 	}
 }
 

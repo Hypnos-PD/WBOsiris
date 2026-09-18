@@ -105,6 +105,8 @@ func (g *game) numericValue(expr ir.NumericExpr, self *instance, bindings frame)
 				total += i.earthsigil
 			}
 			return total
+		case "entered_artifacts":
+			return len(p.enteredArtifacts)
 		case "combo":
 			return p.combo
 		case "pp":
