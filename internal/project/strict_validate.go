@@ -431,7 +431,8 @@ func attackHistoryCondition(t []syntax.Token) bool {
 	if len(t) == 4 && t[0].Value == "not" {
 		t = t[1:]
 	}
-	return len(t) == 3 && set("own", "oppo")[t[0].Value] && t[1].Value == "." && t[2].Value == "attacked_this_turn"
+	return len(t) == 3 && set("own", "oppo")[t[0].Value] && t[1].Value == "." &&
+		set("attacked_this_turn", "attacked_leader_last_turn")[t[2].Value]
 }
 
 // deckDuplicatesCondition 匹配 `own|oppo.deck has [no] duplicates`。
@@ -553,6 +554,11 @@ func strictPlayer(s *syntax.Statement, a map[string]string, ds *[]syntax.Diagnos
 				shapeError(ds, x, h+" 整数;")
 			} else {
 				checkU16(tt[1], true, ds)
+			}
+		case "attacked_leader_last_turn":
+			// 场景状态：标记"自己的随从在上一回合中攻击过主战者"。
+			if len(tt) != 1 || !x.Terminated {
+				shapeError(ds, x, h+";")
 			}
 		case "deck":
 			if len(tt) != 2 || tt[1].Value != "top" {

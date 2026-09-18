@@ -904,7 +904,8 @@ func conditionIR(t []syntax.Token) ir.Condition {
 		if !attacked {
 			t = t[1:]
 		}
-		return ir.AttackHistoryCondition{Kind: "attack_history", Side: t[0].Value, Attacked: attacked}
+		return ir.AttackHistoryCondition{Kind: "attack_history", Side: t[0].Value, Attacked: attacked,
+			LeaderLastTurn: t[2].Value == "attacked_leader_last_turn"}
 	}
 	if len(t) == 1 {
 		return ir.OverflowCondition{Kind: "overflow", Side: "own"}
@@ -1116,6 +1117,10 @@ func compilePlayerState(s *syntax.Statement, p *ir.PlayerState, a map[string]str
 			p.Shadows = intToken(t[1])
 		case "rally":
 			p.Rally = intToken(t[1])
+		case "attacked_leader_last_turn":
+			if len(t) == 1 {
+				p.LeaderAttackedLastTurn = true
+			}
 		default:
 			zone := x.Word(0)
 			items := []ir.TestInstance{}

@@ -66,6 +66,8 @@ type player struct {
 	destroyed                                                 []DestructionRecord
 	resolving                                                 []*instance
 	attackedThisTurn, evolvedThisTurn                         bool
+	// leaderAttackedThisTurn / leaderAttackedLastTurn：本回合 / 上一回合自己的随从是否攻击过主战者。
+	leaderAttackedThisTurn, leaderAttackedLastTurn            bool
 	extraPPEarly, extraPPLate                                 bool
 	extraPPActive                                             bool
 }
@@ -235,6 +237,7 @@ func (g *game) loadState(s ir.State) error {
 		p.leaderLife, p.leaderMax = src.Leader.Life, src.Leader.MaxLife
 		p.pp, p.maxpp, p.ep, p.sep, p.combo, p.shadows = src.PP, src.MaxPP, src.EP, src.SEP, src.Combo, src.Shadows
 		p.rally = src.Rally
+		p.leaderAttackedLastTurn = src.LeaderAttackedLastTurn
 		p.extraPPEarly, p.extraPPLate = src.ExtraPPEarly, src.ExtraPPLate
 		for _, zone := range []string{"deck", "hand", "field", "graveyard", "banished", "destroyed", "crests"} {
 			for _, decl := range src.Zones[zone] {
@@ -701,6 +704,9 @@ func (g *game) commitAttack(a ir.AttackAction) string {
 	attacker.attacksUsed++
 	attacker.removeKeyword("stealth")
 	g.player(a.Actor).attackedThisTurn = true
+	if a.Kind == "attack_leader" {
+		g.player(a.Actor).leaderAttackedThisTurn = true
+	}
 	g.attack = &attackState{stage: "attack", actor: a.Actor, attacker: attacker.id}
 	attackerTarget := ir.EventTarget{Kind: "instance", InstanceID: attacker.id}
 	opponentSide := oppositeSide(a.Actor)
@@ -1308,6 +1314,9 @@ func (g *game) advanceTurn() {
 		active.pp = active.maxpp
 		active.combo = 0
 		active.attackedThisTurn = false
+		// 上一回合是否攻击过主战者：进入自己回合时结转，并清空本回合的标记。
+		active.leaderAttackedLastTurn = active.leaderAttackedThisTurn
+		active.leaderAttackedThisTurn = false
 		active.evolvedThisTurn = false
 		for _, i := range g.instances {
 			i.fusedThisTurn = false

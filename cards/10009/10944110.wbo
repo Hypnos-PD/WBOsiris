@@ -6,7 +6,13 @@ card 10944110 {
     stats 6/5;
 
     effect {
-        unplayable;
+        rush;
+        ignore_ward;
+        fanfare {
+            if own.attacked_leader_last_turn {
+                add storm to self;
+            }
+        }
     }
 
     meta {

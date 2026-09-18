@@ -1,0 +1,109 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+// S-87：`own.attacked_leader_last_turn` 表示"自己的随从在自己的上一回合中攻击过主战者"。
+// 场景状态里可以直接用 `attacked_leader_last_turn;` 摆出这个历史。
+
+scenario "绝倒的袭击者在上一回合攻击过主战者时攻击加成" {
+    seed 95001;
+    state {
+        player own {
+            attacked_leader_last_turn;
+            field { follower source = 10942110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { attack source into victim; }
+    expect { legal; victim.stats == 0/7; source.stats == 2/2; }
+}
+
+scenario "绝倒的袭击者没有该历史时不加成" {
+    seed 95002;
+    state {
+        player own {
+            field { follower source = 10942110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { attack source into victim; }
+    expect { legal; victim.stats == 0/8; }
+}
+
+scenario "尘土的不法者在上一回合攻击过主战者时改为发动两次" {
+    seed 95003;
+    state {
+        player own {
+            pp 5/5;
+            attacked_leader_last_turn;
+            hand { follower source = 10943110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001120 { stats 0/9; }
+                follower second = 10001120 { stats 0/9; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10943110 == 1; }
+}
+
+scenario "利牙在上一回合攻击过主战者时分配六点伤害" {
+    seed 95004;
+    state {
+        player own {
+            pp 2/2;
+            attacked_leader_last_turn;
+            hand { spell source = 10943310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; victim.stats == 0/3; }
+}
+
+scenario "利牙没有该历史时只分配三点伤害" {
+    seed 95005;
+    state {
+        player own {
+            pp 2/2;
+            hand { spell source = 10943310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; victim.stats == 0/6; }
+}
+
+scenario "穿孔的罪人在上一回合攻击过主战者时获得疾驰" {
+    seed 95006;
+    state {
+        player own {
+            pp 7/7;
+            attacked_leader_last_turn;
+            hand { follower source = 10944110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has storm; source has rush; source has ignore_ward; }
+}
+
+scenario "穿孔的罪人没有该历史时只有突进" {
+    seed 95007;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10944110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source lacks storm; source has rush; }
+}

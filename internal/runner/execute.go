@@ -46,6 +46,9 @@ func (g *game) condition(c ir.Condition, self *instance) bool {
 	switch x := c.(type) {
 	case ir.AttackHistoryCondition:
 		p, side := g.playerForSide(self, x.Side)
+		if x.LeaderLastTurn {
+			return p.leaderAttackedLastTurn == x.Attacked
+		}
 		return (side == g.turn.Active && p.attackedThisTurn) == x.Attacked
 	case ir.SkyboundArtCondition:
 		return self != nil && g.turn.Number+self.skybound >= x.Level

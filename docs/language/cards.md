@@ -727,6 +727,11 @@ damage target self.attack;
 
 `own.attacked_this_turn` 和 `oppo.attacked_this_turn` 可直接作为 `if` 条件，
 在前面加 `not` 表示本回合尚未有对应玩家的随从宣告攻击。这里的 `own` 始终指能力控制者。
+`own.attacked_leader_last_turn` / `oppo.attacked_leader_last_turn` 判断"该玩家的随从在
+**自己的上一回合**中攻击过主战者"（同样支持 `not`）：进入某个玩家的回合时，会把
+"上一回合是否攻击过主战者"结转下来并清空本回合标记，用于
+「若自己的随从在自己的上一回合中攻击过主战者，则…」。场景测试可以在玩家状态里写
+`attacked_leader_last_turn;` 直接摆出这个历史。
 
 `set attack T N;` 直接设置目标随从的当前攻击力（与 `set life` 对称）。
 

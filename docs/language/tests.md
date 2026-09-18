@@ -74,6 +74,7 @@ player own {
     combo 2;
     shadows 4;
     rally 20;
+    attacked_leader_last_turn;
 
     deck top {
         follower first = 10001110;

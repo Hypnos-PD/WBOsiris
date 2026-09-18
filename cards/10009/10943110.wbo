@@ -6,7 +6,17 @@ card 10943110 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fanfare {
+            if own.attacked_leader_last_turn {
+                repeat 2 {
+                    random victim from oppo.field.followers;
+                    damage victim 4;
+                }
+            } else {
+                random victim from oppo.field.followers;
+                damage victim 4;
+            }
+        }
     }
 
     meta {

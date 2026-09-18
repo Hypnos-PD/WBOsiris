@@ -355,6 +355,9 @@ type AttackHistoryCondition struct {
 	Kind     string `json:"kind"`
 	Side     string `json:"side"`
 	Attacked bool   `json:"attacked"`
+	// LeaderLastTurn 表示"该玩家的随从在自己的上一回合中攻击过主战者"，
+	// 为假时是"本回合宣告过攻击"。
+	LeaderLastTurn bool `json:"leaderLastTurn,omitempty"`
 }
 
 func (c AttackHistoryCondition) conditionKind() string { return c.Kind }
@@ -698,6 +701,9 @@ type PlayerState struct {
 	Combo        int                       `json:"combo"`
 	Shadows      int                       `json:"shadows"`
 	Rally        int                       `json:"rally"`
+	// LeaderAttackedLastTurn 用于"自己的随从在自己的上一回合中攻击过主战者"这类条件，
+	// 让场景测试可以直接摆出这种历史。
+	LeaderAttackedLastTurn bool `json:"leaderAttackedLastTurn,omitempty"`
 	ExtraPPEarly bool                      `json:"extraPPEarly,omitempty"`
 	ExtraPPLate  bool                      `json:"extraPPLate,omitempty"`
 	Zones        map[string][]TestInstance `json:"zones"`

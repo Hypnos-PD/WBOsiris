@@ -6,7 +6,13 @@ card 10942110 {
     stats 1/2;
 
     effect {
-        unplayable;
+        storm;
+        attack {
+            // 「若自己的随从在自己的上一回合中攻击过主战者」。
+            if own.attacked_leader_last_turn {
+                buff self +1/+0 until turn ends;
+            }
+        }
     }
 
     meta {

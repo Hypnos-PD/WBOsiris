@@ -5,7 +5,11 @@ card 10943310 {
     cost 2;
 
     effect {
-        unplayable;
+        if own.attacked_leader_last_turn {
+            damage oppo.field.followers 6 distributed;
+        } else {
+            damage oppo.field.followers 3 distributed;
+        }
     }
 
     meta {

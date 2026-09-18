@@ -95,6 +95,9 @@ type ContinuationPlayer struct {
 	EnteredArtifacts []int               `json:"enteredArtifacts,omitempty"`
 	LeaderAbilities  []string            `json:"leaderAbilities,omitempty"`
 	AttackedThisTurn bool                `json:"attackedThisTurn"`
+	// LeaderAttackedThisTurn / LeaderAttackedLastTurn：本回合 / 上一回合攻击过主战者。
+	LeaderAttackedThisTurn bool `json:"leaderAttackedThisTurn,omitempty"`
+	LeaderAttackedLastTurn bool `json:"leaderAttackedLastTurn,omitempty"`
 	EvolvedThisTurn  bool                `json:"evolvedThisTurn"`
 	ExtraPPEarly     bool                `json:"extraPPEarly"`
 	ExtraPPLate      bool                `json:"extraPPLate"`
@@ -540,6 +543,7 @@ func snapshotContinuationPlayer(p player) ContinuationPlayer {
 		Crests:      instanceIDs(p.crests), RetiredCrests: instanceIDs(p.retiredCrests),
 		PP: p.pp, MaxPP: p.maxpp, LeaderLife: p.leaderLife, LeaderMax: p.leaderMax,
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, Rally: p.rally, LeaderAbilities: leaderAbilityNames(p), AttackedThisTurn: p.attackedThisTurn,
+		LeaderAttackedThisTurn: p.leaderAttackedThisTurn, LeaderAttackedLastTurn: p.leaderAttackedLastTurn,
 		EnteredArtifacts: sortedCardIDs(p.enteredArtifacts),
 		Deck: instanceIDs(p.deck), Hand: instanceIDs(p.hand), Field: instanceIDs(p.field), EvolvedThisTurn: p.evolvedThisTurn,
 		Graveyard: instanceIDs(p.graveyard), Banished: instanceIDs(p.banished), Destroyed: cloneDestructionHistory(p.destroyed),
@@ -912,7 +916,8 @@ func generatedInstanceSerial(instances []ContinuationEntity) int {
 }
 
 func restorePlayer(saved ContinuationPlayer, instances map[string]*instance, cards map[int]*ir.Card) (player, error) {
-	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, rally: saved.Rally, leaderAbilities: leaderAbilitySet(saved.LeaderAbilities), attackedThisTurn: saved.AttackedThisTurn, evolvedThisTurn: saved.EvolvedThisTurn, extraPPEarly: saved.ExtraPPEarly, extraPPLate: saved.ExtraPPLate, extraPPActive: saved.ExtraPPActive}
+	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, rally: saved.Rally, leaderAbilities: leaderAbilitySet(saved.LeaderAbilities), attackedThisTurn: saved.AttackedThisTurn,
+		leaderAttackedThisTurn: saved.LeaderAttackedThisTurn, leaderAttackedLastTurn: saved.LeaderAttackedLastTurn, evolvedThisTurn: saved.EvolvedThisTurn, extraPPEarly: saved.ExtraPPEarly, extraPPLate: saved.ExtraPPLate, extraPPActive: saved.ExtraPPActive}
 	if len(saved.EnteredArtifacts) > 0 {
 		p.enteredArtifacts = make(map[int]bool, len(saved.EnteredArtifacts))
 		for _, id := range saved.EnteredArtifacts {

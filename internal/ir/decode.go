@@ -1667,9 +1667,10 @@ func decodeCondition(data []byte) (Condition, error) {
 	}
 	if k.Kind == "attack_history" {
 		var v struct {
-			Kind     string `json:"kind"`
-			Side     string `json:"side"`
-			Attacked *bool  `json:"attacked"`
+			Kind           string `json:"kind"`
+			Side           string `json:"side"`
+			Attacked       *bool  `json:"attacked"`
+			LeaderLastTurn bool   `json:"leaderLastTurn,omitempty"`
 		}
 		if err := strict(data, &v); err != nil {
 			return nil, err
@@ -1677,7 +1678,7 @@ func decodeCondition(data []byte) (Condition, error) {
 		if !validSide(v.Side) || v.Attacked == nil {
 			return nil, fmt.Errorf("invalid attack history condition")
 		}
-		return AttackHistoryCondition{Kind: v.Kind, Side: v.Side, Attacked: *v.Attacked}, nil
+		return AttackHistoryCondition{Kind: v.Kind, Side: v.Side, Attacked: *v.Attacked, LeaderLastTurn: v.LeaderLastTurn}, nil
 	}
 	if k.Kind == "self_form" {
 		var v SelfFormCondition
