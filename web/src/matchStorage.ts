@@ -9,7 +9,12 @@ function decode(key: string, raw: string | null): SavedMatch | null {
     if (!value || typeof value.id !== "string" || !/^[a-f0-9]{12}$/.test(value.id) ||
       (value.side !== "own" && value.side !== "oppo") || typeof value.token !== "string" ||
       !/^[a-f0-9]{48}$/.test(value.token) || matchKey(value) !== key) return null;
-    return { id: value.id, side: value.side, token: value.token, updatedAt: Number.isSafeInteger(value.updatedAt) && value.updatedAt >= 0 ? value.updatedAt : 0 };
+    const base = typeof value.base === "string" && /^https?:\/\//.test(value.base) ? value.base : "";
+    const updatedAt = Number.isSafeInteger(value.updatedAt) && value.updatedAt >= 0 ? value.updatedAt : 0;
+    // 没有 base 的旧记录不写入该字段，保持存档形状稳定。
+    return base
+      ? { id: value.id, side: value.side, token: value.token, base, updatedAt }
+      : { id: value.id, side: value.side, token: value.token, updatedAt };
   } catch { return null; }
 }
 export function readSavedMatches(storage: ReadStorage): SavedMatch[] {
@@ -32,7 +37,9 @@ export function readMatchAuth(storage: Pick<Storage, "getItem">, id: string, sid
   return null;
 }
 export function saveMatchAuth(storage: Pick<Storage, "setItem">, auth: MatchAuth): void {
-  const value = { id: auth.id, side: auth.side, token: auth.token, updatedAt: Date.now() };
+  const value = auth.base
+    ? { id: auth.id, side: auth.side, token: auth.token, base: auth.base, updatedAt: Date.now() }
+    : { id: auth.id, side: auth.side, token: auth.token, updatedAt: Date.now() };
   const key = matchKey(auth), raw = JSON.stringify(value);
   if (!decode(key, raw)) throw new Error("房间凭据无效");
   storage.setItem(key, raw);

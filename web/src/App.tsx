@@ -22,8 +22,9 @@ import { TriggerLimits } from "./TriggerLimits";
 import { CrestZone, crestName } from "./CrestZone";
 import { decodeRemote, MatchConnection, type ConnectionStatus } from "./matchConnection";
 import { matchKey, readMatchAuth, readSavedMatches, saveMatchAuth, type SavedMatch } from "./matchStorage";
+import type { MatchAuth } from "./matchConnection";
 import { RoomInvitation } from "./RoomInvitation";
-import { API_BASE, fetchIllustrations, setApiBase, type IllustrationEntry } from "./api";
+import { API_BASE, PRODUCTION_API_BASE, fetchIllustrations, localApiBase, lobbyApiBase, setLobbyApiBase, type IllustrationEntry } from "./api";
 
 
 type Page = "menu" | "battle" | "decks" | "solo" | "lobby" | "replays" | "settings";
@@ -173,9 +174,12 @@ export function App() {
   const [loginPassword, setLoginPassword] = useState("");
   const [loginBusy, setLoginBusy] = useState(false);
   const [loginError, setLoginError] = useState("");
-  const [apiAddress, setApiAddress] = useState<string>(() => { try { return localStorage.getItem("wbo-api-base") || ""; } catch { return ""; } });
-  // 账号服务与规则服务同源：托管在 WBArts 下时就是站点的 /api/auth/*。
-  const authBase = API_BASE;
+  const [lobbyAddress, setLobbyAddress] = useState<string>(() => { try { return localStorage.getItem("wbo-lobby-base") || ""; } catch { return ""; } });
+  // 大厅（联机）与单人（本机）各用一份地址：大厅默认线上 WBA，单人优先本机离线服务。
+  const lobbyBaseUrl = lobbyApiBase();
+  const soloBaseUrl = API_BASE;
+  // 账号服务与大厅服务同源：托管在 WBArts 下时就是站点的 /api/auth/*。
+  const authBase = lobbyBaseUrl;
   const [format, setFormat] = useState<string>(() => localStorage.getItem("wbo-format") || "rotation");
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [catalogError, setCatalogError] = useState("");
@@ -224,11 +228,8 @@ export function App() {
     defender?: string;
     leader?: boolean;
   }>({});
-  const [matchAuth, setMatchAuth] = useState<{
-    id: string;
-    token: string;
-    side: string;
-  } | null>(null);
+  // 凭据里带上这一局所在的服务地址，重连/续局/再开一局都回到同一个服务。
+  const [matchAuth, setMatchAuth] = useState<MatchAuth | null>(null);
   const started = useRef(false);
   const [handExpanded, setHandExpanded] = useState(false);
   const [leftPanel, setLeftPanel] = useState<"history" | "card" | null>(null);
@@ -288,12 +289,12 @@ export function App() {
   // 问一下规则服务：这个实例进大厅要不要登录。
   useEffect(() => {
     let cancelled = false;
-    fetch(`${API_BASE}/api/health`, { cache: "no-store" })
+    fetch(`${lobbyBaseUrl}/api/health`, { cache: "no-store" })
       .then((response) => (response.ok ? response.json() : null))
       .then((payload: { lobbyRequiresLogin?: boolean } | null) => { if (!cancelled) setLobbyRequiresLogin(Boolean(payload?.lobbyRequiresLogin)); })
       .catch(() => { if (!cancelled) setLobbyRequiresLogin(false); });
     return () => { cancelled = true; };
-  }, [API_BASE]);
+  }, [lobbyBaseUrl]);
 
   // 已登录时顺手把用户名取回来（账号服务与 WBArts 共用 jwt）。
   useEffect(() => {
@@ -353,10 +354,10 @@ export function App() {
     setPickerOpen(false);
   };
 
-  const acceptMatch = (data: Remote, previousToken = "") => {
+  const acceptMatch = (data: Remote, previousToken = "", base = lobbyBaseUrl) => {
     const token = data.playerToken || previousToken;
     if (!data.matchId || !token || !data.side) return;
-    const auth = { id: data.matchId, token, side: data.side };
+    const auth = { id: data.matchId, token, side: data.side, base };
     connection.current?.stop();
     connection.current = null;
     try { saveMatchAuth(localStorage, auth); refreshSavedRooms(); }
@@ -370,14 +371,14 @@ export function App() {
     setSelected(null);
     sync(data);
   };
-  const createMatch = async (mode: "" | "bot" = "") => {
+  const createMatch = async (mode: "" | "bot" = "", base = lobbyBaseUrl) => {
     if (roomRequest.current) return;
     if (deckErrors.length) { setRequestError(deckErrors[0]); navigate("decks"); return; }
     roomRequest.current = true;
     setRoomBusy(true);
     setRequestError("");
     try {
-      const response = await fetch(`${API_BASE}/api/matches`, {
+      const response = await fetch(`${base}/api/matches`, {
       method: "POST",
       headers: lobbyHeaders(),
       body: JSON.stringify({ deck: deckCards.map(Number), format: matchFormat, ...(mode ? { mode } : {}) }),
@@ -386,7 +387,7 @@ export function App() {
       const data: Remote = await response.json();
       if (!data.matchId || !data.playerToken || data.side !== "own" || !data.state) throw new Error("房间响应无效");
       history.replaceState(null, "", `?match=${data.matchId}&seat=own`);
-      acceptMatch(data);
+      acceptMatch(data, "", base);
       setActivePage("battle");
     } catch (error) { setRequestError(error instanceof Error ? error.message : "无法连接对局服务"); }
     finally { roomRequest.current = false; setRoomBusy(false); }
@@ -423,7 +424,7 @@ export function App() {
   useEffect(() => {
     if (!matchAuth) return;
     const client = new MatchConnection({
-      base: API_BASE,
+      base: matchAuth.base || lobbyBaseUrl,
       auth: matchAuth,
       onRemote: (data) => matchCallbacks.current.receive(data),
       onStatus: setConnectionStatus,
@@ -436,7 +437,7 @@ export function App() {
   useEffect(() => {
     if (activePage !== "lobby") return;
     const controller = new AbortController();
-    const refreshRooms = () => fetch(`${API_BASE}/api/matches`, { signal: controller.signal }).then((r) => r.ok ? r.json() : []).then(setRoomList).catch((error) => { if (error?.name !== "AbortError") setRoomList([]); });
+    const refreshRooms = () => fetch(`${lobbyBaseUrl}/api/matches`, { signal: controller.signal }).then((r) => r.ok ? r.json() : []).then(setRoomList).catch((error) => { if (error?.name !== "AbortError") setRoomList([]); });
     refreshRooms();
     const timer = window.setInterval(refreshRooms, 5000);
     return () => { window.clearInterval(timer); controller.abort(); };
@@ -444,7 +445,7 @@ export function App() {
   useEffect(() => {
     if (!matchAuth) return;
     const controller = new AbortController();
-    fetch(`${API_BASE}/api/matches/${matchAuth.id}/replay`, {
+    fetch(`${(matchAuth.base || lobbyBaseUrl)}/api/matches/${matchAuth.id}/replay`, {
       headers: { Authorization: `Bearer ${matchAuth.token}` },
       signal: controller.signal,
     })
@@ -751,14 +752,14 @@ export function App() {
     setRoomBusy(true);
     setRequestError("");
     try {
-      const response = await fetch(`${API_BASE}/api/matches/${encodeURIComponent(joinRoomId.trim())}/join?code=${encodeURIComponent(joinRoomCode.trim())}`, {
+      const response = await fetch(`${lobbyBaseUrl}/api/matches/${encodeURIComponent(joinRoomId.trim())}/join?code=${encodeURIComponent(joinRoomCode.trim())}`, {
         method: "POST", headers: lobbyHeaders(), body: JSON.stringify({ deck: deckCards.map(Number), format: matchFormat }),
       });
       if (!response.ok) throw new Error(response.status === 401 ? "邀请码无效" : response.status === 409 ? "房间已满" : await response.text());
       const data: Remote = await response.json();
       if (!data.matchId || !data.playerToken || data.side !== "oppo" || !data.state) throw new Error("房间响应无效");
       history.replaceState(null, "", `?match=${data.matchId}&seat=oppo`);
-      acceptMatch(data);
+      acceptMatch(data, "", lobbyBaseUrl);
       setActivePage("battle");
     } catch (error) { setRequestError(error instanceof Error ? error.message : "无法加入房间"); }
     finally { roomRequest.current = false; setRoomBusy(false); }
@@ -769,10 +770,10 @@ export function App() {
     setRoomBusy(true);
     setRequestError("");
     try {
-      const response = await fetch(`${API_BASE}/api/matches/${auth.id}`, { cache: "no-store", signal: AbortSignal.timeout(10000), headers: { Authorization: `Bearer ${auth.token}` } });
+      const response = await fetch(`${(auth.base || lobbyBaseUrl)}/api/matches/${auth.id}`, { cache: "no-store", signal: AbortSignal.timeout(10000), headers: { Authorization: `Bearer ${auth.token}` } });
       if (!response.ok) throw new Error(response.status === 404 ? "房间已不存在，服务重启后旧房间不会保留" : response.status === 401 ? "房间凭据已失效" : `无法恢复房间 (${response.status})`);
       const data = decodeRemote(await response.json(), auth);
-      acceptMatch(data, auth.token);
+      acceptMatch(data, auth.token, auth.base || lobbyBaseUrl);
       history.replaceState(null, "", `?match=${auth.id}&seat=${auth.side}`);
       setActivePage("battle");
     } catch (error) { setRequestError(error instanceof Error && error.name !== "TimeoutError" ? error.message : "恢复房间超时，请重试"); }
@@ -785,7 +786,7 @@ export function App() {
     setRoomBusy(true);
     setRequestError("");
     try {
-      const response = await fetch(`${API_BASE}/api/matches/${id}/spectate`, { method: "POST", headers: lobbyHeaders(), body: "{}" });
+      const response = await fetch(`${lobbyBaseUrl}/api/matches/${id}/spectate`, { method: "POST", headers: lobbyHeaders(), body: "{}" });
       if (!response.ok) throw new Error((await response.text()).trim() || "无法观战");
       const data: Remote = await response.json();
       if (!data.playerToken) throw new Error("观战响应无效");
@@ -845,12 +846,12 @@ export function App() {
           ? <p className="panel-note" role="status">当前牌组还不能对战：{deckErrors[0]}<button className="btn" onClick={() => navigate("decks")}>去卡组管理</button></p>
           : <p className="panel-note">当前牌组：{deckLibrary.active.name} · {deckCards.length}/40 · {classNames[deckClass]}</p>}
         <FormatPicker value={matchFormat} onChange={changeMatchFormat} formats={catalogFormats}/>
-        <button className="btn primary" disabled={roomBusy || catalogLoading || !!deckErrors.length} onClick={() => createMatch("bot")}><Bot size={16}/>开始练习对战</button>
+        <button className="btn primary" disabled={roomBusy || catalogLoading || !!deckErrors.length} onClick={() => createMatch("bot", soloBaseUrl)}><Bot size={16}/>开始练习对战</button>
       </div>
     </section>
   ) : activePage === "lobby" ? (
     <section className="workspace-page">
-      <div className="page-heading"><div><span className="eyebrow">ONLINE</span><h1>大厅</h1></div>{lobbyReady && <button className="primary-action" disabled={roomBusy || catalogLoading || !!deckErrors.length} onClick={() => createMatch()}><Plus size={17}/>创建房间</button>}</div>
+      <div className="page-heading"><div><span className="eyebrow">ONLINE</span><h1>大厅</h1></div>{lobbyReady && <button className="primary-action" disabled={roomBusy || catalogLoading || !!deckErrors.length} onClick={() => createMatch("", lobbyBaseUrl)}><Plus size={17}/>创建房间</button>}</div>
       {!lobbyReady ? (
         <div className="panel login-panel">
           <div className="panel-head"><h2>进入大厅需要登录</h2><small>{authBase ? `账号服务：${authBase || location.host}` : "使用 WBArts 账号"}</small></div>
@@ -868,7 +869,7 @@ export function App() {
             <div className="panel-head"><h2>创建房间</h2><small>赛制在这里选：指定模式只用最新 6 弹 + 基础卡牌，无限制模式全卡池</small></div>
             <FormatPicker value={matchFormat} onChange={changeMatchFormat} formats={catalogFormats}/>
             <p className="panel-note">{deckErrors.length ? `当前牌组还不能对战：${deckErrors[0]}` : `当前牌组：${deckLibrary.active.name} · ${deckCards.length}/40 · ${classNames[deckClass]}`}<button className="btn" onClick={() => navigate("decks")}>去卡组管理</button></p>
-            <button className="btn primary" disabled={roomBusy || catalogLoading || !!deckErrors.length} onClick={() => createMatch()}><Plus size={16}/>使用当前牌组创建房间</button>
+            <button className="btn primary" disabled={roomBusy || catalogLoading || !!deckErrors.length} onClick={() => createMatch("", lobbyBaseUrl)}><Plus size={16}/>使用当前牌组创建房间</button>
           </div>
           {matchAuth && (
             <div className="panel">
@@ -938,12 +939,21 @@ export function App() {
         <p className="panel-note">{illustrations.length} 张可用{illustrations.some((item) => item.source === "wbarts") ? "（含 WBArts 素材库）" : "（内置素材）"}。把 WBA 的全部主界面打包进来：<code>node scripts/bundle_illustrations.mjs</code></p>
       </div>
       <div className="panel">
-        <div className="panel-head"><h2>规则服务</h2><small>本地默认 http://127.0.0.1:23215；线上默认同源</small></div>
-        <form className="setting-row" onSubmit={(event) => { event.preventDefault(); setApiBase(apiAddress); location.reload(); }}>
-          <label className="field">服务地址<input aria-label="规则服务地址" value={apiAddress} placeholder="留空 = 同源" onChange={(event) => setApiAddress(event.target.value)}/></label>
+        <div className="panel-head"><h2>大厅服务</h2><small>默认使用 WBA：{PRODUCTION_API_BASE}</small></div>
+        <div className="setting-row">
+          <button className="btn" onClick={() => { setLobbyApiBase(PRODUCTION_API_BASE); location.reload(); }}>用线上 WBA</button>
+          <button className="btn" disabled={!localApiBase()} onClick={() => { setLobbyApiBase(localApiBase() || "local"); location.reload(); }}>用本机服务（离线联机）</button>
+        </div>
+        <form className="setting-row" onSubmit={(event) => { event.preventDefault(); setLobbyApiBase(lobbyAddress); location.reload(); }}>
+          <label className="field">自定义地址<input aria-label="大厅服务地址" value={lobbyAddress} placeholder={PRODUCTION_API_BASE} onChange={(event) => setLobbyAddress(event.target.value)}/></label>
           <button className="btn primary">保存并重新连接</button>
         </form>
-        <p className="panel-note">当前连接：{API_BASE || location.origin} · {catalogError ? "不可用" : catalogLoading ? "连接中" : "已连接"}{lobbyRequiresLogin ? " · 大厅需要登录" : " · 本地模式"}</p>
+        <p className="panel-note">当前大厅：{lobbyBaseUrl} · {lobbyRequiresLogin ? "需要登录（WBArts 账号）" : "不需要登录"}{localApiBase() ? ` · 本机离线服务：${localApiBase()}` : ""}</p>
+      </div>
+      <div className="panel">
+        <div className="panel-head"><h2>本机服务</h2><small>单人模式 / 卡组 / 回放用</small></div>
+        <p className="panel-note">当前：{soloBaseUrl || location.origin} · {catalogError ? "不可用" : catalogLoading ? "连接中" : "已连接"}</p>
+        <p className="panel-note">桌面客户端自带的规则引擎（卡池嵌在程序里），不需要网络；网页版会退回大厅服务。</p>
       </div>
       <div className="panel">
         <div className="panel-head"><h2>账号</h2><small>大厅使用 WBArts 账号</small></div>
@@ -1054,7 +1064,7 @@ export function App() {
           <button
             title="创建新对局"
             disabled={roomBusy}
-            onClick={() => createMatch()}
+            onClick={() => createMatch("", matchAuth?.base || lobbyBaseUrl)}
           >
             <Menu size={18} />
           </button>
@@ -1470,7 +1480,7 @@ export function App() {
                 : "对局结束"}
           </strong>
           <span>规则引擎已结束本局对战</span>
-          <button className="primary-action" onClick={() => createMatch()} disabled={roomBusy}>再开一局</button>
+          <button className="primary-action" onClick={() => createMatch("", matchAuth?.base || soloBaseUrl)} disabled={roomBusy}>再开一局</button>
         </aside>
       )}
       {selected && (

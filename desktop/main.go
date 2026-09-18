@@ -42,6 +42,7 @@ func main() {
 	// 主界面素材（约 675 MB 的 40 张立绘）不进二进制：它们放在可执行文件旁边，
 	// 由客户端直接当静态文件提供，这样二进制保持在几十 MB。
 	assetsDir := flag.String("assets-dir", "", "主界面素材目录（默认找可执行文件旁的 assets/，再找 ../share/WBOsiris/assets）")
+	apiBase := flag.String("api-base", "", "覆盖界面默认连接的服务地址（默认线上 https://sva.hypd.asia/wbo；填 local 用本机离线服务）")
 	flag.Parse()
 	mounted := resolveAssetsDir(*assetsDir)
 
@@ -52,6 +53,18 @@ func main() {
 	defer shutdown()
 	log.Printf("WBOsiris %s · 规则服务 %s", version, baseURL)
 
+	injected := ""
+	if *apiBase == "local" {
+		injected = baseURL
+	} else if strings.TrimSpace(*apiBase) != "" {
+		injected = strings.TrimSpace(*apiBase)
+	}
+	if injected == "" {
+		log.Printf("界面默认连接线上服务 %s（本机离线服务：%s，可在设置里切换）", defaultRemoteBase, baseURL)
+	} else {
+		log.Printf("界面默认连接 %s（本机离线服务：%s）", injected, baseURL)
+	}
+
 	err = wails.Run(&options.App{
 		Title:            "WBOsiris",
 		Width:            1440,
@@ -61,7 +74,7 @@ func main() {
 		BackgroundColour: &options.RGBA{R: 11, G: 11, B: 11, A: 1},
 		AssetServer: &assetserver.Options{
 			Assets:     assets,
-			Middleware: assetserver.ChainMiddleware(injectAPIBase(baseURL), serveAssetsFromDisk(mounted)),
+			Middleware: assetserver.ChainMiddleware(injectRuntimeConfig(baseURL, injected), serveAssetsFromDisk(mounted)),
 		},
 	})
 	if err != nil {
@@ -126,10 +139,21 @@ func serveAssetsFromDisk(directory string) assetserver.Middleware {
 	}
 }
 
-// injectAPIBase 在返回 HTML 时插入一行脚本，把进程内规则服务的地址告诉前端。
-// 前端设置里如果自己填了服务地址（localStorage 的 wbo-api-base），那一份优先。
-func injectAPIBase(baseURL string) assetserver.Middleware {
-	snippet := []byte(`<script>window.WBO_API_BASE = "` + baseURL + `";</script>`)
+// defaultRemoteBase 是界面默认连接的线上服务（部署在 WBArts 站点的 /wbo/ 前缀下）。
+const defaultRemoteBase = "https://sva.hypd.asia/wbo"
+
+// injectRuntimeConfig 在返回 HTML 时插入运行期配置：
+//   - WBO_LOCAL_API_BASE：进程内离线服务的地址（设置页“本机（离线）”用它）
+//   - WBO_API_BASE：只有显式指定（--api-base）时才注入，作为默认地址覆盖
+//
+// 前端设置里存过地址（localStorage 的 wbo-api-base）时，那一份最优先。
+func injectRuntimeConfig(localURL, injected string) assetserver.Middleware {
+	script := `<script>window.WBO_LOCAL_API_BASE = "` + localURL + `";`
+	if injected != "" {
+		script += `window.WBO_API_BASE = "` + injected + `";`
+	}
+	script += `</script>`
+	snippet := []byte(script)
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.Method != http.MethodGet || !wantsHTML(r) {

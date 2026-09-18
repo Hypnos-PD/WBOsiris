@@ -1,6 +1,6 @@
 import type { Remote } from "./gameTypes.ts";
 
-export type MatchAuth = { id: string; token: string; side: string };
+export type MatchAuth = { id: string; token: string; side: string; /** 这一局建在哪个服务上（缺省=大厅地址） */ base?: string };
 export type ConnectionStatus = "connecting" | "connected" | "sending" | "reconnecting" | "unavailable";
 class MatchUnavailable extends Error {}
 type Options = {

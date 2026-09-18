@@ -10,9 +10,17 @@
   用户缓存目录（`<cache>/WBOsiris/cards-<指纹>`），编译一次，然后起一个只监听
   `127.0.0.1` 的规则服务（端口由系统分配，避免和本机其它服务抢端口）。
 - **界面就是 `web/` 构建出来的那份前端**：Wails 的 AssetServer 提供 `desktop/frontend/dist`，
-  并在返回 HTML 时注入 `window.WBO_API_BASE`，前端据此连进程内服务。
-  想连线上（`https://sva.hypd.asia/wbo`，进大厅需要登录）就在**设置 → 规则服务**里改地址，
-  存在本机 `localStorage` 的 `wbo-api-base`，优先于注入值。
+  并在返回 HTML 时注入 `window.WBO_LOCAL_API_BASE`（进程内服务的地址）。
+
+地址是**按用途分两份**的：
+
+| 用途 | 默认地址 | 说明 |
+| --- | --- | --- |
+| 大厅（联机） | `https://sva.hypd.asia/wbo` | 默认就用 WBA 线上服务，进大厅要 WBArts 账号登录；设置里可切“本机服务”做离线联机 |
+| 单人 / 卡组 / 回放 | 进程内服务 | 桌面客户端自带的规则引擎（卡池内嵌），不需要网络也不需要登录 |
+
+设置里存的覆盖值在 `localStorage`：`wbo-lobby-base`（大厅）与 `wbo-api-base`（单人侧）。
+桌面壳想换个默认大厅地址可以用 `--api-base https://…`（填 `local` 表示默认用本机）。
 
 界面结构按约定：**主界面只有五项菜单**（单人模式 / 进入大厅 / 卡组管理 / 回放列表 / 设置），
 没有侧栏、没有状态小字；子页面才显示侧栏。

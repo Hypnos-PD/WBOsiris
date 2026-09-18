@@ -103,6 +103,8 @@ export type Remote = {
   state: GameState;
   legalActions?: LegalAction[];
   events?: RuntimeEvent[];
+  /** 创建/加入这一局所用的服务地址（客户端用它重连与续局）。 */
+  base?: string;
   /** 练习模式：对手是 AI；botError 非空表示 AI 驱动失败。 */
   bot?: boolean;
   botError?: string;
