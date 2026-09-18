@@ -6,7 +6,13 @@ card 10642120 {
     stats 5/5;
 
     effect {
-        unplayable;
+        when own turn ends {
+            evolve self silent;
+        }
+        when self evolved {
+            damage oppo.field.followers 3;
+            damage oppo.leader 3;
+        }
     }
 
     meta {

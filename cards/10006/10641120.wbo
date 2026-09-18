@@ -6,7 +6,12 @@ card 10641120 {
     stats 2/2;
 
     effect {
-        unplayable;
+        enhance 6 {
+            summon 2 card 10641120;
+        }
+        lastwords {
+            heal own.leader 1;
+        }
     }
 
     meta {

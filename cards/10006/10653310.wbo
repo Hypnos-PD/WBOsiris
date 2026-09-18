@@ -6,7 +6,24 @@ card 10653310 {
     trait encroacher;
 
     effect {
-        unplayable;
+        mode {
+            option 1 {
+                label chs "回复自己1点进化点。";
+                label eng "Recover 1 evolution point.";
+                label jpn "自分のEPを1回復。";
+                label kor "내 EP를 1 회복.";
+                label cht "回復自己1點EP。";
+                gain own.ep 1;
+            }
+            option 2 {
+                label chs "对对手的战场上的所有随从造成2点伤害。";
+                label eng "Deal 2 damage to all enemy followers.";
+                label jpn "相手の場のフォロワーすべてに2ダメージ。";
+                label kor "상대방 전장의 추종자 모두에게 2 피해.";
+                label cht "給予敵方戰場上全部的從者卡2點傷害。";
+                damage oppo.field.followers 2;
+            }
+        }
     }
 
     meta {

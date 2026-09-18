@@ -6,7 +6,15 @@ card 10663110 {
     stats 2/4;
 
     effect {
-        unplayable;
+        bane;
+        aura;
+        fanfare {
+            summon 1 card 10663110;
+        }
+        evolve {
+            require target from oppo.field.followers;
+            destroy target;
+        }
     }
 
     meta {

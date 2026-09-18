@@ -5,7 +5,15 @@ card 10661210 {
     cost 2;
 
     effect {
-        unplayable;
+        countdown 3;
+        lastwords {
+            draw 1;
+            random victim from oppo.field.followers;
+            destroy victim;
+        }
+        engage 1 {
+            reduce countdown self 1;
+        }
     }
 
     meta {

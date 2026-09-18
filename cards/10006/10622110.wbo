@@ -6,7 +6,14 @@ card 10622110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        ward;
+        enhance 4 {
+            buff self +2/+2;
+        }
+        evolve {
+            require target from oppo.field.followers;
+            damage target 3;
+        }
     }
 
     meta {

@@ -6,7 +6,11 @@ card 10672120 {
     stats 1/1;
 
     effect {
-        unplayable;
+        stealth;
+        fanfare {
+            require target from oppo.field.followers where life <= 3;
+            banish target;
+        }
     }
 
     meta {

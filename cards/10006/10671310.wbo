@@ -6,7 +6,11 @@ card 10671310 {
     trait encroacher;
 
     effect {
-        unplayable;
+        require target from oppo.field.followers;
+        damage target 4;
+        if count(own.field.followers where base.cost >= 5) >= 1 {
+            draw 1;
+        }
     }
 
     meta {

@@ -6,7 +6,25 @@ card 10613310 {
     trait encroacher;
 
     effect {
-        unplayable;
+        mode {
+            option 1 {
+                label chs "破坏对手的战场上的随机1个攻击力最大的随从。";
+                label eng "Destroy a random enemy follower with the highest attack.";
+                label jpn "相手の場の攻撃力が最も高いフォロワーからランダム1枚を破壊。";
+                label kor "상대방 전장에서 공격력이 가장 높은 추종자 중 무작위로 1장을 파괴.";
+                label cht "隨機破壞1張敵方戰場上攻擊力最大的從者卡。";
+                random victim from oppo.field.followers highest attack;
+                destroy victim;
+            }
+            option 2 {
+                label chs "召唤1个『新绿的妖精』。";
+                label eng "Summon a Verdant Fairy.";
+                label jpn "『<color=Keyword>新緑の妖精</color>』1枚を自分の場に出す。";
+                label kor "「신록의 요정」 1장을 내 전장에 소환.";
+                label cht "召喚1張『新綠的妖精』。";
+                summon 1 card 90011120;
+            }
+        }
     }
 
     meta {

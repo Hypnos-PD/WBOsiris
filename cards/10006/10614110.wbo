@@ -6,7 +6,14 @@ card 10614110 {
     stats 7/7;
 
     effect {
-        unplayable;
+        attack_limit 2;
+        fanfare {
+            summon 3 card 90011120;
+        }
+        superevolve {
+            require target from oppo.field.followers;
+            destroy target;
+        }
     }
 
     meta {

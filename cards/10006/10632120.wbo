@@ -6,7 +6,13 @@ card 10632120 {
     stats 3/3;
 
     effect {
-        unplayable;
+        rush;
+        enhance 6 {
+            summon 2 card 10632120;
+        }
+        lastwords {
+            spellboost own.hand 1;
+        }
     }
 
     meta {

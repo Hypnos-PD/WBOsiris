@@ -6,7 +6,12 @@ card 10633110 {
     stats 3/4;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 2 card 10631110;
+        }
+        evolve {
+            buff own.field.followers +1/+0 where card 10631110;
+        }
     }
 
     meta {

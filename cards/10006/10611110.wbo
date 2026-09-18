@@ -6,7 +6,12 @@ card 10611110 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 90011120 to hand;
+        }
+        evolve {
+            summon 1 card 90011120;
+        }
     }
 
     meta {

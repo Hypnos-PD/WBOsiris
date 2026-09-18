@@ -5,7 +5,12 @@ card 10662210 {
     cost 2;
 
     effect {
-        unplayable;
+        countdown 4;
+        lastwords {
+            draw 2;
+            damage oppo.field.followers 2;
+            heal own.leader 2;
+        }
     }
 
     meta {

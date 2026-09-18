@@ -6,7 +6,12 @@ card 10631120 {
     stats 2/2;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 10002120;
+        }
+        superevolve {
+            add rush to own.field.followers other;
+        }
     }
 
     meta {

@@ -7,7 +7,14 @@ card 10654120 {
     trait encroacher;
 
     effect {
-        unplayable;
+        fanfare {
+            necromancy 4 {
+                evolve self silent;
+            }
+        }
+        when self evolved {
+            add 1 card 90054330 to hand;
+        }
     }
 
     meta {

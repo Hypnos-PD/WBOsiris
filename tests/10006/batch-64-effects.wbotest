@@ -1,0 +1,392 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "慈育的森民加入新绿的妖精并在进化时召唤" {
+    seed 64001;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            pp 4/4;
+            hand { follower source = 10611110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90011120 == 1; }
+}
+
+scenario "胆小鬼先锋让低生命随从消失并带潜行" {
+    seed 64002;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10672120; }
+        }
+        player oppo {
+            field {
+                follower weak = 10001110 { stats 2/3; }
+                follower strong = 10001110 { stats 2/9; }
+            }
+        }
+    }
+    action { play source; select weak; }
+    expect { legal; weak.zone == banished; strong.zone == field; source has stealth; }
+}
+
+scenario "古旧天眼在唤灵四点时进化并把天眼深渊加入手牌" {
+    seed 64003;
+    state {
+        player own {
+            pp 4/4;
+            shadows 4;
+            hand { follower source = 10654120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == true; own.hand count card 90054330 == 1; own.shadows == 0; }
+}
+
+scenario "爆能强化六点让熟透的海鱼召唤两个自己" {
+    seed 64004;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10641120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10641120 == 3; }
+}
+
+scenario "慈惠的心腹召唤妖精并在自己随从进化时回复" {
+    seed 64005;
+    state {
+        turn own 5;
+        player own {
+            leader 10/20;
+            ep 1;
+            pp 5/5;
+            field {
+                follower source = 10613110;
+                follower ally = 10001110;
+            }
+        }
+    }
+    action { evolve ally; }
+    expect { legal; own.leader.life == 11; }
+}
+
+scenario "魔醉的教师召唤两个天晶魔手并在进化时强化" {
+    seed 64006;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10633110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10631110 == 2; }
+}
+
+scenario "魔醉的教师进化时强化天晶魔手" {
+    seed 64028;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            field {
+                follower source = 10633110;
+                follower first = 10631110;
+                follower second = 10631110;
+            }
+        }
+    }
+    action { evolve source; }
+    expect { legal; first.stats == 2/1; second.stats == 2/1; }
+}
+
+scenario "魔境的学生在天晶魔手入场时回复主战者" {
+    seed 64007;
+    state {
+        player own {
+            leader 10/20;
+            pp 5/5;
+            hand { follower source = 10632110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10631110 == 2; own.leader.life == 12; }
+}
+
+scenario "冒险魔导书的谢幕曲强化手牌" {
+    seed 64008;
+    state {
+        player own {
+            field { follower source = 10632120; }
+            hand { follower held = 10032120; }
+        }
+        player oppo { field { follower big = 10001110 { stats 5/5; } } }
+    }
+    action { attack source into big; }
+    expect { legal; source.zone == graveyard; held.cost == 9; }
+}
+
+scenario "失恋恶魔爆能强化获得疾驰并在进化时造成四点伤害" {
+    seed 64009;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            pp 7/7;
+            field { follower source = 10652120; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/9; } } }
+    }
+    action { evolve source; select enemy; }
+    expect { legal; enemy.stats == 2/5; }
+}
+
+scenario "枯渴的魔神交战时破坏对手且不会被能力破坏" {
+    seed 64010;
+    state {
+        player own { field { follower source = 10654110; } }
+        player oppo { field { follower big = 10001110 { stats 9/9; } } }
+    }
+    action { attack source into big; }
+    expect { legal; big.zone == graveyard; source.stats == 10/10; }
+}
+
+scenario "枯渴的魔神超进化时获得三次攻击" {
+    seed 64011;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10654110; }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; source.attack_limit == 3; }
+}
+
+scenario "尖刺龙在回合结束时进化并打击敌方全体与主战者" {
+    seed 64012;
+    state {
+        player own { field { follower source = 10642120; } }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { end_turn; }
+    expect { legal; source.evolved == true; enemy.stats == 2/5; oppo.leader.life == 17; }
+}
+
+scenario "枯渴的天眼模式一回复进化点" {
+    seed 64013;
+    state {
+        player own {
+            pp 3/3;
+            ep 0;
+            hand { spell source = 10653310; }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; own.ep == 1; }
+}
+
+scenario "枯渴的天眼模式二打击敌方全体" {
+    seed 64014;
+    state {
+        player own {
+            pp 3/3;
+            hand { spell source = 10653310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; mode 2; }
+    expect { legal; enemy.stats == 2/6; }
+}
+
+scenario "爆能强化四点让忠烈的近卫兵加二加二" {
+    seed 64015;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10622110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.stats == 5/5; source has ward; }
+}
+
+scenario "救赎的圣典吟唱结束时抽两张并打击敌方全体" {
+    seed 64016;
+    state {
+        player own {
+            leader 10/20;
+            pp 1/1;
+            field { amulet bible = 10662210; }
+            deck top { follower first = 10001110; follower second = 10001110; }
+            hand { spell source = 90074310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; select bible; }
+    // 奏绝的独唱先打 4 点，圣典的谢幕曲再打 2 点。
+    expect { legal; bible.zone == graveyard; own.leader.life == 12; enemy.stats == 2/2; }
+}
+
+scenario "崇拜的圣骑士召唤复制体并在进化时破坏敌方随从" {
+    seed 64017;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            pp 6/6;
+            field { follower source = 10663110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/9; } } }
+    }
+    action { evolve source; select enemy; }
+    expect { legal; enemy.zone == graveyard; source has bane; source has aura; }
+}
+
+scenario "天斧授予在高费随从在场时额外抽牌" {
+    seed 64018;
+    state {
+        player own {
+            pp 2/2;
+            field { follower big = 10401110; }
+            deck top { follower drew = 10001110; }
+            hand { spell source = 10671310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/9; } } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.stats == 2/5; own.hand count card 10001110 == 1; }
+}
+
+scenario "慈爱的天枪模式一破坏攻击力最大的随从" {
+    seed 64019;
+    state {
+        player own {
+            pp 3/3;
+            hand { spell source = 10613310; }
+        }
+        player oppo {
+            field {
+                follower strong = 10001110 { stats 5/5; }
+                follower weak = 10001110 { stats 1/5; }
+            }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; strong.zone == graveyard; weak.zone == field; }
+}
+
+scenario "慈爱的凛华召唤三个妖精且一回合可以攻击两次" {
+    seed 64020;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10614110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90011120 == 3; source.attack_limit == 2; }
+}
+
+scenario "爆能强化六点让暴烈的参谋回复能量点并加入士兵" {
+    seed 64021;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10623110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/9; } } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.zone == graveyard; own.pp == 3/6; own.hand count card 10621110 == 1; }
+}
+
+scenario "渴命的破坏者献祭其他随从并召唤进化的蝙蝠" {
+    seed 64022;
+    state {
+        player own {
+            pp 5/5;
+            field { follower ally = 10001110; }
+            hand { follower source = 10653110; }
+        }
+    }
+    action { play source; select ally; }
+    expect { legal; ally.zone == graveyard; own.field count card 90051120 == 1; }
+}
+
+scenario "平庸的制图召唤三种玩具并加生命" {
+    seed 64023;
+    state {
+        player own {
+            pp 6/6;
+            hand { spell source = 10672310; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        all own.field where card 10671110 have ward;
+        own.field count card 10673110 == 1;
+    }
+}
+
+scenario "空想的图书管理员召唤猛犸象并在超进化时给突进" {
+    seed 64024;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            pp 6/6;
+            field {
+                follower source = 10631120;
+                follower ally = 10001110;
+            }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; ally has rush; }
+}
+
+scenario "魔恋的爱慕召唤天晶魔手并在超进化时获得纹章" {
+    seed 64025;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            pp 3/3;
+            field { follower source = 10634110; }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; own.crests count card 10634110 == 1; }
+}
+
+scenario "魔恋的爱慕的纹章强化攻击的天晶魔手" {
+    seed 64026;
+    state {
+        player own {
+            crests { crest shim = 10634110; }
+            field { follower hand = 10631110 { stats 2/2; } }
+        }
+    }
+    action { attack hand into oppo.leader; }
+    expect { legal; hand.stats == 3/2; oppo.leader.life == 17; }
+}
+
+scenario "污浊的圣水的启动推进吟唱" {
+    seed 64027;
+    state {
+        player own {
+            pp 1/1;
+            field { amulet water = 10661210; }
+        }
+    }
+    action { engage water; }
+    expect { legal; water.countdown == 2; }
+}

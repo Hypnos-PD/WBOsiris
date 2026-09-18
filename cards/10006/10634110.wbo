@@ -6,7 +6,54 @@ card 10634110 {
     stats 1/2;
 
     effect {
-        unplayable;
+        drain;
+        fanfare {
+            summon 2 card 10631110;
+        }
+        superevolve {
+            gain own crest 10634110;
+        }
+    }
+
+    crest {
+        when own follower attacks where card 10631110 {
+            buff attacker +1/+0;
+        }
+
+        locale chs {
+            name "纹章：魔恋的爱慕·希姆";
+            text """
+自己的『<color=Keyword>天晶魔手</color>』攻击时，使其+1/+0。
+""";
+        }
+
+        locale eng {
+            name "Crest: Shim, Enchanted Admirer";
+            text """
+Whenever an allied <b><i><color=Keyword>Crystal Hand</color></i></b> attacks, give it +1/+0.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"まれん\">魔恋</rub>の<rub=\"あこが\">憧</rub>れ・シム";
+            text """
+自分の『<color=Keyword>天晶魔手</color>』が攻撃したとき、それを+1/+0する。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 마연의 동경 시무";
+            text """
+내 「<color=Keyword>천정마수</color>」가 공격했을 때, 그 추종자는 +1/+0.
+""";
+        }
+
+        locale cht {
+            name "紋章：魔戀的愛慕‧希姆";
+            text """
+自己的『<color=Keyword>天晶魔手</color>』攻擊時，使其+1/+0。
+""";
+        }
     }
 
     meta {

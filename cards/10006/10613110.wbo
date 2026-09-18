@@ -6,7 +6,12 @@ card 10613110 {
     stats 5/5;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90011120;
+        }
+        when own follower evolved {
+            heal own.leader 1;
+        }
     }
 
     meta {

@@ -6,7 +6,15 @@ card 10653110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            choose ally from own.field.followers other;
+            destroy ally;
+            evolve self silent;
+        }
+        when self evolved {
+            summon 1 card 90051120;
+            evolve summoned silent;
+        }
     }
 
     meta {

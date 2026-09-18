@@ -6,7 +6,14 @@ card 10623110 {
     stats 2/1;
 
     effect {
-        unplayable;
+        fanfare {
+            require target from oppo.field.followers;
+            destroy target;
+        }
+        enhance 6 {
+            gain own.pp 3;
+            add 1 card 10621110 to hand;
+        }
     }
 
     meta {
