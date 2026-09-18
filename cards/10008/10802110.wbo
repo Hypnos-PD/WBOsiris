@@ -6,7 +6,13 @@ card 10802110 {
     stats 1/3;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from oppo.field.followers;
+            damage target 4;
+        }
+        evolve {
+            add storm to self;
+        }
     }
 
     meta {

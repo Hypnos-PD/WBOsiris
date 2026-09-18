@@ -6,7 +6,14 @@ card 10861130 {
     stats 3/2;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from oppo.field.followers;
+            destroy target;
+        }
+        evolve {
+            choose target from oppo.field.followers;
+            destroy target;
+        }
     }
 
     meta {

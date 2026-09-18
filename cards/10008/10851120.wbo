@@ -6,7 +6,12 @@ card 10851120 {
     stats 1/1;
 
     effect {
-        unplayable;
+        attack {
+            damage all.leaders 1;
+        }
+        lastwords {
+            add 1 card 90051120 to hand;
+        }
     }
 
     meta {

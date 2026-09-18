@@ -6,7 +6,12 @@ card 10852110 {
     stats 3/5;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 3 card 90051120;
+        }
+        when own follower summoned where card 90051120 {
+            add rush to summoned;
+        }
     }
 
     meta {

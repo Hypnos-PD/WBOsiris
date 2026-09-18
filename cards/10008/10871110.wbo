@@ -6,7 +6,11 @@ card 10871110 {
     stats 7/7;
 
     effect {
-        unplayable;
+        ward;
+        lastwords {
+            summon 1 card 10871110;
+            remove lastwords from summoned;
+        }
     }
 
     meta {

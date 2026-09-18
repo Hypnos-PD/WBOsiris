@@ -1,0 +1,294 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "宁静的孤独破坏敌方随从并回复主战者" {
+    seed 86001;
+    state {
+        player own {
+            leader 10/20;
+            pp 4/4;
+            hand { spell source = 10812310; }
+        }
+        player oppo {
+            field { follower victim = 10001110; }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.zone == graveyard; own.leader.life == 12; }
+}
+
+scenario "纯净无垢的日常在超进化解禁回合追加回复" {
+    seed 86002;
+    state {
+        turn own 7;
+        player own {
+            leader 10/20;
+            pp 3/3;
+            hand { spell source = 10872310; }
+            deck top { follower next = 10011110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 12; own.hand count card 10011110 == 1; }
+}
+
+scenario "纯净无垢的日常在未解禁回合只抽牌" {
+    seed 86003;
+    state {
+        turn own 3;
+        player own {
+            leader 10/20;
+            pp 3/3;
+            hand { spell source = 10872310; }
+            deck top { follower next = 10011110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 10; own.hand count card 10011110 == 1; }
+}
+
+scenario "末世死化妆打击随机随从与主战者" {
+    seed 86004;
+    state {
+        player own {
+            pp 6/6;
+            hand { spell source = 10842310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; victim.stats == 0/5; oppo.leader.life == 16; }
+}
+
+scenario "可爱恶魔的攻击时打击双方主战者" {
+    seed 86005;
+    state {
+        player own {
+            field { follower source = 10851120; }
+        }
+    }
+    action { attack source into oppo.leader; }
+    expect { legal; own.leader.life == 19; oppo.leader.life == 18; }
+}
+
+scenario "可爱恶魔的谢幕曲把蝙蝠加入手牌" {
+    seed 86006;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10851120; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.hand count card 90051120 == 1; }
+}
+
+scenario "深渊探究者在自己的随从超进化时费用减三" {
+    seed 86007;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower ally = 10001110; }
+            hand { follower source = 10862120; }
+        }
+    }
+    action { superevolve ally; }
+    expect { legal; source.cost == 3; }
+}
+
+scenario "过度守护者超进化时让其他随从获得潜行" {
+    seed 86008;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field {
+                follower source = 10871120;
+                follower ally = 10001110;
+            }
+        }
+    }
+    action { superevolve source; select ally; }
+    expect { legal; ally has stealth; }
+}
+
+scenario "母爱恶魔召唤三个蝙蝠并让它们获得突进" {
+    seed 86009;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10852110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90051120 == 3;
+        all own.field where card 90051120 have rush;
+    }
+}
+
+scenario "满溢的幸福谢幕曲召唤一个失去谢幕曲的自己" {
+    seed 86010;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10871110; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.field count card 10871110 == 1; }
+}
+
+scenario "狼人族首领在生命值十以下时进化" {
+    seed 86011;
+    state {
+        player own {
+            leader 10/20;
+            pp 4/4;
+            hand { follower source = 10841110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == true; source has bane; source has ward; }
+}
+
+scenario "狼人族首领在生命值充足时不进化" {
+    seed 86012;
+    state {
+        player own {
+            leader 11/20;
+            pp 4/4;
+            hand { follower source = 10841110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == false; }
+}
+
+scenario "知恩图报破坏敌方随从并召唤绚烂的创造物" {
+    seed 86013;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10873110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.zone == graveyard; own.field count card 90071160 == 1; }
+}
+
+scenario "激动的欢喜入场打击敌方随从" {
+    seed 86014;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10802110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 0/5; }
+}
+
+scenario "激动的欢喜的进化时获得疾驰" {
+    seed 86019;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10802110; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; source has storm; }
+}
+
+scenario "亡灵猎人的入场曲与进化时都能破坏随从" {
+    seed 86015;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10861130; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.zone == graveyard; }
+}
+
+scenario "水镜的信赖从牌组召唤两种低费随从并强化全体" {
+    seed 86016;
+    state {
+        player own {
+            pp 5/5;
+            field { follower witness = 10042110; }
+            hand { spell source = 10813310; }
+            deck top {
+                follower first = 10001110;
+                follower second = 10011110;
+                follower expensive = 10021120;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 10001110 == 1;
+        own.field count card 10011110 == 1;
+        own.field count card 10021120 == 0;
+        // 4/5 的见证随从吃到 +1/+1。
+        witness.stats == 5/6;
+    }
+}
+
+scenario "快乐绽花随机抽牌后的双方抽牌与费用减免" {
+    seed 86017;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10832110; }
+            deck top {
+                follower a = 10011110;
+                follower b = 10011120;
+            }
+        }
+        player oppo {
+            deck top { follower enemynext = 10001110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.hand count card 10011110 == 1;
+        own.hand count card 10011120 == 1;
+        oppo.hand count card 10001110 == 1;
+    }
+}
+
+scenario "暴风破从两点起算并按魔力增幅提高伤害" {
+    seed 86018;
+    state {
+        player own {
+            pp 1/1;
+            hand { spell source = 10831310 { counter x 4; } }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 0/5; }
+}

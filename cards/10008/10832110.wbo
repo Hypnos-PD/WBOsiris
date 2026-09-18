@@ -6,7 +6,13 @@ card 10832110 {
     stats 1/2;
 
     effect {
-        unplayable;
+        spellboost {
+            reduce cost self 1 minimum 0;
+        }
+        fanfare {
+            draw 2;
+            draw 1 for oppo;
+        }
     }
 
     meta {

@@ -5,7 +5,12 @@ card 10831310 {
     cost 1;
 
     effect {
-        unplayable;
+        counter x 2;
+        spellboost {
+            add 1 counter x;
+        }
+        choose target from oppo.field.followers;
+        damage target self.counter.x;
     }
 
     meta {

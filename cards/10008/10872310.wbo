@@ -5,7 +5,10 @@ card 10872310 {
     cost 3;
 
     effect {
-        unplayable;
+        draw 2;
+        if own.superevolve_unlocked {
+            heal own.leader 2;
+        }
     }
 
     meta {

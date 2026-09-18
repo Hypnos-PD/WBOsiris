@@ -6,7 +6,11 @@ card 10871120 {
     stats 2/2;
 
     effect {
-        unplayable;
+        ward;
+        superevolve {
+            choose target from own.field.followers other;
+            add stealth to target;
+        }
     }
 
     meta {

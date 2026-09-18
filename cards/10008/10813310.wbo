@@ -5,7 +5,8 @@ card 10813310 {
     cost 5;
 
     effect {
-        unplayable;
+        summon random 2 from own.deck.followers where cost <= 2 distinct names;
+        buff own.field.followers +1/+1;
     }
 
     meta {
