@@ -5,7 +5,10 @@ card 10603210 {
     cost 4;
 
     effect {
-        unplayable;
+        countdown 2;
+        when own turn ends {
+            damage field.followers 2 where not trait encroacher;
+        }
     }
 
     meta {

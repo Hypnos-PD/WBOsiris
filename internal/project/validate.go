@@ -995,6 +995,39 @@ func otherExclusionEnd(t []syntax.Token, i int) int {
 	return next
 }
 
+// negatedWhereTerm 解析 `not` 之后的单个筛选词条，返回该词条的结束位置。
+// 目前支持 trait/type/class/form/keyword/damaged 六种词条的取反。
+func negatedWhereTerm(t []syntax.Token, i int) (int, bool) {
+	if i >= len(t) {
+		return i, false
+	}
+	switch t[i].Value {
+	case "damaged":
+		return i + 1, true
+	case "trait":
+		if i+1 < len(t) && ir.ValidTrait(t[i+1].Value) {
+			return i + 2, true
+		}
+	case "type":
+		if i+1 < len(t) && cardTypes[t[i+1].Value] {
+			return i + 2, true
+		}
+	case "class":
+		if i+1 < len(t) && classes[t[i+1].Value] {
+			return i + 2, true
+		}
+	case "form":
+		if i+1 < len(t) && set("unevolved", "evolved", "super_evolved")[t[i+1].Value] {
+			return i + 2, true
+		}
+	case "keyword":
+		if i+1 < len(t) && ir.ValidKeyword(t[i+1].Value) {
+			return i + 2, true
+		}
+	}
+	return i, false
+}
+
 func parseWhere(t []syntax.Token, i int) (int, bool) {
 	if i >= len(t) || t[i].Value != "where" {
 		return i, false
@@ -1023,6 +1056,9 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 		case "not":
 			if i+3 < len(t) && t[i+1].Value == "attacked" && t[i+2].Value == "this" && t[i+3].Value == "turn" {
 				i += 4
+			} else if end, ok := negatedWhereTerm(t, i+1); ok {
+				// `not <筛选词条>`：取反单个词条（"非侵蚀者随从"）。
+				i = end
 			}
 		case "cost":
 			if i+1 < len(t) && t[i+1].Value == "changed" {

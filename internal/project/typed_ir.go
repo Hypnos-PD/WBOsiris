@@ -692,8 +692,36 @@ func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 			terms = append(terms, ir.FieldPredicate{Kind: "attacked_this_turn"})
 			j += 3
 		case "not":
-			terms = append(terms, ir.FieldPredicate{Kind: "not_attacked_this_turn"})
-			j += 4
+			if j+3 < len(t) && values(t[j+1:j+4]) == "attacked this turn" {
+				terms = append(terms, ir.FieldPredicate{Kind: "not_attacked_this_turn"})
+				j += 4
+				break
+			}
+			var inner ir.Predicate
+			switch {
+			case t[j+1].Value == "damaged":
+				inner = ir.FieldPredicate{Kind: "is_damaged"}
+				j += 2
+			case t[j+1].Value == "trait":
+				inner = ir.FieldPredicate{Kind: "has_trait", Trait: t[j+2].Value}
+				j += 3
+			case t[j+1].Value == "type":
+				inner = ir.FieldPredicate{Kind: "has_type", CardType: t[j+2].Value}
+				j += 3
+			case t[j+1].Value == "class":
+				inner = ir.FieldPredicate{Kind: "has_class", Class: t[j+2].Value}
+				j += 3
+			case t[j+1].Value == "form":
+				inner = ir.FieldPredicate{Kind: "has_form", Form: t[j+2].Value}
+				j += 3
+			case t[j+1].Value == "keyword":
+				inner = ir.FieldPredicate{Kind: "has_keyword", Keyword: t[j+2].Value}
+				j += 3
+			default:
+				j++
+				continue
+			}
+			terms = append(terms, ir.NotPredicate{Kind: "not", Term: inner})
 		case "damaged":
 			terms = append(terms, ir.FieldPredicate{Kind: "is_damaged"})
 			j++

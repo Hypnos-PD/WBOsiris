@@ -210,7 +210,9 @@ require target from own.field.followers;
 
 `where attacked this turn` 与 `where not attacked this turn` 按实例本回合已经进行的攻击
 筛选（回合开始时清零），用于"本回合中没有进行过攻击的进化前随从"这类文本。
-`not` 目前只在这个词组里可用，其它否定写法仍会被检查器拒绝。
+`where not <词条>` 可以取反单个筛选词条，目前支持 `trait`、`type`、`class`、`form`、
+`keyword` 与 `damaged`（例如"非侵蚀者随从"写作 `where not trait encroacher`）；
+其它否定写法仍会被检查器拒绝。
 
 `if own.hand has 4 same cost { … }` 判断某区域里是否存在 4 张以上**当前费用**相同的卡牌
 （`hand` 与 `deck` 可用），用于"若自己的手牌中有4张或以上费用相同的卡牌"。

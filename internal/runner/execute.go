@@ -354,6 +354,8 @@ func (g *game) matches(i *instance, p ir.Predicate, self *instance, bindings fra
 		return true
 	}
 	switch x := p.(type) {
+	case ir.NotPredicate:
+		return !g.matches(i, x.Term, self, bindings)
 	case ir.FieldPredicate:
 		switch x.Kind {
 		case "has_keyword":

@@ -1409,6 +1409,23 @@ func decodePredicate(data []byte) (Predicate, error) {
 	if err := json.Unmarshal(data, &k); err != nil {
 		return nil, err
 	}
+	if k.Kind == "not" {
+		var v struct {
+			Kind string          `json:"kind"`
+			Term json.RawMessage `json:"term"`
+		}
+		if err := strict(data, &v); err != nil {
+			return nil, err
+		}
+		if len(v.Term) == 0 {
+			return nil, fmt.Errorf("not predicate requires a term")
+		}
+		term, err := decodePredicate(v.Term)
+		if err != nil {
+			return nil, err
+		}
+		return NotPredicate{Kind: "not", Term: term}, nil
+	}
 	if k.Kind == "and" || k.Kind == "or" {
 		var v struct {
 			Kind  string            `json:"kind"`
@@ -1842,6 +1859,10 @@ func validatePredicateCardRefs(predicate Predicate, cards map[int]bool) error {
 			if err := validatePredicateCardRefs(term, cards); err != nil {
 				return err
 			}
+		}
+	case NotPredicate:
+		if err := validatePredicateCardRefs(p.Term, cards); err != nil {
+			return err
 		}
 	}
 	return nil

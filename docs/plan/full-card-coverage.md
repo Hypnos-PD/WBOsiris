@@ -20,7 +20,7 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 638 · 未实现(骨架) 35 · 未导入 231
+总计 904 · 已完成 639 · 未实现(骨架) 34 · 未导入 231
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
@@ -28,12 +28,12 @@
 10003        77      75       2       0
 10004        76      73       3       0
 10005        76      63      13       0
-10006        76      61      15       0
+10006        76      62      14       0
 10007        77       0       0      77
 10008        78       0       0      78
 10009        76       0       0      76
 90000        93      91       2       0
-未完成卡按文本复杂度：中(41–100字) 255 · 短(≤40字) 140 · 长(>100字) 18 · 白板 1
+未完成卡按文本复杂度：中(41–100字) 255 · 短(≤40字) 139 · 长(>100字) 18 · 白板 1
 ```
 
 ## 工作流
@@ -105,6 +105,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-58 | `own\|oppo.hand\|deck has N same cost`（同费用张数） | `internal/ir/model.go`（`SameCostCondition`）、`internal/ir/decode.go`、`internal/project/strict_validate.go`/`validate.go`/`typed_ir.go`、`internal/runner/execute.go`（按当前费用统计最多同费张数）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/same_cost_and_summoned_all_test.go`；卡片 10553310 + 2 个场景 |
 | S-71 | `when own\|oppo follower attacks [leader]`（宣告攻击事件） | `internal/ir/model.go`（`EventTrigger.TargetKind`）、`internal/ir/decode.go`（事件白名单与目标种类校验）、`internal/project/strict_validate.go`/`typed_ir.go`/`validate.go`（事件形状与 `attacker` 绑定）、`internal/runner/runner.go`（事件带上攻击方一侧、绑定名 `attacker`）、`internal/runner/trigger_index.go`（按目标种类过滤）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/attack_event_test.go`（双方、`attacks leader`、筛选与临时增益）；卡片 10474110、10544120 + 8 个场景 |
 | S-73 | `mode random N { … }`（随机模式） | `internal/ir/model.go`（`ModeEffect.Random`）、`internal/ir/decode.go`、`internal/project/validate.go`/`strict_validate.go`/`typed_ir.go`、`internal/runner/session.go`（`pushRandomMode`：随机选 N 个不同选项并按编号入栈）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/random_mode_test.go`（编译保留 `random` 与数量、拒绝 0 与单选项）；卡片 10532310 + 2 个场景 |
+| S-75 | `where not <词条>`（否定筛选） | `internal/ir/model.go`（`NotPredicate`）、`internal/ir/decode.go`（解码、卡牌引用检查）、`internal/project/validate.go`（`negatedWhereTerm`）、`typed_ir.go`（`filterIR`）、`internal/runner/execute.go`（`matches` 取反）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/not_filter_test.go`；卡片 10603210 + 1 个场景 |
 | S-66 | `banish` 输出 `banished` | `internal/project/typed_ir.go`（写入输出）、`validate.go`（登记绑定）、`internal/ir/encode.go`/`decode.go`（形状白名单）、`internal/runner/execute.go`（记录实际消失的实例）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/banish_output_test.go`（输出保留、`count(banished)` 作为分配伤害量）；卡片 10543110 + 2 个场景 |
 | S-61 | `summoned_all`（一次结算的全部召唤） | `internal/runner/bindings.go`（`bindSummoned`）、`internal/runner/execute.go`/`session.go`（所有召唤类效果改为写入累计绑定）、`internal/project/validate.go`（登记 `summoned_all`）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/same_cost_and_summoned_all_test.go`；卡片 10571110 + 3 个场景 |
 
@@ -171,7 +172,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-71 | ~~其他随从的宣告攻击事件~~ **已解决**：`when own\|oppo follower attacks [leader] [where …]` | 已解锁 10474110 光之法则·龙敖、10544120 波摇花·夕夜 | 绑定 `attacker`；`attacks leader` 用 `EventTrigger.targetKind="leader"` 限定攻击目标。 |
 | S-73 | ~~随机发动若干个模式能力~~ **已解决**：`mode random N { … }` | 已解锁 10532310 魔猫戏法 | 引擎随机选出 N 个互不相同的选项并按编号顺序结算；玩家响应协议不变（随机模式不产生请求）。 |
 | S-74 | 逐个记住"尚未发动"的模式能力 | 10574110 转动的《命运之轮》·斯洛士（"从以下未发动的能力中随机发动1个能力"） | 需要按选项记录已发动状态并跨回合保存（类似限次记录，但按选项编号）。 |
-| S-75 | 否定筛选（"非侵蚀者随从"） | 10603210 黑暗次元（"对战场上的所有非侵蚀者随从造成2点伤害"） | 筛选项只有正向词条；`not attacked this turn` 是特例，没有通用的 `not <筛选>`。 |
+| S-75 | ~~否定筛选（"非侵蚀者随从"）~~ **已解决**：`where not <词条>` | 已解锁 10603210 黑暗次元 | 支持 `trait`/`type`/`class`/`form`/`keyword`/`damaged` 六种词条的取反；`not attacked this turn` 仍是专用写法。 |
 | S-76 | 再次发动自身【入场曲】 | 10604110 恐惧的象征·欧米伽奥提普（随机能力之一为"本随从+4/+4。发动本随从的【入场曲】"） | 没有"重新执行本卡牌入场曲"的效果；照抄一段等价文本无法表达可能递归的能力。 |
 | S-77 | "通过【爆能强化】使用卡牌时"事件 | 10622310 威风的行军的纹章（"自己通过【爆能强化】使用卡牌时，召唤1个『勇烈的士兵』"） | 打出事件没有携带"本次是否支付了爆能强化档位"的信息。 |
 | S-51 | 主战者临时"受到的伤害变为 0" | 10444120 世界的伙伴·佐伊（爆能强化 10：主战者直到对手回合结束"受到的1点或以上伤害变为0"） | 主战者关键词只有永久形式；`until ... turn ends` 的期限只作用于随从关键词。 |
@@ -180,6 +181,16 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 66（S-75 否定筛选 + 卡包 10006）
+
+- **S-75 `where not <词条>`**：筛选取反，目前支持 `trait` / `type` / `class` / `form` / `keyword` / `damaged`
+  六种词条（`not attacked this turn` 保持原有专用写法）。新增 `NotPredicate`（IR、解码、
+  卡牌引用检查、运行时可不像；解析在 `parseWhere` 与 `filterIR` 两处）。
+- 完成 10603210 黑暗次元：吟唱 2，自己的回合结束时对战场上的所有**非侵蚀者**随从造成 2 点伤害。
+- 新增 1 个场景（`tests/10006/batch-66-negated-filter.wbotest`）；Go 单测
+  `internal/project/not_filter_test.go`（取反保留、`not attacked this turn` 未回归、拒绝不支持的词条）。
+- 全量回归：`check` 0 错 0 警；`test` 951 全绿；`go test ./...` 全绿；语料快照更新为 951 个场景。
 
 ### 批次 65（卡包 10006 第三批，8 张）
 

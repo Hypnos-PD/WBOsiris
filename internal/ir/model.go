@@ -330,6 +330,14 @@ type OrPredicate struct {
 	Terms []Predicate `json:"terms"`
 }
 
+// NotPredicate 取反单个筛选词条，用于"非侵蚀者随从"这类文本。
+type NotPredicate struct {
+	Kind string    `json:"kind"`
+	Term Predicate `json:"term"`
+}
+
+func (p NotPredicate) predicateKind() string { return p.Kind }
+
 func (p OrPredicate) predicateKind() string { return p.Kind }
 
 type Condition interface{ conditionKind() string }

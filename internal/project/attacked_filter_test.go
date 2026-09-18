@@ -45,7 +45,7 @@ func TestAttackedThisTurnFilterAcceptsBothPolarities(t *testing.T) {
 	}
 	if _, ds := compile(t, validCard(`
 		fanfare {
-			random ally from own.field.followers where not damaged;
+			random ally from own.field.followers where not cost;
 			damage ally 1;
 		}`)); len(ds) == 0 {
 		t.Fatal("filter accepted an unsupported `not` term")

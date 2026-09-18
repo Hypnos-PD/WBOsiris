@@ -1,0 +1,20 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "黑暗次元在回合结束打击非侵蚀者随从" {
+    seed 66001;
+    state {
+        player own {
+            field { amulet dimension = 10603210; }
+        }
+        player oppo {
+            field {
+                follower normal = 10001110 { stats 2/8; }
+                follower encroacher = 10604110 { stats 4/8; }
+            }
+        }
+    }
+    action { end_turn; }
+    // 只有非侵蚀者随从受到 2 点伤害（10604110 是侵蚀者）。
+    expect { legal; normal.stats == 2/6; encroacher.stats == 4/8; }
+}

@@ -232,6 +232,7 @@ filter_term         = "card" , (card_id | binding_name)
                     | "damaged"
                     | "attacked" , "this" , "turn"
                     | "not" , "attacked" , "this" , "turn"
+                    | "not" , filter_term
                     | "cost" , "changed"
                     | "base" , "." , ("life" | "cost" | "attack") , comparison_operator , (integer | player_scalar)
                     | ("skybound_art" | "super_skybound_art")
