@@ -6,7 +6,29 @@ card 10944120 {
     stats 5/6;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            mode {
+                option 1 {
+                    draw 1;
+                    heal own.leader 3;
+                }
+                option 2 {
+                    buff oppo.field.followers -0/-4;
+                }
+            }
+        }
+        evolve {
+            mode {
+                option 1 {
+                    draw 1;
+                    heal own.leader 3;
+                }
+                option 2 {
+                    buff oppo.field.followers -0/-4;
+                }
+            }
+        }
     }
 
     meta {

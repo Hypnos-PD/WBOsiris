@@ -6,7 +6,59 @@ card 10934110 {
     stats 4/4;
 
     effect {
-        unplayable;
+        fusion material from own.hand {
+            // 与本卡牌融合时消耗 2 点能量点并召唤 1 个沉溺的实验体。
+            pp 2 {
+                summon 1 card 10931110;
+            }
+        }
+        fanfare {
+            summon 2 card 10931110;
+        }
+        superevolve {
+            gain own crest 10934110;
+        }
+    }
+
+    crest {
+        when own follower summoned once per own turn where card 10931110 {
+            add storm to summoned;
+        }
+
+        locale chs {
+            name "纹章：万术的罪人·赛菲";
+            text """
+自己的『<color=Keyword>沉溺的实验体</color>』进入战场时，自己的每回合中可触发1次，使其获得【<color=Keyword>疾驰</color>】。
+""";
+        }
+
+        locale eng {
+            name "Crest: Sephi, Sinbound Sorcerer";
+            text """
+Once per your turn, whenever an allied <b><i><color=Keyword>Immersive Test Subject</color></i></b> enters the field, give it <b><color=Keyword>Storm</color></b>.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"ばんじゅつ\">万術</rub>の<rub=\"とがびと\">咎人</rub>・セフィー";
+            text """
+自分の『<color=Keyword>没入の実験体</color>』が場に出たとき、自分のターンごとに1回、それは【<color=Keyword>疾走</color>】を持つ。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 만술의 죄인 세피";
+            text """
+내 <color=Keyword>몰입의 실험체</color>가 전장에 나왔을 때, 내 턴마다 1번, 그 추종자는 [<color=Keyword>질주</color>]를 갖는다.
+""";
+        }
+
+        locale cht {
+            name "紋章：萬術的罪人‧賽菲";
+            text """
+當自己的『<color:Keyword>沉溺的實驗體</color>』進入戰場時，自己的每回合中可發動1次，使其獲得【<color:Keyword>疾馳</color>】。
+""";
+        }
     }
 
     meta {

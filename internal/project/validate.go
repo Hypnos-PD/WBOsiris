@@ -365,7 +365,7 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 				validateEffectBlock(b[0], ds, visible, "")
 			}
 			continue
-		case "engage", "enhance", "accelerate", "earthrite", "necromancy", "faith":
+		case "engage", "enhance", "accelerate", "earthrite", "necromancy", "faith", "pp":
 			// enhance 额外允许 `replaces`：支付该档时改为只执行这个块。
 			replaces := h == "enhance" && len(t) == 3 && t[2].Value == "replaces"
 			if !(len(t) == 2 || replaces) || len(b) != 1 {

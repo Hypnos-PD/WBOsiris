@@ -6,7 +6,17 @@ card 10914120 {
     stats 4/4;
 
     effect {
-        unplayable;
+        // 手牌中发动：自己使用卡牌时，回合结束前费用 -1。
+        when own card played while self in hand {
+            reduce cost self 1 until turn ends;
+        }
+        fanfare {
+            choose target from oppo.field.followers;
+            damage target 4;
+        }
+        lastwords {
+            summon 1 card 10914120;
+        }
     }
 
     meta {

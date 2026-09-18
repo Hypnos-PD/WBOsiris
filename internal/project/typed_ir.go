@@ -346,12 +346,15 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			opts = append(opts, ir.ModeOption{ID: intAt(o, 1), Body: body, Origin: originIR(o.Span, sid), Labels: labels})
 		}
 		return ir.ModeEffect{NodeBase: base, Kind: "mode", Count: count, Random: random, Options: opts}, nil
-	case "earthrite", "necromancy", "faith":
+	case "earthrite", "necromancy", "faith", "pp":
 		resource := "shadows"
 		if h == "earthrite" {
 			resource = "earthsigil"
 		} else if h == "faith" {
 			resource = "faith"
+		} else if h == "pp" {
+			// `pp N { … }`：支付 N 点能量点后执行块内效果（不够则整块跳过）。
+			resource = "pp"
 		}
 		body, err := compileEffectBlock(s.Blocks()[0], sid, id, ids)
 		if err != nil {

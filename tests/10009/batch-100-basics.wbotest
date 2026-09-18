@@ -1,0 +1,256 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "绿伞会两大招牌在连击三点时发动所有模式" {
+    seed 100001;
+    state {
+        player own {
+            pp 2/2;
+            combo 3;
+            hand { spell source = 10912310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        victim.stats == 0/5;
+        own.hand count card 90011310 == 1;
+        own.hand count card 90011110 == 1;
+    }
+}
+
+scenario "绿伞会两大招牌连击不足时只发动选中的模式" {
+    seed 100002;
+    state {
+        player own {
+            pp 2/2;
+            combo 1;
+            hand { spell source = 10912310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; victim.stats == 0/5; own.hand count card 90011110 == 0; }
+}
+
+scenario "波涛副船长的入场曲打击随从并召唤海盗旗" {
+    seed 100003;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10923110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 0/6; own.field count card 90021210 == 1; }
+}
+
+scenario "波涛副船长超进化时把两件黄金饰品减到零费" {
+    seed 100004;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10923110; }
+        }
+    }
+    action { superevolve source; }
+    expect {
+        legal;
+        own.hand count card 90021310 == 1;
+        own.hand count card 90021340 == 1;
+    }
+}
+
+scenario "钥灵的入场曲打击随从与主战者" {
+    seed 100005;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10931120; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 0/2; oppo.leader.life == 16; }
+}
+
+scenario "钥灵的进化时给手牌增幅四次" {
+    seed 100006;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10931120; }
+            hand { spell boostable = 10133310; }
+        }
+    }
+    action { evolve source; select boostable; }
+    expect { legal; boostable.counter.x == 4; }
+}
+
+scenario "陶醉的才女的入场曲抽两张并召唤实验体" {
+    seed 100007;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10933110; }
+            deck top {
+                follower a = 10011110;
+                follower b = 10011120;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 10931110 == 1;
+        own.hand count card 10011110 == 1;
+        own.hand count card 10011120 == 1;
+    }
+}
+
+scenario "万术的罪人融合时消耗能量点召唤实验体" {
+    seed 100008;
+    state {
+        player own {
+            pp 7/7;
+            hand {
+                follower source = 10934110;
+                follower material = 10001110;
+            }
+        }
+    }
+    action { fuse source; select material; }
+    expect { legal; own.field count card 10931110 == 1; own.pp == 5/7; own.hand count card 10934110 == 1; }
+}
+
+scenario "禁牙的变貌模式一抽牌并回复" {
+    seed 100009;
+    state {
+        player own {
+            leader 10/20;
+            pp 7/7;
+            hand { follower source = 10944120; }
+            deck top { follower next = 10011110; }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; own.hand count card 10011110 == 1; own.leader.life == 13; source has ward; }
+}
+
+scenario "禁牙的变貌模式二削弱敌方全体" {
+    seed 100010;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10944120; }
+        }
+        player oppo {
+            field {
+                follower first = 10001120 { stats 4/6; }
+                follower second = 10001110;
+            }
+        }
+    }
+    action { play source; mode 2; }
+    expect { legal; first.stats == 4/2; second.zone == graveyard; }
+}
+
+scenario "伽罗塔德对泽特模式一获得疾驰并自伤" {
+    seed 100011;
+    state {
+        player own {
+            leader 10/20;
+            pp 8/8;
+            hand { follower source = 10954120; }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; source has storm; own.leader.life == 8; }
+}
+
+scenario "伽罗塔德对泽特在手牌中随回合结束减费" {
+    seed 100012;
+    state {
+        player own {
+            leader 12/20;
+            hand { follower source = 10954120; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; source.cost == 7; }
+}
+
+scenario "铭刻之约在有高价卡时发动所有模式" {
+    seed 100013;
+    state {
+        player own {
+            leader 10/20;
+            pp 1/1;
+            field { follower big = 10804110; }
+            hand { spell source = 10962310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; victim.stats == 0/6; own.leader.life == 12; }
+}
+
+scenario "誓言干部的入场曲回复并触发破坏敌方随从" {
+    seed 100014;
+    state {
+        player own {
+            leader 10/20;
+            pp 7/7;
+            hand { follower source = 10963110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 12; victim.zone == graveyard; source has ward; }
+}
+
+scenario "香风的变貌入场打击选中的随从" {
+    seed 100015;
+    state {
+        player own {
+            pp 9/9;
+            hand { follower source = 10914120; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 0/5; }
+}
+
+scenario "香风的变貌在手牌中随自己使用卡牌减费" {
+    seed 100016;
+    state {
+        player own {
+            pp 1/1;
+            hand {
+                follower source = 10914120;
+                spell cheap = 10031310;
+            }
+        }
+    }
+    action { play cheap; }
+    expect { legal; source.cost == 8; }
+}

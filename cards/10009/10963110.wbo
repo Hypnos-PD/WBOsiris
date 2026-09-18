@@ -6,7 +6,17 @@ card 10963110 {
     stats 6/6;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            heal own.leader 2;
+        }
+        when own leader healed during own turn {
+            random victim from oppo.field.followers;
+            destroy victim;
+        }
+        superevolve {
+            heal own.leader 2;
+        }
     }
 
     meta {

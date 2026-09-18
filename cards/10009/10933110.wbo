@@ -6,7 +6,19 @@ card 10933110 {
     stats 2/3;
 
     effect {
-        unplayable;
+        fusion material from own.hand {
+        }
+        fanfare {
+            draw 2;
+            summon 1 card 10931110;
+        }
+        superevolve {
+            // 「若已与本卡牌融合」。
+            if fused.distinct >= 1 {
+                choose target from own.field.followers where card 10931110;
+                add drain to target;
+            }
+        }
     }
 
     meta {

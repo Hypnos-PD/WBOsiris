@@ -740,6 +740,10 @@ damage target self.attack;
 
 `set attack T N;` 直接设置目标随从的当前攻击力（与 `set life` 对称）。
 
+`pp N { … }` 是支付能量点的块：当前能量点不足 N 时整块跳过，够则先扣 N 再结算块内效果
+（与 `earthrite N { … }`、`necromancy N { … }`、`faith N { … }` 同族）。
+用于"与本卡牌【融合】时，消耗 2 点能量点，…"这类写法。
+
 【激奏】写作 `accelerate N { … }`：以 N 点能量点打出时只结算这个块，
 **本体不进入战场、也不发动入场曲**，结算完成后按法术流程进入墓场；
 测试与模拟器的动作用 `accelerate <别名>;`（`SimulatorCommand{Kind: "accelerate"}`）。

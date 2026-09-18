@@ -851,7 +851,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
 			return nil, err
 		}
-		if !oneOf(v.Resource, "earthsigil", "shadows", "faith") || v.Amount < 0 {
+		if !oneOf(v.Resource, "earthsigil", "shadows", "faith", "pp") || v.Amount < 0 {
 			return nil, fmt.Errorf("invalid resource payment")
 		}
 		b, err := decodeEffects(v.OnPaid, nodeIDs)

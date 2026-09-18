@@ -549,6 +549,10 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 		} else if e.Resource == "faith" {
 			// 「信仰值-N，…」：信仰不存在或信仰值不足时整块跳过（官方 FAQ 口径同 SWB-RL 的第二意见实现）。
 			paid = s.g.consumeFaith(self, e.Amount)
+		} else if e.Resource == "pp" && own.pp >= e.Amount {
+			// `pp N { … }`：支付 N 点能量点；不足时整块跳过。
+			s.g.spendPP(own, e.Amount)
+			paid = true
 		}
 		if paid {
 			if e.Resource == "earthsigil" {

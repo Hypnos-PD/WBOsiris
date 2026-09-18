@@ -6,7 +6,21 @@ card 10954120 {
     stats 8/8;
 
     effect {
-        unplayable;
+        when own turn ends while self in hand if own.life <= 12 {
+            reduce cost self 1 minimum 0;
+        }
+        fanfare {
+            mode {
+                option 1 {
+                    add storm to self;
+                    damage own.leader 2;
+                }
+                option 2 {
+                    add ward to self;
+                    damage oppo.field.followers 8;
+                }
+            }
+        }
     }
 
     meta {

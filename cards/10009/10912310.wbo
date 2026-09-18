@@ -5,7 +5,24 @@ card 10912310 {
     cost 2;
 
     effect {
-        unplayable;
+        // 【连击_3】时改为发动所有模式。
+        if combo >= 3 {
+            random victim from oppo.field.followers;
+            damage victim 4;
+            add 1 card 90011310 to hand;
+            add 1 card 90011110 to hand;
+        } else {
+            mode {
+                option 1 {
+                    random victim from oppo.field.followers;
+                    damage victim 4;
+                }
+                option 2 {
+                    add 1 card 90011310 to hand;
+                    add 1 card 90011110 to hand;
+                }
+            }
+        }
     }
 
     meta {

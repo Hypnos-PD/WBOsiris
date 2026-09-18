@@ -123,7 +123,7 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 			if len(t) == 2 {
 				checkU16(t[1], true, ds)
 			}
-		case "engage", "enhance", "accelerate", "earthrite", "necromancy":
+		case "engage", "enhance", "accelerate", "earthrite", "necromancy", "pp":
 			if len(t) == 2 {
 				checkU16(t[1], true, ds)
 			}

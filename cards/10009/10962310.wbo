@@ -5,7 +5,22 @@ card 10962310 {
     cost 1;
 
     effect {
-        unplayable;
+        // 自己战场上有原始费用 6 以上的卡牌时改为发动所有模式。
+        if count(own.field where base.cost >= 6) >= 1 {
+            random victim from oppo.field.followers;
+            damage victim 3;
+            heal own.leader 2;
+        } else {
+            mode {
+                option 1 {
+                    random victim from oppo.field.followers;
+                    damage victim 3;
+                }
+                option 2 {
+                    heal own.leader 2;
+                }
+            }
+        }
     }
 
     meta {

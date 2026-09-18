@@ -6,7 +6,21 @@ card 10923110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from oppo.field.followers;
+            damage target 3;
+            summon 1 card 90021210;
+        }
+        evolve {
+            choose target from oppo.field.followers;
+            damage target 3;
+            summon 1 card 90021210;
+        }
+        superevolve {
+            add 1 card 90021310 to hand;
+            add 1 card 90021340 to hand;
+            set cost added 0;
+        }
     }
 
     meta {
