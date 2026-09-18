@@ -35,6 +35,78 @@ func (c Card) FaithCard() *Card {
 	return &Card{ID: c.ID, CardType: "faith", Counters: d.Counters, Abilities: d.Abilities, Locales: d.Locales, Meta: c.Meta, Origin: d.Origin}
 }
 
+// CrystallizeDefinition 是【结晶】形态：以 Cost 点费用当作护符打出时使用的卡面。
+type CrystallizeDefinition struct {
+	Cost           int              `json:"cost"`
+	Counters       map[string]int   `json:"counters,omitempty"`
+	Intrinsic      []string         `json:"intrinsic,omitempty"`
+	IntrinsicState []IntrinsicState `json:"intrinsicState,omitempty"`
+	// Abilities 是谢幕曲/事件监听等触发能力；PlayEffects 是吟唱等打出时结算的效果。
+	Abilities   []Ability `json:"abilities"`
+	PlayEffects []Effect  `json:"playEffects"`
+	Locales     map[string]Locale `json:"locales"`
+	Origin      Origin            `json:"origin"`
+}
+
+// CrystallizeCard 派生【结晶】打出后进入战场的护符卡面。
+func (c Card) CrystallizeCard() *Card {
+	if c.Crystallize == nil {
+		return nil
+	}
+	d := c.Crystallize
+	return &Card{ID: c.ID, CardType: "amulet", Cost: d.Cost, Counters: d.Counters,
+		Intrinsic: d.Intrinsic, IntrinsicState: d.IntrinsicState, Abilities: d.Abilities,
+		PlayEffects: d.PlayEffects, Locales: d.Locales, Meta: c.Meta, Origin: d.Origin}
+}
+
+// decodeCrystallize 解码【结晶】形态（效果、能力与本地化）。
+func decodeCrystallize(data []byte, abilityIDs, nodeIDs map[string]bool) (*CrystallizeDefinition, error) {
+	var raw struct {
+		Cost           int               `json:"cost"`
+		Counters       map[string]int    `json:"counters,omitempty"`
+		Intrinsic      []string          `json:"intrinsic,omitempty"`
+		IntrinsicState []json.RawMessage `json:"intrinsicState,omitempty"`
+		Abilities      []json.RawMessage `json:"abilities"`
+		PlayEffects    []json.RawMessage `json:"playEffects"`
+		Locales        map[string]Locale `json:"locales"`
+		Origin         Origin            `json:"origin"`
+	}
+	if err := strict(data, &raw); err != nil {
+		return nil, err
+	}
+	if !validOrigin(raw.Origin) || !ValidCounters(raw.Counters) || raw.Cost < 0 || raw.Cost > 65535 || len(raw.Abilities) == 0 {
+		return nil, fmt.Errorf("invalid crystallize definition")
+	}
+	d := &CrystallizeDefinition{Cost: raw.Cost, Counters: raw.Counters, Intrinsic: raw.Intrinsic, Locales: raw.Locales, Origin: raw.Origin}
+	for _, x := range raw.IntrinsicState {
+		type state struct {
+			Kind    string `json:"kind"`
+			Initial int    `json:"initial"`
+		}
+		var s state
+		if err := strict(x, &s); err != nil || s.Kind != "countdown" || s.Initial < 0 || s.Initial > 65535 {
+			return nil, fmt.Errorf("invalid crystallize state")
+		}
+		d.IntrinsicState = append(d.IntrinsicState, IntrinsicState{s.Kind, s.Initial})
+	}
+	var err error
+	if d.PlayEffects, err = decodeEffects(raw.PlayEffects, nodeIDs); err != nil {
+		return nil, err
+	}
+	for _, data := range raw.Abilities {
+		a, err := decodeAbility(data, nodeIDs)
+		if err != nil {
+			return nil, err
+		}
+		if abilityIDs[a.ID] {
+			return nil, fmt.Errorf("duplicate ability ID %s", a.ID)
+		}
+		abilityIDs[a.ID] = true
+		d.Abilities = append(d.Abilities, a)
+	}
+	return d, nil
+}
+
 func decodeCrest(data []byte, abilityIDs, nodeIDs map[string]bool) (*CrestDefinition, error) {
 	var raw struct {
 		Counters  map[string]int    `json:"counters"`

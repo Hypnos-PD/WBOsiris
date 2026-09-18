@@ -192,6 +192,17 @@ func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error)
 		}
 		m.Faith = &ir.CrestDefinition{Counters: faith.Counters, Abilities: faith.Abilities, Locales: faith.Locales, Origin: faith.Origin}
 	}
+	if c.Crystallize != nil {
+		// 结晶形态沿用本体卡面的本地化文本（护符形态的说明由卡表提供）。
+		c.Crystallize.Locales = c.Locales
+		derived, err := compileTypedCard(c.Crystallize, sid, ids)
+		if err != nil {
+			return ir.Card{}, err
+		}
+		m.Crystallize = &ir.CrystallizeDefinition{Cost: derived.Cost, Counters: derived.Counters, Intrinsic: derived.Intrinsic,
+			IntrinsicState: derived.IntrinsicState, Abilities: derived.Abilities, PlayEffects: derived.PlayEffects,
+			Locales: derived.Locales, Origin: derived.Origin}
+	}
 	return m, nil
 }
 
@@ -1185,7 +1196,7 @@ func compileActions(s *syntax.Statement, a map[string]string) ([]ir.Action, erro
 		t := x.Tokens()
 		var action ir.Action
 		switch x.Word(0) {
-		case "play", "engage", "evolve", "superevolve", "accelerate":
+		case "play", "engage", "evolve", "superevolve", "accelerate", "crystallize":
 			action = ir.SourceAction{Kind: x.Word(0), Actor: "own", Source: a[t[1].Value]}
 		case "fuse":
 			action = ir.FusionAction{Kind: "fusion", Actor: "own", Source: a[t[1].Value]}

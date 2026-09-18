@@ -10,6 +10,13 @@ card 10662110 {
         bane;
     }
 
+    crystallize 1 {
+        countdown 3;
+        lastwords {
+            summon 1 card 10662110;
+        }
+    }
+
     meta {
         pack 10006;
         class havencraft;

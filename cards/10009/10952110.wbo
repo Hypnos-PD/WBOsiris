@@ -14,6 +14,13 @@ card 10952110 {
         }
     }
 
+    crystallize 2 {
+        countdown 4;
+        lastwords {
+            summon 1 card 10952110;
+        }
+    }
+
     meta {
         pack 10009;
         class abysscraft;

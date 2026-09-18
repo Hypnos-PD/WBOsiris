@@ -1,0 +1,71 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+// 【结晶_N】：以 N 费当作护符打出，使用衍生护符卡面（吟唱 + 谢幕曲）；本体入场曲不发动。
+
+scenario "崇奉的懦者结晶成护符并在吟唱结束后召唤本体" {
+    seed 99001;
+    state {
+        player own {
+            pp 2/5;
+            hand { follower source = 10661110; }
+        }
+    }
+    action { crystallize source; }
+    expect {
+        legal;
+        source.zone == field;
+        source.countdown == 3;
+        own.pp == 0/5;
+        // 本体是"进入战场时回复主战者 2 点"，结晶入场不发动它。
+        own.leader.life == 20;
+    }
+}
+
+scenario "能量点不足时不能结晶" {
+    seed 99003;
+    state {
+        player own {
+            pp 1/5;
+            hand { follower source = 10661110; }
+        }
+    }
+    action { crystallize source; }
+    expect { illegal cost; unchanged; source.zone == hand; }
+}
+
+scenario "崇敬的涂描者结晶费用为一点" {
+    seed 99004;
+    state {
+        player own {
+            pp 1/4;
+            hand { follower source = 10662110; }
+        }
+    }
+    action { crystallize source; }
+    expect { legal; source.zone == field; source.countdown == 3; own.pp == 0/4; }
+}
+
+scenario "崇拜的圣骑士结晶不发动入场曲召唤" {
+    seed 99005;
+    state {
+        player own {
+            pp 1/6;
+            hand { follower source = 10663110; }
+        }
+    }
+    action { crystallize source; }
+    expect { legal; source.zone == field; own.field count card 10663110 == 1; }
+}
+
+scenario "崇拜的圣骑士正常打出时才召唤复制" {
+    seed 99006;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10663110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.zone == field; own.field count card 10663110 == 2; source has bane; }
+}

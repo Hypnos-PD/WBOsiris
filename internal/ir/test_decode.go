@@ -186,7 +186,7 @@ func decodeAction(data []byte) (Action, error) {
 		return nil, err
 	}
 	switch k.Kind {
-	case "play", "engage", "evolve", "superevolve", "accelerate":
+	case "play", "engage", "evolve", "superevolve", "accelerate", "crystallize":
 		var v struct {
 			Kind   string `json:"kind"`
 			Actor  string `json:"actor"`

@@ -122,6 +122,17 @@ func validateCard(f *syntax.File, ds *[]syntax.Diagnostic) *Card {
 			} else {
 				c.Faith = validateFaith(c, s, ds)
 			}
+		case "crystallize":
+			// `crystallize N { … }`：【结晶_N】以 N 费当作护符打出时的效果与能力。
+			if stage != 4 || c.Crystallize != nil || len(t) != 2 || len(s.Blocks()) != 1 || s.Terminated {
+				shapeError(ds, s, "crystallize 整数 { 效果与能力 }")
+			} else if _, ok := integer(t[1]); !ok {
+				rangeError(ds, t[1])
+			} else {
+				derived := validateCrystallize(c, s, ds)
+				derived.Cost = intToken(t[1])
+				c.Crystallize = derived
+			}
 		case "meta":
 			if stage != 4 || len(t) != 1 || len(s.Blocks()) != 1 {
 				shapeError(ds, s, "meta { pack ...; class ...; rarity ...; }")
@@ -1312,7 +1323,7 @@ func validateScenario(b []*syntax.Statement, ds *[]syntax.Diagnostic) {
 	aliases := map[string]bool{}
 	scanAliases(b[1].Blocks()[0], aliases, ds)
 	a := b[2].Blocks()[0]
-	primary := set("play", "engage", "evolve", "superevolve", "accelerate", "fuse", "attack", "end_turn", "advance")
+	primary := set("play", "engage", "evolve", "superevolve", "accelerate", "crystallize", "fuse", "attack", "end_turn", "advance")
 	if len(a) == 0 || !primary[a[0].Word(0)] {
 		diag(ds, "WBT-E005-ACTION-ORDER", "错误", "action 必须以一个主动作开始", b[2].Span)
 	}

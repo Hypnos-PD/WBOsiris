@@ -9,6 +9,16 @@ card 10962120 {
         storm;
     }
 
+    crystallize 1 {
+        countdown 3;
+        lastwords {
+            summon 1 card 10962120;
+        }
+        engage 1 {
+            reduce countdown self 1;
+        }
+    }
+
     meta {
         pack 10009;
         class havencraft;

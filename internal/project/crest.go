@@ -91,3 +91,24 @@ func validateCrest(parent *Card, decl *syntax.Statement, ds *[]syntax.Diagnostic
 	strictValidateCard(c, ds)
 	return c
 }
+
+// validateCrystallize 校验【结晶_N】块：以较低费用当作护符打出时使用的效果与能力。
+// 允许计数器、吟唱、谢幕曲与事件监听；本地化沿用本体卡面。
+func validateCrystallize(parent *Card, decl *syntax.Statement, ds *[]syntax.Diagnostic) *Card {
+	c := &Card{ID: parent.ID, Type: "amulet", Path: parent.Path, File: parent.File, Decl: decl, Locales: map[string]Locale{}}
+	abilitySeen := false
+	for _, s := range decl.Blocks()[0] {
+		if !set("counter", "countdown", "lastwords", "when", "engage")[s.Word(0)] {
+			shapeError(ds, s, "结晶仅允许计数器、吟唱、谢幕曲、事件监听与启动能力")
+			continue
+		}
+		abilitySeen = abilitySeen || s.Word(0) == "when" || s.Word(0) == "lastwords"
+		c.Effect = append(c.Effect, s)
+	}
+	if !abilitySeen {
+		shapeError(ds, decl, "结晶必须声明至少一个谢幕曲或事件监听")
+	}
+	validateEffectBlock(c.Effect, ds, map[string]bool{"self": true}, "")
+	strictValidateCard(c, ds)
+	return c
+}

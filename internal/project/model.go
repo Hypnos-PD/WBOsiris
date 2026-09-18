@@ -15,6 +15,8 @@ type Locale struct{ Name, Text string }
 type Card struct {
 	Crest                   *Card
 	Faith                   *Card
+	// Crystallize 是【结晶】形态：以较低费用当作护符打出时使用的卡面（不含本地化）。
+	Crystallize *Card
 	Path, Version, ID, Type string
 	Cost                    int
 	Stats                   *[2]int

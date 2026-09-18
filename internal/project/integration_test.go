@@ -35,7 +35,7 @@ func TestProjectCorpusAndReferenceStrictness(t *testing.T) {
 	for _, tf := range l.Tests {
 		sc += len(tf.Scenarios)
 	}
-	if sc != 1312 {
+	if sc != 1317 {
 		t.Fatalf("scenarios=%d", sc)
 	}
 	if len(l.Unresolved) != 0 {
@@ -102,7 +102,7 @@ func TestCompileTestPackStructured(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(typed.Scenarios) != 1312 || typed.Scenarios[0].Name != "Orchis grants Storm and Bane to the summoned Lloyd" {
+	if len(typed.Scenarios) != 1317 || typed.Scenarios[0].Name != "Orchis grants Storm and Bane to the summoned Lloyd" {
 		t.Fatalf("bad typed test pack: scenarios=%d", len(typed.Scenarios))
 	}
 	b, err := Compile(l, true)
@@ -120,7 +120,7 @@ func TestCompileTestPackStructured(t *testing.T) {
 		t.Fatal("test pack is missing ruleset dependency")
 	}
 	scenarios := pack["scenarios"].([]any)
-	if len(scenarios) != 1312 {
+	if len(scenarios) != 1317 {
 		t.Fatalf("scenarios=%d", len(scenarios))
 	}
 	first := scenarios[0].(map[string]any)

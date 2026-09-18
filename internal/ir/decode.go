@@ -325,6 +325,7 @@ func decodeCard(data []byte, abilityIDs, nodeIDs map[string]bool) (Card, error) 
 	type rawCard struct {
 		Crest           json.RawMessage   `json:"crest"`
 		Faith           json.RawMessage   `json:"faith"`
+		Crystallize     json.RawMessage   `json:"crystallize"`
 		Counters        map[string]int    `json:"counters,omitempty"`
 		ID              int               `json:"id"`
 		CardType        string            `json:"cardType"`
@@ -450,6 +451,15 @@ func decodeCard(data []byte, abilityIDs, nodeIDs map[string]bool) (Card, error) 
 			return Card{}, err
 		}
 		if err = validateCounterRefs(*c.FaithCard()); err != nil {
+			return Card{}, err
+		}
+	}
+	if len(raw.Crystallize) > 0 {
+		c.Crystallize, err = decodeCrystallize(raw.Crystallize, abilityIDs, nodeIDs)
+		if err != nil {
+			return Card{}, err
+		}
+		if err = validateCounterRefs(*c.CrystallizeCard()); err != nil {
 			return Card{}, err
 		}
 	}

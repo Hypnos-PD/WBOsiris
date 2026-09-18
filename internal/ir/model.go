@@ -130,6 +130,8 @@ type Card struct {
 	Crest           *CrestDefinition  `json:"crest,omitempty"`
 	// Faith 是本卡牌定义的「信仰」实体（信仰值放在 counters 的 value 里，与纹章共用主战者区域）。
 	Faith           *CrestDefinition  `json:"faith,omitempty"`
+	// Crystallize 是【结晶】形态：以较低费用当作护符打出时使用。
+	Crystallize     *CrystallizeDefinition `json:"crystallize,omitempty"`
 	Counters        map[string]int    `json:"counters,omitempty"`
 	ID              int               `json:"id"`
 	CardType        string            `json:"cardType"`

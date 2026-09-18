@@ -541,6 +541,32 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 		sandbox.remove(&sandbox.player(x.Actor).hand, sandboxSource)
 		sandbox.addToZone(sandbox.player(x.Actor), sandboxSource, "resolving")
 		return sandbox.preflightRequirements(a.Body, sandboxSource, frame{}, true)
+	case "crystallize":
+		// 【结晶】：以结晶费用当作护符打出，使用衍生的护符卡面（吟唱/谢幕曲等）。
+		actor := g.player(x.Actor)
+		derived := i.card.CrystallizeCard()
+		if i.zone != "hand" || !contains(actor.hand, i) || derived == nil || actor.pp < derived.Cost {
+			return "cost"
+		}
+		for _, restriction := range i.card.Restrictions {
+			if restriction.Kind == "unplayable" {
+				return "unplayable"
+			}
+		}
+		if len(actor.field) >= fieldLimit {
+			return "field_full"
+		}
+		sandbox := g.clone()
+		sandbox.budget = budget
+		sandboxSource := sandbox.instances[i.id]
+		resetCardState(sandboxSource, derived)
+		sandbox.player(x.Actor).pp -= derived.Cost
+		sandbox.remove(&sandbox.player(x.Actor).hand, sandboxSource)
+		sandbox.addToZone(sandbox.player(x.Actor), sandboxSource, "field")
+		if code := sandbox.preflightRequirements(derived.PlayEffects, sandboxSource, frame{}, true); code != "" {
+			return code
+		}
+		return ""
 	case "evolve":
 		actor := g.player(x.Actor)
 		if i.zone != "field" || !contains(actor.field, i) || i.card.CardType != "follower" || i.evolved || actor.ep < 1 || actor.evolvedThisTurn || g.firstPlayer != "" && !g.evolutionUnlocked(x.Actor, false) {
@@ -636,6 +662,8 @@ func (g *game) commitAction(a ir.Action) ([]execFrame, string) {
 		return g.commitEngage(i), ""
 	case "accelerate":
 		return g.commitAccelerate(i), ""
+	case "crystallize":
+		return g.commitCrystallize(i), ""
 	case "superevolve":
 		return g.commitSuperEvolve(i), ""
 	case "evolve":
@@ -1197,6 +1225,24 @@ func (g *game) commitAccelerate(i *instance) []execFrame {
 	g.addToZone(actor, i, "resolving")
 	g.triggerPlayed(i)
 	return []execFrame{{body: a.Body, blockID: abilityBlockID(i.card.ID, a.ID), self: i, bindings: frame{}}}
+}
+
+// commitCrystallize 处理【结晶】打出：支付结晶费用，把卡牌换成衍生护符卡面并进入战场，
+// 然后结算该护符的打出效果（吟唱等）。本体入场曲与进化等能力不会发动。
+func (g *game) commitCrystallize(i *instance) []execFrame {
+	derived := i.card.CrystallizeCard()
+	if derived == nil {
+		return nil
+	}
+	actor := g.owner(i)
+	g.spendPP(actor, derived.Cost)
+	resetCardState(i, derived)
+	g.remove(&actor.hand, i)
+	actor.combo++
+	g.addToZone(actor, i, "field")
+	g.triggerSummoned(i)
+	g.triggerPlayed(i)
+	return []execFrame{{body: derived.PlayEffects, blockID: cardPlayBlockID(derived.ID), self: i, bindings: frame{}}}
 }
 
 func (g *game) spendPP(actor *player, amount int) {

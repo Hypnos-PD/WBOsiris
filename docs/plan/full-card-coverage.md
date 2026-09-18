@@ -182,6 +182,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-86 | 玩家标量之间的比较 | 10851130 兔耳恶魔·莉蜜儿（"若自己的主战者的生命值 大于 对手的主战者的生命值"）、以及后续"双方主战者生命值比较"的卡 | 条件右侧只接受整数（`own.<标量> 比较 整数`），没有 `own.life > oppo.life` 这类写法；需要把比较条件的右值放宽到数值表达式。 |
 | S-87 | ~~"上一回合中攻击过主战者"~~ **已解决**：`own\|oppo.attacked_leader_last_turn` | 已解锁 10942110 绝倒的袭击者、10943110 尘土的不法者、10943310 利牙、10944110 穿孔的罪人·安缇马丽亚 | 玩家新增"本回合/上一回合攻击过主战者"两个标记：攻击主战者时置位本回合标记，进入该玩家回合时结转并清空。场景状态可直接写 `attacked_leader_last_turn;`；Go 单测 `internal/runner/leader_attack_history_test.go` 覆盖结转、清空与续局保存。 |
 | S-88 | ~~【激奏】（accelerate）打出模式~~ **已解决**：`accelerate N { … }` | 10671110 低劣的玩具（激奏 2：召唤 1 个自己）、10672110 拙劣的人偶（激奏 3：召唤 2 个自己）、10673110 愚劣的兵器（激奏 4：召唤 1 个自己）、10844120 金银绚烂·璐米欧儿&雅尔贞特（激奏 3：能量点上限 +1）、10901110 最古老的狱卒（激奏 1：随机随从 2 点伤害） | 新打出模式：`internal/project/typed_ir.go`/`validate.go`/`strict_validate.go` 解析 `accelerate N { … }` 块（CostTrigger），`internal/ir/decode.go`/`test_decode.go` 接受 `accelerate` 触发器与动作，`internal/runner/runner.go` 新增 `accelerate` 动作：付激奏费用、把卡牌放进"结算中"区域（不入场、不发动入场曲）、只结算激奏能力，结算后按法术流程进入墓场；测试 DSL 与模拟器命令同步。场景测试覆盖"激奏召唤/加能量上限/打伤害"与"正常打出仍走本体和入场曲""费用不足不能激奏" |
+| S-89 | ~~【结晶】（crystallize）打出模式~~ **已解决**：`crystallize N { … }` | 10661110 崇奉的懦者（结晶 2）、10662110 崇敬的涂描者（结晶 1）、10663110 崇拜的圣骑士（结晶 1）、10952110 渊底上校（结晶 2）、10962120 奇迹独角兔（结晶 1，含启动推进吟唱） | 新打出模式与衍生卡面：`project/crest.go` 的 `validateCrystallize`（允许 counter/countdown/lastwords/when/engage）、`ir/crest.go` 的 `CrystallizeDefinition` + `CrystallizeCard()`（派生为护符卡面）、编解码与 `runner.commitCrystallize`（付结晶费用→换卡面→进入战场→只结算衍生护符的打出效果，本体入场曲不发动）；测试 DSL 与模拟器命令同步。Go 单测 `internal/runner/crystallize_test.go` 覆盖吟唱归零后由谢幕曲召唤本体 |
 | S-68 | ~~回合窗口事件~~ **已解决**：`during own\|oppo turn` 可用于回复事件 | 已解锁 10563110 至圣威仪 | 检查器原先只允许"受到伤害时"带 `during`；运行时的回合匹配本来就通用。 |
 | S-69 | 跨方混合随机集合 | 10524110 威猛的《战车》·奥辂昂（"随机对战场上的1个其他随从或自己的主战者或对手的主战者造成7点伤害"） | 混合集合只支持"同一方的随从+该方主战者"，无法表达"双方随从+双方主战者"。 |
 | S-70 | ~~从两种指定卡中随机召唤~~ **已解决**：`summon random N card A or card B [...] [for own\|oppo];` | 已解锁 10564120 雾卷花·茎白 | 新 IR 节点 `SummonPoolEffect`：每次抽取消费一次对局随机数，池内卡牌定义必须互不相同（2..16 种）。 |
@@ -197,6 +198,21 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 99（S-89 结晶打出模式 + 5 张补齐）
+
+- **S-89 `crystallize N { … }`**：【结晶】打出模式与衍生卡面。`project/crest.go` 的
+  `validateCrystallize` 校验块内语句（`counter`/`countdown`/`lastwords`/`when`/`engage`），
+  `ir/crest.go` 的 `CrystallizeDefinition` + `CrystallizeCard()` 把卡面派生为护符，
+  `runner.commitCrystallize` 完成"付结晶费用 → 换卡面 → 进入战场 → 只结算衍生护符的
+  打出效果（吟唱等）"，本体入场曲/进化不发动；测试 DSL 与模拟器用
+  `crystallize <别名>;` / `SimulatorCommand{Kind:"crystallize"}`。
+- 补齐 5 张（此前只有本体）：10661110 崇奉的懦者（结晶 2）、10662110 崇敬的涂描者（结晶 1）、
+  10663110 崇拜的圣骑士（结晶 1）、10952110 渊底上校（结晶 2）、10962120 奇迹独角兔（结晶 1）。
+  **这批是照 S-88 的办法复查 `alt_modes` 的 `crystallize` 条目发现的同类缺口。**
+- 新增 5 个场景（`tests/10006/batch-99-crystallize.wbotest`）与 Go 单测
+  `internal/runner/crystallize_test.go`（吟唱归零 → 谢幕曲召唤本体）。
+- 全量回归：`check` 0 错 0 警；`test` 1317 全绿；`go test ./...` 全绿；语料快照更新为 1317 个场景。
 
 ### 批次 98（S-88 激奏打出模式 + 5 张补齐）
 

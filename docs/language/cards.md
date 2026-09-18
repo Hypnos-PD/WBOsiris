@@ -754,6 +754,25 @@ effect {
 }
 ```
 
+【结晶】写作 `crystallize N { … }`：以 N 点能量点**当作护符**打出。打出时卡面换成
+衍生护符（类型变成护符、费用 N、带块内声明的吟唱/谢幕曲/事件监听），本体的入场曲、
+进化等能力都不会发动；测试与模拟器的动作用 `crystallize <别名>;`
+（`SimulatorCommand{Kind: "crystallize"}`）。块内允许 `counter`、`countdown`、
+`lastwords`、`when` 与 `engage`：
+
+```wbo
+effect {
+    bane;
+    ward;
+}
+crystallize 2 {
+    countdown 3;
+    lastwords {
+        summon 1 card 10661110;
+    }
+}
+```
+
 `count(集合 other)` 统计时排除来源实例自身，`destroy 集合 other` 同理，
 因此"X 为自己的战场上的其他卡牌张数"写作 `count(own.field other)`。
 
