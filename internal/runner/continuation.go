@@ -156,6 +156,7 @@ type ContinuationEntity struct {
 	CostChanged       bool                     `json:"costChanged,omitempty"`
 	Skybound          int                      `json:"skybound,omitempty"`
 	FanfareReplays    int                      `json:"fanfareReplays,omitempty"`
+	ModeHistory       map[string][]int         `json:"modeHistory,omitempty"`
 }
 
 type ContinuationEvent struct {
@@ -497,6 +498,7 @@ func snapshotContinuationGame(g *game) ContinuationGame {
 			SuperEvolved: i.superEvolved, Departed: i.departed, FusedThisTurn: i.fusedThisTurn, DamageReduction: i.damageReduction, Abilities: abilities, Materials: instanceIDs(i.materials), Grants: grantIDs(i),
 			Suppressed: suppressedAbilities(i), SuppressAll: i.suppressAll, CostChanged: i.costChanged, Skybound: i.skybound,
 			FanfareReplays: i.fanfareReplays,
+			ModeHistory:    sortedModeHistory(i.modeHistory),
 		})
 	}
 	for _, event := range g.events {
@@ -521,6 +523,46 @@ func leaderAbilityNames(p player) []string {
 }
 
 // sortedCardIDs 把"卡牌 ID 集合"稳定地写进存档（顺序与内容都要可复现）。
+// sortedModeHistory 把"已发动过的模式选项"整理成稳定的快照形式。
+func sortedModeHistory(history map[string]map[int]bool) map[string][]int {
+	if len(history) == 0 {
+		return nil
+	}
+	out := make(map[string][]int, len(history))
+	for name, options := range history {
+		ids := make([]int, 0, len(options))
+		for id, used := range options {
+			if used {
+				ids = append(ids, id)
+			}
+		}
+		if len(ids) == 0 {
+			continue
+		}
+		sort.Ints(ids)
+		out[name] = ids
+	}
+	if len(out) == 0 {
+		return nil
+	}
+	return out
+}
+
+func modeHistorySet(saved map[string][]int) map[string]map[int]bool {
+	if len(saved) == 0 {
+		return nil
+	}
+	out := make(map[string]map[int]bool, len(saved))
+	for name, ids := range saved {
+		options := make(map[int]bool, len(ids))
+		for _, id := range ids {
+			options[id] = true
+		}
+		out[name] = options
+	}
+	return out
+}
+
 func sortedCardIDs(set map[int]bool) []int {
 	if len(set) == 0 {
 		return nil
@@ -626,7 +668,7 @@ func restoreGame(cards map[int]*ir.Card, saved ContinuationGame) (*game, error) 
 			id:           entity.ID, alias: entity.Alias, zone: entity.Zone, card: card,
 			attack: entity.Attack, life: entity.Life, damageTaken: entity.DamageTaken, cost: entity.Cost, earthsigil: entity.Earthsigil, countdown: entity.Countdown,
 			attacksUsed: entity.AttacksUsed, attackLimitValue: limit, engaged: entity.Engaged, summoningSick: entity.SummoningSick,
-			evolved: entity.Evolved, superEvolved: entity.SuperEvolved, departed: entity.Departed, fusedThisTurn: entity.FusedThisTurn, damageReduction: entity.DamageReduction, damageCap: entity.DamageCap, costChanged: entity.CostChanged, skybound: entity.Skybound, fanfareReplays: entity.FanfareReplays, abilities: map[string]bool{},
+			evolved: entity.Evolved, superEvolved: entity.SuperEvolved, departed: entity.Departed, fusedThisTurn: entity.FusedThisTurn, damageReduction: entity.DamageReduction, damageCap: entity.DamageCap, costChanged: entity.CostChanged, skybound: entity.Skybound, fanfareReplays: entity.FanfareReplays, modeHistory: modeHistorySet(entity.ModeHistory), abilities: map[string]bool{},
 		}
 		for _, id := range entity.Grants {
 			grant, ok := grants[id]

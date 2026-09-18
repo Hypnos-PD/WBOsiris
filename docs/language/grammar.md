@@ -304,7 +304,8 @@ resource_block    = resource_name , integer , effect_block ;
 resource_name     = "earthrite" | "necromancy" | "faith" ;
 
 mode_block        = "mode" , [positive_integer] , "{" , option_decl , option_decl , {option_decl} , "}"
-                  | "mode" , "random" , positive_integer , "{" , option_decl , option_decl , {option_decl} , "}" ;
+                  | "mode" , "random" , positive_integer , ["history" , identifier] ,
+                    "{" , option_decl , option_decl , {option_decl} , "}" ;
 distribute_block  = "distribute" , "faith" , card_id , "{" , option_decl , option_decl , {option_decl} , "}" ;
 option_decl       = "option" , integer , "{" , {option_label} , {effect_statement} , "}" ;
 option_label      = "label" , locale_id , string , ";" ;

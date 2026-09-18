@@ -50,6 +50,8 @@ type instance struct {
 	skybound                                                                    int
 	// fanfareReplays 记录本实例被"重新发动入场曲"的次数（防止随机自引用无限递归）。
 	fanfareReplays                                                              int
+	// modeHistory 记录"从尚未发动的能力中随机发动"已经发动过的选项（按记录名分组）。
+	modeHistory                                                                 map[string]map[int]bool
 }
 type player struct {
 	retiredDeck                                               []*instance

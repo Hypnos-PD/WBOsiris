@@ -185,7 +185,8 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 			continue
 		case "mode":
 			randomMode := len(t) == 3 && t[1].Value == "random" && isUnsigned(t[2])
-			if (!randomMode && (len(t) < 1 || len(t) > 2)) || len(b) != 1 || len(b[0]) < 2 || s.Terminated {
+			historyMode := len(t) == 5 && t[1].Value == "random" && isUnsigned(t[2]) && t[3].Value == "history" && t[4].Kind == syntax.Identifier && ir.ValidBindingName(t[4].Value)
+			if (!randomMode && !historyMode && (len(t) < 1 || len(t) > 2)) || len(b) != 1 || len(b[0]) < 2 || s.Terminated {
 				shapeError(ds, s, "mode [random 数量] { 至少两个合法 option }")
 				continue
 			}

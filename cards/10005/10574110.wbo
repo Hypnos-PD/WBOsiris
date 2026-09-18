@@ -6,7 +6,117 @@ card 10574110 {
     stats 0/2;
 
     effect {
-        unplayable;
+        stealth;
+        // 自己的回合开始时：从尚未发动过的能力中随机发动1个。
+        when own turn starts {
+            mode random 1 history wheel {
+                option 1 {
+                    label chs "回合结束前，使自己的所有手牌的费用-1。";
+                    label eng "Reduce the cost of all cards in your hand by 1 until the end of the turn.";
+                    label jpn "ターン終了まで、自分の手札すべてのコストを-1。";
+                    label kor "턴 종료까지 내 패 모두의 코스트를 -1.";
+                    label cht "回合結束前，使自己的手牌中全部的卡片消費-1。";
+                    reduce cost own.hand 1 until own turn ends;
+                }
+                option 2 {
+                    label chs "使自己的战场上的所有随从+2/+2。";
+                    label eng "Give all allied followers on the field +2/+2.";
+                    label jpn "自分の場のフォロワーすべては+2/+2する。";
+                    label kor "내 전장의 추종자 모두는 +2/+2.";
+                    label cht "使自己的戰場上全體從者+2/+2。";
+                    buff own.field.followers +2/+2;
+                }
+                option 3 {
+                    label chs "回复自己的主战者3点生命值。";
+                    label eng "Restore 3 defense to your leader.";
+                    label jpn "自分のリーダーを3回復。";
+                    label kor "내 리더를 3 회복.";
+                    label cht "回復自己的主戰者3點生命值。";
+                    heal own.leader 3;
+                }
+            }
+        }
+        // 自己的回合结束时：若本随从已进化，则使对手获得纹章并消失。
+        when own turn ends {
+            if self form evolved {
+                gain oppo crest 10574110;
+                banish self;
+            }
+        }
+    }
+
+    crest {
+        countdown 3;
+
+        // 纹章持有者的回合开始时：从尚未发动过的能力中随机发动1个（全是负面效果）。
+        when own turn starts {
+            mode random 1 history wheel {
+                option 1 {
+                    raise cost own.hand 1 until own turn ends;
+                }
+                option 2 {
+                    buff own.field.followers -2/-2;
+                }
+                option 3 {
+                    damage own.leader 3;
+                }
+            }
+        }
+
+        locale chs {
+            name "纹章：转动的《命运之轮》·斯洛士";
+            text """
+【<color=Keyword>吟唱</color>_3】
+自己的回合开始时，从以下尚未发动的能力中随机发动1个。
+（1）回合结束前，使自己的所有手牌的费用+1。
+（2）使自己的战场上的所有随从-2/-2。
+（3）对自己的主战者造成3点伤害。
+""";
+        }
+
+        locale eng {
+            name "Crest: Slaus, Revolving Wheel of Fortune";
+            text """
+<b><color=Keyword>Countdown</color> (3)</b>
+At the start of your turn, activate 1 of the following abilities, chosen at random, that hasn't been activated yet.
+1. Increase the cost of all cards in your hand by 1 until the end of the turn.
+2. Give all allied followers on the field -2/-2.
+3. Deal 3 damage to your leader.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"まわ\">廻</rub>る《<rub=\"うんめい\">運命</rub>の<rub=\"わ\">輪</rub>》・スロース";
+            text """
+【<color=Keyword>カウントダウン</color>_3】
+自分のターン開始時、次の未発動の能力からランダムに1つ働く。
+（1）ターン終了まで、自分の手札すべてのコストを+1。
+（2）自分の場のフォロワーすべては-2/-2する。
+（3）自分のリーダーに3ダメージ。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 회전하는 《운명의 수레바퀴》 슬라우스";
+            text """
+[<color=Keyword>카운트다운</color> 3]
+내 턴 시작 시, 다음의 미발동 능력 중 무작위로 1개가 발동.
+(1) 턴 종료까지 내 패 모두의 코스트를 +1.
+(2) 내 전장의 추종자 모두는 -2/-2.
+(3) 내 리더에게 3 피해.
+""";
+        }
+
+        locale cht {
+            name "紋章：轉動的《命運之輪》‧斯洛士";
+            text """
+【<color=Keyword>吟唱</color>_3】
+自己的回合開始時，從以下尚未發動的能力中隨機發動1個。
+（1）回合結束前，使自己的手牌中全部的卡片消費+1。
+（2）使自己的戰場上全體從者-2/-2。
+（3）對自己的主戰者造成3點傷害。
+""";
+        }
     }
 
     meta {

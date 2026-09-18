@@ -1,0 +1,160 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "转动的命运之轮在回合开始随机发动一个未发动能力" {
+    seed 112001;
+    state {
+        player own {
+            leader 10/20;
+            field {
+                follower source = 10574110;
+                follower ally = 10001110;
+            }
+            hand { spell held = 10012310; }
+        }
+    }
+    action { advance turn_start own; }
+    expect {
+        legal;
+        // 该种子下抽到能力（2）：全体随从 +2/+2。
+        source.stats == 2/4;
+        ally.stats == 4/4;
+        own.leader.life == 10;
+        held.cost == 1;
+    }
+}
+
+scenario "转动的命运之轮也能抽到回复" {
+    seed 112003;
+    state {
+        player own {
+            leader 10/20;
+            field {
+                follower source = 10574110;
+                follower ally = 10001110;
+            }
+            hand { spell held = 10012310; }
+        }
+    }
+    action { advance turn_start own; }
+    expect {
+        legal;
+        // 该种子下抽到能力（3）：回复主战者 3 点。
+        source.stats == 0/2;
+        ally.stats == 2/2;
+        own.leader.life == 13;
+        held.cost == 1;
+    }
+}
+
+scenario "转动的命运之轮也能抽到减费" {
+    seed 112004;
+    state {
+        player own {
+            leader 10/20;
+            field {
+                follower source = 10574110;
+                follower ally = 10001110;
+            }
+            hand { spell held = 10012310; }
+        }
+    }
+    action { advance turn_start own; }
+    expect {
+        legal;
+        // 该种子下抽到能力（1）：手牌费用 -1（回合结束前）。
+        source.stats == 0/2;
+        ally.stats == 2/2;
+        own.leader.life == 10;
+        held.cost == 0;
+    }
+}
+
+scenario "转动的命运之轮进化后于回合结束给对手纹章并消失" {
+    seed 112101;
+    state {
+        turn own 7;
+        player own {
+            field { follower source = 10574110 { evolved; } }
+        }
+    }
+    action { advance turn_end own; }
+    expect {
+        legal;
+        oppo.crests count card 10574110 == 1;
+        source.zone == banished;
+    }
+}
+
+scenario "未进化的转动命运之轮不会给对手纹章" {
+    seed 112102;
+    state {
+        player own {
+            field { follower source = 10574110; }
+        }
+    }
+    action { advance turn_end own; }
+    expect {
+        legal;
+        oppo.crests count card 10574110 == 0;
+        source.zone == field;
+    }
+}
+
+scenario "命运之轮纹章在持有者回合开始发动负面能力" {
+    seed 112201;
+    state {
+        player oppo {
+            leader 20/20;
+            crests { crest wheel = 10574110; }
+            field { follower theirs = 10001110; }
+        }
+    }
+    action { advance turn_start oppo; }
+    expect {
+        legal;
+        // 该种子下抽到能力（3）：对自己主战者造成 3 点伤害。
+        oppo.leader.life == 17;
+        theirs.stats == 2/2;
+    }
+}
+
+scenario "命运之轮纹章也能抽到加费" {
+    seed 112202;
+    state {
+        player oppo {
+            leader 20/20;
+            crests { crest wheel = 10574110; }
+            field { follower theirs = 10001110; }
+            hand { spell theirheld = 10012310; }
+        }
+    }
+    action { advance turn_start oppo; }
+    expect {
+        legal;
+        // 该种子下抽到能力（1）：手牌费用 +1。
+        oppo.leader.life == 20;
+        theirs.stats == 2/2;
+        theirheld.cost == 2;
+    }
+}
+
+scenario "命运之轮纹章也能抽到削弱随从" {
+    seed 112206;
+    state {
+        player oppo {
+            leader 20/20;
+            crests { crest wheel = 10574110; }
+            field { follower theirs = 10001110; }
+            hand { spell theirheld = 10012310; }
+        }
+    }
+    action { advance turn_start oppo; }
+    expect {
+        legal;
+        // 该种子下抽到能力（2）：该随从 -2/-2 被破坏。
+        oppo.leader.life == 20;
+        theirs.stats == 0/0;
+        theirheld.cost == 1;
+    }
+}

@@ -541,6 +541,9 @@ type ModeEffect struct {
 	Count   int          `json:"count,omitempty"`
 	// Random 为真时由引擎随机选出 Count 个不同选项（"随机发动2个能力"），不向玩家提问。
 	Random  bool         `json:"random,omitempty"`
+	// History 非空时按选项记录已发动过的能力（"从尚未发动的能力中随机发动1种"），
+	// 键为该实例上的记录名。
+	History string       `json:"history,omitempty"`
 	Options []ModeOption `json:"options"`
 }
 

@@ -501,7 +501,8 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			// `mode { ... }` 选 1 个；`mode N { ... }` 选 N 个（【模式】选择 N 个能力发动）；
 			// `mode random N { ... }` 由引擎随机选出 N 个（"从以下能力中随机发动2个能力"）。
 			randomMode := len(t) == 3 && t[1].Value == "random" && isUnsigned(t[2])
-			valid := randomMode || len(t) == 1 || len(t) == 2 && isUnsigned(t[1])
+			historyMode := len(t) == 5 && t[1].Value == "random" && isUnsigned(t[2]) && t[3].Value == "history" && t[4].Kind == syntax.Identifier && ir.ValidBindingName(t[4].Value)
+			valid := randomMode || historyMode || len(t) == 1 || len(t) == 2 && isUnsigned(t[1])
 			if !valid || len(b) != 1 || len(b[0]) < 2 {
 				shapeError(ds, s, "mode [random 数量] { 至少两个 option }")
 			} else {

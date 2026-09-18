@@ -710,6 +710,21 @@ func (s *Session) pushRandomMode(e ir.ModeEffect, bindings frame, self *instance
 		return
 	}
 	candidates := append([]ir.ModeOption(nil), e.Options...)
+	if e.History != "" && self != nil {
+		// "从尚未发动的能力中随机发动1种"：排除本实例已经发动过的选项。
+		used := self.modeHistory[e.History]
+		remaining := candidates[:0]
+		for _, option := range candidates {
+			if used[option.ID] {
+				continue
+			}
+			remaining = append(remaining, option)
+		}
+		candidates = remaining
+		if len(candidates) == 0 {
+			return
+		}
+	}
 	count := max(e.Count, 1)
 	count = min(count, len(candidates))
 	chosen := make([]int, 0, count)
@@ -725,6 +740,17 @@ func (s *Session) pushRandomMode(e ir.ModeEffect, bindings frame, self *instance
 		candidates = append(candidates[:index], candidates[index+1:]...)
 	}
 	sort.Ints(chosen)
+	if e.History != "" && self != nil {
+		if self.modeHistory == nil {
+			self.modeHistory = map[string]map[int]bool{}
+		}
+		if self.modeHistory[e.History] == nil {
+			self.modeHistory[e.History] = map[int]bool{}
+		}
+		for _, id := range chosen {
+			self.modeHistory[e.History][id] = true
+		}
+	}
 	for _, id := range chosen {
 		for _, option := range e.Options {
 			if option.ID != id {

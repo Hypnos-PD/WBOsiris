@@ -326,7 +326,13 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 	case "mode":
 		count := 0
 		random := false
-		if len(t) == 3 && t[1].Value == "random" {
+		history := ""
+		if len(t) == 5 && t[1].Value == "random" && t[3].Value == "history" {
+			// `mode random N history <名字>`：从尚未发动过的选项里随机选（"从以下未发动的能力中随机发动1个"）。
+			random = true
+			count = intToken(t[2])
+			history = t[4].Value
+		} else if len(t) == 3 && t[1].Value == "random" {
 			random = true
 			count = intToken(t[2])
 		} else if len(t) > 1 {
@@ -344,7 +350,7 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			}
 			opts = append(opts, ir.ModeOption{ID: intAt(o, 1), Body: body, Origin: originIR(o.Span, sid), Labels: labels})
 		}
-		return ir.ModeEffect{NodeBase: base, Kind: "mode", Count: count, Random: random, Options: opts}, nil
+		return ir.ModeEffect{NodeBase: base, Kind: "mode", Count: count, Random: random, History: history, Options: opts}, nil
 	case "earthrite", "necromancy", "faith", "pp":
 		resource := "shadows"
 		if h == "earthrite" {

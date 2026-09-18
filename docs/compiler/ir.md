@@ -629,6 +629,7 @@ Mode = NodeBase & {
   kind: "mode",
   count?: 1..65535,          (* 玩家要选择或随机发动的选项数量，省略为 1 *)
   random?: bool,             (* 为真时由引擎随机选出 count 个不同选项，不产生玩家请求 *)
+  history?: BindingName,     (* 只与 random 搭配：按实例记住已发动过的选项并排除 *)
   options: [{ id: OptionId, body: [EffectNode], origin: Origin,
               labels?: { [LocaleId]: non-empty string } }]
 }
