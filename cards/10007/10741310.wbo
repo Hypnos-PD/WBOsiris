@@ -6,7 +6,9 @@ card 10741310 {
     trait anathema;
 
     effect {
-        unplayable;
+        gain own.maxpp 1;
+        transform own.hand into card 10742310 where card 10741310;
+        transform own.deck into card 10742310 where card 10741310;
     }
 
     meta {

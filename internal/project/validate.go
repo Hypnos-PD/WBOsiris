@@ -1369,7 +1369,7 @@ func validateAssertion(s *syntax.Statement, a map[string]bool, ds *[]syntax.Diag
 // instanceFields 与 internal/runner 的字段求值保持一致。
 var instanceFields = set(
 	"zone", "cost", "stats", "evolved", "super_evolved",
-	"earthsigil", "countdown", "engaged", "attack_limit", "damage_reduction",
+	"earthsigil", "countdown", "engaged", "attack_limit", "damage_reduction", "damage_cap",
 )
 
 func validateCollection(l *Loaded, strict bool) {

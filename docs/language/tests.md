@@ -253,7 +253,7 @@ expect {
 ```
 
 实例字段只接受 `zone`、`stats`、`cost`、`evolved`、`super_evolved`、`earthsigil`、
-`countdown`、`engaged`、`attack_limit`、`damage_reduction`，以及
+`countdown`、`engaged`、`attack_limit`、`damage_reduction`、`damage_cap`，以及
 `alias.counter.<名字>`；写错字段名会在检查阶段报错，而不是静默变成不相等。
 
 牌组顺序断言：

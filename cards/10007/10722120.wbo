@@ -6,7 +6,14 @@ card 10722120 {
     stats 2/3;
 
     effect {
-        unplayable;
+        fanfare {
+            draw 2;
+            summon 2 card 90021110;
+        }
+        evolve {
+            choose target from oppo.field.followers;
+            damage target 3;
+        }
     }
 
     meta {

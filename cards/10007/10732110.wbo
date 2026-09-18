@@ -6,7 +6,15 @@ card 10732110 {
     stats 4/2;
 
     effect {
-        unplayable;
+        rush;
+        lastwords {
+            add 2 earthsigil;
+        }
+        superevolve {
+            earthrite 2 {
+                summon 2 card 10732110;
+            }
+        }
     }
 
     meta {

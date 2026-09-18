@@ -476,7 +476,7 @@ func decodeTestRef(data []byte) (TestRef, error) {
 		if err := strict(data, &v); err != nil {
 			return TestRef{}, err
 		}
-		if !nodeIDPattern.MatchString(v.InstanceID) || v.Kind == "instance_field" && !oneOf(v.Field, "zone", "stats", "cost", "attack", "life", "evolved", "super_evolved", "engaged", "countdown", "earthsigil", "attack_limit", "damage_reduction") || v.Kind == "instance_counter" && !ValidCounterName(v.Field) {
+		if !nodeIDPattern.MatchString(v.InstanceID) || v.Kind == "instance_field" && !oneOf(v.Field, "zone", "stats", "cost", "attack", "life", "evolved", "super_evolved", "engaged", "countdown", "earthsigil", "attack_limit", "damage_reduction", "damage_cap") || v.Kind == "instance_counter" && !ValidCounterName(v.Field) {
 			return TestRef{}, fmt.Errorf("malformed instance reference")
 		}
 		return TestRef{Kind: v.Kind, InstanceID: v.InstanceID, Field: v.Field}, nil

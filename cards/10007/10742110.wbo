@@ -6,7 +6,11 @@ card 10742110 {
     stats 10/10;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            choose target from oppo.field.followers;
+            destroy target;
+        }
     }
 
     meta {

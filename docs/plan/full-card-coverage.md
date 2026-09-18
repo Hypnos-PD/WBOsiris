@@ -20,7 +20,7 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 678 · 未实现(骨架) 72 · 未导入 154
+总计 904 · 已完成 690 · 未实现(骨架) 60 · 未导入 154
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
@@ -29,7 +29,7 @@
 10004        76      73       3       0
 10005        76      66      10       0
 10006        76      74       2       0
-10007        77      22      55       0
+10007        77      34      43       0
 10008        78       0       0      78
 10009        76       0       0      76
 90000        93      93       0       0
@@ -189,6 +189,22 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 77（卡包 10007 第三批 12 张）
+
+- 完成 12 张：10742110 豪龙守门人、10711110 巨型熊、10722110 听略谍报兵、
+  10751120 恶魔鼓手·拉兹、10771110 个性店主、10722120 斩奏医护兵、10752110 猫咪走绳师、
+  10732110 迷人怪兽、10764110 裁神的安纳提玛·罗德欧、10761120 广域传教士、
+  10721310 敌我的调律、10741310 百无聊赖的睥睨。
+- 用的都是既有原语：`summon copies of self`（复制体继承关键词）、`damage_cap 3`、
+  `earthrite 2`、`raise countdown`、`draw N from deck where type amulet`、
+  `count(own.hand.amulets)`、`cannot_attack … until oppo turn ends`、
+  `gain own.maxpp 1` + `transform own.hand|deck into card … where card …`。
+- 测试侧补上 `alias.damage_cap == N` 断言（此前的实例字段表里只有 `damage_reduction`）。
+- 新增 19 个场景（`tests/10007/batch-77-basics.wbotest`）。写测试时再次确认：**已在战场上**的
+  随从再进化只会走 `evolve` 块，不会重放入场曲，所以"入场曲 + 进化时"的卡要拆成两个场景
+  （打出测入场曲、`evolve` 测进化时）。
+- 全量回归：`check` 0 错 0 警；`test` 1049 全绿；`go test ./...` 全绿；语料快照更新为 1049 个场景。
 
 ### 批次 76（卡包 10007 第二批 11 张）
 

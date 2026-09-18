@@ -108,6 +108,8 @@ func (g *game) assertCompare(a ir.CompareAssertion) string {
 			got = attackLimit(i)
 		case "damage_reduction":
 			got = i.damageReduction
+		case "damage_cap":
+			got = i.damageCap
 		}
 	case "rng_consumed":
 		got = int(g.rng.Consumed())

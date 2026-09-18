@@ -1,0 +1,320 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "豪龙守门人入场破坏敌方随从并且自带守护" {
+    seed 77001;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10742110; }
+        }
+        player oppo {
+            field { follower victim = 10001110; }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; source has ward; victim.zone == graveyard; }
+}
+
+scenario "巨型熊入场召唤复制随从并带有突进守护与伤害上限" {
+    seed 77002;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10711110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 10711110 == 2;
+        source has ward;
+        source has rush;
+        source.damage_cap == 3;
+    }
+}
+
+scenario "巨型熊的复制随从也带着自己的关键词" {
+    seed 77003;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10711110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        all own.field where card 10711110 have ward;
+        all own.field where card 10711110 have rush;
+    }
+}
+
+scenario "听略谍报兵的谢幕曲召唤骑士" {
+    seed 77004;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10722110; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.field count card 90021110 == 1; }
+}
+
+scenario "恶魔鼓手的谢幕曲召唤骸骨士兵" {
+    seed 77005;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10751120; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.field count card 90051110 == 1; }
+}
+
+scenario "个性店主在自己的创造物入场时回复主战者" {
+    seed 77006;
+    state {
+        player own {
+            leader 10/20;
+            pp 8/8;
+            field { follower source = 10771110; }
+            hand { follower artifact = 90071150; }
+        }
+    }
+    action { play artifact; }
+    expect { legal; own.leader.life == 11; }
+}
+
+scenario "个性店主对非创造物随从的入场不回复" {
+    seed 77007;
+    state {
+        player own {
+            leader 10/20;
+            pp 8/8;
+            field { follower source = 10771110; }
+            hand { follower plain = 10001110; }
+        }
+    }
+    action { play plain; }
+    expect { legal; own.leader.life == 10; }
+}
+
+scenario "斩奏医护兵入场抽牌并召唤两个骑士" {
+    seed 77008;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10722120; }
+            deck top {
+                follower a = 10011110;
+                follower b = 10011120;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90021110 == 2;
+        own.hand count card 10011110 == 1;
+        own.hand count card 10011120 == 1;
+    }
+}
+
+scenario "猫咪走绳师的入场曲打击随从并召唤骸骨士兵" {
+    seed 77017;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10752110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 0/6; own.field count card 90051110 == 1; }
+}
+
+scenario "猫咪走绳师的进化时重复入场曲的效果" {
+    seed 77009;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10752110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { evolve source; select victim; }
+    expect {
+        legal;
+        victim.stats == 0/6;
+        own.field count card 90051110 == 1;
+    }
+}
+
+scenario "迷人怪兽的谢幕曲增加土之印" {
+    seed 77010;
+    state {
+        player own {
+            pp 1/1;
+            field {
+                follower source = 10732110;
+                amulet sigil = 90031210 { earthsigil 1; }
+            }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.earthsigils == 3; }
+}
+
+scenario "迷人怪兽超进化时消耗土之秘术召唤两个自己" {
+    seed 77011;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field {
+                follower source = 10732110;
+                amulet sigil = 90031210 { earthsigil 2; }
+            }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; own.field count card 10732110 == 3; sigil.earthsigil == 0; }
+}
+
+scenario "裁神的安纳提玛入场召唤月影指环" {
+    seed 77018;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10764110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90064210 == 1; }
+}
+
+scenario "裁神的安纳提玛进化时推进随机月影指环的倒计数" {
+    seed 77012;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field {
+                follower source = 10764110;
+                amulet ring = 90064210 { countdown 2; }
+            }
+        }
+    }
+    action { evolve source; }
+    expect { legal; ring.countdown == 3; }
+}
+
+scenario "广域传教士入场抽两张护符" {
+    seed 77019;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10761120; }
+            deck top {
+                amulet first = 10001210;
+                follower wrong = 10011110;
+                amulet second = 10061210;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.hand count card 10001210 == 1;
+        own.hand count card 10061210 == 1;
+        own.hand count card 10011110 == 0;
+    }
+}
+
+scenario "广域传教士进化时按手牌护符数打击敌方全体" {
+    seed 77013;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10761120; }
+            hand {
+                amulet first = 10001210;
+                amulet second = 10061210;
+            }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { evolve source; }
+    expect { legal; victim.stats == 0/7; }
+}
+
+scenario "敌我的调律在协作不足时只造成伤害" {
+    seed 77014;
+    state {
+        player own {
+            pp 1/1;
+            rally 9;
+            hand { spell source = 10721310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 0/6; }
+}
+
+scenario "敌我的调律在协作达标时让对方无法攻击" {
+    seed 77015;
+    state {
+        player own {
+            pp 1/1;
+            rally 10;
+            hand { spell source = 10721310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 0/6; victim has cannot_attack; }
+}
+
+scenario "百无聊赖的睥睨提升能量点上限并把手牌与牌组的自己变形" {
+    seed 77016;
+    state {
+        player own {
+            pp 4/6;
+            hand {
+                spell source = 10741310;
+                spell another = 10741310;
+            }
+            deck top {
+                spell deckcopy = 10741310;
+                follower other = 10011110;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.maxpp == 7;
+        own.hand count card 10742310 == 1;
+        own.deck count card 10742310 == 1;
+        own.deck count card 10741310 == 0;
+    }
+}

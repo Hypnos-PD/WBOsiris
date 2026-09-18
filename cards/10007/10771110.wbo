@@ -6,7 +6,12 @@ card 10771110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        when own follower summoned where trait artifact {
+            heal own.leader 1;
+        }
+        evolve {
+            summon 1 card 90071150;
+        }
     }
 
     meta {

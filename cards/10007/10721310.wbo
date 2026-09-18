@@ -6,7 +6,11 @@ card 10721310 {
     trait anathema;
 
     effect {
-        unplayable;
+        choose target from oppo.field.followers;
+        damage target 3;
+        if rally >= 10 {
+            add cannot_attack to target until oppo turn ends;
+        }
     }
 
     meta {

@@ -6,7 +6,13 @@ card 10722110 {
     stats 2/1;
 
     effect {
-        unplayable;
+        lastwords {
+            summon 1 card 90021110;
+        }
+        evolve {
+            choose target from oppo.field.followers;
+            damage target 3;
+        }
     }
 
     meta {

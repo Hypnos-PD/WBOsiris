@@ -7,7 +7,13 @@ card 10764110 {
     trait anathema;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 1 card 90064210;
+        }
+        evolve {
+            random target from own.field.amulets where card 90064210;
+            raise countdown target 1;
+        }
     }
 
     meta {

@@ -6,7 +6,12 @@ card 10761120 {
     stats 5/5;
 
     effect {
-        unplayable;
+        fanfare {
+            draw 2 from deck where type amulet;
+        }
+        evolve {
+            damage oppo.field.followers count(own.hand.amulets);
+        }
     }
 
     meta {

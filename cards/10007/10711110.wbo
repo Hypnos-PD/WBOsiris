@@ -6,7 +6,12 @@ card 10711110 {
     stats 6/6;
 
     effect {
-        unplayable;
+        rush;
+        ward;
+        damage_cap 3;
+        fanfare {
+            summon copies of self;
+        }
     }
 
     meta {
