@@ -6,7 +6,15 @@ card 10843110 {
     stats 6/2;
 
     effect {
-        unplayable;
+        rush;
+        intimidate;
+        attack {
+            add barrier to self;
+            // 只在攻击随从时追加"1回合可以攻击2次"。
+            if count(opponent) >= 1 {
+                set_attack_limit self 2;
+            }
+        }
     }
 
     meta {

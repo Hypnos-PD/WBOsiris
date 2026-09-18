@@ -6,7 +6,13 @@ card 10814110 {
     stats 4/6;
 
     effect {
-        unplayable;
+        storm;
+        ward;
+        fanfare {
+            choose target from oppo.field.followers;
+            destroy target;
+            buff own.field.followers other +1/+1;
+        }
     }
 
     meta {

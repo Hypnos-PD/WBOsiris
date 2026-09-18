@@ -1,0 +1,220 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "沧海之精的入场曲加入大海虎鲸" {
+    seed 87001;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10841130; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90041130 == 1; }
+}
+
+scenario "沧海之精的纹章让海洋随从入场时加身材" {
+    seed 87002;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower whale = 90041130; }
+            crests { crest emblem = 10841130; }
+        }
+    }
+    action { play whale; }
+    expect { legal; whale.stats == 3/3; }
+}
+
+scenario "改变的流向在解禁回合把手牌放回并降费" {
+    seed 87003;
+    state {
+        turn own 7;
+        player own {
+            pp 2/2;
+            hand {
+                spell source = 10853310;
+                follower fodder = 10001110;
+            }
+        }
+    }
+    action { play source; select fodder; }
+    // 牌组原本是空的：放回后抽 2 张只能抽到它，所以它既回到手牌又被降到 1 费。
+    expect {
+        legal;
+        own.hand count card 10001110 == 1;
+        own.deck count card 10001110 == 0;
+        fodder.cost == 1;
+    }
+}
+
+scenario "寡言的刺客进化时让敌方随从无法攻击" {
+    seed 87004;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10821120; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { evolve source; select victim; }
+    expect { legal; source has stealth; victim has cannot_attack; }
+}
+
+scenario "闪耀旋律召唤一个自己并在回合结束加入大海虎鲸" {
+    seed 87005;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10842110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10842110 == 2; source has rush; }
+}
+
+scenario "闪耀旋律的回合结束能力加入大海虎鲸" {
+    seed 87006;
+    state {
+        player own {
+            field { follower source = 10842110; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; own.hand count card 90041130 == 1; }
+}
+
+scenario "图书室的魔女进化时抹掉能力并造成伤害" {
+    seed 87007;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10861110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { evolve source; select victim; }
+    expect { legal; victim.stats == 0/7; victim lacks ward; }
+}
+
+scenario "悠久的骑士入场与进化各召唤一个铁甲骑士" {
+    seed 87008;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10821130; }
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        own.field count card 90021120 == 1;
+        all own.field where card 90021120 have ward;
+    }
+}
+
+scenario "离合有终破坏敌方随从并强化其他随从" {
+    seed 87009;
+    state {
+        player own {
+            pp 7/7;
+            field { follower ally = 10001110; }
+            hand { follower source = 10814110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.zone == graveyard; ally.stats == 3/3; source has storm; source has ward; }
+}
+
+scenario "穹顶的战火攻击随从时获得屏障并可攻击两次" {
+    seed 87010;
+    state {
+        player own {
+            field { follower source = 10843110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { attack source into victim; }
+    expect { legal; source has barrier; source has intimidate; }
+}
+
+scenario "诚实的诅咒师削弱敌方随从并在进化时强化手牌" {
+    seed 87011;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10853110; }
+            hand { follower inhand = 10001110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 2/6; } }
+        }
+    }
+    action { evolve source; select inhand; }
+    expect { legal; inhand.stats == 5/2; }
+}
+
+scenario "武力与治安召唤私兵并打击敌方全体" {
+    seed 87012;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10821110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90021130 == 1; victim.stats == 0/6; }
+}
+
+scenario "温柔读心者召唤毒荆并给全体随从屏障" {
+    seed 87013;
+    state {
+        player own {
+            pp 6/6;
+            field { follower ally = 10001110; }
+            hand { follower source = 10813110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 10812120 == 1;
+        ally has barrier;
+        source has barrier;
+    }
+}
+
+scenario "重历新生削弱攻击力最大的随从" {
+    seed 87014;
+    state {
+        player own {
+            pp 4/4;
+            hand { spell source = 10822310; }
+        }
+        player oppo {
+            field {
+                follower strong = 10001120 { stats 7/7; }
+                follower weak = 10001110;
+            }
+        }
+    }
+    action { play source; }
+    // -10/-10 把 7/7 打到 0/-3，生命归零的随从被破坏。
+    expect { legal; strong.zone == graveyard; weak.stats == 2/2; }
+}

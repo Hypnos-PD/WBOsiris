@@ -6,7 +6,53 @@ card 10841130 {
     stats 1/2;
 
     effect {
-        unplayable;
+        fanfare {
+            add 1 card 90041130 to hand;
+        }
+        evolve {
+            gain own crest 10841130;
+        }
+    }
+
+    crest {
+        when own follower summoned where trait marine {
+            buff summoned +1/+1;
+        }
+
+        locale chs {
+            name "纹章：沧海之精";
+            text """
+自己的海洋·随从进入战场时，使其+1/+1。
+""";
+        }
+
+        locale eng {
+            name "Crest: Spirit of Wadatsumi";
+            text """
+Whenever an allied Marine follower enters the field, give it +1/+1.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：わだつみの<rub=\"せい\">精</rub>";
+            text """
+自分の海洋・フォロワーが場に出たとき、それは+1/+1する。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 바다신의 정령";
+            text """
+내 바다 추종자가 전장에 소환되었을 때, 그 추종자는 +1/+1.
+""";
+        }
+
+        locale cht {
+            name "紋章：掌海精靈";
+            text """
+當自己的海洋‧從者卡進入戰場時，使其+1/+1。
+""";
+        }
     }
 
     meta {

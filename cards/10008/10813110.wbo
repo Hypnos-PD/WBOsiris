@@ -6,7 +6,11 @@ card 10813110 {
     stats 1/1;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            summon 1 card 10812120;
+            add barrier to own.field.followers;
+        }
     }
 
     meta {

@@ -5,7 +5,12 @@ card 10853310 {
     cost 2;
 
     effect {
-        unplayable;
+        choose target from own.hand;
+        return target to deck;
+        draw 2;
+        if own.superevolve_unlocked {
+            reduce cost target 1 minimum 0;
+        }
     }
 
     meta {
