@@ -6,6 +6,24 @@ import (
 	"wbo/internal/ir"
 )
 
+// PracticeDeck 是练习/压测用的固定 40 张卡组：第一弹的中立随从与法术轮转，
+// 每张至多 3 张，天然满足构筑规则。客户端、练习模式与自对弈都从这里取，
+// 保证"大家玩的是同一副默认卡组"。
+func PracticeDeck() []int {
+	ids := []int{10001110, 10001120, 10001130, 10001210, 10002110, 10002120, 10002210,
+		10011110, 10011120, 10011130, 10011210, 10012110, 10012120, 10012310}
+	deck := make([]int, 0, 40)
+	for len(deck) < 40 {
+		for _, id := range ids {
+			if len(deck) == 40 {
+				break
+			}
+			deck = append(deck, id)
+		}
+	}
+	return deck
+}
+
 // ValidateMatchDeck validates constructed play against the loaded rule pack.
 func ValidateMatchDeck(cards *ir.CardPack, deck []int) error {
 	if cards == nil || len(deck) != 40 {

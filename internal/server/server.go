@@ -175,20 +175,7 @@ func validateDeck(cards *ir.CardPack, deck []int) error {
 }
 
 func practiceDeck() []int {
-	ids := []int{10001110, 10001120, 10001130, 10001210, 10002110, 10002120, 10002210, 10011110, 10011120, 10011130, 10011210, 10012110, 10012120, 10012310}
-	deck := make([]int, 0, 40)
-	for len(deck) < 40 {
-		for _, id := range ids {
-			if len(deck) == 40 {
-				break
-			}
-			deck = append(deck, id)
-			if len(deck)%3 == 0 {
-				continue
-			}
-		}
-	}
-	return deck
+	return runner.PracticeDeck()
 }
 
 func simulationStateWithDeck(state ir.State, cards *ir.CardPack, deck []int) ir.State {
