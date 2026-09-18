@@ -6,7 +6,18 @@ card 10854120 {
     stats 1/4;
 
     effect {
-        unplayable;
+        fanfare {
+            necromancy 20 {
+                // 梦魇·卡牌 = 职业 abysscraft 的卡牌（手牌里全部减 2 费）。
+                reduce cost own.hand where class abysscraft 2 minimum 0;
+            }
+        }
+        clash {
+            damage opponent 4;
+        }
+        when own turn ends {
+            heal own.leader 4;
+        }
     }
 
     meta {

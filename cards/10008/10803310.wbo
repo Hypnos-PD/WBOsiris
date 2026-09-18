@@ -5,7 +5,18 @@ card 10803310 {
     cost 2;
 
     effect {
-        unplayable;
+        mode {
+            option 1 {
+                random victim from oppo.field.followers;
+                damage victim 3;
+            }
+            option 2 {
+                reanimate 2;
+            }
+            option 3 {
+                buff own.field.followers +1/+0;
+            }
+        }
     }
 
     meta {

@@ -6,7 +6,15 @@ card 10844120 {
     stats 6/6;
 
     effect {
-        unplayable;
+        fanfare {
+            choose targets from own.hand count 2;
+            discard targets;
+            damage oppo.field.followers 4;
+            damage oppo.leader 4;
+        }
+        superevolve {
+            draw 3;
+        }
     }
 
     meta {

@@ -6,7 +6,16 @@ card 10824110 {
     stats 4/4;
 
     effect {
-        unplayable;
+        rush;
+        fanfare {
+            summon 1 card 10824110;
+            if rally >= 20 {
+                damage oppo.leader 4;
+            }
+        }
+        evolve {
+            add 1 card 90024330 to hand;
+        }
     }
 
     meta {

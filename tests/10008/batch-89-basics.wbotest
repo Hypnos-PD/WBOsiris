@@ -1,0 +1,180 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "金银绚烂舍弃两张手牌并打击敌方全体与主战者" {
+    seed 89001;
+    state {
+        player own {
+            pp 8/8;
+            hand {
+                follower source = 10844120;
+                follower first = 10001110;
+                follower second = 10001120;
+            }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select first, second; }
+    expect {
+        legal;
+        own.graveyard count card 10001110 == 1;
+        own.graveyard count card 10001120 == 1;
+        victim.stats == 0/5;
+        oppo.leader.life == 16;
+    }
+}
+
+scenario "钢铁的小憩在增幅不足时只抽牌" {
+    seed 89002;
+    state {
+        player own {
+            leader 10/20;
+            pp 3/3;
+            hand { spell source = 10833310; }
+            deck top {
+                follower a = 10011110;
+                follower b = 10011120;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.hand count card 10011110 == 1;
+        own.hand count card 10011120 == 1;
+        own.leader.life == 10;
+        own.pp == 0/3;
+    }
+}
+
+scenario "钢铁的小憩在增幅达标时追加回复生命与能量点" {
+    seed 89003;
+    state {
+        player own {
+            leader 10/20;
+            pp 3/3;
+            hand { spell source = 10833310 { counter x 5; } }
+            deck top {
+                follower a = 10011110;
+                follower b = 10011120;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.leader.life == 12;
+        own.pp == 2/3;
+    }
+}
+
+scenario "天命的子弹的入场曲召唤自己并在协作达标时打击主战者" {
+    seed 89004;
+    state {
+        player own {
+            pp 5/5;
+            rally 20;
+            hand { follower source = 10824110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10824110 == 2; oppo.leader.life == 16; source has rush; }
+}
+
+scenario "天命的子弹的进化时把亡命者的枪击加入手牌" {
+    seed 89005;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10824110; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.hand count card 90024330 == 1; }
+}
+
+scenario "传承的意志模式一打击随机随从" {
+    seed 89006;
+    state {
+        player own {
+            pp 2/2;
+            hand { spell source = 10803310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; victim.stats == 0/6; }
+}
+
+scenario "传承的意志模式三强化全体随从" {
+    seed 89007;
+    state {
+        player own {
+            pp 2/2;
+            field { follower ally = 10001110; }
+            hand { spell source = 10803310; }
+        }
+    }
+    action { play source; mode 3; }
+    expect { legal; ally.stats == 3/2; }
+}
+
+scenario "灾难言灵召唤两个守护者巨像并让它们获得突进" {
+    seed 89008;
+    state {
+        player own {
+            pp 7/7;
+            hand {
+                follower source = 10834120;
+                spell boostable = 10133310;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90031120 == 2;
+        all own.field where card 90031120 have rush;
+        // 两张守护者巨像各触发一次入场监听，各增幅手牌 1 次。
+        boostable.counter.x == 2;
+    }
+}
+
+scenario "日月的蔷薇用唤灵二十给手牌梦魇卡减费" {
+    seed 89009;
+    state {
+        player own {
+            pp 5/5;
+            shadows 20;
+            hand {
+                follower source = 10854120;
+                follower nightmare = 10751110;
+                follower other = 10001110;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.shadows == 0;
+        nightmare.cost == 0;
+        other.cost == 2;
+    }
+}
+
+scenario "日月的蔷薇的回合结束回复主战者四点" {
+    seed 89010;
+    state {
+        player own {
+            leader 10/20;
+            field { follower source = 10854120; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; own.leader.life == 14; }
+}

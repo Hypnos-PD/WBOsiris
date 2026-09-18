@@ -590,8 +590,15 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			return e, nil
 		}
 		end := valueRefEnd(t, 2)
+		target := valueRefIR(t, 2)
+		// `reduce cost|countdown <集合> where <筛选> N …`：筛选紧跟在集合之后。
+		if end < len(t) && t[end].Value == "where" {
+			predicate, next := filterIR(t, end)
+			target = ir.FilterRef{Kind: "filter", Source: target, Predicate: predicate}
+			end = next
+		}
 		amount, expr := numericIR(t, end)
-		e := ir.AdjustEffect{NodeBase: base, Kind: "adjust_entity_field", Field: t[1].Value, Target: valueRefIR(t, 2), Delta: -amount}
+		e := ir.AdjustEffect{NodeBase: base, Kind: "adjust_entity_field", Field: t[1].Value, Target: target, Delta: -amount}
 		if expr != nil {
 			e.Delta = 0
 			e.DeltaExpr = &ir.NegateExpr{Kind: "negate", Value: expr}
@@ -618,7 +625,13 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		}
 		// raise cost|countdown <集合> N：给目标加费或推进倒计数；与 reduce 共用同一 IR 节点。
 		end := valueRefEnd(t, 2)
-		e := ir.AdjustEffect{NodeBase: base, Kind: "adjust_entity_field", Field: t[1].Value, Target: valueRefIR(t, 2), Delta: intToken(t[end])}
+		target := valueRefIR(t, 2)
+		if end < len(t) && t[end].Value == "where" {
+			predicate, next := filterIR(t, end)
+			target = ir.FilterRef{Kind: "filter", Source: target, Predicate: predicate}
+			end = next
+		}
+		e := ir.AdjustEffect{NodeBase: base, Kind: "adjust_entity_field", Field: t[1].Value, Target: target, Delta: intToken(t[end])}
 		if end+1 < len(t) && t[end+1].Value == "until" {
 			e.Until = effectDurationIR(t, end+1)
 		}

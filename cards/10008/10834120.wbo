@@ -6,7 +6,17 @@ card 10834120 {
     stats 5/5;
 
     effect {
-        unplayable;
+        fanfare {
+            summon 2 card 90031120;
+        }
+        // 英文把"增幅手牌"并进入场监听里：每有一张其他随从入场就给它突进并增幅手牌 1 次。
+        when own follower summoned other {
+            add rush to summoned;
+            spellboost own.hand 1;
+        }
+        evolve {
+            summon 1 card 90031120;
+        }
     }
 
     meta {

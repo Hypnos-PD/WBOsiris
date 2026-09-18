@@ -856,6 +856,10 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		}
 		if len(t) >= 4 && (t[1].Value == "countdown" || t[1].Value == "cost") {
 			end, good := parseValueRef(t, 2)
+			if good && end < len(t) && t[end].Value == "where" {
+				// `reduce cost|countdown <集合> where <筛选> N`：筛选紧跟在集合之后。
+				end, good = parseWhere(t, end)
+			}
 			if good {
 				// 增量可以是常量或数值引用：`reduce countdown self own.crests`。
 				if next, amountOK := parseEffectAmount(t, end); amountOK {
@@ -886,6 +890,9 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		}
 		if len(t) >= 4 && (t[1].Value == "cost" || t[1].Value == "countdown") {
 			end, good := parseValueRef(t, 2)
+			if good && end < len(t) && t[end].Value == "where" {
+				end, good = parseWhere(t, end)
+			}
 			if good && end < len(t) && isUnsigned(t[end]) {
 				end++
 			} else {
