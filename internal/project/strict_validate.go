@@ -354,6 +354,10 @@ func parseBaseEventPattern(t []syntax.Token) (int, string, bool) {
 	if t[2].Value == "leader" && t[3].Value == "healed" {
 		return 4, "", true
 	}
+	if t[2].Value == "earthrite" {
+		// `when own|oppo earthrite`：某位玩家发动【土之秘术】（支付土之印）时。
+		return 3, "", true
+	}
 	if set("follower", "amulet")[t[2].Value] && set("summoned", "engaged", "destroyed")[t[3].Value] {
 		return 4, t[2].Value, true
 	}

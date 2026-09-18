@@ -1,0 +1,91 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+// 「手札で働く。自分が【土の秘術】したとき、これのコストを-1する。」
+// 土之秘术支付成功后派发 earthrite 事件，手牌里的这两张法术随之减费。
+
+scenario "召唤仆从在自己发动土之秘术时费用减一" {
+    seed 83001;
+    state {
+        player own {
+            pp 7/7;
+            field { amulet sigil = 90031210 { earthsigil 1; } }
+            hand {
+                spell payoff = 10731310;
+                follower eater = 10734110;
+            }
+        }
+    }
+    action { play eater; }
+    expect { legal; payoff.cost == 3; sigil.earthsigil == 0; own.crests count card 10734110 == 1; }
+}
+
+scenario "饕餮魔咒在自己发动土之秘术时费用减一" {
+    seed 83002;
+    state {
+        player own {
+            pp 7/7;
+            field { amulet sigil = 90031210 { earthsigil 1; } }
+            hand {
+                spell payoff = 10733310;
+                follower eater = 10734110;
+            }
+        }
+    }
+    action { play eater; }
+    expect { legal; payoff.cost == 3; }
+}
+
+scenario "没有发动土之秘术时召唤仆从维持原费用" {
+    seed 83003;
+    state {
+        player own {
+            pp 2/2;
+            hand {
+                spell payoff = 10731310;
+                follower racer = 10731120;
+            }
+        }
+    }
+    // 10731120 只是增加土之印，并没有支付土之秘术。
+    action { play racer; }
+    expect { legal; payoff.cost == 4; own.earthsigils == 1; }
+}
+
+scenario "召唤仆从打出时抽两张并增加土之印" {
+    seed 83004;
+    state {
+        player own {
+            pp 4/4;
+            field { amulet sigil = 90031210 { earthsigil 2; } }
+            hand { spell source = 10731310; }
+            deck top {
+                follower a = 10011110;
+                follower b = 10011120;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.hand count card 10011110 == 1;
+        own.hand count card 10011120 == 1;
+        sigil.earthsigil == 3;
+    }
+}
+
+scenario "饕餮魔咒打破敌方随从并增加两张土之印" {
+    seed 83005;
+    state {
+        player own {
+            pp 4/4;
+            field { amulet sigil = 90031210 { earthsigil 2; } }
+            hand { spell source = 10733310; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.zone == graveyard; sigil.earthsigil == 4; }
+}

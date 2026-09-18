@@ -6,7 +6,18 @@ card 10734120 {
     stats 4/8;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            damage oppo.field.followers 6;
+        }
+        lastwords {
+            earthrite 2 {
+                damage oppo.leader 3;
+            }
+        }
+        superevolve {
+            summon 1 card 10734120;
+        }
     }
 
     meta {

@@ -1,0 +1,239 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "巴别隆城第一次回合结束打击随机敌方随从" {
+    seed 82001;
+    state {
+        player own {
+            field { amulet source = 10703210; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { end_turn; }
+    expect { legal; victim.stats == 0/7; source.counter.step == 1; }
+}
+
+scenario "巴别隆城第二次回合结束改为回复主战者" {
+    seed 82002;
+    state {
+        player own {
+            leader 10/20;
+            // 计数器 step=1：下一次回合结束该发动第二个能力（回复主战者）。
+            field { amulet source = 10703210 { counter step 1; } }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { end_turn; }
+    expect { legal; own.leader.life == 12; victim.stats == 0/9; }
+}
+
+scenario "巴别隆城的启动舍弃手牌并推进吟唱" {
+    seed 82003;
+    state {
+        player own {
+            pp 1/1;
+            field { amulet source = 10703210; }
+            hand { follower fodder = 10001110; }
+        }
+    }
+    action { engage source; select fodder; }
+    expect { legal; own.graveyard count card 10001110 == 1; source.countdown == 2; }
+}
+
+scenario "特殊目标攻击随从时获得屏障并让对方无法攻击" {
+    seed 82004;
+    state {
+        player own {
+            field { follower source = 10704110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { attack source into victim; }
+    expect { legal; source has barrier; victim has cannot_attack; }
+}
+
+scenario "特殊目标的谢幕曲让对手获得纹章" {
+    seed 82005;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10704110; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.crests count card 10704110 == 1; }
+}
+
+scenario "曲行工兵在自己的随从超进化时费用变为一" {
+    seed 82006;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower ally = 10001110; }
+            hand { follower source = 10721110; }
+        }
+    }
+    action { superevolve ally; }
+    expect { legal; source.cost == 1; }
+}
+
+scenario "曲行工兵的入场曲打击选中的敌方随从" {
+    seed 82007;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10721110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 0/6; }
+}
+
+scenario "宽严的音帅召唤两个铁甲骑士并强化其他皇家随从" {
+    seed 82008;
+    state {
+        player own {
+            pp 7/7;
+            field { follower ally = 10722110; }
+            hand { follower source = 10724120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90021120 == 2;
+        source has ward;
+        // 10722110 是 2/1 的皇家随从：+1/+3 后变成 3/4 并获得守护。
+        ally.stats == 3/4;
+        ally has ward;
+    }
+}
+
+scenario "甜美存在用土之秘术选择打击模式" {
+    seed 82009;
+    state {
+        player own {
+            pp 5/5;
+            field { amulet sigil = 90031210 { earthsigil 1; } }
+            hand { follower source = 10733110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { play source; mode 1; }
+    expect { legal; victim.stats == 0/6; sigil.earthsigil == 0; }
+}
+
+scenario "甜美存在用土之秘术选择抽牌模式" {
+    seed 82010;
+    state {
+        player own {
+            pp 5/5;
+            field { amulet sigil = 90031210 { earthsigil 1; } }
+            hand { follower source = 10733110; }
+            deck top {
+                follower a = 10011110;
+                follower b = 10011120;
+            }
+        }
+    }
+    action { play source; mode 2; }
+    expect { legal; own.hand count card 10011110 == 1; own.hand count card 10011120 == 1; }
+}
+
+scenario "可爱杰作入场打击敌方全体六点" {
+    seed 82011;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10734120; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/12; } }
+        }
+    }
+    action { play source; }
+    expect { legal; source has ward; victim.stats == 0/6; }
+}
+
+scenario "可爱杰作超进化时召唤一个自己" {
+    seed 82012;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10734120; }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; own.field count card 10734120 == 2; }
+}
+
+scenario "傍死的安纳提玛按费用从牌组召唤两种梦魇随从" {
+    seed 82013;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10754110; }
+            deck top {
+                follower first = 10152120;
+                follower second = 10352120;
+                follower expensive = 10752110;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 10152120 == 1;
+        own.field count card 10352120 == 1;
+        own.field count card 10752110 == 0;
+        all own.field where card 10152120 have rush;
+        all own.field where card 10352120 have rush;
+    }
+}
+
+scenario "阳光耳饰入场把一张手牌放回牌组并抽一张" {
+    seed 82014;
+    state {
+        player own {
+            pp 1/1;
+            hand {
+                amulet source = 10761210;
+                follower fodder = 10001110;
+            }
+        }
+    }
+    action { play source; select fodder; }
+    // 牌组原本是空的：必须先放回牌组才可能再被抽回手牌。
+    expect { legal; own.deck count card 10001110 == 0; own.hand count card 10001110 == 1; }
+}
+
+scenario "阳光耳饰启动破坏自身并重复入场曲" {
+    seed 82015;
+    state {
+        player own {
+            pp 1/1;
+            field { amulet source = 10761210; }
+            hand { follower fodder = 10001110; }
+        }
+    }
+    action { engage source; select fodder; }
+    expect {
+        legal;
+        source.zone == graveyard;
+        own.hand count card 10001110 == 1;
+    }
+}

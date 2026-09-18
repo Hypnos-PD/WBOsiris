@@ -6,7 +6,11 @@ card 10731310 {
     trait anathema;
 
     effect {
-        unplayable;
+        when own earthrite while self in hand {
+            reduce cost self 1 minimum 0;
+        }
+        draw 2;
+        add 1 earthsigil;
     }
 
     meta {

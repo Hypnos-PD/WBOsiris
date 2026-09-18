@@ -6,7 +6,13 @@ card 10721110 {
     stats 2/2;
 
     effect {
-        unplayable;
+        when own follower super_evolved while self in hand {
+            set cost self 1;
+        }
+        fanfare {
+            choose target from oppo.field.followers;
+            damage target 3;
+        }
     }
 
     meta {

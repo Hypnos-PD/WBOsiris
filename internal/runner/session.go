@@ -551,6 +551,14 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 			paid = s.g.consumeFaith(self, e.Amount)
 		}
 		if paid {
+			if e.Resource == "earthsigil" {
+				// 「自己发动【土之秘术】时」：支付成功后派发事件，监听可能挂在手牌里的卡上。
+				event := ir.RuntimeEvent{Kind: "earthrite", Side: s.g.sideOf(self), Count: e.Amount}
+				if !s.g.emit(event) {
+					return nil
+				}
+				s.g.queueEventTriggers(event, nil, "")
+			}
 			s.pushFrame(execFrame{body: e.OnPaid, blockID: nestedBlockID(e.ID, "onPaid"), self: self, bindings: bindings})
 		}
 	case ir.DrawEffect:

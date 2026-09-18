@@ -6,7 +6,16 @@ card 10724120 {
     stats 5/7;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            summon 2 card 90021120;
+            buff own.field.followers other +1/+3 where class swordcraft;
+            add ward to own.field.followers other where class swordcraft;
+        }
+        superevolve {
+            choose target from oppo.field.followers;
+            destroy target;
+        }
     }
 
     meta {

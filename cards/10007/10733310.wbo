@@ -6,7 +6,12 @@ card 10733310 {
     trait anathema;
 
     effect {
-        unplayable;
+        when own earthrite while self in hand {
+            reduce cost self 1 minimum 0;
+        }
+        choose target from oppo.field.followers;
+        destroy target;
+        add 2 earthsigil;
     }
 
     meta {

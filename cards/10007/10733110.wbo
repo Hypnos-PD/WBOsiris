@@ -6,7 +6,31 @@ card 10733110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            earthrite 1 {
+                // 【模式】是入场曲的一部分：嵌在 fanfare 与 earthrite 里结算。
+                mode {
+                    option 1 {
+                        damage oppo.field.followers 3;
+                    }
+                    option 2 {
+                        draw 2;
+                    }
+                }
+            }
+        }
+        evolve {
+            earthrite 1 {
+                mode {
+                    option 1 {
+                        damage oppo.field.followers 3;
+                    }
+                    option 2 {
+                        draw 2;
+                    }
+                }
+            }
+        }
     }
 
     meta {

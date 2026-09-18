@@ -1390,6 +1390,18 @@ when own turn ends {
 对应"自己的亡者·随从进入战场时，若为自己的回合…"；`during own turn` 只在自己的回合触发，
 `during oppo turn` 只在对方回合触发。
 
+`when own earthrite [while self in hand] { … }` 在自己成功支付【土之秘术】的土之印时触发，
+用于"手牌中发动：自己发动【土之秘术】时，使本卡牌的费用-1"这类写法：
+
+```wbo
+when own earthrite while self in hand {
+    reduce cost self 1 minimum 0;
+}
+```
+
+事件在土之印实际扣除之后派发（层数不足、整块跳过时不触发），
+监听可以挂在手牌里的卡牌上；`oppo earthrite` 对应对手发动。
+
 抽牌事件写作 `when own card drawn [during own turn] { … }`，绑定名 `drawn` 指向被抽到的实例
 （可以当数值用，例如 `damage oppo.field.followers drawn.cost;`）。
 "抽到本卡牌时"写作 `when self drawn { set cost self 3 until turn ends; }`：

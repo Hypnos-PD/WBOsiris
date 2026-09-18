@@ -5,7 +5,28 @@ card 10703210 {
     cost 1;
 
     effect {
-        unplayable;
+        countdown 1;
+        // 「順に1つ」：用实例计数器记住下一次该发动第几个能力。
+        counter step 0;
+        when own turn ends {
+            if self.counter.step == 0 {
+                random victim from oppo.field.followers;
+                damage victim 2;
+            } else {
+                if self.counter.step == 1 {
+                    heal own.leader 2;
+                } else {
+                    damage oppo.leader 2;
+                    destroy self;
+                }
+            }
+            add 1 counter step;
+        }
+        engage 1 {
+            choose target from own.hand;
+            discard target;
+            raise countdown self 1;
+        }
     }
 
     meta {

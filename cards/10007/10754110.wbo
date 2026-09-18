@@ -7,7 +7,16 @@ card 10754110 {
     trait anathema;
 
     effect {
-        unplayable;
+        fanfare {
+            // 「梦魇·随从」是职业（本工程里写作 abysscraft），随机 2 种各 1 张。
+            summon random 2 from own.deck.followers where class abysscraft and cost <= 2 distinct names;
+        }
+        when own follower summoned other where class abysscraft {
+            add rush to summoned;
+        }
+        superevolve {
+            buff own.field.followers other +2/+2 where class abysscraft;
+        }
     }
 
     meta {

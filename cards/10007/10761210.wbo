@@ -6,7 +6,17 @@ card 10761210 {
     trait anathema;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from own.hand;
+            return target to deck;
+            draw 1;
+        }
+        engage 0 {
+            destroy self;
+            choose target from own.hand;
+            return target to deck;
+            draw 1;
+        }
     }
 
     meta {

@@ -942,6 +942,9 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 		m.Side, m.Event, m.SubjectType, m.SelfOnly = "own", "damaged", "follower", true
 	} else if t[2].Value == "turn" {
 		m.Event = map[string]string{"starts": "turn_started", "ends": "turn_ended"}[t[3].Value]
+	} else if t[2].Value == "earthrite" {
+		// "自己发动【土之秘术】时"：监听土之印支付成功的那一刻。
+		m.Event = "earthrite"
 	} else {
 		m.SubjectType = t[2].Value
 		if m.SubjectType == "card" {
