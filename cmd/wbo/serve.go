@@ -16,6 +16,7 @@ func runServe(args []string) int {
 	// 默认端口刻意避开 8080/8000/3000 这类常见值，免得和本地其它服务抢端口；
 	// 数字取自 WBO（W=23、B=2、O=15）。
 	listen := fs.String("listen", ":23215", "监听地址")
+	illustrations := fs.String("illustration-root", "", "主界面插图素材目录（默认自动找 ../WBArts/data；传空目录名 --illustration-root=none 可禁用）")
 	if fs.Parse(args) != nil {
 		return 2
 	}
@@ -24,7 +25,19 @@ func runServe(args []string) int {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
-	h, err := server.New(base, []string{filepath.Join(base, "cards"), filepath.Join(base, "tests")})
+	var newServer func(string, []string) (*server.Server, error)
+	if *illustrations == "none" {
+		newServer = func(root string, paths []string) (*server.Server, error) {
+			return server.NewWithIllustrations(root, paths, "")
+		}
+	} else if *illustrations != "" {
+		newServer = func(root string, paths []string) (*server.Server, error) {
+			return server.NewWithIllustrations(root, paths, *illustrations)
+		}
+	} else {
+		newServer = server.New
+	}
+	h, err := newServer(base, []string{filepath.Join(base, "cards"), filepath.Join(base, "tests")})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1

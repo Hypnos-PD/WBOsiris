@@ -35,13 +35,20 @@ go run ./cmd/wbo serve --source-root . --listen :23215
 相对路径、源文件与输出文件的 SHA-256，以及转换参数。前端通过生成的
 `src/generated/card-art.json` 查找图片；不依赖外部目录或运行时素材服务。
 
-大厅横幅是**主界面插图（home illustration）的合成**，与 WBArts 的 `/hi/` 页面同一套：
+大厅的**整页背景是主界面插图（home illustration）的合成**，与 WBArts 的 `/hi/` 页面同一套：
 背景贴图 + Spine 立绘（`idle` 待机、点击触发 `tap_01..04`），相机窗口与背景摆位由
 `src/HomeIllustration.tsx` 按 WBArts 的公式换算（`skeletonScale × prefabScale × 布局缩放`
 把 Unity 的 19.2×10.8 世界窗口映射到 spine 世界坐标，背景按 spine-player 默认 10%
-内边距填满相机）。素材在 `public/assets/home/`：`hi_1001.json`（从 WBArts 的
+内边距填满相机），并按窗口比例在 `aspectLayouts` 里挑最接近的一套。插图可以更换
+（大厅「更换主界面」）：`GET /api/illustrations` 列出内置那张与 WBArts 素材库里的全部插图，
+选择记在 `localStorage.wbo-illustration`。
+
+素材在 `public/assets/home/`：`hi_1001.json`（从 WBArts 的
 index + config 提炼的参数）、`hi_1001.skel`/`.atlas`/`.webp`（立绘，图集转 WebP 并改写过
-图集页名）与 `hi_1001-bg.webp`（背景，1600²）。
+图集页名）与 `hi_1001-bg.webp`（背景，1600²）——它是规则服务不可用时的兜底；
+正常运行时立绘与缩略图由服务端从 WBArts 数据目录直接提供。
+spine 运行时在加载阶段会把 logo 与转圈画进 canvas（不是 DOM），所以加载完成前
+`canvas` 保持 `visibility: hidden`，加载好再淡入，避免出现加载圈。
 
 界面风格（浅底、黑描边、硬阴影、荧光绿强调、深色侧边栏）也沿用 WBArts 的视觉规范，
 定义集中在 `src/theme.css`；牌桌仍是深色竞技场。Spine 运行时是

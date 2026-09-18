@@ -26,13 +26,13 @@ const toNum = (value: unknown, fallback: number) => {
   return Number.isFinite(n) ? n : fallback;
 };
 
-// 按容器宽高比挑一套布局，与 WBArts 的 getLayout 一致（16:9 优先）。
+// 按容器宽高比挑最接近的一套布局：游戏里 aspectLayouts 就是给不同屏幕比例用的
+// （4:3 / 16:9 / 21:10 / 21:9）。没有布局数据时退回 16:9 或第一套。
 export function layoutFor(config: HomeIllustration, aspect: number) {
   const layouts = config.aspectLayouts || {};
   const candidates = Object.entries(layouts);
-  if (layouts["16:9"]) return layouts["16:9"];
-  if (layouts["default"]) return layouts["default"];
-  let best = candidates[0]?.[1] || { x: 0, y: 0, scale_x: 1, scale_y: 1 };
+  let best = layouts["16:9"] || layouts["default"] || candidates[0]?.[1] || { x: 0, y: 0, scale_x: 1, scale_y: 1 };
+  if (candidates.length < 2) return best;
   let bestDelta = Infinity;
   for (const [key, value] of candidates) {
     const [w, h] = key.split(":").map(Number);
@@ -94,12 +94,27 @@ export function HomeIllustrationView({ config, className = "", ratio = 16 / 9, i
   const host = useRef<HTMLDivElement>(null);
   const player = useRef<SpinePlayerLike | null>(null);
   const [failed, setFailed] = useState(false);
+  // spine 运行时会先把"加载中"的 logo + 转圈画进 canvas，所以加载完成前不显示 canvas。
+  const [ready, setReady] = useState(false);
+  // 窗口尺寸变化时按新的宽高比重新取景（防抖后重建播放器）。
+  const [tick, setTick] = useState(0);
   const tapIndex = useRef(0);
+
+  useEffect(() => {
+    let timer: number | undefined;
+    const onResize = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => setTick((value) => value + 1), 400);
+    };
+    window.addEventListener("resize", onResize);
+    return () => { window.clearTimeout(timer); window.removeEventListener("resize", onResize); };
+  }, []);
 
   useEffect(() => {
     const element = host.current;
     if (!element) return;
     let disposed = false;
+    setReady(false);
     const runtime = (window as unknown as {
       spine?: { SpinePlayer?: new (host: HTMLElement, options: Record<string, unknown>) => SpinePlayerLike };
     }).spine;
@@ -121,12 +136,13 @@ export function HomeIllustrationView({ config, className = "", ratio = 16 / 9, i
         if (disposed) return;
         player.current = created;
         if (created.animationState?.data) created.animationState.data.defaultMix = config.defaultMix;
+        setReady(true);
       },
       error: () => { if (!disposed) setFailed(true); },
     });
     player.current = instance;
     return () => { disposed = true; player.current?.dispose?.(); player.current = null; };
-  }, [config, ratio]);
+  }, [config, ratio, tick]);
 
   const playTap = () => {
     if (!interactive) return;
@@ -143,7 +159,7 @@ export function HomeIllustrationView({ config, className = "", ratio = 16 / 9, i
   return (
     <div
       ref={host}
-      className={`home-illustration ${className}`.trim()}
+      className={`home-illustration ${ready ? "ready" : "loading"} ${className}`.trim()}
       onPointerDown={playTap}
       data-illustration={config.id}
       aria-label={`${config.name} 主界面插画`}

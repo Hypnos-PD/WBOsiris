@@ -26,3 +26,31 @@ export const encodeDeckCode = (cards: string[], format: string) =>
 
 /** 解析分享码或官方卡组链接。 */
 export const decodeDeckCode = (code: string) => postDeckCode({ code });
+
+/** 主界面插图（背景 + Spine 立绘）的清单。 */
+export type IllustrationEntry = {
+  id: string;
+  name: string;
+  type?: string;
+  source: "bundled" | "wbarts" | string;
+  skel?: string;
+  atlas?: string;
+  background?: string;
+  thumbnail?: string;
+  idleAnimation: string;
+  tapAnimations?: string[];
+  blendTimes?: number[];
+  defaultMix: number;
+  skeletonScale: number;
+  prefabScale: number;
+  aspectLayouts?: Record<string, { x?: number; y?: number; scale_x?: number; scale_y?: number }>;
+};
+
+export async function fetchIllustrations(): Promise<IllustrationEntry[]> {
+  const response = await fetch(`${API_BASE}/api/illustrations`, { cache: "no-store" });
+  if (!response.ok) throw new Error("无法读取主界面插图列表");
+  const payload = (await response.json()) as { items?: IllustrationEntry[] };
+  const items = (payload.items || []).filter((item) => item.skel && item.atlas && item.background);
+  // 内置的排在最前，其余按编号。
+  return items.sort((a, b) => (a.source === "bundled" ? -1 : b.source === "bundled" ? 1 : a.id.localeCompare(b.id)));
+}

@@ -95,6 +95,8 @@ ocgcore / 客户端 / WindBot 三分结构学的）。
 | `GET` | `/api/health` | 存活探测 |
 | `GET` | `/api/cards` | 卡表 + `practiceDeck` + `formats`（每张卡带 `formats` 与 `deckLegal`） |
 | `POST` | `/api/deckcode` | 卡组码：给 `{cards, format}` 编码，给 `{code}` 解码（官网 hash 规则） |
+| `GET` | `/api/illustrations` | 主界面插图清单（内置 + WBArts 素材库），含合成参数与素材 URL |
+| `GET` | `/illustration-assets/…` | 只读地取插图素材（skel/atlas/图集/背景/缩略图） |
 | `GET` | `/api/scenarios` | 规则测试场景（调试用） |
 | `POST` | `/api/matches` | 建房：`{deck?, format?, mode?, botDeck?, botPolicy?}` |
 | `GET` | `/api/matches` | 房间列表 `{id, waiting, started, spectatable, bot, turn}`，不含任何凭据 |

@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -21,6 +23,9 @@ type Server struct {
 	matchSetup  func() (uint64, string, error)
 	cards       *ir.CardPack
 	tests       *ir.TestPack
+	// illustrationRoot 指向 WBArts 的 data 目录；为空时只用内置主界面插图。
+	illustrationRoot string
+	illustrations    illustrationCache
 	sessions    map[string]*runner.Session
 	matches     map[string]*match
 	mu          sync.Mutex
@@ -116,6 +121,29 @@ type replayResponse struct {
 }
 
 func New(root string, paths []string) (*Server, error) {
+	return NewWithIllustrations(root, paths, defaultIllustrationRoot(root))
+}
+
+// defaultIllustrationRoot 找同级的 WBArts 数据目录（有 home_illust_index.json 才算）。
+func defaultIllustrationRoot(root string) string {
+	candidates := []string{
+		filepath.Join(root, "..", "WBArts", "data"),
+		filepath.Join(root, "..", "..", "WBArts", "data"),
+	}
+	for _, candidate := range candidates {
+		absolute, err := filepath.Abs(candidate)
+		if err != nil {
+			continue
+		}
+		if _, err := os.Stat(filepath.Join(absolute, "home_illust_index.json")); err == nil {
+			return absolute
+		}
+	}
+	return ""
+}
+
+// NewWithIllustrations 允许显式指定主界面插图的数据目录（传空字符串表示只用内置素材）。
+func NewWithIllustrations(root string, paths []string, illustrationRoot string) (*Server, error) {
 	loaded := project.LoadWithRoot(paths, true, root)
 	if loaded.HasErrors() {
 		return nil, fmt.Errorf("load simulator sources: %v", loaded.Diagnostics)
@@ -124,7 +152,10 @@ func New(root string, paths []string) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Server{cards: cards, tests: tests, sessions: map[string]*runner.Session{}, matches: map[string]*match{}}, nil
+	return &Server{
+		cards: cards, tests: tests, illustrationRoot: illustrationRoot,
+		sessions: map[string]*runner.Session{}, matches: map[string]*match{},
+	}, nil
 }
 
 func (s *Server) Handler() http.Handler {
@@ -132,6 +163,8 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("/api/health", s.health)
 	mux.HandleFunc("/api/cards", s.cardCatalog)
 	mux.HandleFunc("/api/deckcode", s.deckCodeHandler)
+	mux.HandleFunc("/api/illustrations", s.illustrationsHandler)
+	mux.HandleFunc("/illustration-assets/", s.illustrationAssetHandler)
 	mux.HandleFunc("/api/scenarios", s.scenarios)
 	mux.HandleFunc("/api/sessions", s.sessionsHandler)
 	mux.HandleFunc("/api/sessions/", s.sessionHandler)

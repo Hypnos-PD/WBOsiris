@@ -5,10 +5,10 @@ import {
   type DragEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { Bot, ChevronDown, ChevronUp, CircleHelp, Combine, DoorOpen, Eye, Film, History, Home, Layers, Menu, Play, Plus, Shield, Sparkles, Swords, X, Zap } from "lucide-react";
+import { Bot, ChevronDown, ChevronUp, CircleHelp, Combine, DoorOpen, Eye, Film, History, Home, Layers, Menu, Play, Plus, Shield, Sparkles, X, Zap } from "lucide-react";
 import { StatusEffects, type StatusEffect } from "./StatusEffects";
 import { DeckBuilder } from "./DeckBuilder";
-import { HomeIllustrationView, type HomeIllustration } from "./HomeIllustration";
+import { HomeIllustrationView } from "./HomeIllustration";
 import { cardArt, cardText, classNames, deckProblems, typeNames, type CatalogCard, type CatalogFormat } from "./decks";
 import { useDeckLibrary } from "./useDeckLibrary";
 import { CardArt } from "./CardArt";
@@ -22,7 +22,7 @@ import { CrestZone, crestName } from "./CrestZone";
 import { decodeRemote, MatchConnection, type ConnectionStatus } from "./matchConnection";
 import { matchKey, readMatchAuth, readSavedMatches, saveMatchAuth, type SavedMatch } from "./matchStorage";
 import { RoomInvitation } from "./RoomInvitation";
-import { API_BASE } from "./api";
+import { API_BASE, fetchIllustrations, type IllustrationEntry } from "./api";
 
 
 const validPages = new Set(["home", "battle", "decks", "replays", "rooms"]);
@@ -151,7 +151,9 @@ export function App() {
   const [catalog, setCatalog] = useState(fallbackCatalog);
   const [catalogCards, setCatalogCards] = useState<CatalogCard[]>([]);
   const [catalogFormats, setCatalogFormats] = useState<CatalogFormat[]>([]);
-  const [homeIllust, setHomeIllust] = useState<HomeIllustration | null>(null);
+  const [illustrations, setIllustrations] = useState<IllustrationEntry[]>([]);
+  const [illustrationId, setIllustrationId] = useState<string>(() => localStorage.getItem("wbo-illustration") || "hi_1001");
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [format, setFormat] = useState<string>(() => localStorage.getItem("wbo-format") || "rotation");
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [catalogError, setCatalogError] = useState("");
@@ -244,15 +246,31 @@ export function App() {
     return () => controller.abort();
   }, [catalogVersion]);
 
-  // 主界面插图参数（背景 + Spine 立绘的合成）随前端分发，加载失败就退回静态背景。
+  // 主界面插图列表（背景 + Spine 立绘）：规则服务会给内置的 hi_1001 与
+  // WBArts 数据目录里的全部插图。选中的那张作为整页背景，选择记在本地。
   useEffect(() => {
     let cancelled = false;
-    fetch("/assets/home/hi_1001.json", { cache: "force-cache" })
-      .then((response) => (response.ok ? response.json() : Promise.reject(new Error("no illustration"))))
-      .then((config: HomeIllustration) => { if (!cancelled) setHomeIllust(config); })
-      .catch(() => { if (!cancelled) setHomeIllust(null); });
+    fetchIllustrations()
+      .then((items) => { if (!cancelled && items.length) setIllustrations(items); })
+      .catch(async () => {
+        // 规则服务不可用时至少保住内置的那张，主界面仍然能显示。
+        try {
+          const response = await fetch("/assets/home/hi_1001.json", { cache: "force-cache" });
+          const fallback = (await response.json()) as IllustrationEntry;
+          if (!cancelled) setIllustrations([fallback]);
+        } catch { /* 连内置素材都读不到就退回静态背景 */ }
+      });
     return () => { cancelled = true; };
   }, []);
+
+  const illustration = illustrations.find((item) => item.id === illustrationId)
+    || illustrations.find((item) => item.source === "bundled")
+    || null;
+  const chooseIllustration = (id: string) => {
+    setIllustrationId(id);
+    try { localStorage.setItem("wbo-illustration", id); } catch { /* 隐私模式下不保存 */ }
+    setPickerOpen(false);
+  };
 
   const acceptMatch = (data: Remote, previousToken = "") => {
     const token = data.playerToken || previousToken;
@@ -702,14 +720,13 @@ export function App() {
 
   const workspacePage = activePage === "home" ? (
     <div className="lobby">
-      <section className="lobby-banner" aria-label="大厅横幅">
-        {homeIllust
-          ? <HomeIllustrationView config={homeIllust}/>
-          : <img className="home-illustration-fallback" src="/assets/home/hi_1001-bg.webp" alt=""/>}
-        <div className="lobby-banner-copy">
-          <em>SHADOWVERSE: WORLDS BEYOND</em>
-          <strong>WBO ARENA</strong>
-          <span>本地规则服务 + 官网同款卡组码。练习模式带 AI 陪练，房间用邀请码和朋友对战，录像可以逐帧复盘，卡组能按指定 / 无限制模式校验。</span>
+      <section className="lobby-hero">
+        <em>SHADOWVERSE: WORLDS BEYOND</em>
+        <strong>WBO ARENA</strong>
+        <span>本地规则服务 + 官网同款卡组码。练习模式带 AI 陪练，房间用邀请码和朋友对战，录像可以逐帧复盘，卡组能按指定 / 无限制模式校验。</span>
+        <div className="lobby-hero-actions">
+          <button className="btn dark" onClick={() => setPickerOpen(true)}><Sparkles size={16}/>更换主界面</button>
+          {illustration && <small>当前：{illustration.name}</small>}
         </div>
       </section>
       <div className="lobby-actions">
@@ -786,10 +803,28 @@ export function App() {
 
   // 非牌桌页面：走"左侧导航 + 内容区"的外壳，和牌桌完全分开渲染，
   // 不再把牌桌压在页面底下（这是之前 GUI 显得乱的主要原因）。
-  const pages = ([["home", Home, "大厅"], ["battle", Swords, "牌桌"], ["decks", Layers, "卡组"], ["replays", Film, "录像"], ["rooms", DoorOpen, "房间"]] as const);
+  const pages = ([["home", Home, "大厅"], ["decks", Layers, "卡组"], ["replays", Film, "录像"], ["rooms", DoorOpen, "房间"]] as const);
   if (activePage !== "battle") {
     return (
       <div className="app-shell">
+        <div className="page-backdrop" aria-hidden="true">
+          {illustration && illustration.skel && illustration.atlas && illustration.background
+            ? <HomeIllustrationView key={illustration.id} config={{
+                id: illustration.id,
+                name: illustration.name,
+                skeletonScale: illustration.skeletonScale,
+                prefabScale: illustration.prefabScale,
+                idleAnimation: illustration.idleAnimation,
+                tapAnimations: illustration.tapAnimations || [],
+                blendTimes: illustration.blendTimes || [],
+                defaultMix: illustration.defaultMix,
+                aspectLayouts: illustration.aspectLayouts || {},
+                skel: illustration.skel,
+                atlas: illustration.atlas,
+                background: illustration.background,
+              }}/>
+            : <img className="home-illustration-fallback" src="/assets/home/hi_1001-bg.webp" alt=""/>}
+        </div>
         <aside className="app-sidebar">
           <div className="app-brand"><strong>WBO ARENA</strong><span>影之诗：超凡世界 · 规则沙盒</span></div>
           <nav className="app-nav" aria-label="主导航">
@@ -809,6 +844,24 @@ export function App() {
           {requestError && <div className="network-notice" role="alert"><span>{requestError}</span><button aria-label="关闭提示" title="关闭" onClick={() => setRequestError("")}><X size={17}/></button></div>}
           {workspacePage}
         </main>
+        {illustration && <span className="illustration-credit">主界面 · {illustration.name}</span>}
+        {pickerOpen && (
+          <div className="illustration-picker" role="dialog" aria-label="选择主界面">
+            <div className="illustration-picker-panel panel">
+              <div className="panel-head"><h2>选择主界面</h2><button className="btn" onClick={() => setPickerOpen(false)}>关闭</button></div>
+              <small className="illustration-picker-note">{illustrations.length} 张可选 · 来自 {illustrations.some((item) => item.source === "wbarts") ? "WBArts 素材库" : "内置素材"} · 选择会记在本机</small>
+              <div className="illustration-grid">
+                {illustrations.map((item) => (
+                  <button key={item.id} className={`illustration-card ${item.id === illustration?.id ? "active" : ""}`} onClick={() => chooseIllustration(item.id)}>
+                    {item.thumbnail ? <img src={`${API_BASE}${item.thumbnail}`} alt="" loading="lazy"/> : <span className="illustration-thumb-fallback">{item.name.slice(0, 2)}</span>}
+                    <strong>{item.name}</strong>
+                    <small>{item.id}{item.source === "bundled" ? " · 内置" : ""}</small>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
