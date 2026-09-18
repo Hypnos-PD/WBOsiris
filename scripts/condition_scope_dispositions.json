@@ -12,6 +12,11 @@
       "verdict": "merged_by_english",
       "note": "官方英文 `restore 4 instead and give this follower Barrier` 把【屏障】并进『超进化后』条件；日/中/韩用句号切断。按英文实现，与 SWB-RL 断言一致。"
     },
+    "10154120": {
+      "classes": ["E"],
+      "verdict": "scope_confirmed",
+      "note": "『攻击随从时』的条件由 `attack` 块表达：攻击主战者时 `opponent` 为空，`destroy opponent` 不会执行。"
+    },
     "10262110": {
       "classes": ["A"],
       "verdict": "scope_confirmed",
@@ -141,6 +146,11 @@
       "classes": ["A", "B"],
       "verdict": "merged_by_english",
       "note": "日文与英文都把『将1张天书深渊加入手牌』放进『选到自己的护符』条件内，中/韩用句号切断；按日+英实现。SWB-RL 放在条件外，是已知分歧。"
+    },
+    "90074130": {
+      "classes": ["E"],
+      "verdict": "scope_confirmed",
+      "note": "同 10154120：『攻击随从时』由 `attack` 块表达，攻击主战者时 `opponent` 为空。"
     },
     "10372110": {
       "classes": ["B"],

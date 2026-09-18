@@ -7,6 +7,7 @@ import {test} from 'node:test';
 import {
   candidateClasses,
   scanRuleRequires,
+  screenDroppedCondition,
   screenEnglishSplit,
   screenSelectedCondition,
   screenSentenceSplit,
@@ -99,6 +100,62 @@ test('candidateClasses 汇总同一张卡在多个清单里的类别', () => {
   ];
   const classes = candidateClasses(cards);
   assert.deepEqual([...classes.get('90064320')].sort(), ['A', 'B']);
+});
+
+test('screenDroppedCondition 挑出日文有条件但规则里没有条件书写的卡', () => {
+  const dir = writeRules({
+    '10000004.wbo': `wbo 0.1.0;
+
+card 10000004 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        rush;
+        attack {
+            destroy opponent;
+        }
+    }
+}
+`,
+    '10000005.wbo': `wbo 0.1.0;
+
+card 10000005 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        fanfare {
+            if combo >= 3 {
+                draw 1;
+            }
+        }
+    }
+}
+`,
+  });
+  try {
+    const cards = [
+      card({
+        id: 10000004,
+        chs: '【攻击时】若攻击随从，则破坏交战对手。',
+        eng: 'Follower Strike: Destroy the opposing follower.',
+        jpn: '【攻撃時】フォロワーへの攻撃なら、交戦相手を破壊。',
+      }),
+      card({
+        id: 10000005,
+        chs: '【入场曲】若连击为3以上，则抽取1张卡牌。',
+        eng: 'Fanfare: If you have 3 cards in your hand, draw a card.',
+        jpn: '【ファンファーレ】連擊3なら、デッキから1枚を引く。',
+      }),
+    ];
+    const rows = screenDroppedCondition(cards, [path.join(dir, '10000004.wbo'), path.join(dir, '10000005.wbo')]);
+    assert.deepEqual(rows.map(row => row.id), ['10000004']);
+  } finally {
+    fs.rmSync(dir, {recursive: true, force: true});
+  }
 });
 
 test('verifyDispositions 报告未核对、类别不符、结论非法与过期条目', () => {

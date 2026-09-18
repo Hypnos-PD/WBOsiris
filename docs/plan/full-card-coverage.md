@@ -202,10 +202,10 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 
 ## 批次记录
 
-### 批次 102（条件范围同类问题复查：账本化 + D 类筛查）
+### 批次 102（条件范围同类问题复查：账本化 + D/E 类筛查）
 
 - **复查范围**：把 90064320 天书深渊那次条件范围错误当成一类问题，对全部 910 张卡重跑
-  `scripts/card_scope_screen.mjs` 并逐张核对 A/B/D 三类候选（33 张）。
+  `scripts/card_scope_screen.mjs` 并逐张核对 A/B/D/E 四类候选（35 张）。
   结论是没有新的范围错误；批次 73 之后新实现的 10704110、10754120、10763110、10753110、
   10823110、10833310、10863210、10943110、10972110、10554120 都符合各自文本口径。
   细节见[条件范围专项核查](#条件范围专项核查配合批次-67批次-73)。
@@ -213,12 +213,15 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   `classes`、`verdict`（`scope_confirmed`／`merged_by_english`／`unimplemented`）与 `note`。
   `node scripts/card_scope_screen.mjs --verify` 对"未核对"与"账本过期"退出 1，
   以后导入新卡包不会再静默漏检。
-- **新增 D 类筛查**：英文句子比中文/日文多且英文含条件词——方向与 A 类相反
-  （条件可能被英文拆开）。当前 7 张全是模式列表被英文切成多句的排版问题，已逐张记录。
+- **新增 D、E 两类筛查**：D 是"英文句子比中文/日文多且英文含条件词"（方向与 A 类相反，
+  条件可能被英文拆开），当前 7 张全是模式列表被英文切成多句的排版问题；
+  E 是"日文有条件词但规则里没有 `if`/`when`/`where`/`has`/`choose`/`require`"
+  （条件可能被整段吞掉），当前 2 张（10154120、90074130）的条件由 `attack` 块的
+  『交战对手』表达，攻击主战者时不执行。两类都逐张记录了结论。
 - **修正 C 类误报**：`engage` 启动能力的 `require` 按 S-80 属于合法用法，
   筛查工具不再把它算成候选。
 - 本次没有改卡牌规则；`check` 0 错 0 警；`test` 1339 全绿；`go test ./...` 全绿；
-  `node scripts/card_scope_screen.mjs --verify` 退出 0；`node --test scripts/` 51 项全绿。
+  `node scripts/card_scope_screen.mjs --verify` 退出 0；`node --test scripts/` 52 项全绿。
 
 ### 批次 101（S-72 返回张数 + 按返回张数抽牌）
 
@@ -758,8 +761,9 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 **批次 102 把这份核查补成"可执行的账本"**（起因：复查 90064320 时又问了"还有没有同类问题"）：
 对当前卡表重跑筛查、逐张复核，并把结论固化成文件，避免下次导入新卡包时漏检。
 
-- **覆盖面**：A（中文/日文句数多于英文）、B（「〜を選んだなら」）、D（英文句数多于中文/日文）
-  三类候选共 33 张，每张卡的结论与理由写进 `scripts/condition_scope_dispositions.json`。
+- **覆盖面**：A（中文/日文句数多于英文）、B（「〜を選んだなら」）、D（英文句数多于中文/日文）、
+  E（日文有条件词但规则里没有任何条件书写）四类候选共 35 张，
+  每张卡的结论与理由写进 `scripts/condition_scope_dispositions.json`。
   `node scripts/card_scope_screen.mjs --verify` 在出现"未核对候选"或"账本过期条目"时退出 1。
 - **修正工具**：C 类把 `engage` 启动能力的 `require` 从误报里去掉了——S-80 明确启动能力与
   法术同属"选不到目标就不能发动"，允许保留 `require`。现在 C 类输出 0。

@@ -15,6 +15,7 @@
 //   B 所选卡身份条件：日文出现「〜を選んだなら」，且条件之后还有别的句子。
 //   C 规则侧 require：WBO 的非法术卡里仍在用 require 的位置（应为 choose）。
 //   D 反向错位：英文句子比中文/日文多，且英文含条件词（条件可能被英文拆开）。
+//   E 条件被吞掉：日文含条件词，但规则里既没有 `if` 也没有 `when`/`where`/`has`/`choose`/`require`。
 //
 // A/B/D 的每一张卡都要在 scripts/condition_scope_dispositions.json 里留下核对结论；
 // `--verify` 会把"没核对"和"账本过期"当成错误，新卡包导入后不会静默漏检。
@@ -121,6 +122,29 @@ export function screenEnglishSplit(cards) {
   return rows;
 }
 
+// E 类：日文含条件词，但规则里找不到任何条件书写——条件可能被整段吞掉。
+const JPN_CONDITION_PATTERNS = [/なら/, /場合/];
+const RULE_GATE_PATTERN = /\b(if|when|where|has|choose|require)\b/;
+export function screenDroppedCondition(cards, ruleFiles) {
+  const sources = new Map();
+  for (const file of ruleFiles) {
+    const source = fs.readFileSync(file, 'utf8');
+    const id = (source.match(/^\s*card\s+(\d+)\s*\{/m) ?? [])[1];
+    if (id) sources.set(id, {source, file});
+  }
+  const rows = [];
+  for (const card of cards) {
+    const id = String(card.card_id);
+    const rule = sources.get(id);
+    if (!rule || /^\s*unplayable;/m.test(rule.source)) continue;
+    const texts = cardTextLangs(card);
+    if (!JPN_CONDITION_PATTERNS.some(pattern => pattern.test(texts.jpn))) continue;
+    if (RULE_GATE_PATTERN.test(rule.source)) continue;
+    rows.push({id, name: card.name_chs, file: rule.file, jpn: splitSentences(texts.jpn, 'jpn')});
+  }
+  return rows;
+}
+
 // C 类：WBO 规则里非法术卡仍在用 require 的位置。
 // 官方 QA：只有"打出时需要选卡牌"的法术才会因为选不到目标而不能打出；
 // 随从与护符没有可选对象时照样能打出、能力照常结算，因此应当写 choose。
@@ -175,7 +199,7 @@ export function collectRuleFiles(dir) {
 // 核对账本：A/B/D 候选的结论。新卡包带来新候选时 `--verify` 会报"未核对"。
 export const DISPOSITION_VERDICTS = ['scope_confirmed', 'merged_by_english', 'unimplemented'];
 
-export function candidateClasses(cards) {
+export function candidateClasses(cards, ruleFiles = []) {
   const map = new Map();
   const add = (id, kind) => {
     id = String(id);
@@ -185,6 +209,7 @@ export function candidateClasses(cards) {
   for (const row of screenSentenceSplit(cards)) add(row.id, 'A');
   for (const row of screenSelectedCondition(cards)) add(row.id, 'B');
   for (const row of screenEnglishSplit(cards)) add(row.id, 'D');
+  for (const row of screenDroppedCondition(cards, ruleFiles)) add(row.id, 'E');
   return map;
 }
 
@@ -215,7 +240,7 @@ export function readDispositions(file = 'scripts/condition_scope_dispositions.js
   return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
 
-export function formatReport({ sentenceSplit, selectedCondition, ruleRequires, englishSplit = [], dispositions = null }) {
+export function formatReport({ sentenceSplit, selectedCondition, ruleRequires, englishSplit = [], droppedCondition = [], dispositions = null }) {
   const lines = [];
   lines.push(`A 句数错位候选：${sentenceSplit.length}`);
   for (const row of sentenceSplit) {
@@ -245,6 +270,12 @@ export function formatReport({ sentenceSplit, selectedCondition, ruleRequires, e
     );
     lines.push(`     ENG: ${row.eng.join(' | ')}`);
   }
+  lines.push('');
+  lines.push(`E 条件可能被吞掉的卡：${droppedCondition.length}`);
+  for (const row of droppedCondition) {
+    lines.push(`  ${row.id} ${row.name}  ${row.file}`);
+    lines.push(`     JPN: ${row.jpn.join(' | ')}`);
+  }
   if (dispositions) {
     lines.push('');
     lines.push(
@@ -261,15 +292,19 @@ function main(argv) {
   const ledgerPath = valueAfter(argv, '--dispositions') ?? 'scripts/condition_scope_dispositions.json';
   const cards = JSON.parse(fs.readFileSync(cardsPath, 'utf8'));
   const verify = argv.includes('--verify');
+  const ruleFiles = collectRuleFiles(rulesDir);
   let dispositions = null;
   if (verify) {
-    dispositions = { problems: verifyDispositions(candidateClasses(cards), readDispositions(ledgerPath)) };
+    dispositions = {
+      problems: verifyDispositions(candidateClasses(cards, ruleFiles), readDispositions(ledgerPath)),
+    };
   }
   const report = formatReport({
     sentenceSplit: screenSentenceSplit(cards),
     selectedCondition: screenSelectedCondition(cards),
-    ruleRequires: scanRuleRequires(collectRuleFiles(rulesDir)),
+    ruleRequires: scanRuleRequires(ruleFiles),
     englishSplit: screenEnglishSplit(cards),
+    droppedCondition: screenDroppedCondition(cards, ruleFiles),
     dispositions,
   });
   console.log(report);
