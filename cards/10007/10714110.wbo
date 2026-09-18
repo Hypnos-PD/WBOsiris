@@ -7,7 +7,64 @@ card 10714110 {
     trait anathema;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from oppo.field.followers;
+            buff target -0/-self.attack;
+            add combo 1;
+        }
+        evolve {
+            gain own crest 10714110;
+        }
+    }
+
+    crest {
+        countdown 3;
+
+        when own turn ends {
+            if combo >= 3 {
+                buff own.deck.followers +1/+1;
+            }
+        }
+
+        locale chs {
+            name "纹章：操量的安纳提玛·达斯特迪兹";
+            text """
+【<color=Keyword>吟唱</color>_3】
+自己的回合结束时，【<color=Keyword>连击</color>_3】使自己的牌组中的所有随从+1/+1。
+""";
+        }
+
+        locale eng {
+            name "Crest: Dustdeiz, Anathema of Meting";
+            text """
+<b><color=Keyword>Countdown</color> (3)</b>
+At the end of your turn, if you have at least 3 cards in your combo, give all followers in your deck +1/+1.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"そうこう\">操嵩</rub>のアナテマ・ダストデイズ";
+            text """
+【<color=Keyword>カウントダウン</color>_3】
+自分のターン終了時、【<color=Keyword>コンボ</color>_3】自分のデッキのフォロワーすべては+1/+1する。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 조고의 아나테마 더스트데이즈";
+            text """
+[<color=Keyword>카운트다운</color> 3]
+내 턴 종료 시, [<color=Keyword>콤보</color> 3] 내 덱의 추종자 모두는 +1/+1.
+""";
+        }
+
+        locale cht {
+            name "紋章：操嵩的安納提瑪‧達斯特迪茲";
+            text """
+【<color=Keyword>倒數</color>_3】
+自己的回合結束時，【<color=Keyword>連擊</color>_3】使自己牌堆中的所有從者卡+1/+1。
+""";
+        }
     }
 
     meta {

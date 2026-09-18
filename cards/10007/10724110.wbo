@@ -7,7 +7,67 @@ card 10724110 {
     trait anathema;
 
     effect {
-        unplayable;
+        fanfare {
+            // 官方 FAQ：协作必须在打出本卡牌之前就达到 20，本次入场不计入。
+            if rally >= 20 {
+                gain own crest 10724110;
+                evolve self silent;
+            }
+        }
+        when own follower summoned other during own turn {
+            add rush to summoned;
+        }
+        when self evolved {
+            summon 2 card 90021120;
+        }
+    }
+
+    crest {
+        countdown 1;
+
+        when own follower summoned during own turn {
+            damage oppo.leader 1;
+        }
+
+        locale chs {
+            name "纹章：统音的安纳提玛·吉尔达利娅";
+            text """
+【<color=Keyword>吟唱</color>_1】
+自己的随从进入战场时，若为自己的回合，则对对手的主战者造成1点伤害。
+""";
+        }
+
+        locale eng {
+            name "Crest: Gilnelise, Anathema of Unity";
+            text """
+<b><color=Keyword>Countdown</color> (1)</b>
+During your turn, whenever an allied follower enters the field, deal 1 damage to the enemy leader.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"とうおん\">統音</rub>のアナテマ・ギルダリア";
+            text """
+【<color=Keyword>カウントダウン</color>_1】
+自分のフォロワーが場に出たとき、自分のターンなら、相手のリーダーに1ダメージ。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 통음의 아나테마 길다리아";
+            text """
+[<color=Keyword>카운트다운</color> 1]
+내 추종자가 전장에 나왔을 때, 내 턴이라면 상대방 리더에게 1 피해.
+""";
+        }
+
+        locale cht {
+            name "紋章：統音的安納提瑪‧吉爾達利亞";
+            text """
+【<color=Keyword>倒數</color>_1】
+自己的從者進入戰場時，若為自己的回合，則給予敵方的主戰者1點傷害。
+""";
+        }
     }
 
     meta {

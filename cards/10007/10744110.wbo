@@ -7,7 +7,62 @@ card 10744110 {
     trait anathema;
 
     effect {
-        unplayable;
+        fanfare {
+            damage oppo.field.followers 9;
+        }
+        superevolve {
+            gain oppo crest 10744110;
+        }
+    }
+
+    crest {
+        // 没有吟唱，永久保留。
+        when own turn starts {
+            damage own.leader 2;
+        }
+        when own leader healed once per own turn {
+            damage own.leader 1;
+        }
+
+        locale chs {
+            name "纹章：焦灰的安纳提玛·班德奈特";
+            text """
+自己的回合开始时，对自己的主战者造成2点伤害。
+自己的主战者回复时，自己的每回合中可触发1次，对自己的主战者造成1点伤害。
+""";
+        }
+
+        locale eng {
+            name "Crest: Burndown, Anathema of Ashen Ruin";
+            text """
+At the start of your turn, deal 2 damage to your leader.
+Once per your turn, whenever your leader is restored, deal 1 damage to your leader.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"しょうかい\">焦灰</rub>のアナテマ・バーンドナイト";
+            text """
+自分のターン開始時、自分のリーダーに2ダメージ。
+自分のリーダーが回復したとき、自分のターンごとに1回、自分のリーダーに1ダメージ。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 초회의 아나테마 번드나이트";
+            text """
+내 턴 시작 시, 내 리더에게 2 피해.
+내 리더가 회복했을 때, 내 턴마다 1번, 내 리더에게 1 피해.
+""";
+        }
+
+        locale cht {
+            name "紋章：焦灰的安納提瑪‧班德奈特";
+            text """
+自己的回合開始時，給予自己的主戰者2點傷害。
+自己的主戰者回復時，自己的每回合中可發動1次，給予自己的主戰者1點傷害。
+""";
+        }
     }
 
     meta {

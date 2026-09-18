@@ -6,7 +6,66 @@ card 10714120 {
     stats 5/5;
 
     effect {
-        unplayable;
+        fanfare {
+            add 2 card 90011310 to hand;
+        }
+        // X 为本随从的攻击力：分配 X 点伤害给对手战场上的所有随从。
+        when own turn ends {
+            damage oppo.field.followers self.attack distributed;
+        }
+        superevolve {
+            gain own crest 10714120;
+        }
+    }
+
+    crest {
+        countdown 3;
+
+        when own turn ends {
+            if combo >= 3 {
+                add 1 card 90011310 to hand;
+            }
+        }
+
+        locale chs {
+            name "纹章：冰界鹿王";
+            text """
+【<color=Keyword>吟唱</color>_3】
+自己的回合结束时，【<color:Keyword>连击</color>_3】将1张『<color=Keyword>森林的奥秘</color>』加入手牌。
+""";
+        }
+
+        locale eng {
+            name "Crest: Winterglade Stag King";
+            text """
+<b><color=Keyword>Countdown</color> (3)</b>
+At the end of your turn, if you have at least 3 cards in your combo, add a <b><i><color=Keyword>Deepwood Bounty</color></i></b> to your hand.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"ひょうかい\">氷界</rub>の<rub=\"しかおう\">鹿王</rub>";
+            text """
+【<color=Keyword>カウントダウン</color>_3】
+自分のターン終了時、【<color=Keyword>コンボ</color>_3】『<color=Keyword>森の神秘</color>』1枚を自分の手札に加える。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 빙계의 녹왕";
+            text """
+[<color=Keyword>카운트다운</color> 3]
+내 턴 종료 시, [<color=Keyword>콤보</color> 3] <color=Keyword>숲의 신비</color> 1장을 내 패에 넣는다.
+""";
+        }
+
+        locale cht {
+            name "紋章：冰界鹿王";
+            text """
+【<color=Keyword>倒數</color>_3】
+自己的回合結束時，【<color=Keyword>連擊</color>_3】增加1張『<color=Keyword>森林的奧祕</color>』到自己的手牌中。
+""";
+        }
     }
 
     meta {

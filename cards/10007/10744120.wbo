@@ -6,7 +6,62 @@ card 10744120 {
     stats 7/7;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            summon 1 card 90041120;
+            gain own crest 10744120;
+        }
+        superevolve {
+            raise countdown own.crests 2;
+        }
+    }
+
+    crest {
+        countdown 2;
+
+        when own turn ends {
+            summon 1 card 90041120;
+        }
+
+        locale chs {
+            name "纹章：龙峪的古龙";
+            text """
+【<color=Keyword>吟唱</color>_2】
+自己的回合结束时，召唤1个『<color=Keyword>巨翼飞龙</color>』。
+""";
+        }
+
+        locale eng {
+            name "Crest: Elderdragon of the Dragonvale";
+            text """
+<b><color=Keyword>Countdown</color> (2)</b>
+At the end of your turn, summon a <b><i><color=Keyword>Vastwing Dragon</color></i></b>.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"りゅうこく\">龍谷</rub>のエルダードラゴン";
+            text """
+【<color=Keyword>カウントダウン</color>_2】
+自分のターン終了時、『<color=Keyword>大翼のドラゴン</color>』1枚を自分の場に出す。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 용곡의 엘더 드래곤";
+            text """
+[<color=Keyword>카운트다운</color> 2]
+내 턴 종료 시, <color=Keyword>대익의 드래곤</color> 1장을 내 전장에 소환.
+""";
+        }
+
+        locale cht {
+            name "紋章：龍谷的古龍";
+            text """
+【<color=Keyword>倒數</color>_2】
+自己的回合結束時，召喚1張『<color=Keyword>巨翼飛龍</color>』。
+""";
+        }
     }
 
     meta {

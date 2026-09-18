@@ -1,0 +1,185 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "操量的安纳提玛在入场曲里削弱随从并增加连击" {
+    seed 81001;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10714110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 2/6; } }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.stats == 2/3; own.combo == 2; }
+}
+
+scenario "操量的安纳提玛的纹章在连击达标时强化牌组随从" {
+    seed 81002;
+    state {
+        player own {
+            combo 3;
+            field { follower source = 10714110; }
+            crests { crest emblem = 10714110; }
+            deck top { follower stored = 10001110; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; stored.stats == 3/3; }
+}
+
+scenario "冰界鹿王的入场曲加入两张森林的奥秘" {
+    seed 81003;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10714120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90011310 == 2; }
+}
+
+scenario "冰界鹿王在回合结束时按攻击力分配伤害" {
+    seed 81004;
+    state {
+        player own {
+            field { follower source = 10714120; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { end_turn; }
+    expect { legal; victim.stats == 0/4; }
+}
+
+scenario "统音的安纳提玛在协作二十时获得纹章并进化" {
+    seed 81005;
+    state {
+        player own {
+            pp 4/4;
+            rally 20;
+            hand { follower source = 10724110; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.crests count card 10724110 == 1;
+        own.field count card 90021120 == 2;
+    }
+}
+
+scenario "统音的安纳提玛让自己的其他随从获得突进" {
+    seed 81006;
+    state {
+        player own {
+            pp 3/3;
+            field { follower source = 10724110; }
+            hand { follower ally = 10001110; }
+        }
+    }
+    action { play ally; }
+    expect { legal; ally has rush; }
+}
+
+scenario "万食的安纳提玛用土之秘术获得纹章" {
+    seed 81007;
+    state {
+        player own {
+            pp 7/7;
+            field { amulet sigil = 90031210 { earthsigil 1; } }
+            hand { follower source = 10734110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.crests count card 10734110 == 1; sigil.earthsigil == 0; source has aura; }
+}
+
+scenario "万食的安纳提玛的纹章在对手回合结束时召唤自己并进化" {
+    seed 81008;
+    state {
+        player own {
+            crests { crest emblem = 10734110; }
+        }
+    }
+    action { advance turn_end oppo; }
+    expect { legal; own.field count card 10734110 == 1; }
+}
+
+scenario "焦灰的安纳提玛入场打击敌方全体九点" {
+    seed 81013;
+    state {
+        player own {
+            pp 9/9;
+            hand { follower source = 10744110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110;
+                follower second = 10001120 { stats 0/12; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; first.zone == graveyard; second.stats == 0/3; }
+}
+
+scenario "焦灰的安纳提玛超进化时把纹章交给对手" {
+    seed 81009;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10744110; }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; oppo.crests count card 10744110 == 1; }
+}
+
+scenario "焦灰的安纳提玛的纹章在对手回合开始时自伤两点" {
+    seed 81010;
+    state {
+        player own {
+            field { follower source = 10744110; }
+        }
+        player oppo {
+            crests { crest emblem = 10744110; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; oppo.leader.life == 18; }
+}
+
+scenario "龙峪的古龙入场召唤巨翼飞龙并获得纹章" {
+    seed 81011;
+    state {
+        player own {
+            pp 10/10;
+            hand { follower source = 10744120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90041120 == 1;
+        own.crests count card 10744120 == 1;
+        source has ward;
+    }
+}
+
+scenario "龙峪的古龙的纹章在回合结束时召唤巨翼飞龙" {
+    seed 81012;
+    state {
+        player own {
+            field { follower source = 10744120; }
+            crests { crest emblem = 10744120; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; own.field count card 90041120 == 1; }
+}
