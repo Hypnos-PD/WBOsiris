@@ -561,7 +561,7 @@ func strictInstances(s *syntax.Statement, a map[string]string, ds *[]syntax.Diag
 	}
 	for _, x := range s.Blocks()[0] {
 		t := x.Tokens()
-		if len(t) != 4 || !(cardTypes[t[0].Value] && s.Word(0) != "crests" || t[0].Value == "crest" && s.Word(0) == "crests") || t[1].Kind != syntax.Identifier || t[2].Value != "=" || !isCardID(t[3]) || !(x.Terminated && len(x.Blocks()) == 0 || !x.Terminated && len(x.Blocks()) == 1) {
+		if len(t) != 4 || !(cardTypes[t[0].Value] && s.Word(0) != "crests" || set("crest", "faith")[t[0].Value] && s.Word(0) == "crests") || t[1].Kind != syntax.Identifier || t[2].Value != "=" || !isCardID(t[3]) || !(x.Terminated && len(x.Blocks()) == 0 || !x.Terminated && len(x.Blocks()) == 1) {
 			shapeError(ds, x, "card_type alias = card_id [overrides]")
 			continue
 		}

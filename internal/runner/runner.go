@@ -239,17 +239,24 @@ func (g *game) loadState(s ir.State) error {
 				if c != nil && decl.DeclaredType == "crest" {
 					c = c.CrestCard()
 				}
+				if c != nil && decl.DeclaredType == "faith" {
+					c = c.FaithCard()
+				}
 				if c == nil {
 					return fmt.Errorf("unknown card %d", decl.CardID)
 				}
 				if c.CardType != decl.DeclaredType {
 					return fmt.Errorf("card type mismatch for %d", decl.CardID)
 				}
-				if (zone == "crests") != (c.CardType == "crest") {
+				if (zone == "crests") != (c.CardType == "crest" || c.CardType == "faith") {
 					return fmt.Errorf("invalid initial crest zone")
 				}
 				if zone == "crests" {
-					if !ir.ValidCrestOverrides(decl.Overrides, g.cards[decl.CardID].Crest.Countdown) {
+					countdown := 0
+					if base := g.cards[decl.CardID]; base != nil && base.Crest != nil {
+						countdown = base.Crest.Countdown
+					}
+					if !ir.ValidCrestOverrides(decl.Overrides, countdown) {
 						return fmt.Errorf("invalid initial crest overrides")
 					}
 					if len(p.crests) >= crestLimit {

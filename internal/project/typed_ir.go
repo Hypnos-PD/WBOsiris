@@ -185,6 +185,13 @@ func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error)
 			}
 		}
 	}
+	if c.Faith != nil {
+		faith, err := compileTypedCard(c.Faith, sid, ids)
+		if err != nil {
+			return ir.Card{}, err
+		}
+		m.Faith = &ir.CrestDefinition{Counters: faith.Counters, Abilities: faith.Abilities, Locales: faith.Locales, Origin: faith.Origin}
+	}
 	return m, nil
 }
 
@@ -328,10 +335,12 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 			opts = append(opts, ir.ModeOption{ID: intAt(o, 1), Body: body, Origin: originIR(o.Span, sid), Labels: labels})
 		}
 		return ir.ModeEffect{NodeBase: base, Kind: "mode", Count: count, Random: random, Options: opts}, nil
-	case "earthrite", "necromancy":
+	case "earthrite", "necromancy", "faith":
 		resource := "shadows"
 		if h == "earthrite" {
 			resource = "earthsigil"
+		} else if h == "faith" {
+			resource = "faith"
 		}
 		body, err := compileEffectBlock(s.Blocks()[0], sid, id, ids)
 		if err != nil {

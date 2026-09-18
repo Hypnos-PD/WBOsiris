@@ -7,7 +7,64 @@ card 10664120 {
     trait encroacher;
 
     effect {
-        unplayable;
+        ward;
+        fanfare {
+            require targets from field other count 3;
+            destroy targets;
+        }
+        when own turn ends {
+            faith 10 {
+                add 1 card 90064320 to hand;
+            }
+        }
+    }
+
+    faith {
+        counter value 0;
+
+        when own amulet destroyed {
+            add 1 counter value;
+        }
+
+        locale chs {
+            name "信仰：古旧天书·莲妥丝";
+            text """
+信仰值起始为0。
+<hr>自己的护符被破坏时，信仰值+1。
+""";
+        }
+
+        locale eng {
+            name "Faith: Ancient Tome, Lyntos";
+            text """
+This faith's value starts at 0.
+<hr>Whenever an allied amulet is destroyed, increase this faith's value by 1.
+""";
+        }
+
+        locale jpn {
+            name "信仰：<rub=\"こきゅうてんしょ\">古旧天書</rub>・レントス";
+            text """
+信仰値は0から始まる。
+<hr>自分のアミュレットが破壊されたとき、信仰値を+1する。
+""";
+        }
+
+        locale kor {
+            name "신앙: 고구천서 렌토스";
+            text """
+신앙 수치는 0부터 시작.
+<hr>내 마법진이 파괴되었을 때, 신앙 수치를 +1.
+""";
+        }
+
+        locale cht {
+            name "信仰：古舊天書‧蓮妥絲";
+            text """
+信仰值由0開始。
+<hr>當自己的護符卡被破壞時，使信仰值+1。
+""";
+        }
     }
 
     meta {

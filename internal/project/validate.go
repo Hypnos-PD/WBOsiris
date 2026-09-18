@@ -113,6 +113,12 @@ func validateCard(f *syntax.File, ds *[]syntax.Diagnostic) *Card {
 			} else {
 				c.Crest = validateCrest(c, s, ds)
 			}
+		case "faith":
+			if stage != 4 || c.Faith != nil || len(t) != 1 || len(s.Blocks()) != 1 || s.Terminated {
+				shapeError(ds, s, "faith { 计数器、能力与五种本地化 }")
+			} else {
+				c.Faith = validateFaith(c, s, ds)
+			}
 		case "meta":
 			if stage != 4 || len(t) != 1 || len(s.Blocks()) != 1 {
 				shapeError(ds, s, "meta { pack ...; class ...; rarity ...; }")
@@ -343,7 +349,7 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 				validateEffectBlock(b[0], ds, visible, "")
 			}
 			continue
-		case "engage", "enhance", "earthrite", "necromancy":
+		case "engage", "enhance", "earthrite", "necromancy", "faith":
 			// enhance 额外允许 `replaces`：支付该档时改为只执行这个块。
 			replaces := h == "enhance" && len(t) == 3 && t[2].Value == "replaces"
 			if !(len(t) == 2 || replaces) || len(b) != 1 {
@@ -1276,7 +1282,7 @@ func validateScenario(b []*syntax.Statement, ds *[]syntax.Diagnostic) {
 func scanAliases(body []*syntax.Statement, aliases map[string]bool, ds *[]syntax.Diagnostic) {
 	for _, s := range body {
 		t := s.Tokens()
-		if len(t) >= 4 && (cardTypes[t[0].Value] || t[0].Value == "crest") && t[2].Value == "=" {
+		if len(t) >= 4 && (cardTypes[t[0].Value] || set("crest", "faith")[t[0].Value]) && t[2].Value == "=" {
 			if aliases[t[1].Value] {
 				diag(ds, "WBT-E002-DUPLICATE-ALIAS", "错误", "实例别名重复: "+t[1].Value, t[1].Span)
 			}
@@ -1378,7 +1384,7 @@ func validateCollection(l *Loaded, strict bool) {
 
 func checkDeclaredTypes(s *syntax.Statement, ids map[string]*Card, ds *[]syntax.Diagnostic) {
 	t := s.Tokens()
-	if len(t) >= 4 && (cardTypes[t[0].Value] || t[0].Value == "crest") && t[2].Value == "=" {
+	if len(t) >= 4 && (cardTypes[t[0].Value] || set("crest", "faith")[t[0].Value]) && t[2].Value == "=" {
 		if c := ids[t[3].Value]; c != nil {
 			if t[0].Value == "crest" {
 				if c.Crest == nil {
@@ -1386,6 +1392,12 @@ func checkDeclaredTypes(s *syntax.Statement, ids map[string]*Card, ds *[]syntax.
 					return
 				}
 				c = c.Crest
+			} else if t[0].Value == "faith" {
+				if c.Faith == nil {
+					diag(ds, "WBT-E003-CARD-TYPE", "错误", "卡牌没有信仰定义", t[0].Span)
+					return
+				}
+				c = c.Faith
 			}
 			if c.Type != t[0].Value {
 				diag(ds, "WBT-E003-CARD-TYPE", "错误", "实例声明类型与卡牌定义不一致: "+t[1].Value, t[0].Span)

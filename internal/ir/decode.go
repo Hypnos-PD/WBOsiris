@@ -324,6 +324,7 @@ func decodeSources(items []json.RawMessage) ([]Source, error) {
 func decodeCard(data []byte, abilityIDs, nodeIDs map[string]bool) (Card, error) {
 	type rawCard struct {
 		Crest           json.RawMessage   `json:"crest"`
+		Faith           json.RawMessage   `json:"faith"`
 		Counters        map[string]int    `json:"counters,omitempty"`
 		ID              int               `json:"id"`
 		CardType        string            `json:"cardType"`
@@ -440,6 +441,15 @@ func decodeCard(data []byte, abilityIDs, nodeIDs map[string]bool) (Card, error) 
 			return Card{}, err
 		}
 		if err = validateCounterRefs(*c.CrestCard()); err != nil {
+			return Card{}, err
+		}
+	}
+	if len(raw.Faith) > 0 {
+		c.Faith, err = decodeCrest(raw.Faith, abilityIDs, nodeIDs)
+		if err != nil {
+			return Card{}, err
+		}
+		if err = validateCounterRefs(*c.FaithCard()); err != nil {
 			return Card{}, err
 		}
 	}
@@ -831,7 +841,7 @@ func decodeEffectShape(data []byte, nodeIDs map[string]bool) (Effect, error) {
 		if err := newNode(v.ID, nodeIDs, v.Origin); err != nil {
 			return nil, err
 		}
-		if !oneOf(v.Resource, "earthsigil", "shadows") || v.Amount < 0 {
+		if !oneOf(v.Resource, "earthsigil", "shadows", "faith") || v.Amount < 0 {
 			return nil, fmt.Errorf("invalid resource payment")
 		}
 		b, err := decodeEffects(v.OnPaid, nodeIDs)

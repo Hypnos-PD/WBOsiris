@@ -155,6 +155,15 @@ func newSessionWithPack(index map[int]*ir.Card, state ir.State, seed uint64, pac
 	if err := g.loadState(state); err != nil {
 		return nil, err
 	}
+	// 初始牌组里出现的「信仰」在开局时置入主战者区域（与纹章共用区域，最多五个）。
+	for _, side := range []string{"own", "oppo"} {
+		p := g.player(side)
+		for _, card := range append([]*instance(nil), p.deck...) {
+			if card.card != nil && card.card.Faith != nil {
+				g.placeFaith(p, side, card.card.ID)
+			}
+		}
+	}
 	blocks, err := indexBlocks(index)
 	if err != nil {
 		return nil, err
@@ -534,6 +543,9 @@ func (s *Session) execute(effect ir.Effect, self *instance, bindings frame) *pen
 			paid = true
 		} else if e.Resource == "earthsigil" {
 			paid = s.g.consumeEarthSigil(self, e.Amount)
+		} else if e.Resource == "faith" {
+			// 「信仰值-N，…」：信仰不存在或信仰值不足时整块跳过（官方 FAQ 口径同 SWB-RL 的第二意见实现）。
+			paid = s.g.consumeFaith(self, e.Amount)
 		}
 		if paid {
 			s.pushFrame(execFrame{body: e.OnPaid, blockID: nestedBlockID(e.ID, "onPaid"), self: self, bindings: bindings})

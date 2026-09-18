@@ -1,0 +1,88 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "古旧天晶召唤两个带疾驰的天晶魔手并增长信仰值" {
+    seed 69001;
+    state {
+        player own {
+            pp 10/10;
+            hand {
+                follower source = 10634120;
+                follower held = 10634120;
+            }
+            crests { faith crystals = 10634120 { counter value 0; } }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 10631110 == 2;
+        all own.field where card 10631110 have storm;
+        crystals.counter.value == 2;
+        // 手牌里的另一张因两次召唤而减费 2（10 → 8）。
+        held.cost == 8;
+    }
+}
+
+scenario "古旧天晶进化时把天晶深渊加入手牌" {
+    seed 69002;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            field { follower source = 10634120; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.hand count card 90034330 == 1; }
+}
+
+scenario "信仰值足够时古旧天书在回合结束把天书深渊加入手牌" {
+    seed 69003;
+    state {
+        player own {
+            crests { faith tome = 10664120 { counter value 10; } }
+            field { follower scholar = 10664120; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; own.hand count card 90064320 == 1; tome.counter.value == 0; }
+}
+
+scenario "信仰值不足时古旧天书不加入手牌也不扣信仰值" {
+    seed 69004;
+    state {
+        player own {
+            crests { faith tome = 10664120 { counter value 9; } }
+            field { follower scholar = 10664120; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; own.hand count card 90064320 == 0; tome.counter.value == 9; }
+}
+
+scenario "古旧天书的入场曲破坏三张卡牌并因护符被破坏增长信仰值" {
+    seed 69005;
+    state {
+        player own {
+            pp 9/9;
+            crests { faith tome = 10664120 { counter value 0; } }
+            field {
+                amulet first = 10001210;
+                amulet second = 10002210;
+            }
+            hand { follower source = 10664120; }
+        }
+        player oppo { field { follower enemy = 10001110; } }
+    }
+    action { play source; select first, second, enemy; }
+    expect {
+        legal;
+        first.zone == graveyard;
+        second.zone == graveyard;
+        enemy.zone == graveyard;
+        source has ward;
+        // 两个自己的护符被破坏 → 信仰值 +2。
+        tome.counter.value == 2;
+    }
+}

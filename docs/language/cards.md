@@ -17,6 +17,34 @@ effect {
 }
 ```
 
+「信仰」是卡片可以声明的永久实体（与纹章共用主战者区域，最多五个），
+开局时按初始牌组里出现的信仰定义自动放置，信仰值放在 `counter value` 里：
+
+```wbo
+card 10664120 {
+    effect {
+        when own turn ends {
+            faith 10 {            // 信仰值-10 后再执行；不足则整块跳过
+                add 1 card 90064320 to hand;
+            }
+        }
+    }
+
+    faith {
+        counter value 0;
+        when own amulet destroyed {
+            add 1 counter value;   // 信仰值 +1
+        }
+        locale chs { name "信仰：…"; text "…"; }
+        // eng/jpn/kor/cht 同样必须齐全
+    }
+}
+```
+
+`faith N { … }` 与 `earthrite`/`necromancy` 同属资源支付块：信仰不存在或信仰值不足时
+整块不执行（不会扣值，也不会产生块内效果）；信仰值由信仰自身的事件监听增长。
+测试里可以用 `crests { faith 别名 = 卡牌ID { counter value N; } }` 直接放置信仰。
+
 `damage_reduction N` 使该随从每次受到的伤害减少 `N`，实际伤害最低为零。
 在效果块中使用 `set_damage_reduction TARGET N` 可在结算时动态设置目标的固定减伤值；
 `N` 必须为非负整数，并从下一次伤害结算开始生效。

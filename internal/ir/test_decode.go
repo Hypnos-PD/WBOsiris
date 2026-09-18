@@ -122,7 +122,7 @@ func decodePlayer(data []byte, instances map[string]bool) (PlayerState, error) {
 			if err != nil {
 				return PlayerState{}, err
 			}
-			if (zone == "crests") != (i.DeclaredType == "crest") {
+			if (zone == "crests") != (i.DeclaredType == "crest" || i.DeclaredType == "faith") {
 				return PlayerState{}, fmt.Errorf("invalid crest zone")
 			}
 			if instances[i.InstanceID] {
@@ -159,7 +159,7 @@ func decodeInstance(data []byte) (TestInstance, error) {
 	if err := strict(data, &v); err != nil {
 		return TestInstance{}, fmt.Errorf("instance: %w", err)
 	}
-	if !nodeIDPattern.MatchString(v.InstanceID) || v.Alias == "" || !validCardID(v.CardID) || !oneOf(v.DeclaredType, "follower", "spell", "amulet", "crest") {
+	if !nodeIDPattern.MatchString(v.InstanceID) || v.Alias == "" || !validCardID(v.CardID) || !oneOf(v.DeclaredType, "follower", "spell", "amulet", "crest", "faith") {
 		return TestInstance{}, fmt.Errorf("malformed test instance")
 	}
 	if v.Overrides.Cost != nil && (*v.Overrides.Cost < 0 || *v.Overrides.Cost > 65535) {
@@ -825,7 +825,7 @@ func ValidateRuntimePacks(cards *CardPack, tests *TestPack) error {
 					if !ok {
 						return fmt.Errorf("scenario %q references unknown card %d", s.Name, i.CardID)
 					}
-					if c.CardType != i.DeclaredType && !(i.DeclaredType == "crest" && c.Crest != nil) {
+					if c.CardType != i.DeclaredType && !(i.DeclaredType == "crest" && c.Crest != nil) && !(i.DeclaredType == "faith" && c.Faith != nil) {
 						return fmt.Errorf("scenario %q card %d type mismatch", s.Name, i.CardID)
 					}
 					if damage := i.Overrides.DamageTaken; damage != nil {
@@ -839,6 +839,9 @@ func ValidateRuntimePacks(cards *CardPack, tests *TestPack) error {
 					}
 					if i.DeclaredType == "crest" && !ValidCrestOverrides(i.Overrides, c.Crest.Countdown) {
 						return fmt.Errorf("scenario %q invalid crest overrides", s.Name)
+					}
+					if i.DeclaredType == "faith" && !ValidCrestOverrides(i.Overrides, 0) {
+						return fmt.Errorf("scenario %q invalid faith overrides", s.Name)
 					}
 				}
 			}

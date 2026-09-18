@@ -7,7 +7,66 @@ card 10634120 {
     trait encroacher;
 
     effect {
-        unplayable;
+        when own follower summoned while self in hand where card 10631110 {
+            reduce cost self 1 minimum 0;
+        }
+        fanfare {
+            summon 1 card 10631110;
+            add storm to summoned;
+            summon 1 card 10631110;
+            add storm to summoned;
+        }
+        evolve {
+            add 1 card 90034330 to hand;
+        }
+    }
+
+    faith {
+        counter value 0;
+
+        when own follower summoned where card 10631110 {
+            add 1 counter value;
+        }
+
+        locale chs {
+            name "信仰：古旧天晶·卡卢基典瑟拉";
+            text """
+信仰值起始为0。
+<hr>自己的『<color=Keyword>天晶魔手</color>』进入战场时，信仰值+1。
+""";
+        }
+
+        locale eng {
+            name "Faith: Crystals of the Eld, Kalukidensera";
+            text """
+This faith's value starts at 0.
+<hr>Whenever an allied <b><i><color=Keyword>Crystalspawn</color></i></b> enters the field, increase this faith's value by 1.
+""";
+        }
+
+        locale jpn {
+            name "信仰：<rub=\"こきゅうてんしょう\">古旧天晶</rub>・カルキデンセラ";
+            text """
+信仰値は0から始まる。
+<hr>自分の『<color=Keyword>天晶の魔手</color>』が場に出たとき、信仰値を+1する。
+""";
+        }
+
+        locale kor {
+            name "신앙: 고구천정 칼키덴세라";
+            text """
+신앙 수치는 0부터 시작.
+<hr>내 <color=Keyword>천정의 마수</color>가 전장에 소환되었을 때, 신앙 수치를 +1.
+""";
+        }
+
+        locale cht {
+            name "信仰：古舊天晶‧卡盧基典瑟拉";
+            text """
+信仰值由0開始。
+<hr>當自己的『<color=Keyword>天晶的魔手</color>』進入戰場時，使信仰值+1。
+""";
+        }
     }
 
     meta {

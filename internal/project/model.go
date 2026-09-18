@@ -14,6 +14,7 @@ type Locale struct{ Name, Text string }
 
 type Card struct {
 	Crest                   *Card
+	Faith                   *Card
 	Path, Version, ID, Type string
 	Cost                    int
 	Stats                   *[2]int

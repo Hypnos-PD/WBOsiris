@@ -17,7 +17,7 @@ func (x *triggerIndex) add(i *instance) {
 	}
 	for ability := range i.triggeredAbilities() {
 		zone := "field"
-		if i.card.CardType == "crest" {
+		if i.card.CardType == "crest" || i.card.CardType == "faith" {
 			zone = "crests"
 		}
 		if event, ok := ability.Trigger.(ir.EventTrigger); ok && event.SourceZone != "" {

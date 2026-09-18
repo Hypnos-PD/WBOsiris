@@ -26,6 +26,15 @@ func (c Card) CrestCard() *Card {
 	return crest
 }
 
+// FaithCard 派生信仰实例使用的卡牌定义（关卡类型为 faith，与纹章共用能力与本地化结构）。
+func (c Card) FaithCard() *Card {
+	if c.Faith == nil {
+		return nil
+	}
+	d := c.Faith
+	return &Card{ID: c.ID, CardType: "faith", Counters: d.Counters, Abilities: d.Abilities, Locales: d.Locales, Meta: c.Meta, Origin: d.Origin}
+}
+
 func decodeCrest(data []byte, abilityIDs, nodeIDs map[string]bool) (*CrestDefinition, error) {
 	var raw struct {
 		Counters  map[string]int    `json:"counters"`

@@ -2,6 +2,54 @@ package project
 
 import "wbo/internal/syntax"
 
+// validateFaith 解析卡牌的 `faith { ... }` 块：与纹章同构，但不允许吟唱，
+// 并且必须声明 `counter value 0;` 作为信仰值。
+func validateFaith(parent *Card, decl *syntax.Statement, ds *[]syntax.Diagnostic) *Card {
+	c := &Card{ID: parent.ID, Type: "faith", Path: parent.Path, File: parent.File, Decl: decl, Locales: map[string]Locale{}}
+	localeIndex := 0
+	abilitySeen, valueSeen := false, false
+	for _, s := range decl.Blocks()[0] {
+		if s.Word(0) == "locale" {
+			t := s.Tokens()
+			if len(t) != 2 || len(s.Blocks()) != 1 || s.Terminated || localeIndex >= len(locales) || s.Word(1) != locales[localeIndex] {
+				shapeError(ds, s, "locale chs|eng|jpn|kor|cht { name ...; text ...; }")
+				continue
+			}
+			parseLocale(c, s.Word(1), s.Blocks()[0], ds)
+			localeIndex++
+			continue
+		}
+		if localeIndex > 0 || !set("counter", "when")[s.Word(0)] {
+			shapeError(ds, s, "信仰仅允许计数器与事件监听，之后声明本地化")
+			continue
+		}
+		if s.Word(0) == "when" && (s.Word(1) == "self" || filterContains(s.Tokens(), "while")) {
+			shapeError(ds, s, "信仰监听来源固定为主战者区域")
+		}
+		if s.Word(0) == "counter" {
+			if len(s.Tokens()) != 3 || s.Word(1) != "value" || intAt(s, 2) != 0 {
+				shapeError(ds, s, "信仰必须声明一次 counter value 0;")
+				continue
+			}
+			valueSeen = true
+		}
+		abilitySeen = abilitySeen || s.Word(0) == "when"
+		c.Effect = append(c.Effect, s)
+	}
+	if localeIndex != len(locales) {
+		shapeError(ds, decl, "信仰必须声明五种本地化")
+	}
+	if !valueSeen {
+		shapeError(ds, decl, "信仰必须声明 counter value 0;")
+	}
+	if !abilitySeen {
+		shapeError(ds, decl, "信仰必须声明至少一个能力")
+	}
+	validateEffectBlock(c.Effect, ds, map[string]bool{"self": true}, "")
+	strictValidateCard(c, ds)
+	return c
+}
+
 func validateCrest(parent *Card, decl *syntax.Statement, ds *[]syntax.Diagnostic) *Card {
 	c := &Card{ID: parent.ID, Type: "crest", Path: parent.Path, File: parent.File, Decl: decl, Locales: map[string]Locale{}}
 	localeIndex := 0
