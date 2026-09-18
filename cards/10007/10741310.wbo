@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10741310 {
+    type spell;
+    cost 4;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "百无聊赖的睥睨";
+        text """
+使自己的能量点最大值+1。使自己的手牌和自己的牌组中的所有『<color=Keyword>百无聊赖的睥睨</color>』变身为『<color=Keyword>焦龙的午睡</color>』。
+""";
+    }
+
+    locale eng {
+        name "Apathetic Gaze";
+        text """
+Gain 1 max play point. Transform all copies of <b><i><color=Keyword>Apathetic Gaze</color></i></b> in your hand and deck into copies of <b><i><color=Keyword>Lazing Flame</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"たいくつ\">退屈</rub>な<rub=\"へいげい\">睥睨</rub>";
+        text """
+自分のPP最大値を+1する。自分の手札と自分のデッキの『<color=Keyword>退屈な睥睨</color>』すべては『<color=Keyword>焦龍の午睡</color>』に変身する。
+""";
+    }
+
+    locale kor {
+        name "따분한 눈빛";
+        text """
+내 PP 최대치를 +1. 내 패와 내 덱의 <color=Keyword>따분한 눈빛</color> 모두는 <color=Keyword>초룡의 낮잠</color>으로 변신한다.
+""";
+    }
+
+    locale cht {
+        name "厭倦的睥睨";
+        text """
+使自己的PP最大值+1。使自己手牌中與自己牌堆中全部的『<color=Keyword>厭倦的睥睨</color>』變身為『<color=Keyword>焦龍的午睡</color>』。
+""";
+    }
+
+}

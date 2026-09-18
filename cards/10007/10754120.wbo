@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10754120 {
+    type follower;
+    cost 9;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class abysscraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "死亡主持人·马克米朗";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>唤灵</color>_10】召唤3个『<color=Keyword>腐臭的僵尸</color>』。
+<hr>自己的亡者·随从进入战场时，若为自己的回合，则使其+1/+0且获得【<color=Keyword>突进</color>】和【<color=Keyword>守护</color>】。对对手的主战者造成1点伤害。
+""";
+    }
+
+    locale eng {
+        name "Macmillan, Reaper of Ceremonies";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Necromancy</color> (10)</b> - Summon 3 copies of <b><i><color=Keyword>Rotting Zombie</color></i></b>.
+<hr>During your turn, whenever an allied Departed follower enters the field, give it +1/+0, <b><color=Keyword>Rush</color></b>, and <b><color=Keyword>Ward</color></b> and deal 1 damage to the enemy leader.
+""";
+    }
+
+    locale jpn {
+        name "デッドプレゼンター・マクミラン";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>ネクロマンス</color>_10】『<color=Keyword>腐臭のゾンビ</color>』3枚を自分の場に出す。
+<hr>自分の死者・フォロワーが場に出たとき、自分のターンなら、それは+1/+0して【<color=Keyword>突進</color>】と【<color=Keyword>守護</color>】を持つ。相手のリーダーに1ダメージ。
+""";
+    }
+
+    locale kor {
+        name "데드 프리젠터 맥밀란";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>사령술</color> 10] <color=Keyword>부취 좀비</color> 3장을 내 전장에 소환.
+<hr>내 망자 추종자가 전장에 소환되었을 때 내 턴이라면, 그 추종자는 +1/+0 및 [<color=Keyword>돌진</color>], [<color=Keyword>수호</color>]를 갖는다. 상대방 리더에게 1 피해.
+""";
+    }
+
+    locale cht {
+        name "死亡統籌人‧馬可米蘭";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>死靈術</color>_10】召喚3張『<color=Keyword>腐臭的殭屍</color>』到自己的戰場上。
+<hr>當自己的死者‧從者卡進入戰場時，如果是自己的回合，則會使其+1/+0並獲得【<color=Keyword>突進</color>】與【<color=Keyword>守護</color>】。給予敵方的主戰者1點傷害。
+""";
+    }
+
+}

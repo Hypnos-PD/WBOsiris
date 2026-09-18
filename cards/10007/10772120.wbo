@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10772120 {
+    type follower;
+    cost 6;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "大胆的涂鸦师";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的1个随从，破坏该随从。若本次对战中进入战场的自己的创造物·随从的种类为3种或以上，则召唤1个『<color=Keyword>古老的创造物</color>』和1个『<color=Keyword>神秘的创造物</color>』。
+""";
+    }
+
+    locale eng {
+        name "Audacious Artist";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select an enemy follower on the field and destroy it. If at least 3 differently named allied Artifact followers have entered the field this match, summon an <b><i><color=Keyword>Ancient Artifact</color></i></b> and <b><i><color=Keyword>Mystic Artifact</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "ボールドペインター";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー1枚を選ぶ。それを破壊。このバトル中に場に出た自分のアーティファクト・フォロワーの種類が3以上なら、『<color=Keyword>エンシェントアーティファクト</color>』1枚と『<color=Keyword>ミスティックアーティファクト</color>』1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "대담한 그래피터";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴. 이번 대전에서 전장에 소환된 내 아티팩트 추종자의 종류 수가 3 이상이라면, <color=Keyword>고대의 아티팩트</color> 1장, <color=Keyword>신비의 아티팩트</color> 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "大膽的噴漆繪手";
+        text """
+【<color=Keyword>入場曲</color>】指定1張敵方戰場上的從者卡。將其破壞。如果本次對戰中自己已進入戰場的創造物‧從者卡種類為3以上，則會召喚1張『<color=Keyword>古老的創造物</color>』與1張『<color=Keyword>神祕的創造物</color>』到自己的戰場上。
+""";
+    }
+
+}

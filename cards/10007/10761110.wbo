@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10761110 {
+    type follower;
+    cost 4;
+    stats 3/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "营利支援者";
+        text """
+【<color=Keyword>入场曲</color>】若自己的战场上的护符的张数为3张或以上，则召唤1个『<color=Keyword>营利支援者</color>』。
+<hr>【<color=Keyword>突进</color>】
+【<color=Keyword>谢幕曲</color>】抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Reverend of Finance";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If there are at least 3 allied amulets on the field, summon a <b><i><color=Keyword>Reverend of Finance</color></i></b>.
+<hr><b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Last Words</color></b>: Draw a card.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"えいり\">営利</rub>の<rub=\"しえんしゃ\">支援者</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の場のアミュレットの枚数が3以上なら、『<color=Keyword>営利の支援者</color>』1枚を自分の場に出す。
+<hr>【<color=Keyword>突進</color>】
+【<color=Keyword>ラストワード</color>】自分のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "재무의 지원자";
+        text """
+[<color=Keyword>출격</color>] 내 전장의 마법진 수가 3 이상이라면, <color=Keyword>재무의 지원자</color> 1장을 내 전장에 소환.
+<hr>[<color=Keyword>돌진</color>]
+[<color=Keyword>유언</color>] 내 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "營利的支援者";
+        text """
+【<color=Keyword>入場曲</color>】如果自己戰場上的護符卡張數為3以上，則會召喚1張『<color=Keyword>營利的支援者</color>』到自己的戰場上。
+<hr>【<color=Keyword>突進</color>】
+【<color=Keyword>謝幕曲</color>】由自己的牌堆中抽取1張卡片。
+""";
+    }
+
+}

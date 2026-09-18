@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10703110 {
+    type follower;
+    cost 3;
+    stats 1/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class neutral;
+        rarity gold;
+    }
+
+    locale chs {
+        name "享乐的上级市民";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的1张手牌，舍弃该手牌。对对手的战场上的所有随从造成2点伤害。
+""";
+    }
+
+    locale eng {
+        name "Hedonistic Socialite";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a card in your hand and discard it. Deal 2 damage to all enemy followers.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きょうらく\">享楽</rub>の<rub=\"じょういしみん\">上位市民</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札1枚を選ぶ。それを捨てる。相手の場のフォロワーすべてに2ダメージ。
+""";
+    }
+
+    locale kor {
+        name "향락의 상류시민";
+        text """
+[<color=Keyword>출격</color>] 내 패에서 1장을 선택한다. 그 카드를 버린다. 상대방 전장의 추종자 모두에게 2 피해.
+""";
+    }
+
+    locale cht {
+        name "享樂的上流市民";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己手牌中的卡片。將其捨棄。給予敵方戰場上全部的從者卡2點傷害。
+""";
+    }
+
+}

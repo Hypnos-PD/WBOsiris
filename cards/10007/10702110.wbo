@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10702110 {
+    type follower;
+    cost 3;
+    stats 3/2;
+
+    effect {
+        lastwords {
+            draw 1;
+        }
+        superevolve {
+            summon 2 card 10702110;
+        }
+    }
+
+    meta {
+        pack 10007;
+        class neutral;
+        rarity silver;
+    }
+
+    locale chs {
+        name "神话记者";
+        text """
+【<color=Keyword>谢幕曲</color>】抽取1张卡牌。
+<hr><sev>【<color=Keyword>超进化时</color>】召唤2个『<color=Keyword>神话记者</color>』。</sev>
+""";
+    }
+
+    locale eng {
+        name "Intrepid Newshound";
+        text """
+<b><color=Keyword>Last Words</color></b>: Draw a card.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Summon 2 copies of <b><i><color=Keyword>Intrepid Newshound</color></i></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "ゴッズレポーター";
+        text """
+【<color=Keyword>ラストワード</color>】自分のデッキから1枚を引く。
+<hr><sev>【<color=Keyword>超進化時</color>】『<color=Keyword>ゴッズレポーター</color>』2枚を自分の場に出す。</sev>
+""";
+    }
+
+    locale kor {
+        name "신을 취재하는 기자";
+        text """
+[<color=Keyword>유언</color>] 내 덱에서 1장을 뽑는다.
+<hr><sev>[<color=Keyword>초진화시</color>] <color=Keyword>신을 취재하는 기자</color> 2장을 내 전장에 소환.</sev>
+""";
+    }
+
+    locale cht {
+        name "神事記者";
+        text """
+【<color=Keyword>謝幕曲</color>】由自己的牌堆中抽取1張卡片。
+<hr><sev>【<color=Keyword>超進化時</color>】召喚2張『<color=Keyword>神事記者</color>』到自己的戰場上。</sev>
+""";
+    }
+
+}

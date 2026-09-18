@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10753110 {
+    type follower;
+    cost 7;
+    stats 3/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class abysscraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "骸骨驯兽师";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>腐臭的僵尸</color>』和1个『<color=Keyword>骸骨士兵</color>』。
+<hr>自己的亡者·随从进入战场时，使其获得【<color=Keyword>疾驰</color>】。
+<hr><sev>【<color=Keyword>超进化时</color>】选择自己的战场上的1个其他随从，若成功选择，则破坏该随从。破坏对手的战场上的随机1个随从。</sev>
+""";
+    }
+
+    locale eng {
+        name "Beastmaster Bones";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Rotting Zombie</color></i></b> and <b><i><color=Keyword>Skeleton</color></i></b>.
+<hr>Whenever an allied Departed follower enters the field, give it <b><color=Keyword>Storm</color></b>.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Select another allied follower on the field. If you selected one, destroy it and a random enemy follower.</sev>
+""";
+    }
+
+    locale jpn {
+        name "テイマースケルトン";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>腐臭のゾンビ</color>』1枚と『<color=Keyword>スケルトン</color>』1枚を自分の場に出す。
+<hr>自分の死者・フォロワーが場に出たとき、それは【<color=Keyword>疾走</color>】を持つ。
+<hr><sev>【<color=Keyword>超進化時</color>】自分の場の他のフォロワー1枚を選ぶ。選んだなら、それを破壊。相手の場のフォロワーからランダム1枚を破壊。</sev>
+""";
+    }
+
+    locale kor {
+        name "조련사 스켈레톤";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>부취 좀비</color> 1장, <color=Keyword>스켈레톤</color> 1장을 내 전장에 소환.
+<hr>내 망자 추종자가 전장에 소환되었을 때, 그 추종자는 [<color=Keyword>질주</color>]를 갖는다.
+<hr><sev>[<color=Keyword>초진화시</color>] 내 전장에서 다른 추종자 1장을 선택한다. 선택했다면, 그 추종자를 파괴. 상대방 전장의 추종자 중 무작위로 1장을 파괴.</sev>
+""";
+    }
+
+    locale cht {
+        name "骸骨馴服師";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>腐臭的殭屍</color>』與1張『<color=Keyword>骷髏士兵</color>』到自己的戰場上。
+<hr>當自己的死者‧從者卡進入戰場時，使其獲得【<color=Keyword>疾馳</color>】。
+<hr><sev>【<color=Keyword>超進化時</color>】指定1張自己戰場上的其他從者卡。如果完成指定，則會將其破壞。隨機破壞1張敵方戰場上的從者卡。</sev>
+""";
+    }
+
+}

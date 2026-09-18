@@ -1,0 +1,56 @@
+wbo 0.1.0;
+
+card 10721120 {
+    type follower;
+    cost 3;
+    stats 2/3;
+
+    effect {
+        fanfare {
+            summon 1 card 90021110;
+            add 1 card 90021120 to hand;
+        }
+    }
+
+    meta {
+        pack 10007;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "传调联络兵";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>骑士</color>』。将1张『<color=Keyword>铁甲骑士</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "High-Strung Liaison";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Knight</color></i></b>. Add a <b><i><color=Keyword>Steelclad Knight</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ちょうでん\">調伝</rub>の<rub=\"れんらくへい\">連絡兵</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>ナイト</color>』1枚を自分の場に出す。『<color=Keyword>スティールナイト</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "조전의 통신병";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>기사</color> 1장을 내 전장에 소환. <color=Keyword>철갑 기사</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "傳調聯絡兵";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>騎士</color>』到自己的戰場上。增加1張『<color=Keyword>鐵甲騎士</color>』到自己的手牌中。
+""";
+    }
+
+}

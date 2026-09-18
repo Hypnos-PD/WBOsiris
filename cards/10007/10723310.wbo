@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10723310 {
+    type spell;
+    cost 3;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class swordcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "带来静寂的拔刀";
+        text """
+选择对手的战场上的1个随从，对其造成6点伤害。【<color=Keyword>协作</color>_10】对对手的战场上的所有随从造成X点伤害。X为自己的战场上的随从的张数。
+""";
+    }
+
+    locale eng {
+        name "Caesura al Fine";
+        text """
+Select an enemy follower on the field and deal it 6 damage. <b><color=Keyword>Rally</color> (10)</b> - Deal X damage to all enemy followers. X is the number of allied followers on the field.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"せいしゅくもたら\">静粛齎</rub>す<rub=\"ばっとう\">抜刀</rub>";
+        text """
+相手の場のフォロワー1枚を選ぶ。それに6ダメージ。【<color=Keyword>連携</color>_10】相手の場のフォロワーすべてにXダメージ。Xは自分の場のフォロワーの枚数である。
+""";
+    }
+
+    locale kor {
+        name "정적을 부르는 발도";
+        text """
+상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 6 피해. [<color=Keyword>연계</color> 10] 상대방 전장의 추종자 모두에게 X 피해. X는 내 전장의 추종자 수.
+""";
+    }
+
+    locale cht {
+        name "歸於肅靜的拔刀";
+        text """
+指定1張敵方戰場上的從者卡。給予其6點傷害。【<color=Keyword>協作</color>_<nobr>10</nobr>】給予敵方戰場上全部的從者卡X點傷害。X為「自己戰場上的從者卡張數」。
+""";
+    }
+
+}

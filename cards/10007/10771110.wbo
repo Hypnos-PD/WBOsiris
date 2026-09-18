@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10771110 {
+    type follower;
+    cost 4;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "个性店主";
+        text """
+自己的创造物·随从进入战场时，回复自己的主战者1点生命值。
+<hr><ev>【<color=Keyword>进化时</color>】召唤1个『<color=Keyword>神秘的创造物</color>』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Brusque Barkeep";
+        text """
+Whenever an allied Artifact follower enters the field, restore 1 defense to your leader.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Summon a <b><i><color=Keyword>Mystic Artifact</color></i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "エッジーマスター";
+        text """
+自分のアーティファクト・フォロワーが場に出たとき、自分のリーダーを1回復。
+<hr><ev>【<color=Keyword>進化時</color>】『<color=Keyword>ミスティックアーティファクト</color>』1枚を自分の場に出す。</ev>
+""";
+    }
+
+    locale kor {
+        name "무뚝뚝한 마스터";
+        text """
+내 아티팩트 추종자가 전장에 소환되었을 때, 내 리더를 1 회복.
+<hr><ev>[<color=Keyword>진화시</color>] <color=Keyword>신비의 아티팩트</color> 1장을 내 전장에 소환.</ev>
+""";
+    }
+
+    locale cht {
+        name "刻薄的酒吧老闆";
+        text """
+當自己的創造物‧從者卡進入戰場時，回復自己的主戰者1點生命值。
+<hr><ev>【<color=Keyword>進化時</color>】召喚1張『<color=Keyword>神祕的創造物</color>』到自己的戰場上。</ev>
+""";
+    }
+
+}

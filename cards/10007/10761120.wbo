@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10761120 {
+    type follower;
+    cost 6;
+    stats 5/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "广域传教士";
+        text """
+【<color=Keyword>入场曲</color>】抽取2张护符。
+<hr><ev>【<color=Keyword>进化时</color>】对对手的战场上的所有随从造成X点伤害。X为自己的手牌中的护符的张数。</ev>
+""";
+    }
+
+    locale eng {
+        name "Missionary of Recruitment";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Draw 2 amulets.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Deal X damage to all enemy followers. X is the number of amulets in your hand.</ev>
+""";
+    }
+
+    locale jpn {
+        name "ブロードミッショナリー";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキからアミュレット2枚を引く。
+<hr><ev>【<color=Keyword>進化時</color>】相手の場のフォロワーすべてにXダメージ。Xは自分の手札のアミュレットの枚数である。</ev>
+""";
+    }
+
+    locale kor {
+        name "전파하는 선교사";
+        text """
+[<color=Keyword>출격</color>] 내 덱에서 마법진 2장을 뽑는다.
+<hr><ev>[<color=Keyword>진화시</color>] 상대방 전장의 추종자 모두에게 X 피해. X는 내 패의 마법진 수.</ev>
+""";
+    }
+
+    locale cht {
+        name "廣域的傳教士";
+        text """
+【<color=Keyword>入場曲</color>】由自己的牌堆中抽取2張護符卡。
+<hr><ev>【<color=Keyword>進化時</color>】給予敵方戰場上全部的從者卡X點傷害。X為「自己手牌中的護符卡張數」。</ev>
+""";
+    }
+
+}

@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10723110 {
+    type follower;
+    cost 5;
+    stats 3/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class swordcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "响爪分队长";
+        text """
+【<color=Keyword>入场曲</color>】召唤3个『<color=Keyword>骑士</color>』。【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）使自己的战场上的其他所有随从+1/+0且获得【<color=Keyword>突进</color>】。</ridx>
+<ridx=1>（2）使自己的战场上的其他所有随从+0/+1且获得【<color=Keyword>守护</color>】。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Knellclaw Lieutenant";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon 3 copies of <b><i><color=Keyword>Knight</color></i></b>. Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Give all other allied followers on the field +1/+0 and <b><color=Keyword>Rush</color></b>.</ridx>
+<ridx=1>2. Give all other allied followers on the field +0/+1 and <b><color=Keyword>Ward</color></b>.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きょうそう\">響爪</rub>の<rub=\"ぶんぱんちょう\">分班長</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>ナイト</color>』3枚を自分の場に出す。【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）自分の場の他のフォロワーすべては+1/+0して【<color=Keyword>突進</color>】を持つ。</ridx>
+<ridx=1>（2）自分の場の他のフォロワーすべては+0/+1して【<color=Keyword>守護</color>】を持つ。</ridx>
+""";
+    }
+
+    locale kor {
+        name "향조의 분대장";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>기사</color> 3장을 내 전장에 소환. [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 내 전장의 다른 추종자 모두는 +1/+0 및 [<color=Keyword>돌진</color>]을 갖는다.</ridx>
+<ridx=1>(2) 내 전장의 다른 추종자 모두는 +0/+1 및 [<color=Keyword>수호</color>]를 갖는다.</ridx>
+""";
+    }
+
+    locale cht {
+        name "響爪分隊長";
+        text """
+【<color=Keyword>入場曲</color>】召喚3張『<color=Keyword>騎士</color>』到自己的戰場上。指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）使自己戰場上全部的其他從者卡+1/+0並獲得【<color=Keyword>突進</color>】。</ridx>
+<ridx=1>（2）使自己戰場上全部的其他從者卡+0/+1並獲得【<color=Keyword>守護</color>】。</ridx>
+""";
+    }
+
+}

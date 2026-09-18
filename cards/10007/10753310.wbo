@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10753310 {
+    type spell;
+    cost 3;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class abysscraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "夜之歌的演唱会";
+        text """
+对对手的战场上的所有随从分配6点伤害。【<color=Keyword>唤灵</color>_6】对对手的主战者造成2点伤害。
+""";
+    }
+
+    locale eng {
+        name "Hark to the Night Song";
+        text """
+Deal 6 damage split between all enemy followers. <b><color=Keyword>Necromancy</color> (6)</b> - Deal 2 damage to the enemy leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"よる\">夜</rub>の<rub=\"うた\">唱</rub>のライブ";
+        text """
+相手の場のフォロワーすべてに6ダメージを割りふる。【<color=Keyword>ネクロマンス</color>_6】相手のリーダーに2ダメージ。
+""";
+    }
+
+    locale kor {
+        name "밤의 노래";
+        text """
+상대방 전장의 추종자 모두에게 6 피해를 분배한다. [<color=Keyword>사령술</color> 6] 상대방 리더에게 2 피해.
+""";
+    }
+
+    locale cht {
+        name "夜詠的演唱";
+        text """
+對敵方戰場上全部的從者卡分配6點傷害。【<color=Keyword>死靈術</color>_6】給予敵方的主戰者2點傷害。
+""";
+    }
+
+}

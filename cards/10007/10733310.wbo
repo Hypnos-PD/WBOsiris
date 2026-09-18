@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10733310 {
+    type spell;
+    cost 4;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class runecraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "饕餮魔咒";
+        text """
+在手牌中发动。自己发动【<color=Keyword>土之秘术</color>】时，使本卡牌的费用-1。
+<hr>选择对手的战场上的1个随从，破坏该随从。使自己的战场上的土之印+2。
+""";
+    }
+
+    locale eng {
+        name "Bottomless Gluttony";
+        text """
+Activates in hand. Whenever you perform <b><color=Keyword>Earth Rite</color></b>, reduce the cost of this card by 1.
+<hr>Select an enemy follower on the field and destroy it. Gain 2 earth sigils.
+""";
+    }
+
+    locale jpn {
+        name "グラトンスペル";
+        text """
+手札で働く。自分が【<color=Keyword>土の秘術</color>】したとき、これのコストを-1する。
+<hr>相手の場のフォロワー1枚を選ぶ。それを破壊。自分の場の土の印を+2する。
+""";
+    }
+
+    locale kor {
+        name "글러튼 스펠";
+        text """
+패에서 발동. 내가 [<color=Keyword>대지의 비술</color>]을 발동했을 때, 이 주문의 비용을 -1.
+<hr>상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴. 내 전장의 대지의 인장을 +2.
+""";
+    }
+
+    locale cht {
+        name "貪食的魔力";
+        text """
+於手牌中發動。當自己發動【<color=Keyword>土之秘術</color>】時，使這張卡片的消費-1。
+<hr>指定1張敵方戰場上的從者卡。將其破壞。使自己戰場上的土之印+2。
+""";
+    }
+
+}

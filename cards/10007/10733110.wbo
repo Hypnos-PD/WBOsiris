@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10733110 {
+    type follower;
+    cost 5;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class runecraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "甜美存在";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>土之秘术</color>_1】【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）对对手的战场上的所有随从造成3点伤害。</ridx>
+<ridx=1>（2）抽取2张卡牌。</ridx>
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Sweet Abomination";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Earth Rite</color> (1)</b> - Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Deal 3 damage to all enemy followers.</ridx>
+<ridx=1>2. Draw 2 cards.</ridx>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "スウィートエンティティ";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>土の秘術</color>_1】【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）相手の場のフォロワーすべてに3ダメージ。</ridx>
+<ridx=1>（2）自分のデッキから2枚を引く。</ridx>
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "스위트 엔티티";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>대지의 비술</color> 1] [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 상대방 전장의 추종자 모두에게 3 피해.</ridx>
+<ridx=1>(2) 내 덱에서 2장을 뽑는다.</ridx>
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "詭甜的化身";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>土之秘術</color>_1】指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）給予敵方戰場上全部的從者卡3點傷害。</ridx>
+<ridx=1>（2）由自己的牌堆中抽取2張卡片。</ridx>
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

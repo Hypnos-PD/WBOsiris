@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10752310 {
+    type spell;
+    cost 7;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class abysscraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "讴歌青春";
+        text """
+召唤1个『<color=Keyword>怨灵</color>』和1个『<color=Keyword>蝙蝠</color>』和1个『<color=Keyword>骸骨士兵</color>』，使其进化。
+""";
+    }
+
+    locale eng {
+        name "Harmony of Youth";
+        text """
+Summon a <b><i><color=Keyword>Ghost</color></i></b>, <b><i><color=Keyword>Bat</color></i></b>, and <b><i><color=Keyword>Skeleton</color></i></b> and evolve them.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"せいしゅん\">青春</rub>の<rub=\"おうか\">謳歌</rub>";
+        text """
+『<color=Keyword>ゴースト</color>』1枚と『<color=Keyword>バット</color>』1枚と『<color=Keyword>スケルトン</color>』1枚を自分の場に出す。それは進化する。
+""";
+    }
+
+    locale kor {
+        name "청춘의 하모니";
+        text """
+<color=Keyword>유령</color> 1장, <color=Keyword>박쥐</color> 1장, <color=Keyword>스켈레톤</color> 1장을 내 전장에 소환. 그 추종자는 진화한다.
+""";
+    }
+
+    locale cht {
+        name "謳歌青春";
+        text """
+召喚1張『<color=Keyword>怨靈</color>』與1張『<color=Keyword>蝙蝠</color>』與1張『<color=Keyword>骷髏士兵</color>』到自己的戰場上。使其進化。
+""";
+    }
+
+}

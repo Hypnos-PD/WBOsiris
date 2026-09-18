@@ -1,0 +1,64 @@
+wbo 0.1.0;
+
+card 10774110 {
+    type follower;
+    cost 8;
+    stats 6/6;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class portalcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "虚刻的安纳提玛·斯卡雷特";
+        text """
+【<color=Keyword>入场曲</color>】对对手的战场上的所有随从造成X点伤害。X为本次对战中进入战场的自己的创造物·随从的种类。
+<hr>【<color=Keyword>疾驰</color>】
+【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Scarlet, Anathema of Dislocation";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Deal X damage to all enemy followers. X is the number of differently named allied Artifact followers that have entered the field this match.
+<hr><b><color=Keyword>Storm</color></b>
+<b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きょこく\">虚刻</rub>のアナテマ・スカーレット";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワーすべてにXダメージ。Xはこのバトル中に場に出た自分のアーティファクト・フォロワーの種類である。
+<hr>【<color=Keyword>疾走</color>】
+【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "허각의 아나테마 스칼렛";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장의 추종자 모두에게 X 피해. X는 이번 대전에서 전장에 소환된 내 아티팩트 추종자의 종류 수.
+<hr>[<color=Keyword>질주</color>]
+[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "虛刻的弒滅者‧史考雷特";
+        text """
+【<color=Keyword>入場曲</color>】給予敵方戰場上全部的從者卡X點傷害。X為「本次對戰中自己已進入戰場的創造物‧從者卡種類數」。
+<hr>【<color=Keyword>疾馳</color>】
+【<color=Keyword>守護</color>】
+""";
+    }
+
+}

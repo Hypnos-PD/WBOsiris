@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10751310 {
+    type spell;
+    cost 1;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "灵魂调律";
+        text """
+选择自己的战场上的2个随从，使其+0/+1。抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Soul Tuning";
+        text """
+Select 2 allied followers on the field and give them +0/+1. Draw a card.
+""";
+    }
+
+    locale jpn {
+        name "ソウルチューニング";
+        text """
+自分の場のフォロワー2枚を選ぶ。それは+0/+1する。自分のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "소울 튜닝";
+        text """
+내 전장에서 추종자 2장을 선택한다. 그 추종자는 +0/+1. 내 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "靈魂調音";
+        text """
+指定2張自己戰場上的從者卡。使其+0/+1。由自己的牌堆中抽取1張卡片。
+""";
+    }
+
+}

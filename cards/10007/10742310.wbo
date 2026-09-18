@@ -1,0 +1,56 @@
+wbo 0.1.0;
+
+card 10742310 {
+    type spell;
+    cost 3;
+    trait anathema;
+
+    effect {
+        heal own.leader 3;
+        if overflow {
+            draw 1;
+        }
+    }
+
+    meta {
+        pack 10007;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "焦龙的午睡";
+        text """
+回复自己的主战者3点生命值。若为【<color=Keyword>觉醒</color>】，则抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Lazing Flame";
+        text """
+Restore 3 defense to your leader. If you're in <b><color=Keyword>Overflow</color></b>, draw a card. 
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しょうりゅう\">焦龍</rub>の<rub=\"ごすい\">午睡</rub>";
+        text """
+自分のリーダーを3回復。【<color=Keyword>覚醒</color>】なら、自分のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "초룡의 낮잠";
+        text """
+내 리더를 3 회복. [<color=Keyword>각성</color>]이라면, 내 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "焦龍的午睡";
+        text """
+回復自己的主戰者3點生命值。如果【<color=Keyword>覺醒</color>】已發動，則會由自己的牌堆中抽取1張卡片。
+""";
+    }
+
+}

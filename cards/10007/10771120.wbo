@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10771120 {
+    type follower;
+    cost 7;
+    stats 5/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "炫酷舞者";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>炫酷舞者</color>』。若本次对战中进入战场的自己的创造物·随从的种类为3种或以上，则改为召唤2个。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Beat Breaker";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Beat Breaker</color></i></b>. If at least 3 differently named allied Artifact followers have entered the field this match, summon 2 instead.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "ドープダンサー";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>ドープダンサー</color>』1枚を自分の場に出す。このバトル中に場に出た自分のアーティファクト・フォロワーの種類が3以上なら、1枚ではなく2枚。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "하이텐션 댄서";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>하이텐션 댄서</color> 1장을 내 전장에 소환. 이번 대전에서 전장에 소환된 내 아티팩트 추종자의 종류 수가 3 이상이라면, 1장 대신 2장.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "酷炫舞者";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>酷炫舞者</color>』到自己的戰場上。如果本次對戰中自己已進入戰場的創造物‧從者卡種類為3以上，則會由原本的1張轉變為2張。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

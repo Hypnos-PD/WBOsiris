@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10701310 {
+    type spell;
+    cost 4;
+
+    effect {
+        require target from oppo.field;
+        banish target;
+    }
+
+    meta {
+        pack 10007;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "颓废之泪";
+        text """
+选择对手的战场上的1张卡牌，使其消失。
+""";
+    }
+
+    locale eng {
+        name "Tears of Degradation";
+        text """
+Select an enemy card on the field and banish it.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"たいはい\">退廃</rub>の<rub=\"なみだ\">涙</rub>";
+        text """
+相手の場のカード1枚を選ぶ。それを消滅。
+""";
+    }
+
+    locale kor {
+        name "폐퇴의 눈물";
+        text """
+상대방 전장에서 카드 1장을 선택한다. 그 카드를 소멸.
+""";
+    }
+
+    locale cht {
+        name "衰廢之淚";
+        text """
+指定1張敵方戰場上的卡片。使其消失。
+""";
+    }
+
+}

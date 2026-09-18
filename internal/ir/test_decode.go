@@ -463,7 +463,7 @@ func decodeTestRef(data []byte) (TestRef, error) {
 		if err := strict(data, &v); err != nil {
 			return TestRef{}, err
 		}
-		if !validSide(v.Side) || v.Kind == "player_pp_pair" && v.Field != "" || v.Kind == "player_field" && !oneOf(v.Field, "leader.life", "leader.maxlife", "pp", "maxpp", "ep", "sep", "combo", "shadows", "rally") {
+		if !validSide(v.Side) || v.Kind == "player_pp_pair" && v.Field != "" || v.Kind == "player_field" && !oneOf(v.Field, "leader.life", "leader.maxlife", "pp", "maxpp", "ep", "sep", "combo", "shadows", "rally", "earthsigils") {
 			return TestRef{}, fmt.Errorf("malformed player reference")
 		}
 		return TestRef{Kind: v.Kind, Side: v.Side, Field: v.Field}, nil

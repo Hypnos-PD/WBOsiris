@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10744120 {
+    type follower;
+    cost 10;
+    stats 7/7;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "龙峪的古龙";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>巨翼飞龙</color>』。使自己获得『纹章：龙峪的古龙』。
+<hr>【<color=Keyword>守护</color>】
+<hr><sev>【<color=Keyword>超进化时</color>】使自己的『纹章：龙峪的古龙』的倒计数+2。</sev>
+""";
+    }
+
+    locale eng {
+        name "Dragon's Vale Elder";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Vastwing Dragon</color></i></b>. Gain <b><i>Crest: Dragon's Vale Elder</i></b>.
+<hr><b><color=Keyword>Ward</color></b>
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Delay the count of your <b><i>Crest: Dragon's Vale Elder</i></b> by 2.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"りゅうこく\">龍谷</rub>のエルダードラゴン";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>大翼のドラゴン</color>』1枚を自分の場に出す。自分は『クレスト：龍谷のエルダードラゴン』を持つ。
+<hr>【<color=Keyword>守護</color>】
+<hr><sev>【<color=Keyword>超進化時</color>】自分の『クレスト：龍谷のエルダードラゴン』のカウントを+2する。</sev>
+""";
+    }
+
+    locale kor {
+        name "용곡의 엘더 드래곤";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>대익룡</color> 1장을 내 전장에 소환. 나는 「크레스트: 용곡의 엘더 드래곤」을 갖는다.
+<hr>[<color=Keyword>수호</color>]
+<hr><sev>[<color=Keyword>초진화시</color>] 내 「크레스트: 용곡의 엘더 드래곤」의 카운트를 +2.</sev>
+""";
+    }
+
+    locale cht {
+        name "龍谷的古龍";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>巨翼飛龍</color>』到自己的戰場上。使自己獲得『紋章：龍谷的古龍』。
+<hr>【<color=Keyword>守護</color>】
+<hr><sev>【<color=Keyword>超進化時</color>】使自己的『紋章：龍谷的古龍』倒數回合數+2。</sev>
+""";
+    }
+
+}

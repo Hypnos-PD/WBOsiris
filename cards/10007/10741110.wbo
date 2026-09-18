@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10741110 {
+    type follower;
+    cost 2;
+    stats 2/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "宣扬的龙人";
+        text """
+【<color=Keyword>爆能强化</color>_4】召唤2个『<color=Keyword>宣扬的龙人</color>』。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Dragonewt Promoter";
+        text """
+<b><color=Keyword>Enhance</color> (4)</b>: Summon 2 copies of <b><i><color=Keyword>Dragonewt Promoter</color></i></b>.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"けんでん\">喧伝</rub>の<rub=\"りゅうじん\">龍人</rub>";
+        text """
+【<color=Keyword>エンハンス</color>_4】『<color=Keyword>喧伝の龍人</color>』2枚を自分の場に出す。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "전단지 돌리는 용인";
+        text """
+[<color=Keyword>증강</color> 4] <color=Keyword>전단지 돌리는 용인</color> 2장을 내 전장에 소환.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "傳播的龍人";
+        text """
+【<color=Keyword>爆能強化</color>_4】召喚2張『<color=Keyword>傳播的龍人</color>』到自己的戰場上。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

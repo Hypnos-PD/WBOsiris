@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10774120 {
+    type follower;
+    cost 4;
+    stats 3/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class portalcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "奋厉追赶·米乌";
+        text """
+自己的创造物·随从进入战场时，对对手的战场上的随机1个随从造成3点伤害。
+<hr><ev>【<color=Keyword>进化时</color>】召唤1个『<color=Keyword>古老的创造物</color>』。</ev>
+<sev>【<color=Keyword>超进化时</color>】之后，若本次对战中进入战场的自己的创造物·随从的种类为3种或以上，则本随从获得【<color=Keyword>疾驰</color>】。</sev>
+""";
+    }
+
+    locale eng {
+        name "Myuu, Hot on His Heels";
+        text """
+Whenever an allied Artifact follower enters the field, deal 3 damage to a random enemy follower.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Summon an <b><i><color=Keyword>Ancient Artifact</color></i></b>.</ev>
+<sev><b><color=Keyword>Super-Evolve</color></b>: Then, if at least 3 differently named allied Artifact followers have entered the field this match, give this follower <b><color=Keyword>Storm</color></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ふんれい\">奮励</rub>の<rub=\"ついそう\">追走</rub>・ミュー";
+        text """
+自分のアーティファクト・フォロワーが場に出たとき、相手の場のフォロワーからランダム1枚に3ダメージ。
+<hr><ev>【<color=Keyword>進化時</color>】『<color=Keyword>エンシェントアーティファクト</color>』1枚を自分の場に出す。</ev>
+<sev>【<color=Keyword>超進化時</color>】その後、このバトル中に場に出た自分のアーティファクト・フォロワーの種類が3以上なら、これは【<color=Keyword>疾走</color>】を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "추격선언 뮤";
+        text """
+내 아티팩트 추종자가 전장에 소환되었을 때, 상대방 전장의 추종자 중 무작위로 1장에게 3 피해.
+<hr><ev>[<color=Keyword>진화시</color>] <color=Keyword>고대의 아티팩트</color> 1장을 내 전장에 소환.</ev>
+<sev>[<color=Keyword>초진화시</color>] 그다음 이번 대전에서 전장에 소환된 내 아티팩트 추종자의 종류 수가 3 이상이라면, 이 추종자는 [<color=Keyword>질주</color>]를 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "奮勉奔逐‧妙";
+        text """
+當自己的創造物‧從者卡進入戰場時，隨機給予1張敵方戰場上的從者卡3點傷害。
+<hr><ev>【<color=Keyword>進化時</color>】召喚1張『<color=Keyword>古老的創造物</color>』到自己的戰場上。</ev>
+<sev>【<color=Keyword>超進化時</color>】隨後，如果本次對戰中自己已進入戰場的創造物‧從者卡種類為3以上，則會使這張卡片獲得【<color=Keyword>疾馳</color>】。</sev>
+""";
+    }
+
+}

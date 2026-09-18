@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10732310 {
+    type spell;
+    cost 2;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "暴食的零嘴";
+        text """
+【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）使自己的战场上的土之印+4。</ridx>
+<ridx=1>（2）【<color=Keyword>土之秘术</color>_2】对对手的战场上的所有随从造成2点伤害。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Haphazard Snacking";
+        text """
+Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Gain 4 earth sigils.</ridx>
+<ridx=1>2. <b><color=Keyword>Earth Rite</color> (2)</b> - Deal 2 damage to all enemy followers.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぼうしょく\">暴食</rub>の<rub=\"かんしょく\">間食</rub>";
+        text """
+【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）自分の場の土の印を+4する。</ridx>
+<ridx=1>（2）【<color=Keyword>土の秘術</color>_2】相手の場のフォロワーすべてに2ダメージ。</ridx>
+""";
+    }
+
+    locale kor {
+        name "폭식의 간식";
+        text """
+[<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 내 전장의 대지의 인장을 +4.</ridx>
+<ridx=1>(2) [<color=Keyword>대지의 비술</color> 2] 상대방 전장의 추종자 모두에게 2 피해.</ridx>
+""";
+    }
+
+    locale cht {
+        name "暴食的點心";
+        text """
+指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）使自己戰場上的土之印+4。</ridx>
+<ridx=1>（2）【<color=Keyword>土之秘術</color>_2】給予敵方戰場上全部的從者卡2點傷害。</ridx>
+""";
+    }
+
+}

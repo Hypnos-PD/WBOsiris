@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10761210 {
+    type amulet;
+    cost 1;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "阳光耳饰";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的1张手牌，使其返回牌组。抽取1张卡牌。
+<hr>【<color=Keyword>启动</color>】破坏本卡牌。发动与【<color=Keyword>入场曲</color>】相同的能力。
+""";
+    }
+
+    locale eng {
+        name "Earrings of Sunlight";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a card in your hand and return it to deck. Draw a card.
+<hr><b><color=Keyword>Engage</color></b>: Destroy this card. Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ようこう\">陽光</rub>の<rub=\"みみかざ\">耳飾</rub>り";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札1枚を選ぶ。それをデッキに戻す。自分のデッキから1枚を引く。
+<hr>【<color=Keyword>アクト</color>】これを破壊。【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。
+""";
+    }
+
+    locale kor {
+        name "태양의 귀걸이";
+        text """
+[<color=Keyword>출격</color>] 내 패에서 1장을 선택한다. 그 카드를 덱으로 되돌린다. 내 덱에서 1장을 뽑는다.
+<hr>[<color=Keyword>활성화</color>] 이 마법진을 파괴. [<color=Keyword>출격</color>]과 같은 능력을 발동.
+""";
+    }
+
+    locale cht {
+        name "陽光耳飾";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己手牌中的卡片。使其返回牌堆中。由自己的牌堆中抽取1張卡片。
+<hr>【<color=Keyword>策動</color>】破壞這張卡片。發動與【<color=Keyword>入場曲</color>】相同的能力。
+""";
+    }
+
+}

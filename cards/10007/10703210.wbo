@@ -1,0 +1,77 @@
+wbo 0.1.0;
+
+card 10703210 {
+    type amulet;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class neutral;
+        rarity gold;
+    }
+
+    locale chs {
+        name "巴别隆城";
+        text """
+【<color=Keyword>吟唱</color>_1】
+自己的回合结束时，按顺序发动以下1个能力。
+<ridx=0>（1）对对手的战场上的随机1个随从造成2点伤害。</ridx>
+<ridx=1>（2）回复自己的主战者2点生命值。</ridx>
+<ridx=2>（3）对对手的主战者造成2点伤害。破坏本卡牌。</ridx>
+<hr>费用1【<color=Keyword>启动</color>】选择自己的1张手牌，舍弃该手牌。本护符的倒计数+1。
+""";
+    }
+
+    locale eng {
+        name "City of Babelon";
+        text """
+<b><color=Keyword>Countdown</color> (1)</b>
+At the end of your turn, activate an ability in sequence from the following.
+<ridx=0>1. Deal 2 damage to a random enemy follower.</ridx>
+<ridx=1>2. Restore 2 defense to your leader.</ridx>
+<ridx=2>3. Deal 2 damage to the enemy leader. Destroy this card.</ridx>
+<hr><b><color=Keyword>Engage</color> (1)</b>: Select a card in your hand and discard it. Delay the count of this amulet by 1.
+""";
+    }
+
+    locale jpn {
+        name "バベロンシティ";
+        text """
+【<color=Keyword>カウントダウン</color>_1】
+自分のターン終了時、下記の能力から順に1つの能力が働く。
+<ridx=0>（1）相手の場のフォロワーからランダム1枚に2ダメージ。</ridx>
+<ridx=1>（2）自分のリーダーを2回復。</ridx>
+<ridx=2>（3）相手のリーダーに2ダメージ。これを破壊。</ridx>
+<hr>コスト1【<color=Keyword>アクト</color>】自分の手札1枚を選ぶ。それを捨てる。これのカウントを+1する。
+""";
+    }
+
+    locale kor {
+        name "바베론 시티";
+        text """
+[<color=Keyword>카운트다운</color> 1]
+내 턴 종료시, 아래 능력을 순서대로 1개 발동.
+<ridx=0>(1) 상대방 전장의 추종자 중 무작위로 1장에게 2 피해.</ridx>
+<ridx=1>(2) 내 리더를 2 회복.</ridx>
+<ridx=2>(3) 상대방 리더에게 2 피해. 이 마법진을 파괴.</ridx>
+<hr>비용 1 [<color=Keyword>활성화</color>] 내 패에서 1장을 선택한다. 그 카드를 버린다. 이 마법진의 카운트를 +1.
+""";
+    }
+
+    locale cht {
+        name "巴貝倫城";
+        text """
+【<color=Keyword>倒數</color>_1】
+自己的回合結束時，由下列能力中依序發動1個能力。
+<ridx=0>（1）隨機給予1張敵方戰場上的從者卡2點傷害。</ridx>
+<ridx=1>（2）回復自己的主戰者2點生命值。</ridx>
+<ridx=2>（3）給予敵方的主戰者2點傷害。破壞這張卡片。</ridx>
+<hr>消費1【<color=Keyword>策動</color>】指定1張自己手牌中的卡片。將其捨棄。使這張卡片的倒數回合數+1。
+""";
+    }
+
+}

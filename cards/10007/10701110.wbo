@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10701110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        evolve {
+            draw 1 from deck where class neutral;
+        }
+    }
+
+    meta {
+        pack 10007;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "纯真孩童";
+        text """
+<ev>【<color=Keyword>进化时</color>】抽取1张中立·卡牌。</ev>
+""";
+    }
+
+    locale eng {
+        name "Altaro Superfan";
+        text """
+<ev><b><color=Keyword>Evolve</color></b>: Draw a Neutral card.</ev>
+""";
+    }
+
+    locale jpn {
+        name "ピュアリィキッズ";
+        text """
+<ev>【<color=Keyword>進化時</color>】自分のデッキからニュートラル・カード1枚を引く。</ev>
+""";
+    }
+
+    locale kor {
+        name "해맑은 아이";
+        text """
+<ev>[<color=Keyword>진화시</color>] 내 덱에서 중립 카드 1장을 뽑는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "純真的孩子";
+        text """
+<ev>【<color=Keyword>進化時</color>】由自己的牌堆中抽取1張中立‧卡片。</ev>
+""";
+    }
+
+}

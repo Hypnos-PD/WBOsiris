@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10714120 {
+    type follower;
+    cost 6;
+    stats 5/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "冰界鹿王";
+        text """
+【<color=Keyword>入场曲</color>】将2张『<color=Keyword>森林的奥秘</color>』加入手牌。
+<hr>自己的回合结束时，对对手的战场上的所有随从分配X点伤害。X为本随从的攻击力。
+<hr><sev>【<color=Keyword>超进化时</color>】使自己获得『纹章：冰界鹿王』。</sev>
+""";
+    }
+
+    locale eng {
+        name "Great Hart of the Glacial Realm";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add 2 copies of <b><i><color=Keyword>Deepwood Bounty</color></i></b> to your hand.
+<hr>At the end of your turn, deal X damage split between all enemy followers. X is this follower's attack.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Gain <b><i>Crest: Great Hart of the Glacial Realm</i></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ひょうかい\">氷界</rub>の<rub=\"ろくおう\">鹿王</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>森の神秘</color>』2枚を自分の手札に加える。
+<hr>自分のターン終了時、相手の場のフォロワーすべてにXダメージを割りふる。Xはこれの攻撃力である。
+<hr><sev>【<color=Keyword>超進化時</color>】自分は『クレスト：氷界の鹿王』を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "빙계의 사슴왕";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>숲의 신비</color> 2장을 내 패에 넣는다.
+<hr>내 턴 종료시, 상대방 전장의 추종자 모두에게 X 피해를 분배한다. X는 이 추종자의 공격력.
+<hr><sev>[<color=Keyword>초진화시</color>] 나는 「크레스트: 빙계의 사슴왕」을 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "冰界鹿王";
+        text """
+【<color=Keyword>入場曲</color>】增加2張『<color=Keyword>森林的奧祕</color>』到自己的手牌中。
+<hr>自己的回合結束時，對敵方戰場上全部的從者卡分配X點傷害。X為「這張卡片的攻擊力」。
+<hr><sev>【<color=Keyword>超進化時</color>】使自己獲得『紋章：冰界鹿王』。</sev>
+""";
+    }
+
+}

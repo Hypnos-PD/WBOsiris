@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10744110 {
+    type follower;
+    cost 9;
+    stats 9/9;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "焦灰的安纳提玛·班德奈特";
+        text """
+【<color=Keyword>入场曲</color>】对对手的战场上的所有随从造成9点伤害。
+<hr><sev>【<color=Keyword>超进化时</color>】使对手获得『纹章：焦灰的安纳提玛·班德奈特』。</sev>
+""";
+    }
+
+    locale eng {
+        name "Burnite, Anathema of Ash";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Deal 9 damage to all enemy followers.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Give your opponent <b><i>Crest: Burnite, Anathema of Ash</i></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しょうかい\">焦灰</rub>のアナテマ・バーンドナイト";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワーすべてに9ダメージ。
+<hr><sev>【<color=Keyword>超進化時</color>】相手は『クレスト：焦灰のアナテマ・バーンドナイト』を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "초회의 아나테마 번드나이트";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장의 추종자 모두에게 9 피해.
+<hr><sev>[<color=Keyword>초진화시</color>] 상대방은 「크레스트: 초회의 아나테마 번드나이트」를 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "焦灰的弒滅者‧珀德奈特";
+        text """
+【<color=Keyword>入場曲</color>】給予敵方戰場上全部的從者卡9點傷害。
+<hr><sev>【<color=Keyword>超進化時</color>】使敵方獲得『紋章：焦灰的弒滅者‧珀德奈特』。</sev>
+""";
+    }
+
+}

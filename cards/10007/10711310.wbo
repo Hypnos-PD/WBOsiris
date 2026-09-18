@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10711310 {
+    type spell;
+    cost 1;
+    trait anathema;
+
+    effect {
+        choose targets from own.hand count 2;
+        return targets to deck;
+        draw 2;
+    }
+
+    meta {
+        pack 10007;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "人格切换";
+        text """
+选择自己的2张手牌，使其返回牌组。抽取2张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Cognitive Shift";
+        text """
+Select 2 cards in your hand and return them to deck. Draw 2 cards.
+""";
+    }
+
+    locale jpn {
+        name "マインドシフト";
+        text """
+自分の手札2枚を選ぶ。それをデッキに戻す。自分のデッキから2枚を引く。
+""";
+    }
+
+    locale kor {
+        name "마인드 시프트";
+        text """
+내 패에서 2장을 선택한다. 그 카드를 덱으로 되돌린다. 내 덱에서 2장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "人格切換";
+        text """
+指定2張自己手牌中的卡片。使其返回牌堆中。由自己的牌堆中抽取2張卡片。
+""";
+    }
+
+}

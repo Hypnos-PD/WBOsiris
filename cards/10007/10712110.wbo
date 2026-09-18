@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10712110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        fanfare {
+            if own.combo >= 3 {
+                add storm to self;
+            }
+        }
+    }
+
+    meta {
+        pack 10007;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "绿风细剑师";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>连击</color>_3】本随从获得【<color=Keyword>疾驰</color>】。
+""";
+    }
+
+    locale eng {
+        name "Virewind Fencer";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Combo</color> (3)</b> - Give this follower <b><color=Keyword>Storm</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"りょくふう\">緑風</rub>のレイピア<rub=\"つか\">使</rub>い";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>コンボ</color>_3】これは【<color=Keyword>疾走</color>】を持つ。
+""";
+    }
+
+    locale kor {
+        name "녹풍의 세검사";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>콤보</color> 3] 이 추종자는 [<color=Keyword>질주</color>]를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "綠風刺劍手";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>連擊</color>_3】使這張卡片獲得【<color=Keyword>疾馳</color>】。
+""";
+    }
+
+}

@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10764110 {
+    type follower;
+    cost 8;
+    stats 5/5;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "裁神的安纳提玛·罗德欧";
+        text """
+【<color=Keyword>入场曲</color>】召唤1张『<color=Keyword>月影指环</color>』。
+<hr><ev>【<color=Keyword>进化时</color>】使自己的战场上的随机1张『<color=Keyword>月影指环</color>』的倒计数+1。</ev>
+""";
+    }
+
+    locale eng {
+        name "Rodeo, Anathema of Adjudication";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Rings of Moonlight</color></i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Delay the count of a random allied <b><i><color=Keyword>Rings of Moonlight</color></i></b> on the field by 1.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"さいしん\">裁神</rub>のアナテマ・ロデオ";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>月影の指輪</color>』1枚を自分の場に出す。
+<hr><ev>【<color=Keyword>進化時</color>】自分の場の『<color=Keyword>月影の指輪</color>』からランダム1枚のカウントを+1する。</ev>
+""";
+    }
+
+    locale kor {
+        name "재신의 아나테마 로데오";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>월영의 반지</color> 1장을 내 전장에 소환.
+<hr><ev>[<color=Keyword>진화시</color>] 내 전장의 <color=Keyword>월영의 반지</color> 중 무작위로 1장의 카운트를 +1.</ev>
+""";
+    }
+
+    locale cht {
+        name "裁神的弒滅者‧羅德歐";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>月影指環</color>』到自己的戰場上。
+<hr><ev>【<color=Keyword>進化時</color>】隨機使1張自己戰場上的『<color=Keyword>月影指環</color>』倒數回合數+1。</ev>
+""";
+    }
+
+}

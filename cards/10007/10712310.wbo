@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10712310 {
+    type spell;
+    cost 1;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "忧虑缩小";
+        text """
+回复自己的主战者1点生命值。【<color=Keyword>连击</color>_3】使自己获得『纹章：忧虑缩小』。
+""";
+    }
+
+    locale eng {
+        name "Minimized Anxiety";
+        text """
+Restore 1 defense to your leader. <b><color=Keyword>Combo</color> (3)</b> - Gain <b><i>Crest: Minimized Anxiety</i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ゆうりょ\">憂慮</rub>の<rub=\"しゅくしょう\">縮小</rub>";
+        text """
+自分のリーダーを1回復。【<color=Keyword>コンボ</color>_3】自分は『クレスト：憂慮の縮小』を持つ。
+""";
+    }
+
+    locale kor {
+        name "우려의 축소";
+        text """
+내 리더를 1 회복. [<color=Keyword>콤보</color> 3] 나는 「크레스트: 우려의 축소」를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "縮小憂慮";
+        text """
+回復自己的主戰者1點生命值。【<color=Keyword>連擊</color>_3】使自己獲得『紋章：縮小憂慮』。
+""";
+    }
+
+}

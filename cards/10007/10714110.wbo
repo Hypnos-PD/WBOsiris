@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10714110 {
+    type follower;
+    cost 4;
+    stats 3/3;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "操量的安纳提玛·达斯特迪兹";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的1个随从，使其-0/-X。X为本随从的攻击力。使自己的【<color=Keyword>连击</color>】+1。
+<hr><ev>【<color=Keyword>进化时</color>】使自己获得『纹章：操量的安纳提玛·达斯特迪兹』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Thestae, Anathema of Distortion";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select an enemy follower on the field and give it -0/-X. X is this follower's attack. Increase your <b><color=Keyword>Combo</color></b> by 1.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Gain <b><i>Crest: Thestae, Anathema of Distortion</i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"そうしゅう\">操嵩</rub>のアナテマ・ダストデイズ";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー1枚を選ぶ。それは-0/-Xする。Xはこれの攻撃力である。自分の【<color=Keyword>コンボ</color>】を+1する。
+<hr><ev>【<color=Keyword>進化時</color>】自分は『クレスト：操嵩のアナテマ・ダストデイズ』を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "숭조의 아나테마 더스트데이즈";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자는 -0/-X. X는 이 추종자의 공격력. 내 [<color=Keyword>콤보</color>]를 +1.
+<hr><ev>[<color=Keyword>진화시</color>] 나는 「크레스트: 숭조의 아나테마 더스트데이즈」를 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "控質的弒滅者‧坦斯特黛茲";
+        text """
+【<color=Keyword>入場曲</color>】指定1張敵方戰場上的從者卡。使其-0/-X。X為「這張卡片的攻擊力」。使自己的【<color=Keyword>連擊</color>】+1。
+<hr><ev>【<color=Keyword>進化時</color>】使自己獲得『紋章：控質的弒滅者‧坦斯特黛茲』。</ev>
+""";
+    }
+
+}

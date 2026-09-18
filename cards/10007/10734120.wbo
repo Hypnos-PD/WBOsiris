@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10734120 {
+    type follower;
+    cost 8;
+    stats 4/8;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "可爱杰作";
+        text """
+【<color=Keyword>入场曲</color>】对对手的战场上的所有随从造成6点伤害。
+<hr>【<color=Keyword>守护</color>】
+【<color=Keyword>谢幕曲</color>】【<color=Keyword>土之秘术</color>_2】对对手的主战者造成3点伤害。
+<hr><sev>【<color=Keyword>超进化时</color>】召唤1个『<color=Keyword>可爱杰作</color>』。</sev>
+""";
+    }
+
+    locale eng {
+        name "Beloved Masterpiece";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Deal 6 damage to all enemy followers. 
+<hr><b><color=Keyword>Ward</color></b>
+<b><color=Keyword>Last Words</color></b>: <b><color=Keyword>Earth Rite</color> (2)</b> - Deal 3 damage to the enemy leader.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Summon a <b><i><color=Keyword>Beloved Masterpiece</color></i></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "ラブリーマスターピース";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワーすべてに6ダメージ。
+<hr>【<color=Keyword>守護</color>】
+【<color=Keyword>ラストワード</color>】【<color=Keyword>土の秘術</color>_2】相手のリーダーに3ダメージ。
+<hr><sev>【<color=Keyword>超進化時</color>】『<color=Keyword>ラブリーマスターピース</color>』1枚を自分の場に出す。</sev>
+""";
+    }
+
+    locale kor {
+        name "러블리 마스터피스";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장의 추종자 모두에게 6 피해.
+<hr>[<color=Keyword>수호</color>]
+[<color=Keyword>유언</color>] [<color=Keyword>대지의 비술</color> 2] 상대방 리더에게 3 피해.
+<hr><sev>[<color=Keyword>초진화시</color>] <color=Keyword>러블리 마스터피스</color> 1장을 내 전장에 소환.</sev>
+""";
+    }
+
+    locale cht {
+        name "迷人的傑作";
+        text """
+【<color=Keyword>入場曲</color>】給予敵方戰場上全部的從者卡6點傷害。
+<hr>【<color=Keyword>守護</color>】
+【<color=Keyword>謝幕曲</color>】【<color=Keyword>土之秘術</color>_2】給予敵方的主戰者3點傷害。
+<hr><sev>【<color=Keyword>超進化時</color>】召喚1張『<color=Keyword>迷人的傑作</color>』到自己的戰場上。</sev>
+""";
+    }
+
+}

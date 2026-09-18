@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10743310 {
+    type spell;
+    cost 7;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class dragoncraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "黑炎的奔流";
+        text """
+对对手的战场上的所有随从造成5点伤害。对对手的主战者造成3点伤害。
+""";
+    }
+
+    locale eng {
+        name "Blackflame Deluge";
+        text """
+Deal 5 damage to all enemy followers. Deal 3 damage to the enemy leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"こくえん\">黒炎</rub>の<rub=\"ほんりゅう\">奔流</rub>";
+        text """
+相手の場のフォロワーすべてに5ダメージ。相手のリーダーに3ダメージ。
+""";
+    }
+
+    locale kor {
+        name "흑염의 격류";
+        text """
+상대방 전장의 추종자 모두에게 5 피해. 상대방 리더에게 3 피해.
+""";
+    }
+
+    locale cht {
+        name "黑炎奔流";
+        text """
+給予敵方戰場上全部的從者卡5點傷害。給予敵方的主戰者3點傷害。
+""";
+    }
+
+}

@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10772110 {
+    type follower;
+    cost 2;
+    stats 2/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "悠然的滑手";
+        text """
+【<color=Keyword>入场曲</color>】将1张『<color=Keyword>古老的创造物</color>』加入手牌。
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Cool Courier";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add an <b><i><color=Keyword>Ancient Artifact</color></i></b> to your hand.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "チルスケーター";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>エンシェントアーティファクト</color>』1枚を自分の手札に加える。
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "쿨한 스케이터";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>고대의 아티팩트</color> 1장을 내 패에 넣는다.
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "自在的滑板玩家";
+        text """
+【<color=Keyword>入場曲</color>】增加1張『<color=Keyword>古老的創造物</color>』到自己的手牌中。
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

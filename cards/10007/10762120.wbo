@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10762120 {
+    type follower;
+    cost 8;
+    stats 4/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "传言圣鸟";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的1个随从，使其消失。若自己的战场上的护符的张数为3张或以上，则回复自己的主战者3点生命值。
+<hr>【<color=Keyword>疾驰</color>】
+""";
+    }
+
+    locale eng {
+        name "Holy Hawk of Communications";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select an enemy follower on the field and banish it. If there are at least 3 allied amulets on the field, restore 3 defense to your leader.
+<hr><b><color=Keyword>Storm</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"でんたつ\">伝達</rub>の<rub=\"せいちょう\">聖鳥</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー1枚を選ぶ。それを消滅。自分の場のアミュレットの枚数が3以上なら、自分のリーダーを3回復。
+<hr>【<color=Keyword>疾走</color>】
+""";
+    }
+
+    locale kor {
+        name "전달의 성조";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 소멸. 내 전장의 마법진 수가 3 이상이라면, 내 리더를 3 회복.
+<hr>[<color=Keyword>질주</color>]
+""";
+    }
+
+    locale cht {
+        name "傳令聖鳥";
+        text """
+【<color=Keyword>入場曲</color>】指定1張敵方戰場上的從者卡。使其消失。如果自己戰場上的護符卡張數為3以上，則會回復自己的主戰者3點生命值。
+<hr>【<color=Keyword>疾馳</color>】
+""";
+    }
+
+}

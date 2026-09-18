@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10762210 {
+    type amulet;
+    cost 2;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "完美的时钟";
+        text """
+【<color=Keyword>爆能强化</color>_4】对对手的战场上的所有随从造成1点伤害。
+<hr>【<color=Keyword>启动</color>】破坏本卡牌。对对手的战场上的所有随从造成1点伤害。
+""";
+    }
+
+    locale eng {
+        name "Timepiece of Perfection";
+        text """
+<b><color=Keyword>Enhance</color> (4)</b>: Deal 1 damage to all enemy followers.
+<hr><b><color=Keyword>Engage</color></b>: Destroy this card. Deal 1 damage to all enemy followers.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"むけつ\">無欠</rub>の<rub=\"とけい\">時計</rub>";
+        text """
+【<color=Keyword>エンハンス</color>_4】相手の場のフォロワーすべてに1ダメージ。
+<hr>【<color=Keyword>アクト</color>】これを破壊。相手の場のフォロワーすべてに1ダメージ。
+""";
+    }
+
+    locale kor {
+        name "무결의 시계";
+        text """
+[<color=Keyword>증강</color> 4] 상대방 전장의 추종자 모두에게 1 피해.
+<hr>[<color=Keyword>활성화</color>] 이 마법진을 파괴. 상대방 전장의 추종자 모두에게 1 피해.
+""";
+    }
+
+    locale cht {
+        name "完美之錶";
+        text """
+【<color=Keyword>爆能強化</color>_4】給予敵方戰場上全部的從者卡1點傷害。
+<hr>【<color=Keyword>策動</color>】破壞這張卡片。給予敵方戰場上全部的從者卡1點傷害。
+""";
+    }
+
+}

@@ -65,6 +65,12 @@ func (g *game) assertCompare(a ir.CompareAssertion) string {
 			got = p.shadows
 		case "rally":
 			got = p.rally
+		case "earthsigils":
+			total := 0
+			for _, i := range p.field {
+				total += i.earthsigil
+			}
+			got = total
 		}
 	case "instance_counter":
 		i := g.instances[a.Left.InstanceID]

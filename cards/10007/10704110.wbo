@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10704110 {
+    type follower;
+    cost 6;
+    stats 1/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class neutral;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "特殊目标·海雷姆哈妮";
+        text """
+【<color=Keyword>攻击时</color>】若攻击随从，则本随从获得【<color=Keyword>屏障</color>】。使交战对手获得「无法攻击随从或主战者」和「自己的回合结束时，使本随从消失」。
+【<color=Keyword>谢幕曲</color>】使自己获得『纹章：特殊目标·海雷姆哈妮』。
+""";
+    }
+
+    locale eng {
+        name "Illamrita, Designated Target";
+        text """
+<b><color=Keyword>Follower</color></b> <b><color=Keyword>Strike</color></b>: Give this follower <b><color=Keyword>Barrier</color></b>. Give the opposing follower \"Can't attack followers or leaders\" and \"At the end of your turn, banish this card.\"
+<b><color=Keyword>Last Words</color></b>: Gain <b><i>Crest: Illamrita, Designated Target</i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"とっきひょうてき\">特記標的</rub>・ヘイレムハニィ";
+        text """
+【<color=Keyword>攻撃時</color>】フォロワーへの攻撃なら、これは【<color=Keyword>バリア</color>】を持つ。交戦相手は「フォロワーやリーダーを攻撃できない。」と「自分のターン終了時、これを消滅。」を持つ。
+【<color=Keyword>ラストワード</color>】自分は『クレスト：特記標的・ヘイレムハニィ』を持つ。
+""";
+    }
+
+    locale kor {
+        name "특기표적 헤렘허니";
+        text """
+[<color=Keyword>공격시</color>] 추종자를 공격한다면, 이 추종자는 [<color=Keyword>배리어</color>]를 갖는다. 교전 상대는 「추종자나 리더 공격 불가」, 「내 턴 종료시, 이 추종자를 소멸」을 갖는다.
+[<color=Keyword>유언</color>] 나는 「크레스트: 특기표적 헤렘허니」를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "特別註記目標‧赫萊哈妮";
+        text """
+【<color=Keyword>攻擊時</color>】如果對從者卡進行攻擊，則會使這張卡片獲得【<color=Keyword>障壁</color>】。使交戰對象獲得「無法攻擊從者或主戰者」與「自己的回合結束時，使這張卡片消失」。
+【<color=Keyword>謝幕曲</color>】使自己獲得『紋章：特別註記目標‧赫萊哈妮』。
+""";
+    }
+
+}

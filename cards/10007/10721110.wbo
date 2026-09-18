@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10721110 {
+    type follower;
+    cost 3;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "曲行工兵";
+        text """
+在手牌中发动。自己的随从超进化时，使本卡牌的费用变为1。
+<hr>【<color=Keyword>入场曲</color>】选择对手的战场上的1个随从，对其造成3点伤害。
+""";
+    }
+
+    locale eng {
+        name "Bombastic Bombardier";
+        text """
+Activates in hand. Whenever an allied follower super-evolves, set the cost of this card to 1.
+<hr><b><color=Keyword>Fanfare</color></b>: Select an enemy follower on the field and deal it 3 damage.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きょくそう\">曲走</rub>の<rub=\"こうへい\">工兵</rub>";
+        text """
+手札で働く。自分のフォロワーが超進化したとき、これのコストを1にする。
+<hr>【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー1枚を選ぶ。それに3ダメージ。
+""";
+    }
+
+    locale kor {
+        name "곡주의 공병";
+        text """
+패에서 발동. 내 추종자가 초진화했을 때, 이 추종자의 비용을 1로 만든다.
+<hr>[<color=Keyword>출격</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 3 피해.
+""";
+    }
+
+    locale cht {
+        name "奔躍工兵";
+        text """
+於手牌中發動。當自己的從者卡超進化時，使這張卡片的消費轉變為1。
+<hr>【<color=Keyword>入場曲</color>】指定1張敵方戰場上的從者卡。給予其3點傷害。
+""";
+    }
+
+}

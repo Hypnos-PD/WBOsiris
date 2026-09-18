@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10711120 {
+    type follower;
+    cost 1;
+    stats 1/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "精灵陷阱师";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的1张手牌，使其返回牌组。将2张『<color=Keyword>妖精</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Elven Trapper";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a card in your hand and return it to deck. Add 2 copies of <b><i><color=Keyword>Fairy</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "エルフトラッパー";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札1枚を選ぶ。それをデッキに戻す。『<color=Keyword>フェアリー</color>』2枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "엘프 트래퍼";
+        text """
+[<color=Keyword>출격</color>] 내 패에서 1장을 선택한다. 그 카드를 덱으로 되돌린다. <color=Keyword>요정</color> 2장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "精靈陷阱師";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己手牌中的卡片。使其返回牌堆中。增加2張『<color=Keyword>妖精</color>』到自己的手牌中。
+""";
+    }
+
+}

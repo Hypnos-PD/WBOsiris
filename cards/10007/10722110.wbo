@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10722110 {
+    type follower;
+    cost 2;
+    stats 2/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "听略谍报兵";
+        text """
+【<color=Keyword>谢幕曲</color>】召唤1个『<color=Keyword>骑士</color>』。
+<hr><ev>【<color=Keyword>进化时</color>】选择对手的战场上的1个随从，对其造成3点伤害。</ev>
+""";
+    }
+
+    locale eng {
+        name "Sharp-Eared Operative";
+        text """
+<b><color=Keyword>Last Words</color></b>: Summon a <b><i><color=Keyword>Knight</color></i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select an enemy follower on the field and deal it 3 damage.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ちょうりゃく\">聴略</rub>の<rub=\"ちょうほうへい\">諜報兵</rub>";
+        text """
+【<color=Keyword>ラストワード</color>】『<color=Keyword>ナイト</color>』1枚を自分の場に出す。
+<hr><ev>【<color=Keyword>進化時</color>】相手の場のフォロワー1枚を選ぶ。それに3ダメージ。</ev>
+""";
+    }
+
+    locale kor {
+        name "청략의 첩보병";
+        text """
+[<color=Keyword>유언</color>] <color=Keyword>기사</color> 1장을 내 전장에 소환.
+<hr><ev>[<color=Keyword>진화시</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 3 피해.</ev>
+""";
+    }
+
+    locale cht {
+        name "策聽諜報兵";
+        text """
+【<color=Keyword>謝幕曲</color>】召喚1張『<color=Keyword>騎士</color>』到自己的戰場上。
+<hr><ev>【<color=Keyword>進化時</color>】指定1張敵方戰場上的從者卡。給予其3點傷害。</ev>
+""";
+    }
+
+}

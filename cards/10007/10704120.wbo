@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10704120 {
+    type follower;
+    cost 3;
+    stats 0/3;
+
+    effect {
+        stealth;
+        when own turn ends {
+            draw 1;
+        }
+    }
+
+    meta {
+        pack 10007;
+        class neutral;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "巴别隆市长·埃尔塔罗";
+        text """
+【<color=Keyword>潜行</color>】
+自己的回合结束时，抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Altaro, Mayor of Babelon";
+        text """
+<b><color=Keyword>Ambush</color></b>
+At the end of your turn, draw a card.
+""";
+    }
+
+    locale jpn {
+        name "バベロンメイヤー・エルタロ";
+        text """
+【<color=Keyword>潜伏</color>】
+自分のターン終了時、自分のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "바베론 시장 엘타로";
+        text """
+[<color=Keyword>잠복</color>]
+내 턴 종료시, 내 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "巴貝倫的市長‧艾爾塔路";
+        text """
+【<color=Keyword>潛行</color>】
+自己的回合結束時，由自己的牌堆中抽取1張卡片。
+""";
+    }
+
+}

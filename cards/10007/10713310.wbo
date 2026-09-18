@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10713310 {
+    type spell;
+    cost 1;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class forestcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "恶意扩大";
+        text """
+对对手的战场上的随机1个随从造成2点伤害。【<color=Keyword>连击</color>_3】使自己获得『纹章：恶意扩大』。
+""";
+    }
+
+    locale eng {
+        name "Magnified Malice";
+        text """
+Deal 2 damage to a random enemy follower. <b><color=Keyword>Combo</color> (3)</b> - Gain <b><i>Crest: Magnified Malice</i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"がいい\">害意</rub>の<rub=\"かくだい\">拡大</rub>";
+        text """
+相手の場のフォロワーからランダム1枚に2ダメージ。【<color=Keyword>コンボ</color>_3】自分は『クレスト：害意の拡大』を持つ。
+""";
+    }
+
+    locale kor {
+        name "해의의 확대";
+        text """
+상대방 전장의 추종자 중 무작위로 1장에게 2 피해. [<color=Keyword>콤보</color> 3] 나는 「크레스트: 해의의 확대」를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "擴大惡意";
+        text """
+隨機給予1張敵方戰場上的從者卡2點傷害。【<color=Keyword>連擊</color>_3】使自己獲得『紋章：擴大惡意』。
+""";
+    }
+
+}

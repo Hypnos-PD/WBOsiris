@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10732120 {
+    type follower;
+    cost 2;
+    stats 1/3;
+
+    effect {
+        ward;
+        fanfare {
+            add 2 earthsigil;
+        }
+    }
+
+    meta {
+        pack 10007;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "甜蜜猎食者";
+        text """
+【<color=Keyword>入场曲</color>】使自己的战场上的土之印+2。
+<hr>【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Pretty Predator";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Gain 2 earth sigils.
+<hr><b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "プリティープレデター";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の場の土の印を+2する。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "프리티 프레데터";
+        text """
+[<color=Keyword>출격</color>] 내 전장의 대지의 인장을 +2.
+<hr>[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "俏麗的捕食者";
+        text """
+【<color=Keyword>入場曲</color>】使自己戰場上的土之印+2。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+}

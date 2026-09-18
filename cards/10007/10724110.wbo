@@ -1,0 +1,64 @@
+wbo 0.1.0;
+
+card 10724110 {
+    type follower;
+    cost 4;
+    stats 4/4;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class swordcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "统音的安纳提玛·吉尔达利娅";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>协作</color>_20】使自己获得『纹章：统音的安纳提玛·吉尔达利娅』。本随从进化。
+<hr>自己的其他随从进入战场时，若为自己的回合，则使其获得【<color=Keyword>突进</color>】。
+<hr><ev>本随从进化时，召唤2个『<color=Keyword>铁甲骑士</color>』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Gildaria, Anathema of Attunement";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Rally</color> (20)</b> - Gain <b><i>Crest: Gildaria, Anathema of Attunement</i></b>. Evolve this follower.
+<hr>During your turn, whenever another allied follower enters the field, give it <b><color=Keyword>Rush</color></b>.
+<hr><ev>When this follower evolves, summon 2 copies of <b><i><color=Keyword>Steelclad Knight</color></i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"とうおん\">統音</rub>のアナテマ・ギルダリア";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>連携</color>_20】自分は『クレスト：統音のアナテマ・ギルダリア』を持つ。これは進化する。
+<hr>自分の他のフォロワーが場に出たとき、自分のターンなら、それは【<color=Keyword>突進</color>】を持つ。
+<hr><ev>これが進化したとき、『<color=Keyword>スティールナイト</color>』2枚を自分の場に出す。</ev>
+""";
+    }
+
+    locale kor {
+        name "통음의 아나테마 기르다리아";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>연계</color> 20] 나는 「크레스트: 통음의 아나테마 기르다리아」를 갖는다. 이 추종자는 진화한다.
+<hr>내 다른 추종자가 전장에 소환되었을 때 내 턴이라면, 그 추종자는 [<color=Keyword>돌진</color>]을 갖는다.
+<hr><ev>이 추종자가 진화했을 때, <color=Keyword>철갑 기사</color> 2장을 내 전장에 소환.</ev>
+""";
+    }
+
+    locale cht {
+        name "統音的弒滅者‧吉露塔利亞";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>協作</color>_20】使自己獲得『紋章：統音的弒滅者‧吉露塔利亞』。使這張卡片進化。
+<hr>當自己的其他從者卡進入戰場時，如果是自己的回合，則會使其獲得【<color=Keyword>突進</color>】。
+<hr><ev>當這張卡片進化時，召喚2張『<color=Keyword>鐵甲騎士</color>』到自己的戰場上。</ev>
+""";
+    }
+
+}

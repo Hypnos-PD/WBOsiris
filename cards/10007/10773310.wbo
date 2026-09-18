@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10773310 {
+    type spell;
+    cost 3;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class portalcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "瞬移斩击";
+        text """
+对对手的战场上的所有随从造成X点伤害。X为本次对战中进入战场的自己的创造物·随从的种类。对对手的主战者造成1点伤害。
+""";
+    }
+
+    locale eng {
+        name "Warp Slash";
+        text """
+Deal X damage to all enemy followers. X is the number of differently named allied Artifact followers that have entered the field this match. Deal 1 damage to the enemy leader.
+""";
+    }
+
+    locale jpn {
+        name "テレポートスラッシュ";
+        text """
+相手の場のフォロワーすべてにXダメージ。Xはこのバトル中に場に出た自分のアーティファクト・フォロワーの種類である。相手のリーダーに1ダメージ。
+""";
+    }
+
+    locale kor {
+        name "텔레포트 슬래시";
+        text """
+상대방 전장의 추종자 모두에게 X 피해. X는 이번 대전에서 전장에 소환된 내 아티팩트 추종자의 종류 수. 상대방 리더에게 1 피해.
+""";
+    }
+
+    locale cht {
+        name "瞬移斬擊";
+        text """
+給予敵方戰場上全部的從者卡X點傷害。X為「本次對戰中自己已進入戰場的創造物‧從者卡種類數」。給予敵方的主戰者1點傷害。
+""";
+    }
+
+}

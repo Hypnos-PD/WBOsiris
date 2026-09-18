@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10772310 {
+    type spell;
+    cost 2;
+    trait anathema;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10007;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "闪光一瞬";
+        text """
+使自己的战场上的所有随从+1/+0。若为超进化已解禁的回合，则使自己的手牌中的所有随从+1/+0。
+""";
+    }
+
+    locale eng {
+        name "Blink Step";
+        text """
+Give all allied followers on the field +1/+0. If you've unlocked super-evolution, give all followers in your hand +1/+0.
+""";
+    }
+
+    locale jpn {
+        name "フラッシュブリンク";
+        text """
+自分の場のフォロワーすべては+1/+0する。超進化可能ターンなら、自分の手札のフォロワーすべては+1/+0する。
+""";
+    }
+
+    locale kor {
+        name "플래시 블링크";
+        text """
+내 전장의 추종자 모두는 +1/+0. 초진화 가능 턴이라면, 내 패의 추종자 모두는 +1/+0.
+""";
+    }
+
+    locale cht {
+        name "閃影瞬行";
+        text """
+使自己戰場上全部的從者卡+1/+0。如果為已超進化解禁的回合，則會使自己手牌中全部的從者卡+1/+0。
+""";
+    }
+
+}

@@ -1,0 +1,223 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "纯真孩童进化时只抽取中立卡牌" {
+    seed 75001;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field { follower source = 10701110; }
+            deck top {
+                follower neutralcard = 10001110;
+                follower forestcard = 10011110;
+            }
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        own.hand count card 10001110 == 1;
+        own.hand count card 10011110 == 0;
+        own.deck count card 10011110 == 1;
+    }
+}
+
+scenario "颓废之泪让对手的护符消失" {
+    seed 75002;
+    state {
+        player own {
+            pp 4/4;
+            hand { spell source = 10701310; }
+        }
+        player oppo {
+            field { amulet relic = 10001210; }
+        }
+    }
+    action { play source; select relic; }
+    expect { legal; relic.zone == banished; }
+}
+
+scenario "巴别隆市长潜行并在回合结束时抽牌" {
+    seed 75003;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10704120; }
+            deck top { follower next = 10001110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has stealth; own.hand count card 10001110 == 0; }
+}
+
+scenario "巴别隆市长的回合结束能力抽一张牌" {
+    seed 75004;
+    state {
+        player own {
+            field { follower source = 10704120; }
+            deck top { follower next = 10001110; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; own.hand count card 10001110 == 1; }
+}
+
+scenario "绿风细剑师在连击3时获得疾驰" {
+    seed 75005;
+    state {
+        player own {
+            pp 2/2;
+            combo 3;
+            hand { follower source = 10712110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has storm; }
+}
+
+scenario "绿风细剑师在连击不足时没有疾驰" {
+    seed 75006;
+    state {
+        player own {
+            pp 2/2;
+            // 连击把本张牌自己算进去：连击 1 时打出后是 2，还不到 3。
+            combo 1;
+            hand { follower source = 10712110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source lacks storm; }
+}
+
+scenario "暗夜键盘手的谢幕曲把蝙蝠加入手牌" {
+    seed 75007;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10751110; }
+            hand { spell remover = 90074310; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; source.zone == graveyard; own.hand count card 90051120 == 1; }
+}
+
+scenario "小巧捕食者用土之秘术进化自己" {
+    seed 75008;
+    state {
+        player own {
+            pp 4/4;
+            field { amulet sigil = 90031210 { earthsigil 1; } }
+            hand { follower source = 10731110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == true; sigil.earthsigil == 0; }
+}
+
+scenario "甜蜜猎食者的土之印不足时召唤带两层土之印的护符" {
+    seed 75009;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10732120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has ward; own.earthsigils == 2; }
+}
+
+scenario "人格切换把手牌两张放回牌组再抽两张" {
+    seed 75010;
+    state {
+        player own {
+            pp 1/1;
+            hand {
+                spell source = 10711310;
+                follower first = 10001110;
+                follower second = 10001120;
+            }
+        }
+    }
+    action { play source; select first, second; }
+    expect {
+        legal;
+        // 牌组原本是空的：两张牌必须先回到牌组才可能再被抽回手牌。
+        own.hand count card 10001110 == 1;
+        own.hand count card 10001120 == 1;
+        own.deck count card 10001110 == 0;
+        own.deck count card 10001120 == 0;
+    }
+}
+
+scenario "传调联络兵召唤骑士并把铁甲骑士加入手牌" {
+    seed 75011;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10721120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90021110 == 1;
+        own.hand count card 90021120 == 1;
+    }
+}
+
+scenario "神话记者的谢幕曲抽牌" {
+    seed 75012;
+    state {
+        player own {
+            pp 1/1;
+            field { follower source = 10702110; }
+            hand { spell remover = 90074310; }
+            deck top { follower next = 10001110; }
+        }
+    }
+    action { play remover; select source; }
+    expect { legal; own.hand count card 10001110 == 1; }
+}
+
+scenario "神话记者超进化时召唤两个自己" {
+    seed 75013;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10702110; }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; own.field count card 10702110 == 3; }
+}
+
+scenario "焦龙的午睡在未觉醒时只回复生命值" {
+    seed 75014;
+    state {
+        player own {
+            leader 10/20;
+            pp 3/3;
+            hand { spell source = 10742310; }
+            deck top { follower next = 10001110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 13; own.hand count card 10001110 == 0; }
+}
+
+scenario "焦龙的午睡在觉醒时追加抽一张牌" {
+    seed 75015;
+    state {
+        player own {
+            leader 10/20;
+            pp 7/7;
+            hand { spell source = 10742310; }
+            deck top { follower next = 10001110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 13; own.hand count card 10001110 == 1; }
+}

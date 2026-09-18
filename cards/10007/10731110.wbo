@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10731110 {
+    type follower;
+    cost 4;
+    stats 2/6;
+
+    effect {
+        ward;
+        fanfare {
+            earthrite 1 {
+                evolve self silent;
+            }
+        }
+    }
+
+    meta {
+        pack 10007;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "小巧捕食者";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>土之秘术</color>_1】本随从进化。
+<hr>【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Dainty Horror";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Earth Rite</color> (1)</b> - Evolve this follower.
+<hr><b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "ディンキークリーチャー";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>土の秘術</color>_1】これは進化する。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "딩키 크리처";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>대지의 비술</color> 1] 이 추종자는 진화한다.
+<hr>[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "嬌巧生物";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>土之秘術</color>_1】使這張卡片進化。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+}
