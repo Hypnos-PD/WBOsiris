@@ -325,6 +325,9 @@ func parseBaseEventPattern(t []syntax.Token) (int, string, bool) {
 	if len(t) == 3 && values(t) == "when self discarded" {
 		return 3, "card", true
 	}
+	if len(t) == 3 && values(t) == "when self drawn" {
+		return 3, "card", true
+	}
 	if len(t) == 3 && t[0].Value == "when" && t[1].Value == "self" && set("evolved", "super_evolved", "summoned")[t[2].Value] {
 		return 3, "follower", true
 	}
@@ -351,7 +354,7 @@ func parseBaseEventPattern(t []syntax.Token) (int, string, bool) {
 	if t[2].Value == "follower" && set("evolved", "super_evolved")[t[3].Value] {
 		return 4, "follower", true
 	}
-	if t[2].Value == "card" && set("discarded", "fused", "played")[t[3].Value] {
+	if t[2].Value == "card" && set("discarded", "fused", "played", "drawn")[t[3].Value] {
 		return 4, "card", true
 	}
 	if len(t) >= 5 && values(t[2:5]) == "follower leaves field" {

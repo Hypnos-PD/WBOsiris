@@ -6,7 +6,15 @@ card 10562120 {
     stats 1/3;
 
     effect {
-        unplayable;
+        fanfare {
+            draw 1;
+        }
+        when own card drawn during own turn {
+            damage oppo.field.followers 1;
+        }
+        evolve {
+            draw 1;
+        }
     }
 
     meta {

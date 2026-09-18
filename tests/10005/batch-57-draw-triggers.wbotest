@@ -1,0 +1,112 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "爆能强化四点让连结的使徒抽牌并获得毁灭与突进" {
+    seed 57001;
+    state {
+        player own {
+            pp 4/4;
+            deck top { follower drew = 10001110; }
+            hand { follower source = 10561120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10001110 == 1; source has bane; source has rush; }
+}
+
+scenario "未爆能强化的连结的使徒不会抽牌" {
+    seed 57002;
+    state {
+        player own {
+            pp 1/1;
+            deck top { follower drew = 10001110; }
+            hand { follower source = 10561120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10001110 == 0; source lacks bane; source lacks rush; }
+}
+
+scenario "其他卡牌抽牌时连结的使徒获得突进" {
+    seed 57003;
+    state {
+        player own {
+            pp 1/1;
+            field { follower apostle = 10561120; }
+            deck top { follower drew = 10001110; }
+            hand { spell source = 10571310; }
+        }
+    }
+    action { play source; }
+    expect { legal; apostle has rush; }
+}
+
+scenario "抽到迅猛的武术家时其费用变为三点" {
+    seed 57004;
+    state {
+        player own {
+            pp 1/1;
+            deck top { follower martial = 10522110; }
+            hand { spell source = 10571310; }
+        }
+    }
+    action { play source; }
+    expect { legal; martial.cost == 3; }
+}
+
+scenario "迅猛的武术家的入场曲抽牌并回复主战者" {
+    seed 57005;
+    state {
+        player own {
+            leader 10/20;
+            pp 6/6;
+            deck top { follower drew = 10001110; }
+            hand { follower source = 10522110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10001110 == 1; own.leader.life == 13; source has rush; }
+}
+
+scenario "穷途末路的巫女的入场曲抽牌" {
+    seed 57006;
+    state {
+        player own {
+            pp 5/5;
+            deck top { follower drew = 10001110; }
+            hand { follower source = 10562120; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10001110 == 1; }
+}
+
+scenario "自己抽牌时穷途末路的巫女打击敌方全体" {
+    seed 57007;
+    state {
+        player own {
+            pp 1/1;
+            field { follower shrine = 10562120; }
+            deck top { follower drew = 10001110; }
+            hand { spell source = 10571310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect { legal; enemy.stats == 2/7; }
+}
+
+scenario "穷途末路的巫女进化时再次抽牌并打击敌方全体" {
+    seed 57008;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            field { follower shrine = 10562120; }
+            deck top { follower drew = 10001110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { evolve shrine; }
+    expect { legal; own.hand count card 10001110 == 1; enemy.stats == 2/7; }
+}

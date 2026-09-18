@@ -6,7 +6,13 @@ card 10561120 {
     stats 1/1;
 
     effect {
-        unplayable;
+        enhance 4 {
+            draw 1;
+            add bane to self;
+        }
+        when own card drawn during own turn {
+            add rush to self;
+        }
     }
 
     meta {

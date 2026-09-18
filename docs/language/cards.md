@@ -1305,6 +1305,11 @@ when own turn ends {
 （`self survives damage during own turn`、`when own leader healed during own turn`），
 用于"若为自己的回合"这类条件。
 
+抽牌事件写作 `when own card drawn [during own turn] { … }`，绑定名 `drawn` 指向被抽到的实例
+（可以当数值用，例如 `damage oppo.field.followers drawn.cost;`）。
+"抽到本卡牌时"写作 `when self drawn { set cost self 3 until turn ends; }`：
+监听在该实例进入手牌后触发，每次抽到都会按张结算。
+
 场上事件监听也可以显式限制为在手牌中发动：
 
 ```wbo

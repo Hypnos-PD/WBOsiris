@@ -6,7 +6,14 @@ card 10522110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        rush;
+        when self drawn {
+            set cost self 3 until turn ends;
+        }
+        fanfare {
+            draw 1;
+            heal own.leader 3;
+        }
     }
 
     meta {

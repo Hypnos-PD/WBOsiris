@@ -835,6 +835,10 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 		if t[2].Value == "discarded" {
 			return ir.EventTrigger{Kind: "event", Event: "card_discarded", Side: "own", SelfOnly: true}
 		}
+		if t[2].Value == "drawn" {
+			// "抽到本卡牌时"：本实例从牌组进入手牌的瞬间；监听在持有者手牌中生效。
+			return ir.EventTrigger{Kind: "event", Event: "card_drawn", Side: "own", SelfOnly: true, SourceZone: "hand"}
+		}
 		if t[2].Value == "summoned" {
 			return ir.EventTrigger{Kind: "event", Event: "follower_summoned", Side: "own", SubjectType: "follower", SelfOnly: true}
 		}
@@ -856,7 +860,7 @@ func eventPatternIR(t []syntax.Token) ir.Trigger {
 		if len(t) >= 5 && m.SubjectType == "follower" && (values(t[3:5]) == "stats increased" || values(t[3:5]) == "life decreased") {
 			m.Event = map[string]string{"stats increased": "stats_increased", "life decreased": "life_decreased"}[values(t[3:5])]
 		} else {
-			m.Event = map[string]string{"summoned": "follower_summoned", "leaves": "follower_left", "survives": "damaged", "destroyed": "destroyed", "healed": "healed", "fused": "card_fused", "engaged": "amulet_engaged", "discarded": "card_discarded", "played": "card_played", "evolved": "evolved", "super_evolved": "super_evolved", "increased": "stats_increased", "decreased": "life_decreased"}[t[3].Value]
+			m.Event = map[string]string{"summoned": "follower_summoned", "leaves": "follower_left", "survives": "damaged", "destroyed": "destroyed", "healed": "healed", "fused": "card_fused", "engaged": "amulet_engaged", "discarded": "card_discarded", "played": "card_played", "drawn": "card_drawn", "evolved": "evolved", "super_evolved": "super_evolved", "increased": "stats_increased", "decreased": "life_decreased"}[t[3].Value]
 		}
 		if m.Event == "follower_summoned" && m.SubjectType == "amulet" {
 			m.Event = "amulet_summoned"

@@ -461,7 +461,7 @@ func (g *game) draw(e ir.DrawEffect, self *instance, f frame) {
 		return
 	}
 	event := ir.RuntimeEvent{Kind: "card_drawn", Side: ownSide, Count: count}
-	if !g.emit(event) || !g.queueEventTriggers(event, nil, "") {
+	if !g.emit(event) {
 		return
 	}
 	var drawn []*instance
@@ -481,6 +481,7 @@ func (g *game) draw(e ir.DrawEffect, self *instance, f frame) {
 		g.putInHandOrOverdraw(own, i)
 		if i.zone == "hand" {
 			f[e.Output] = append(f[e.Output], bindEntities(i)...)
+			g.triggerDrawn(i)
 		}
 	}
 	kept := own.deck[:0]
@@ -493,6 +494,16 @@ func (g *game) draw(e ir.DrawEffect, self *instance, f frame) {
 	if g.firstPlayer != "" && e.Predicate == nil && !e.All && count < e.Count {
 		g.finishGame(oppositeSide(ownSide))
 	}
+}
+
+// triggerDrawn 按"抽到的每一张卡"派发抽牌监听（公开事实仍然只记一次聚合事件）。
+func (g *game) triggerDrawn(card *instance) {
+	if card == nil || card.zone != "hand" {
+		return
+	}
+	event := ir.RuntimeEvent{Kind: "card_drawn", Side: g.sideOf(card), Count: 1,
+		Subject: &ir.EventTarget{Kind: "instance", InstanceID: card.id, CardID: card.card.ID}}
+	g.queueEventTriggers(event, card, "drawn")
 }
 
 func (g *game) putInHandOrOverdraw(owner *player, card *instance) {
