@@ -20,6 +20,7 @@
 - [对局线协议](tooling/wire-protocol.md)：状态/动作/选择/推送流，以及写外部 bot 的最小循环。
 - [部署](tooling/deployment.md)：规则服务挂在 WBA 的 `/wbo/` 前缀、账号沿用 WBArts JWT、单实例约束。
 - [桌面客户端](tooling/desktop-client.md)：Go + Wails 的客户端、素材放包内、AppImage 预处理与发布。
+- [训练环境协议](tooling/env-protocol.md)：`wbo env` 的 JSON-lines 协议（供 WBDecima 驱动）。
 
 ## 规则
 

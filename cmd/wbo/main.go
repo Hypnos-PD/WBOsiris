@@ -39,6 +39,8 @@ func main() {
 		code = runSimulate(os.Args[2:])
 	case "selfplay":
 		code = runSelfplay(os.Args[2:])
+	case "env":
+		code = runEnv(os.Args[2:])
 	case "serve":
 		code = runServe(os.Args[2:])
 	default:
@@ -48,7 +50,7 @@ func main() {
 	os.Exit(code)
 }
 func usage() {
-	fmt.Fprintln(os.Stderr, "用法: wbo <check|format|compile|test|simulate|selfplay|serve> [选项] PATH...")
+	fmt.Fprintln(os.Stderr, "用法: wbo <check|format|compile|test|simulate|selfplay|env|serve> [选项] PATH...")
 }
 
 func runCheck(args []string) int {
