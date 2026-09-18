@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10534110 {
+    type follower;
+    cost 1;
+    stats 1/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "漫步的《愚者》·琳库露";
+        text """
+【<color=Keyword>入场曲</color>】使自己获得『纹章：漫步的《愚者》·琳库露』。
+<hr>【<color=Keyword>突进</color>】
+<hr><sev>【<color=Keyword>超进化时</color>】将10张『<color=Keyword>漫步的《愚者》·琳库露</color>』加入牌组。</sev>
+""";
+    }
+
+    locale eng {
+        name "Lhynkal, Wandering Fool";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Gain <b><i>Crest: Lhynkal, Wandering Fool</i></b>.
+<hr><b><color=Keyword>Rush</color></b>
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Add 10 copies of <b><i><color=Keyword>Lhynkal, Wandering Fool</color></i></b> to your deck.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あゆ\">歩</rub>む《<rub=\"ぐしゃ\">愚者</rub>》・リンクル";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分は『クレスト：歩む《愚者》・リンクル』を持つ。
+<hr>【<color=Keyword>突進</color>】
+<hr><sev>【<color=Keyword>超進化時</color>】『<color=Keyword>歩む《愚者》・リンクル</color>』10枚を自分のデッキに加える。</sev>
+""";
+    }
+
+    locale kor {
+        name "걸어 나가는 《광대》 링클";
+        text """
+[<color=Keyword>출격</color>] 나는 「크레스트: 걸어 나가는 《광대》 링클」을 갖는다.
+<hr>[<color=Keyword>돌진</color>]
+<hr><sev>[<color=Keyword>초진화시</color>] <color=Keyword>걸어 나가는 《광대》 링클</color> 10장을 내 덱에 넣는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "步履《愚者》‧琳庫露";
+        text """
+【<color=Keyword>入場曲</color>】使自己獲得『紋章：步履《愚者》‧琳庫露』。
+<hr>【<color=Keyword>突進</color>】
+<hr><sev>【<color=Keyword>超進化時</color>】增加10張『<color=Keyword>步履《愚者》‧琳庫露</color>』到自己的牌堆中。</sev>
+""";
+    }
+
+}

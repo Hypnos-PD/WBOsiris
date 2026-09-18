@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10573310 {
+    type spell;
+    cost 1;
+
+    effect {
+        require target from field;
+        transform target into card 90074140;
+    }
+
+    meta {
+        pack 10005;
+        class portalcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "诚心的尽小花";
+        text """
+选择战场上的1张卡牌，使其变身为『<color=Keyword>伊鞠的小鬼</color>』。
+""";
+    }
+
+    locale eng {
+        name "Sincerity of the Dewdrop";
+        text """
+Select a card on the field and transform it into an <b><i><color=Keyword>Imari's Little Buddies</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"せいしん\">誠心</rub>なる<rub=\"つきこばな\">尽小花</rub>";
+        text """
+場のカード1枚を選ぶ。それは『<color=Keyword>イマリの小鬼</color>』に変身する。
+""";
+    }
+
+    locale kor {
+        name "정성스러운 진소화";
+        text """
+전장에서 카드 1장을 선택한다. 그 카드는 <color=Keyword>이마리의 꼬마 깨비</color>로 변신한다.
+""";
+    }
+
+    locale cht {
+        name "誠心的盡小花";
+        text """
+指定1張戰場上的卡片。使其變身為『<color=Keyword>伊萬里的小鬼</color>』。
+""";
+    }
+
+}

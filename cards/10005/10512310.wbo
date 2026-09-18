@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10512310 {
+    type spell;
+    cost 3;
+
+    effect {
+        damage field.followers 1;
+        damage oppo.leader 1;
+        if combo >= 3 {
+            damage field.followers 1;
+            damage oppo.leader 1;
+        }
+    }
+
+    meta {
+        pack 10005;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "寂静的助力";
+        text """
+对对手的战场上的所有随从和对手的主战者造成1点伤害。【<color=Keyword>连击</color>_3】改为2点伤害。
+""";
+    }
+
+    locale eng {
+        name "Quiet Encouragement";
+        text """
+Deal 1 damage to all enemies. <b><color=Keyword>Combo</color> (3)</b> - Deal 2 damage instead.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しず\">静</rub>かなる<rub=\"おうえん\">応援</rub>";
+        text """
+相手の場のフォロワーすべてと相手のリーダーに1ダメージ。【<color=Keyword>コンボ</color>_3】1ダメージではなく2ダメージ。
+""";
+    }
+
+    locale kor {
+        name "고요한 응원";
+        text """
+상대방 전장의 추종자 모두와 상대방 리더에게 1 피해. [<color=Keyword>콤보</color> 3] 1 피해 대신 2 피해.
+""";
+    }
+
+    locale cht {
+        name "寧靜的鼓舞";
+        text """
+給予敵方戰場上全部的從者卡與敵方的主戰者1點傷害。【<color=Keyword>連擊</color>_3】由原本的1點傷害轉變為2點傷害。
+""";
+    }
+
+}

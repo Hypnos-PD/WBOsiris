@@ -1,0 +1,54 @@
+wbo 0.1.0;
+
+card 10531310 {
+    type spell;
+    cost 2;
+
+    effect {
+        require target from own.hand;
+        discard target;
+        draw 2;
+    }
+
+    meta {
+        pack 10005;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "明越花的转变";
+        text """
+选择自己的1张手牌，舍弃该手牌。抽取2张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Metamorphosis of the Dawnblossom";
+        text """
+Select a card in your hand and discard it. Draw 2 cards.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あけごえばな\">明越花</rub>の<rub=\"てんぺん\">転変</rub>";
+        text """
+自分の手札1枚を選ぶ。それを捨てる。自分のデッキから2枚を引く。
+""";
+    }
+
+    locale kor {
+        name "명월화의 변화";
+        text """
+내 패에서 1장을 선택한다. 그 카드를 버린다. 내 덱에서 2장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "明越花的轉變";
+        text """
+指定1張自己手牌中的卡片。將其捨棄。由自己的牌堆中抽取2張卡片。
+""";
+    }
+
+}

@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10562110 {
+    type follower;
+    cost 8;
+    stats 4/4;
+
+    effect {
+        ward;
+        fanfare {
+            summon 3 card 10562110;
+        }
+    }
+
+    meta {
+        pack 10005;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "毫不动摇的圣骑士";
+        text """
+【<color=Keyword>入场曲</color>】召唤3个『<color=Keyword>毫不动摇的圣骑士</color>』。
+<hr>【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Immovable Paladin";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon 3 copies of <b><i><color=Keyword>Immovable Paladin</color></i></b>.
+<hr><b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "イムーバブルパラディン";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>イムーバブルパラディン</color>』3枚を自分の場に出す。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "미동 없는 성기사";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>미동 없는 성기사</color> 3장을 내 전장에 소환.
+<hr>[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "堅定不移的聖騎士";
+        text """
+【<color=Keyword>入場曲</color>】召喚3張『<color=Keyword>堅定不移的聖騎士</color>』到自己的戰場上。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+}

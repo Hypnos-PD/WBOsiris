@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10554120 {
+    type follower;
+    cost 10;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class abysscraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "奥夜花·释藤";
+        text """
+【<color=Keyword>入场曲</color>】发动2次「使自己的所有手牌返回牌组。抽取X张卡牌。X为因本能力返回牌组的张数。之后，若自己的手牌中有4张或以上费用相同的卡牌，则对对手的战场上的所有随从和对手的主战者造成4点伤害」。
+<hr><sev>【<color=Keyword>超进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</sev>
+""";
+    }
+
+    locale eng {
+        name "Shakdoh, Nightblossom";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Do this 2 times: \"Return your hand to deck. Draw X cards. X is the number of cards you returned. Then, if you have at least 4 cards with the same cost in your hand, deal 4 damage to all enemies.\"
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"おくよばな\">奥夜花</rub>・シャクドウ";
+        text """
+【<color=Keyword>ファンファーレ</color>】「自分の手札すべてをデッキに戻す。自分のデッキからX枚を引く。Xはこれでデッキに戻した枚数である。その後、自分の手札に4枚以上同じコストがあるなら、相手の場のフォロワーすべてと相手のリーダーに4ダメージ。」を2回行う。
+<hr><sev>【<color=Keyword>超進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</sev>
+""";
+    }
+
+    locale kor {
+        name "오야화 샤크도";
+        text """
+[<color=Keyword>출격</color>] 「내 패 모두를 덱으로 되돌린다. 내 덱에서 X장을 뽑는다. X는 이 능력으로 덱으로 되돌린 카드 수. 그다음 내 패에 비용이 같은 카드가 4장 이상이라면, 상대방 전장의 추종자 모두와 상대방 리더에게 4 피해」를 2회 발동.
+<hr><sev>[<color=Keyword>초진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</sev>
+""";
+    }
+
+    locale cht {
+        name "奧夜花‧釋銅";
+        text """
+【<color=Keyword>入場曲</color>】發動2次「使自己手牌中全部的卡片返回牌堆中。由自己的牌堆中抽取X張卡片。X為「因這張卡片而返回牌堆的卡片張數」。隨後，如果自己手牌中有4張以上相同消費的卡片，則會給予敵方戰場上全部的從者卡與敵方的主戰者4點傷害」。
+<hr><sev>【<color=Keyword>超進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</sev>
+""";
+    }
+
+}

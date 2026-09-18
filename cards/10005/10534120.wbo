@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10534120 {
+    type follower;
+    cost 10;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "明越花·阿罗";
+        text """
+【<color=Keyword>魔力增幅时</color>】使本卡牌的费用-1。
+<hr>【<color=Keyword>入场曲</color>】选择对手的战场上的1个随从，对其造成10点伤害。
+<hr><ev>【<color=Keyword>进化时</color>】选择战场上的1个其他随从，使其变身为『<color=Keyword>壮丽大神隼</color>』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Ara, Dawnblossom";
+        text """
+<b><color=Keyword>On Spellboost</color></b>: Reduce the cost of this card by 1.
+<hr><b><color=Keyword>Fanfare</color></b>: Select an enemy follower on the field and deal it 10 damage.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select another follower on the field and transform it into a <b><i><color=Keyword>Regal Falcon</color></i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あけごえばな\">明越花</rub>・アラ";
+        text """
+【<color=Keyword>スペルブースト時</color>】これのコストを-1する。
+<hr>【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー1枚を選ぶ。それに10ダメージ。
+<hr><ev>【<color=Keyword>進化時</color>】場の他のフォロワー1枚を選ぶ。それは『<color=Keyword>壮麗なる隼</color>』に変身する。</ev>
+""";
+    }
+
+    locale kor {
+        name "명월화 아라";
+        text """
+[<color=Keyword>주문증폭시</color>] 이 추종자의 비용을 -1.
+<hr>[<color=Keyword>출격</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 10 피해.
+<hr><ev>[<color=Keyword>진화시</color>] 전장에서 다른 추종자 1장을 선택한다. 그 추종자는 <color=Keyword>거대한 매</color>로 변신한다.</ev>
+""";
+    }
+
+    locale cht {
+        name "明越花‧鴉良";
+        text """
+【<color=Keyword>魔力增幅時</color>】使這張卡片的消費-1。
+<hr>【<color=Keyword>入場曲</color>】指定1張敵方戰場上的從者卡。給予其10點傷害。
+<hr><ev>【<color=Keyword>進化時</color>】指定1張戰場上的其他從者卡。使其變身為『<color=Keyword>壯麗大神隼</color>』。</ev>
+""";
+    }
+
+}

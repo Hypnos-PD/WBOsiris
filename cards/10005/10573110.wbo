@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10573110 {
+    type follower;
+    cost 5;
+    stats 4/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class portalcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "神经遮蔽者";
+        text """
+【<color=Keyword>入场曲</color>】回复自己X点能量点。X为自己的战场上的其他随从的张数。
+<hr>【<color=Keyword>突进</color>】
+【<color=Keyword>谢幕曲</color>】抽取2张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Neuron Disrupter";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Recover X play points. X is the number of other allied followers on the field.
+<hr><b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Last Words</color></b>: Draw 2 cards.
+""";
+    }
+
+    locale jpn {
+        name "ニューロンインタラプター";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のPPをX回復。Xは自分の場の他のフォロワーの枚数である。
+<hr>【<color=Keyword>突進</color>】
+【<color=Keyword>ラストワード</color>】自分のデッキから2枚を引く。
+""";
+    }
+
+    locale kor {
+        name "뉴런 인터럽터";
+        text """
+[<color=Keyword>출격</color>] 내 PP를 X 회복. X는 내 전장의 다른 추종자 수.
+<hr>[<color=Keyword>돌진</color>]
+[<color=Keyword>유언</color>] 내 덱에서 2장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "感知斷絕者";
+        text """
+【<color=Keyword>入場曲</color>】回復自己的PP X點。X為「自己戰場上的其他從者卡張數」。
+<hr>【<color=Keyword>突進</color>】
+【<color=Keyword>謝幕曲</color>】由自己的牌堆中抽取2張卡片。
+""";
+    }
+
+}

@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10562120 {
+    type follower;
+    cost 5;
+    stats 1/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "穷途末路的巫女";
+        text """
+【<color=Keyword>入场曲</color>】抽取1张卡牌。
+<hr>自己抽取卡牌时，若为自己的回合，则对对手的战场上的所有随从造成1点伤害。
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Desperate Shrinemouse";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Draw a card.
+<hr>During your turn, whenever you draw a card, deal 1 damage to all enemy followers.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きゅうそ\">窮鼠</rub>の<rub=\"いつきめ\">斎女</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキから1枚を引く。
+<hr>自分がカードを引いたとき、自分のターンなら、相手の場のフォロワーすべてに1ダメージ。
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "궁서의 신녀";
+        text """
+[<color=Keyword>출격</color>] 내 덱에서 1장을 뽑는다.
+<hr>내가 카드를 뽑았을 때 내 턴이라면, 상대방 전장의 추종자 모두에게 1 피해.
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "窮途的巫女";
+        text """
+【<color=Keyword>入場曲</color>】由自己的牌堆中抽取1張卡片。
+<hr>當自己抽取卡片時，如果是自己的回合，則會給予敵方戰場上全部的從者卡1點傷害。
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

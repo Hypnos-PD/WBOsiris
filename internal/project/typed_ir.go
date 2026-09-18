@@ -766,6 +766,12 @@ func conditionIR(t []syntax.Token) ir.Condition {
 	if t[0].Value == "count" || t[0].Value == "sum" {
 		source := valueRefIR(t, 2)
 		next, _ := parseCountSource(t, 2)
+		if next < len(t) && t[next].Value == "other" {
+			// count(集合 other)：统计时排除来源实例（"若战场上有其他…"）。
+			value, after := otherExclusion(t, next)
+			source = ir.ExcludeRef{Kind: "exclude", Source: source, Value: value}
+			next = after
+		}
 		if next < len(t) && t[next].Value == "where" {
 			predicate, end := filterIR(t, next)
 			source = ir.FilterRef{Kind: "filter", Source: source, Predicate: predicate}

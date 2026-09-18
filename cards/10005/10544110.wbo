@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10544110 {
+    type follower;
+    cost 10;
+    stats 8/8;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "约束的《正义》·伊兰翠";
+        text """
+【<color=Keyword>守护</color>】
+自己的回合结束时，若本随从为进化前，则对对手的战场上的随机2个随从造成8点伤害。回复自己的主战者8点生命值。若为进化后，则对对手的主战者造成8点伤害。
+<hr><ev>【<color=Keyword>进化时</color>】本随从失去【<color=Keyword>守护</color>】。本随从获得【<color=Keyword>威慑</color>】。</ev>
+""";
+    }
+
+    locale eng {
+        name "Erntz, Governing Justice";
+        text """
+<b><color=Keyword>Ward</color></b>
+At the end of your turn, if this follower is unevolved, deal 8 damage to 2 random enemy followers and restore 8 defense to your leader. If this follower is evolved, deal 8 damage to the enemy leader.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Remove <b><color=Keyword>Ward</color></b> from this follower. Give it <b><color=Keyword>Intimidate</color></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"りっ\">律</rub>する《<rub=\"せいぎ\">正義</rub>》・イランツァ";
+        text """
+【<color=Keyword>守護</color>】
+自分のターン終了時、これが進化前なら、相手の場のフォロワーからランダム2枚に8ダメージ。自分のリーダーを8回復。進化後なら、相手のリーダーに8ダメージ。
+<hr><ev>【<color=Keyword>進化時</color>】これは【<color=Keyword>守護</color>】を失う。これは【<color=Keyword>威圧</color>】を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "통제하는 《정의》 이란차";
+        text """
+[<color=Keyword>수호</color>]
+내 턴 종료시 이 추종자가 진화전이라면, 상대방 전장의 추종자 중 무작위로 2장에게 8 피해. 내 리더를 8 회복. 진화후라면, 상대방 리더에게 8 피해.
+<hr><ev>[<color=Keyword>진화시</color>] 이 추종자는 [<color=Keyword>수호</color>]를 잃는다. 이 추종자는 [<color=Keyword>위압</color>]을 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "紀律《正義》‧伊蘭翠";
+        text """
+【<color=Keyword>守護</color>】
+自己的回合結束時，如果這張卡片為進化前，則會隨機給予2張敵方戰場上的從者卡8點傷害。回復自己的主戰者8點生命值。如果為進化後，則會給予敵方的主戰者8點傷害。
+<hr><ev>【<color=Keyword>進化時</color>】使這張卡片失去【<color=Keyword>守護</color>】。使這張卡片獲得【<color=Keyword>威懾</color>】。</ev>
+""";
+    }
+
+}

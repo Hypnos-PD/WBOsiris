@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10571120 {
+    type follower;
+    cost 5;
+    stats 3/3;
+
+    effect {
+        fanfare {
+            draw 1 from deck where type spell;
+        }
+        when own card played where type spell {
+            damage oppo.field.followers 3;
+        }
+    }
+
+    meta {
+        pack 10005;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "繁花技师";
+        text """
+【<color=Keyword>入场曲</color>】抽取1张法术。
+<hr>自己使用法术时，对对手的战场上的所有随从造成3点伤害。
+""";
+    }
+
+    locale eng {
+        name "Flowering Artisan";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Draw a spell.
+<hr>Whenever you play a spell, deal 3 damage to all enemy followers.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"まんかい\">満開</rub>の<rub=\"ぎじゅつや\">技術屋</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキからスペル1枚を引く。
+<hr>自分がスペルをプレイしたとき、相手の場のフォロワーすべてに3ダメージ。
+""";
+    }
+
+    locale kor {
+        name "꽃보라 기술자";
+        text """
+[<color=Keyword>출격</color>] 내 덱에서 주문 1장을 뽑는다.
+<hr>내가 주문을 사용했을 때, 상대방 전장의 추종자 모두에게 3 피해.
+""";
+    }
+
+    locale cht {
+        name "花綻的技職者";
+        text """
+【<color=Keyword>入場曲</color>】由自己的牌堆中抽取1張法術卡。
+<hr>當自己使用法術卡時，給予敵方戰場上全部的從者卡3點傷害。
+""";
+    }
+
+}

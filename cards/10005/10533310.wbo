@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10533310 {
+    type spell;
+    cost 7;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class runecraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "壮美的明越花";
+        text """
+使自己的战场上的所有随从分别变身为自己的牌组中的随机1张随从的复制随从。
+""";
+    }
+
+    locale eng {
+        name "Grandeur of the Dawnblossom";
+        text """
+Transform all allied followers on the field into exact copies of random followers in your deck.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"そうび\">壮美</rub>なる<rub=\"あけごえばな\">明越花</rub>";
+        text """
+自分の場のフォロワーすべてはそれぞれ、自分のデッキのフォロワーからランダム1枚のコピーに変身する。
+""";
+    }
+
+    locale kor {
+        name "장대한 명월화";
+        text """
+내 전장의 추종자 모두는 각각 내 덱의 추종자 중 무작위로 1장의 복사본으로 변신한다.
+""";
+    }
+
+    locale cht {
+        name "壯美的明越花";
+        text """
+使自己戰場上全部的從者卡各自變身為「由自己牌堆中複製的隨機1張從者卡」。
+""";
+    }
+
+}

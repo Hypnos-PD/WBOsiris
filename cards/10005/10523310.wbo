@@ -1,0 +1,60 @@
+wbo 0.1.0;
+
+card 10523310 {
+    type spell;
+    cost 3;
+
+    effect {
+        add 2 card 90021350 to hand;
+        enhance 5 replaces {
+            add 4 card 90021350 to hand;
+        }
+    }
+
+    meta {
+        pack 10005;
+        class swordcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "荣耀的丽金花";
+        text """
+将2张『<color=Keyword>闪耀的金币</color>』加入手牌。
+【<color=Keyword>爆能强化</color>_5】改为4张。
+""";
+    }
+
+    locale eng {
+        name "Splendor of the Goldbloom";
+        text """
+Add 2 copies of <b><i><color=Keyword>Glittering Gold</color></i></b> to your hand.
+<b><color=Keyword>Enhance</color> (5)</b>: Add 4 instead.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"えいよう\">栄耀</rub>なる<rub=\"うらかねばな\">麗金花</rub>";
+        text """
+『<color=Keyword>輝く金貨</color>』2枚を自分の手札に加える。
+【<color=Keyword>エンハンス</color>_5】2枚ではなく4枚。
+""";
+    }
+
+    locale kor {
+        name "호사스러운 여금화";
+        text """
+<color=Keyword>찬란한 금화</color> 2장을 내 패에 넣는다.
+[<color=Keyword>증강</color> 5] 2장 대신 4장.
+""";
+    }
+
+    locale cht {
+        name "榮耀的麗金花";
+        text """
+增加2張『<color=Keyword>閃耀的金幣</color>』到自己的手牌中。
+【<color=Keyword>爆能強化</color>_5】由原本的2張轉變為4張。
+""";
+    }
+
+}

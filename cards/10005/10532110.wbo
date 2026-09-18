@@ -1,0 +1,111 @@
+wbo 0.1.0;
+
+card 10532110 {
+    type follower;
+    cost 4;
+    stats 3/3;
+
+    effect {
+        fanfare {
+            gain own crest 10532110;
+        }
+        evolve {
+            destroy own.crests where card 10532110;
+        }
+    }
+
+    crest {
+        countdown 2;
+
+        lastwords {
+            damage field.followers 3;
+        }
+
+        locale chs {
+            name "纹章：失眠女巫";
+            text """
+【<color=Keyword>吟唱</color>_2】
+【<color=Keyword>谢幕曲</color>】对战场上的所有随从造成3点伤害。
+""";
+        }
+
+        locale eng {
+            name "Crest: Insomniac Witch";
+            text """
+<b><color=Keyword>Countdown</color> (2)</b>
+<b><color=Keyword>Last Words</color></b>: Deal 3 damage to all followers.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"ふみん\">不眠</rub>の<rub=\"まじょ\">魔女</rub>";
+            text """
+【<color=Keyword>カウントダウン</color>_2】
+【<color=Keyword>ラストワード</color>】場のフォロワーすべてに3ダメージ。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 불면의 마녀";
+            text """
+[<color=Keyword>카운트다운</color> 2]
+[<color=Keyword>유언</color>] 전장의 추종자 모두에게 3 피해.
+""";
+        }
+
+        locale cht {
+            name "紋章：失眠女巫";
+            text """
+【<color=Keyword>倒數</color>_2】
+【<color=Keyword>謝幕曲</color>】給予戰場上全部的從者卡3點傷害。
+""";
+        }
+    }
+
+    meta {
+        pack 10005;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "失眠女巫";
+        text """
+【<color=Keyword>入场曲</color>】使自己获得『纹章：失眠女巫』。
+<hr><ev>【<color=Keyword>进化时</color>】破坏自己的『纹章：失眠女巫』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Insomniac Witch";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Gain <b><i>Crest: Insomniac Witch</i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Destroy your <b><i>Crest: Insomniac Witch</i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "インソムニアウィッチ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分は『クレスト：インソムニアウィッチ』を持つ。
+<hr><ev>【<color=Keyword>進化時</color>】自分の『クレスト：インソムニアウィッチ』を破壊。</ev>
+""";
+    }
+
+    locale kor {
+        name "불면증 마녀";
+        text """
+[<color=Keyword>출격</color>] 나는 「크레스트: 불면증 마녀」를 갖는다.
+<hr><ev>[<color=Keyword>진화시</color>] 내 「크레스트: 불면증 마녀」를 파괴.</ev>
+""";
+    }
+
+    locale cht {
+        name "難眠的魔女";
+        text """
+【<color=Keyword>入場曲</color>】使自己獲得『紋章：難眠的魔女』。
+<hr><ev>【<color=Keyword>進化時</color>】破壞自己的『紋章：難眠的魔女』。</ev>
+""";
+    }
+
+}

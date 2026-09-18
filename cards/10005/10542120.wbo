@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10542120 {
+    type follower;
+    cost 2;
+    stats 2/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "水母舞姬";
+        text """
+【<color=Keyword>入场曲</color>】将1张『<color=Keyword>大海虎鲸</color>』加入手牌。
+<hr>自己的海洋·随从进入战场时，本随从获得【<color=Keyword>突进</color>】和【<color=Keyword>毁灭</color>】。
+""";
+    }
+
+    locale eng {
+        name "Jellyfish Dancer";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add a <b><i><color=Keyword>Majestic Megalorca</color></i></b> to your hand.
+<hr>Whenever an allied Marine follower enters the field, give this follower <b><color=Keyword>Rush</color></b> and <b><color=Keyword>Bane</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "クラゲの<rub=\"まいひめ\">舞姫</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>大海のオルカ</color>』1枚を自分の手札に加える。
+<hr>自分の海洋・フォロワーが場に出たとき、これは【<color=Keyword>突進</color>】と【<color=Keyword>必殺</color>】を持つ。
+""";
+    }
+
+    locale kor {
+        name "해파리 무희";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>대해의 오르카</color> 1장을 내 패에 넣는다.
+<hr>내 바다 추종자가 전장에 소환되었을 때, 이 추종자는 [<color=Keyword>돌진</color>], [<color=Keyword>필살</color>]을 갖는다.
+""";
+    }
+
+    locale cht {
+        name "海月舞姬";
+        text """
+【<color=Keyword>入場曲</color>】增加1張『<color=Keyword>滄海虎鯨</color>』到自己的手牌中。
+<hr>當自己的海洋‧從者卡進入戰場時，使這張卡片獲得【<color=Keyword>突進</color>】與【<color=Keyword>必殺</color>】。
+""";
+    }
+
+}

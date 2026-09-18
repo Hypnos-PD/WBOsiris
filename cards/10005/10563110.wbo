@@ -1,0 +1,73 @@
+wbo 0.1.0;
+
+card 10563110 {
+    type follower;
+    cost 5;
+    stats 2/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class havencraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "至圣威仪";
+        text """
+【<color=Keyword>入场曲</color>】回复自己的主战者1点生命值。
+<hr>【<color=Keyword>守护</color>】
+自己的主战者回复时，若为自己的回合，则召唤1个『<color=Keyword>纯洁白狐</color>』。
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+<sev>【<color=Keyword>超进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</sev>
+""";
+    }
+
+    locale eng {
+        name "Saint of Rehabilitation";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Restore 1 defense to your leader.
+<hr><b><color=Keyword>Ward</color></b>
+During your turn, whenever your leader's defense is restored, summon a <b><i><color=Keyword>Fox of Purity</color></i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+<sev><b><color=Keyword>Super-Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"いとく\">威徳</rub>の<rub=\"しせい\">至聖</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のリーダーを1回復。
+<hr>【<color=Keyword>守護</color>】
+自分のリーダーが回復したとき、自分のターンなら、『<color=Keyword>清純なる白狐</color>』1枚を自分の場に出す。
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+<sev>【<color=Keyword>超進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</sev>
+""";
+    }
+
+    locale kor {
+        name "위덕의 성인";
+        text """
+[<color=Keyword>출격</color>] 내 리더를 1 회복.
+<hr>[<color=Keyword>수호</color>]
+내 리더가 회복했을 때 내 턴이라면, <color=Keyword>정결한 흰여우</color> 1장을 내 전장에 소환.
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+<sev>[<color=Keyword>초진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</sev>
+""";
+    }
+
+    locale cht {
+        name "威德至聖";
+        text """
+【<color=Keyword>入場曲</color>】回復自己的主戰者1點生命值。
+<hr>【<color=Keyword>守護</color>】
+當自己的主戰者回復生命值時，如果是自己的回合，則會召喚1張『<color=Keyword>純淨白狐</color>』到自己的戰場上。
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+<sev>【<color=Keyword>超進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</sev>
+""";
+    }
+
+}

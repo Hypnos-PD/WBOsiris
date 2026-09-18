@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10551110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        rush;
+        enhance 6 {
+            buff self +0/+6;
+            add bane to self;
+            add barrier to self;
+        }
+    }
+
+    meta {
+        pack 10005;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "鼓舞之狼";
+        text """
+【<color=Keyword>爆能强化</color>_6】本随从+0/+6且获得【<color=Keyword>毁灭</color>】和【<color=Keyword>屏障</color>】。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Support Wolf";
+        text """
+<b><color=Keyword>Enhance</color> (6)</b>: Give this follower +0/+6, <b><color=Keyword>Bane</color></b>, and <b><color=Keyword>Barrier</color></b>.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "リリーブウルフ";
+        text """
+【<color=Keyword>エンハンス</color>_6】これは+0/+6して【<color=Keyword>必殺</color>】と【<color=Keyword>バリア</color>】を持つ。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "릴리브 울프";
+        text """
+[<color=Keyword>증강</color> 6] 이 추종자는 +0/+6 및 [<color=Keyword>필살</color>], [<color=Keyword>배리어</color>]를 갖는다.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "寧神之狼";
+        text """
+【<color=Keyword>爆能強化</color>_6】使這張卡片+0/+6並獲得【<color=Keyword>必殺</color>】與【<color=Keyword>障壁</color>】。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

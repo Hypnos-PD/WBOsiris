@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10511120 {
+    type follower;
+    cost 5;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "森林羽子板工匠";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>妖精</color>』。
+<hr>自己的妖精·随从进入战场时，对对手的主战者造成1点伤害。
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Battledore Woodsmaiden";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Fairy</color></i></b>.
+<hr>Whenever an allied Pixie follower enters the field, deal 1 damage to the enemy leader.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"もりはごいた\">森羽子板</rub>の<rub=\"たくみ\">匠</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>フェアリー</color>』1枚を自分の場に出す。
+<hr>自分の妖精・フォロワーが場に出たとき、相手のリーダーに1ダメージ。
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "씨앗 날리기 장인";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>요정</color> 1장을 내 전장에 소환.
+<hr>내 요정 추종자가 전장에 소환되었을 때, 상대방 리더에게 1 피해.
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "森林羽子板拍匠";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>妖精</color>』到自己的戰場上。
+<hr>當自己的妖精‧從者卡進入戰場時，給予敵方的主戰者1點傷害。
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

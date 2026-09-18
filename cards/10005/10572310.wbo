@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10572310 {
+    type spell;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "苏生调律";
+        text """
+选择自己的1张手牌，舍弃该手牌。将随机2种与本次对战中被破坏的自己的随从同名的卡牌各1张以非公开形式加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Resurrection Tuner";
+        text """
+Select a card in your hand and discard it. Add a copy each of 2 random differently named allied followers destroyed this match to your hand without revealing them.
+""";
+    }
+
+    locale jpn {
+        name "リヴァイブチューニング";
+        text """
+自分の手札1枚を選ぶ。それを捨てる。このバトル中に破壊された自分のフォロワーからランダム2種類と同名のカード1枚ずつを非公開で自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "리바이브 튜닝";
+        text """
+내 패에서 1장을 선택한다. 그 카드를 버린다. 이번 대전에서 파괴된 내 추종자 중 무작위로 2종류와 동명의 추종자 1장씩을 비공개로 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "復甦的調律";
+        text """
+指定1張自己手牌中的卡片。將其捨棄。隨機將2種與「本次對戰中自己已被破壞的從者卡」同名的卡片各1張，以非公開形式增加到自己的手牌中。
+""";
+    }
+
+}

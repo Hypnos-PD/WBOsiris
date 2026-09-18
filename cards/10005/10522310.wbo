@@ -1,0 +1,60 @@
+wbo 0.1.0;
+
+card 10522310 {
+    type spell;
+    cost 2;
+
+    effect {
+        summon 2 card 90021110;
+        enhance 4 replaces {
+            summon 4 card 90021110;
+        }
+    }
+
+    meta {
+        pack 10005;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "温柔援军";
+        text """
+召唤2个『<color=Keyword>骑士</color>』。
+【<color=Keyword>爆能强化</color>_4】改为召唤4个。
+""";
+    }
+
+    locale eng {
+        name "Serenity's Shield";
+        text """
+Summon 2 copies of <b><i><color=Keyword>Knight</color></i></b>.
+<b><color=Keyword>Enhance</color> (4)</b>: Summon 4 instead.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"やさ\">優</rub>しき<rub=\"えんぐん\">援軍</rub>";
+        text """
+『<color=Keyword>ナイト</color>』2枚を自分の場に出す。
+【<color=Keyword>エンハンス</color>_4】2枚ではなく4枚。
+""";
+    }
+
+    locale kor {
+        name "다정한 지원군";
+        text """
+<color=Keyword>기사</color> 2장을 내 전장에 소환.
+[<color=Keyword>증강</color> 4] 2장 대신 4장.
+""";
+    }
+
+    locale cht {
+        name "溫情的援軍";
+        text """
+召喚2張『<color=Keyword>騎士</color>』到自己的戰場上。
+【<color=Keyword>爆能強化</color>_4】由原本的2張轉變為4張。
+""";
+    }
+
+}

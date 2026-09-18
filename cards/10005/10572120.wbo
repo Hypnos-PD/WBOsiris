@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10572120 {
+    type follower;
+    cost 2;
+    stats 1/1;
+
+    effect {
+        ward;
+        when own card played where type spell {
+            evolve self silent;
+        }
+    }
+
+    meta {
+        pack 10005;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "清宵玉兔";
+        text """
+【<color=Keyword>守护</color>】
+自己使用法术时，本随从进化。
+""";
+    }
+
+    locale eng {
+        name "Lunar Bunny";
+        text """
+<b><color=Keyword>Ward</color></b>
+When you play a spell, evolve this follower.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"せいしょう\">清宵</rub>の<rub=\"ぐうと\">偶兎</rub>";
+        text """
+【<color=Keyword>守護</color>】
+自分がスペルをプレイしたとき、これは進化する。
+""";
+    }
+
+    locale kor {
+        name "맑은 밤의 토끼 인형";
+        text """
+[<color=Keyword>수호</color>]
+내가 주문을 사용했을 때, 이 추종자는 진화한다.
+""";
+    }
+
+    locale cht {
+        name "清宵的兔偶";
+        text """
+【<color=Keyword>守護</color>】
+當自己使用法術卡時，使這張卡片進化。
+""";
+    }
+
+}

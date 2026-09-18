@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10533110 {
+    type follower;
+    cost 7;
+    stats 4/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class runecraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "元素支配者";
+        text """
+【<color=Keyword>入场曲</color>】召唤2个『<color=Keyword>守护者巨像</color>』。
+<hr>自己的巨像·随从进入战场时，【<color=Keyword>土之秘术</color>_1】使其进化。
+""";
+    }
+
+    locale eng {
+        name "Emperor of Elements";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon 2 copies of <b><i><color=Keyword>Guardian Golem</color></i></b>.
+<hr>Whenever an allied Golem follower enters the field, <b><color=Keyword>Earth Rite</color> (1)</b> - Evolve it.
+""";
+    }
+
+    locale jpn {
+        name "エレメンタルガバナー";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>ガーディアンゴーレム</color>』2枚を自分の場に出す。
+<hr>自分のゴーレム・フォロワーが場に出たとき、【<color=Keyword>土の秘術</color>_1】それは進化する。
+""";
+    }
+
+    locale kor {
+        name "원소 제어자";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>수호 골렘</color> 2장을 내 전장에 소환.
+<hr>내 골렘 추종자가 전장에 소환되었을 때, [<color=Keyword>대지의 비술</color> 1] 그 추종자는 진화한다.
+""";
+    }
+
+    locale cht {
+        name "元素統治者";
+        text """
+【<color=Keyword>入場曲</color>】召喚2張『<color=Keyword>守護者巨像</color>』到自己的戰場上。
+<hr>當自己的巨像‧從者卡進入戰場時，【<color=Keyword>土之秘術</color>_1】使其進化。
+""";
+    }
+
+}

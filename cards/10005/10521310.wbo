@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10521310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "丽金花的挥霍";
+        text """
+选择自己的手牌中的1张法术，舍弃该手牌。发动2次「对对手的战场上的随机1个随从造成3点伤害」。
+""";
+    }
+
+    locale eng {
+        name "Extravagance of the Goldbloom";
+        text """
+Select a spell in your hand and discard it. Do this 2 times: \"Deal 3 damage to a random enemy follower.\"
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"うらかねばな\">麗金花</rub>の<rub=\"さんざい\">散財</rub>";
+        text """
+自分の手札のスペル1枚を選ぶ。それを捨てる。「相手の場のフォロワーからランダム1枚に3ダメージ。」を2回行う。
+""";
+    }
+
+    locale kor {
+        name "여금화의 산재";
+        text """
+내 패에서 주문 1장을 선택한다. 그 카드를 버린다. 「상대방 전장의 추종자 중 무작위로 1장에게 3 피해」를 2회 발동.
+""";
+    }
+
+    locale cht {
+        name "麗金花的散財";
+        text """
+指定1張自己手牌中的法術卡。將其捨棄。發動2次「隨機給予1張敵方戰場上的從者卡3點傷害」。
+""";
+    }
+
+}

@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10562210 {
+    type amulet;
+    cost 2;
+
+    effect {
+        engage 0 {
+            destroy self;
+            repeat count(own.field.followers where keyword ward) {
+                draw 1;
+            }
+        }
+    }
+
+    meta {
+        pack 10005;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "穹顶护甲";
+        text """
+【<color=Keyword>启动</color>】破坏本卡牌。抽取X张卡牌。X为自己的战场上的拥有【<color=Keyword>守护</color>】的随从的张数。
+""";
+    }
+
+    locale eng {
+        name "Protective Shell";
+        text """
+<b><color=Keyword>Engage</color></b>: Destroy this card. Draw X cards. X is the number of allied followers on the field with <b><color=Keyword>Ward</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "プロテクションシェル";
+        text """
+【<color=Keyword>アクト</color>】これを破壊。自分のデッキからX枚を引く。Xは自分の場の【<color=Keyword>守護</color>】を持つフォロワーの枚数である。
+""";
+    }
+
+    locale kor {
+        name "프로텍션 셸";
+        text """
+[<color=Keyword>활성화</color>] 이 마법진을 파괴. 내 덱에서 X장을 뽑는다. X는 내 전장의 [<color=Keyword>수호</color>]를 가진 추종자 수.
+""";
+    }
+
+    locale cht {
+        name "庇護的龜甲";
+        text """
+【<color=Keyword>策動</color>】破壞這張卡片。由自己的牌堆中抽取X張卡片。X為「自己戰場上擁有【<color=Keyword>守護</color>】的從者卡張數」。
+""";
+    }
+
+}

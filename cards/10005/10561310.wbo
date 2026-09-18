@@ -1,0 +1,54 @@
+wbo 0.1.0;
+
+card 10561310 {
+    type spell;
+    cost 3;
+
+    effect {
+        random card from own.hand;
+        return card to deck;
+        draw 3;
+    }
+
+    meta {
+        pack 10005;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "雾卷花的激愤";
+        text """
+使自己的随机1张手牌返回牌组。抽取3张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Malice of the Mistbloom";
+        text """
+Return a random card from your hand to deck. Draw 3 cards.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きりまきばな\">霧巻花</rub>の<rub=\"げきふん\">激憤</rub>";
+        text """
+自分の手札からランダム1枚をデッキに戻す。自分のデッキから3枚を引く。
+""";
+    }
+
+    locale kor {
+        name "무권화의 격분";
+        text """
+내 패에서 무작위로 1장을 덱으로 되돌린다. 내 덱에서 3장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "霧卷花的激憤";
+        text """
+隨機使1張自己手牌中的卡片返回牌堆中。由自己的牌堆中抽取3張卡片。
+""";
+    }
+
+}

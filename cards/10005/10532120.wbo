@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10532120 {
+    type follower;
+    cost 6;
+    stats 2/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class runecraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "余韵俳谐师";
+        text """
+【<color=Keyword>魔力增幅时</color>】使本卡牌的费用-1。
+<hr>【<color=Keyword>入场曲</color>】抽取1张卡牌。
+<hr>【<color=Keyword>谢幕曲</color>】使自己的所有手牌发动1次魔力增幅。
+""";
+    }
+
+    locale eng {
+        name "Woodsong Haikumaster";
+        text """
+<b><color=Keyword>On Spellboost</color></b>: Reduce the cost of this card by 1.
+<hr><b><color=Keyword>Fanfare</color></b>: Draw a card.
+<hr><b><color=Keyword>Last Words</color></b>: Spellboost your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"よじょう\">余情</rub>の<rub=\"はいじん\">俳人</rub>";
+        text """
+【<color=Keyword>スペルブースト時</color>】これのコストを-1する。
+<hr>【<color=Keyword>ファンファーレ</color>】自分のデッキから1枚を引く。
+<hr>【<color=Keyword>ラストワード</color>】自分の手札すべては1回スペルブーストする。
+""";
+    }
+
+    locale kor {
+        name "여운의 시인";
+        text """
+[<color=Keyword>주문증폭시</color>] 이 추종자의 비용을 -1.
+<hr>[<color=Keyword>출격</color>] 내 덱에서 1장을 뽑는다.
+<hr>[<color=Keyword>유언</color>] 내 패 모두를 1회 주문증폭.
+""";
+    }
+
+    locale cht {
+        name "雅韻的俳句詩人";
+        text """
+【<color=Keyword>魔力增幅時</color>】使這張卡片的消費-1。
+<hr>【<color=Keyword>入場曲</color>】由自己的牌堆中抽取1張卡片。
+<hr>【<color=Keyword>謝幕曲</color>】使自己手牌中全部的卡片發動1次魔力增幅。
+""";
+    }
+
+}

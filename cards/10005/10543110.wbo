@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10543110 {
+    type follower;
+    cost 7;
+    stats 5/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class dragoncraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "破灭屠戮者";
+        text """
+<sev>【<color=Keyword>超进化时</color>】使自己的牌组中的所有费用为1、3、5、7、9的卡牌消失。对对手的战场上的所有随从分配X点伤害。X为因本能力消失的卡牌的张数。</sev>
+""";
+    }
+
+    locale eng {
+        name "Ruinbringer";
+        text """
+<sev><b><color=Keyword>Super-Evolve</color></b>: Banish all 1-, 3-, 5-, 7-, and 9-cost cards from your deck. Deal X damage split between all enemy followers. X is the number of cards you banished.</sev>
+""";
+    }
+
+    locale jpn {
+        name "ルインジェノサイダー";
+        text """
+<sev>【<color=Keyword>超進化時</color>】自分のデッキのコスト1、3、5、7、9のカードすべてを消滅。相手の場のフォロワーすべてにXダメージを割りふる。Xはこれで消滅したカードの枚数である。</sev>
+""";
+    }
+
+    locale kor {
+        name "루인 제노사이더";
+        text """
+<sev>[<color=Keyword>초진화시</color>] 비용이 1, 3, 5, 7, 9인 내 덱의 카드 모두를 소멸. 상대방 전장의 추종자 모두에게 X 피해를 분배한다. X는 이 능력으로 소멸시킨 카드 수.</sev>
+""";
+    }
+
+    locale cht {
+        name "殘垣虐殺者";
+        text """
+<sev>【<color=Keyword>超進化時</color>】使自己牌堆中消費為1、3、5、7、9的全部卡片消失。對敵方戰場上全部的從者卡分配X點傷害。X為「因這張卡片而消失的卡片張數」。</sev>
+""";
+    }
+
+}

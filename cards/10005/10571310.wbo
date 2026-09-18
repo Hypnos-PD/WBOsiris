@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10571310 {
+    type spell;
+    cost 1;
+
+    effect {
+        draw 1;
+    }
+
+    meta {
+        pack 10005;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "尽小花的临照";
+        text """
+抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Light of the Dewdrop";
+        text """
+Draw a card.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"つきこばな\">尽小花</rub>の<rub=\"しょうりん\">照臨</rub>";
+        text """
+自分のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "진소화의 굽어봄";
+        text """
+내 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "盡小花的照臨";
+        text """
+由自己的牌堆中抽取1張卡片。
+""";
+    }
+
+}

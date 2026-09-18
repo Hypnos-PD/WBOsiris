@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10521120 {
+    type follower;
+    cost 3;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "烟管美玉";
+        text """
+【<color=Keyword>入场曲</color>】若自己的手牌中的法术的张数为2张或以上，则本随从+1/+1且获得【<color=Keyword>守护</color>】。
+<hr><ev>【<color=Keyword>进化时</color>】将1张『<color=Keyword>闪耀的金币</color>』加入手牌。</ev>
+""";
+    }
+
+    locale eng {
+        name "Smoke-Shrouded Beauty";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If you have at least 2 spells in your hand, give this follower +1/+1 and <b><color=Keyword>Ward</color></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Add a <b><i><color=Keyword>Glittering Gold</color></i></b> to your hand.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きせる\">煙管</rub>の<rub=\"びぎょく\">美玉</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札のスペルの枚数が2以上なら、これは+1/+1して【<color=Keyword>守護</color>】を持つ。
+<hr><ev>【<color=Keyword>進化時</color>】『<color=Keyword>輝く金貨</color>』1枚を自分の手札に加える。</ev>
+""";
+    }
+
+    locale kor {
+        name "연관의 가인";
+        text """
+[<color=Keyword>출격</color>] 내 패의 주문 수가 2 이상이라면, 이 추종자는 +1/+1 및 [<color=Keyword>수호</color>]를 갖는다.
+<hr><ev>[<color=Keyword>진화시</color>] <color=Keyword>찬란한 금화</color> 1장을 내 패에 넣는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "煙管玉女";
+        text """
+【<color=Keyword>入場曲</color>】如果自己手牌中的法術卡張數為2以上，則會使這張卡片+1/+1並獲得【<color=Keyword>守護</color>】。
+<hr><ev>【<color=Keyword>進化時</color>】增加1張『<color=Keyword>閃耀的金幣</color>』到自己的手牌中。</ev>
+""";
+    }
+
+}

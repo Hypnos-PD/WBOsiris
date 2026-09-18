@@ -1,0 +1,54 @@
+wbo 0.1.0;
+
+card 10513310 {
+    type spell;
+    cost 3;
+
+    effect {
+        repeat own.combo {
+            draw 1;
+        }
+    }
+
+    meta {
+        pack 10005;
+        class forestcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "优雅的虫风花";
+        text """
+抽取X张卡牌。X为自己的【<color=Keyword>连击</color>】。
+""";
+    }
+
+    locale eng {
+        name "Grace of the Swarmpetal";
+        text """
+Draw X cards. X is your <b><color=Keyword>Combo</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ゆうが\">優雅</rub>なる<rub=\"むしかざばな\">虫風花</rub>";
+        text """
+自分のデッキからX枚を引く。Xは自分の【<color=Keyword>コンボ</color>】である。
+""";
+    }
+
+    locale kor {
+        name "우아한 충풍화";
+        text """
+내 덱에서 X장을 뽑는다. X는 내 [<color=Keyword>콤보</color>].
+""";
+    }
+
+    locale cht {
+        name "優雅的蟲風花";
+        text """
+由自己的牌堆中抽取X張卡片。X為「自己的【<color=Keyword>連擊</color>】數」。
+""";
+    }
+
+}

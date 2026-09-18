@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10553310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class abysscraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "严酷的奥夜花";
+        text """
+使自己获得『纹章：严酷的奥夜花』。
+""";
+    }
+
+    locale eng {
+        name "Rigor of the Nightblossom";
+        text """
+Gain <b><i>Crest: Rigor of the Nightblossom</i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"げんこく\">厳酷</rub>なる<rub=\"おくよばな\">奥夜花</rub>";
+        text """
+自分は『クレスト：厳酷なる奥夜花』を持つ。
+""";
+    }
+
+    locale kor {
+        name "혹독한 오야화";
+        text """
+나는 「크레스트: 혹독한 오야화」를 갖는다.
+""";
+    }
+
+    locale cht {
+        name "嚴酷的奧夜花";
+        text """
+使自己獲得『紋章：嚴酷的奧夜花』。
+""";
+    }
+
+}

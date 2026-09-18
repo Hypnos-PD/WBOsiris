@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10504110 {
+    type follower;
+    cost 8;
+    stats 8/8;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class neutral;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "八界花·下天央";
+        text """
+【<color=Keyword>入场曲</color>】舍弃自己的所有手牌。【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）抽取8张卡牌。</ridx>
+<ridx=1>（2）抽取2张卡牌，使其费用-8。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Getenou, Eightfold Glory";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Discard your hand. Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Draw 8 cards.</ridx>
+<ridx=1>2. Draw 2 cards and reduce their costs by 8.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"はちかいばな\">八界花</rub>・ゲテンオウ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札すべてを捨てる。【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）自分のデッキから8枚を引く。</ridx>
+<ridx=1>（2）自分のデッキから2枚を引く。それのコストを-8する。</ridx>
+""";
+    }
+
+    locale kor {
+        name "팔계화 게텐오";
+        text """
+[<color=Keyword>출격</color>] 내 패 모두를 버린다. [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 내 덱에서 8장을 뽑는다.</ridx>
+<ridx=1>(2) 내 덱에서 2장을 뽑는다. 그 카드의 비용을 -8.</ridx>
+""";
+    }
+
+    locale cht {
+        name "八界花‧下天櫻";
+        text """
+【<color=Keyword>入場曲</color>】捨棄自己全部的手牌。指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）由自己的牌堆中抽取8張卡片。</ridx>
+<ridx=1>（2）由自己的牌堆中抽取2張卡片。使其消費-8。</ridx>
+""";
+    }
+
+}

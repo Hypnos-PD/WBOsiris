@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10542110 {
+    type follower;
+    cost 8;
+    stats 7/7;
+
+    effect {
+        fanfare {
+            require target from oppo.field.followers;
+            damage target 7;
+            summon 1 card 90041120;
+        }
+    }
+
+    meta {
+        pack 10005;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "铁锤龙骑士";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的1个随从，对其造成7点伤害。召唤1个『<color=Keyword>巨翼飞龙</color>』。
+""";
+    }
+
+    locale eng {
+        name "Ironmace Dragoon";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select an enemy follower on the field and deal it 7 damage. Summon a <b><i><color=Keyword>Vastwing Dragon</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てっつい\">鉄槌</rub>のドラグーン";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー1枚を選ぶ。それに7ダメージ。『<color=Keyword>大翼のドラゴン</color>』1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "철퇴를 든 용기병";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 7 피해. <color=Keyword>대익룡</color> 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "鐵鎚龍騎士";
+        text """
+【<color=Keyword>入場曲</color>】指定1張敵方戰場上的從者卡。給予其7點傷害。召喚1張『<color=Keyword>巨翼飛龍</color>』到自己的戰場上。
+""";
+    }
+
+}

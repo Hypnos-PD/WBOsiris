@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10551120 {
+    type follower;
+    cost 4;
+    stats 3/2;
+
+    effect {
+        fanfare {
+            reanimate 2;
+        }
+        evolve {
+            reanimate 2;
+        }
+    }
+
+    meta {
+        pack 10005;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "红符的魂魄道士";
+        text """
+【<color=Keyword>入场曲</color>】发动【<color=Keyword>亡者召还</color>_2】。
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Crimson Soulmancer";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Reanimate</color> (2)</b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あかふだ\">紅札</rub>の<rub=\"こんぱくつか\">魂魄使</rub>い";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>リアニメイト</color>_2】を行う。
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "홍단의 혼백술사";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>소생</color> 2]를 발동.
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "赤符的魂魄操縱者";
+        text """
+【<color=Keyword>入場曲</color>】發動【<color=Keyword>亡者召還</color>_2】。
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

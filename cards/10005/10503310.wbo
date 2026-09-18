@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10503310 {
+    type spell;
+    cost 5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class neutral;
+        rarity gold;
+    }
+
+    locale chs {
+        name "《世界》的呈现";
+        text """
+抽取2张卡牌。破坏对手的战场上的随机1个攻击力最大的随从。
+【<color=Keyword>爆能强化</color>_10】对对手的战场上的所有随从和对手的主战者造成4点伤害。
+""";
+    }
+
+    locale eng {
+        name "Fate of the World";
+        text """
+Draw 2 cards. Destroy a random enemy follower with the highest attack.
+<b><color=Keyword>Enhance</color> (10)</b>: Deal 4 damage to all enemies.
+""";
+    }
+
+    locale jpn {
+        name "《<rub=\"せかい\">世界</rub>》の<rub=\"ていじ\">提示</rub>";
+        text """
+自分のデッキから2枚を引く。相手の場の攻撃力最大のフォロワーからランダム1枚を破壊。
+【<color=Keyword>エンハンス</color>_10】相手の場のフォロワーすべてと相手のリーダーに4ダメージ。
+""";
+    }
+
+    locale kor {
+        name "《세계》의 제시";
+        text """
+내 덱에서 2장을 뽑는다. 공격력이 가장 높은 상대방 전장의 추종자 중 무작위로 1장을 파괴.
+[<color=Keyword>증강</color> 10] 상대방 전장의 추종자 모두와 상대방 리더에게 4 피해.
+""";
+    }
+
+    locale cht {
+        name "《世界》的提示";
+        text """
+由自己的牌堆中抽取2張卡片。隨機破壞1張敵方戰場上攻擊力最高的從者卡。
+【<color=Keyword>爆能強化</color>_10】給予敵方戰場上全部的從者卡與敵方的主戰者4點傷害。
+""";
+    }
+
+}

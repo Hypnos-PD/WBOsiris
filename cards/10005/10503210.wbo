@@ -1,0 +1,62 @@
+wbo 0.1.0;
+
+card 10503210 {
+    type amulet;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class neutral;
+        rarity gold;
+    }
+
+    locale chs {
+        name "大游戏世界";
+        text """
+【<color=Keyword>吟唱</color>_5】
+自己使用其他卡牌时，若战场上有原始费用为X的其他卡牌，则本护符的倒计数-1。X为使用的卡牌的原始费用。
+【<color=Keyword>谢幕曲</color>】抽取2张卡牌。
+""";
+    }
+
+    locale eng {
+        name "World of Games";
+        text """
+<b><color=Keyword>Countdown</color> (5)</b>
+Whenever you play another card, if there's a card on the field other than it with the same base cost, advance this amulet's count by 1.
+<b><color=Keyword>Last Words</color></b>: Draw 2 cards.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"だいゆうぎせかい\">大遊戯世界</rub>";
+        text """
+【<color=Keyword>カウントダウン</color>_5】
+自分が他のカードをプレイしたとき、場にそれ以外の元のコストXのカードがあるなら、これのカウントを-1する。Xはプレイしたカードの元のコストである。
+【<color=Keyword>ラストワード</color>】自分のデッキから2枚を引く。
+""";
+    }
+
+    locale kor {
+        name "대유희 세계";
+        text """
+[<color=Keyword>카운트다운</color> 5]
+내가 다른 카드를 사용했을 때 그 카드 이외에 원래 비용이 X인 카드가 전장에 있다면, 이 마법진의 카운트를 -1. X는 사용한 카드의 원래 비용.
+[<color=Keyword>유언</color>] 내 덱에서 2장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "大遊戲世界";
+        text """
+【<color=Keyword>倒數</color>_5】
+當自己使用其他卡片時，如果戰場上有其以外原始消費為X的卡片，則會使這張卡片的倒數回合數-1。X為「所使用卡片的原始消費值」。
+【<color=Keyword>謝幕曲</color>】由自己的牌堆中抽取2張卡片。
+""";
+    }
+
+}

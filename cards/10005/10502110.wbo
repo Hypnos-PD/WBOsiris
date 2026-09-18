@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10502110 {
+    type follower;
+    cost 5;
+    stats 5/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class neutral;
+        rarity silver;
+    }
+
+    locale chs {
+        name "星辉女神";
+        text """
+<ev>【<color=Keyword>进化时</color>】选择自己的3张手牌，舍弃这些手牌。将自己的手牌中从左起的3张卡牌的复制卡牌各1张以非公开形式加入手牌。</ev>
+""";
+    }
+
+    locale eng {
+        name "Goddess of Starlight";
+        text """
+<ev><b><color=Keyword>Evolve</color></b>: Select 3 cards in your hand and discard them. Add an exact copy each of the 3 leftmost cards in your hand to your hand without revealing them.</ev>
+""";
+    }
+
+    locale jpn {
+        name "スターライトゴッデス";
+        text """
+<ev>【<color=Keyword>進化時</color>】自分の手札3枚を選ぶ。それを捨てる。自分の手札左から3枚のコピー1枚ずつを非公開で自分の手札に加える。</ev>
+""";
+    }
+
+    locale kor {
+        name "스타라이트 가디스";
+        text """
+<ev>[<color=Keyword>진화시</color>] 내 패에서 3장을 선택한다. 그 카드를 버린다. 내 패에서 왼쪽부터 3장의 복사본 1장씩을 비공개로 내 패에 넣는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "星光女神";
+        text """
+<ev>【<color=Keyword>進化時</color>】指定3張自己手牌中的卡片。將其捨棄。將自己手牌中由左數來的3張卡片各複製1張並以非公開形式增加到自己的手牌中。</ev>
+""";
+    }
+
+}

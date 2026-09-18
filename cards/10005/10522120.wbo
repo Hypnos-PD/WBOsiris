@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10522120 {
+    type follower;
+    cost 7;
+    stats 5/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "吉祥蛙";
+        text """
+自己的回合结束时，若自己的手牌中的法术的张数为2张或以上，则对对手的战场上的所有随从造成5点伤害。
+<hr><ev>【<color=Keyword>进化时</color>】将2张『<color=Keyword>闪耀的金币</color>』加入手牌。</ev>
+""";
+    }
+
+    locale eng {
+        name "Amphibian Goldmuncher";
+        text """
+At the end of your turn, if you have at least 2 spells in your hand, deal 5 damage to all enemy followers.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Add 2 copies of <b><i><color=Keyword>Glittering Gold</color></i></b> to your hand.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きっしょうかわず\">吉祥蛙</rub>";
+        text """
+自分のターン終了時、自分の手札のスペルの枚数が2以上なら、相手の場のフォロワーすべてに5ダメージ。
+<hr><ev>【<color=Keyword>進化時</color>】『<color=Keyword>輝く金貨</color>』2枚を自分の手札に加える。</ev>
+""";
+    }
+
+    locale kor {
+        name "복개구리";
+        text """
+내 턴 종료시 내 패의 주문 수가 2 이상이라면, 상대방 전장의 추종자 모두에게 5 피해.
+<hr><ev>[<color=Keyword>진화시</color>] <color=Keyword>찬란한 금화</color> 2장을 내 패에 넣는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "吉祥蛙";
+        text """
+自己的回合結束時，如果自己手牌中的法術卡張數為2以上，則會給予敵方戰場上全部的從者卡5點傷害。
+<hr><ev>【<color=Keyword>進化時</color>】增加2張『<color=Keyword>閃耀的金幣</color>』到自己的手牌中。</ev>
+""";
+    }
+
+}

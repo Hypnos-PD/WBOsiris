@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10521110 {
+    type follower;
+    cost 6;
+    stats 4/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "好施的名人";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的1张手牌，舍弃该手牌。回复自己的主战者3点生命值。若选择了法术，则改为回复6点。
+""";
+    }
+
+    locale eng {
+        name "Altruistic Aristocrat";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a card in your hand and discard it. Restore 3 defense to your leader. If you selected a spell, restore 6 defense instead.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きしゃ\">喜捨</rub>の<rub=\"めいし\">名士</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札1枚を選ぶ。それを捨てる。自分のリーダーを3回復。スペルを選んだなら、3回復ではなく6回復。
+""";
+    }
+
+    locale kor {
+        name "희사의 저명인";
+        text """
+[<color=Keyword>출격</color>] 내 패에서 1장을 선택한다. 그 카드를 버린다. 내 리더를 3 회복. 주문을 선택했다면, 3 회복 대신 6 회복.
+""";
+    }
+
+    locale cht {
+        name "樂善好施的名士";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己手牌中的卡片。將其捨棄。回復自己的主戰者3點生命值。如果指定的是法術卡，則會由原本的回復3點轉變為回復6點。
+""";
+    }
+
+}

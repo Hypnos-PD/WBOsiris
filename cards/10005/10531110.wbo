@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10531110 {
+    type follower;
+    cost 3;
+    stats 3/3;
+
+    effect {
+        fanfare {
+            add 2 earthsigil;
+        }
+        superevolve {
+            summon 2 card 90031120;
+        }
+    }
+
+    meta {
+        pack 10005;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "创造魔法师";
+        text """
+【<color=Keyword>入场曲</color>】使自己的战场上的土之印+2。
+<hr><sev>【<color=Keyword>超进化时</color>】召唤2个『<color=Keyword>守护者巨像</color>』。</sev>
+""";
+    }
+
+    locale eng {
+        name "Terraforming Wizard";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Gain 2 earth sigils.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Summon 2 copies of <b><i><color=Keyword>Guardian Golem</color></i></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "シェイプウィザード";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の場の土の印を+2する。
+<hr><sev>【<color=Keyword>超進化時</color>】『<color=Keyword>ガーディアンゴーレム</color>』2枚を自分の場に出す。</sev>
+""";
+    }
+
+    locale kor {
+        name "형상의 마법사";
+        text """
+[<color=Keyword>출격</color>] 내 전장의 대지의 인장을 +2.
+<hr><sev>[<color=Keyword>초진화시</color>] <color=Keyword>수호 골렘</color> 2장을 내 전장에 소환.</sev>
+""";
+    }
+
+    locale cht {
+        name "築形魔法師";
+        text """
+【<color=Keyword>入場曲</color>】使自己戰場上的土之印+2。
+<hr><sev>【<color=Keyword>超進化時</color>】召喚2張『<color=Keyword>守護者巨像</color>』到自己的戰場上。</sev>
+""";
+    }
+
+}

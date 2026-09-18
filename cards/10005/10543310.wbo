@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10543310 {
+    type spell;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class dragoncraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "懒惰的波摇花";
+        text """
+发动2次「对对手的战场上的随机1个随从造成2点伤害」。若为【<color=Keyword>觉醒</color>】，则对对手的主战者造成2点伤害。
+""";
+    }
+
+    locale eng {
+        name "Sloth of the Crestpetal";
+        text """
+Do this 2 times: \"Deal 2 damage to a random enemy follower.\" If you're in <b><color=Keyword>Overflow</color></b>, deal 2 damage to the enemy leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"たいだ\">怠惰</rub>なる<rub=\"なみたゆばな\">波揺花</rub>";
+        text """
+「相手の場のフォロワーからランダム1枚に2ダメージ。」を2回行う。【<color=Keyword>覚醒</color>】なら、相手のリーダーに2ダメージ。
+""";
+    }
+
+    locale kor {
+        name "나태한 파요화";
+        text """
+「상대방 전장의 추종자 중 무작위로 1장에게 2 피해」를 2회 발동. [<color=Keyword>각성</color>]이라면, 상대방 리더에게 2 피해.
+""";
+    }
+
+    locale cht {
+        name "怠惰的波搖花";
+        text """
+發動2次「隨機給予1張敵方戰場上的從者卡2點傷害」。如果【<color=Keyword>覺醒</color>】已發動，則會給予敵方的主戰者2點傷害。
+""";
+    }
+
+}

@@ -886,6 +886,9 @@ func (g *game) damageExtremumLeaders(source *instance, amount int, extremum *ir.
 		return
 	}
 	best := max(g.own.leaderLife, g.oppo.leaderLife)
+	if extremum.Direction != "highest" {
+		best = min(g.own.leaderLife, g.oppo.leaderLife)
+	}
 	for _, target := range []struct {
 		player *player
 		side   string

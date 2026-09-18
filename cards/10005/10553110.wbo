@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10553110 {
+    type follower;
+    cost 9;
+    stats 7/7;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class abysscraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "致命掠夺者";
+        text """
+【<color=Keyword>入场曲</color>】使战场上的其他所有随从变身为『<color=Keyword>骸骨士兵</color>』。
+<hr>『<color=Keyword>骸骨士兵</color>』被破坏时，回复自己的主战者1点生命值。
+<hr><ev>【<color=Keyword>进化时</color>】对战场上的其他所有随从造成1点伤害。</ev>
+""";
+    }
+
+    locale eng {
+        name "Lifestealer";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Transform all other followers on the field into copies of <b><i><color=Keyword>Skeleton</color></i></b>.
+<hr>Whenever a <b><i><color=Keyword>Skeleton</color></i></b> is destroyed, restore 1 defense to your leader.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Deal 1 damage to all other followers.</ev>
+""";
+    }
+
+    locale jpn {
+        name "フェイタルテイカー";
+        text """
+【<color=Keyword>ファンファーレ</color>】場の他のフォロワーすべては『<color=Keyword>スケルトン</color>』に変身する。
+<hr>『<color=Keyword>スケルトン</color>』が破壊されたとき、自分のリーダーを1回復。
+<hr><ev>【<color=Keyword>進化時</color>】場の他のフォロワーすべてに1ダメージ。</ev>
+""";
+    }
+
+    locale kor {
+        name "페이탈 테이커";
+        text """
+[<color=Keyword>출격</color>] 전장의 다른 추종자 모두는 <color=Keyword>스켈레톤</color>으로 변신한다.
+<hr><color=Keyword>스켈레톤</color>이 파괴되었을 때, 내 리더를 1 회복.
+<hr><ev>[<color=Keyword>진화시</color>] 전장의 다른 추종자 모두에게 1 피해.</ev>
+""";
+    }
+
+    locale cht {
+        name "致命獵魂者";
+        text """
+【<color=Keyword>入場曲</color>】使戰場上全部的其他從者卡變身為『<color=Keyword>骷髏士兵</color>』。
+<hr>當『<color=Keyword>骷髏士兵</color>』被破壞時，回復自己的主戰者1點生命值。
+<hr><ev>【<color=Keyword>進化時</color>】給予戰場上全部的其他從者卡1點傷害。</ev>
+""";
+    }
+
+}

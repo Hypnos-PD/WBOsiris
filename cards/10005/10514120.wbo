@@ -1,0 +1,73 @@
+wbo 0.1.0;
+
+card 10514120 {
+    type follower;
+    cost 3;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "虫风花·魅禄";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）将2张『<color=Keyword>妖精</color>』加入手牌。</ridx>
+<ridx=1>（2）回复自己2点能量点。</ridx>
+<ridx=2>（3）对对手的战场上的所有随从分配3点伤害。</ridx>
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Miroku, Swarmpetal";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Add 2 copies of <b><i><color=Keyword>Fairy</color></i></b> to your hand.</ridx>
+<ridx=1>2. Recover 2 play points.</ridx>
+<ridx=2>3. Deal 3 damage split between all enemy followers.</ridx>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"むしかざばな\">虫風花</rub>・ミロク";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）『<color=Keyword>フェアリー</color>』2枚を自分の手札に加える。</ridx>
+<ridx=1>（2）自分のPPを2回復。</ridx>
+<ridx=2>（3）相手の場のフォロワーすべてに3ダメージを割りふる。</ridx>
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "충풍화 미로쿠";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) <color=Keyword>요정</color> 2장을 내 패에 넣는다.</ridx>
+<ridx=1>(2) 내 PP를 2 회복.</ridx>
+<ridx=2>(3) 상대방 전장의 추종자 모두에게 3 피해를 분배한다.</ridx>
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "蟲風花‧實祿玖";
+        text """
+【<color=Keyword>入場曲</color>】指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）增加2張『<color=Keyword>妖精</color>』到自己的手牌中。</ridx>
+<ridx=1>（2）回復自己的PP 2點。</ridx>
+<ridx=2>（3）對敵方戰場上全部的從者卡分配3點傷害。</ridx>
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

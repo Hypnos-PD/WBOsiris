@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10561120 {
+    type follower;
+    cost 1;
+    stats 1/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "连结的使徒";
+        text """
+【<color=Keyword>爆能强化</color>_4】抽取1张卡牌。本随从获得【<color=Keyword>毁灭</color>】。
+<hr>自己抽取卡牌时，若为自己的回合，则本随从获得【<color=Keyword>突进</color>】。
+""";
+    }
+
+    locale eng {
+        name "Bouquet Believer";
+        text """
+<b><color=Keyword>Enhance</color> (4)</b>: Draw a card. Give this follower <b><color=Keyword>Bane</color></b>.
+<hr>During your turn, whenever you draw a card, give this follower <b><color=Keyword>Rush</color></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"むす\">結</rub>びの<rub=\"しと\">使徒</rub>";
+        text """
+【<color=Keyword>エンハンス</color>_4】自分のデッキから1枚を引く。これは【<color=Keyword>必殺</color>】を持つ。
+<hr>自分がカードを引いたとき、自分のターンなら、これは【<color=Keyword>突進</color>】を持つ。
+""";
+    }
+
+    locale kor {
+        name "화합의 사도";
+        text """
+[<color=Keyword>증강</color> 4] 내 덱에서 1장을 뽑는다. 이 추종자는 [<color=Keyword>필살</color>]을 갖는다.
+<hr>내가 카드를 뽑았을 때 내 턴이라면, 이 추종자는 [<color=Keyword>돌진</color>]을 갖는다.
+""";
+    }
+
+    locale cht {
+        name "繫花使徒";
+        text """
+【<color=Keyword>爆能強化</color>_4】由自己的牌堆中抽取1張卡片。使這張卡片獲得【<color=Keyword>必殺</color>】。
+<hr>當自己抽取卡片時，如果是自己的回合，則會使這張卡片獲得【<color=Keyword>突進</color>】。
+""";
+    }
+
+}

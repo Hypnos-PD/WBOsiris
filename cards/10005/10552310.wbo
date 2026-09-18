@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10552310 {
+    type spell;
+    cost 2;
+
+    effect {
+        damage all.leaders 3 lowest life;
+    }
+
+    meta {
+        pack 10005;
+        class abysscraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "残虐的炸裂";
+        text """
+对生命值最小的所有主战者造成3点伤害。
+""";
+    }
+
+    locale eng {
+        name "Tyrannical Fists";
+        text """
+Deal 3 damage to all leaders with the lowest defense.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ざんぎゃく\">残虐</rub>の<rub=\"さくれつ\">炸裂</rub>";
+        text """
+体力最小のリーダーすべてに3ダメージ。
+""";
+    }
+
+    locale kor {
+        name "작렬하는 잔학";
+        text """
+체력이 가장 낮은 리더 모두에게 3 피해.
+""";
+    }
+
+    locale cht {
+        name "殘虐的炸裂";
+        text """
+給予生命值最低的全部主戰者3點傷害。
+""";
+    }
+
+}

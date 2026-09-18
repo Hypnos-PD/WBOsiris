@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10554110 {
+    type follower;
+    cost 7;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class abysscraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "充实的《恋人与节制》·米路缇欧&卢泽";
+        text """
+【<color=Keyword>入场曲</color>】发动【<color=Keyword>亡者召还</color>_4】和【<color=Keyword>亡者召还</color>_2】。
+<hr><ev>本随从进化时，破坏战场上的随机6个其他随从。</ev>
+<sev>本随从超进化时，使自己获得『纹章：充实的《恋人与节制》·米路缇欧&卢泽』。</sev>
+""";
+    }
+
+    locale eng {
+        name "Milteo & Luzen";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Reanimate</color> (4)</b> and <b><color=Keyword>Reanimate</color> (2)</b>.
+<hr><ev>When this follower evolves, destroy 6 other random followers.</ev>
+<sev>When this follower super-evolves, gain <b><i>Crest: Milteo & Luzen</i></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"み\">充</rub>つ《<rub=\"こいびと\">恋人</rub>と<rub=\"せっせい\">節制</rub>》・ミルティオ＆ルーゼン";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>リアニメイト</color>_4】と【<color=Keyword>リアニメイト</color>_2】を行う。
+<hr><ev>これが進化したとき、場の他のフォロワーからランダム6枚を破壊。</ev>
+<sev>これが超進化したとき、自分は『クレスト：充つ《恋人と節制》・ミルティオ＆ルーゼン』を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "충족시키는 《연인과 절제》 밀티오&루젠";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>소생</color> 4], [<color=Keyword>소생</color> 2]를 발동.
+<hr><ev>이 추종자가 진화했을 때, 전장의 다른 추종자 중 무작위로 6장을 파괴.</ev>
+<sev>이 추종자가 초진화했을 때, 나는 「크레스트: 충족시키는 《연인과 절제》 밀티오&루젠」을 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "饜足《戀人與節制》‧米路緹歐＆盧澤";
+        text """
+【<color=Keyword>入場曲</color>】發動【<color=Keyword>亡者召還</color>_4】與【<color=Keyword>亡者召還</color>_2】。
+<hr><ev>當這張卡片進化時，隨機破壞6張戰場上的其他從者卡。</ev>
+<sev>當這張卡片超進化時，使自己獲得『紋章：饜足《戀人與節制》‧米路緹歐＆盧澤』。</sev>
+""";
+    }
+
+}

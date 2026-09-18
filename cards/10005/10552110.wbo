@@ -1,0 +1,64 @@
+wbo 0.1.0;
+
+card 10552110 {
+    type follower;
+    cost 3;
+    stats 1/1;
+
+    effect {
+        fanfare {
+            summon 1 card 90051130;
+            summon 1 card 90051110;
+        }
+        evolve {
+            summon 1 card 90051140;
+        }
+    }
+
+    meta {
+        pack 10005;
+        class abysscraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "制造麻烦的唤灵师";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>怨灵</color>』和1个『<color=Keyword>骸骨士兵</color>』。
+<hr><ev>【<color=Keyword>进化时</color>】召唤1个『<color=Keyword>腐臭的僵尸</color>』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Fickle Necromancer";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Ghost</color></i></b> and <b><i><color=Keyword>Skeleton</color></i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Summon a <b><i><color=Keyword>Rotting Zombie</color></i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "トラブルネクロマンサー";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>ゴースト</color>』1枚と『<color=Keyword>スケルトン</color>』1枚を自分の場に出す。
+<hr><ev>【<color=Keyword>進化時</color>】『<color=Keyword>腐臭のゾンビ</color>』1枚を自分の場に出す。</ev>
+""";
+    }
+
+    locale kor {
+        name "트러블 네크로맨서";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>유령</color> 1장, <color=Keyword>스켈레톤</color> 1장을 내 전장에 소환.
+<hr><ev>[<color=Keyword>진화시</color>] <color=Keyword>부취 좀비</color> 1장을 내 전장에 소환.</ev>
+""";
+    }
+
+    locale cht {
+        name "惹麻煩的死靈法師";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>怨靈</color>』與1張『<color=Keyword>骷髏士兵</color>』到自己的戰場上。
+<hr><ev>【<color=Keyword>進化時</color>】召喚1張『<color=Keyword>腐臭的殭屍</color>』到自己的戰場上。</ev>
+""";
+    }
+
+}

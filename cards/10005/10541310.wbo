@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10541310 {
+    type spell;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "波摇花的裁决";
+        text """
+抽取1张随从。对对手的战场上的随机1个随从造成X点伤害。X为因本能力抽取的卡牌的费用。
+""";
+    }
+
+    locale eng {
+        name "Blade of the Crestpetal";
+        text """
+Draw a follower. Deal X damage to a random enemy follower. X is the cost of the card you drew.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"なみたゆばな\">波揺花</rub>の<rub=\"だんさい\">断裁</rub>";
+        text """
+自分のデッキからフォロワー1枚を引く。相手の場のフォロワーからランダム1枚にXダメージ。Xはこれで引いたカードのコストである。
+""";
+    }
+
+    locale kor {
+        name "파요화의 단재";
+        text """
+내 덱에서 추종자 1장을 뽑는다. 상대방 전장의 추종자 중 무작위로 1장에게 X 피해. X는 이 능력으로 뽑은 추종자의 비용.
+""";
+    }
+
+    locale cht {
+        name "波搖花的裁斷";
+        text """
+由自己的牌堆中抽取1張從者卡。隨機給予1張敵方戰場上的從者卡X點傷害。X為「這張卡片所抽取之卡片的消費值」。
+""";
+    }
+
+}

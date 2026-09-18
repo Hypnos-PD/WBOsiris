@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10511110 {
+    type follower;
+    cost 2;
+    stats 1/3;
+
+    effect {
+        stealth;
+        evolve {
+            draw 1;
+        }
+    }
+
+    meta {
+        pack 10005;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "熟虑的狸猫";
+        text """
+【<color=Keyword>潜行</color>】
+<hr><ev>【<color=Keyword>进化时</color>】抽取1张卡牌。</ev>
+""";
+    }
+
+    locale eng {
+        name "Prudent Tanuki";
+        text """
+<b><color=Keyword>Ambush</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Draw a card.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"けんりょ\">賢慮</rub>の<rub=\"たぬき\">狸</rub>";
+        text """
+【<color=Keyword>潜伏</color>】
+<hr><ev>【<color=Keyword>進化時</color>】自分のデッキから1枚を引く。</ev>
+""";
+    }
+
+    locale kor {
+        name "현명한 너구리";
+        text """
+[<color=Keyword>잠복</color>]
+<hr><ev>[<color=Keyword>진화시</color>] 내 덱에서 1장을 뽑는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "卓識的狸貓";
+        text """
+【<color=Keyword>潛行</color>】
+<hr><ev>【<color=Keyword>進化時</color>】由自己的牌堆中抽取1張卡片。</ev>
+""";
+    }
+
+}

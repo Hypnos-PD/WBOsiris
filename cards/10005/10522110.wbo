@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10522110 {
+    type follower;
+    cost 6;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "迅猛的武术家";
+        text """
+抽到本卡牌时，回合结束前，使本卡牌的费用变为3。
+<hr>【<color=Keyword>入场曲</color>】抽取1张卡牌。回复自己的主战者3点生命值。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Swift Staffmaster";
+        text """
+When you draw this card, set its cost to 3 until the end of the turn.
+<hr><b><color=Keyword>Fanfare</color></b>: Draw a card. Restore 3 defense to your leader.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ひょうしつ\">剽疾</rub>の<rub=\"ぶとうか\">武闘家</rub>";
+        text """
+これを引いたとき、ターン終了まで、これのコストを3にする。
+<hr>【<color=Keyword>ファンファーレ</color>】自分のデッキから1枚を引く。自分のリーダーを3回復。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "민첩한 무투가";
+        text """
+이 추종자를 뽑았을 때, 턴 종료까지 이 추종자의 비용을 3으로 만든다.
+<hr>[<color=Keyword>출격</color>] 내 덱에서 1장을 뽑는다. 내 리더를 3 회복.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "迅悍的武鬥家";
+        text """
+當抽取這張卡片時，到回合結束為止，使這張卡片的消費轉變為3。
+<hr>【<color=Keyword>入場曲</color>】由自己的牌堆中抽取1張卡片。回復自己的主戰者3點生命值。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

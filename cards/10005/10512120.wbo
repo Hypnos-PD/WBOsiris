@@ -1,0 +1,65 @@
+wbo 0.1.0;
+
+card 10512120 {
+    type follower;
+    cost 5;
+    stats 2/6;
+
+    effect {
+        rush;
+        bane;
+        drain;
+    }
+
+    meta {
+        pack 10005;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "和气蔼蔼的妖精";
+        text """
+【<color=Keyword>突进</color>】
+【<color=Keyword>毁灭</color>】
+【<color=Keyword>虹吸</color>】
+""";
+    }
+
+    locale eng {
+        name "Fairy Beastwhisperer";
+        text """
+<b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Bane</color></b>
+<b><color=Keyword>Drain</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"わきあいあい\">和気藹々</rub>の<rub=\"ようせい\">妖精</rub>";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>必殺</color>】
+【<color=Keyword>ドレイン</color>】
+""";
+    }
+
+    locale kor {
+        name "화기애애한 요정";
+        text """
+[<color=Keyword>돌진</color>]
+[<color=Keyword>필살</color>]
+[<color=Keyword>흡혈</color>]
+""";
+    }
+
+    locale cht {
+        name "和藹可親的妖精";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>必殺</color>】
+【<color=Keyword>吸血</color>】
+""";
+    }
+
+}

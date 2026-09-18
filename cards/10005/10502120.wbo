@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10502120 {
+    type follower;
+    cost 4;
+    stats 4/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class neutral;
+        rarity silver;
+    }
+
+    locale chs {
+        name "手持军配团扇的伟丈夫";
+        text """
+<ev>【<color=Keyword>进化时</color>】若自己的手牌中原始费用最大的3张卡牌的费用合计大于对手的手牌中原始费用最大的3张卡牌的费用合计，则破坏对手的战场上的所有随从。</ev>
+""";
+    }
+
+    locale eng {
+        name "Behemoth General";
+        text """
+<ev><b><color=Keyword>Evolve</color></b>: If the sum of the 3 highest base costs in your hand is higher than that of your opponent's, destroy all enemy followers.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぐんばい\">軍配</rub>の<rub=\"いじょうふ\">偉丈夫</rub>";
+        text """
+<ev>【<color=Keyword>進化時</color>】自分の手札の元のコストの大きい順に3枚の合計が相手の手札の元のコストの大きい順に3枚の合計より大きいなら、相手の場のフォロワーすべてを破壊。</ev>
+""";
+    }
+
+    locale kor {
+        name "군배의 대장부";
+        text """
+<ev>[<color=Keyword>진화시</color>] 원래 비용이 높은 순으로 내 패 3장의 합계가 원래 비용이 높은 순으로 상대방 패 3장의 합계보다 크다면, 상대방 전장의 추종자 모두를 파괴.</ev>
+""";
+    }
+
+    locale cht {
+        name "軍扇偉丈夫";
+        text """
+<ev>【<color=Keyword>進化時</color>】如果自己手牌中按「原始消費由大至小的前3張卡片之合計」大於敵方手牌中按「原始消費由大至小的前3張卡片之合計」，則會破壞敵方戰場上全部的從者卡。</ev>
+""";
+    }
+
+}

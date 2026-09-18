@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10511310 {
+    type spell;
+    cost 2;
+
+    effect {
+        damage oppo.field.followers 3 distributed;
+        add 1 card 90011110 to hand;
+    }
+
+    meta {
+        pack 10005;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "虫风花的飞翔";
+        text """
+对对手的战场上的所有随从分配3点伤害。将1张『<color=Keyword>妖精</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Flight of the Swarmpetal";
+        text """
+Deal 3 damage split between all enemy followers. Add a <b><i><color=Keyword>Fairy</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"むしかざばな\">虫風花</rub>の<rub=\"ひしょう\">飛翔</rub>";
+        text """
+相手の場のフォロワーすべてに3ダメージを割りふる。『<color=Keyword>フェアリー</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "충풍화의 비상";
+        text """
+상대방 전장의 추종자 모두에게 3 피해를 분배한다. <color=Keyword>요정</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "蟲風花的飛翔";
+        text """
+對敵方戰場上全部的從者卡分配3點傷害。增加1張『<color=Keyword>妖精</color>』到自己的手牌中。
+""";
+    }
+
+}

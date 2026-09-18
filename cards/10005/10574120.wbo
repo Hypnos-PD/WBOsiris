@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10574120 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class portalcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "尽小花·伊鞠";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的1张手牌，舍弃该手牌。抽取1张法术。
+<hr>自己使用法术时，若本随从为进化后，则召唤1个『<color=Keyword>伊鞠的小鬼</color>』。
+<hr><sev>【<color=Keyword>超进化时</color>】抽取2种费用为1的法术。</sev>
+""";
+    }
+
+    locale eng {
+        name "Imari, Dewdrop";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a card in your hand and discard it. Draw a spell.
+<hr>Whenever you play a spell, if this follower is evolved, summon an <b><i><color=Keyword>Imari's Little Buddies</color></i></b>.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Draw 2 differently named 1-cost spells.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"つきこばな\">尽小花</rub>・イマリ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札1枚を選ぶ。それを捨てる。自分のデッキからスペル1枚を引く。
+<hr>自分がスペルをプレイしたとき、これが進化後なら、『<color=Keyword>イマリの小鬼</color>』1枚を自分の場に出す。
+<hr><sev>【<color=Keyword>超進化時</color>】自分のデッキからコスト1のスペル2種類を引く。</sev>
+""";
+    }
+
+    locale kor {
+        name "진소화 이마리";
+        text """
+[<color=Keyword>출격</color>] 내 패에서 1장을 선택한다. 그 카드를 버린다. 내 덱에서 주문 1장을 뽑는다.
+<hr>내가 주문을 사용했을 때 이 추종자가 진화후라면, <color=Keyword>이마리의 꼬마 깨비</color> 1장을 내 전장에 소환.
+<hr><sev>[<color=Keyword>초진화시</color>] 내 덱에서 비용이 1인 주문 2종류를 뽑는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "盡小花‧伊萬里";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己手牌中的卡片。將其捨棄。由自己的牌堆中抽取1張法術卡。
+<hr>當自己使用法術卡時，如果這張卡片已進化，則會召喚1張『<color=Keyword>伊萬里的小鬼</color>』到自己的戰場上。
+<hr><sev>【<color=Keyword>超進化時</color>】由自己的牌堆中抽取2種消費為1的法術卡。</sev>
+""";
+    }
+
+}

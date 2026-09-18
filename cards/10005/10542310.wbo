@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10542310 {
+    type spell;
+    cost 4;
+
+    effect {
+        damage field.followers count(field.followers);
+    }
+
+    meta {
+        pack 10005;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "日珥咆哮";
+        text """
+对战场上的所有随从造成X点伤害。X为战场上的随从的张数。
+""";
+    }
+
+    locale eng {
+        name "Roar of Prominence";
+        text """
+Deal X damage to all followers. X is the number of followers on the field.
+""";
+    }
+
+    locale jpn {
+        name "プロミネンスロア";
+        text """
+場のフォロワーすべてにXダメージ。Xは場のフォロワーの枚数である。
+""";
+    }
+
+    locale kor {
+        name "프로미넌스 로어";
+        text """
+전장의 추종자 모두에게 X 피해. X는 전장의 추종자 수.
+""";
+    }
+
+    locale cht {
+        name "紅炎咆哮";
+        text """
+給予戰場上全部的從者卡X點傷害。X為「戰場上的從者卡張數」。
+""";
+    }
+
+}

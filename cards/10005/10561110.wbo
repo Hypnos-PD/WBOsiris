@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10561110 {
+    type follower;
+    cost 3;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "先见的神官";
+        text """
+【<color=Keyword>入场曲</color>】选择对手的战场上的1个随从，对其造成2点伤害。
+<hr>【<color=Keyword>守护</color>】
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Prescient Priestess";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select an enemy follower on the field and deal it 2 damage.
+<hr><b><color=Keyword>Ward</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "フォアサイトプリースト";
+        text """
+【<color=Keyword>ファンファーレ</color>】相手の場のフォロワー1枚を選ぶ。それに2ダメージ。
+<hr>【<color=Keyword>守護</color>】
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "예견의 성직자";
+        text """
+[<color=Keyword>출격</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 2 피해.
+<hr>[<color=Keyword>수호</color>]
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "先識的聖職者";
+        text """
+【<color=Keyword>入場曲</color>】指定1張敵方戰場上的從者卡。給予其2點傷害。
+<hr>【<color=Keyword>守護</color>】
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

@@ -1,0 +1,479 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "尽小花的临照抽一张" {
+    seed 54001;
+    state {
+        player own {
+            pp 1/1;
+            deck top { follower drew = 10001110; }
+            hand { spell source = 10571310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10001110 == 1; }
+}
+
+scenario "和气蔼蔼的妖精携带突进毁灭与虹吸" {
+    seed 54002;
+    state { player own { field { follower fairy = 10512120; } } }
+    action { end_turn; }
+    expect { legal; fairy has rush; fairy has bane; fairy has drain; }
+}
+
+scenario "熟虑的狸猫进化时抽一张" {
+    seed 54003;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            field { follower source = 10511110; }
+            deck top { follower drew = 10001110; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; source has stealth; own.hand count card 10001110 == 1; }
+}
+
+scenario "优雅的虫风花按连击抽牌" {
+    seed 54004;
+    state {
+        player own {
+            pp 3/3;
+            combo 2;
+            deck top { follower first = 10001110; follower second = 10001110; }
+            hand { spell source = 10513310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10001110 == 2; }
+}
+
+scenario "清宵玉兔在使用法术时进化" {
+    seed 54005;
+    state {
+        player own {
+            pp 1/1;
+            field { follower rabbit = 10572120; }
+            deck top { follower first = 10001110; follower second = 10001110; }
+            hand { spell source = 90054330; }
+        }
+    }
+    action { play source; }
+    expect { legal; rabbit.evolved == true; rabbit has ward; }
+}
+
+scenario "残虐的炸裂只打击生命值最小的主战者" {
+    seed 54006;
+    state {
+        player own {
+            leader 10/20;
+            pp 2/2;
+            hand { spell source = 10552310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 7; oppo.leader.life == 20; }
+}
+
+scenario "雾卷花的激愤让一张手牌返回牌组后抽三张" {
+    seed 54007;
+    state {
+        player own {
+            pp 3/3;
+            deck top {
+                follower first = 10001110;
+                follower second = 10001110;
+                follower third = 10001110;
+                follower fourth = 10001110;
+            }
+            hand {
+                spell source = 10561310;
+                follower other = 10001110;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10001110 == 3; own.deck count card 10001110 == 2; }
+}
+
+scenario "明越花的转变舍弃一张手牌后抽两张" {
+    seed 54008;
+    state {
+        player own {
+            pp 2/2;
+            deck top { follower first = 10001110; follower second = 10001110; }
+            hand {
+                spell source = 10531310;
+                follower other = 10001110;
+            }
+        }
+    }
+    action { play source; select other; }
+    expect { legal; other.zone == graveyard; own.hand count card 10001110 == 2; }
+}
+
+scenario "温柔援军召唤两个骑士" {
+    seed 54009;
+    state {
+        player own {
+            pp 2/2;
+            hand { spell source = 10522310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90021110 == 2; }
+}
+
+scenario "爆能强化四点让温柔援军召唤四个骑士" {
+    seed 54010;
+    state {
+        player own {
+            pp 4/4;
+            hand { spell source = 10522310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90021110 == 4; own.pp == 0/4; }
+}
+
+scenario "毫不动摇的圣骑士召唤三个自己" {
+    seed 54011;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10562110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10562110 == 4; source has ward; }
+}
+
+scenario "诚心的尽小花把战场上的卡牌变成伊鞠的小鬼" {
+    seed 54012;
+    state {
+        player own {
+            pp 1/1;
+            hand { spell source = 10573310; }
+        }
+        player oppo { field { follower enemy = 10001110; } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.stats == 3/3; }
+}
+
+scenario "荣耀的丽金花把手牌中加入两张闪耀的金币" {
+    seed 54013;
+    state {
+        player own {
+            pp 3/3;
+            hand { spell source = 10523310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90021350 == 2; }
+}
+
+scenario "爆能强化五点让荣耀的丽金花加入四张闪耀的金币" {
+    seed 54014;
+    state {
+        player own {
+            pp 5/5;
+            hand { spell source = 10523310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90021350 == 4; own.pp == 0/5; }
+}
+
+scenario "日珥咆哮按战场上的随从张数造成伤害" {
+    seed 54015;
+    state {
+        player own {
+            pp 4/4;
+            field { follower ally = 10001110 { stats 2/8; } }
+            hand { spell source = 10542310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect { legal; ally.stats == 2/6; enemy.stats == 2/6; }
+}
+
+scenario "虫风花的飞翔分配三点伤害并把妖精加入手牌" {
+    seed 54016;
+    state {
+        player own {
+            pp 2/2;
+            hand { spell source = 10511310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/6; } } }
+    }
+    action { play source; }
+    expect { legal; enemy.stats == 2/3; own.hand count card 90011110 == 1; }
+}
+
+scenario "挥毫的怪物在有其他一费卡牌时加一加一" {
+    seed 54017;
+    state {
+        player own {
+            pp 1/1;
+            field { follower cheap = 10012110; }
+            hand { follower source = 10501110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.stats == 2/2; }
+}
+
+scenario "没有其他一费卡牌时挥毫的怪物保持原样" {
+    seed 54018;
+    state {
+        player own {
+            pp 1/1;
+            hand { follower source = 10501110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.stats == 1/1; }
+}
+
+scenario "连击五时新晋搭档召唤复制体并让两者进化" {
+    seed 54019;
+    state {
+        player own {
+            pp 2/2;
+            combo 5;
+            hand { follower source = 10512110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10512110 == 2; source.evolved == true; source.stats == 4/4; }
+}
+
+scenario "连击不足时新晋搭档不召唤" {
+    seed 54020;
+    state {
+        player own {
+            pp 2/2;
+            combo 1;
+            hand { follower source = 10512110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10512110 == 1; source.evolved == false; }
+}
+
+scenario "爆能强化六点让鼓舞之狼加生命并获得毁灭与屏障" {
+    seed 54021;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10551110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.stats == 2/8; source has bane; source has barrier; source has rush; }
+}
+
+scenario "红符的魂魄道士的入场曲发动亡者召还二" {
+    seed 54022;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10551120; }
+            destroyed { follower dead = 10001110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10001110 == 1; }
+}
+
+scenario "创造魔法师的入场曲增加两层土之印" {
+    seed 54023;
+    state {
+        player own {
+            pp 3/3;
+            field { amulet sigil = 90031210; }
+            hand { follower source = 10531110; }
+        }
+    }
+    action { play source; }
+    expect { legal; sigil.earthsigil == 3; }
+}
+
+scenario "创造魔法师超进化时召唤两个守护者巨像" {
+    seed 54024;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10531110; }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; own.field count card 90031120 == 2; }
+}
+
+scenario "连击三时寂静的助力改为两点伤害" {
+    seed 54025;
+    state {
+        player own {
+            pp 3/3;
+            combo 3;
+            hand { spell source = 10512310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect { legal; enemy.stats == 2/6; oppo.leader.life == 18; }
+}
+
+scenario "铁锤龙骑士对指定随从造成七点伤害并召唤巨翼飞龙" {
+    seed 54026;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10542110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/9; } } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.stats == 2/2; own.field count card 90041120 == 1; }
+}
+
+scenario "制造麻烦的唤灵师召唤怨灵与骸骨士兵" {
+    seed 54027;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10552110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 90051130 == 1; own.field count card 90051110 == 1; }
+}
+
+scenario "制造麻烦的唤灵师进化时召唤腐臭的僵尸" {
+    seed 54028;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            field { follower source = 10552110; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.field count card 90051140 == 1; }
+}
+
+scenario "流动控符师打击三个随机随从并强化手牌" {
+    seed 54029;
+    state {
+        player own {
+            pp 6/6;
+            hand {
+                follower source = 10531120;
+                follower held = 10032120;
+            }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/12; } } }
+    }
+    action { play source; }
+    expect { legal; enemy.stats == 2/3; held.cost == 7; }
+}
+
+scenario "涌泉打水人进化时对指定随从造成五点伤害" {
+    seed 54030;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            field { follower source = 10541110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { evolve source; select enemy; }
+    expect { legal; enemy.stats == 2/3; }
+}
+
+scenario "涌泉打水人超进化时改为选择两个随从" {
+    seed 54031;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10541110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/8; }
+                follower second = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { superevolve source; select first, second; }
+    expect { legal; first.stats == 2/3; second.stats == 2/3; }
+}
+
+scenario "繁花技师的入场曲只抽法术且在使用法术时打击敌方全体" {
+    seed 54032;
+    state {
+        player own {
+            pp 5/5;
+            field { follower technician = 10571120; }
+            deck top {
+                follower first = 10001110;
+                spell second = 90054330;
+            }
+            hand { spell source = 90054330; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect { legal; enemy.stats == 2/5; }
+}
+
+scenario "穹顶护甲启动时破坏自己并按守护随从数量抽牌" {
+    seed 54033;
+    state {
+        player own {
+            field {
+                amulet source = 10562210;
+                follower guard = 10001120;
+            }
+            deck top { follower drew = 10001110; }
+        }
+    }
+    action { engage source; }
+    expect { legal; source.zone == graveyard; own.hand count card 10001110 == 1; }
+}
+
+scenario "失眠女巫的纹章在谢幕时对全体随从造成三点伤害" {
+    seed 54034;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10532110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; }
+    expect { legal; own.crests count card 10532110 == 1; }
+}
+
+scenario "失眠女巫进化时破坏纹章并触发全体三点伤害" {
+    seed 54035;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            field { follower source = 10532110; }
+            crests { crest witch = 10532110; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { evolve source; }
+    // 进化后是 5/5，纹章谢幕曲的 3 点伤害让它剩 5/2。
+    expect { legal; own.crests count card 10532110 == 0; enemy.stats == 2/5; source.stats == 5/2; }
+}

@@ -1,0 +1,78 @@
+wbo 0.1.0;
+
+card 10574110 {
+    type follower;
+    cost 3;
+    stats 0/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class portalcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "转动的《命运之轮》·斯洛士";
+        text """
+【<color=Keyword>潜行</color>】
+自己的回合结束时，若本随从为进化后，则使对手获得『纹章：转动的《命运之轮》·斯洛士』。使本随从消失。
+自己的回合开始时，从以下未发动的能力中随机发动1个能力。
+<ridx=0>（1）回合结束前，使自己的所有手牌的费用-1。</ridx>
+<ridx=1>（2）使自己的战场上的所有随从+2/+2。</ridx>
+<ridx=2>（3）回复自己的主战者3点生命值。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Slaus, Revolving Wheel of Fortune";
+        text """
+<b><color=Keyword>Ambush</color></b>
+At the end of your turn, if this follower is evolved, give your opponent <b><i>Crest: Slaus, Revolving Wheel of Fortune</i></b> and banish this card.
+At the start of your turn, activate a random ability that hasn't been activated yet from the following.
+<ridx=0>1. Reduce the cost of all cards in your hand by 1 until the end of the turn.</ridx>
+<ridx=1>2. Give all allied followers on the field +2/+2.</ridx>
+<ridx=2>3. Restore 3 defense to your leader.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"まわ\">廻</rub>る《<rub=\"うんめい\">運命</rub>の<rub=\"わ\">輪</rub>》・スロース";
+        text """
+【<color=Keyword>潜伏</color>】
+自分のターン終了時、これが進化後なら、相手は『クレスト：廻る《運命の輪》・スロース』を持つ。これを消滅。
+自分のターン開始時、下記の能力から働いていないランダム1つの能力が働く。
+<ridx=0>（1）ターン終了まで、自分の手札すべてのコストを-1する。</ridx>
+<ridx=1>（2）自分の場のフォロワーすべては+2/+2する。</ridx>
+<ridx=2>（3）自分のリーダーを3回復。</ridx>
+""";
+    }
+
+    locale kor {
+        name "돌아가는 《운명의 수레바퀴》 슬로스";
+        text """
+[<color=Keyword>잠복</color>]
+내 턴 종료시 이 추종자가 진화후라면, 상대방은 「크레스트: 돌아가는 《운명의 수레바퀴》 슬로스」를 갖는다. 이 추종자를 소멸.
+내 턴 시작시, 아래에서 발동하지 않은 능력 중 무작위로 1개를 발동.
+<ridx=0>(1) 턴 종료까지 내 패 모두의 비용을 -1.</ridx>
+<ridx=1>(2) 내 전장의 추종자 모두는 +2/+2.</ridx>
+<ridx=2>(3) 내 리더를 3 회복.</ridx>
+""";
+    }
+
+    locale cht {
+        name "迴環《命運之輪》‧斯洛士";
+        text """
+【<color=Keyword>潛行</color>】
+自己的回合結束時，如果這張卡片已進化，則會使敵方獲得『紋章：迴環《命運之輪》‧斯洛士』。使這張卡片消失。
+自己的回合開始時，由下列能力中隨機發動1個尚未發動的能力。
+<ridx=0>（1）到回合結束為止，使自己手牌中全部的卡片消費-1。</ridx>
+<ridx=1>（2）使自己戰場上全部的從者卡+2/+2。</ridx>
+<ridx=2>（3）回復自己的主戰者3點生命值。</ridx>
+""";
+    }
+
+}

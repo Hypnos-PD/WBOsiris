@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10523110 {
+    type follower;
+    cost 4;
+    stats 5/6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class swordcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "不动如山的将校";
+        text """
+无法攻击随从或主战者。
+自己的回合结束时，召唤1个『<color=Keyword>铁甲骑士</color>』。
+<hr><sev>【<color=Keyword>超进化时</color>】使自己的战场上的其他所有随从+3/+3。</sev>
+""";
+    }
+
+    locale eng {
+        name "Unmoving Tactician";
+        text """
+Can't attack followers or leaders.
+At the end of your turn, summon a <b><i><color=Keyword>Steelclad Knight</color></i></b>.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Give all other allied followers on the field +3/+3.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ふどう\">不動</rub>の<rub=\"しょうこう\">将校</rub>";
+        text """
+フォロワーやリーダーを攻撃できない。
+自分のターン終了時、『<color=Keyword>スティールナイト</color>』1枚を自分の場に出す。
+<hr><sev>【<color=Keyword>超進化時</color>】自分の場の他のフォロワーすべては+3/+3する。</sev>
+""";
+    }
+
+    locale kor {
+        name "부동의 장교";
+        text """
+추종자나 리더 공격 불가.
+내 턴 종료시, <color=Keyword>철갑 기사</color> 1장을 내 전장에 소환.
+<hr><sev>[<color=Keyword>초진화시</color>] 내 전장의 다른 추종자 모두는 +3/+3.</sev>
+""";
+    }
+
+    locale cht {
+        name "不動的將領";
+        text """
+無法攻擊從者或主戰者。
+自己的回合結束時，召喚1張『<color=Keyword>鐵甲騎士</color>』到自己的戰場上。
+<hr><sev>【<color=Keyword>超進化時</color>】使自己戰場上全部的其他從者卡+3/+3。</sev>
+""";
+    }
+
+}

@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10544120 {
+    type follower;
+    cost 3;
+    stats 1/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "波摇花·夕夜";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>大海虎鲸</color>』。
+<hr><ev>【<color=Keyword>进化时</color>】选择自己的1张手牌，舍弃该手牌。使自己获得『纹章：波摇花·夕夜』。</ev>
+""";
+    }
+
+    locale eng {
+        name "Yube, Crestpetal";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Majestic Megalorca</color></i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select a card in your hand and discard it. Gain <b><i>Crest: Yube, Crestpetal</i></b>.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"なみたゆばな\">波揺花</rub>・ユウベ";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>大海のオルカ</color>』1枚を自分の場に出す。
+<hr><ev>【<color=Keyword>進化時</color>】自分の手札1枚を選ぶ。それを捨てる。自分は『クレスト：波揺花・ユウベ』を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "파요화 유우베";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>대해의 오르카</color> 1장을 내 전장에 소환.
+<hr><ev>[<color=Keyword>진화시</color>] 내 패에서 1장을 선택한다. 그 카드를 버린다. 나는 「크레스트: 파요화 유우베」를 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "波搖花‧遊夜";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>滄海虎鯨</color>』到自己的戰場上。
+<hr><ev>【<color=Keyword>進化時</color>】指定1張自己手牌中的卡片。將其捨棄。使自己獲得『紋章：波搖花‧遊夜』。</ev>
+""";
+    }
+
+}

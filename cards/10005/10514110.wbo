@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10514110 {
+    type follower;
+    cost 2;
+    stats 1/1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10005;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "脚踩天穹的《倒吊人》·罗弗拉德";
+        text """
+【<color=Keyword>入场曲</color>】本随从+X/+X。X为自己的【<color=Keyword>连击</color>】。
+<hr><ev>【<color=Keyword>进化时</color>】舍弃自己的所有手牌。将对手的牌组中的随机5张卡牌的复制卡牌各1张以非公开形式加入自己的手牌。</ev>
+""";
+    }
+
+    locale eng {
+        name "Wolfraud, Skybound Hanged Man";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Give this follower +X/+X. X is your <b><color=Keyword>Combo</color></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Discard your hand. Add an exact copy each of 5 random cards in your opponent's deck to your hand without revealing them.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんふ\">天踏</rub>む《<rub=\"つ\">吊</rub>るされた<rub=\"おとこ\">男</rub>》・ローフラッド";
+        text """
+【<color=Keyword>ファンファーレ</color>】これは+X/+Xする。Xは自分の【<color=Keyword>コンボ</color>】である。
+<hr><ev>【<color=Keyword>進化時</color>】自分の手札すべてを捨てる。相手のデッキからランダム5枚のコピー1枚ずつを非公開で自分の手札に加える。</ev>
+""";
+    }
+
+    locale kor {
+        name "하늘을 딛는 《매달린 남자》 로플러드";
+        text """
+[<color=Keyword>출격</color>] 이 추종자는 +X/+X. X는 내 [<color=Keyword>콤보</color>].
+<hr><ev>[<color=Keyword>진화시</color>] 내 패 모두를 버린다. 상대방 덱에서 무작위로 5장의 복사본 1장씩을 비공개로 내 패에 넣는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "佇天《倒吊人》‧羅弗拉德";
+        text """
+【<color=Keyword>入場曲</color>】使這張卡片+X/+X。X為「自己的【<color=Keyword>連擊</color>】數」。
+<hr><ev>【<color=Keyword>進化時</color>】捨棄自己全部的手牌。隨機將敵方牌堆中的5張卡片各複製1張並以非公開形式增加到自己的手牌中。</ev>
+""";
+    }
+
+}
