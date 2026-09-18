@@ -34,14 +34,79 @@ node scripts/bundle_illustrations.mjs --dry-run    # 只看规模
 node scripts/bundle_illustrations.mjs              # 复制 40 张到 web/public/assets/home
 ```
 
-## 构建
+## 本地测试
 
-开发（本机窗口）：
+### 1. 界面快速循环（改 UI 用这个，不需要 Wails）
+
+```bash
+go run ./cmd/wbo serve --source-root .          # 规则服务，127.0.0.1:23215，本地模式不要求登录
+cd web && npm run dev                            # Vite 5173，改前端即时热更新
+```
+
+浏览器打开 `http://localhost:5173`。前端在 localhost 下默认连 `127.0.0.1:23215`，
+所以两条命令起来就能构筑、练习对战（对 AI）、看回放。
+
+想直接拿**线上**服务调 UI（比如验证大厅与登录），生产端点带 `Access-Control-Allow-Origin: *`，
+所以本地页面可以直接连：
+
+```bash
+cd web && VITE_API_BASE=https://sva.hypd.asia/wbo npm run dev
+```
+
+（线上进大厅要 WBArts 账号：设置页登录，jwt 存在 localStorage。）
+
+### 2. 桌面壳（真窗口 / 改 Go 用这个）
 
 ```bash
 cd desktop
-wails dev              # 前端热更新；Linux 需要 -tags webkit2_41（按发行版的 WebKitGTK 版本）
+wails dev -tags webkit2_41      # Arch 只有 WebKitGTK 4.1，必须带这个 tag
 ```
+
+`wails dev` 会自己构建前端、开真窗口，并 watch `desktop/` 自动重建；它另起一个
+`http://localhost:34115` 的 dev server。注意：它**不 watch `web/src`**，改前端请用上面第 1 条，
+或者把 `wails.json` 的 `frontend:dev:watcher` 指到自定义脚本。
+
+跑打包后的二进制：
+
+```bash
+cd desktop && wails build -tags webkit2_41 -ldflags "-X main.version=dev"
+./build/bin/WBOsiris                                    # 内嵌默认立绘
+./build/bin/WBOsiris --assets-dir ../web/public/assets/home   # 用完整的 40 张立绘
+```
+
+客户端默认连**进程内**规则服务（离线可用）；要试线上大厅就在「设置 → 规则服务」填
+`https://sva.hypd.asia/wbo`，保存后会自动重新连接。
+
+### 3. 无头环境冒烟（CI / 没有桌面时）
+
+```bash
+Xvfb :99 -screen 0 1440x900x24 &
+DISPLAY=:99 WEBKIT_DISABLE_COMPOSITING_MODE=1 LIBGL_ALWAYS_SOFTWARE=1 GDK_BACKEND=x11 \
+  ./desktop/build/bin/WBOsiris &
+sleep 15
+DISPLAY=:99 magick import -window root /tmp/wbo-client.png    # 截图核对界面
+```
+
+WebKit 在虚拟显示里需要 `WEBKIT_DISABLE_COMPOSITING_MODE=1` 与软件 GL，否则窗口是空白。
+
+### 4. 打包产物验收
+
+```bash
+scripts/release/build-appimage.sh --slim        # 先出小体积 AppImage 验证启动
+scripts/release/build-appimage.sh               # 完整包（含 675 MB 素材）
+```
+
+AppImage 需要能运行 FUSE 或 `APPIMAGE_EXTRACT_AND_RUN=1`（脚本内部已用后者）。
+
+### 常见坑
+
+- **`wails doctor` 会说 `libwebkit` 缺失**：它只探测 WebKitGTK 4.0；Arch 只有 4.1，
+  带上 `-tags webkit2_41` 就能编译，这条警告可以直接忽略。
+- **窗口一片空白**：无头/虚拟显示下需要上面那三个环境变量；真机上一般是缺 WebKitGTK 运行库。
+- **立绘上下有黑边**：`HomeIllustration.tsx` 会按容器比例取景，容器尺寸为 0 时不会建播放器；
+  检查元素是否真的铺满（例如 `inset: -3%` 那层没被别处的 `overflow` 裁掉）。
+- **Linux 需要 GTK/WebKit 开发包**：Debian/Ubuntu 是 `libgtk-3-dev libwebkit2gtk-4.1-dev`，
+  Arch 是 `gtk3 webkit2gtk-4.1`。
 
 Linux AppImage：
 
