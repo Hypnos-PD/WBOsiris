@@ -41,6 +41,10 @@ func numericIR(t []syntax.Token, i int) (int, ir.NumericExpr) {
 		// `fused.cost` / `fused.distinct` 也可以直接当数值用（例如造成 X 点伤害，X 为融合种类）。
 		return 0, &ir.Scalar{Kind: "fusion_material_scalar", Field: t[i+2].Value}
 	}
+	if t[i].Value != "own" && t[i].Value != "oppo" {
+		// `<绑定>.attack|life|cost`：读取绑定实例当前的数值（例如"X 为选择的随从的攻击力"）。
+		return 0, &ir.Scalar{Kind: "binding_scalar", Side: t[i].Value, Field: t[i+2].Value}
+	}
 	return 0, &ir.Scalar{Kind: "scalar", Side: t[i].Value, Field: t[i+2].Value}
 }
 

@@ -6,7 +6,7 @@ card 90054330 {
     trait encroacher;
 
     effect {
-        unplayable;
+        draw 2;
     }
 
     meta {

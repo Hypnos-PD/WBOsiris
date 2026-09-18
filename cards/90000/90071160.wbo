@@ -7,7 +7,7 @@ card 90071160 {
     trait artifact;
 
     effect {
-        unplayable;
+        storm;
     }
 
     meta {

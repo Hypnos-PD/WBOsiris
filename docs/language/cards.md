@@ -212,6 +212,14 @@ require target from own.field.followers;
 筛选（回合开始时清零），用于"本回合中没有进行过攻击的进化前随从"这类文本。
 `not` 目前只在这个词组里可用，其它否定写法仍会被检查器拒绝。
 
+数值位置除了 `self.attack`、`count(...)`、`sum(...)` 与玩家数值，还可以写
+`<绑定>.attack|life|cost`，读取该绑定里第一个实例的当前数值，例如
+"X 为选择的随从的攻击力"写作 `require target from own.hand.followers where trait artifact;
+damage oppo.field.followers target.attack;`。绑定名写错不会报错，求值为 0。
+`raise countdown <集合> N` 与 `reduce countdown <集合> N` 互为反向，可用来推进或延后
+护符与纹章的吟唱；`set_attack_limit <目标> N` 把"1回合可以攻击 N 次"给到任意随从，
+写 `self` 时就是本随从。
+
 `own.deck has no duplicates` / `oppo.deck has duplicates` 判断牌组里是否有重复的卡牌定义；
 `banish duplicates in own.deck;` 让牌组中的重复卡牌消失，只保留每种的第一张。
 

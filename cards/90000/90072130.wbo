@@ -7,7 +7,10 @@ card 90072130 {
     trait puppetry;
 
     effect {
-        unplayable;
+        stealth;
+        lastwords {
+            summon 1 card 10272110;
+        }
     }
 
     meta {

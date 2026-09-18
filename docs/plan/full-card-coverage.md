@@ -18,20 +18,20 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 476 · 未实现(骨架) 45 · 未导入 383
+总计 904 · 已完成 496 · 未实现(骨架) 25 · 未导入 383
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
 10002        77      77       0       0
 10003        77      75       2       0
-10004        76      71       5       0
+10004        76      72       4       0
 10005        76       0       0      76
 10006        76       0       0      76
 10007        77       0       0      77
 10008        78       0       0      78
 10009        76       0       0      76
-90000        93      55      38       0
-未完成卡按文本复杂度：中(41–100字) 248 · 短(≤40字) 164 · 长(>100字) 15 · 白板 1
+90000        93      74      19       0
+未完成卡按文本复杂度：中(41–100字) 247 · 短(≤40字) 146 · 长(>100字) 15 · 白板 1
 ```
 
 ## 工作流
@@ -91,6 +91,9 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-45 | `add copies of … to hand`（复制同名卡加入手牌） | `internal/project/validate.go`（`add` 形状）、`typed_ir.go`（`add_copies`）、`internal/ir/encode.go`/`decode.go`、`internal/runner/execute.go`（按目标卡牌定义创建实例并用 `putInHandOrOverdraw` 加入手牌）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/copies_and_hand_summon_test.go`（形状、目标绑定、拒绝未知目的地）；卡片 10443310 + 3 个场景 |
 | S-46 | `summon <绑定>`（把手牌对象召唤到战场） | `internal/project/validate.go`（`summon` 两 token 形状）、`typed_ir.go`（`summon_from_hand`）、`internal/ir/encode.go`/`decode.go`、`internal/runner/execute.go`（`move` 到手牌之外的战场、置入场等待、发 `summoned` 事件）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/copies_and_hand_summon_test.go`（形状、拒绝未定义绑定）；卡片 10412110 + 2 个场景 |
 | S-47 | 筛选器 `attacked this turn` / `not attacked this turn` | `internal/project/validate.go`（`parseWhere` 词条）、`typed_ir.go`（`filterIR` 谓词）、`internal/ir/encode.go`/`decode.go`（谓词白名单）、`internal/runner/execute.go`（`matches` 读取 `attacksUsed`）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/attacked_filter_test.go`（合取保留两个词条、两种极性、拒绝其它 `not` 形状）；卡片 10464110 + 3 个场景 |
+| S-50 | `<绑定>.attack\|life\|cost` 数值 | `internal/ir/amount.go`（`validNumericExpr`、`decodeNumericValue`）、`internal/ir/counters.go`（`ValidBindingName`）、`internal/project/numeric.go`（生成 `binding_scalar`）、`internal/project/validate.go`（`parseEffectAmount` 形状）、`internal/runner/numeric.go`（按绑定求值）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/binding_scalar_test.go`（生成 `binding_scalar`、拒绝不支持的字段）；卡片 10473110 + 2 个场景 |
+| S-53 | `raise countdown <集合> N` | `internal/project/validate.go`（`raise` 接受 `countdown`）、`typed_ir.go`（沿用 `adjust_entity_field` 的正增量） | Go 单测 `internal/project/binding_scalar_test.go`（`Field=countdown`、拒绝缺增量）；卡片 90064310 + 1 个场景 |
+| S-54 | `set_attack_limit <目标> N` | `internal/project/validate.go`（`set_attack_limit` 由 `self` 放宽为任意 `value_ref`） | Go 单测 `internal/project/binding_scalar_test.go`（目标保留为绑定）；卡片 90034350 + 1 个场景 |
 
 | S-16 | `ability_destruction_guard`（不会被能力破坏） | 新固有关键词：`internal/ir/decode.go` 的 `validKeyword`、`internal/project/validate.go` 的 `abilities`、`strict_validate.go` 的固有能力形状表、`internal/runner/runner.go`（`destroyByEffect` 受保护，必杀改走新的 `destroyByCombat` 不受保护）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/granted_ability_flow_test.go`（能力破坏被挡下、战斗破坏照样生效）；卡片 10273110 + 2 个场景 |
 | S-07 | `when own\|oppo follower evolved\|super_evolved [other]` —— 其他随从的进化事件 | `internal/ir/model.go`（`EventTrigger.ExcludeSelf`）、`internal/ir/decode.go`（校验 `other` 只用于带对象的非受伤事件）、`internal/project/strict_validate.go`（基础事件模式接受进化动词与 `other`）、`internal/project/typed_ir.go`（事件名映射与 `ExcludeSelf`）、`internal/project/validate.go`（`evolved` 绑定）、`internal/runner/runner.go`（进化事件改为把改名随从绑成 `evolved`）、`internal/runner/trigger_index.go`（按实例排除自身）；文档 `grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/evolution_event_test.go`（`other`/绑定/来源区域、拒绝重复 `other` 与 `self … other`）；卡片 10241110、10212120、10252110 + 6 个场景（含"不因普通进化触发"与"不响应自己超进化"两个反向场景） |
@@ -131,13 +134,37 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-47 | ~~筛选"本回合没有攻击过"~~ **已解决**：`where attacked this turn` / `where not attacked this turn` | 已解锁 10464110 土之法则·伽莱翁；后续"未攻击过的随从"文本可用 | 按实例本回合已经进行的攻击次数筛选（回合开始时清零）。`not` 只支持 `not attacked this turn`，其它 `not ...` 形状仍被拒绝。 |
 | S-48 | 按位置选择随从（"从左起第 N 个"） | 10423310 骁勇骑士（"使自己的战场上的从左起的1个皇家护卫·随从获得『1回合可以攻击2次』"） | 选择只有随机、极值与玩家指定三种；没有按战场顺序取第 N 个的写法。 |
 | S-49 | 对手攻击主战者时的事件 | 10474110 光之法则·龙敖的纹章（"对手的拥有【疾驰】的随从攻击主战者时，回合结束前，使其-3/-0"） | 只有自己的随从 `attack` 触发能力，没有"对方随从宣告攻击"的监听（也没有攻击方的绑定）。 |
-| S-50 | 以绑定实例的攻击力作为数值 | 10473110 向往天空的回归者·卡西乌斯（"对对手的战场上的所有随从造成X点伤害，X为选择的随从的攻击力"） | 数值表达式支持 `sum(...)` 与 `self.attack`，但没有 `<绑定>.attack`。 |
+| S-50 | ~~以绑定实例的攻击力作为数值~~ **已解决**：`<绑定>.attack\|life\|cost` | 已解锁 10473110 向往天空的回归者·卡西乌斯 | 数值表达式新增 `binding_scalar`：读取绑定里第一个实例的当前数值；绑定名不在这里校验存在性，写错名字得 0（与筛选里的 `card <绑定>` 一致的取舍）。 |
+| S-53 | ~~给倒计数加值~~ **已解决**：`raise countdown <集合> N` | 已解锁 90064310 绝望的奔流（"使自己的所有纹章的倒计数+1"） | 原先只有 `reduce`；现在 `raise` 与 `reduce` 共用 `adjust_entity_field`，支持 `cost` 与 `countdown`。 |
+| S-54 | ~~让指定随从可以攻击两次~~ **已解决**：`set_attack_limit <目标> N` | 已解锁 90034350 宏大的回归（"选择自己的战场上的1个随从，使其获得「1回合可以攻击2次」"） | 原先只接受 `set_attack_limit self N`；IR 与运行时本来就按目标集合处理，因此只放宽了验证形状。 |
 | S-51 | 主战者临时"受到的伤害变为 0" | 10444120 世界的伙伴·佐伊（爆能强化 10：主战者直到对手回合结束"受到的1点或以上伤害变为0"） | 主战者关键词只有永久形式；`until ... turn ends` 的期限只作用于随从关键词。 |
 | S-52 | 牌组中发动与【瞬念召唤】 | 10404110 天司长的继承者·圣德芬（"在牌组中发动…【瞬念召唤】本卡牌…被瞬念召唤时获得纹章并返回手牌"） | 需要"在手牌/牌组中监听回合开始""从牌组召唤并选择是否返回手牌"的整套语义。 |
 
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 51（语言扩展 S-50 / S-53 / S-54 + 卡包 10004 / 90000）
+
+- **S-50 `<绑定>.attack|life|cost` 作为数值**：`validNumericExpr`、`decodeNumericValue`（amount.go）、
+  `ir.ValidBindingName`、`project/numeric.go`（不再是 own/oppo 的 `x.y` 一律按绑定实例读取）、
+  `validate.go` 的 `parseEffectAmount`、`runner/numeric.go`（读取绑定里第一个实例的当前值）。
+  用在这类文本："对对手的战场上的所有随从造成 X 点伤害，X 为选择的随从的攻击力"。
+- **S-53 `raise countdown <集合> N`**：给倒计数"加"（原先只有 `reduce`）。
+  **S-54 `set_attack_limit <目标> N`**：允许把"1回合可以攻击2次"给指定随从，不再只限 `self`。
+  两者都只是验证与编译层的形状扩展，IR/运行时早就支持任意目标与正增量。
+- 完成 20 张：
+  - 10004：10473110 向往天空的回归者·卡西乌斯（按手牌创造物的攻击力对敌方全体造成伤害；
+    谢幕曲把『城堡创造物』加入手牌）。
+  - 90000：90021130 娜哈特的私兵（白板）、90022110 异形、90064110 圣骑兵、90071130 解析的创造物、
+    90071140 古老的创造物、90071150 神秘的创造物、90071160 绚烂的创造物、90054330 天眼深渊、
+    90034340 苍奏之四、90004320 绝大的证明、90031310 玛纳利亚魔弹、90024330 亡命者的枪击、
+    90024320 天剑深渊（爆能强化 1 用 `enhance 1 replaces` 复现"改为3点"）、90014330 天枪深渊、
+    90074150 击针看守、90072130 屠戮人偶、90032110 洋葱军团兵、90034350 宏大的回归、
+    90064310 绝望的奔流（消失 + `raise countdown own.crests 1`）。
+- 新增 16 个场景（`tests/90000/batch-51-tokens-and-spells.wbotest`）；Go 单测
+  `internal/project/binding_scalar_test.go`。
+- 全量回归：`check` 0 错 0 警；`test` 752 全绿；`go test ./...` 全绿；语料快照更新为 752 个场景。
 
 ### 批次 50（语言扩展 S-47 + 卡包 10004 第七批）
 

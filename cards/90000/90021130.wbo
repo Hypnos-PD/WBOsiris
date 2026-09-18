@@ -7,7 +7,6 @@ card 90021130 {
     trait officer;
 
     effect {
-        unplayable;
     }
 
     meta {

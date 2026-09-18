@@ -5,7 +5,8 @@ card 90004320 {
     cost 1;
 
     effect {
-        unplayable;
+        require target from oppo.field.followers;
+        destroy target;
     }
 
     meta {

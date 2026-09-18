@@ -6,7 +6,13 @@ card 10473110 {
     stats 3/2;
 
     effect {
-        unplayable;
+        fanfare {
+            require target from own.hand.followers where trait artifact;
+            damage oppo.field.followers target.attack;
+        }
+        lastwords {
+            add 1 card 90072120 to hand;
+        }
     }
 
     meta {

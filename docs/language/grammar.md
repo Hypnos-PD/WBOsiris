@@ -418,7 +418,8 @@ numeric_operation = "damage" , value_ref , ["other" , [binding_name]] , effect_a
 effect_amount     = integer | counter_ref | "count" , "(" , count_source , [where_clause] , ")"
                   | "sum" , "(" , count_source , [where_clause] , "," , ["base" , "."] , ("attack" | "life" | "cost") , ")"
                   | player_scalar
-                  | "self" , "." , ("cost" | "attack" | "life") ;
+                  | "self" , "." , ("cost" | "attack" | "life")
+                  | binding_name , "." , ("attack" | "life" | "cost") ;
 signed_amount     = ("+" | "-") , effect_amount ;
 count_source      = target_set | binding_name ; (* binding must already be defined in this scope *)
 repeat_statement  = "repeat" , effect_amount , effect_block ;
@@ -438,11 +439,11 @@ reanimate_operation = "reanimate" , integer , ";" ;
 reduce_operation  = "reduce" , "countdown" , value_ref , integer , ";"
                   | "reduce" , "cost" , value_ref , integer , "minimum" , integer , ";" ;
 halve_operation   = "halve" , "cost" , value_ref , ";" ;
-raise_operation   = "raise" , "cost" , value_ref , integer , ";" ;
+raise_operation   = "raise" , ("cost" | "countdown") , value_ref , integer , ";" ;
 set_operation_tail = "set" , "cost" , value_ref , effect_amount , [effect_duration] , ";" ;
 double_operation  = "double" , "stats" , value_ref , ";" ;
 spellboost_operation = "spellboost" , value_ref , integer , ";" ;
-set_attack_limit_operation = "set_attack_limit" , "self" , positive_integer , ";" ;
+set_attack_limit_operation = "set_attack_limit" , value_ref , positive_integer , ";" ;
 set_damage_reduction_operation = "set_damage_reduction" , value_ref , nonnegative_integer , ";" ;
 transform_operation = "transform" , value_ref , "into" , "card" , card_id ,
                       ["preserving" , "materials"] , [where_clause] , ";" ;

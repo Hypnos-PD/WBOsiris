@@ -5,7 +5,7 @@ card 90034340 {
     cost 1;
 
     effect {
-        unplayable;
+        damage oppo.field.followers 5;
     }
 
     meta {

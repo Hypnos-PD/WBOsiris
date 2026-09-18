@@ -7,7 +7,7 @@ card 90071150 {
     trait artifact;
 
     effect {
-        unplayable;
+        ward;
     }
 
     meta {

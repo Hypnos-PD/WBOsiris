@@ -877,6 +877,7 @@ NumericExpr = Count { kind: "count", source: ZoneSet | HistorySet | BindingRef |
             | PlayerScalar { kind: "scalar", side: "own" | "oppo",
                              field: "combo" | "rally" | "crests" | "pp" | "maxpp" | "life" | "ep" | "sep" | "shadows" | "hand_count" | "earthsigils" }
             | SelfScalar { kind: "self_scalar", field: "attack" | "life" | "cost" }
+            | BindingScalar { kind: "binding_scalar", side: BindingName, field: "attack" | "life" | "cost" }
             | SelfCounter { kind: "self_counter", field: CounterName }
 EffectAmount = nonnegative_integer | NumericExpr
 AdjustCounter = NodeBase & { kind: "adjust_counter", field: CounterName, delta: nonnegative_i32 }
@@ -1034,6 +1035,8 @@ Spellboost = NodeBase & {
 `self_scalar` 使用能力来源实例的当前数值，攻击力和生命值仅适用于随从；`scalar` 的玩家
 相对能力控制者解析。增益保留负数，伤害和回复的动态数值以零为下限。计数查询超出预算时
 不执行该数值操作。数值引用本身不消耗随机决策。
+`binding_scalar` 读取指定绑定里第一个实例的当前数值（例如"X 为选择的随从的攻击力"）；
+绑定为空时求值为 0，绑定名不参与引用校验。
 值为 `field_entry_order` 时，`target` 必须为单侧 `field` 中的 `follower` 区域集合，
 `amount` 表示本次分配总额。可选 `overflow` 必须引用同侧主战者，且仅能与
 `distribution` 一起出现。筛选后按原出场顺序分配，屏障和减伤不退还额度。

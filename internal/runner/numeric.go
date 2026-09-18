@@ -72,6 +72,24 @@ func (g *game) numericValue(expr ir.NumericExpr, self *instance, bindings frame)
 				return self.damageTaken
 			}
 		}
+		if e.Kind == "binding_scalar" {
+			// `<绑定>.attack|life|cost`：读取绑定里第一个实例的当前数值。
+			for _, bound := range bindings[e.Side] {
+				item := g.instances[bound.InstanceID]
+				if item == nil {
+					continue
+				}
+				switch e.Field {
+				case "attack":
+					return item.currentAttack()
+				case "life":
+					return item.life
+				case "cost":
+					return max(0, item.cost)
+				}
+			}
+			return 0
+		}
 		p, _ := g.playerForSide(self, e.Side)
 		switch e.Field {
 		case "hand_count":

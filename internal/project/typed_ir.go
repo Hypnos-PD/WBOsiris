@@ -559,9 +559,9 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		// halve cost <集合>：把目标的当前费用变为向上取整的一半（官方 FAQ：9 → 5）。
 		return ir.AdjustEffect{NodeBase: base, Kind: "halve_cost", Field: "cost", Target: valueRefIR(t, 2)}, nil
 	case "raise":
-		// raise cost <集合> N：给目标加费；没有上限，与 reduce cost 共用同一 IR 节点。
+		// raise cost|countdown <集合> N：给目标加费或推进倒计数；与 reduce 共用同一 IR 节点。
 		end := valueRefEnd(t, 2)
-		return ir.AdjustEffect{NodeBase: base, Kind: "adjust_entity_field", Field: "cost", Target: valueRefIR(t, 2), Delta: intToken(t[end])}, nil
+		return ir.AdjustEffect{NodeBase: base, Kind: "adjust_entity_field", Field: t[1].Value, Target: valueRefIR(t, 2), Delta: intToken(t[end])}, nil
 	case "double":
 		// double stats <集合>：按每个目标自己的当前数值翻倍（攻击力与生命值）。
 		return ir.AdjustEffect{NodeBase: base, Kind: "double_stats", Target: valueRefIR(t, 2)}, nil

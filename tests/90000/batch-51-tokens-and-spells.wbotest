@@ -1,0 +1,223 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "娜哈特的私兵是没有能力的白板随从" {
+    seed 51001;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 90021130; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.zone == field; source.stats == 4/4; }
+}
+
+scenario "创造物与衍生随从携带各自的固有关键词" {
+    seed 51002;
+    state {
+        player own {
+            field {
+                follower alien = 90022110;
+                follower holy = 90064110;
+                follower ancient = 90071140;
+                follower mystic = 90071150;
+                follower radiant = 90071160;
+            }
+        }
+    }
+    action { end_turn; }
+    expect {
+        legal;
+        alien has rush;
+        holy has ward;
+        ancient has rush;
+        mystic has ward;
+        radiant has storm;
+    }
+}
+
+scenario "解析的创造物进入战场时抽一张" {
+    seed 51003;
+    state {
+        player own {
+            pp 1/1;
+            deck top { follower drew = 10001110; }
+            hand { follower source = 90071130; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10001110 == 1; }
+}
+
+scenario "天眼深渊抽两张" {
+    seed 51004;
+    state {
+        player own {
+            pp 1/1;
+            deck top { follower first = 10001110; follower second = 10001110; }
+            hand { spell source = 90054330; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10001110 == 2; }
+}
+
+scenario "苍奏之四对敌方全体造成五点伤害" {
+    seed 51005;
+    state {
+        player own {
+            pp 1/1;
+            hand { spell source = 90034340; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/8; }
+                follower second = 10001110 { stats 2/8; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; first.stats == 2/3; second.stats == 2/3; }
+}
+
+scenario "绝大的证明破坏指定的敌方随从" {
+    seed 51006;
+    state {
+        player own {
+            pp 1/1;
+            hand { spell source = 90004320; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.zone == graveyard; }
+}
+
+scenario "玛纳利亚魔弹打击随机敌方随从" {
+    seed 51007;
+    state {
+        player own {
+            pp 1/1;
+            hand { spell source = 90031310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/6; } } }
+    }
+    action { play source; }
+    expect { legal; enemy.stats == 2/3; }
+}
+
+scenario "亡命者的枪击发动两次四点伤害" {
+    seed 51008;
+    state {
+        player own {
+            pp 1/1;
+            hand { spell source = 90024330; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/10; } } }
+    }
+    action { play source; }
+    expect { legal; enemy.stats == 2/2; }
+}
+
+scenario "天剑深渊普通打出只造成一点伤害" {
+    seed 51009;
+    state {
+        player own {
+            pp 0/0;
+            hand { spell source = 90024320; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/6; } } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.stats == 2/5; }
+}
+
+scenario "天剑深渊爆能强化一点改为三点伤害" {
+    seed 51010;
+    state {
+        player own {
+            pp 1/1;
+            hand { spell source = 90024320; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/6; } } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.stats == 2/3; own.pp == 0/1; }
+}
+
+scenario "天枪深渊让进化前的己方随从进化" {
+    seed 51011;
+    state {
+        player own {
+            pp 1/1;
+            field { follower ally = 10001110; }
+            hand { spell source = 90014330; }
+        }
+    }
+    action { play source; select ally; }
+    expect { legal; ally.evolved == true; ally.stats == 4/4; }
+}
+
+scenario "击针看守的谢幕曲回复主战者" {
+    seed 51012;
+    state {
+        player own {
+            leader 10/20;
+            field { follower source = 90074150; }
+        }
+        player oppo { field { follower big = 10001110 { stats 5/5; } } }
+    }
+    action { attack source into big; }
+    expect { legal; source.zone == graveyard; own.leader.life == 12; }
+}
+
+scenario "屠戮人偶的谢幕曲召唤心灵屠戮者" {
+    seed 51013;
+    state {
+        player own { field { follower source = 90072130; } }
+        player oppo { field { follower big = 10001110 { stats 5/5; } } }
+    }
+    action { attack source into big; }
+    expect { legal; source.zone == graveyard; own.field count card 10272110 == 1; }
+}
+
+scenario "洋葱军团兵攻击时强化手牌" {
+    seed 51014;
+    state {
+        player own {
+            field { follower source = 90032110; }
+            hand { follower held = 10032120; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/8; } } }
+    }
+    action { attack source into enemy; }
+    expect { legal; held.cost == 9; }
+}
+
+scenario "宏大的回归让指定的己方随从可以攻击两次" {
+    seed 51015;
+    state {
+        player own {
+            pp 1/1;
+            field { follower ally = 10001110; }
+            hand { spell source = 90034350; }
+        }
+    }
+    action { play source; select ally; }
+    expect { legal; ally.attack_limit == 2; }
+}
+
+scenario "绝望的奔流让敌方随从消失并推进自己纹章的吟唱" {
+    seed 51016;
+    state {
+        player own {
+            pp 2/2;
+            crests { crest belial = 10454120; }
+            hand { spell source = 90064310; }
+        }
+        player oppo { field { follower enemy = 10001110; } }
+    }
+    action { play source; }
+    expect { legal; enemy.zone == banished; belial.countdown == 5; }
+}

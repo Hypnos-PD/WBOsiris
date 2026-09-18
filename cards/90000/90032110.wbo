@@ -6,7 +6,10 @@ card 90032110 {
     stats 1/1;
 
     effect {
-        unplayable;
+        rush;
+        attack {
+            spellboost own.hand 1;
+        }
     }
 
     meta {

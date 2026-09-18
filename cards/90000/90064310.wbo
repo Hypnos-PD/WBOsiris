@@ -5,7 +5,9 @@ card 90064310 {
     cost 2;
 
     effect {
-        unplayable;
+        random victim from oppo.field.followers;
+        banish victim;
+        raise countdown own.crests 1;
     }
 
     meta {

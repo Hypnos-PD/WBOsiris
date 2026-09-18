@@ -6,7 +6,12 @@ card 90024320 {
     trait encroacher;
 
     effect {
-        unplayable;
+        require target from oppo.field.followers;
+        damage target 1;
+        enhance 1 replaces {
+            require target from oppo.field.followers;
+            damage target 3;
+        }
     }
 
     meta {

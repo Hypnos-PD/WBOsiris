@@ -45,7 +45,8 @@ func TestSelfScalarAndRaiseCostRejectBadShapes(t *testing.T) {
 		"if self.keyword != 2 { draw 1; }",
 		"raise cost;",
 		"raise cost self;",
-		"raise countdown self 1;",
+		"raise countdown self;",
+		"raise ward self 1;",
 	} {
 		if _, ds := compile(t, validCard("fanfare { "+line+" }")); len(ds) == 0 {
 			t.Fatalf("%q must not compile", line)

@@ -6,7 +6,8 @@ card 90014330 {
     trait encroacher;
 
     effect {
-        unplayable;
+        require target from own.field.followers where form unevolved;
+        evolve target silent;
     }
 
     meta {

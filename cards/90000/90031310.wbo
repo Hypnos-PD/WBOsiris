@@ -6,7 +6,8 @@ card 90031310 {
     trait mysteria;
 
     effect {
-        unplayable;
+        random victim from oppo.field.followers;
+        damage victim 3;
     }
 
     meta {

@@ -67,7 +67,8 @@ func TestRejectAmbiguousNumericSyntax(t *testing.T) {
 	for _, operation := range []string{
 		"buff self own.combo/+0", "buff self +own.combo", "buff self +1/+", "buff self +1/+1 extra",
 		"buff self +self.unknown/+0", "buff self +own.combo+1/+0", "buff self +count(self)/+0",
-		"buff self +count(own.hand)/-count(own.hand where)", "damage oppo.leader target.attack",
+		"buff self +count(own.hand)/-count(own.hand where)", "damage oppo.leader target.maxpp",
+		"damage oppo.leader target.attack + 1",
 		"damage oppo.leader self.attack + 1", "damage oppo.leader own.field", "heal own.leader -own.combo",
 	} {
 		t.Run(operation, func(t *testing.T) {

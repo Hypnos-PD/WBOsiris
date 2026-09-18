@@ -7,7 +7,7 @@ card 90071140 {
     trait artifact;
 
     effect {
-        unplayable;
+        rush;
     }
 
     meta {

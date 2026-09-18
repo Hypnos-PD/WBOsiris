@@ -12,6 +12,9 @@ var counterNamePattern = regexp.MustCompile(`^[a-z][a-z0-9_]{0,31}$`)
 
 func ValidCounterName(name string) bool { return counterNamePattern.MatchString(name) }
 
+// ValidBindingName 校验绑定名（与计数器名共用同一套标识符规则）。
+func ValidBindingName(name string) bool { return counterNamePattern.MatchString(name) }
+
 func ValidCounters(counters map[string]int) bool {
 	for name, value := range counters {
 		if !ValidCounterName(name) || value < 0 || value > MaxCounterValue {

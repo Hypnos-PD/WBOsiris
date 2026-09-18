@@ -575,9 +575,11 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 		}
 		ok = set("life", "cost", "attack")[t[1].Value] && good && end == len(t)
 	case "set_attack_limit":
-		ok = len(t) == 3 && t[1].Value == "self" && isU16(t[2])
+		end, good := parseValueRef(t, 1)
+		checkBindingAt(t, 1, end, bindings, ds)
+		ok = good && end+1 == len(t) && isU16(t[end])
 		if ok {
-			n, _ := integer(t[2])
+			n, _ := integer(t[end])
 			ok = n >= 1
 		}
 	case "set_damage_reduction":
@@ -808,7 +810,7 @@ func validateOperation(s *syntax.Statement, ds *[]syntax.Diagnostic, bindings ma
 			checkBindingAt(t, 2, end, bindings, ds)
 		}
 	case "raise":
-		if len(t) >= 4 && t[1].Value == "cost" {
+		if len(t) >= 4 && (t[1].Value == "cost" || t[1].Value == "countdown") {
 			end, good := parseValueRef(t, 2)
 			ok = good && end+1 == len(t) && isUnsigned(t[end])
 			checkBindingAt(t, 2, end, bindings, ds)
@@ -854,7 +856,9 @@ func parseEffectAmount(t []syntax.Token, i int) (int, bool) {
 	if i+2 < len(t) && t[i+1].Value == "." {
 		if t[i].Value == "self" && set("attack", "life", "cost", "damage_taken")[t[i+2].Value] ||
 			set("own", "oppo")[t[i].Value] && ir.ValidPlayerScalar(t[i+2].Value) ||
-			t[i].Value == "fused" && set("cost", "distinct")[t[i+2].Value] {
+			t[i].Value == "fused" && set("cost", "distinct")[t[i+2].Value] ||
+			t[i].Kind == syntax.Identifier && set("attack", "life", "cost")[t[i+2].Value] {
+			// 最后一条是 `<绑定>.attack|life|cost`（绑定名不在这里校验存在性）。
 			return i + 3, true
 		}
 	}

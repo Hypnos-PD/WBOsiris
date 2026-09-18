@@ -5,7 +5,8 @@ card 90034350 {
     cost 1;
 
     effect {
-        unplayable;
+        require target from own.field.followers;
+        set_attack_limit target 2;
     }
 
     meta {
