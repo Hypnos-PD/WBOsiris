@@ -251,7 +251,7 @@ func (s *Session) SubmitAs(actionID, actor string, command SimulatorCommand) Ste
 		s.pending, s.stack, s.g.triggers = nil, nil, nil
 		s.actionID, s.g.turnTransition = "", ""
 		return StepResult{Status: StatusCompleted}
-	case "play", "engage", "evolve", "superevolve", "fusion", "end_turn", "use_extra_pp":
+	case "play", "engage", "evolve", "superevolve", "accelerate", "fusion", "end_turn", "use_extra_pp":
 		if command.Kind == "fusion" {
 			return s.Begin(actionID, ir.FusionAction{Kind: "fusion", Actor: actor, Source: command.Source})
 		}

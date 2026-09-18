@@ -123,7 +123,7 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 			if len(t) == 2 {
 				checkU16(t[1], true, ds)
 			}
-		case "engage", "enhance", "earthrite", "necromancy":
+		case "engage", "enhance", "accelerate", "earthrite", "necromancy":
 			if len(t) == 2 {
 				checkU16(t[1], true, ds)
 			}
@@ -647,7 +647,7 @@ func strictAction(s *syntax.Statement, a map[string]string, ds *[]syntax.Diagnos
 		ok := x.Terminated && len(x.Blocks()) == 0
 		if i == 0 {
 			switch x.Word(0) {
-			case "play", "engage", "evolve", "superevolve", "fuse":
+			case "play", "engage", "evolve", "superevolve", "accelerate", "fuse":
 				ok = ok && len(t) == 2 && aliasKnown(t[1], a, ds)
 			case "attack":
 				ok = ok && len(t) >= 4 && aliasKnown(t[1], a, ds) && t[2].Value == "into"

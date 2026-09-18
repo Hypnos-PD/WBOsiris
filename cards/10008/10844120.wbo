@@ -15,6 +15,10 @@ card 10844120 {
         superevolve {
             draw 3;
         }
+        // 【激奏_3】：以 3 费打出时改为提升 1 点能量点上限（本体不进入战场）。
+        accelerate 3 {
+            gain own.maxpp 1;
+        }
     }
 
     meta {

@@ -561,7 +561,7 @@ func decodeTrigger(data []byte) (Trigger, error) {
 			return nil, err
 		}
 		return SimpleTrigger{v.Kind}, nil
-	case "engage", "enhance":
+	case "engage", "enhance", "accelerate":
 		type raw struct {
 			Kind string `json:"kind"`
 			Cost int    `json:"cost"`

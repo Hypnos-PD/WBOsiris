@@ -10,6 +10,10 @@ card 10671110 {
         fanfare {
             draw 3;
         }
+        // 【激奏_2】：以 2 费打出时改为召唤 1 个自己（本体不进入战场）。
+        accelerate 2 {
+            summon 1 card 10671110;
+        }
     }
 
     meta {

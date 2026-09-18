@@ -116,7 +116,7 @@ func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error)
 				return ir.Card{}, err
 			}
 			fusion = append(fusion, n)
-		case len(s.Blocks()) > 0 && set("fanfare", "lastwords", "attack", "clash", "evolve", "superevolve", "engage", "enhance", "spellboost", "when", "replace")[h]:
+		case len(s.Blocks()) > 0 && set("fanfare", "lastwords", "attack", "clash", "evolve", "superevolve", "engage", "enhance", "accelerate", "spellboost", "when", "replace")[h]:
 			n, err := compileAbility(s, sid, scope, ids)
 			if err != nil {
 				return ir.Card{}, err
@@ -202,7 +202,7 @@ func compileAbility(s *syntax.Statement, sid string, scope *idScope, ids map[str
 	}
 	h := s.Word(0)
 	var trigger ir.Trigger = ir.SimpleTrigger{Kind: h}
-	if h == "engage" || h == "enhance" {
+	if h == "engage" || h == "enhance" || h == "accelerate" {
 		trigger = ir.CostTrigger{Kind: h, Cost: intAt(s, 1)}
 	}
 	if h == "when" {
@@ -1185,7 +1185,7 @@ func compileActions(s *syntax.Statement, a map[string]string) ([]ir.Action, erro
 		t := x.Tokens()
 		var action ir.Action
 		switch x.Word(0) {
-		case "play", "engage", "evolve", "superevolve":
+		case "play", "engage", "evolve", "superevolve", "accelerate":
 			action = ir.SourceAction{Kind: x.Word(0), Actor: "own", Source: a[t[1].Value]}
 		case "fuse":
 			action = ir.FusionAction{Kind: "fusion", Actor: "own", Source: a[t[1].Value]}

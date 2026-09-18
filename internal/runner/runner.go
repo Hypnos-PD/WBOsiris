@@ -522,6 +522,25 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 		sandbox.player(x.Actor).pp -= a.Trigger.(ir.CostTrigger).Cost
 		sandboxSource.engaged = true
 		return sandbox.preflightRequirements(a.Body, sandboxSource, frame{}, true)
+	case "accelerate":
+		// 【激奏】：以激奏费用打出，只结算激奏能力，不进入战场、不发动入场曲。
+		a := findCostAbility(i.card, "accelerate")
+		actor := g.player(x.Actor)
+		if i.zone != "hand" || !contains(actor.hand, i) || a == nil || actor.pp < a.Trigger.(ir.CostTrigger).Cost {
+			return "cost"
+		}
+		for _, restriction := range i.card.Restrictions {
+			if restriction.Kind == "unplayable" {
+				return "unplayable"
+			}
+		}
+		sandbox := g.clone()
+		sandbox.budget = budget
+		sandboxSource := sandbox.instances[i.id]
+		sandbox.player(x.Actor).pp -= a.Trigger.(ir.CostTrigger).Cost
+		sandbox.remove(&sandbox.player(x.Actor).hand, sandboxSource)
+		sandbox.addToZone(sandbox.player(x.Actor), sandboxSource, "resolving")
+		return sandbox.preflightRequirements(a.Body, sandboxSource, frame{}, true)
 	case "evolve":
 		actor := g.player(x.Actor)
 		if i.zone != "field" || !contains(actor.field, i) || i.card.CardType != "follower" || i.evolved || actor.ep < 1 || actor.evolvedThisTurn || g.firstPlayer != "" && !g.evolutionUnlocked(x.Actor, false) {
@@ -615,6 +634,8 @@ func (g *game) commitAction(a ir.Action) ([]execFrame, string) {
 		return g.commitPlay(i), ""
 	case "engage":
 		return g.commitEngage(i), ""
+	case "accelerate":
+		return g.commitAccelerate(i), ""
 	case "superevolve":
 		return g.commitSuperEvolve(i), ""
 	case "evolve":
@@ -1162,6 +1183,22 @@ func (g *game) commitEngage(i *instance) []execFrame {
 	return []execFrame{{body: a.Body, blockID: abilityBlockID(i.card.ID, a.ID), self: i, bindings: frame{}}}
 }
 
+// commitAccelerate 处理【激奏】打出：支付激奏费用，把卡牌放进"结算中"区域
+// （不进入战场、不发动入场曲），只结算激奏能力；结算完成后按法术流程进入墓场。
+func (g *game) commitAccelerate(i *instance) []execFrame {
+	a := findCostAbility(i.card, "accelerate")
+	if a == nil {
+		return nil
+	}
+	actor := g.owner(i)
+	g.spendPP(actor, a.Trigger.(ir.CostTrigger).Cost)
+	g.remove(&actor.hand, i)
+	actor.combo++
+	g.addToZone(actor, i, "resolving")
+	g.triggerPlayed(i)
+	return []execFrame{{body: a.Body, blockID: abilityBlockID(i.card.ID, a.ID), self: i, bindings: frame{}}}
+}
+
 func (g *game) spendPP(actor *player, amount int) {
 	before := actor.pp
 	actor.pp -= amount
@@ -1362,6 +1399,16 @@ func (g *game) advanceTurn() {
 func findAbility(card *ir.Card, kind string) *ir.Ability {
 	for n := range card.Abilities {
 		if ir.TriggerKind(card.Abilities[n].Trigger) == kind {
+			return &card.Abilities[n]
+		}
+	}
+	return nil
+}
+
+// findCostAbility 找出带费用档位的能力（enhnace / engage / accelerate）。
+func findCostAbility(card *ir.Card, kind string) *ir.Ability {
+	for n := range card.Abilities {
+		if trigger, ok := card.Abilities[n].Trigger.(ir.CostTrigger); ok && trigger.Kind == kind {
 			return &card.Abilities[n]
 		}
 	}

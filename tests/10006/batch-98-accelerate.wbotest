@@ -1,0 +1,87 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+// S-88：【激奏_N】以较低费用打出，只结算激奏能力；本体不进入战场也不发动入场曲，
+// 结算后按法术流程进入墓场。测试动作用 `accelerate <别名>;`。
+
+scenario "低劣的玩具激奏召唤一个自己且本体不进战场" {
+    seed 98001;
+    state {
+        player own {
+            pp 2/6;
+            hand { follower source = 10671110; }
+        }
+    }
+    action { accelerate source; }
+    expect {
+        legal;
+        own.field count card 10671110 == 1;
+        source.zone == graveyard;
+        own.pp == 0/6;
+        // 入场曲没有发动：手牌没有增加。
+        own.hand count card 10011110 == 0;
+    }
+}
+
+scenario "低劣的玩具正常打出时保留原费用与入场曲" {
+    seed 98002;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10671110; }
+            deck top {
+                follower a = 10011110;
+                follower b = 10011120;
+                follower c = 10011130;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == field;
+        own.pp == 0/6;
+        own.hand count card 10011110 == 1;
+        own.hand count card 10011120 == 1;
+        own.hand count card 10011130 == 1;
+    }
+}
+
+scenario "能量点不足时不能激奏" {
+    seed 98003;
+    state {
+        player own {
+            pp 1/6;
+            hand { follower source = 10671110; }
+        }
+    }
+    action { accelerate source; }
+    expect { illegal cost; unchanged; source.zone == hand; }
+}
+
+scenario "拙劣的人偶激奏召唤两个自己" {
+    seed 98004;
+    state {
+        player own {
+            pp 3/5;
+            hand { follower source = 10672110; }
+        }
+    }
+    action { accelerate source; }
+    expect { legal; own.field count card 10672110 == 2; source.zone == graveyard; own.pp == 0/5; }
+}
+
+scenario "愚劣的兵器激奏只召唤一个且不触发回合结束伤害" {
+    seed 98005;
+    state {
+        player own {
+            pp 4/8;
+            hand { follower source = 10673110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { accelerate source; }
+    expect { legal; own.field count card 10673110 == 1; source.zone == graveyard; victim.stats == 0/9; }
+}

@@ -1,0 +1,47 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "金银绚烂激奏提升能量点上限" {
+    seed 98011;
+    state {
+        player own {
+            pp 3/6;
+            hand { follower source = 10844120; }
+        }
+    }
+    action { accelerate source; }
+    expect { legal; own.maxpp == 7; source.zone == graveyard; own.field count card 10844120 == 0; }
+}
+
+scenario "最古老的狱卒激奏打击随机敌方随从" {
+    seed 98012;
+    state {
+        player own {
+            pp 1/6;
+            hand { follower source = 10901110; }
+        }
+        player oppo {
+            field { follower victim = 10001120 { stats 0/9; } }
+        }
+    }
+    action { accelerate source; }
+    expect { legal; victim.stats == 0/7; source.zone == graveyard; own.field count card 10901110 == 0; }
+}
+
+scenario "最古老的狱卒正常打出时才发动入场曲" {
+    seed 98013;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10901110; }
+        }
+        player oppo {
+            field {
+                follower chosen = 10001120 { stats 0/9; }
+                follower other = 10001120 { stats 0/9; }
+            }
+        }
+    }
+    action { play source; select chosen; }
+    expect { legal; source.zone == field; chosen.stats == 0/3; }
+}

@@ -740,6 +740,20 @@ damage target self.attack;
 
 `set attack T N;` 直接设置目标随从的当前攻击力（与 `set life` 对称）。
 
+【激奏】写作 `accelerate N { … }`：以 N 点能量点打出时只结算这个块，
+**本体不进入战场、也不发动入场曲**，结算完成后按法术流程进入墓场；
+测试与模拟器的动作用 `accelerate <别名>;`（`SimulatorCommand{Kind: "accelerate"}`）。
+它和 `enhance N { … }` 的区别是：爆能强化仍然正常入场，只替换/追加效果。
+
+```wbo
+effect {
+    fanfare { draw 3; }
+    accelerate 2 {
+        summon 1 card 10671110;
+    }
+}
+```
+
 `count(集合 other)` 统计时排除来源实例自身，`destroy 集合 other` 同理，
 因此"X 为自己的战场上的其他卡牌张数"写作 `count(own.field other)`。
 

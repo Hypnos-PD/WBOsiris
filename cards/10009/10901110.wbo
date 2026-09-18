@@ -14,6 +14,11 @@ card 10901110 {
             random victim from oppo.field.followers other target;
             damage victim 2;
         }
+        // 【激奏_1】：以 1 费打出时改为对随机 1 个敌方随从造成 2 点伤害。
+        accelerate 1 {
+            random victim from oppo.field.followers;
+            damage victim 2;
+        }
     }
 
     meta {

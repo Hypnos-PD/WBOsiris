@@ -11,6 +11,10 @@ card 10672110 {
             evolve summoned silent;
             evolve self silent;
         }
+        // 【激奏_3】：以 3 费打出时改为召唤 2 个自己。
+        accelerate 3 {
+            summon 2 card 10672110;
+        }
     }
 
     meta {

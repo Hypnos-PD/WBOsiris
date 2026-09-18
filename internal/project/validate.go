@@ -354,7 +354,7 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 				validateEffectBlock(b[0], ds, visible, "")
 			}
 			continue
-		case "engage", "enhance", "earthrite", "necromancy", "faith":
+		case "engage", "enhance", "accelerate", "earthrite", "necromancy", "faith":
 			// enhance 额外允许 `replaces`：支付该档时改为只执行这个块。
 			replaces := h == "enhance" && len(t) == 3 && t[2].Value == "replaces"
 			if !(len(t) == 2 || replaces) || len(b) != 1 {
@@ -1312,7 +1312,7 @@ func validateScenario(b []*syntax.Statement, ds *[]syntax.Diagnostic) {
 	aliases := map[string]bool{}
 	scanAliases(b[1].Blocks()[0], aliases, ds)
 	a := b[2].Blocks()[0]
-	primary := set("play", "engage", "evolve", "superevolve", "fuse", "attack", "end_turn", "advance")
+	primary := set("play", "engage", "evolve", "superevolve", "accelerate", "fuse", "attack", "end_turn", "advance")
 	if len(a) == 0 || !primary[a[0].Word(0)] {
 		diag(ds, "WBT-E005-ACTION-ORDER", "错误", "action 必须以一个主动作开始", b[2].Span)
 	}
