@@ -275,6 +275,8 @@ func (r LeaderSetRef) refKind() string { return r.Kind }
 type CharacterSetRef struct {
 	Kind string `json:"kind"`
 	Side string `json:"side"`
+	// ExcludeSelf 对应 `other`：随机/选择时排除来源实例（"其他随从或主战者"）。
+	ExcludeSelf bool `json:"excludeSelf,omitempty"`
 }
 
 func (r CharacterSetRef) refKind() string { return r.Kind }

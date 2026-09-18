@@ -606,6 +606,10 @@ First = NodeBase & {
   extremum?: SelectionExtremum
 }
 
+CharacterSet = { kind: "characters", side: Side | "", excludeSelf?: bool }
+
+`side` 为空表示双方战场的随从加双方主战者；`excludeSelf` 对应 `other`。
+
 SelectionExtremum = { direction: "highest" | "lowest",
                      field: "attack" | "life" | "cost" | "base_attack" | "base_life" | "base_cost" }
 

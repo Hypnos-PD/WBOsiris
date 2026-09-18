@@ -6,7 +6,17 @@ card 10524110 {
     stats 7/7;
 
     effect {
-        unplayable;
+        when own turn ends {
+            if self form evolved {
+                // 「随机对战场上的1个其他随从或自己的主战者或对手的主战者造成7点伤害」。
+                repeat 3 {
+                    random victim from field.followers other or leaders;
+                    damage victim 7;
+                }
+            } else {
+                damage oppo.field.followers 7;
+            }
+        }
     }
 
     meta {

@@ -20,20 +20,20 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 896 · 未实现(骨架) 8 · 未导入 0
+总计 904 · 已完成 897 · 未实现(骨架) 7 · 未导入 0
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
 10002        77      77       0       0
 10003        77      75       2       0
 10004        76      75       1       0
-10005        76      72       4       0
+10005        76      73       3       0
 10006        76      75       1       0
 10007        77      77       0       0
 10008        78      78       0       0
 10009        76      76       0       0
 90000        93      93       0       0
-未完成卡按文本复杂度：中(41–100字) 6 · 短(≤40字) 1 · 长(>100字) 1
+未完成卡按文本复杂度：中(41–100字) 5 · 短(≤40字) 1 · 长(>100字) 1
 ```
 
 ## 工作流
@@ -77,7 +77,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-13 | ~~`add card … to hand` 不产生绑定~~ **已解决**：`added` 绑定 | 已解锁 10271120 猫偶；全卡另有约 7 张"加入手牌后立即修改"的卡（10641310、10643310、10844110、10922310 等），后续卡包直接使用 | `add 1 card X to hand` 现在把成功进入手牌的实例绑成 `added`（手牌满被丢弃的不计入），Go 测试同时验证只有新卡被强化、手里的同名旧卡不受影响。 |
 | S-11 | `.wbotest` 无法声明先手 | 影响"抽牌耗尽判负"这类与先手有关的规则验证 | 规则本身已实现（`execute.go` 在无法满足抽牌时让对方获胜），但触发条件是 `firstPlayer != ""`，而场景测试不提供先手信息，这条路径只能由 Go 侧测试覆盖，场景测试写不出来。 |
 | S-18 | ~~条件里判断绑定对象的受伤状态~~ **已解决**：`if <绑定> damaged { … }` | 已解锁 10223110 剑士公主·萝泽（`attack { if opponent damaged { destroy opponent; } }`） | `internal/ir` 新增 `IsDamagedCondition`，条件求值新增 `conditionIn(c, self, bindings)`（执行与预检两处都带当前帧），绑定缺失或对象不是随从时为假。 |
-| S-19 | 随从与主战者混合的随机集合 | 10524110 威猛的《战车》·奥辂昂（"随机对战场上的1个其他随从或自己的主战者或对手的主战者造成7点伤害"） | `character_set` 只允许 `own.field.followers or own.leader` / `oppo...` 这种同方混合，而且只用于 `choose/require`。跨方的"随从或双方主战者"混合随机目标尚未支持；需要把主战者纳入随机/选择集合。 |
+| S-19 | ~~随从与主战者混合的随机集合~~ **已解决**：`field.followers [other] or leaders` | 已解锁 10524110 威猛的《战车》·奥辂昂 | `CharacterSetRef` 的 `side` 允许为空（双方战场随从 + 双方主战者），并新增 `excludeSelf` 对应 `other`；`random`/`choose`/`require`/`first` 共用这套混合集合。 |
 
 ## 已完成的语言扩展
 
@@ -194,7 +194,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-88 | ~~【激奏】（accelerate）打出模式~~ **已解决**：`accelerate N { … }` | 10671110 低劣的玩具（激奏 2：召唤 1 个自己）、10672110 拙劣的人偶（激奏 3：召唤 2 个自己）、10673110 愚劣的兵器（激奏 4：召唤 1 个自己）、10844120 金银绚烂·璐米欧儿&雅尔贞特（激奏 3：能量点上限 +1）、10901110 最古老的狱卒（激奏 1：随机随从 2 点伤害） | 新打出模式：`internal/project/typed_ir.go`/`validate.go`/`strict_validate.go` 解析 `accelerate N { … }` 块（CostTrigger），`internal/ir/decode.go`/`test_decode.go` 接受 `accelerate` 触发器与动作，`internal/runner/runner.go` 新增 `accelerate` 动作：付激奏费用、把卡牌放进"结算中"区域（不入场、不发动入场曲）、只结算激奏能力，结算后按法术流程进入墓场；测试 DSL 与模拟器命令同步。场景测试覆盖"激奏召唤/加能量上限/打伤害"与"正常打出仍走本体和入场曲""费用不足不能激奏" |
 | S-89 | ~~【结晶】（crystallize）打出模式~~ **已解决**：`crystallize N { … }` | 10661110 崇奉的懦者（结晶 2）、10662110 崇敬的涂描者（结晶 1）、10663110 崇拜的圣骑士（结晶 1）、10952110 渊底上校（结晶 2）、10962120 奇迹独角兔（结晶 1，含启动推进吟唱） | 新打出模式与衍生卡面：`project/crest.go` 的 `validateCrystallize`（允许 counter/countdown/lastwords/when/engage）、`ir/crest.go` 的 `CrystallizeDefinition` + `CrystallizeCard()`（派生为护符卡面）、编解码与 `runner.commitCrystallize`（付结晶费用→换卡面→进入战场→只结算衍生护符的打出效果，本体入场曲不发动）；测试 DSL 与模拟器命令同步。Go 单测 `internal/runner/crystallize_test.go` 覆盖吟唱归零后由谢幕曲召唤本体 |
 | S-68 | ~~回合窗口事件~~ **已解决**：`during own\|oppo turn` 可用于回复事件 | 已解锁 10563110 至圣威仪 | 检查器原先只允许"受到伤害时"带 `during`；运行时的回合匹配本来就通用。 |
-| S-69 | 跨方混合随机集合 | 10524110 威猛的《战车》·奥辂昂（"随机对战场上的1个其他随从或自己的主战者或对手的主战者造成7点伤害"） | 混合集合只支持"同一方的随从+该方主战者"，无法表达"双方随从+双方主战者"。 |
+| S-69 | ~~跨方混合随机集合~~ **已解决**：同 S-19 | 已解锁 10524110 威猛的《战车》·奥辂昂 | 与 S-19 合并处理：双方随从用无 side 的 `field.followers`，双方主战者用 `leaders`。 |
 | S-70 | ~~从两种指定卡中随机召唤~~ **已解决**：`summon random N card A or card B [...] [for own\|oppo];` | 已解锁 10564120 雾卷花·茎白 | 新 IR 节点 `SummonPoolEffect`：每次抽取消费一次对局随机数，池内卡牌定义必须互不相同（2..16 种）。 |
 | S-71 | ~~其他随从的宣告攻击事件~~ **已解决**：`when own\|oppo follower attacks [leader] [where …]` | 已解锁 10474110 光之法则·龙敖、10544120 波摇花·夕夜 | 绑定 `attacker`；`attacks leader` 用 `EventTrigger.targetKind="leader"` 限定攻击目标。 |
 | S-73 | ~~随机发动若干个模式能力~~ **已解决**：`mode random N { … }` | 已解锁 10532310 魔猫戏法 | 引擎随机选出 N 个互不相同的选项并按编号顺序结算；玩家响应协议不变（随机模式不产生请求）。 |
@@ -209,6 +209,20 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 批次 109（S-19 / S-69 跨方混合随机集合）
+
+- **混合集合扩展到双方**：`field.followers [other] or leaders` = 双方战场上的随从
+  （`other` 时排除来源实例）+ 双方的主战者，用于"随机对战场上的 1 个其他随从或
+  自己的主战者或对手的主战者造成 7 点伤害"。`CharacterSetRef` 的 `side` 允许为空，
+  新增 `excludeSelf`；`selectionValues` 为无 side 的集合追加双方主战者。
+  形状校验与 IR 构建共用同一份解析（顺带修好此前"or"分支的索引越界与不同方领袖的漏洞）。
+- 完成 1 张：10524110 威猛的《战车》·奥辂昂（回合结束时：进化前对对手全体随从 7 点；
+  进化后 3 次随机 7 点，目标为双方其他随从或双方主战者）。
+- 新增 2 个场景（`tests/10005/batch-109-mixed-targets.wbotest`），覆盖"进化前打全体"与
+  "进化后三次随机且不包含自己"（用例锁定该种子下的具体分配：我方 7 点、对手 14 点）；
+  Go 单测 `internal/project/mixed_character_set_test.go`。
+- 全量回归：`check` 0 错 0 警；`test` 1386 全绿；`go test ./...` 全绿；语料快照更新为 1386 个场景。
 
 ### 批次 108（S-52 牌组中发动与【瞬念召唤】）
 

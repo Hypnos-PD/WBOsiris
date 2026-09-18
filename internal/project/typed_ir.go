@@ -279,9 +279,8 @@ func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[stri
 		return ir.RepeatEffect{NodeBase: base, Kind: "repeat", Times: times, TimesExpr: expr, Body: body}, err
 	case "choose", "require", "random", "first":
 		src, end := setExprIR(t, 3)
-		if end < len(t) && t[end].Value == "or" {
-			src = ir.CharacterSetRef{Kind: "characters", Side: t[3].Value}
-			end += 4
+		if mixed, mixedEnd, ok := mixedCharacterSetIR(t, 3); ok {
+			src, end = mixed, mixedEnd
 		}
 		if end < len(t) && t[end].Value == "other" {
 			value, next := otherExclusion(t, end)
@@ -798,6 +797,27 @@ func whereScalarIR(t []syntax.Token, i int) (*ir.Scalar, int, bool) {
 		}
 	}
 	return nil, i, false
+}
+
+// mixedCharacterSetIR 解析"随从或主战者"的混合选择集合：
+//   - `<own|oppo>.field.followers or <own|oppo>.leader`
+//   - `field.followers [other] or leaders`（双方战场的随从 + 双方的主战者）
+func mixedCharacterSetIR(t []syntax.Token, i int) (ir.CharacterSetRef, int, bool) {
+	if i+9 <= len(t) && set("own", "oppo")[t[i].Value] && values(t[i+1:i+5]) == ". field . followers" &&
+		t[i+5].Value == "or" && t[i+6].Value == t[i].Value && values(t[i+7:i+9]) == ". leader" {
+		return ir.CharacterSetRef{Kind: "characters", Side: t[i].Value}, i + 9, true
+	}
+	if i+3 <= len(t) && values(t[i:i+3]) == "field . followers" {
+		j := i + 3
+		exclude := false
+		if j < len(t) && t[j].Value == "other" {
+			exclude, j = true, j+1
+		}
+		if j+2 <= len(t) && t[j].Value == "or" && t[j+1].Value == "leaders" {
+			return ir.CharacterSetRef{Kind: "characters", Side: "", ExcludeSelf: exclude}, j + 2, true
+		}
+	}
+	return ir.CharacterSetRef{}, i, false
 }
 
 func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {

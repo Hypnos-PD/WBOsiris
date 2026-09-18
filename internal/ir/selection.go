@@ -17,7 +17,7 @@ func decodeSelectionSource(data []byte) (Ref, error) {
 	if err := strict(data, &ref); err != nil {
 		return nil, err
 	}
-	if !validSide(ref.Side) {
+	if ref.Side != "" && !validSide(ref.Side) {
 		return nil, fmt.Errorf("invalid character set side")
 	}
 	return ref, nil

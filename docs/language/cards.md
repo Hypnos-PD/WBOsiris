@@ -249,6 +249,16 @@ heal own.leader 5;
 同样支持 `choose`、`random` 和末尾的 `count N`，不支持在混合来源上追加
 `other`、`where` 或极值筛选。敌方随从仍受潜行、不能被选中等保护；敌方存在
 `ability_target_guard` 时，主战者也不能成为玩家选择的目标。随机选择不受这些选择保护限制。
+双方的战场随从加双方主战者写作 `field.followers [other] or leaders`，
+其中 `other` 排除来源实例（"其他随从或自己的主战者或对手的主战者"）：
+
+```wbo
+repeat 3 {
+    random victim from field.followers other or leaders;
+    damage victim 7;
+}
+```
+
 混合绑定支持不带筛选的 `damage` 和 `heal`；`count(target)` 包含主战者，
 `count(target where ...)` 仅统计满足卡牌筛选的实例。破坏、增益及复制等
 操作不能直接使用混合绑定，编译器会报告类型错误。

@@ -1,0 +1,44 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "威猛的战车进化前于回合结束打击对手全体随从七点" {
+    seed 109001;
+    state {
+        player own {
+            field { follower source = 10524110; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/12; }
+                follower second = 10001110 { stats 2/12; }
+            }
+        }
+    }
+    action { advance turn_end own; }
+    expect {
+        legal;
+        first.stats == 2/5;
+        second.stats == 2/5;
+        oppo.leader.life == 20;
+    }
+}
+
+scenario "威猛的战车进化后于回合结束打三次随机目标" {
+    seed 109002;
+    state {
+        player own {
+            field { follower source = 10524110 { evolved; } }
+        }
+        player oppo {
+            leader 20/20;
+        }
+    }
+    action { advance turn_end own; }
+    expect {
+        legal;
+        // 场上只有自己一个随从且被排除，三次 7 点只能在双方主战者之间分配。
+        source.stats == 7/7;
+        own.leader.life == 13;
+        oppo.leader.life == 6;
+    }
+}

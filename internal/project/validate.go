@@ -441,27 +441,25 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			continue
 		case "choose", "require", "random", "first":
 			end, setOK := parseTargetSet(t, 3)
-			if setOK && len(t) > 5 && t[5].Value == "destroyed" {
-				setOK = false
-			}
-			if setOK && end < len(t) && t[end].Value == "or" {
-				if end == 8 && len(t) >= 12 && values(t[4:8]) == ". field . followers" && values(t[end:end+4]) == "or "+t[3].Value+" . leader" {
-					end += 4
-				} else {
-					setOK = false
-				}
+			if mixedEnd, mixedOK := mixedCharacterSetEnd(t, 3); mixedOK {
+				// 混合集合（随从 + 主战者）：只允许 `count` 后缀。
+				end, setOK = mixedEnd, true
 				if end < len(t) && t[end].Value != "count" {
 					setOK = false
 				}
-			}
-			if setOK && end < len(t) && t[end].Value == "other" {
-				end = otherExclusionEnd(t, end)
-			}
-			if setOK && end < len(t) && t[end].Value == "where" {
-				end, setOK = parseWhere(t, end)
-			}
-			if setOK && end < len(t) && set("highest", "lowest")[t[end].Value] {
-				_, end, setOK = parseExtremum(t, end)
+			} else {
+				if setOK && len(t) > 5 && t[5].Value == "destroyed" {
+					setOK = false
+				}
+				if setOK && end < len(t) && t[end].Value == "other" {
+					end = otherExclusionEnd(t, end)
+				}
+				if setOK && end < len(t) && t[end].Value == "where" {
+					end, setOK = parseWhere(t, end)
+				}
+				if setOK && end < len(t) && set("highest", "lowest")[t[end].Value] {
+					_, end, setOK = parseExtremum(t, end)
+				}
 			}
 			if setOK && end < len(t) && t[end].Value == "count" {
 				if end+1 < len(t) {
@@ -1158,6 +1156,24 @@ func negatedWhereTerm(t []syntax.Token, i int) (int, bool) {
 	case "keyword":
 		if i+1 < len(t) && ir.ValidKeyword(t[i+1].Value) {
 			return i + 2, true
+		}
+	}
+	return i, false
+}
+
+// mixedCharacterSetEnd 是 mixedCharacterSetIR 的形状校验镜像。
+func mixedCharacterSetEnd(t []syntax.Token, i int) (int, bool) {
+	if i+9 <= len(t) && set("own", "oppo")[t[i].Value] && values(t[i+1:i+5]) == ". field . followers" &&
+		t[i+5].Value == "or" && t[i+6].Value == t[i].Value && values(t[i+7:i+9]) == ". leader" {
+		return i + 9, true
+	}
+	if i+3 <= len(t) && values(t[i:i+3]) == "field . followers" {
+		j := i + 3
+		if j < len(t) && t[j].Value == "other" {
+			j++
+		}
+		if j+2 <= len(t) && t[j].Value == "or" && t[j+1].Value == "leaders" {
+			return j + 2, true
 		}
 	}
 	return i, false

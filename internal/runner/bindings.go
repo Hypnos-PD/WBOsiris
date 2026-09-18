@@ -49,18 +49,35 @@ func (g *game) selectionValues(e ir.SelectionEffect, self *instance, f frame) []
 	}
 	e.Source = ir.ZoneRef{Kind: "zone", Side: characters.Side, Zone: "field", Member: "follower"}
 	values := bindEntities(g.selectionCandidates(e, self, f)...)
-	_, side := g.playerForSide(self, characters.Side)
-	if e.Kind != "random_choose" && side != g.sideOf(self) {
-		for _, i := range g.player(side).field {
-			if !g.chargeQueryVisits(1) {
-				return nil
+	if characters.ExcludeSelf && self != nil {
+		kept := values[:0]
+		for _, value := range values {
+			if value.Kind == "instance" && value.InstanceID == self.id {
+				continue
 			}
-			if i.abilities["ability_target_guard"] {
-				return values
+			kept = append(kept, value)
+		}
+		values = kept
+	}
+	sides := []string{"own", "oppo"}
+	if characters.Side != "" {
+		_, side := g.playerForSide(self, characters.Side)
+		sides = []string{side}
+		if e.Kind != "random_choose" && side != g.sideOf(self) {
+			for _, i := range g.player(side).field {
+				if !g.chargeQueryVisits(1) {
+					return nil
+				}
+				if i.abilities["ability_target_guard"] {
+					return values
+				}
 			}
 		}
 	}
-	return append(values, ir.EventTarget{Kind: "leader", Side: side})
+	for _, side := range sides {
+		values = append(values, ir.EventTarget{Kind: "leader", Side: side})
+	}
+	return values
 }
 
 func (g *game) boundLeaderSides(ref ir.Ref, self *instance, f frame) []string {

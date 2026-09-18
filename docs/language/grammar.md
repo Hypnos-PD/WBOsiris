@@ -212,8 +212,9 @@ fusion_block       = "fusion" , "material" , "from" , target_set ,
 selection_statement = selection_kind , binding_name , "from" , target_set ,
                       ["other" , [binding_name]] , [where_clause] , [extremum_clause] , ["count" , effect_amount] , ";"
                     | selection_kind , binding_name , "from" , character_set , ["count" , integer] , ";" ;
-character_set       = "own.field.followers" , "or" , "own.leader"
-                    | "oppo.field.followers" , "or" , "oppo.leader" ;
+character_set       = ("own" | "oppo") , ".field.followers" , "or" , ("own" | "oppo") , ".leader"
+                    | "field.followers" , ["other"] , "or" , "leaders" ;
+(* 两侧必须同方；`field.followers other or leaders` = 双方战场的其他随从 + 双方主战者 *)
 selection_kind      = "choose" | "require" | "random" | "first" ;
 extremum_clause     = ("highest" | "lowest") , ["base" , "."] , ("attack" | "life" | "cost") ;
 binding_name        = identifier ;
