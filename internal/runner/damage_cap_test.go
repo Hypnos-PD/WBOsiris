@@ -25,7 +25,7 @@ func TestDamageCapClampsInstanceDamage(t *testing.T) {
 func TestLeaderDamageTakenUpAddsOne(t *testing.T) {
 	g := &game{}
 	g.oppo.leaderLife = 20
-	g.setLeaderKeyword([]string{"oppo"}, "damage_taken_up", true)
+	g.setLeaderKeyword([]string{"oppo"}, "damage_taken_up", true, "")
 	if got := g.damageLeaderFrom(nil, &g.oppo, "oppo", 5); got != 6 || g.oppo.leaderLife != 14 {
 		t.Fatalf("raised leader damage = %d, life=%d; want 6/14", got, g.oppo.leaderLife)
 	}
@@ -38,8 +38,8 @@ func TestLeaderDamageTakenUpAddsOne(t *testing.T) {
 func TestLeaderDamageTakenUpIsNeutralizedByBarrier(t *testing.T) {
 	g := &game{}
 	g.own.leaderLife = 20
-	g.setLeaderKeyword([]string{"own"}, "damage_taken_up", true)
-	g.setLeaderKeyword([]string{"own"}, "barrier", true)
+	g.setLeaderKeyword([]string{"own"}, "damage_taken_up", true, "")
+	g.setLeaderKeyword([]string{"own"}, "barrier", true, "")
 	if got := g.damageLeaderFrom(nil, &g.own, "own", 5); got != 0 || g.own.leaderLife != 20 {
 		t.Fatalf("barrier did not absorb the raised damage: dealt=%d life=%d", got, g.own.leaderLife)
 	}

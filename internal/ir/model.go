@@ -896,6 +896,7 @@ func (a CompareAssertion) assertionOrigin() Origin { return a.Origin }
 
 type KeywordAssertion struct {
 	Kind     string `json:"kind"`
+	Side     string `json:"side,omitempty"`
 	Target   string `json:"target,omitempty"`
 	Keyword  string `json:"keyword"`
 	Expected bool   `json:"expected,omitempty"`

@@ -251,8 +251,12 @@ expect {
     own.hand count card 10001110 == 2;
     own.field count card 90051130 == 1;
     all own.field where card 90051130 have drain;
+    own.leader has damage_to_zero;
 }
 ```
+
+主战者关键词（【屏障】、`damage_taken_up`、`damage_to_zero` 等，含临时状态）用
+`own.leader has <关键词>` / `own.leader lacks <关键词>` 断言。
 
 实例字段只接受 `zone`、`stats`、`cost`、`evolved`、`super_evolved`、`earthsigil`、
 `countdown`、`engaged`、`attack_limit`、`damage_reduction`、`damage_cap`，以及

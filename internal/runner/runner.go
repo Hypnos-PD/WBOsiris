@@ -55,6 +55,8 @@ type player struct {
 	pp, maxpp, leaderLife, leaderMax, ep, sep, combo, shadows int
 	// leaderAbilities 记录主战者级别的关键词（例如"使自己的主战者获得【屏障】"）。
 	leaderAbilities map[string]bool
+	// leaderTemporary 记录主战者级关键词的到期时点（"到对手的回合结束为止"）。
+	leaderTemporary map[string]KeywordExpiry
 	// rally（协作）统计本场对战中进入过自己战场的随从数量。
 	// 手牌打出的随从在本次结算结束后才计入，见 creditRally。
 	rally                                                     int
@@ -921,6 +923,10 @@ func (g *game) damageLeaderFrom(source *instance, target *player, side string, a
 		// 「受到的伤害 +1」：先加一，再让【屏障】把这次伤害整体降为 0（官方 QA）。
 		amount++
 	}
+	if target.leaderAbilities["damage_to_zero"] && amount > 0 {
+		// 「受到的1点或以上的伤害变为0点」：最终伤害归零，也不消耗【屏障】。
+		amount = 0
+	}
 	if target.leaderAbilities["barrier"] && amount > 0 {
 		// 主战者的【屏障】把下一次伤害降为 0（官方 QA：与"受到伤害+1"同时存在时也是 0）。
 		delete(target.leaderAbilities, "barrier")
@@ -955,6 +961,10 @@ func (g *game) damageLeaders(source *instance, amount int) {
 		if target.player.leaderAbilities["damage_taken_up"] {
 			// 「受到的伤害 +1」：先加一，再让【屏障】把这次伤害整体降为 0（官方 QA）。
 			damage++
+		}
+		if target.player.leaderAbilities["damage_to_zero"] && damage > 0 {
+			// 「受到的1点或以上的伤害变为0点」：最终伤害归零，也不消耗【屏障】。
+			damage = 0
 		}
 		if target.player.leaderAbilities["barrier"] && damage > 0 {
 			delete(target.player.leaderAbilities, "barrier")

@@ -383,6 +383,8 @@ func (a KeywordAssertion) MarshalJSON() ([]byte, error) {
 		object["target"], object["expected"] = a.Target, a.Expected
 	case "all_have_keyword":
 		object["source"] = a.Source
+	case "leader_keyword":
+		object["side"], object["expected"] = a.Side, a.Expected
 	default:
 		return nil, fmt.Errorf("encode unknown keyword assertion kind %q", a.Kind)
 	}

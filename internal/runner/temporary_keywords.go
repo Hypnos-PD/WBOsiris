@@ -82,6 +82,24 @@ func (g *game) expireTurnEffects(side string) bool {
 			i.temporaryKeywords = nil
 		}
 	}
+	for _, p := range []*player{&g.own, &g.oppo} {
+		for keyword, expiry := range p.leaderTemporary {
+			if side == "own" {
+				expiry.OwnTurnEnd = false
+			} else {
+				expiry.OppoTurnEnd = false
+			}
+			if expiry.OwnTurnEnd || expiry.OppoTurnEnd {
+				p.leaderTemporary[keyword] = expiry
+				continue
+			}
+			delete(p.leaderTemporary, keyword)
+			delete(p.leaderAbilities, keyword)
+		}
+		if len(p.leaderTemporary) == 0 {
+			p.leaderTemporary = nil
+		}
+	}
 	g.resolveDeathBatch(nil)
 	return g.budget == nil || !g.budget.exceeded
 }

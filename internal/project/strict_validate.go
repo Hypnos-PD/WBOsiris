@@ -687,7 +687,7 @@ func strictOverride(s *syntax.Statement, ds *[]syntax.Diagnostic) {
 		}
 	case "evolved", "super_evolved":
 		ok = ok && len(t) == 1
-	case "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "ability_target_guard", "ability_destruction_guard", "damage_taken_up", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader":
+	case "ward", "storm", "rush", "bane", "drain", "intimidate", "barrier", "stealth", "aura", "ability_target_guard", "ability_destruction_guard", "damage_taken_up", "damage_to_zero", "cannot_attack", "cannot_attack_follower", "cannot_attack_leader":
 		ok = ok && len(t) == 1
 	case "cost", "earthsigil", "countdown", "damage_taken", "damage_cap":
 		ok = ok && len(t) == 2
@@ -796,6 +796,10 @@ func strictAssertion(s *syntax.Statement, a map[string]string, ds *[]syntax.Diag
 		return len(t) == 2 && t[1].Kind == syntax.Identifier
 	}
 	if len(t) == 3 && a[t[0].Value] != "" && set("has", "lacks")[t[1].Value] && abilities[t[2].Value] {
+		return true
+	}
+	if len(t) == 5 && set("own", "oppo")[t[0].Value] && values(t[1:3]) == ". leader" && set("has", "lacks")[t[3].Value] && abilities[t[4].Value] {
+		// `own.leader has damage_to_zero`：主战者级关键词断言（含临时状态）。
 		return true
 	}
 	if h == "all" {

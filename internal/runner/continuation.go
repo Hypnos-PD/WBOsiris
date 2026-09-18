@@ -102,6 +102,8 @@ type ContinuationPlayer struct {
 	// EvolutionsThisMatch 是本场对战中该玩家随从进化过的次数（含超进化）。
 	EvolutionsThisMatch int `json:"evolutionsThisMatch,omitempty"`
 	LeaderAbilities  []string            `json:"leaderAbilities,omitempty"`
+	// LeaderTemporary 是主战者级关键词的到期时点（"到对手的回合结束为止"）。
+	LeaderTemporary map[string]KeywordExpiry `json:"leaderTemporary,omitempty"`
 	AttackedThisTurn bool                `json:"attackedThisTurn"`
 	// LeaderAttackedThisTurn / LeaderAttackedLastTurn：本回合 / 上一回合攻击过主战者。
 	LeaderAttackedThisTurn bool `json:"leaderAttackedThisTurn,omitempty"`
@@ -553,6 +555,7 @@ func snapshotContinuationPlayer(p player) ContinuationPlayer {
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, Rally: p.rally, LeaderAbilities: leaderAbilityNames(p), AttackedThisTurn: p.attackedThisTurn,
 		LeaderAttackedThisTurn: p.leaderAttackedThisTurn, LeaderAttackedLastTurn: p.leaderAttackedLastTurn,
 		EnteredArtifacts: sortedCardIDs(p.enteredArtifacts),
+		LeaderTemporary:  maps.Clone(p.leaderTemporary),
 		Entered:          instanceIDs(p.entered),
 		PlayedCosts:      sortedCardIDs(p.playedCosts),
 		EvolutionsThisMatch: p.evolutionsThisMatch,
@@ -928,6 +931,7 @@ func generatedInstanceSerial(instances []ContinuationEntity) int {
 
 func restorePlayer(saved ContinuationPlayer, instances map[string]*instance, cards map[int]*ir.Card) (player, error) {
 	p := player{pp: saved.PP, maxpp: saved.MaxPP, leaderLife: saved.LeaderLife, leaderMax: saved.LeaderMax, ep: saved.EP, sep: saved.SEP, combo: saved.Combo, shadows: saved.Shadows, rally: saved.Rally, leaderAbilities: leaderAbilitySet(saved.LeaderAbilities), attackedThisTurn: saved.AttackedThisTurn,
+		leaderTemporary: maps.Clone(saved.LeaderTemporary),
 		leaderAttackedThisTurn: saved.LeaderAttackedThisTurn, leaderAttackedLastTurn: saved.LeaderAttackedLastTurn, evolvedThisTurn: saved.EvolvedThisTurn, extraPPEarly: saved.ExtraPPEarly, extraPPLate: saved.ExtraPPLate, extraPPActive: saved.ExtraPPActive}
 	if len(saved.EnteredArtifacts) > 0 {
 		p.enteredArtifacts = make(map[int]bool, len(saved.EnteredArtifacts))

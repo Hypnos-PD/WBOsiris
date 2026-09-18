@@ -57,6 +57,19 @@ card 10664120 {
 `damage_cap N` 给该随从加上单次伤害上限：每次受到的伤害最多为 `N`，对应卡面
 "受到的 N+1 点或以上的伤害变为 N 点"（如"受到的 4 点或以上的伤害变为 3 点"写作
 `damage_cap 3;`）。上限在伤害减免之后应用，最低仍为零；它只作用于该实例，不影响主战者。
+主战者的"受到的1点或以上的伤害变为0点"写作给主战者关键词 `damage_to_zero`：
+
+```wbo
+enhance 10 {
+    add storm to self;
+    set maxlife own.leader 1;
+    add damage_to_zero to own.leader until oppo turn ends;
+}
+```
+
+主战者关键词同样支持 `until own|oppo turn ends`：到期时点在对应一方的回合结束时清除，
+只影响该关键词，不会动到同一位主战者的其他关键词。【屏障】与 `damage_to_zero`
+同时存在时，归零不会消耗【屏障】（伤害本来就是 0）。
 `stealth` 使敌方效果的主动目标查询和攻击目标查询忽略该随从；范围效果和随机效果仍可作用于它。
 拥有潜行的随从声明攻击，或通过能力造成实际伤害时解除潜行。
 `aura` 仅使敌方效果的主动目标查询忽略该随从；它不会影响攻击，也可能成为随机效果的目标。
@@ -379,6 +392,8 @@ add cannot_attack to target until oppo turn ends;
 手牌返回牌组则保留，到期仍会移除。设置生命值本身不随攻击限制一起到期。
 
 期限修饰也适用于 `buff`；临时移除关键词仍会被显式拒绝。
+主战者关键词的期限独立于随从：`add damage_to_zero to own.leader until oppo turn ends;`
+在对手的回合结束时清除，不会影响同一位主战者上的其他关键词。
 
 ### 临时属性增益
 

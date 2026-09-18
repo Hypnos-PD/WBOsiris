@@ -6,7 +6,15 @@ card 10444120 {
     stats 5/5;
 
     effect {
-        unplayable;
+        fanfare {
+            gain own.maxpp 1;
+        }
+        enhance 10 {
+            add storm to self;
+            set maxlife own.leader 1;
+            // 「对手的回合结束前」：主战者级关键词的到期时点。
+            add damage_to_zero to own.leader until oppo turn ends;
+        }
     }
 
     meta {

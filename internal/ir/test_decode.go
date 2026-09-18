@@ -362,13 +362,14 @@ func decodeAssertion(data []byte) (Assertion, error) {
 		}
 		r, err := decodeLiteral(v.Right)
 		return CompareAssertion{v.Kind, v.Op, l, r, v.Origin}, err
-	case "has_keyword", "all_have_keyword":
+	case "has_keyword", "all_have_keyword", "leader_keyword":
 		var v struct {
 			Kind     string          `json:"kind"`
 			Target   string          `json:"target,omitempty"`
 			Keyword  string          `json:"keyword"`
 			Expected bool            `json:"expected,omitempty"`
 			Source   json.RawMessage `json:"source,omitempty"`
+			Side     string          `json:"side,omitempty"`
 			Origin   Origin          `json:"origin"`
 		}
 		if err := strict(data, &v); err != nil {
@@ -379,10 +380,10 @@ func decodeAssertion(data []byte) (Assertion, error) {
 		if len(v.Source) > 0 {
 			src, err = decodeRef(v.Source)
 		}
-		if v.Keyword == "" || v.Kind == "has_keyword" && !nodeIDPattern.MatchString(v.Target) || v.Kind == "all_have_keyword" && src == nil {
+		if v.Keyword == "" || v.Kind == "has_keyword" && !nodeIDPattern.MatchString(v.Target) || v.Kind == "all_have_keyword" && src == nil || v.Kind == "leader_keyword" && !validSide(v.Side) {
 			return nil, fmt.Errorf("malformed keyword assertion")
 		}
-		return KeywordAssertion{v.Kind, v.Target, v.Keyword, v.Expected, src, v.Origin}, err
+		return KeywordAssertion{Kind: v.Kind, Side: v.Side, Target: v.Target, Keyword: v.Keyword, Expected: v.Expected, Source: src, Origin: v.Origin}, err
 	case "zone_count", "ordered_instances":
 		var v struct {
 			Kind, Side, Zone, Op, Containment string

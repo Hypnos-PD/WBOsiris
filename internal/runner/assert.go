@@ -135,6 +135,16 @@ func (g *game) assertCompare(a ir.CompareAssertion) string {
 	return ""
 }
 func (g *game) assertKeyword(a ir.KeywordAssertion) string {
+	if a.Kind == "leader_keyword" {
+		p := g.player(a.Side)
+		if p == nil {
+			return "unknown leader"
+		}
+		if p.leaderAbilities[a.Keyword] != a.Expected {
+			return fmt.Sprintf("expected %s.leader %s=%t", a.Side, a.Keyword, a.Expected)
+		}
+		return ""
+	}
 	if a.Kind == "has_keyword" {
 		i := g.instances[a.Target]
 		if i == nil {

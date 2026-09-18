@@ -928,12 +928,12 @@ func (g *game) execTargetEffect(e ir.TargetEffect, self *instance, f frame) {
 		for _, i := range targets {
 			i.addKeyword(e.Keyword, endingSide)
 		}
-		g.setLeaderKeyword(leaders, e.Keyword, true)
+		g.setLeaderKeyword(leaders, e.Keyword, true, endingSide)
 	case "remove_keyword":
 		for _, i := range targets {
 			i.removeKeyword(e.Keyword)
 		}
-		g.setLeaderKeyword(leaders, e.Keyword, false)
+		g.setLeaderKeyword(leaders, e.Keyword, false, "")
 	case "remove_ability":
 		for _, i := range targets {
 			g.removeAbility(i, e.Keyword)
@@ -1244,8 +1244,9 @@ func (g *game) invokeInstance(i *instance) {
 	g.queueEventTriggers(event, i, "invoked")
 }
 
-// setLeaderKeyword 给主战者加上/移除关键词（目前只有【屏障】这类主战者级状态）。
-func (g *game) setLeaderKeyword(sides []string, keyword string, enabled bool) {
+// setLeaderKeyword 给主战者加上/移除关键词（【屏障】、"受到的伤害变为0"这类主战者级状态）。
+// endingSide 非空时记录到期时点（"到对手的回合结束为止"）。
+func (g *game) setLeaderKeyword(sides []string, keyword string, enabled bool, endingSide string) {
 	for _, side := range sides {
 		p := g.player(side)
 		if p == nil {
@@ -1256,8 +1257,22 @@ func (g *game) setLeaderKeyword(sides []string, keyword string, enabled bool) {
 				p.leaderAbilities = map[string]bool{}
 			}
 			p.leaderAbilities[keyword] = true
+			if endingSide != "" {
+				expiry := p.leaderTemporary[keyword]
+				expiry.Permanent = false
+				if endingSide == "own" {
+					expiry.OwnTurnEnd = true
+				} else {
+					expiry.OppoTurnEnd = true
+				}
+				if p.leaderTemporary == nil {
+					p.leaderTemporary = map[string]KeywordExpiry{}
+				}
+				p.leaderTemporary[keyword] = expiry
+			}
 		} else if p.leaderAbilities != nil {
 			delete(p.leaderAbilities, keyword)
+			delete(p.leaderTemporary, keyword)
 		}
 	}
 }

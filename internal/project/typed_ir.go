@@ -1410,7 +1410,10 @@ func compileAssertions(s *syntax.Statement, a map[string]string, sid string) ([]
 			pred, end := filterIR(t, end)
 			assertion = ir.KeywordAssertion{Kind: "all_have_keyword", Source: ir.FilterRef{Kind: "filter", Source: src, Predicate: pred}, Keyword: t[end+1].Value, Origin: origin}
 		default:
-			if len(t) == 3 && a[t[0].Value] != "" && set("has", "lacks")[t[1].Value] {
+			if len(t) == 5 && set("own", "oppo")[t[0].Value] && values(t[1:3]) == ". leader" && set("has", "lacks")[t[3].Value] {
+				// `own.leader has damage_to_zero`：主战者级关键词断言（含临时状态）。
+				assertion = ir.KeywordAssertion{Kind: "leader_keyword", Side: t[0].Value, Keyword: t[4].Value, Expected: t[3].Value == "has", Origin: origin}
+			} else if len(t) == 3 && a[t[0].Value] != "" && set("has", "lacks")[t[1].Value] {
 				assertion = ir.KeywordAssertion{Kind: "has_keyword", Target: a[t[0].Value], Keyword: t[2].Value, Expected: t[1].Value == "has", Origin: origin}
 			} else if isCountTokens(t) {
 				assertion = ir.ZoneAssertion{Kind: "zone_count", Side: t[0].Value, Zone: t[2].Value, CardID: intToken(t[5]), Op: "eq", Count: intToken(t[7]), Origin: origin}

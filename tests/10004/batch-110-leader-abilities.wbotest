@@ -1,0 +1,37 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "佐伊的入场曲把能量点最大值加一" {
+    seed 110001;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10444120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source.zone == field;
+        own.maxpp == 6;
+        own.pp == 0/6;
+    }
+}
+
+scenario "佐伊在爆能强化十时获得疾驰并把主战者生命上限变为一" {
+    seed 110002;
+    state {
+        player own {
+            pp 10/10;
+            hand { follower source = 10444120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        source has storm;
+        own.leader.maxlife == 1;
+        own.leader.life == 1;
+        own.leader has damage_to_zero;
+    }
+}
