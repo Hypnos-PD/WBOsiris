@@ -1155,6 +1155,9 @@ func (g *game) emitDamage(amount int, target *ir.EventTarget, subject *instance)
 
 func (g *game) commitPlay(i *instance) []execFrame {
 	enhanceCost := g.enhanceCost(i, g.owner(i).pp)
+	// 纹章/信仰的持续性规则改动："自己的随从的【入场曲】/【爆能强化】不发动"。
+	suppressFanfare := g.playerPassive(g.owner(i), "suppress_fanfare")
+	suppressEnhance := g.playerPassive(g.owner(i), "suppress_enhance")
 	// 爆能强化的“改为”档会替换本次打出的基础效果与入场曲，而不是追加。
 	replacing := false
 	for _, a := range i.card.Abilities {
@@ -1180,11 +1183,35 @@ func (g *game) commitPlay(i *instance) []execFrame {
 		if replacing && kind == "fanfare" {
 			continue
 		}
+		if kind == "fanfare" && suppressFanfare {
+			continue
+		}
+		if kind == "enhance" && isCost && trigger.Cost <= enhanceCost && suppressEnhance {
+			continue
+		}
 		if (kind == "fanfare" || kind == "enhance" && isCost && trigger.Cost <= enhanceCost) && (i.zone == "field" || i.card.CardType == "spell") {
 			frames = append(frames, execFrame{body: a.Body, blockID: abilityBlockID(i.card.ID, a.ID), self: i, bindings: playFrame})
 		}
 	}
 	return frames
+}
+
+// playerPassive 检查该玩家身上的持续性规则改动（来自纹章/信仰定义里的 passive 语句）。
+func (g *game) playerPassive(p *player, name string) bool {
+	if p == nil {
+		return false
+	}
+	for _, crest := range p.crests {
+		if crest.card == nil {
+			continue
+		}
+		for _, passive := range crest.card.Passives {
+			if passive == name {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (g *game) playCost(i *instance, pp int) int {

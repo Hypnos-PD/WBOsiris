@@ -9,6 +9,9 @@ type CrestDefinition struct {
 	Counters  map[string]int    `json:"counters,omitempty"`
 	Countdown int               `json:"countdown,omitempty"`
 	Abilities []Ability         `json:"abilities"`
+	// Passives 是"持续性规则改动"（例如"自己的随从的【入场曲】不发动"），
+	// 不是事件监听，因此单独列出。
+	Passives []string `json:"passives,omitempty"`
 	Locales   map[string]Locale `json:"locales"`
 	Origin    Origin            `json:"origin"`
 }
@@ -19,7 +22,7 @@ func (c Card) CrestCard() *Card {
 		return nil
 	}
 	d := c.Crest
-	crest := &Card{ID: c.ID, CardType: "crest", Counters: d.Counters, Abilities: d.Abilities, Locales: d.Locales, Meta: c.Meta, Origin: d.Origin}
+	crest := &Card{ID: c.ID, CardType: "crest", Counters: d.Counters, Abilities: d.Abilities, Passives: d.Passives, Locales: d.Locales, Meta: c.Meta, Origin: d.Origin}
 	if d.Countdown > 0 {
 		crest.IntrinsicState = []IntrinsicState{{Kind: "countdown", Initial: d.Countdown}}
 	}
@@ -32,7 +35,7 @@ func (c Card) FaithCard() *Card {
 		return nil
 	}
 	d := c.Faith
-	return &Card{ID: c.ID, CardType: "faith", Counters: d.Counters, Abilities: d.Abilities, Locales: d.Locales, Meta: c.Meta, Origin: d.Origin}
+	return &Card{ID: c.ID, CardType: "faith", Counters: d.Counters, Abilities: d.Abilities, Passives: d.Passives, Locales: d.Locales, Meta: c.Meta, Origin: d.Origin}
 }
 
 // CrystallizeDefinition 是【结晶】形态：以 Cost 点费用当作护符打出时使用的卡面。
@@ -112,16 +115,25 @@ func decodeCrest(data []byte, abilityIDs, nodeIDs map[string]bool) (*CrestDefini
 		Counters  map[string]int    `json:"counters"`
 		Countdown int               `json:"countdown"`
 		Abilities []json.RawMessage `json:"abilities"`
+		Passives  []string          `json:"passives"`
 		Locales   map[string]Locale `json:"locales"`
 		Origin    Origin            `json:"origin"`
 	}
 	if err := strict(data, &raw); err != nil {
 		return nil, err
 	}
-	if !validOrigin(raw.Origin) || !ValidCounters(raw.Counters) || raw.Countdown < 0 || raw.Countdown > 65535 || len(raw.Abilities) == 0 || len(raw.Locales) != 5 {
+	if !validOrigin(raw.Origin) || !ValidCounters(raw.Counters) || raw.Countdown < 0 || raw.Countdown > 65535 || len(raw.Abilities) == 0 && len(raw.Passives) == 0 || len(raw.Locales) != 5 {
 		return nil, fmt.Errorf("invalid crest definition")
 	}
 	c := &CrestDefinition{Counters: raw.Counters, Countdown: raw.Countdown, Locales: raw.Locales, Origin: raw.Origin}
+	seenPassives := map[string]bool{}
+	for _, name := range raw.Passives {
+		if !ValidPassive(name) || seenPassives[name] {
+			return nil, fmt.Errorf("invalid crest passive")
+		}
+		seenPassives[name] = true
+		c.Passives = append(c.Passives, name)
+	}
 	for _, code := range []string{"chs", "eng", "jpn", "kor", "cht"} {
 		if c.Locales[code].Name == "" || c.Locales[code].Text == "" {
 			return nil, fmt.Errorf("missing crest locale %s", code)

@@ -6,7 +6,69 @@ card 10554110 {
     stats 3/3;
 
     effect {
-        unplayable;
+        fanfare {
+            // 【亡者召还_4】与【亡者召还_2】各发动一次。
+            reanimate 4;
+            reanimate 2;
+        }
+        // 本随从进化时（含超进化与效果引起的进化）：破坏战场上的随机 6 个其他随从。
+        when self evolved {
+            random victims from field.followers other count 6;
+            destroy victims;
+        }
+        superevolve {
+            gain own crest 10554110;
+        }
+    }
+
+    crest {
+        passive suppress_fanfare;
+        passive suppress_enhance;
+
+        // "自己使用的随从入场时进化"（效果引起的进化，不发动进化时能力）。
+        when own card played where type follower {
+            evolve played silent;
+        }
+
+        locale chs {
+            name "纹章：充实的《恋人与节制》·米路缇欧&卢泽";
+            text """
+自己的随从的【<color=Keyword>入场曲</color>】与【<color=Keyword>爆能强化</color>】不发动。
+自己使用的随从进入战场时，使其进化。
+""";
+        }
+
+        locale eng {
+            name "Crest: Milteo & Luzen, Contentment";
+            text """
+Allied followers' <b><color=Keyword>Fanfare</color></b> and <b><color=Keyword>Enhance</color></b> effects do not activate.
+When you play a follower, evolve it.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"み\">充</rub>つ《<rub=\"こいびと\">恋人</rub>と<rub=\"せっせい\">節制</rub>》・ミルティオ＆ルーゼン";
+            text """
+自分のフォロワーの【<color=Keyword>ファンファーレ</color>】と【<color=Keyword>エンハンス</color>】は働かない。
+自分のフォロワーが場に出たとき、それは進化する。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 충만한 《연인과 절제》 밀티오&루젠";
+            text """
+내 추종자의 [<color=Keyword>출격</color>]과 [<color=Keyword>강화</color>]는 발동하지 않는다.
+내 추종자가 전장에 나올 때, 그 추종자는 진화한다.
+""";
+        }
+
+        locale cht {
+            name "紋章：充實的《戀人與節制》‧米路緹歐＆盧澤";
+            text """
+自己的從者的【<color=Keyword>入場曲</color>】與【<color=Keyword>爆能強化</color>】不會發動。
+自己使用的從者進入戰場時，使其進化。
+""";
+        }
     }
 
     meta {

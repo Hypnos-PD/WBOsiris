@@ -2089,6 +2089,11 @@ func validKeyword(v string) bool {
 }
 
 func ValidKeyword(v string) bool { return validKeyword(v) }
+
+// ValidPassive 是"持续性规则改动"的名单：纹章（或信仰）持有者身上生效，不是事件监听。
+func ValidPassive(v string) bool {
+	return oneOf(v, "suppress_fanfare", "suppress_enhance")
+}
 func validOp(v string) bool      { return oneOf(v, "eq", "ne", "lt", "le", "gt", "ge") }
 func oneOf(s string, v ...string) bool {
 	for _, x := range v {

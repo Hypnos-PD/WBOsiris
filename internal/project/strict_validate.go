@@ -113,6 +113,11 @@ func strictEffectBlock(body []*syntax.Statement, ctx effectContext, ds *[]syntax
 				shapeError(ds, s, "counter 只能声明在 effect 最外层")
 			}
 			continue
+		case "passive":
+			if len(t) != 2 || !s.Terminated || t[1].Kind != syntax.Identifier || !ir.ValidPassive(t[1].Value) {
+				shapeError(ds, s, "passive suppress_fanfare|suppress_enhance;")
+			}
+			continue
 		case "repeat":
 			for _, block := range b {
 				if repeatHasRequire(block) {

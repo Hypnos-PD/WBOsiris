@@ -803,6 +803,10 @@ ReplayFanfare = NodeBase & {
 `replay_fanfare` 按实例当前的卡牌定义查找 `fanfare` 能力并作为新的效果帧执行；
 同一实例最多重发 12 次（`fanfareReplays` 随实例快照保存），避免随机自引用无限递归。
 
+CrestDefinition 与 Card 都带 `passives?: [PassiveName]`：`suppress_fanfare` 与
+`suppress_enhance` 表示持有者（纹章/信仰所在的主战者）的随从入场曲/爆能强化不发动。
+派生纹章实例（`CrestCard()`）会带上这些被动，运行期由 `playerPassive` 查询。
+
 Reanimate = NodeBase & {
   kind: "reanimate",
   owner: Side,

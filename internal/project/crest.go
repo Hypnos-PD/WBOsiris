@@ -65,8 +65,8 @@ func validateCrest(parent *Card, decl *syntax.Statement, ds *[]syntax.Diagnostic
 			localeIndex++
 			continue
 		}
-		if localeIndex > 0 || !set("counter", "countdown", "lastwords", "when")[s.Word(0)] {
-			shapeError(ds, s, "纹章仅允许计数器、吟唱、谢幕曲和事件监听，之后声明本地化")
+		if localeIndex > 0 || !set("counter", "countdown", "lastwords", "when", "passive")[s.Word(0)] {
+			shapeError(ds, s, "纹章仅允许计数器、吟唱、持续性规则改动、谢幕曲和事件监听，之后声明本地化")
 			continue
 		}
 		if s.Word(0) == "when" && (s.Word(1) == "self" || filterContains(s.Tokens(), "while")) {

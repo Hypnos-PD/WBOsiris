@@ -105,7 +105,8 @@ effect_decl       = "effect" , effect_block ;
 effect_block      = "{" , {effect_statement} , "}" ;
 crest_decl        = "crest" , "{" , {crest_statement} , locale_decl , {locale_decl} , "}" ;
 crest_statement   = counter_declaration | "countdown" , integer , ";"
-                  | "lastwords" , effect_block | event_block ;
+                  | "lastwords" , effect_block | event_block
+                  | "passive" , ("suppress_fanfare" | "suppress_enhance") , ";" ;
 
 meta_decl         = "meta" , "{" , pack_decl , class_decl , rarity_decl , "}" ;
 pack_decl         = "pack" , integer , ";" ;

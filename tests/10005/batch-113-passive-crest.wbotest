@@ -1,0 +1,140 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "充实的恋人与节制的入场曲发动两次亡者召还" {
+    seed 113001;
+    state {
+        player own {
+            pp 7/7;
+            hand { follower source = 10554110; }
+            destroyed {
+                follower big = 10022120;
+                follower small = 10021110;
+            }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        // 亡者召还_2 只能选到原始费用 1 的那张。
+        own.field count card 10021110 == 1;
+        source.zone == field;
+    }
+}
+
+scenario "充实的恋人与节制进化时破坏战场上随机六个其他随从" {
+    seed 113002;
+    state {
+        turn own 7;
+        player own {
+            ep 1;
+            field {
+                follower source = 10554110;
+                follower ally1 = 10001110;
+                follower ally2 = 10001110;
+                follower ally3 = 10001110;
+            }
+        }
+        player oppo {
+            field {
+                follower enemy1 = 10001110;
+                follower enemy2 = 10001110;
+                follower enemy3 = 10001110;
+            }
+        }
+    }
+    action { evolve source; }
+    expect {
+        legal;
+        ally1.zone == graveyard;
+        ally2.zone == graveyard;
+        ally3.zone == graveyard;
+        enemy1.zone == graveyard;
+        enemy2.zone == graveyard;
+        enemy3.zone == graveyard;
+        source.zone == field;
+    }
+}
+
+scenario "充实的恋人与节制超进化时获得纹章" {
+    seed 113003;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10554110; }
+        }
+    }
+    action { superevolve source; }
+    expect { legal; own.crests count card 10554110 == 1; }
+}
+
+scenario "纹章让打出的随从不再发动入场曲但立即进化" {
+    seed 113004;
+    state {
+        player own {
+            pp 2/2;
+            crests { crest milteo = 10554110; }
+            hand { follower probe = 10212120; }
+        }
+    }
+    action { play probe; }
+    expect {
+        legal;
+        // 【入场曲】被压制：没有加入妖精；同时效果引起的进化 +2/+2。
+        own.hand count card 90011110 == 0;
+        probe.evolved == true;
+        probe.stats == 4/4;
+    }
+}
+
+scenario "没有纹章时妖精击剑士照常发动入场曲且不进化" {
+    seed 113005;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower probe = 10212120; }
+        }
+    }
+    action { play probe; }
+    expect {
+        legal;
+        own.hand count card 90011110 == 1;
+        probe.evolved == false;
+        probe.stats == 2/2;
+    }
+}
+
+scenario "纹章压制入场曲与爆能强化" {
+    seed 113006;
+    state {
+        player own {
+            pp 10/10;
+            crests { crest milteo = 10554110; }
+            hand { follower source = 10444120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        // 爆能强化（生命上限变为1）被压制，但随从自动进化。
+        own.leader.maxlife == 20;
+        source.evolved == true;
+    }
+}
+
+scenario "没有纹章时佐伊的入场曲与爆能强化照常发动" {
+    seed 113007;
+    state {
+        player own {
+            pp 10/10;
+            hand { follower source = 10444120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.leader.maxlife == 1;
+        source.evolved == false;
+    }
+}

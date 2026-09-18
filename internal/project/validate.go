@@ -296,6 +296,13 @@ func validateEffectBlock(body []*syntax.Statement, ds *[]syntax.Diagnostic, inhe
 			}
 			continue
 		}
+		if h == "passive" {
+			// `passive suppress_fanfare;`：纹章/信仰带来的持续性规则改动。
+			if len(t) != 2 || !s.Terminated || len(b) > 0 || t[1].Kind != syntax.Identifier || !ir.ValidPassive(t[1].Value) {
+				shapeError(ds, s, "passive suppress_fanfare|suppress_enhance;")
+			}
+			continue
+		}
 		if h == "countdown" {
 			if len(t) != 2 || !s.Terminated {
 				shapeError(ds, s, "countdown 整数;")

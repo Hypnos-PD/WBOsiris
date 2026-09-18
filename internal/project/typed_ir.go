@@ -79,6 +79,7 @@ func compileCardsTyped(l *Loaded) (ir.CardPack, error) {
 func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error) {
 	counters := map[string]int{}
 	intrinsic := []string{}
+	passives := []string{}
 	restrictions := []ir.Restriction{}
 	states := []ir.IntrinsicState{}
 	abilitiesIR := []ir.Ability{}
@@ -110,6 +111,9 @@ func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error)
 			states = append(states, ir.IntrinsicState{Kind: "attack_limit", Initial: intAt(s, 1)})
 		case h == "earthsigil":
 			states = append(states, ir.IntrinsicState{Kind: "earthsigil", Initial: 1})
+		case h == "passive" && len(s.Blocks()) == 0:
+			// `passive suppress_fanfare;`：纹章/信仰持有者的持续性规则改动。
+			passives = append(passives, s.Word(1))
 		case h == "fusion":
 			n, err := compileFusion(s, sid, scope, ids)
 			if err != nil {
@@ -169,6 +173,7 @@ func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error)
 		loc[code] = ir.Locale{Name: x.Name, Text: x.Text}
 	}
 	m := ir.Card{ID: mustInt(c.ID), CardType: c.Type, Cost: c.Cost, Traits: unique(c.Traits), Intrinsic: intrinsic, IntrinsicState: states, Restrictions: restrictions, Abilities: abilitiesIR, FusionAbilities: fusion, PlayEffects: play, ActionPlans: plans, Meta: ir.Meta{Pack: c.Meta.Pack, Class: c.Meta.Class, Rarity: c.Meta.Rarity}, Locales: loc, Origin: originIR(c.Decl.Span, sid)}
+	m.Passives = passives
 	m.Counters = counters
 	if c.Stats != nil {
 		m.Stats = &ir.Stats{Attack: c.Stats[0], Life: c.Stats[1]}
@@ -178,7 +183,7 @@ func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error)
 		if err != nil {
 			return ir.Card{}, err
 		}
-		m.Crest = &ir.CrestDefinition{Counters: crest.Counters, Abilities: crest.Abilities, Locales: crest.Locales, Origin: crest.Origin}
+		m.Crest = &ir.CrestDefinition{Counters: crest.Counters, Abilities: crest.Abilities, Passives: crest.Passives, Locales: crest.Locales, Origin: crest.Origin}
 		for _, state := range crest.IntrinsicState {
 			if state.Kind == "countdown" {
 				m.Crest.Countdown = state.Initial
@@ -190,7 +195,7 @@ func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error)
 		if err != nil {
 			return ir.Card{}, err
 		}
-		m.Faith = &ir.CrestDefinition{Counters: faith.Counters, Abilities: faith.Abilities, Locales: faith.Locales, Origin: faith.Origin}
+		m.Faith = &ir.CrestDefinition{Counters: faith.Counters, Abilities: faith.Abilities, Passives: faith.Passives, Locales: faith.Locales, Origin: faith.Origin}
 	}
 	if c.Crystallize != nil {
 		// 结晶形态沿用本体卡面的本地化文本（护符形态的说明由卡表提供）。

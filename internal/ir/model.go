@@ -139,6 +139,8 @@ type Card struct {
 	Stats           *Stats            `json:"stats,omitempty"`
 	Traits          []string          `json:"traits"`
 	Intrinsic       []string          `json:"intrinsic"`
+	// Passives 是纹章/信仰带来的持续性规则改动（见 CrestDefinition.Passives）。
+	Passives []string `json:"passives,omitempty"`
 	IntrinsicState  []IntrinsicState  `json:"intrinsicState"`
 	Restrictions    []Restriction     `json:"restrictions"`
 	Abilities       []Ability         `json:"abilities"`
