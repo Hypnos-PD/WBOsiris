@@ -6,7 +6,14 @@ card 10741120 {
     stats 3/2;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from own.field.followers other;
+            buff target +2/+2;
+        }
+        evolve {
+            choose target from own.hand.followers;
+            buff target +2/+2;
+        }
     }
 
     meta {

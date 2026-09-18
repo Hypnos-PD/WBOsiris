@@ -6,7 +6,13 @@ card 10762210 {
     trait anathema;
 
     effect {
-        unplayable;
+        enhance 4 {
+            damage oppo.field.followers 1;
+        }
+        engage 0 {
+            destroy self;
+            damage oppo.field.followers 1;
+        }
     }
 
     meta {

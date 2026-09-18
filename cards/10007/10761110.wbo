@@ -6,7 +6,15 @@ card 10761110 {
     stats 3/2;
 
     effect {
-        unplayable;
+        rush;
+        fanfare {
+            if count(own.field.amulets) >= 3 {
+                summon 1 card 10761110;
+            }
+        }
+        lastwords {
+            draw 1;
+        }
     }
 
     meta {

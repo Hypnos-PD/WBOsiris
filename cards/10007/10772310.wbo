@@ -6,7 +6,10 @@ card 10772310 {
     trait anathema;
 
     effect {
-        unplayable;
+        buff own.field.followers +1/+0;
+        if own.superevolve_unlocked {
+            buff own.hand.followers +1/+0;
+        }
     }
 
     meta {

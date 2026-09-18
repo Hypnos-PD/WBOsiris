@@ -6,7 +6,15 @@ card 10713110 {
     stats 3/1;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from oppo.field.followers;
+            damage target self.attack;
+        }
+        when own turn ends {
+            if combo >= 3 {
+                draw 1;
+            }
+        }
     }
 
     meta {

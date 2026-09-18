@@ -6,7 +6,16 @@ card 10732310 {
     trait anathema;
 
     effect {
-        unplayable;
+        mode {
+            option 1 {
+                add 4 earthsigil;
+            }
+            option 2 {
+                earthrite 2 {
+                    damage oppo.field.followers 2;
+                }
+            }
+        }
     }
 
     meta {
