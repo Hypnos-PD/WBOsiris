@@ -6,7 +6,11 @@ card 10752310 {
     trait anathema;
 
     effect {
-        unplayable;
+        summon 1 card 90051130;
+        summon 1 card 90051120;
+        summon 1 card 90051110;
+        // 「それらは進化する」：本次召唤的三张一起进化。
+        evolve summoned_all silent;
     }
 
     meta {

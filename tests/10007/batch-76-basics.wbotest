@@ -1,0 +1,218 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "宣扬的龙人爆能强化时召唤两个自己" {
+    seed 76001;
+    state {
+        player own {
+            pp 4/4;
+            hand { follower source = 10741110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source has rush; own.field count card 10741110 == 3; own.pp == 0/4; }
+}
+
+scenario "黑炎的奔流同时打击敌方战场与主战者" {
+    seed 76002;
+    state {
+        player own {
+            pp 7/7;
+            hand { spell source = 10743310; }
+        }
+        player oppo {
+            field {
+                follower weak = 10001110;
+                follower sturdy = 10001120 { stats 2/9; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; weak.zone == graveyard; sturdy.stats == 2/4; oppo.leader.life == 17; }
+}
+
+scenario "讴歌青春召唤三个随从并让它们一起进化" {
+    seed 76003;
+    state {
+        player own {
+            leader 10/20;
+            pp 7/7;
+            // 10613110：自己的随从进化时回复主战者 1 点，用来观测三次进化事件。
+            field { follower teacher = 10613110; }
+            hand { spell source = 10752310; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90051130 == 1;
+        own.field count card 90051120 == 1;
+        own.field count card 90051110 == 1;
+        own.field count card 10613110 == 1;
+        own.leader.life == 13;
+    }
+}
+
+scenario "精灵陷阱师把一张手牌放回牌组并加入两张妖精" {
+    seed 76004;
+    state {
+        player own {
+            pp 1/1;
+            hand {
+                follower source = 10711120;
+                follower fodder = 10001110;
+            }
+        }
+    }
+    action { play source; select fodder; }
+    expect {
+        legal;
+        own.deck count card 10001110 == 1;
+        own.hand count card 90011110 == 2;
+    }
+}
+
+scenario "灵魂调律给两个随从加生命值并抽一张牌" {
+    seed 76005;
+    state {
+        player own {
+            pp 1/1;
+            field {
+                follower first = 10001110;
+                follower second = 10001120;
+            }
+            hand { spell source = 10751310; }
+            deck top { follower next = 10011110; }
+        }
+    }
+    action { play source; select first, second; }
+    expect {
+        legal;
+        first.stats == 2/3;
+        // 10001120 叮当天使自身是 0/2。
+        second.stats == 0/3;
+        own.hand count card 10011110 == 1;
+    }
+}
+
+scenario "乌鸦杂耍师破坏敌方随从并发动亡者召还" {
+    seed 76006;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10752120; }
+        }
+        player oppo {
+            field { follower victim = 10001110; }
+        }
+        player own {
+            destroyed { follower fallen = 10001120; }
+        }
+    }
+    action { play source; select victim; }
+    expect { legal; victim.zone == graveyard; own.field count card 10001120 == 1; }
+}
+
+scenario "担忧缩小的纹章吟唱结束后把恶意扩大加入手牌" {
+    seed 76007;
+    state {
+        player own {
+            leader 10/20;
+            pp 1/1;
+            combo 2;
+            hand { spell source = 10712310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 11; own.crests count card 10712310 == 1; }
+}
+
+scenario "连击不足时忧虑缩小不产生纹章" {
+    seed 76008;
+    state {
+        player own {
+            leader 10/20;
+            pp 1/1;
+            combo 1;
+            hand { spell source = 10712310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 11; own.crests count card 10712310 == 0; }
+}
+
+scenario "无音的包围在协作不足时只加入一张铁甲骑士" {
+    seed 76009;
+    state {
+        player own {
+            pp 1/1;
+            rally 9;
+            hand { spell source = 10722310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90021120 == 1; }
+}
+
+scenario "无音的包围在协作达标时加入两张并赋予突进" {
+    seed 76010;
+    state {
+        player own {
+            pp 1/1;
+            rally 10;
+            hand { spell source = 10722310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90021120 == 2; }
+}
+
+scenario "夜之歌的演唱会分配伤害并在唤灵达标时打击主战者" {
+    seed 76011;
+    state {
+        player own {
+            pp 3/3;
+            shadows 6;
+            hand { spell source = 10753310; }
+        }
+        player oppo {
+            field {
+                follower first = 10001110 { stats 2/9; }
+                follower second = 10001120 { stats 2/9; }
+            }
+        }
+    }
+    action { play source; }
+    // 分配伤害按战场顺序填满当前生命：6 点全部落在第一个随从身上。
+    expect { legal; first.stats == 2/3; second.stats == 2/9; oppo.leader.life == 18; }
+}
+
+scenario "享乐的上级市民舍弃手牌后打击对手全体随从" {
+    seed 76012;
+    state {
+        player own {
+            pp 3/3;
+            hand {
+                follower source = 10703110;
+                follower fodder = 10001110;
+            }
+        }
+        player oppo {
+            field { follower victim = 10001110; }
+        }
+    }
+    action { play source; select fodder; }
+    expect { legal; own.graveyard count card 10001110 == 1; victim.zone == graveyard; }
+}
+
+scenario "悠然的滑手入场与进化时各加入一张古老的创造物" {
+    seed 76013;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10772110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90071140 == 1; }
+}

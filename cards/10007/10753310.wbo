@@ -6,7 +6,10 @@ card 10753310 {
     trait anathema;
 
     effect {
-        unplayable;
+        damage oppo.field.followers 6 distributed;
+        necromancy 6 {
+            damage oppo.leader 2;
+        }
     }
 
     meta {

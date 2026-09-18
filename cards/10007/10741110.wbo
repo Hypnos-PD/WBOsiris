@@ -6,7 +6,10 @@ card 10741110 {
     stats 2/1;
 
     effect {
-        unplayable;
+        rush;
+        enhance 4 {
+            summon 2 card 10741110;
+        }
     }
 
     meta {

@@ -6,7 +6,11 @@ card 10711120 {
     stats 1/1;
 
     effect {
-        unplayable;
+        fanfare {
+            choose target from own.hand;
+            return target to deck;
+            add 2 card 90011110 to hand;
+        }
     }
 
     meta {

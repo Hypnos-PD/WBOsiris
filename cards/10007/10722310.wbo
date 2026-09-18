@@ -6,7 +6,13 @@ card 10722310 {
     trait anathema;
 
     effect {
-        unplayable;
+        if rally >= 10 {
+            add 2 card 90021120 to hand;
+            add rush to added;
+        } else {
+            add 1 card 90021120 to hand;
+            add rush to added;
+        }
     }
 
     meta {

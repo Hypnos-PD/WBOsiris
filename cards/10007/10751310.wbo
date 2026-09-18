@@ -6,7 +6,9 @@ card 10751310 {
     trait anathema;
 
     effect {
-        unplayable;
+        choose targets from own.field.followers count 2;
+        buff targets +0/+1;
+        draw 1;
     }
 
     meta {
