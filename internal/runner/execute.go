@@ -8,15 +8,38 @@ import (
 
 // conditionIn 求值条件；带绑定名字的条件（例如 `opponent damaged`）需要当前帧。
 func (g *game) conditionIn(c ir.Condition, self *instance, bindings frame) bool {
-	if x, ok := c.(ir.IsDamagedCondition); ok {
+	switch x := c.(type) {
+	case ir.IsDamagedCondition:
 		for _, i := range g.boundInstances(bindings[x.Name]) {
 			if i != nil && i.card.CardType == "follower" && i.damageTaken > 0 {
 				return true
 			}
 		}
 		return false
+	case ir.CountCondition:
+		// 计数条件可以引用绑定（例如 `count(own.field.amulets where card target) >= 1`），
+		// 因此必须带上当前帧求值。
+		return compareCount(g.numericValue(&ir.CountExpr{Kind: "count", Source: x.Source}, self, bindings), x.Op, x.Right)
 	}
 	return g.condition(c, self)
+}
+
+func compareCount(n int, op string, right int) bool {
+	switch op {
+	case "eq":
+		return n == right
+	case "ne":
+		return n != right
+	case "lt":
+		return n < right
+	case "le":
+		return n <= right
+	case "gt":
+		return n > right
+	case "ge":
+		return n >= right
+	}
+	return false
 }
 
 func (g *game) condition(c ir.Condition, self *instance) bool {
@@ -65,22 +88,7 @@ func (g *game) condition(c ir.Condition, self *instance) bool {
 		p, _ := g.playerForSide(self, x.Side)
 		return p.maxpp >= 7
 	case ir.CountCondition:
-		n := g.numericValue(&ir.CountExpr{Kind: "count", Source: x.Source}, self, nil)
-		switch x.Op {
-		case "eq":
-			return n == x.Right
-		case "ne":
-			return n != x.Right
-		case "lt":
-			return n < x.Right
-		case "le":
-			return n <= x.Right
-		case "gt":
-			return n > x.Right
-		case "ge":
-			return n >= x.Right
-		}
-		return false
+		return compareCount(g.numericValue(&ir.CountExpr{Kind: "count", Source: x.Source}, self, nil), x.Op, x.Right)
 	case ir.CompareCondition:
 		n := 0
 		if x.Left.Kind == "self_counter" || x.Left.Kind == "scalar" || x.Left.Kind == "self_scalar" {
@@ -373,6 +381,8 @@ func (g *game) matches(i *instance, p ir.Predicate, self *instance, bindings fra
 			return i.attacksUsed > 0
 		case "not_attacked_this_turn":
 			return i.attacksUsed == 0
+		case "was_enhanced":
+			return i.enhancedPlay
 		case "cost_changed":
 			return i.costChanged
 		case "has_card":

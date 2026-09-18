@@ -1,0 +1,67 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "威风的行军获得纹章并在爆能强化时延长吟唱" {
+    seed 67001;
+    state {
+        player own {
+            pp 3/3;
+            hand { spell source = 10622310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.crests count card 10622310 == 1; }
+}
+
+scenario "纹章在通过爆能强化使用卡牌时召唤勇烈的士兵" {
+    seed 67002;
+    state {
+        player own {
+            pp 3/3;
+            crests { crest march = 10622310; }
+            hand { follower source = 10621110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10621110 == 2; source.stats == 3/3; }
+}
+
+scenario "普通费用使用卡牌时纹章不召唤" {
+    seed 67003;
+    state {
+        player own {
+            pp 2/2;
+            crests { crest march = 10622310; }
+            hand { follower source = 10621110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10621110 == 1; }
+}
+
+scenario "天书深渊破坏敌方随从时不加入手牌" {
+    seed 67004;
+    state {
+        player own {
+            pp 1/1;
+            hand { spell source = 90064320; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/9; } } }
+    }
+    action { play source; select enemy; }
+    // 只有"选到自己的护符"才会追加 2 点伤害并把同名卡加入手牌。
+    expect { legal; enemy.zone == graveyard; oppo.leader.life == 20; own.hand count card 90064320 == 0; }
+}
+
+scenario "天书深渊破坏自己的护符时追加两点伤害" {
+    seed 67005;
+    state {
+        player own {
+            pp 1/1;
+            field { amulet relic = 10001210; }
+            hand { spell source = 90064320; }
+        }
+    }
+    action { play source; select relic; }
+    expect { legal; relic.zone == graveyard; oppo.leader.life == 18; own.hand count card 90064320 == 1; }
+}

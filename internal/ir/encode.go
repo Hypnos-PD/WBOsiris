@@ -87,7 +87,7 @@ func (p FieldPredicate) MarshalJSON() ([]byte, error) {
 	object := map[string]any{"kind": p.Kind}
 	switch p.Kind {
 	case "has_spellboost":
-	case "is_damaged", "cost_changed", "attacked_this_turn", "not_attacked_this_turn":
+	case "is_damaged", "cost_changed", "attacked_this_turn", "not_attacked_this_turn", "was_enhanced":
 	case "has_card":
 		object["cardId"] = p.CardID
 	case "same_card":

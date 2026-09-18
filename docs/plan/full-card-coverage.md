@@ -20,7 +20,7 @@
 ## 现状（生成于 `node scripts/card_worklist.mjs`）
 
 ```text
-总计 904 · 已完成 639 · 未实现(骨架) 34 · 未导入 231
+总计 904 · 已完成 641 · 未实现(骨架) 32 · 未导入 231
 卡包      总数  已完成  未实现  未导入
 10000        56      56       0       0
 10001       142     142       0       0
@@ -28,12 +28,12 @@
 10003        77      75       2       0
 10004        76      73       3       0
 10005        76      63      13       0
-10006        76      62      14       0
+10006        76      63      13       0
 10007        77       0       0      77
 10008        78       0       0      78
 10009        76       0       0      76
 90000        93      91       2       0
-未完成卡按文本复杂度：中(41–100字) 255 · 短(≤40字) 139 · 长(>100字) 18 · 白板 1
+未完成卡按文本复杂度：中(41–100字) 254 · 短(≤40字) 138 · 长(>100字) 18 · 白板 1
 ```
 
 ## 工作流
@@ -106,6 +106,8 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-71 | `when own\|oppo follower attacks [leader]`（宣告攻击事件） | `internal/ir/model.go`（`EventTrigger.TargetKind`）、`internal/ir/decode.go`（事件白名单与目标种类校验）、`internal/project/strict_validate.go`/`typed_ir.go`/`validate.go`（事件形状与 `attacker` 绑定）、`internal/runner/runner.go`（事件带上攻击方一侧、绑定名 `attacker`）、`internal/runner/trigger_index.go`（按目标种类过滤）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/attack_event_test.go`（双方、`attacks leader`、筛选与临时增益）；卡片 10474110、10544120 + 8 个场景 |
 | S-73 | `mode random N { … }`（随机模式） | `internal/ir/model.go`（`ModeEffect.Random`）、`internal/ir/decode.go`、`internal/project/validate.go`/`strict_validate.go`/`typed_ir.go`、`internal/runner/session.go`（`pushRandomMode`：随机选 N 个不同选项并按编号入栈）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/random_mode_test.go`（编译保留 `random` 与数量、拒绝 0 与单选项）；卡片 10532310 + 2 个场景 |
 | S-75 | `where not <词条>`（否定筛选） | `internal/ir/model.go`（`NotPredicate`）、`internal/ir/decode.go`（解码、卡牌引用检查）、`internal/project/validate.go`（`negatedWhereTerm`）、`typed_ir.go`（`filterIR`）、`internal/runner/execute.go`（`matches` 取反）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/not_filter_test.go`；卡片 10603210 + 1 个场景 |
+| S-77 | `where enhanced`（本次通过爆能强化打出） | `internal/runner/runner.go`（`instance.enhancedPlay` 在 `applyPlaySetup` 前设置）、`internal/project/validate.go`/`typed_ir.go`（筛选词条）、`internal/ir/decode.go`/`encode.go`（谓词白名单）、`internal/runner/execute.go`（求值）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/enhanced_filter_test.go`；卡片 10622310 + 3 个场景 |
+| S-57 | 归属判断（`count(own.<区域> where card <绑定>)`） | 无需新节点：`same_card` 谓词 + 区域计数；但修好了 `conditionIn` 里 `CountCondition` 丢帧的问题（`internal/runner/execute.go`） | 卡片 90064320 + 2 个场景（敌方随从时不加牌、自己的护符时追加 2 点伤害并加牌） |
 | S-66 | `banish` 输出 `banished` | `internal/project/typed_ir.go`（写入输出）、`validate.go`（登记绑定）、`internal/ir/encode.go`/`decode.go`（形状白名单）、`internal/runner/execute.go`（记录实际消失的实例）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/banish_output_test.go`（输出保留、`count(banished)` 作为分配伤害量）；卡片 10543110 + 2 个场景 |
 | S-61 | `summoned_all`（一次结算的全部召唤） | `internal/runner/bindings.go`（`bindSummoned`）、`internal/runner/execute.go`/`session.go`（所有召唤类效果改为写入累计绑定）、`internal/project/validate.go`（登记 `summoned_all`）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/same_cost_and_summoned_all_test.go`；卡片 10571110 + 3 个场景 |
 
@@ -153,7 +155,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-54 | ~~让指定随从可以攻击两次~~ **已解决**：`set_attack_limit <目标> N` | 已解锁 90034350 宏大的回归（"选择自己的战场上的1个随从，使其获得「1回合可以攻击2次」"） | 原先只接受 `set_attack_limit self N`；IR 与运行时本来就按目标集合处理，因此只放宽了验证形状。 |
 | S-55 | ~~护符的【灵气】~~ **已解决**：护符可以声明 `aura` | 已解锁 90064210 月影指环 | 原先所有固有关键词都要求随从；现在 `aura` 例外（其余关键词仍然只允许随从）。运行时目标保护按战场实例判断，无需改动。 |
 | S-56 | ~~带期限的费用修改~~ **已解决**：`raise\|reduce cost T N until …` | 已解锁 90044310 银冰吐息（"对手的回合结束前，使对手的所有手牌的费用+1"） | 原先只有 `set cost` 接受 `until`；现在加减费同样记录差量并在到期侧还原。 |
-| S-57 | 判断选中的卡牌属于哪一方 | 90064320 天书深渊（"若选择了自己的护符，则对对手的主战者造成2点伤害"） | 谓词里有类型、职业、种族、形态等，但没有"该实例属于能力控制者"。 |
+| S-57 | ~~判断选中的卡牌属于哪一方~~ **已解决**：`count(own.<区域> where card <绑定>) >= 1` | 已解锁 90064320 天书深渊；10663210 崇高的天书同构 | 用"同名 + 己方区域计数"表达归属，无需新的谓词；同时修好条件里的计数会丢掉绑定帧的问题。 |
 | S-58 | ~~手牌中同费用的张数~~ **已解决**：`own\|oppo.hand\|deck has N same cost` | 已解锁 10553310 严酷的奥夜花 | 新增 `SameCostCondition`：按**当前费用**统计区域里出现次数最多的费用是否达到 N。 |
 | S-59 | ~~把卡牌加入牌组~~ **已解决**：`add N card C to deck;`（`add copies of … to deck` 同样可用） | 已解锁 10551310 奥夜花的开战 | 新卡在随机位置插入牌组，不视为抽牌；仍然输出 `added`。 |
 | S-60 | 按牌组随机随从变身并复制 | 10533310 壮美的明越花（"使自己的战场上的所有随从分别变身为自己的牌组中的随机1张随从的复制随从"） | 需要"从牌组随机取一张随从的定义并让每个己方随从变成它的复制"的组合操作。 |
@@ -174,13 +176,55 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-74 | 逐个记住"尚未发动"的模式能力 | 10574110 转动的《命运之轮》·斯洛士（"从以下未发动的能力中随机发动1个能力"） | 需要按选项记录已发动状态并跨回合保存（类似限次记录，但按选项编号）。 |
 | S-75 | ~~否定筛选（"非侵蚀者随从"）~~ **已解决**：`where not <词条>` | 已解锁 10603210 黑暗次元 | 支持 `trait`/`type`/`class`/`form`/`keyword`/`damaged` 六种词条的取反；`not attacked this turn` 仍是专用写法。 |
 | S-76 | 再次发动自身【入场曲】 | 10604110 恐惧的象征·欧米伽奥提普（随机能力之一为"本随从+4/+4。发动本随从的【入场曲】"） | 没有"重新执行本卡牌入场曲"的效果；照抄一段等价文本无法表达可能递归的能力。 |
-| S-77 | "通过【爆能强化】使用卡牌时"事件 | 10622310 威风的行军的纹章（"自己通过【爆能强化】使用卡牌时，召唤1个『勇烈的士兵』"） | 打出事件没有携带"本次是否支付了爆能强化档位"的信息。 |
+| S-77 | ~~"通过【爆能强化】使用卡牌时"事件~~ **已解决**：`where enhanced` | 已解锁 10622310 威风的行军 | 打出事件现在带上"本次支付了爆能强化档位"的标记，筛选词条 `enhanced` 读取它。 |
 | S-51 | 主战者临时"受到的伤害变为 0" | 10444120 世界的伙伴·佐伊（爆能强化 10：主战者直到对手回合结束"受到的1点或以上伤害变为0"） | 主战者关键词只有永久形式；`until ... turn ends` 的期限只作用于随从关键词。 |
 | S-52 | 牌组中发动与【瞬念召唤】 | 10404110 天司长的继承者·圣德芬（"在牌组中发动…【瞬念召唤】本卡牌…被瞬念召唤时获得纹章并返回手牌"） | 需要"在手牌/牌组中监听回合开始""从牌组召唤并选择是否返回手牌"的整套语义。 |
 
 `DrawEffect.Owner` 与执行器（`g.playerForSide(self, e.Owner)`）本来就支持任意一方，缺的只是语法入口，所以这次扩展只动了验证与解析两处，没有改运行时。
 
 ## 批次记录
+
+### 条件范围专项核查（配合批次 67）
+
+发现 90064320 天书深渊的条件范围错误后，做了两类系统排查：
+
+1. **机械筛查**：对全部已实现卡，比较中/英文本的句数并筛出"含条件词且英文句数少于中文"的候选，
+   共 7 张：10262110、90064320、10344110、10544110、10543310、10153110、10474110。
+   - 10262110 弹幕驱魔人、10543310 懒惰的波摇花、10474110 光之法则·龙敖：条件只影响紧随其后的量
+     （"改为发动 2 次" / "追加 2 点"），实现正确。
+   - 10544110 约束的《正义》：日/英文都把"回复 8 点"放在"进化前"分支内，实现正确。
+   - 10344110 侮蔑的继承者：只是【守护】等关键词被英文并进同一句，无条件范围问题。
+   - 90064320 天书深渊：**已按日/英文修正**（"加回手牌"在条件句内）。
+     SWB-RL 的实现把"加回手牌"放在条件外，与卡牌英文文本冲突——按 [权威契约](../authority.md) 以卡牌文本为准，
+     并在 `tests/10006/batch-67-enhanced-and-own-amulet.wbotest` 里固定了两侧行为。
+   - 10153110 蓝蔷薇千金·赛蕾丝：日/中/韩/繁中是「…なら、4回復。これは【バリア】を持つ。」，
+     英文并成一句（"restore 4 instead and give this follower Barrier"）。SWB-RL 的
+     `test_ceres_turn_end_uses_owner_scope_and_super_branch` 明确断言"未超进化时不获得【屏障】"，
+     与英文一致，因此保留现有实现（屏障只在超进化分支内），并把该歧义记录在此。
+     同类结构还有未导入的 10763110 审理的守卫（英文同样并入条件句），届时按同一口径处理。
+2. **权威顺序**：卡牌文本（多语言）+ QA 优先，SWB-RL 只作第二意见。遇到冲突时在场景测试里固定最终行为，
+   并把冲突写进本节，避免以后再翻案。
+
+### 批次 67（S-77 爆能强化打出事件 + S-57 归属判断复核 + 卡包 10006 / 90000）
+
+- **S-77 `where enhanced`**：打出事件新增"本次是否支付了【爆能强化】档位"的标记
+  （`instance.enhancedPlay` 在 `applyPlaySetup` 之前设置），筛选词条 `enhanced` 用它判断，
+  因此"自己通过【爆能强化】使用卡牌时"可以写成
+  `when own card played where enhanced { … }`。
+- **S-57 归属判断不再需要新原语**：`count(own.field.amulets where card target) >= 1`
+  可以判断"选中的卡牌是自己的护符"（`same_card` 谓词 + 区域计数）。
+  顺带修好 `CountCondition` 在 `conditionIn` 里丢掉绑定帧的问题——之前
+  `count(集合 where card <绑定>)` 在条件里恒为 0（`condition` 那条路径传的是 nil 帧）。
+- 完成 2 张：10622310 威风的行军（纹章：通过爆能强化使用卡牌时召唤勇烈的士兵；
+  爆能强化 3 让纹章吟唱 +2）、90064320 天书深渊。
+- **修正 90064320 的条件范围**：日文/英文原文是
+  「自分のアミュレットを選んだなら、相手のリーダーに2ダメージ。『天書の深淵』1枚を自分の手札に加える。」，
+  "把同名卡加入手牌"在条件句**内部**；中文用句号切断后容易被读成无条件。
+  现在只有选到自己的护符时才追加 2 点伤害并加回手牌。
+  **教训**：中文文本的句号不保证条件范围，遇到"若…则…。…"的写法必须核对日文/英文原文。
+- 新增 5 个场景（`tests/10006/batch-67-enhanced-and-own-amulet.wbotest`）；Go 单测
+  `internal/project/enhanced_filter_test.go`。
+- 全量回归：`check` 0 错 0 警；`test` 956 全绿；`go test ./...` 全绿；语料快照更新为 956 个场景。
 
 ### 批次 66（S-75 否定筛选 + 卡包 10006）
 

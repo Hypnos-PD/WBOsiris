@@ -32,6 +32,8 @@ type instance struct {
 	attacksUsed                                                                  int
 	damageTaken                                                                  int
 	engaged, summoningSick                                                       bool
+	// enhancedPlay 记录本实例是通过【爆能强化】打出的（"自己通过爆能强化使用卡牌时"）。
+	enhancedPlay bool
 	evolved, superEvolved                                                        bool
 	departed                                                                     bool
 	suppressAll                                                                  bool
@@ -1049,6 +1051,9 @@ func (g *game) commitPlay(i *instance) []execFrame {
 		if isCost && trigger.Kind == "enhance" && trigger.Cost <= enhanceCost && a.Relation == "replaces" {
 			replacing = true
 		}
+	}
+	if enhanceCost >= 0 {
+		i.enhancedPlay = true
 	}
 	g.applyPlaySetup(i, true)
 	// 一次打出产生的所有效果块（外层效果、入场曲、爆能强化）共享同一个打出帧，

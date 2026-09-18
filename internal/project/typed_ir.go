@@ -725,6 +725,9 @@ func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 		case "damaged":
 			terms = append(terms, ir.FieldPredicate{Kind: "is_damaged"})
 			j++
+		case "enhanced":
+			terms = append(terms, ir.FieldPredicate{Kind: "was_enhanced"})
+			j++
 		case "keyword":
 			terms = append(terms, ir.FieldPredicate{Kind: "has_keyword", Keyword: t[j+1].Value})
 			j += 2

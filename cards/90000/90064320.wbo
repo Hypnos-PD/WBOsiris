@@ -6,7 +6,14 @@ card 90064320 {
     trait encroacher;
 
     effect {
-        unplayable;
+        require target from field;
+        // 日文/英文原文把"加入手牌"放在条件句内：
+        // 「自分のアミュレットを選んだなら、相手のリーダーに2ダメージ。『天書の深淵』1枚を自分の手札に加える。」
+        if count(own.field.amulets where card target) >= 1 {
+            damage oppo.leader 2;
+            add 1 card 90064320 to hand;
+        }
+        destroy target;
     }
 
     meta {

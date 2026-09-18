@@ -1049,6 +1049,8 @@ func parseWhere(t []syntax.Token, i int) (int, bool) {
 			}
 		case "damaged":
 			i++
+		case "enhanced":
+			i++
 		case "attacked":
 			if i+2 < len(t) && t[i+1].Value == "this" && t[i+2].Value == "turn" {
 				i += 3

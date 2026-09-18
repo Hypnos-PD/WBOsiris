@@ -5,7 +5,58 @@ card 10622310 {
     cost 1;
 
     effect {
-        unplayable;
+        gain own crest 10622310;
+        enhance 3 {
+            raise countdown own.crests 2;
+        }
+    }
+
+    crest {
+        countdown 2;
+
+        when own card played where enhanced {
+            summon 1 card 10621110;
+        }
+
+        locale chs {
+            name "纹章：威风的行军";
+            text """
+【<color=Keyword>吟唱</color>_2】
+自己通过【<color=Keyword>爆能强化</color>】使用卡牌时，召唤1个『<color=Keyword>勇烈的士兵</color>』。
+""";
+        }
+
+        locale eng {
+            name "Crest: March of Valor";
+            text """
+<b><color=Keyword>Countdown</color> (2)</b>
+Whenever you play an <b><color=Keyword>Enhance</color>d</b> card, summon a <b><i><color=Keyword>Fearless Soldier</color></i></b>.
+""";
+        }
+
+        locale jpn {
+            name "クレスト：<rub=\"いふう\">威風</rub>の<rub=\"こうしん\">行進</rub>";
+            text """
+【<color=Keyword>カウントダウン</color>_2】
+自分が【<color=Keyword>エンハンス</color>】でカードを使用したとき、『<color=Keyword>勇烈の兵士</color>』1枚を自分の場に出す。
+""";
+        }
+
+        locale kor {
+            name "크레스트: 위풍의 행진";
+            text """
+[<color=Keyword>카운트다운</color> 2]
+내가 [<color=Keyword>증강</color>]으로 카드를 사용했을 때, 「<color=Keyword>용렬한 병사</color>」 1장을 내 전장에 소환.
+""";
+        }
+
+        locale cht {
+            name "紋章：威風的行軍";
+            text """
+【<color=Keyword>倒數</color>_2】
+自己透過【<color=Keyword>爆能強化</color>】使用卡片時，召喚1張『<color=Keyword>勇烈的士兵</color>』。
+""";
+        }
     }
 
     meta {
