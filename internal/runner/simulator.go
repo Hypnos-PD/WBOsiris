@@ -293,6 +293,9 @@ func (s *Session) LegalActionsFor(actor string) []LegalAction {
 	}
 	for _, source := range player.hand {
 		add("play", source)
+		// 以替代费用打出的模式（激奏/结晶）同样要出现在合法动作里。
+		add("accelerate", source)
+		add("crystallize", source)
 	}
 	for _, source := range player.field {
 		add("engage", source)
