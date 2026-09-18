@@ -59,11 +59,18 @@
 会按窗口比例挑 `aspectLayouts` 里最接近的一套。选中的插图作为整个内容区的背景，
 可以像游戏主界面那样随时更换（大厅的「更换主界面」，选择记在本机）。
 
-立绘来自规则服务：内置的 `hi_1001` 随前端分发；`wbo serve` 另外扫描
-`--illustration-root`（默认 `../WBArts/data`）里的 `home-illustration/*`，
-通过 `GET /api/illustrations` 列出、`/illustration-assets/…` 只读地提供素材
-（含 `home-illustration-picts` 的缩略图）。spine 运行时在加载阶段会把 logo 与转圈
-画进 canvas，因此前端在加载完成前不显示 canvas，避免那个加载圈。
+立绘有两个来源，前端优先用打包进来的那份：
+
+1. **打包素材**：`node scripts/bundle_illustrations.mjs` 把 WBArts 的主界面插图
+   （默认 `home` 类型 40 张，约 675 MB）**逐字节**复制进 `web/public/assets/home/`，
+   并生成 `index.json` 清单。素材不压缩、不转码，图集页名保持原始 PNG。
+2. **规则服务**：内置的 `hi_1001` 永远可用；`wbo serve` 另外扫描
+   `--illustration-root`（默认 `../WBArts/data`）里的 `home-illustration/*`，
+   通过 `GET /api/illustrations` 列出、`/illustration-assets/…` 只读地提供素材
+   （含 `home-illustration-picts` 的缩略图）。
+
+spine 运行时在加载阶段会把 logo 与转圈画进 canvas，因此前端在加载完成前不显示
+canvas，避免那个加载圈。
 
 大厅其余部分：`公开房间`列表（可加入的房间给「去加入」，进行中的房间给「观战」）、
 快速加入（房间 ID + 邀请码）、当前牌组与当前房间的状态卡。大厅与其它页面共用左侧导航，

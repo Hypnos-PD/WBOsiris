@@ -1,8 +1,13 @@
 {
   "id": "hi_1001",
   "name": "拉卜赛因",
-  "skeletonScale": 0.01,
-  "prefabScale": 0.434,
+  "type": "home",
+  "source": "bundled",
+  "skel": "/assets/home/hi_1001/spine_hi_1001.skel",
+  "atlas": "/assets/home/hi_1001/spine_hi_1001.atlas",
+  "texture": "/assets/home/hi_1001/spine_hi_1001.png",
+  "background": "/assets/home/hi_1001/bg_hi_1001.png",
+  "thumbnail": "/assets/home/hi_1001/thumb.png",
   "idleAnimation": "idle",
   "tapAnimations": [
     "tap_01",
@@ -17,6 +22,8 @@
     0.25
   ],
   "defaultMix": 0.2,
+  "skeletonScale": 0.01,
+  "prefabScale": 0.434,
   "aspectLayouts": {
     "16:9": {
       "x": 0,
@@ -42,9 +49,5 @@
       "scale_x": 1.18,
       "scale_y": 1.18
     }
-  },
-  "skel": "/assets/home/hi_1001.skel",
-  "atlas": "/assets/home/hi_1001.atlas",
-  "background": "/assets/home/hi_1001-bg.webp",
-  "source": "WBArts data/home-illustration/hi_1001"
+  }
 }

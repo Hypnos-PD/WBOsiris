@@ -853,7 +853,9 @@ export function App() {
               <div className="illustration-grid">
                 {illustrations.map((item) => (
                   <button key={item.id} className={`illustration-card ${item.id === illustration?.id ? "active" : ""}`} onClick={() => chooseIllustration(item.id)}>
-                    {item.thumbnail ? <img src={`${API_BASE}${item.thumbnail}`} alt="" loading="lazy"/> : <span className="illustration-thumb-fallback">{item.name.slice(0, 2)}</span>}
+                    {item.thumbnail
+                      ? <img src={item.thumbnail.startsWith("/assets/") ? item.thumbnail : `${API_BASE}${item.thumbnail}`} alt="" loading="lazy"/>
+                      : <span className="illustration-thumb-fallback">{item.name.slice(0, 2)}</span>}
                     <strong>{item.name}</strong>
                     <small>{item.id}{item.source === "bundled" ? " · 内置" : ""}</small>
                   </button>

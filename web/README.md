@@ -43,10 +43,23 @@ go run ./cmd/wbo serve --source-root . --listen :23215
 （大厅「更换主界面」）：`GET /api/illustrations` 列出内置那张与 WBArts 素材库里的全部插图，
 选择记在 `localStorage.wbo-illustration`。
 
-素材在 `public/assets/home/`：`hi_1001.json`（从 WBArts 的
-index + config 提炼的参数）、`hi_1001.skel`/`.atlas`/`.webp`（立绘，图集转 WebP 并改写过
-图集页名）与 `hi_1001-bg.webp`（背景，1600²）——它是规则服务不可用时的兜底；
-正常运行时立绘与缩略图由服务端从 WBArts 数据目录直接提供。
+素材在 `public/assets/home/`：每张插图一个目录，里面是**逐字节复制的原图**——
+`spine_hi_XXXX.skel` / `.atlas` / `.png`（图集）与 `bg_hi_XXXX.png`（背景），
+外加 `thumb.png` 缩略图，**不做任何压缩或转码**（图集页名保持原始 PNG）。
+仓库里只随包分发内置默认那张 `hi_1001/`（约 12.5 MB）与它的参数文件 `hi_1001.json`；
+
+要用 WBA 的全部主界面（40 张，约 675 MB）在打包机上跑一次：
+
+```bash
+node scripts/bundle_illustrations.mjs --data ../WBArts/data --out web/public/assets/home
+node scripts/bundle_illustrations.mjs --dry-run      # 只看规模，不写文件
+```
+
+脚本会原样复制 skel/atlas/图集/背景/缩略图并生成 `assets/home/index.json` 清单
+（清单里带每张图的 idle/tap、混合时间、`skeletonScale`、`prefabScale`、`aspectLayouts`）。
+前端优先读这份清单，读不到才请求规则服务的 `/api/illustrations`；两者都会扫描
+WBArts 数据目录以外的兜底路径也一样（`hi_1001.json`）。素材目录默认不进 git
+（见 `.gitignore`），因此克隆仓库后没有跑过脚本时，列表会退回服务端提供的插图。
 spine 运行时在加载阶段会把 logo 与转圈画进 canvas（不是 DOM），所以加载完成前
 `canvas` 保持 `visibility: hidden`，加载好再淡入，避免出现加载圈。
 

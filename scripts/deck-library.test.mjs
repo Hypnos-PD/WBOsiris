@@ -57,17 +57,38 @@ test('stale tabs and legacy migration reject newer stored data', () => {
   assert.throws(() => saveLibrary(legacy, old, old.library), /其他页面/);
 });
 
-test('deck export roundtrip keeps drafts and gives imports independent identity and cards', () => {
+test('version 2 文件只保存卡组码，卡牌明细由规则服务解码', () => {
   const original = newDeck('测试牌组', ['10001110', '10001110', '99999999']);
-  const imported = importDeck(exportDeck(original));
+  const code = '1.1.c9hM.c9hM.c99A';
+  const file = JSON.parse(exportDeck(original, code));
+  assert.equal(file.format, 'wbo-deck');
+  assert.equal(file.version, 2);
+  assert.equal(file.code, code);
+  assert.equal(file.environment, 'rotation');
+  assert.equal(file.cards, undefined);
+  const imported = importDeck(JSON.stringify(file));
   assert.notEqual(imported.id, original.id);
   assert.equal(imported.name, original.name);
-  assert.deepEqual(imported.cards, original.cards);
-  imported.cards.pop();
-  assert.equal(original.cards.length, 3);
+  assert.equal(imported.code, code);
+  assert.equal(imported.format, 'rotation');
+  // 卡牌明细由调用方（客户端）拿卡组码去 /api/deckcode 解出来。
+  assert.deepEqual(imported.cards, []);
   const library = addDeck(emptyLibrary(), original);
   assert.equal(library.activeId, original.id);
   assert.deepEqual(parseLibrary(JSON.stringify(library)), library);
+});
+
+test('version 1 文件（直接列卡牌）仍然可以导入', () => {
+  const legacy = JSON.stringify({ format: 'wbo-deck', version: 1, name: '旧草稿', cards: [10001110, 10001110, 99999999] });
+  const imported = importDeck(legacy);
+  assert.equal(imported.name, '旧草稿');
+  assert.deepEqual(imported.cards, ['10001110', '10001110', '99999999']);
+  assert.equal(imported.code, undefined);
+});
+
+test('version 2 缺少卡组码时拒绝导入', () => {
+  assert.throws(() => importDeck(JSON.stringify({ format: 'wbo-deck', version: 2, name: 'x', code: '  ' })), /卡组码/);
+  assert.throws(() => importDeck(JSON.stringify({ format: 'wbo-deck', version: 3, name: 'x' })), /版本/);
 });
 
 test('imports reject invalid identifiers, versions, names and oversized input', () => {

@@ -57,8 +57,9 @@ func (s *Server) illustrationsHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Server) scanIllustrations() []illustrationEntry {
 	items := []illustrationEntry{{
 		ID: "hi_1001", Name: "拉卜赛因", Type: "home", Source: "bundled",
-		Skel: "/assets/home/hi_1001.skel", Atlas: "/assets/home/hi_1001.atlas",
-		Background: "/assets/home/hi_1001-bg.webp",
+		// 内置素材是逐字节复制的原图（不压缩）：skel/atlas/图集 PNG + 背景 PNG。
+		Skel: "/assets/home/hi_1001/spine_hi_1001.skel", Atlas: "/assets/home/hi_1001/spine_hi_1001.atlas",
+		Background: "/assets/home/hi_1001/bg_hi_1001.png",
 		// 内置版的参数与 WBArts 的 hi_1001 一致，直接内联，省一次请求。
 		IdleAnimation: "idle",
 		TapAnimations: []string{"tap_01", "tap_02", "tap_03", "tap_04"},
