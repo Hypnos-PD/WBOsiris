@@ -1502,7 +1502,7 @@ func decodePredicate(data []byte) (Predicate, error) {
 			return nil, fmt.Errorf("invalid predicate form")
 		}
 		return FieldPredicate{Kind: v.Kind, Form: v.Form}, nil
-	case "is_damaged", "cost_changed":
+	case "is_damaged", "cost_changed", "attacked_this_turn", "not_attacked_this_turn":
 		var v struct {
 			Kind string `json:"kind"`
 		}

@@ -1,0 +1,113 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "流浪的家庭教师在自己的回合结束时按攻击力强化手牌" {
+    seed 50001;
+    state {
+        player own {
+            field { follower source = 10431120; }
+            hand { follower held = 10032120; }
+        }
+    }
+    action { end_turn; }
+    // 攻击力 1，因此手牌发动 1 次魔力增幅：10 费变 9 费。
+    expect { legal; held.cost == 9; }
+}
+
+scenario "流浪的家庭教师进化时在回合结束前无法攻击" {
+    seed 50002;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            field { follower source = 10431120; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; source has cannot_attack; source.stats == 3/3; }
+}
+
+scenario "水之法则的入场曲让所有手牌发动一次魔力增幅" {
+    seed 50003;
+    state {
+        player own {
+            pp 3/3;
+            hand {
+                follower source = 10434110;
+                follower held = 10032120;
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; held.cost == 9; }
+}
+
+scenario "水之法则在魔力增幅时加一加一" {
+    seed 50004;
+    state {
+        player own {
+            pp 2/2;
+            hand {
+                follower boost = 10132110;
+                follower held = 10434110;
+            }
+        }
+    }
+    action { play boost; }
+    expect { legal; held.stats == 1/2; }
+}
+
+scenario "水之法则超进化模式一使其他随从获得屏障" {
+    seed 50005;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field {
+                follower source = 10434110;
+                follower ally = 10001110;
+            }
+        }
+    }
+    action { superevolve source; mode 1; }
+    expect { legal; ally has barrier; source lacks barrier; }
+}
+
+scenario "水之法则超进化模式二按攻击力分配伤害" {
+    seed 50006;
+    state {
+        turn own 7;
+        player own {
+            sep 1;
+            field { follower source = 10434110 { stats 0/1; } }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/6; } } }
+    }
+    action { superevolve source; mode 2; }
+    // 超进化后攻击力为 3，全部落在唯一的敌方随从身上。
+    expect { legal; source.stats == 3/4; enemy.stats == 2/3; }
+}
+
+scenario "土之法则在超进化已解禁的回合结束时让未攻击的进化前随从进化" {
+    seed 50007;
+    state {
+        turn own 7;
+        player own {
+            field { follower source = 10464110; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; source has ward; source has cannot_attack; source.evolved == true; }
+}
+
+scenario "未解禁超进化时土之法则不进化随从" {
+    seed 50008;
+    state {
+        turn own 6;
+        player own {
+            field { follower source = 10464110; }
+        }
+    }
+    action { end_turn; }
+    expect { legal; source.evolved == false; }
+}

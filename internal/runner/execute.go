@@ -350,6 +350,10 @@ func (g *game) matches(i *instance, p ir.Predicate, self *instance, bindings fra
 			return false
 		case "is_damaged":
 			return i.card.CardType == "follower" && i.damageTaken > 0
+		case "attacked_this_turn":
+			return i.attacksUsed > 0
+		case "not_attacked_this_turn":
+			return i.attacksUsed == 0
 		case "cost_changed":
 			return i.costChanged
 		case "has_card":

@@ -230,6 +230,8 @@ filter_conjunction  = filter_term , {"and" , filter_term} ;
 filter_term         = "card" , (card_id | binding_name)
                     | "spellboost"
                     | "damaged"
+                    | "attacked" , "this" , "turn"
+                    | "not" , "attacked" , "this" , "turn"
                     | "cost" , "changed"
                     | "base" , "." , ("life" | "cost" | "attack") , comparison_operator , (integer | player_scalar)
                     | ("skybound_art" | "super_skybound_art")

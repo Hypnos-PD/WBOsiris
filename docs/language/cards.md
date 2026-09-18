@@ -208,6 +208,10 @@ require target from own.field.followers;
 筛选器里的 `where cost changed` 匹配"费用被效果改过"的卡牌（加费、减费与设置费用都算），
 配合 `when own card played` 表达"自己使用费用发生变化的随从时"。
 
+`where attacked this turn` 与 `where not attacked this turn` 按实例本回合已经进行的攻击
+筛选（回合开始时清零），用于"本回合中没有进行过攻击的进化前随从"这类文本。
+`not` 目前只在这个词组里可用，其它否定写法仍会被检查器拒绝。
+
 `own.deck has no duplicates` / `oppo.deck has duplicates` 判断牌组里是否有重复的卡牌定义；
 `banish duplicates in own.deck;` 让牌组中的重复卡牌消失，只保留每种的第一张。
 

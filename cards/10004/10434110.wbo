@@ -6,7 +6,32 @@ card 10434110 {
     stats 0/1;
 
     effect {
-        unplayable;
+        spellboost {
+            buff self +1/+1;
+        }
+        fanfare {
+            spellboost own.hand 1;
+        }
+        superevolve {
+            mode {
+                option 1 {
+                    label chs "使自己的战场上的其他所有随从获得【屏障】。";
+                    label eng "Give all other allied followers Barrier.";
+                    label jpn "自分の場の他のフォロワーすべては【障壁】を持つ。";
+                    label kor "내 전장의 다른 추종자 모두는 [방벽]을 갖는다.";
+                    label cht "使自己戰場上其他全部的從者卡獲得【屏障】。";
+                    add barrier to own.field.followers other;
+                }
+                option 2 {
+                    label chs "对对手的战场上的所有随从分配X点伤害。X为本随从的攻击力。";
+                    label eng "Distribute X damage among enemy followers. X is this follower's attack.";
+                    label jpn "相手の場のフォロワーすべてにXダメージを分配。Xはこれの攻撃力。";
+                    label kor "상대방 전장의 추종자 모두에게 X 피해를 분배. X는 이 추종자의 공격력.";
+                    label cht "對敵方戰場上的全部從者卡分配X點傷害。X為這張卡片的攻擊力。";
+                    damage oppo.field.followers self.attack distributed;
+                }
+            }
+        }
     }
 
     meta {

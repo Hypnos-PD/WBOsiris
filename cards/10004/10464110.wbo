@@ -6,7 +6,14 @@ card 10464110 {
     stats 5/5;
 
     effect {
-        unplayable;
+        ward;
+        cannot_attack;
+        when own turn ends {
+            if own.superevolve_unlocked {
+                random ally from own.field.followers where form unevolved and not attacked this turn;
+                evolve ally silent;
+            }
+        }
     }
 
     meta {

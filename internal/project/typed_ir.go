@@ -659,6 +659,12 @@ func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
 		case "spellboost":
 			terms = append(terms, ir.FieldPredicate{Kind: "has_spellboost"})
 			j++
+		case "attacked":
+			terms = append(terms, ir.FieldPredicate{Kind: "attacked_this_turn"})
+			j += 3
+		case "not":
+			terms = append(terms, ir.FieldPredicate{Kind: "not_attacked_this_turn"})
+			j += 4
 		case "damaged":
 			terms = append(terms, ir.FieldPredicate{Kind: "is_damaged"})
 			j++
