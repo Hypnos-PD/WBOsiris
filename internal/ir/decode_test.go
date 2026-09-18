@@ -83,7 +83,7 @@ func TestDecodeAllCards(t *testing.T) {
 		t.Fatal(err)
 	}
 	// 语料快照：全卡覆盖工作推进时要一起更新（见 docs/plan/full-card-coverage.md）。
-	if len(pack.Cards) != 603 {
+	if len(pack.Cards) != 679 {
 		t.Fatalf("cards=%d", len(pack.Cards))
 	}
 }

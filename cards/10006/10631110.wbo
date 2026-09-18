@@ -1,0 +1,54 @@
+wbo 0.1.0;
+
+card 10631110 {
+    type follower;
+    cost 1;
+    stats 1/1;
+    trait encroacher;
+
+    effect {
+        rush;
+    }
+
+    meta {
+        pack 10006;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "天晶魔手";
+        text """
+【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Crystalspawn";
+        text """
+<b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんしょう\">天晶</rub>の<rub=\"ましゅ\">魔手</rub>";
+        text """
+【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "천정의 마수";
+        text """
+[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "天晶的魔手";
+        text """
+【<color=Keyword>突進</color>】
+""";
+    }
+
+}

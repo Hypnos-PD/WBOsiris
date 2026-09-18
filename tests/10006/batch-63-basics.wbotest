@@ -1,0 +1,390 @@
+wbotest 0.1.0;
+use cards "../../cards";
+
+scenario "咆哮狼人天晶魔手与崇敬的涂描者携带关键词" {
+    seed 63001;
+    state {
+        player own {
+            field {
+                follower wolf = 10612120;
+                follower hand = 10631110;
+                follower painter = 10662110;
+            }
+        }
+    }
+    action { end_turn; }
+    expect {
+        legal;
+        wolf has storm;
+        hand has rush;
+        painter has rush;
+        painter has bane;
+    }
+}
+
+scenario "天书授予抽取两张护符" {
+    seed 63002;
+    state {
+        player own {
+            pp 3/3;
+            deck top {
+                amulet first = 10001210;
+                follower second = 10001110;
+                amulet third = 10022210;
+            }
+            hand { spell source = 10661310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10001210 == 1; own.hand count card 10022210 == 1; own.hand count card 10001110 == 0; }
+}
+
+scenario "天晶授予召唤两个天晶魔手" {
+    seed 63003;
+    state {
+        player own {
+            pp 2/2;
+            hand { spell source = 10631310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10631110 == 2; }
+}
+
+scenario "低劣的玩具抽三张并带守护" {
+    seed 63004;
+    state {
+        player own {
+            pp 6/6;
+            deck top {
+                follower first = 10001110;
+                follower second = 10001110;
+                follower third = 10001110;
+            }
+            hand { follower source = 10671110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 10001110 == 3; source has ward; }
+}
+
+scenario "连击三时伊甸之猴自行进化" {
+    seed 63005;
+    state {
+        player own {
+            pp 3/3;
+            combo 3;
+            hand { follower source = 10611120; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.evolved == true; source.stats == 5/5; }
+}
+
+scenario "浑浊之民的谢幕曲打击对手主战者" {
+    seed 63006;
+    state {
+        player own { field { follower source = 10601110; } }
+        player oppo { field { follower big = 10001110 { stats 5/5; } } }
+    }
+    action { attack source into big; }
+    expect { legal; source.zone == graveyard; oppo.leader.life == 19; }
+}
+
+scenario "慈颜的拥趸把新绿的妖精加入手牌" {
+    seed 63007;
+    state {
+        player own {
+            pp 2/2;
+            hand { follower source = 10612110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.hand count card 90011120 == 1; }
+}
+
+scenario "爆能强化三点让勇烈的士兵加一加一" {
+    seed 63008;
+    state {
+        player own {
+            pp 3/3;
+            hand { follower source = 10621110; }
+        }
+    }
+    action { play source; }
+    expect { legal; source.stats == 3/3; source has rush; }
+}
+
+scenario "逃避幽灵者的谢幕曲把怨灵加入手牌" {
+    seed 63009;
+    state {
+        player own { field { follower source = 10651120; } }
+        player oppo { field { follower big = 10001110 { stats 5/5; } } }
+    }
+    action { attack source into big; }
+    expect { legal; own.hand count card 90051130 == 1; }
+}
+
+scenario "爆能强化八点让渴欲的唤灵师发动亡者召还九" {
+    seed 63010;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10652110; }
+            destroyed { follower dead = 10401110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10401110 == 1; source has ward; }
+}
+
+scenario "渴望的恶魔的谢幕曲抽牌并自伤" {
+    seed 63011;
+    state {
+        player own {
+            field { follower source = 10651110; }
+            deck top { follower drew = 10001110; }
+        }
+        player oppo { field { follower big = 10001110 { stats 5/5; } } }
+    }
+    action { attack source into big; }
+    expect { legal; own.hand count card 10001110 == 1; own.leader.life == 19; }
+}
+
+scenario "天眼授予抽两张并在唤灵四点时回复" {
+    seed 63012;
+    state {
+        player own {
+            leader 10/20;
+            pp 3/3;
+            shadows 4;
+            deck top { follower first = 10001110; follower second = 10001110; }
+            hand { spell source = 10651310; }
+        }
+    }
+    action { play source; }
+    // 打出的法术本身也进入墓场，因此唤灵支付后还剩 1 点墓场资源。
+    expect { legal; own.hand count card 10001110 == 2; own.shadows == 1; own.leader.life == 12; }
+}
+
+scenario "拙劣的人偶召唤复制体并让两者进化" {
+    seed 63013;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10672110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10672110 == 2; source.evolved == true; }
+}
+
+scenario "爆能强化七点让天剑授予召唤的三个士兵加二加二" {
+    seed 63014;
+    state {
+        player own {
+            pp 7/7;
+            hand { spell source = 10621310; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.field count card 10621110 == 3; all own.field where card 10621110 have rush; }
+}
+
+scenario "匍匐的异类破坏指定的敌方随从" {
+    seed 63015;
+    state {
+        player own {
+            pp 5/5;
+            hand { follower source = 10601120; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/9; } } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.zone == graveyard; source has bane; }
+}
+
+scenario "猫人水手破坏对手所有一生命随从" {
+    seed 63016;
+    state {
+        player own {
+            pp 8/8;
+            hand { follower source = 10622120; }
+        }
+        player oppo {
+            field {
+                follower weak = 10001110 { stats 2/1; }
+                follower strong = 10001110 { stats 2/6; }
+            }
+        }
+    }
+    action { play source; }
+    expect { legal; weak.zone == graveyard; strong.zone == field; source has storm; }
+}
+
+scenario "果断的剑圣舍弃一张手牌并获得屏障" {
+    seed 63017;
+    state {
+        player own {
+            pp 4/4;
+            hand {
+                follower source = 10642110;
+                follower fuel = 10001110;
+            }
+        }
+    }
+    action { play source; select fuel; }
+    expect { legal; fuel.zone == graveyard; source has barrier; source has rush; }
+}
+
+scenario "天枪授予打击敌方全体并召唤两个妖精" {
+    seed 63018;
+    state {
+        player own {
+            pp 7/7;
+            hand { spell source = 10611310; }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/9; } } }
+    }
+    action { play source; }
+    expect { legal; enemy.stats == 2/5; own.field count card 90011120 == 2; }
+}
+
+scenario "正常的侵蚀破坏自己的天晶魔手并抽两张" {
+    seed 63019;
+    state {
+        player own {
+            pp 1/1;
+            field { follower golem = 10631110; }
+            deck top { follower first = 10001110; follower second = 10001110; }
+            hand { spell source = 10632310; }
+        }
+    }
+    action { play source; select golem; }
+    expect { legal; golem.zone == graveyard; own.hand count card 10001110 == 2; }
+}
+
+scenario "最强的诱惑让敌方随从消失并召唤复制体" {
+    seed 63020;
+    state {
+        player own {
+            pp 7/7;
+            hand { spell source = 10652310; }
+        }
+        player oppo { field { follower enemy = 10622120; } }
+    }
+    action { play source; select enemy; }
+    expect { legal; enemy.zone == banished; own.field count card 10622120 == 1; }
+}
+
+scenario "崇奉的懦者进入战场时回复主战者" {
+    seed 63021;
+    state {
+        player own {
+            leader 10/20;
+            pp 5/5;
+            hand { follower source = 10661110; }
+        }
+    }
+    action { play source; }
+    expect { legal; own.leader.life == 12; source has bane; source has ward; }
+}
+
+scenario "聪明的创造者召唤毁灭创造物α并给予毁灭与守护" {
+    seed 63022;
+    state {
+        player own {
+            pp 6/6;
+            hand { follower source = 10671120; }
+        }
+    }
+    action { play source; }
+    expect {
+        legal;
+        own.field count card 90073110 == 1;
+        all own.field where card 90073110 have bane;
+        all own.field where card 90073110 have ward;
+    }
+}
+
+scenario "决断的龙人舍弃手牌并在谢幕时抽两张" {
+    seed 63023;
+    state {
+        player own {
+            pp 3/3;
+            deck top { follower first = 10001110; follower second = 10001110; }
+            hand {
+                follower source = 10641110;
+                follower fuel = 10001110;
+            }
+        }
+        player oppo { field { follower big = 10001110 { stats 5/5; } } }
+    }
+    action { play source; select fuel; }
+    expect { legal; fuel.zone == graveyard; }
+}
+
+scenario "懒惰女仆让手牌返回牌组并按职业抽牌" {
+    seed 63024;
+    state {
+        player own {
+            pp 4/4;
+            deck top {
+                follower royal = 10021110;
+                follower royal2 = 10021120;
+                follower other = 10012110;
+            }
+            hand {
+                follower source = 10621120;
+                follower fuel = 10001110;
+            }
+        }
+    }
+    action { play source; select fuel; }
+    expect { legal; own.hand count card 10021110 == 1; own.hand count card 10021120 == 1; own.hand count card 10012110 == 0; }
+}
+
+scenario "飞马骑手的入场曲与进化时都召唤神圣猎鹰" {
+    seed 63025;
+    state {
+        turn own 5;
+        player own {
+            ep 1;
+            pp 6/6;
+            field { follower source = 10662120; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; own.field count card 90061110 == 1; }
+}
+
+scenario "赤流舍弃手牌并破坏敌方随从" {
+    seed 63026;
+    state {
+        player own {
+            pp 1/1;
+            hand {
+                spell source = 10642310;
+                follower fuel = 10001110;
+            }
+        }
+        player oppo { field { follower enemy = 10001110 { stats 2/9; } } }
+    }
+    action { play source; select fuel; select enemy; }
+    expect { legal; fuel.zone == graveyard; enemy.zone == graveyard; }
+}
+
+scenario "向女王献花在自己随从进化时减费" {
+    seed 63027;
+    state {
+        turn own 5;
+        player own {
+            pp 5/5;
+            ep 1;
+            field { follower source = 10001110; }
+            hand { spell held = 10612310; }
+        }
+    }
+    action { evolve source; }
+    expect { legal; held.cost == 4; }
+}

@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10601110 {
+    type follower;
+    cost 2;
+    stats 2/1;
+
+    effect {
+        lastwords {
+            damage oppo.leader 1;
+        }
+    }
+
+    meta {
+        pack 10006;
+        class neutral;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "浑浊之民";
+        text """
+【<color=Keyword>谢幕曲</color>】对对手的主战者造成1点伤害。
+""";
+    }
+
+    locale eng {
+        name "Muddled Onlooker";
+        text """
+<b><color=Keyword>Last Words</color></b>: Deal 1 damage to the enemy leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"こんだく\">混濁</rub>せし<rub=\"たみ\">民</rub>";
+        text """
+【<color=Keyword>ラストワード</color>】相手のリーダーに1ダメージ。
+""";
+    }
+
+    locale kor {
+        name "혼탁에 물든 시민";
+        text """
+[<color=Keyword>유언</color>] 상대방 리더에게 1 피해.
+""";
+    }
+
+    locale cht {
+        name "混濁之民";
+        text """
+【<color=Keyword>謝幕曲</color>】給予敵方的主戰者1點傷害。
+""";
+    }
+
+}

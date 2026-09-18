@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10672310 {
+    type spell;
+    cost 6;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class portalcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "平庸的制图";
+        text """
+召唤1个『<color=Keyword>愚劣的兵器</color>』和1个『<color=Keyword>低劣的玩具</color>』和1个『<color=Keyword>拙劣的人偶</color>』，使其+0/+1。
+""";
+    }
+
+    locale eng {
+        name "Myriad Designs";
+        text """
+Summon a <b><i><color=Keyword>Ludicrous Ordnance</color></i></b>, <b><i><color=Keyword>Shoddy Plaything</color></i></b>, and <b><i><color=Keyword>Substandard Puppet</color></i></b> and give them +0/+1.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ぼんびゃく\">凡百</rub>の<rub=\"せいず\">製図</rub>";
+        text """
+『<color=Keyword>愚劣の兵器</color>』1枚と『<color=Keyword>低劣の玩具</color>』1枚と『<color=Keyword>拙劣の人形</color>』1枚を自分の場に出す。それは+0/+1する。
+""";
+    }
+
+    locale kor {
+        name "범재의 도면";
+        text """
+<color=Keyword>우열의 병기</color> 1장, <color=Keyword>저열의 완구</color> 1장, <color=Keyword>졸렬의 인형</color> 1장을 내 전장에 소환. 그 추종자는 +0/+1.
+""";
+    }
+
+    locale cht {
+        name "平庸的製圖";
+        text """
+召喚1張『<color=Keyword>愚劣的兵器</color>』與1張『<color=Keyword>粗劣的玩具</color>』與1張『<color=Keyword>拙劣的人偶</color>』到自己的戰場上。使其+0/+1。
+""";
+    }
+
+}

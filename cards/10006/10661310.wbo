@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10661310 {
+    type spell;
+    cost 3;
+    trait encroacher;
+
+    effect {
+        draw 2 from deck where type amulet;
+    }
+
+    meta {
+        pack 10006;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "天书授予";
+        text """
+抽取2张护符。
+""";
+    }
+
+    locale eng {
+        name "Advent of the Eld Tome";
+        text """
+Draw 2 amulets.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんしょじゅよ\">天書授与</rub>";
+        text """
+自分のデッキからアミュレット2枚を引く。
+""";
+    }
+
+    locale kor {
+        name "천서수여";
+        text """
+내 덱에서 마법진 2장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "授予天書";
+        text """
+由自己的牌堆中抽取2張護符卡。
+""";
+    }
+
+}

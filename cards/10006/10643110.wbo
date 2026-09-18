@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10643110 {
+    type follower;
+    cost 6;
+    stats 6/9;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class dragoncraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "隔断的龙斗士";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的1张手牌，舍弃该手牌。对对手的战场上的随机1个随从造成6点伤害。
+<hr>【<color=Keyword>守护</color>】
+【<color=Keyword>屏障</color>】
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Impeding Pugilist";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a card in your hand and discard it. Deal 6 damage to a random enemy follower.
+<hr><b><color=Keyword>Ward</color></b>
+<b><color=Keyword>Barrier</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しゃだん\">遮断</rub>の<rub=\"りゅうとうし\">竜闘士</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札1枚を選ぶ。それを捨てる。相手の場のフォロワーからランダム1枚に6ダメージ。
+<hr>【<color=Keyword>守護</color>】
+【<color=Keyword>バリア</color>】
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "차단의 용투사";
+        text """
+[<color=Keyword>출격</color>] 내 패에서 1장을 선택한다. 그 카드를 버린다. 상대방 전장의 추종자 중 무작위로 1장에게 6 피해.
+<hr>[<color=Keyword>수호</color>]
+[<color=Keyword>배리어</color>]
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "阻斷的龍鬥士";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己手牌中的卡片。將其捨棄。隨機給予1張敵方戰場上的從者卡6點傷害。
+<hr>【<color=Keyword>守護</color>】
+【<color=Keyword>障壁</color>】
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

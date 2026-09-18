@@ -1,0 +1,52 @@
+wbo 0.1.0;
+
+card 10602210 {
+    type amulet;
+    cost 3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class neutral;
+        rarity silver;
+    }
+
+    locale chs {
+        name "被侵略的世界";
+        text """
+【<color=Keyword>启动</color>】选择自己的1张手牌，使其变身为对手的牌组中的随机1张卡牌的复制卡牌。
+""";
+    }
+
+    locale eng {
+        name "Encroached World";
+        text """
+<b><color=Keyword>Engage</color></b>: Select a card in your hand and transform it into an exact copy of a random card in your opponent's deck.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"しんりゃく\">侵略</rub>されし<rub=\"せかい\">世界</rub>";
+        text """
+【<color=Keyword>アクト</color>】自分の手札1枚を選ぶ。それは相手のデッキからランダム1枚のコピーに変身する。
+""";
+    }
+
+    locale kor {
+        name "침략당한 세계";
+        text """
+[<color=Keyword>활성화</color>] 내 패에서 1장을 선택한다. 그 카드는 상대방 덱에서 무작위로 1장의 복사본으로 변신한다.
+""";
+    }
+
+    locale cht {
+        name "蒙受侵略的世界";
+        text """
+【<color=Keyword>策動</color>】指定1張自己手牌中的卡片。使其變身為「由敵方牌堆中複製的隨機1張卡片」。
+""";
+    }
+
+}

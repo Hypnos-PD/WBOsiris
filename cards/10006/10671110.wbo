@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10671110 {
+    type follower;
+    cost 6;
+    stats 1/3;
+
+    effect {
+        ward;
+        fanfare {
+            draw 3;
+        }
+    }
+
+    meta {
+        pack 10006;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "低劣的玩具";
+        text """
+【<color=Keyword>入场曲</color>】抽取3张卡牌。
+<hr>【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Shoddy Plaything";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Draw 3 cards.
+<hr><b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ていれつ\">低劣</rub>の<rub=\"がんぐ\">玩具</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分のデッキから3枚を引く。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "저열의 완구";
+        text """
+[<color=Keyword>출격</color>] 내 덱에서 3장을 뽑는다.
+<hr>[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "粗劣的玩具";
+        text """
+【<color=Keyword>入場曲</color>】由自己的牌堆中抽取3張卡片。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+}

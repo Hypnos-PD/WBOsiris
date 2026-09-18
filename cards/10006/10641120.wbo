@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10641120 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "熟透的海鱼";
+        text """
+【<color=Keyword>爆能强化</color>_6】召唤2个『<color=Keyword>熟透的海鱼</color>』。
+<hr>【<color=Keyword>谢幕曲</color>】回复自己的主战者1点生命值。
+""";
+    }
+
+    locale eng {
+        name "Fruitfish";
+        text """
+<b><color=Keyword>Enhance</color> (6)</b>: Summon 2 copies of <b><i><color=Keyword>Fruitfish</color></i></b>.
+<hr><b><color=Keyword>Last Words</color></b>: Restore 1 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"かんじゅく\">完熟</rub>の<rub=\"かいぎょ\">海魚</rub>";
+        text """
+【<color=Keyword>エンハンス</color>_6】『<color=Keyword>完熟の海魚</color>』2枚を自分の場に出す。
+<hr>【<color=Keyword>ラストワード</color>】自分のリーダーを1回復。
+""";
+    }
+
+    locale kor {
+        name "완숙 해수어";
+        text """
+[<color=Keyword>증강</color> 6] <color=Keyword>완숙 해수어</color> 2장을 내 전장에 소환.
+<hr>[<color=Keyword>유언</color>] 내 리더를 1 회복.
+""";
+    }
+
+    locale cht {
+        name "熟成的海魚";
+        text """
+【<color=Keyword>爆能強化</color>_6】召喚2張『<color=Keyword>熟成的海魚</color>』到自己的戰場上。
+<hr>【<color=Keyword>謝幕曲</color>】回復自己的主戰者1點生命值。
+""";
+    }
+
+}

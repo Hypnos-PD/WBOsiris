@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10671310 {
+    type spell;
+    cost 2;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class portalcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "天斧授予";
+        text """
+选择对手的战场上的1个随从，对其造成4点伤害。若自己的战场上有原始费用为5或以上的随从，则抽取1张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Advent of the Eld Axe";
+        text """
+Select an enemy follower on the field and deal it 4 damage. If there's an allied follower on the field with a base cost of 5 or more, draw a card.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんぷじゅよ\">天斧授与</rub>";
+        text """
+相手の場のフォロワー1枚を選ぶ。それに4ダメージ。自分の場に元のコスト5以上のフォロワーがあるなら、自分のデッキから1枚を引く。
+""";
+    }
+
+    locale kor {
+        name "천부수여";
+        text """
+상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 4 피해. 내 전장에 원래 비용이 5 이상인 추종자가 있다면, 내 덱에서 1장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "授予天斧";
+        text """
+指定1張敵方戰場上的從者卡。給予其4點傷害。如果自己戰場上有原始消費為5以上的從者卡，則會由自己的牌堆中抽取1張卡片。
+""";
+    }
+
+}

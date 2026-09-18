@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10664110 {
+    type follower;
+    cost 4;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "崇高的憎恶·康蒂玛";
+        text """
+【<color=Keyword>入场曲</color>】召唤随机2种与本次对战中被破坏的「原始费用为2或以下的拥有【<color=Keyword>谢幕曲</color>】的自己的护符」同名的护符各1张。
+<hr><sev>【<color=Keyword>超进化时</color>】选择战场上的1张其他卡牌，破坏该卡牌。若选择了自己的护符，则对对手的战场上的所有随从造成3点伤害。</sev>
+""";
+    }
+
+    locale eng {
+        name "Kandima, Sublime Hatred";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a copy each of 2 random differently named allied amulets destroyed this match with <b><color=Keyword>Last Words</color></b> and a base cost of 2 or less.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Select another card on the field and destroy it. If you selected an allied amulet, deal 3 damage to all enemy followers.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"すうこう\">崇高</rub>の<rub=\"ぞうお\">憎悪</rub>・カンディマ";
+        text """
+【<color=Keyword>ファンファーレ</color>】このバトル中に破壊された自分の「元のコスト2以下の、【<color=Keyword>ラストワード</color>】を持つアミュレット」からランダム2種類と同名のカード1枚ずつを自分の場に出す。
+<hr><sev>【<color=Keyword>超進化時</color>】場の他のカード1枚を選ぶ。それを破壊。自分のアミュレットを選んだなら、相手の場のフォロワーすべてに3ダメージ。</sev>
+""";
+    }
+
+    locale kor {
+        name "숭고의 증오 칸디마";
+        text """
+[<color=Keyword>출격</color>] 이번 대전에서 파괴된 원래 비용이 2 이하이며 [<color=Keyword>유언</color>]을 가진 내 마법진 중 무작위로 2종류와 동명의 마법진 1장씩을 내 전장에 소환.
+<hr><sev>[<color=Keyword>초진화시</color>] 전장에서 다른 카드 1장을 선택한다. 그 카드를 파괴. 내 마법진을 선택했다면, 상대방 전장의 추종자 모두에게 3 피해.</sev>
+""";
+    }
+
+    locale cht {
+        name "崇高的憎惡‧坎蒂瑪";
+        text """
+【<color=Keyword>入場曲</color>】隨機召喚2種與「本次對戰中自己已被破壞且原始消費為2以下，擁有【<color=Keyword>謝幕曲</color>】的護符卡」同名的卡片各1張到自己的戰場上。
+<hr><sev>【<color=Keyword>超進化時</color>】指定1張戰場上的其他卡片。將其破壞。如果指定的是自己的護符卡，則會給予敵方戰場上全部的從者卡3點傷害。</sev>
+""";
+    }
+
+}

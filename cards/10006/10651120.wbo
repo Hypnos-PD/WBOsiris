@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10651120 {
+    type follower;
+    cost 3;
+    stats 3/2;
+
+    effect {
+        rush;
+        lastwords {
+            add 1 card 90051130 to hand;
+        }
+    }
+
+    meta {
+        pack 10006;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "逃避幽灵者";
+        text """
+【<color=Keyword>突进</color>】
+【<color=Keyword>谢幕曲</color>】将1张『<color=Keyword>怨灵</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Ghost Dodger";
+        text """
+<b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Last Words</color></b>: Add a <b><i><color=Keyword>Ghost</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "ゴーストエスケーパー";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>ラストワード</color>】『<color=Keyword>ゴースト</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "고스트 이스케이퍼";
+        text """
+[<color=Keyword>돌진</color>]
+[<color=Keyword>유언</color>] <color=Keyword>유령</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "避鬼逃亡者";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>謝幕曲</color>】增加1張『<color=Keyword>怨靈</color>』到自己的手牌中。
+""";
+    }
+
+}

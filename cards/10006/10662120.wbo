@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10662120 {
+    type follower;
+    cost 6;
+    stats 5/5;
+
+    effect {
+        fanfare {
+            summon 1 card 90061110;
+        }
+        evolve {
+            summon 1 card 90061110;
+        }
+    }
+
+    meta {
+        pack 10006;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "飞马骑手";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>神圣猎鹰</color>』。
+<hr><ev>【<color=Keyword>进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</ev>
+""";
+    }
+
+    locale eng {
+        name "Pegasus Rider";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Holy Falcon</color></i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</ev>
+""";
+    }
+
+    locale jpn {
+        name "ペガサスの<rub=\"の\">乗</rub>り<rub=\"て\">手</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>ホーリーファルコン</color>』1枚を自分の場に出す。
+<hr><ev>【<color=Keyword>進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</ev>
+""";
+    }
+
+    locale kor {
+        name "페가수스 라이더";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>신성한 매</color> 1장을 내 전장에 소환.
+<hr><ev>[<color=Keyword>진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</ev>
+""";
+    }
+
+    locale cht {
+        name "飛馬騎手";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>神聖獵鷹</color>』到自己的戰場上。
+<hr><ev>【<color=Keyword>進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</ev>
+""";
+    }
+
+}

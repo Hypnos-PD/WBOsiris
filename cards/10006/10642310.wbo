@@ -1,0 +1,55 @@
+wbo 0.1.0;
+
+card 10642310 {
+    type spell;
+    cost 1;
+
+    effect {
+        require target from own.hand;
+        require victim from oppo.field.followers;
+        discard target;
+        destroy victim;
+    }
+
+    meta {
+        pack 10006;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "赤流";
+        text """
+选择自己的1张手牌，舍弃该手牌。选择对手的战场上的1个随从，破坏该随从。
+""";
+    }
+
+    locale eng {
+        name "Spilling Red";
+        text """
+Select a card in your hand and discard it. Select an enemy follower on the field and destroy it.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あかいろなが\">赤色流</rub>し";
+        text """
+自分の手札1枚を選ぶ。それを捨てる。相手の場のフォロワー1枚を選ぶ。それを破壊。
+""";
+    }
+
+    locale kor {
+        name "흐르는 붉은빛";
+        text """
+내 패에서 1장을 선택한다. 그 카드를 버린다. 상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴.
+""";
+    }
+
+    locale cht {
+        name "赤色奔流";
+        text """
+指定1張自己手牌中的卡片。將其捨棄。指定1張敵方戰場上的從者卡。將其破壞。
+""";
+    }
+
+}

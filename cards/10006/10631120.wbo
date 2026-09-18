@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10631120 {
+    type follower;
+    cost 6;
+    stats 2/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "空想的图书管理员";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>商队猛犸象</color>』。
+<hr><sev>【<color=Keyword>超进化时</color>】使自己的战场上的其他所有随从获得【<color=Keyword>突进</color>】。</sev>
+""";
+    }
+
+    locale eng {
+        name "Daydream Librarian";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Caravan Mammoth</color></i></b>.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Give all other allied followers on the field <b><color=Keyword>Rush</color></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"くうそう\">空想</rub>の<rub=\"ししょ\">司書</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>キャラバンマンモス</color>』1枚を自分の場に出す。
+<hr><sev>【<color=Keyword>超進化時</color>】自分の場の他のフォロワーすべては【<color=Keyword>突進</color>】を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "공상의 사서";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>캐러밴 맘모스</color> 1장을 내 전장에 소환.
+<hr><sev>[<color=Keyword>초진화시</color>] 내 전장의 다른 추종자 모두는 [<color=Keyword>돌진</color>]을 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "空想的圖書管理員";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>商隊猛瑪象</color>』到自己的戰場上。
+<hr><sev>【<color=Keyword>超進化時</color>】使自己戰場上全部的其他從者卡獲得【<color=Keyword>突進</color>】。</sev>
+""";
+    }
+
+}

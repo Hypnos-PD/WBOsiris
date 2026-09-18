@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10653310 {
+    type spell;
+    cost 3;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class abysscraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "枯渴的天眼";
+        text """
+【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）回复自己1点进化点。</ridx>
+<ridx=1>（2）对对手的战场上的所有随从造成2点伤害。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Depletive Eld Sight";
+        text """
+Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Recover 1 evolution point.</ridx>
+<ridx=1>2. Deal 2 damage to all enemy followers.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"こかつ\">枯渇</rub>の<rub=\"てんがん\">天眼</rub>";
+        text """
+【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）自分のEPを1回復。</ridx>
+<ridx=1>（2）相手の場のフォロワーすべてに2ダメージ。</ridx>
+""";
+    }
+
+    locale kor {
+        name "고갈의 천안";
+        text """
+[<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 내 EP를 1 회복.</ridx>
+<ridx=1>(2) 상대방 전장의 추종자 모두에게 2 피해.</ridx>
+""";
+    }
+
+    locale cht {
+        name "枯渴的天眼";
+        text """
+指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）回復自己的EP 1點。</ridx>
+<ridx=1>（2）給予敵方戰場上全部的從者卡2點傷害。</ridx>
+""";
+    }
+
+}

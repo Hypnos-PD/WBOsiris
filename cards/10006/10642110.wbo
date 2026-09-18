@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10642110 {
+    type follower;
+    cost 4;
+    stats 4/5;
+
+    effect {
+        rush;
+        barrier;
+        fanfare {
+            require target from own.hand;
+            discard target;
+        }
+    }
+
+    meta {
+        pack 10006;
+        class dragoncraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "果断的剑圣";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的1张手牌，舍弃该手牌。
+<hr>【<color=Keyword>突进</color>】
+【<color=Keyword>屏障</color>】
+""";
+    }
+
+    locale eng {
+        name "Decisive Swordmaster";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a card in your hand and discard it.
+<hr><b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Barrier</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"そくだん\">即断</rub>の<rub=\"けんせい\">剣聖</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札1枚を選ぶ。それを捨てる。
+<hr>【<color=Keyword>突進</color>】
+【<color=Keyword>バリア</color>】
+""";
+    }
+
+    locale kor {
+        name "즉단의 검성";
+        text """
+[<color=Keyword>출격</color>] 내 패에서 1장을 선택한다. 그 카드를 버린다.
+<hr>[<color=Keyword>돌진</color>]
+[<color=Keyword>배리어</color>]
+""";
+    }
+
+    locale cht {
+        name "瞬斷的劍聖";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己手牌中的卡片。將其捨棄。
+<hr>【<color=Keyword>突進</color>】
+【<color=Keyword>障壁</color>】
+""";
+    }
+
+}

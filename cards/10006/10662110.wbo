@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10662110 {
+    type follower;
+    cost 4;
+    stats 5/3;
+
+    effect {
+        rush;
+        bane;
+    }
+
+    meta {
+        pack 10006;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "崇敬的涂描者";
+        text """
+【<color=Keyword>突进</color>】
+【<color=Keyword>毁灭</color>】
+""";
+    }
+
+    locale eng {
+        name "Venerating Dyer";
+        text """
+<b><color=Keyword>Rush</color></b>
+<b><color=Keyword>Bane</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"すうけい\">崇敬</rub>の<rub=\"とふしゃ\">塗布者</rub>";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>必殺</color>】
+""";
+    }
+
+    locale kor {
+        name "숭경의 도포자";
+        text """
+[<color=Keyword>돌진</color>]
+[<color=Keyword>필살</color>]
+""";
+    }
+
+    locale cht {
+        name "崇敬的塗抹者";
+        text """
+【<color=Keyword>突進</color>】
+【<color=Keyword>必殺</color>】
+""";
+    }
+
+}

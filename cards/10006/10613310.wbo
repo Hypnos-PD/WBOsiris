@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10613310 {
+    type spell;
+    cost 3;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class forestcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "慈爱的天枪";
+        text """
+【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）破坏对手的战场上的随机1个攻击力最大的随从。</ridx>
+<ridx=1>（2）召唤1个『<color=Keyword>新绿的妖精</color>』。</ridx>
+""";
+    }
+
+    locale eng {
+        name "Nurturing Eld Lance";
+        text """
+Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Destroy a random enemy follower with the highest attack.</ridx>
+<ridx=1>2. Summon a <b><i><color=Keyword>Springbloom Fairy</color></i></b>.</ridx>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"じあい\">慈愛</rub>の<rub=\"てんそう\">天槍</rub>";
+        text """
+【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）相手の場の攻撃力最大のフォロワーからランダム1枚を破壊。</ridx>
+<ridx=1>（2）『<color=Keyword>新緑のフェアリー</color>』1枚を自分の場に出す。</ridx>
+""";
+    }
+
+    locale kor {
+        name "자애의 천창";
+        text """
+[<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) 공격력이 가장 높은 상대방 전장의 추종자 중 무작위로 1장을 파괴.</ridx>
+<ridx=1>(2) <color=Keyword>신록의 요정</color> 1장을 내 전장에 소환.</ridx>
+""";
+    }
+
+    locale cht {
+        name "慈愛的天槍";
+        text """
+指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）隨機破壞1張敵方戰場上攻擊力最高的從者卡。</ridx>
+<ridx=1>（2）召喚1張『<color=Keyword>新綠的妖精</color>』到自己的戰場上。</ridx>
+""";
+    }
+
+}

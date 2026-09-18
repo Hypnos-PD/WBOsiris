@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10633110 {
+    type follower;
+    cost 4;
+    stats 3/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class runecraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "魔醉的教师";
+        text """
+【<color=Keyword>入场曲</color>】召唤2个『<color=Keyword>天晶魔手</color>』。
+<hr><ev>【<color=Keyword>进化时</color>】使自己的战场上的所有『<color=Keyword>天晶魔手</color>』+1/+0。</ev>
+""";
+    }
+
+    locale eng {
+        name "Spellbound Professor";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon 2 copies of <b><i><color=Keyword>Crystalspawn</color></i></b>.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Give all allied copies of <b><i><color=Keyword>Crystalspawn</color></i></b> on the field +1/+0.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ますい\">魔酔</rub>の<rub=\"きょうし\">教師</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>天晶の魔手</color>』2枚を自分の場に出す。
+<hr><ev>【<color=Keyword>進化時</color>】自分の場の『<color=Keyword>天晶の魔手</color>』すべては+1/+0する。</ev>
+""";
+    }
+
+    locale kor {
+        name "마혹의 교사";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>천정의 마수</color> 2장을 내 전장에 소환.
+<hr><ev>[<color=Keyword>진화시</color>] 내 전장의 <color=Keyword>천정의 마수</color> 모두는 +1/+0.</ev>
+""";
+    }
+
+    locale cht {
+        name "魔意的教師";
+        text """
+【<color=Keyword>入場曲</color>】召喚2張『<color=Keyword>天晶的魔手</color>』到自己的戰場上。
+<hr><ev>【<color=Keyword>進化時</color>】使自己戰場上全部的『<color=Keyword>天晶的魔手</color>』+1/+0。</ev>
+""";
+    }
+
+}

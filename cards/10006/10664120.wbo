@@ -1,0 +1,64 @@
+wbo 0.1.0;
+
+card 10664120 {
+    type follower;
+    cost 9;
+    stats 9/9;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class havencraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "古旧天书·莲妥丝";
+        text """
+【<color=Keyword>入场曲</color>】选择战场上的3张其他卡牌，破坏这些卡牌。
+<hr>【<color=Keyword>守护</color>】
+自己的回合结束时，信仰值-10，将1张『<color=Keyword>天书深渊</color>』加入手牌。
+""";
+    }
+
+    locale eng {
+        name "Lyanthoth, Eld Tome";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select 3 other cards on the field and destroy them.
+<hr><b><color=Keyword>Ward</color></b>
+At the end of your turn, reduce your faith's value by 10 to add a <b><i><color=Keyword>Depths of the Eld Tome</color></i></b> to your hand.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ふる\">旧</rub>き<rub=\"てんしょ\">天書</rub>・リアントース";
+        text """
+【<color=Keyword>ファンファーレ</color>】場の他のカード3枚を選ぶ。それを破壊。
+<hr>【<color=Keyword>守護</color>】
+自分のターン終了時、信仰値を-10して、『<color=Keyword>天書の深淵</color>』1枚を自分の手札に加える。
+""";
+    }
+
+    locale kor {
+        name "옛 천서 리안토스";
+        text """
+[<color=Keyword>출격</color>] 전장에서 다른 카드 3장을 선택한다. 그 카드를 파괴.
+<hr>[<color=Keyword>수호</color>]
+내 턴 종료시, 신앙 수치를 -10 하고 <color=Keyword>천서의 심연</color> 1장을 내 패에 넣는다.
+""";
+    }
+
+    locale cht {
+        name "古老天書‧莉安托絲";
+        text """
+【<color=Keyword>入場曲</color>】指定3張戰場上的其他卡片。將其破壞。
+<hr>【<color=Keyword>守護</color>】
+自己的回合結束時，使信仰值-10，並增加1張『<color=Keyword>天書的深淵</color>』到自己的手牌中。
+""";
+    }
+
+}

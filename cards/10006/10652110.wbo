@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10652110 {
+    type follower;
+    cost 3;
+    stats 3/3;
+
+    effect {
+        ward;
+        enhance 8 {
+            reanimate 9;
+        }
+    }
+
+    meta {
+        pack 10006;
+        class abysscraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "渴欲的唤灵师";
+        text """
+【<color=Keyword>爆能强化</color>_8】发动【<color=Keyword>亡者召还</color>_9】。
+<hr>【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Yearnful Necromancer";
+        text """
+<b><color=Keyword>Enhance</color> (8)</b>: <b><color=Keyword>Reanimate</color> (9)</b>.
+<hr><b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"かつよく\">渇欲</rub>のネクロマンサー";
+        text """
+【<color=Keyword>エンハンス</color>_8】【<color=Keyword>リアニメイト</color>_9】を行う。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "갈욕의 네크로맨서";
+        text """
+[<color=Keyword>증강</color> 8] [<color=Keyword>소생</color> 9]를 발동.
+<hr>[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "渴欲的死靈法師";
+        text """
+【<color=Keyword>爆能強化</color>_8】發動【<color=Keyword>亡者召還</color>_9】。
+<hr>【<color=Keyword>守護</color>】
+""";
+    }
+
+}

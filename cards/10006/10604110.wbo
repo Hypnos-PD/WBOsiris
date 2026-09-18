@@ -1,0 +1,79 @@
+wbo 0.1.0;
+
+card 10604110 {
+    type follower;
+    cost 9;
+    stats 4/4;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class neutral;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "恐惧的象征·欧米伽奥提普";
+        text """
+【<color=Keyword>入场曲</color>】从以下能力中随机发动2个能力。
+<ridx=0>（1）破坏对手的战场上的随机1个随从。</ridx>
+<ridx=1>（2）对对手的主战者造成2点伤害。</ridx>
+<ridx=2>（3）回复自己2点能量点。</ridx>
+<ridx=3>（4）本随从+4/+4。发动本随从的【<color=Keyword>入场曲</color>】。</ridx>
+<hr><sev>【<color=Keyword>超进化时</color>】发动与【<color=Keyword>入场曲</color>】相同的能力。</sev>
+""";
+    }
+
+    locale eng {
+        name "Omegotep, the Dreaded One";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Activate 2 random abilities from the following.
+<ridx=0>1. Destroy a random enemy follower.</ridx>
+<ridx=1>2. Deal 2 damage to the enemy leader.</ridx>
+<ridx=2>3. Recover 2 play points.</ridx>
+<ridx=3>4. Give this follower +4/+4 and activate its <b><color=Keyword>Fanfare</color></b> ability.</ridx>
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Replicate the effects of this card's <b><color=Keyword>Fanfare</color></b> ability.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"いふ\">畏怖</rub>の<rub=\"しょうちょう\">象徴</rub>・オメガオテプ";
+        text """
+【<color=Keyword>ファンファーレ</color>】下記の能力からランダム2つの能力が働く。
+<ridx=0>（1）相手の場のフォロワーからランダム1枚を破壊。</ridx>
+<ridx=1>（2）相手のリーダーに2ダメージ。</ridx>
+<ridx=2>（3）自分のPPを2回復。</ridx>
+<ridx=3>（4）これは+4/+4する。これの【<color=Keyword>ファンファーレ</color>】を働かせる。</ridx>
+<hr><sev>【<color=Keyword>超進化時</color>】【<color=Keyword>ファンファーレ</color>】と同じ能力が働く。</sev>
+""";
+    }
+
+    locale kor {
+        name "공포의 상징 오메가오텝";
+        text """
+[<color=Keyword>출격</color>] 아래 능력 중 무작위로 2개를 발동.
+<ridx=0>(1) 상대방 전장의 추종자 중 무작위로 1장을 파괴.</ridx>
+<ridx=1>(2) 상대방 리더에게 2 피해.</ridx>
+<ridx=2>(3) 내 PP를 2 회복.</ridx>
+<ridx=3>(4) 이 추종자는 +4/+4. 이 추종자의 [<color=Keyword>출격</color>] 능력을 발동.</ridx>
+<hr><sev>[<color=Keyword>초진화시</color>] [<color=Keyword>출격</color>]과 같은 능력을 발동.</sev>
+""";
+    }
+
+    locale cht {
+        name "畏怖的象徵‧奧美加歐特普";
+        text """
+【<color=Keyword>入場曲</color>】由下列能力中隨機發動2個能力。
+<ridx=0>（1）隨機破壞1張敵方戰場上的從者卡。</ridx>
+<ridx=1>（2）給予敵方的主戰者2點傷害。</ridx>
+<ridx=2>（3）回復自己的PP 2點。</ridx>
+<ridx=3>（4）使這張卡片+4/+4。使這張卡片的【<color=Keyword>入場曲</color>】發動。</ridx>
+<hr><sev>【<color=Keyword>超進化時</color>】發動與【<color=Keyword>入場曲</color>】相同的能力。</sev>
+""";
+    }
+
+}

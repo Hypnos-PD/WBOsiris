@@ -1,0 +1,53 @@
+wbo 0.1.0;
+
+card 10631310 {
+    type spell;
+    cost 2;
+    trait encroacher;
+
+    effect {
+        summon 2 card 10631110;
+    }
+
+    meta {
+        pack 10006;
+        class runecraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "天晶授予";
+        text """
+召唤2个『<color=Keyword>天晶魔手</color>』。
+""";
+    }
+
+    locale eng {
+        name "Advent of the Eld Crystals";
+        text """
+Summon 2 copies of <b><i><color=Keyword>Crystalspawn</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんしょうじゅよ\">天晶授与</rub>";
+        text """
+『<color=Keyword>天晶の魔手</color>』2枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "천정수여";
+        text """
+<color=Keyword>천정의 마수</color> 2장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "授予天晶";
+        text """
+召喚2張『<color=Keyword>天晶的魔手</color>』到自己的戰場上。
+""";
+    }
+
+}

@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10621110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        rush;
+        enhance 3 {
+            buff self +1/+1;
+        }
+    }
+
+    meta {
+        pack 10006;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "勇烈的士兵";
+        text """
+【<color=Keyword>爆能强化</color>_3】本随从+1/+1。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Fearless Soldier";
+        text """
+<b><color=Keyword>Enhance</color> (3)</b>: Give this follower +1/+1.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ゆうれつ\">勇烈</rub>の<rub=\"へいし\">兵士</rub>";
+        text """
+【<color=Keyword>エンハンス</color>_3】これは+1/+1する。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "용렬의 병사";
+        text """
+[<color=Keyword>증강</color> 3] 이 추종자는 +1/+1.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "勇烈的士兵";
+        text """
+【<color=Keyword>爆能強化</color>_3】使這張卡片+1/+1。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

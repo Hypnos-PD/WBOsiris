@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10674120 {
+    type follower;
+    cost 2;
+    stats 2/1;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class portalcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "古旧天斧·尤泽塔";
+        text """
+【<color=Keyword>入场曲</color>】若自己的战场上有原始费用为5或以上的随从，则将1张『<color=Keyword>天斧深渊</color>』加入手牌。
+<hr>【<color=Keyword>突进</color>】
+""";
+    }
+
+    locale eng {
+        name "Yog-Zentha, Eld Axe";
+        text """
+<b><color=Keyword>Fanfare</color></b>: If there's an allied follower on the field with a base cost of 5 or more, add a <b><i><color=Keyword>Depths of the Eld Axe</color></i></b> to your hand.
+<hr><b><color=Keyword>Rush</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ふる\">旧</rub>き<rub=\"てんぷ\">天斧</rub>・ヨグゼンタ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の場に元のコスト5以上のフォロワーがあるなら、『<color=Keyword>天斧の深淵</color>』1枚を自分の手札に加える。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+    locale kor {
+        name "옛 천부 요그젠타";
+        text """
+[<color=Keyword>출격</color>] 내 전장에 원래 비용이 5 이상인 추종자가 있다면, <color=Keyword>천부의 심연</color> 1장을 내 패에 넣는다.
+<hr>[<color=Keyword>돌진</color>]
+""";
+    }
+
+    locale cht {
+        name "古老天斧‧尤格傑特";
+        text """
+【<color=Keyword>入場曲</color>】如果自己戰場上有原始消費為5以上的從者卡，則會增加1張『<color=Keyword>天斧的深淵</color>』到自己的手牌中。
+<hr>【<color=Keyword>突進</color>】
+""";
+    }
+
+}

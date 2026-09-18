@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10614120 {
+    type follower;
+    cost 1;
+    stats 1/1;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "古旧天枪·萨莎妮德";
+        text """
+【<color=Keyword>入场曲</color>】信仰值-10，将1张『<color=Keyword>天枪深渊</color>』加入手牌。使自己的信仰获得「自己的随从进化时，对对手的主战者造成1点伤害」。
+<hr>【<color=Keyword>虹吸</color>】
+""";
+    }
+
+    locale eng {
+        name "Sathanid, Eld Lance";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Reduce your faith's value by 10 to add a <b><i><color=Keyword>Depths of the Eld Lance</color></i></b> to your hand and give your faith \"Whenever an allied follower evolves, deal 1 damage to the enemy leader.\"
+<hr><b><color=Keyword>Drain</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ふる\">旧</rub>き<rub=\"てんそう\">天槍</rub>・ササニド";
+        text """
+【<color=Keyword>ファンファーレ</color>】信仰値を-10して、『<color=Keyword>天槍の深淵</color>』1枚を自分の手札に加える。自分の信仰は「自分のフォロワーが進化したとき、相手のリーダーに1ダメージ。」を持つ。
+<hr>【<color=Keyword>ドレイン</color>】
+""";
+    }
+
+    locale kor {
+        name "옛 천창 사사니드";
+        text """
+[<color=Keyword>출격</color>] 신앙 수치를 -10 하고 <color=Keyword>천창의 심연</color> 1장을 내 패에 넣는다. 내 신앙은 「내 추종자가 진화했을 때, 상대방 리더에게 1 피해」를 갖는다.
+<hr>[<color=Keyword>흡혈</color>]
+""";
+    }
+
+    locale cht {
+        name "古老天槍‧賽瑟妮特";
+        text """
+【<color=Keyword>入場曲</color>】使信仰值-10，並增加1張『<color=Keyword>天槍的深淵</color>』到自己的手牌中。使自己的信仰獲得「當自己的從者卡進化時，給予敵方的主戰者1點傷害」。
+<hr>【<color=Keyword>吸血</color>】
+""";
+    }
+
+}

@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10622110 {
+    type follower;
+    cost 3;
+    stats 3/3;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "忠烈的近卫兵";
+        text """
+【<color=Keyword>爆能强化</color>_4】本随从+2/+2。
+<hr>【<color=Keyword>守护</color>】
+<hr><ev>【<color=Keyword>进化时</color>】选择对手的战场上的1个随从，对其造成3点伤害。</ev>
+""";
+    }
+
+    locale eng {
+        name "Loyal Guard";
+        text """
+<b><color=Keyword>Enhance</color> (4)</b>: Give this follower +2/+2.
+<hr><b><color=Keyword>Ward</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Select an enemy follower on the field and deal it 3 damage.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ちゅうれつ\">忠烈</rub>の<rub=\"このえへい\">近衛兵</rub>";
+        text """
+【<color=Keyword>エンハンス</color>_4】これは+2/+2する。
+<hr>【<color=Keyword>守護</color>】
+<hr><ev>【<color=Keyword>進化時</color>】相手の場のフォロワー1枚を選ぶ。それに3ダメージ。</ev>
+""";
+    }
+
+    locale kor {
+        name "충렬의 근위병";
+        text """
+[<color=Keyword>증강</color> 4] 이 추종자는 +2/+2.
+<hr>[<color=Keyword>수호</color>]
+<hr><ev>[<color=Keyword>진화시</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자에게 3 피해.</ev>
+""";
+    }
+
+    locale cht {
+        name "忠烈的近衛兵";
+        text """
+【<color=Keyword>爆能強化</color>_4】使這張卡片+2/+2。
+<hr>【<color=Keyword>守護</color>】
+<hr><ev>【<color=Keyword>進化時</color>】指定1張敵方戰場上的從者卡。給予其3點傷害。</ev>
+""";
+    }
+
+}

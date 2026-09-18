@@ -1,0 +1,54 @@
+wbo 0.1.0;
+
+card 10652310 {
+    type spell;
+    cost 7;
+
+    effect {
+        require target from oppo.field.followers;
+        summon copies of target;
+        banish target;
+    }
+
+    meta {
+        pack 10006;
+        class abysscraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "“最强”的诱惑";
+        text """
+选择对手的战场上的1个随从，使其消失，召唤对应数量的复制随从。
+""";
+    }
+
+    locale eng {
+        name "Allure of the Mightiest";
+        text """
+Select an enemy follower on the field, banish it, and summon an exact copy of it.
+""";
+    }
+
+    locale jpn {
+        name "『<rub=\"さいきょう\">最強</rub>』の<rub=\"みわく\">魅惑</rub>";
+        text """
+相手の場のフォロワー1枚を選ぶ。それを消滅して、コピー1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "「최강」의 매혹";
+        text """
+상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 소멸시키고 복사본 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "「最強」魅惑";
+        text """
+指定1張敵方戰場上的從者卡。使其消失，並將其複製1張後召喚到自己的戰場上。
+""";
+    }
+
+}

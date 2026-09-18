@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10662210 {
+    type amulet;
+    cost 2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class havencraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "救赎的圣典";
+        text """
+【<color=Keyword>吟唱</color>_4】
+【<color=Keyword>谢幕曲</color>】抽取2张卡牌。对对手的战场上的所有随从造成2点伤害。回复自己的主战者2点生命值。
+""";
+    }
+
+    locale eng {
+        name "Scripture of Salvation";
+        text """
+<b><color=Keyword>Countdown</color> (4)</b>
+<b><color=Keyword>Last Words</color></b>: Draw 2 cards. Deal 2 damage to all enemy followers. Restore 2 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"きゅうさい\">救済</rub>の<rub=\"せいてん\">聖典</rub>";
+        text """
+【<color=Keyword>カウントダウン</color>_4】
+【<color=Keyword>ラストワード</color>】自分のデッキから2枚を引く。相手の場のフォロワーすべてに2ダメージ。自分のリーダーを2回復。
+""";
+    }
+
+    locale kor {
+        name "구제의 성전";
+        text """
+[<color=Keyword>카운트다운</color> 4]
+[<color=Keyword>유언</color>] 내 덱에서 2장을 뽑는다. 상대방 전장의 추종자 모두에게 2 피해. 내 리더를 2 회복.
+""";
+    }
+
+    locale cht {
+        name "救贖的聖典";
+        text """
+【<color=Keyword>倒數</color>_4】
+【<color=Keyword>謝幕曲</color>】由自己的牌堆中抽取2張卡片。給予敵方戰場上全部的從者卡2點傷害。回復自己的主戰者2點生命值。
+""";
+    }
+
+}

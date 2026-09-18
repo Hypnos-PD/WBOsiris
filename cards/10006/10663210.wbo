@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10663210 {
+    type amulet;
+    cost 4;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class havencraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "崇高的天书";
+        text """
+【<color=Keyword>入场曲</color>】选择战场上的1张其他卡牌，破坏该卡牌。若选择了自己的护符，则回复自己2点能量点。
+<hr>【<color=Keyword>吟唱</color>_2】
+【<color=Keyword>谢幕曲</color>】召唤随机1张与本次对战中被破坏的「原始费用为2或以下的拥有【<color=Keyword>谢幕曲</color>】的自己的护符」同名的护符。
+""";
+    }
+
+    locale eng {
+        name "Sublime Eld Tome";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select another card on the field and destroy it. If you selected an allied amulet, recover 2 play points.
+<hr><b><color=Keyword>Countdown</color> (2)</b>
+<b><color=Keyword>Last Words</color></b>: Summon a copy of a random allied amulet destroyed this match with <b><color=Keyword>Last Words</color></b> and a base cost of 2 or less.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"すうこう\">崇高</rub>の<rub=\"てんしょ\">天書</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】場の他のカード1枚を選ぶ。それを破壊。自分のアミュレットを選んだなら、自分のPPを2回復。
+<hr>【<color=Keyword>カウントダウン</color>_2】
+【<color=Keyword>ラストワード</color>】このバトル中に破壊された自分の「元のコスト2以下の、【<color=Keyword>ラストワード</color>】を持つアミュレット」からランダム1枚と同名のカード1枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "숭고의 천서";
+        text """
+[<color=Keyword>출격</color>] 전장에서 다른 카드 1장을 선택한다. 그 카드를 파괴. 내 마법진을 선택했다면, 내 PP를 2 회복.
+<hr>[<color=Keyword>카운트다운</color> 2]
+[<color=Keyword>유언</color>] 이번 대전에서 파괴된 원래 비용이 2 이하이며 [<color=Keyword>유언</color>]을 가진 내 마법진 중 무작위로 1장과 동명의 마법진 1장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "崇高的天書";
+        text """
+【<color=Keyword>入場曲</color>】指定1張戰場上的其他卡片。將其破壞。如果指定的是自己的護符卡，則會回復自己的PP 2點。
+<hr>【<color=Keyword>倒數</color>_2】
+【<color=Keyword>謝幕曲</color>】隨機召喚1張與「本次對戰中自己已被破壞且原始消費為2以下，擁有【<color=Keyword>謝幕曲</color>】的護符卡」同名的卡片到自己的戰場上。
+""";
+    }
+
+}

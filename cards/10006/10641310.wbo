@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10641310 {
+    type spell;
+    cost 4;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class dragoncraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "天刀授予";
+        text """
+本卡牌被舍弃时，若本卡牌的费用为4，则将1张『<color=Keyword>天刀授予</color>』加入手牌，使其费用变为2。
+<hr>选择自己的战场上的1个随从，使其+2/+2。
+""";
+    }
+
+    locale eng {
+        name "Advent of the Eld Blades";
+        text """
+When this card is discarded, if its cost is 4, add an <b><i><color=Keyword>Advent of the Eld Blades</color></i></b> to your hand and set its cost to 2.
+<hr>Select an allied follower on the field and give it +2/+2.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんとうじゅよ\">天刀授与</rub>";
+        text """
+これが捨てられたとき、これのコストが4なら、『<color=Keyword>天刀授与</color>』1枚を自分の手札に加える。それのコストを2にする。
+<hr>自分の場のフォロワー1枚を選ぶ。それは+2/+2する。
+""";
+    }
+
+    locale kor {
+        name "천도수여";
+        text """
+이 주문이 버려졌을 때 이 주문의 비용이 4라면, <color=Keyword>천도수여</color> 1장을 내 패에 넣는다. 그 주문의 비용을 2로 만든다.
+<hr>내 전장에서 추종자 1장을 선택한다. 그 추종자는 +2/+2.
+""";
+    }
+
+    locale cht {
+        name "授予天刀";
+        text """
+當這張卡片被捨棄時，如果這張卡片的消費為4，則會增加1張『<color=Keyword>授予天刀</color>』到自己的手牌中。使其消費轉變為2。
+<hr>指定1張自己戰場上的從者卡。使其+2/+2。
+""";
+    }
+
+}

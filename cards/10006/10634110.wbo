@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10634110 {
+    type follower;
+    cost 3;
+    stats 1/2;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class runecraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "魔恋的爱慕·希姆";
+        text """
+【<color=Keyword>入场曲</color>】召唤2个『<color=Keyword>天晶魔手</color>』。
+<hr>【<color=Keyword>虹吸</color>】
+<hr><sev>【<color=Keyword>超进化时</color>】使自己获得『纹章：魔恋的爱慕·希姆』。</sev>
+""";
+    }
+
+    locale eng {
+        name "Shymm, Love Bewitched";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon 2 copies of <b><i><color=Keyword>Crystalspawn</color></i></b>.
+<hr><b><color=Keyword>Drain</color></b>
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Gain <b><i>Crest: Shymm, Love Bewitched</i></b>.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"まれん\">魔恋</rub>の<rub=\"ぼじょう\">慕情</rub>・シイム";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>天晶の魔手</color>』2枚を自分の場に出す。
+<hr>【<color=Keyword>ドレイン</color>】
+<hr><sev>【<color=Keyword>超進化時</color>】自分は『クレスト：魔恋の慕情・シイム』を持つ。</sev>
+""";
+    }
+
+    locale kor {
+        name "마련의 연정 시임";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>천정의 마수</color> 2장을 내 전장에 소환.
+<hr>[<color=Keyword>흡혈</color>]
+<hr><sev>[<color=Keyword>초진화시</color>] 나는 「크레스트: 마련의 연정 시임」을 갖는다.</sev>
+""";
+    }
+
+    locale cht {
+        name "魔戀的愛慕‧希姆";
+        text """
+【<color=Keyword>入場曲</color>】召喚2張『<color=Keyword>天晶的魔手</color>』到自己的戰場上。
+<hr>【<color=Keyword>吸血</color>】
+<hr><sev>【<color=Keyword>超進化時</color>】使自己獲得『紋章：魔戀的愛慕‧希姆』。</sev>
+""";
+    }
+
+}

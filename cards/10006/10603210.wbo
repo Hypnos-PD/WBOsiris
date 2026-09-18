@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10603210 {
+    type amulet;
+    cost 4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class neutral;
+        rarity gold;
+    }
+
+    locale chs {
+        name "黑暗次元";
+        text """
+【<color=Keyword>吟唱</color>_2】
+自己的回合结束时，对战场上的所有非侵蚀者随从造成2点伤害。
+""";
+    }
+
+    locale eng {
+        name "Dark Dimensions";
+        text """
+<b><color=Keyword>Countdown</color> (2)</b>
+At the end of your turn, deal 2 damage to all non-Encroacher followers.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"あんこくじげん\">暗黒次元</rub>";
+        text """
+【<color=Keyword>カウントダウン</color>_2】
+自分のターン終了時、場のアサイラントでないフォロワーすべてに2ダメージ。
+""";
+    }
+
+    locale kor {
+        name "암흑차원";
+        text """
+[<color=Keyword>카운트다운</color> 2]
+내 턴 종료시, 어세일런트가 아닌 전장의 추종자 모두에게 2 피해.
+""";
+    }
+
+    locale cht {
+        name "暗黑次元";
+        text """
+【<color=Keyword>倒數</color>_2】
+自己的回合結束時，給予戰場上全部非獵境者的從者卡2點傷害。
+""";
+    }
+
+}

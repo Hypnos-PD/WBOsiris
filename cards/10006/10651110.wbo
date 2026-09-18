@@ -1,0 +1,56 @@
+wbo 0.1.0;
+
+card 10651110 {
+    type follower;
+    cost 2;
+    stats 2/2;
+
+    effect {
+        lastwords {
+            draw 1;
+            damage own.leader 1;
+        }
+    }
+
+    meta {
+        pack 10006;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "渴望的恶魔";
+        text """
+【<color=Keyword>谢幕曲</color>】抽取1张卡牌。对自己的主战者造成1点伤害。
+""";
+    }
+
+    locale eng {
+        name "Reverent Demon";
+        text """
+<b><color=Keyword>Last Words</color></b>: Draw a card. Deal 1 damage to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"かつごう\">渇仰</rub>の<rub=\"あくま\">悪魔</rub>";
+        text """
+【<color=Keyword>ラストワード</color>】自分のデッキから1枚を引く。自分のリーダーに1ダメージ。
+""";
+    }
+
+    locale kor {
+        name "갈앙의 악마";
+        text """
+[<color=Keyword>유언</color>] 내 덱에서 1장을 뽑는다. 내 리더에게 1 피해.
+""";
+    }
+
+    locale cht {
+        name "渴仰的惡魔";
+        text """
+【<color=Keyword>謝幕曲</color>】由自己的牌堆中抽取1張卡片。給予自己的主戰者1點傷害。
+""";
+    }
+
+}

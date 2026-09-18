@@ -1,0 +1,67 @@
+wbo 0.1.0;
+
+card 10661110 {
+    type follower;
+    cost 5;
+    stats 4/5;
+
+    effect {
+        bane;
+        ward;
+        when self summoned {
+            heal own.leader 2;
+        }
+    }
+
+    meta {
+        pack 10006;
+        class havencraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "崇奉的懦者";
+        text """
+本随从进入战场时，回复自己的主战者2点生命值。
+<hr>【<color=Keyword>毁灭</color>】
+【<color=Keyword>守护</color>】
+""";
+    }
+
+    locale eng {
+        name "Prostrating Coward";
+        text """
+When this follower enters the field, restore 2 defense to your leader.
+<hr><b><color=Keyword>Bane</color></b>
+<b><color=Keyword>Ward</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"すうほう\">崇奉</rub>の<rub=\"きょうしゃ\">怯者</rub>";
+        text """
+これが場に出たとき、自分のリーダーを2回復。
+<hr>【<color=Keyword>必殺</color>】
+【<color=Keyword>守護</color>】
+""";
+    }
+
+    locale kor {
+        name "숭봉의 겁보";
+        text """
+이 추종자가 전장에 소환되었을 때, 내 리더를 2 회복.
+<hr>[<color=Keyword>필살</color>]
+[<color=Keyword>수호</color>]
+""";
+    }
+
+    locale cht {
+        name "崇奉的怯懦者";
+        text """
+當這張卡片進入戰場時，回復自己的主戰者2點生命值。
+<hr>【<color=Keyword>必殺</color>】
+【<color=Keyword>守護</color>】
+""";
+    }
+
+}

@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10622310 {
+    type spell;
+    cost 1;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class swordcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "威风的行军";
+        text """
+使自己获得『纹章：威风的行军』。
+【<color=Keyword>爆能强化</color>_3】使自己的『纹章：威风的行军』的倒计数+2。
+""";
+    }
+
+    locale eng {
+        name "Majestic Conquest";
+        text """
+Gain <b><i>Crest: Majestic Conquest</i></b>.
+<b><color=Keyword>Enhance</color> (3)</b>: Delay the count of your <b><i>Crest: Majestic Conquest</i></b> by 2.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"いふう\">威風</rub>の<rub=\"こうぐん\">行軍</rub>";
+        text """
+自分は『クレスト：威風の行軍』を持つ。
+【<color=Keyword>エンハンス</color>_3】自分の『クレスト：威風の行軍』のカウントを+2する。
+""";
+    }
+
+    locale kor {
+        name "위풍당당한 행군";
+        text """
+나는 「크레스트: 위풍당당한 행군」을 갖는다.
+[<color=Keyword>증강</color> 3] 내 「크레스트: 위풍당당한 행군」의 카운트를 +2.
+""";
+    }
+
+    locale cht {
+        name "威武行軍";
+        text """
+使自己獲得『紋章：威武行軍』。
+【<color=Keyword>爆能強化</color>_3】使自己的『紋章：威武行軍』倒數回合數+2。
+""";
+    }
+
+}

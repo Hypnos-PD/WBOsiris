@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10613110 {
+    type follower;
+    cost 5;
+    stats 5/5;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class forestcraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "慈惠的心腹";
+        text """
+【<color=Keyword>入场曲</color>】召唤1个『<color=Keyword>新绿的妖精</color>』。
+<hr>自己的随从进化时，回复自己的主战者1点生命值。
+""";
+    }
+
+    locale eng {
+        name "Merciful Attendant";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon a <b><i><color=Keyword>Springbloom Fairy</color></i></b>.
+<hr>Whenever an allied follower evolves, restore 1 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"じけい\">慈恵</rub>の<rub=\"そっきん\">側近</rub>";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>新緑のフェアリー</color>』1枚を自分の場に出す。
+<hr>自分のフォロワーが進化したとき、自分のリーダーを1回復。
+""";
+    }
+
+    locale kor {
+        name "자혜의 측근";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>신록의 요정</color> 1장을 내 전장에 소환.
+<hr>내 추종자가 진화했을 때, 내 리더를 1 회복.
+""";
+    }
+
+    locale cht {
+        name "慈惠的親信";
+        text """
+【<color=Keyword>入場曲</color>】召喚1張『<color=Keyword>新綠的妖精</color>』到自己的戰場上。
+<hr>當自己的從者卡進化時，回復自己的主戰者1點生命值。
+""";
+    }
+
+}

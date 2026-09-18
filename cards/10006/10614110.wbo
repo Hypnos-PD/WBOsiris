@@ -1,0 +1,63 @@
+wbo 0.1.0;
+
+card 10614110 {
+    type follower;
+    cost 8;
+    stats 7/7;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class forestcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "慈爱的凛华·奥尔提雅";
+        text """
+【<color=Keyword>入场曲</color>】召唤3个『<color=Keyword>新绿的妖精</color>』。
+<hr>1回合可以攻击2次。
+<hr><sev>【<color=Keyword>超进化时</color>】选择对手的战场上的1个随从，破坏该随从。</sev>
+""";
+    }
+
+    locale eng {
+        name "Althenia, Nurturing Bloom";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Summon 3 copies of <b><i><color=Keyword>Springbloom Fairy</color></i></b>.
+<hr>Can attack 2 times per turn.
+<hr><sev><b><color=Keyword>Super-Evolve</color></b>: Select an enemy follower on the field and destroy it.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"じあい\">慈愛</rub>の<rub=\"りんか\">凛華</rub>・オルテニア";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>新緑のフェアリー</color>』3枚を自分の場に出す。
+<hr>1ターンに2回攻撃できる。
+<hr><sev>【<color=Keyword>超進化時</color>】相手の場のフォロワー1枚を選ぶ。それを破壊。</sev>
+""";
+    }
+
+    locale kor {
+        name "자애의 꽃 오르테니아";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>신록의 요정</color> 3장을 내 전장에 소환.
+<hr>1턴에 2회 공격 가능.
+<hr><sev>[<color=Keyword>초진화시</color>] 상대방 전장에서 추종자 1장을 선택한다. 그 추종자를 파괴.</sev>
+""";
+    }
+
+    locale cht {
+        name "慈愛的凜花‧歐露媞寧雅";
+        text """
+【<color=Keyword>入場曲</color>】召喚3張『<color=Keyword>新綠的妖精</color>』到自己的戰場上。
+<hr>1回合中可進行2次攻擊。
+<hr><sev>【<color=Keyword>超進化時</color>】指定1張敵方戰場上的從者卡。將其破壞。</sev>
+""";
+    }
+
+}

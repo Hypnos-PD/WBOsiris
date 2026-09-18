@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10654120 {
+    type follower;
+    cost 4;
+    stats 3/3;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class abysscraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "古旧天眼·比芭提";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>唤灵</color>_4】本随从进化。
+<hr><ev>本随从进化时，将1张『<color=Keyword>天眼深渊</color>』加入手牌。</ev>
+""";
+    }
+
+    locale eng {
+        name "Bibatii, Eld Sight";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Necromancy</color> (4)</b> - Evolve this follower.
+<hr><ev>When this follower evolves, add a <b><i><color=Keyword>Depths of the Eld Sight</color></i></b> to your hand.</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ふる\">旧</rub>き<rub=\"てんがん\">天眼</rub>・ビバティー";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>ネクロマンス</color>_4】これは進化する。
+<hr><ev>これが進化したとき、『<color=Keyword>天眼の深淵</color>』1枚を自分の手札に加える。</ev>
+""";
+    }
+
+    locale kor {
+        name "옛 천안 비바티";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>사령술</color> 4] 이 추종자는 진화한다.
+<hr><ev>이 추종자가 진화했을 때, <color=Keyword>천안의 심연</color> 1장을 내 패에 넣는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "古老天眼‧畢巴笛";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>死靈術</color>_4】使這張卡片進化。
+<hr><ev>當這張卡片進化時，增加1張『<color=Keyword>天眼的深淵</color>』到自己的手牌中。</ev>
+""";
+    }
+
+}

@@ -1,0 +1,56 @@
+wbo 0.1.0;
+
+card 10651310 {
+    type spell;
+    cost 3;
+    trait encroacher;
+
+    effect {
+        draw 2;
+        necromancy 4 {
+            heal own.leader 2;
+        }
+    }
+
+    meta {
+        pack 10006;
+        class abysscraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "天眼授予";
+        text """
+抽取2张卡牌。【<color=Keyword>唤灵</color>_4】回复自己的主战者2点生命值。
+""";
+    }
+
+    locale eng {
+        name "Advent of the Eld Sight";
+        text """
+Draw 2 cards. <b><color=Keyword>Necromancy</color> (4)</b> - Restore 2 defense to your leader.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんがんじゅよ\">天眼授与</rub>";
+        text """
+自分のデッキから2枚を引く。【<color=Keyword>ネクロマンス</color>_4】自分のリーダーを2回復。
+""";
+    }
+
+    locale kor {
+        name "천안수여";
+        text """
+내 덱에서 2장을 뽑는다. [<color=Keyword>사령술</color> 4] 내 리더를 2 회복.
+""";
+    }
+
+    locale cht {
+        name "授予天眼";
+        text """
+由自己的牌堆中抽取2張卡片。【<color=Keyword>死靈術</color>_4】回復自己的主戰者2點生命值。
+""";
+    }
+
+}

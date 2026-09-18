@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10633310 {
+    type spell;
+    cost 3;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class runecraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "魔恋的天晶";
+        text """
+【<color=Keyword>模式</color>】选择1个能力发动。
+<ridx=0>（1）召唤1个『<color=Keyword>天晶魔手</color>』，使其+1/+0且获得【<color=Keyword>疾驰</color>】。</ridx>
+<ridx=1>（2）召唤2个『<color=Keyword>天晶魔手</color>』，使其+1/+0。</ridx>
+【<color=Keyword>爆能强化</color>_5】改为发动所有能力。
+""";
+    }
+
+    locale eng {
+        name "Bewitching Eld Crystals";
+        text """
+Select a <b><color=Keyword>Mode</color></b> to activate.
+<ridx=0>1. Summon a <b><i><color=Keyword>Crystalspawn</color></i></b> and give it +1/+0 and <b><color=Keyword>Storm</color></b>.</ridx>
+<ridx=1>2. Summon 2 copies of <b><i><color=Keyword>Crystalspawn</color></i></b> and give them +1/+0.</ridx>
+<b><color=Keyword>Enhance</color> (5)</b>: Activate all of them instead.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"まれん\">魔恋</rub>の<rub=\"てんしょう\">天晶</rub>";
+        text """
+【<color=Keyword>モード</color>】1つを選んでその能力が働く。
+<ridx=0>（1）『<color=Keyword>天晶の魔手</color>』1枚を自分の場に出す。それは+1/+0して【<color=Keyword>疾走</color>】を持つ。</ridx>
+<ridx=1>（2）『<color=Keyword>天晶の魔手</color>』2枚を自分の場に出す。それは+1/+0する。</ridx>
+【<color=Keyword>エンハンス</color>_5】1つを選ぶのではなくすべて。
+""";
+    }
+
+    locale kor {
+        name "마련의 천정";
+        text """
+[<color=Keyword>모드</color>] 1개를 선택하여 그 능력을 발동.
+<ridx=0>(1) <color=Keyword>천정의 마수</color> 1장을 내 전장에 소환. 그 추종자는 +1/+0 및 [<color=Keyword>질주</color>]를 갖는다.</ridx>
+<ridx=1>(2) <color=Keyword>천정의 마수</color> 2장을 내 전장에 소환. 그 추종자는 +1/+0.</ridx>
+[<color=Keyword>증강</color> 5] 1개를 선택하는 대신 모두.
+""";
+    }
+
+    locale cht {
+        name "魔戀的天晶";
+        text """
+指定1個【<color=Keyword>模式</color>】並發動該能力。
+<ridx=0>（1）召喚1張『<color=Keyword>天晶的魔手</color>』到自己的戰場上。使其+1/+0並獲得【<color=Keyword>疾馳</color>】。</ridx>
+<ridx=1>（2）召喚2張『<color=Keyword>天晶的魔手</color>』到自己的戰場上。使其+1/+0。</ridx>
+【<color=Keyword>爆能強化</color>_5】由原本的指定1個轉變為全部。
+""";
+    }
+
+}

@@ -1,0 +1,69 @@
+wbo 0.1.0;
+
+card 10644120 {
+    type follower;
+    cost 2;
+    stats 0/2;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "古旧天刀·波菈莱";
+        text """
+本卡牌被舍弃时，召唤1个『<color=Keyword>古旧天刀·波菈莱</color>』。
+<hr>【<color=Keyword>毁灭</color>】
+<hr><ev>【<color=Keyword>进化时</color>】将1张『<color=Keyword>天刀深渊</color>』加入手牌。</ev>
+<sev>【<color=Keyword>超进化时</color>】改为3张。</sev>
+""";
+    }
+
+    locale eng {
+        name "Vorlalai, Eld Blades";
+        text """
+When this card is discarded, summon a <b><i><color=Keyword>Vorlalai, Eld Blades</color></i></b>.
+<hr><b><color=Keyword>Bane</color></b>
+<hr><ev><b><color=Keyword>Evolve</color></b>: Add a <b><i><color=Keyword>Depths of the Eld Blades</color></i></b> to your hand.</ev>
+<sev><b><color=Keyword>Super-Evolve</color></b>: Add 3 copies instead.</sev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ふる\">旧</rub>き<rub=\"てんとう\">天刀</rub>・ヴォーラライ";
+        text """
+これが捨てられたとき、『<color=Keyword>旧き天刀・ヴォーラライ</color>』1枚を自分の場に出す。
+<hr>【<color=Keyword>必殺</color>】
+<hr><ev>【<color=Keyword>進化時</color>】『<color=Keyword>天刀の深淵</color>』1枚を自分の手札に加える。</ev>
+<sev>【<color=Keyword>超進化時</color>】1枚ではなく3枚。</sev>
+""";
+    }
+
+    locale kor {
+        name "옛 천도 보라라이";
+        text """
+이 추종자가 버려졌을 때, <color=Keyword>옛 천도 보라라이</color> 1장을 내 전장에 소환.
+<hr>[<color=Keyword>필살</color>]
+<hr><ev>[<color=Keyword>진화시</color>] <color=Keyword>천도의 심연</color> 1장을 내 패에 넣는다.</ev>
+<sev>[<color=Keyword>초진화시</color>] 1장 대신 3장.</sev>
+""";
+    }
+
+    locale cht {
+        name "古老天刀‧沃拉萊";
+        text """
+當這張卡片被捨棄時，召喚1張『<color=Keyword>古老天刀‧沃拉萊</color>』到自己的戰場上。
+<hr>【<color=Keyword>必殺</color>】
+<hr><ev>【<color=Keyword>進化時</color>】增加1張『<color=Keyword>天刀的深淵</color>』到自己的手牌中。</ev>
+<sev>【<color=Keyword>超進化時</color>】由原本的1張轉變為3張。</sev>
+""";
+    }
+
+}

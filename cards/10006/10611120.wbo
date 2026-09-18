@@ -1,0 +1,57 @@
+wbo 0.1.0;
+
+card 10611120 {
+    type follower;
+    cost 3;
+    stats 3/3;
+
+    effect {
+        fanfare {
+            if combo >= 3 {
+                evolve self silent;
+            }
+        }
+    }
+
+    meta {
+        pack 10006;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "伊甸之猴";
+        text """
+【<color=Keyword>入场曲</color>】【<color=Keyword>连击</color>_3】本随从进化。
+""";
+    }
+
+    locale eng {
+        name "Monkey of Paradise";
+        text """
+<b><color=Keyword>Fanfare</color></b>: <b><color=Keyword>Combo</color> (3)</b> - Evolve this follower.
+""";
+    }
+
+    locale jpn {
+        name "パラダイスモンキー";
+        text """
+【<color=Keyword>ファンファーレ</color>】【<color=Keyword>コンボ</color>_3】これは進化する。
+""";
+    }
+
+    locale kor {
+        name "낙원숭이";
+        text """
+[<color=Keyword>출격</color>] [<color=Keyword>콤보</color> 3] 이 추종자는 진화한다.
+""";
+    }
+
+    locale cht {
+        name "樂園獼猴";
+        text """
+【<color=Keyword>入場曲</color>】【<color=Keyword>連擊</color>_3】使這張卡片進化。
+""";
+    }
+
+}

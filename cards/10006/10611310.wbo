@@ -1,0 +1,54 @@
+wbo 0.1.0;
+
+card 10611310 {
+    type spell;
+    cost 7;
+    trait encroacher;
+
+    effect {
+        damage oppo.field.followers 4;
+        summon 2 card 90011120;
+    }
+
+    meta {
+        pack 10006;
+        class forestcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "天枪授予";
+        text """
+对对手的战场上的所有随从造成4点伤害。召唤2个『<color=Keyword>新绿的妖精</color>』。
+""";
+    }
+
+    locale eng {
+        name "Advent of the Eld Lance";
+        text """
+Deal 4 damage to all enemy followers. Summon 2 copies of <b><i><color=Keyword>Springbloom Fairy</color></i></b>.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんそうじゅよ\">天槍授与</rub>";
+        text """
+相手の場のフォロワーすべてに4ダメージ。『<color=Keyword>新緑のフェアリー</color>』2枚を自分の場に出す。
+""";
+    }
+
+    locale kor {
+        name "천창수여";
+        text """
+상대방 전장의 추종자 모두에게 4 피해. <color=Keyword>신록의 요정</color> 2장을 내 전장에 소환.
+""";
+    }
+
+    locale cht {
+        name "授予天槍";
+        text """
+給予敵方戰場上全部的從者卡4點傷害。召喚2張『<color=Keyword>新綠的妖精</color>』到自己的戰場上。
+""";
+    }
+
+}

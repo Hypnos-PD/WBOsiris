@@ -1,0 +1,59 @@
+wbo 0.1.0;
+
+card 10624120 {
+    type follower;
+    cost 2;
+    stats 1/2;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class swordcraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "古旧天剑·伊德梅塔";
+        text """
+【<color=Keyword>入场曲</color>】将1张『<color=Keyword>天剑深渊</color>』加入手牌。
+<hr><ev>【<color=Keyword>进化时</color>】信仰值-5，使自己的信仰获得「自己通过【<color=Keyword>爆能强化</color>】使用卡牌时，使自己的战场上的所有随从+1/+1」。</ev>
+""";
+    }
+
+    locale eng {
+        name "Yidmetra, Eld Sword";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Add a <b><i><color=Keyword>Depths of the Eld Sword</color></i></b> to your hand.
+<hr><ev><b><color=Keyword>Evolve</color></b>: Reduce your faith's value by 5 to give it \"Whenever you play an <b><color=Keyword>Enhance</color><color=Keyword>d</color></b> card, give all allied followers on the field +1/+1.\"</ev>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"ふる\">旧</rub>き<rub=\"てんけん\">天剣</rub>・イドメタ";
+        text """
+【<color=Keyword>ファンファーレ</color>】『<color=Keyword>天剣の深淵</color>』1枚を自分の手札に加える。
+<hr><ev>【<color=Keyword>進化時</color>】信仰値を-5して、自分の信仰は「自分がカードを【<color=Keyword>エンハンス</color>】でプレイしたとき、自分の場のフォロワーすべては+1/+1する。」を持つ。</ev>
+""";
+    }
+
+    locale kor {
+        name "옛 천검 이드메타";
+        text """
+[<color=Keyword>출격</color>] <color=Keyword>천검의 심연</color> 1장을 내 패에 넣는다.
+<hr><ev>[<color=Keyword>진화시</color>] 신앙 수치를 -5 하고 내 신앙은 「내가 [<color=Keyword>증강</color>]으로 카드를 사용했을 때, 내 전장의 추종자 모두는 +1/+1」을 갖는다.</ev>
+""";
+    }
+
+    locale cht {
+        name "古老天劍‧伊朵梅塔";
+        text """
+【<color=Keyword>入場曲</color>】增加1張『<color=Keyword>天劍的深淵</color>』到自己的手牌中。
+<hr><ev>【<color=Keyword>進化時</color>】使信仰值-5，並使自己的信仰獲得「當自己以【<color=Keyword>爆能強化</color>】使用卡片時，使自己戰場上全部的從者卡+1/+1」。</ev>
+""";
+    }
+
+}

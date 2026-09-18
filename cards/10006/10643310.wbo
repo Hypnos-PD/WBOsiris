@@ -1,0 +1,58 @@
+wbo 0.1.0;
+
+card 10643310 {
+    type spell;
+    cost 7;
+    trait encroacher;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class dragoncraft;
+        rarity gold;
+    }
+
+    locale chs {
+        name "断头的天刀";
+        text """
+本卡牌被舍弃时，若本卡牌的费用为7，则将1张『<color=Keyword>断头的天刀</color>』加入手牌，使其费用变为5。若为5，则将1张『<color=Keyword>断头的天刀</color>』加入手牌，使其费用变为3。
+<hr>对对手的战场上的所有随从造成X点伤害，X为本卡牌的费用。
+""";
+    }
+
+    locale eng {
+        name "Beheading Eld Blades";
+        text """
+When this card is discarded, if its cost is 7, add a <b><i><color=Keyword>Beheading Eld Blades</color></i></b> to your hand and set its cost to 5. If this card's cost is 5, add a <b><i><color=Keyword>Beheading Eld Blades</color></i></b> to your hand and set its cost to 3.
+<hr>Deal X damage to all enemy followers. X is this card's cost.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"だんとう\">断頭</rub>の<rub=\"てんとう\">天刀</rub>";
+        text """
+これが捨てられたとき、これのコストが7なら、『<color=Keyword>断頭の天刀</color>』1枚を自分の手札に加える。それのコストを5にする。5なら、『<color=Keyword>断頭の天刀</color>』1枚を自分の手札に加える。それのコストを3にする。
+<hr>相手の場のフォロワーすべてにXダメージ。Xはこれのコストである。
+""";
+    }
+
+    locale kor {
+        name "단두의 천도";
+        text """
+이 주문이 버려졌을 때 이 주문의 비용이 7이라면, <color=Keyword>단두의 천도</color> 1장을 내 패에 넣는다. 그 주문의 비용을 5로 만든다. 5라면, <color=Keyword>단두의 천도</color> 1장을 내 패에 넣는다. 그 주문의 비용을 3으로 만든다.
+<hr>상대방 전장의 추종자 모두에게 X 피해. X는 이 주문의 비용.
+""";
+    }
+
+    locale cht {
+        name "斷頭的天刀";
+        text """
+當這張卡片被捨棄時，如果這張卡片的消費為7，則會增加1張『<color=Keyword>斷頭的天刀</color>』到自己的手牌中。使其消費轉變為5。如果為5，則會增加1張『<color=Keyword>斷頭的天刀</color>』到自己的手牌中。使其消費轉變為3。
+<hr>給予敵方戰場上全部的從者卡X點傷害。X為「這張卡片的消費值」。
+""";
+    }
+
+}

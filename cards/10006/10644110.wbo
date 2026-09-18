@@ -1,0 +1,68 @@
+wbo 0.1.0;
+
+card 10644110 {
+    type follower;
+    cost 7;
+    stats 5/4;
+
+    effect {
+        unplayable;
+    }
+
+    meta {
+        pack 10006;
+        class dragoncraft;
+        rarity legendary;
+    }
+
+    locale chs {
+        name "断头的斩姬·相枛津";
+        text """
+【<color=Keyword>入场曲</color>】选择自己的1张手牌，舍弃该手牌。将2张『<color=Keyword>赤流</color>』加入手牌。
+<hr>【<color=Keyword>疾驰</color>】
+【<color=Keyword>毁灭</color>】
+【<color=Keyword>灵气</color>】
+""";
+    }
+
+    locale eng {
+        name "Sagatsumatsu, Fair Beheader";
+        text """
+<b><color=Keyword>Fanfare</color></b>: Select a card in your hand and discard it. Add 2 copies of <b><i><color=Keyword>Spilling Red</color></i></b> to your hand.
+<hr><b><color=Keyword>Storm</color></b>
+<b><color=Keyword>Bane</color></b>
+<b><color=Keyword>Aura</color></b>
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"だんとう\">断頭</rub>の<rub=\"ざんき\">斬姫</rub>・サガツマツ";
+        text """
+【<color=Keyword>ファンファーレ</color>】自分の手札1枚を選ぶ。それを捨てる。『<color=Keyword>赤色流し</color>』2枚を自分の手札に加える。
+<hr>【<color=Keyword>疾走</color>】
+【<color=Keyword>必殺</color>】
+【<color=Keyword>オーラ</color>】
+""";
+    }
+
+    locale kor {
+        name "단두의 참희 사가츠마츠";
+        text """
+[<color=Keyword>출격</color>] 내 패에서 1장을 선택한다. 그 카드를 버린다. <color=Keyword>흐르는 붉은빛</color> 2장을 내 패에 넣는다.
+<hr>[<color=Keyword>질주</color>]
+[<color=Keyword>필살</color>]
+[<color=Keyword>오라</color>]
+""";
+    }
+
+    locale cht {
+        name "斷頭的斬姬‧佐嘉鶴茉津";
+        text """
+【<color=Keyword>入場曲</color>】指定1張自己手牌中的卡片。將其捨棄。增加2張『<color=Keyword>赤色奔流</color>』到自己的手牌中。
+<hr>【<color=Keyword>疾馳</color>】
+【<color=Keyword>必殺</color>】
+【<color=Keyword>光紋</color>】
+""";
+    }
+
+}

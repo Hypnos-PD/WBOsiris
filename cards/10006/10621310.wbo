@@ -1,0 +1,61 @@
+wbo 0.1.0;
+
+card 10621310 {
+    type spell;
+    cost 5;
+    trait encroacher;
+
+    effect {
+        summon 3 card 10621110;
+        enhance 7 {
+            buff summoned_all +2/+2;
+        }
+    }
+
+    meta {
+        pack 10006;
+        class swordcraft;
+        rarity bronze;
+    }
+
+    locale chs {
+        name "天剑授予";
+        text """
+召唤3个『<color=Keyword>勇烈的士兵</color>』。
+【<color=Keyword>爆能强化</color>_7】使其+2/+2。
+""";
+    }
+
+    locale eng {
+        name "Advent of the Eld Sword";
+        text """
+Summon 3 copies of <b><i><color=Keyword>Fearless Soldier</color></i></b>.
+<b><color=Keyword>Enhance</color> (7)</b>: Give them +2/+2.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"てんけんじゅよ\">天剣授与</rub>";
+        text """
+『<color=Keyword>勇烈の兵士</color>』3枚を自分の場に出す。
+【<color=Keyword>エンハンス</color>_7】それは+2/+2する。
+""";
+    }
+
+    locale kor {
+        name "천검수여";
+        text """
+<color=Keyword>용렬의 병사</color> 3장을 내 전장에 소환.
+[<color=Keyword>증강</color> 7] 그 추종자는 +2/+2.
+""";
+    }
+
+    locale cht {
+        name "授予天劍";
+        text """
+召喚3張『<color=Keyword>勇烈的士兵</color>』到自己的戰場上。
+【<color=Keyword>爆能強化</color>_7】使其+2/+2。
+""";
+    }
+
+}

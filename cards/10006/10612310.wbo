@@ -1,0 +1,60 @@
+wbo 0.1.0;
+
+card 10612310 {
+    type spell;
+    cost 5;
+
+    effect {
+        when own follower evolved while self in hand {
+            reduce cost self 1 minimum 0;
+        }
+        draw 2;
+    }
+
+    meta {
+        pack 10006;
+        class forestcraft;
+        rarity silver;
+    }
+
+    locale chs {
+        name "向女王献花";
+        text """
+在手牌中发动。自己的随从进化时，使本卡牌的费用-1。
+<hr>抽取2张卡牌。
+""";
+    }
+
+    locale eng {
+        name "Floral Offering";
+        text """
+Activates in hand. Whenever an allied follower evolves, reduce the cost of this card by 1.
+<hr>Draw 2 cards.
+""";
+    }
+
+    locale jpn {
+        name "<rub=\"たいりん\">大輪</rub>への<rub=\"けんじょう\">献上</rub>";
+        text """
+手札で働く。自分のフォロワーが進化したとき、これのコストを-1する。
+<hr>自分のデッキから2枚を引く。
+""";
+    }
+
+    locale kor {
+        name "꽃을 향한 헌상";
+        text """
+패에서 발동. 내 추종자가 진화했을 때, 이 주문의 비용을 -1.
+<hr>내 덱에서 2장을 뽑는다.
+""";
+    }
+
+    locale cht {
+        name "嫣花獻禮";
+        text """
+於手牌中發動。當自己的從者卡進化時，使這張卡片的消費-1。
+<hr>由自己的牌堆中抽取2張卡片。
+""";
+    }
+
+}
