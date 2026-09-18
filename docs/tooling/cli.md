@@ -147,6 +147,19 @@ wbo simulate --source-root . --scenario "场景名称或 ID" cards tests
 继续执行其对应的规则计划；结束回合完成后会切换
 到对方回合，可通过动作输入中的 `actor: "oppo"` 提交指令；省略 `actor` 时默认为 `own`。
 
+## 自对弈压测
+
+```bash
+wbo selfplay --source-root . --games 300 --policy random
+wbo selfplay --source-root . --games 60 --policy greedy --random-deck --format rotation
+wbo selfplay --source-root . --games 60 --policy greedy --random-deck --format unlimited
+```
+
+`selfplay` 用 `internal/ai` 的策略让双方自动打完若干局，报告先手/后手胜、平均回合与动作数，
+以及卡池覆盖。它不看胜负，只看**能不能一直跑完**：崩溃、非法动作、回合上限、执行预算
+超限都会让退出码变成 1。`--random-deck` 按赛制随机生成双方卡组，是覆盖整个卡池的关键
+（固定练习卡组只用到 14 张卡）。
+
 ## 开发验证
 
 ```bash

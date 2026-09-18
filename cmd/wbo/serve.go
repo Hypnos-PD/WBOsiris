@@ -13,7 +13,9 @@ import (
 func runServe(args []string) int {
 	fs := flag.NewFlagSet("serve", flag.ContinueOnError)
 	root := fs.String("source-root", ".", "源文件根目录")
-	listen := fs.String("listen", ":8080", "监听地址")
+	// 默认端口刻意避开 8080/8000/3000 这类常见值，免得和本地其它服务抢端口；
+	// 数字取自 WBO（W=23、B=2、O=15）。
+	listen := fs.String("listen", ":23215", "监听地址")
 	if fs.Parse(args) != nil {
 		return 2
 	}

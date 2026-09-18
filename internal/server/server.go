@@ -11,6 +11,7 @@ import (
 	"strings"
 	"sync"
 
+	"wbo/internal/ai"
 	"wbo/internal/ir"
 	"wbo/internal/project"
 	"wbo/internal/runner"
@@ -36,6 +37,14 @@ type match struct {
 	started           bool
 	mulligan          map[string]bool
 	mulliganSelection map[string][]string
+	// format 是本局的构筑赛制；客方（含 AI）的牌组要按同一赛制校验。
+	format runner.Format
+	// botPolicy 非空表示客方席位由 AI 驱动（练习模式），此时不需要第二名玩家。
+	botPolicy ai.Policy
+	botDriver *ai.Driver
+	botError  string
+	// spectators 是只读观众凭据：只能读状态、事件与推送流。
+	spectators map[string]bool
 	mu                sync.Mutex
 	replay            []replayFrame
 }
@@ -70,6 +79,12 @@ type command struct {
 type createRequest struct {
 	Scenario string `json:"scenario"`
 	Deck     []int  `json:"deck,omitempty"`
+	// Format 是构筑赛制：rotation（指定模式，默认）或 unlimited（无限制模式）。
+	Format string `json:"format,omitempty"`
+	// Mode 为 "bot" 时创建练习模式：客方席位由 BotPolicy 指定的策略接管。
+	Mode      string `json:"mode,omitempty"`
+	BotDeck   []int  `json:"botDeck,omitempty"`
+	BotPolicy string `json:"botPolicy,omitempty"`
 }
 
 type response struct {
@@ -87,6 +102,9 @@ type response struct {
 	LegalActions  []runner.LegalAction         `json:"legalActions"`
 	Capabilities  runner.SimulatorCapabilities `json:"capabilities"`
 	Events        []ir.RuntimeEvent            `json:"events"`
+	// Bot 表示这一局是练习模式（对手是 AI）；BotError 非空表示 AI 驱动失败。
+	Bot      bool   `json:"bot,omitempty"`
+	BotError string `json:"botError,omitempty"`
 }
 
 type replayResponse struct {
@@ -152,26 +170,108 @@ func (s *Server) matchesHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	deck := practiceDeck()
+	format, err := runner.FormatByID(s.cards, input.Format)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	if input.Deck != nil {
-		if err := validateDeck(s.cards, input.Deck); err != nil {
+		if err := runner.ValidateDeckForFormat(s.cards, input.Deck, format); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		deck = input.Deck
 	}
 	id, token, joinCode := randomID(6), randomID(24), randomID(8)
-	room := &match{ownDeck: append([]int(nil), deck...), players: map[string]string{token: "own"}, joinCode: joinCode, mulligan: map[string]bool{}, mulliganSelection: map[string][]string{}}
+	room := &match{ownDeck: append([]int(nil), deck...), players: map[string]string{token: "own"}, joinCode: joinCode, format: format, mulligan: map[string]bool{}, mulliganSelection: map[string][]string{}}
+	if input.Mode == "bot" {
+		botDeck := input.BotDeck
+		if botDeck == nil {
+			botDeck = practiceDeck()
+		}
+		if err := runner.ValidateDeckForFormat(s.cards, botDeck, format); err != nil {
+			http.Error(w, "bot deck: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+		room.botPolicy = botPolicyNamed(input.BotPolicy)
+		room.botDriver = ai.NewDriver("oppo", room.botPolicy, ai.Limits{})
+		// 练习模式不需要等第二名玩家：客方席位就绪，AI 的换牌直接保留起手。
+		room.players[botToken] = "oppo"
+		room.joined = true
+		room.mulligan["oppo"] = true
+		if err := s.startMatch(room, botDeck); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
 	s.mu.Lock()
 	for s.matches[id] != nil {
 		id = randomID(6)
 	}
 	s.matches[id] = room
 	s.mu.Unlock()
+	if room.botDriver != nil {
+		runBot(room)
+	}
 	writeMatch(w, id, token, "own", room, nil)
 }
 
-func validateDeck(cards *ir.CardPack, deck []int) error {
-	return runner.ValidateMatchDeck(cards, deck)
+// botToken 是练习模式里客方席位凭据；它从不返回给客户端。
+const botToken = "bot-seat"
+
+// spectatorSide 是只读观众在接口层使用的"席位"。
+const spectatorSide = "spectator"
+
+// viewerFor 解析凭据：玩家席位或只读观众。
+func viewerFor(room *match, token string) (string, bool) {
+	if token == "" {
+		return "", false
+	}
+	if side, ok := room.players[token]; ok {
+		return side, true
+	}
+	if room.spectators[token] {
+		return spectatorSide, true
+	}
+	return "", false
+}
+
+// botPolicyNamed 把请求里的策略名映射成策略实例；未知名称退回 greedy。
+func botPolicyNamed(name string) ai.Policy {
+	if name == "random" {
+		return ai.NewRandom(1)
+	}
+	return &ai.Greedy{}
+}
+
+// startMatch 在客方牌组就绪后建局（人类加入与练习模式共用）。
+func (s *Server) startMatch(room *match, oppoDeck []int) error {
+	setup := s.matchSetup
+	if setup == nil {
+		setup = randomMatchSetup
+	}
+	seed, first, err := setup()
+	if err != nil {
+		return fmt.Errorf("could not initialize match randomness")
+	}
+	session, err := runner.NewMatchSessionWithFirstPlayer(s.cards, room.ownDeck, oppoDeck, seed, first)
+	if err != nil {
+		return err
+	}
+	room.session = session
+	recordReplay(room)
+	return nil
+}
+
+// runBot 反复推进 AI 席位，直到轮不到它为止（轮到人类、人类需要做选择，或对局结束）。
+func runBot(room *match) {
+	if room == nil || room.botDriver == nil || room.session == nil || room.botError != "" {
+		return
+	}
+	if _, err := room.botDriver.RunUntilBlocked(room.session); err != nil {
+		room.botError = err.Error()
+	}
+	recordReplay(room)
 }
 
 func practiceDeck() []int {
@@ -221,8 +321,32 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
+	// 推送流是长连接，不能握着房间锁；它自己在每次取样时短暂加锁。
+	if len(parts) == 2 && parts[1] == "stream" && r.Method == http.MethodGet {
+		s.streamMatch(w, r, parts[0], room)
+		return
+	}
 	room.mu.Lock()
 	defer room.mu.Unlock()
+	if len(parts) == 2 && parts[1] == "spectate" && r.Method == http.MethodPost {
+		// 观战凭据：只读。任何人都可以申请，但拿不到玩家令牌与邀请码。
+		if room.session == nil {
+			http.Error(w, "match has not started", http.StatusConflict)
+			return
+		}
+		token := randomID(24)
+		if room.spectators == nil {
+			room.spectators = map[string]bool{}
+		}
+		room.spectators[token] = true
+		state, err := room.session.SpectatorView()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		writeJSON(w, response{MatchID: parts[0], PlayerToken: token, Side: "spectator", State: state, Capabilities: runner.SupportedSimulatorCapabilities(), Events: room.session.EventsFor("spectator"), Bot: room.botDriver != nil})
+		return
+	}
 	if len(parts) == 2 && parts[1] == "replay" && r.Method == http.MethodGet {
 		token := bearerToken(r)
 		side, ok := room.players[token]
@@ -267,26 +391,14 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 		if deck == nil {
 			deck = practiceDeck()
 		}
-		if err := validateDeck(s.cards, deck); err != nil {
+		if err := runner.ValidateDeckForFormat(s.cards, deck, room.format); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		setup := s.matchSetup
-		if setup == nil {
-			setup = randomMatchSetup
-		}
-		seed, first, err := setup()
-		if err != nil {
-			http.Error(w, "could not initialize match randomness", http.StatusInternalServerError)
-			return
-		}
-		session, err := runner.NewMatchSessionWithFirstPlayer(s.cards, room.ownDeck, deck, seed, first)
-		if err != nil {
+		if err := s.startMatch(room, deck); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		room.session = session
-		recordReplay(room)
 		token := randomID(24)
 		room.players[token], room.joined = "oppo", true
 		writeMatch(w, parts[0], token, "oppo", room, nil)
@@ -332,6 +444,8 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			room.session.StartMatch()
 			recordReplay(room)
+			// 练习模式里 AI 可能先手，开局就要让它动起来。
+			runBot(room)
 		}
 		writeMatch(w, parts[0], "", side, room, nil)
 		return
@@ -341,7 +455,7 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	token := bearerToken(r)
-	side, ok := room.players[token]
+	side, ok := viewerFor(room, token)
 	if !ok {
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
 		return
@@ -352,6 +466,10 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if side == spectatorSide {
+		http.Error(w, "spectator credentials are read-only", http.StatusForbidden)
 		return
 	}
 	if !room.joined {
@@ -386,6 +504,8 @@ func (s *Server) matchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	result := submit(room.session, input)
 	recordReplay(room)
+	// 练习模式：人类每提交一次（含回答选择）就让 AI 推进到它再次等待为止。
+	runBot(room)
 	writeMatch(w, parts[0], "", side, room, &result)
 }
 
@@ -437,7 +557,7 @@ func writeMatch(w http.ResponseWriter, id, token, side string, room *match, resu
 	if side == "own" && !room.joined {
 		joinCode = room.joinCode
 	}
-	writeJSON(w, response{MatchID: id, PlayerToken: token, JoinCode: joinCode, Side: side, Waiting: !room.joined, MatchPhase: phase, MulliganReady: room.mulligan[side], OpponentReady: room.mulligan[oppositeMatchSide(side)], Result: result, State: state, LegalActions: actions, Capabilities: runner.SupportedSimulatorCapabilities(), Events: room.session.EventsFor(side)})
+	writeJSON(w, response{MatchID: id, PlayerToken: token, JoinCode: joinCode, Side: side, Waiting: !room.joined, MatchPhase: phase, MulliganReady: room.mulligan[side], OpponentReady: room.mulligan[oppositeMatchSide(side)], Result: result, State: state, LegalActions: actions, Capabilities: runner.SupportedSimulatorCapabilities(), Events: room.session.EventsFor(side), Bot: room.botDriver != nil, BotError: room.botError})
 }
 
 func oppositeMatchSide(side string) string {

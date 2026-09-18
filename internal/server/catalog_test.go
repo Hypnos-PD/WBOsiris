@@ -48,7 +48,7 @@ func TestPublicCatalogMatchesConstructedDeckRules(t *testing.T) {
 			t.Fatalf("incorrect availability for %d", card.ID)
 		}
 	}
-	if err := validateDeck(s.cards, catalog.PracticeDeck); err != nil {
+	if err := runner.ValidateMatchDeck(s.cards, catalog.PracticeDeck); err != nil {
 		t.Fatalf("catalog supplied invalid practice deck: %v", err)
 	}
 	if status, _ := perform(t, s.Handler(), http.MethodPost, "/api/cards", ""); status != http.StatusMethodNotAllowed {
@@ -63,7 +63,22 @@ func TestJoinDealsBothSubmittedDecksAfterValidation(t *testing.T) {
 		t.Fatal(err)
 	}
 	h := s.Handler()
-	_, body := perform(t, h, http.MethodPost, "/api/matches", "")
+	post := func(path string, value any) *httptest.ResponseRecorder {
+		data, err := json.Marshal(value)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req := httptest.NewRequest(http.MethodPost, path, bytes.NewReader(data))
+		res := httptest.NewRecorder()
+		h.ServeHTTP(res, req)
+		return res
+	}
+	// 这副测试牌组会用到所有职业卡的卡包，所以整个房间按无限制模式建。
+	created := post("/api/matches", map[string]any{"format": runner.FormatUnlimited})
+	if created.Code != http.StatusOK {
+		t.Fatalf("create status=%d body=%s", created.Code, created.Body.String())
+	}
+	body := created.Body.Bytes()
 	var owner response
 	if err := json.Unmarshal(body, &owner); err != nil {
 		t.Fatal(err)
@@ -72,6 +87,8 @@ func TestJoinDealsBothSubmittedDecksAfterValidation(t *testing.T) {
 	var identities []int
 	for n := range s.cards.Cards {
 		card := &s.cards.Cards[n]
+		// 这里只关心"提交的牌组会被完整发出"，所以用无限制模式挑牌，
+		// 免得受指定模式卡包轮换的影响。
 		if card.Meta.Class == "swordcraft" && runner.MatchCardUnavailableReason(card) == "" {
 			identities = append(identities, card.ID)
 		}
@@ -84,16 +101,6 @@ func TestJoinDealsBothSubmittedDecksAfterValidation(t *testing.T) {
 		guestDeck[n] = identities[n%14]
 	}
 	joinPath := "/api/matches/" + owner.MatchID + "/join?code=" + owner.JoinCode
-	post := func(path string, value any) *httptest.ResponseRecorder {
-		data, err := json.Marshal(value)
-		if err != nil {
-			t.Fatal(err)
-		}
-		req := httptest.NewRequest(http.MethodPost, path, bytes.NewReader(data))
-		res := httptest.NewRecorder()
-		h.ServeHTTP(res, req)
-		return res
-	}
 	previousSession := room.session
 	if previousSession != nil || len(owner.State.Own.Hand) != 0 {
 		t.Fatal("waiting room exposed an opening hand")
@@ -109,10 +116,10 @@ func TestJoinDealsBothSubmittedDecksAfterValidation(t *testing.T) {
 	if malformed.Code != http.StatusBadRequest || room.joined || room.session != previousSession {
 		t.Fatal("malformed guest request changed room or consumed invitation")
 	}
-	if res := post("/api/matches", map[string]any{"deck": []int{}}); res.Code != http.StatusBadRequest {
+	if res := post("/api/matches", map[string]any{"deck": []int{}, "format": runner.FormatUnlimited}); res.Code != http.StatusBadRequest {
 		t.Fatal("explicit empty deck silently used a default")
 	}
-	res := post(joinPath, map[string]any{"deck": guestDeck})
+	res := post(joinPath, map[string]any{"deck": guestDeck, "format": runner.FormatUnlimited})
 	if res.Code != http.StatusOK {
 		t.Fatalf("join status=%d body=%s", res.Code, res.Body.String())
 	}

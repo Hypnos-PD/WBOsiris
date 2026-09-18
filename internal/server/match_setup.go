@@ -27,7 +27,13 @@ func readMatchSetup(entropy io.Reader) (uint64, string, error) {
 // Waiting rooms have no dealt cards, first player or simulator RNG yet.
 func matchState(room *match, side string) (runner.StateView, error) {
 	if room.session != nil {
-		state, err := room.session.View(side)
+		var state runner.StateView
+		var err error
+		if side == spectatorSide {
+			state, err = room.session.SpectatorView()
+		} else {
+			state, err = room.session.View(side)
+		}
 		if !room.started {
 			state.Phase = "mulligan"
 		}

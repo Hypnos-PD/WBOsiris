@@ -12,7 +12,7 @@ go run ./cmd/wbo compile --source-root . --output cards.wbos cards
 go run ./cmd/wbo simulate --source-root . --scenario "最大能量已满时保持上限并抽牌" cards tests
 npm --prefix web install
 npm --prefix web run dev
-go run ./cmd/wbo serve --source-root . --listen :8080
+go run ./cmd/wbo serve --source-root . --listen :23215
 ./scripts/card_coverage.sh --min-percent 40
 ```
 

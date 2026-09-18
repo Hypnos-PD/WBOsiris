@@ -14,6 +14,15 @@ export type CatalogCard = {
   life?: number;
   traits: string[];
   deckLegal: boolean;
+  unavailableReason?: string;
+  /** 这张卡可以使用的赛制（结构上无法编入牌组时缺省）。 */
+  formats?: string[];
+};
+
+export type CatalogFormat = {
+  id: string;
+  name: string;
+  packs: number[];
 };
 
 export const classNames: Record<string, string> = {
@@ -33,7 +42,7 @@ export function cardText(markup: string): string {
   return document.body.textContent?.trim() || "";
 }
 
-export function deckProblems(deck: string[], cards: CatalogCard[]): string[] {
+export function deckProblems(deck: string[], cards: CatalogCard[], format = "rotation"): string[] {
   const byId = new Map(cards.map((card) => [String(card.id), card]));
   const counts = new Map<string, number>();
   const classes = new Set<string>();
@@ -44,6 +53,7 @@ export function deckProblems(deck: string[], cards: CatalogCard[]): string[] {
     const card = byId.get(id);
     if (!card) { errors.push(`卡牌 ${id} 不在当前卡池中`); continue; }
     if (!card.deckLegal) errors.push(`${card.name} 无法编入牌组`);
+    if (card.deckLegal && card.formats && !card.formats.includes(format)) errors.push(`${card.name} 不在该赛制卡池中`);
     if (count > 3) errors.push(`${card.name} 超过 3 张`);
     if (card.class !== "neutral") classes.add(card.class);
   }

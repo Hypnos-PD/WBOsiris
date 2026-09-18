@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, Layers, Minus, Plus, Search, Swords, Trash2, X } from "lucide-react";
-import { cardArt, hasEvolvedArt, classNames, deckProblems, typeNames, type CatalogCard } from "./decks";
+import { Bot, Check, Layers, Minus, Plus, Search, Swords, Trash2, X } from "lucide-react";
+import { cardArt, hasEvolvedArt, classNames, deckProblems, typeNames, type CatalogCard, type CatalogFormat } from "./decks";
 import { CardArt } from "./CardArt";
 import { CounterValues } from "./CounterValues";
 import "./decks.css";
@@ -14,13 +14,17 @@ type Props = {
   onChange: (deck: string[]) => void;
   onPractice: () => void;
   onBattle: () => void;
+  onBotBattle: () => void;
+  formats: CatalogFormat[];
+  format: string;
+  onFormatChange: (format: string) => void;
   loading: boolean;
   busy: boolean;
   error: string;
   onRetry: () => void;
 };
 
-export function DeckBuilder({ library, cards, deck, onChange, onPractice, onBattle, loading, busy, error, onRetry }: Props) {
+export function DeckBuilder({ library, cards, deck, onChange, onPractice, onBattle, onBotBattle, formats, format, onFormatChange, loading, busy, error, onRetry }: Props) {
   const [query, setQuery] = useState("");
   const [classFilter, setClassFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
@@ -41,8 +45,10 @@ export function DeckBuilder({ library, cards, deck, onChange, onPractice, onBatt
   const counts = new Map<string, number>();
   for (const id of deck) counts.set(id, (counts.get(id) || 0) + 1);
   const deckClass = deck.map((id) => byId.get(id)?.class).find((value) => value && value !== "neutral");
-  const problems = cards.length ? deckProblems(deck, cards) : [];
+  const problems = cards.length ? deckProblems(deck, cards, format) : [];
+  const inFormat = (card: CatalogCard) => !card.formats || card.formats.includes(format);
   const filtered = cards.filter((card) => (!availableOnly || card.deckLegal)
+    && inFormat(card)
     && (classFilter === "all" || card.class === classFilter || card.class === "neutral")
     && (typeFilter === "all" || card.cardType === typeFilter)
     && (costFilter === "all" || Math.min(card.cost, 10) === Number(costFilter))
@@ -51,7 +57,7 @@ export function DeckBuilder({ library, cards, deck, onChange, onPractice, onBatt
   const rows = [...counts].sort(([a], [b]) => (byId.get(a)?.cost || 0) - (byId.get(b)?.cost || 0) || Number(a) - Number(b));
   const curve = Array.from({ length: 11 }, (_, cost) => deck.filter((id) => Math.min(byId.get(id)?.cost ?? -1, 10) === cost).length);
   const totalCost = deck.reduce((sum, id) => sum + (byId.get(id)?.cost || 0), 0);
-  const reason = (card: CatalogCard) => !card.deckLegal ? "无法编入牌组" : deck.length >= 40 ? "牌组已满"
+  const reason = (card: CatalogCard) => !card.deckLegal ? "无法编入牌组" : !inFormat(card) ? "不在该赛制卡池中" : deck.length >= 40 ? "牌组已满"
     : (counts.get(String(card.id)) || 0) >= 3 ? "已达 3 张上限"
     : deckClass && card.class !== "neutral" && card.class !== deckClass ? "职业不符" : "";
   const add = (card: CatalogCard) => { if (!reason(card)) onChange([...deck, String(card.id)]); };
@@ -70,6 +76,7 @@ export function DeckBuilder({ library, cards, deck, onChange, onPractice, onBatt
           <select aria-label="职业筛选" value={classFilter} onChange={(event) => setClassFilter(event.target.value)}><option value="all">全部职业</option>{Object.entries(classNames).map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select>
           <select aria-label="类型筛选" value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}><option value="all">全部类型</option>{Object.entries(typeNames).map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select>
           <select aria-label="费用筛选" value={costFilter} onChange={(event) => setCostFilter(event.target.value)}><option value="all">全部费用</option>{curve.map((_, cost) => <option value={cost} key={cost}>{cost === 10 ? "10+" : cost} 费</option>)}</select>
+          <select aria-label="赛制" value={format} onChange={(event) => onFormatChange(event.target.value)}>{formats.length ? formats.map((item) => <option key={item.id} value={item.id}>{item.name}</option>) : <option value="rotation">指定模式</option>}</select>
           <label className="available-filter"><input type="checkbox" checked={availableOnly} onChange={(event) => setAvailableOnly(event.target.checked)}/>可组牌</label>
         </div>
         <div className="collection-count" aria-live="polite">{loading ? "正在加载卡池" : `${filtered.length} 张卡牌`}</div>
@@ -89,6 +96,7 @@ export function DeckBuilder({ library, cards, deck, onChange, onPractice, onBatt
         <div className="deck-curve" aria-label="费用分布">{curve.map((count, cost) => <div key={cost} title={`${cost === 10 ? "10+" : cost} 费：${count} 张`}><span>{count || ""}</span><i style={{ height: `${count / Math.max(1, ...curve) * 36}px` }}/><small>{cost === 10 ? "10+" : cost}</small></div>)}</div>
         <div className="deck-validation" aria-live="polite">{problems.length ? problems.map((problem) => <p key={problem}>{problem}</p>) : cards.length ? <span><Check size={15}/>可以对战</span> : <span>卡池尚未就绪</span>}</div>
         <button className="deck-battle-button" onClick={onBattle} disabled={busy || loading || !cards.length || !!problems.length}><Swords size={17}/>{busy ? "正在创建房间" : "使用牌组创建房间"}</button>
+        <button className="deck-battle-button deck-practice-button" onClick={onBotBattle} disabled={busy || loading || !cards.length || !!problems.length}><Bot size={17}/>{busy ? "正在准备对局" : "练习对战（对 AI）"}</button>
         <div className="deck-rows">{rows.map(([id, count]) => { const card = byId.get(id); return <div className="deck-row" key={id}>
           <span className="deck-row-cost">{card?.cost ?? "?"}</span><button className="deck-row-name" onClick={() => card && inspect(card)}>{card?.name || `卡牌 ${id}`}<small>{card ? typeNames[card.cardType] : "不在卡池中"}</small></button><button className="deck-icon-button" aria-label={`牌组移除 ${card?.name || id}`} title="移除一张" onClick={() => remove(id)}><Minus size={14}/></button><b>{count}</b><button className="deck-icon-button" aria-label={`牌组添加 ${card?.name || id}`} title={card ? reason(card) || "添加一张" : "不在卡池中"} onClick={() => card && add(card)} disabled={!card || !!reason(card)}><Plus size={14}/></button>
         </div>; })}</div>

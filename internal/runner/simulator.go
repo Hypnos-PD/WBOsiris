@@ -376,6 +376,23 @@ func (s *Session) View(viewer string) (StateView, error) {
 	}, nil
 }
 
+// SpectatorView 是给观战者与分析工具的投影：双方手牌都只给张数，
+// 也不暴露待处理选择（选择只属于正在操作的那一方）。
+// 事件用 EventsFor("spectator") 取，私有事件会被裁掉。
+func (s *Session) SpectatorView() (StateView, error) {
+	if s == nil || s.g == nil {
+		return StateView{}, fmt.Errorf("session is required")
+	}
+	return StateView{
+		FirstPlayer: s.g.firstPlayer,
+		Turn:        TurnView{Active: s.g.turn.Active, Number: s.g.turn.Number}, Phase: s.g.phase,
+		Revision: s.g.revision, Viewer: "spectator",
+		GameOver: s.g.gameOver, Winner: s.g.winner,
+		Own:  playerView(&s.g.own, false, s.g.turn.Number, "spectator", s.g.firstPlayer, s.g.cards),
+		Oppo: playerView(&s.g.oppo, false, s.g.turn.Number, "spectator", s.g.firstPlayer, s.g.cards),
+	}, nil
+}
+
 func (s *Session) pendingChoiceFor(viewer string) *ChoiceRequest {
 	request := s.PendingChoice()
 	if request == nil || request.PublicTo != viewer {

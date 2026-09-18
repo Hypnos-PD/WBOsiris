@@ -23,6 +23,8 @@ type catalogCard struct {
 	Traits            []string       `json:"traits"`
 	DeckLegal         bool           `json:"deckLegal"`
 	UnavailableReason string         `json:"unavailableReason,omitempty"`
+	// Formats 列出这张卡可以使用的赛制（结构不可编入时为 null）。
+	Formats []string `json:"formats,omitempty"`
 }
 
 func (s *Server) cardCatalog(w http.ResponseWriter, r *http.Request) {
@@ -39,6 +41,9 @@ func (s *Server) cardCatalog(w http.ResponseWriter, r *http.Request) {
 			CardType: card.CardType, Class: card.Meta.Class, Rarity: card.Meta.Rarity,
 			Pack: card.Meta.Pack, Cost: card.Cost, Traits: append([]string{}, card.Traits...),
 			DeckLegal: reason == "", UnavailableReason: reason, Counters: maps.Clone(card.Counters)}
+		if reason == "" {
+			item.Formats = runner.FormatsForCard(s.cards, card)
+		}
 		if card.Stats != nil {
 			item.Attack, item.Life = &card.Stats.Attack, &card.Stats.Life
 		}
@@ -49,5 +54,6 @@ func (s *Server) cardCatalog(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, struct {
 		Cards        []catalogCard `json:"cards"`
 		PracticeDeck []int         `json:"practiceDeck"`
-	}{items, practiceDeck()})
+		Formats      []runner.Format `json:"formats"`
+	}{items, practiceDeck(), runner.Formats(s.cards)})
 }

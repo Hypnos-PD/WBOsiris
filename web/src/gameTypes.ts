@@ -103,5 +103,8 @@ export type Remote = {
   state: GameState;
   legalActions?: LegalAction[];
   events?: RuntimeEvent[];
+  /** 练习模式：对手是 AI；botError 非空表示 AI 驱动失败。 */
+  bot?: boolean;
+  botError?: string;
   result?: { status: string; errorCode?: string; illegalCode?: string };
 };

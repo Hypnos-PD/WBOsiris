@@ -16,7 +16,7 @@ npm install
 npm run dev
 ```
 
-默认连接 `http://127.0.0.1:8080`。部署网页端和规则服务到不同主机时，可设置：
+默认连接 `http://127.0.0.1:23215`。部署网页端和规则服务到不同主机时，可设置：
 
 ```bash
 VITE_API_BASE=https://rules.example.test npm run dev
@@ -25,7 +25,7 @@ VITE_API_BASE=https://rules.example.test npm run dev
 同时启动项目根目录的规则服务：
 
 ```bash
-go run ./cmd/wbo serve --source-root . --listen :8080
+go run ./cmd/wbo serve --source-root . --listen :23215
 ```
 
 页面默认连接规则服务，消费 `state`、`legalActions`、`pendingChoice` 和 `events`，不实现规则判断。
