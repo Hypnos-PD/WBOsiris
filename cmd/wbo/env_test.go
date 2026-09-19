@@ -241,3 +241,22 @@ func TestEnvSessionPlaysRandomEpisode(t *testing.T) {
 		}
 	}
 }
+
+// formats 命令给出当前赛制与卡包窗口（构筑/训练侧按赛制筛卡时的唯一真值来源）。
+func TestEnvFormatsReportsPackWindows(t *testing.T) {
+	cards := loadEnvCards(t)
+	format, err := runner.FormatByID(cards, "rotation")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(format.Packs) == 0 {
+		t.Fatal("指定模式应当有卡包窗口")
+	}
+	unlimited, err := runner.FormatByID(cards, "unlimited")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(unlimited.Packs) < len(format.Packs) {
+		t.Fatalf("无限制模式的卡包不应少于指定模式：%d < %d", len(unlimited.Packs), len(format.Packs))
+	}
+}

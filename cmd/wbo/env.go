@@ -73,6 +73,13 @@ type envCardInfo struct {
 	Name     string   `json:"name,omitempty"`
 }
 
+// envFormatInfo 是一个赛制：ID/名称 + 允许的卡包窗口。
+type envFormatInfo struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Packs []int  `json:"packs"`
+}
+
 // envChoice 描述学习者当前待处理的选择请求与已累积的选择。
 type envChoice struct {
 	RequestID     string               `json:"requestId"`
@@ -108,6 +115,8 @@ type envEvent struct {
 	Cards  []int  `json:"cards,omitempty"`
 	// Pool 是 "card_pool" 命令的返回值。
 	Pool []envCardInfo `json:"pool,omitempty"`
+	// Formats 是 "formats" 命令的返回值：赛制与各自的卡包窗口。
+	Formats []envFormatInfo `json:"formats,omitempty"`
 	// Lookahead=true 表示这是一次"假想推进"的结果，真实对局没有被改变。
 	Lookahead bool `json:"lookahead,omitempty"`
 	// OK/Reason 是 deck_check 的判定结果。
@@ -279,6 +288,13 @@ func runEnv(args []string) int {
 			}
 			sort.Slice(pool, func(i, j int) bool { return pool[i].ID < pool[j].ID })
 			send(envEvent{Type: "card_pool", Pool: pool})
+		case "formats":
+			// 赛制与卡包窗口：训练/构筑侧要按赛制筛卡时，以引擎为准而不是自己推规则。
+			formats := make([]envFormatInfo, 0, 2)
+			for _, format := range runner.Formats(cards) {
+				formats = append(formats, envFormatInfo{ID: format.ID, Name: format.Name, Packs: format.Packs})
+			}
+			send(envEvent{Type: "formats", Formats: formats})
 		default:
 			fail(fmt.Errorf("未知命令 %q", command.Cmd))
 		}
