@@ -62,11 +62,15 @@ type envChoiceCandidate struct {
 
 // envCardInfo 是卡池清单里的一张卡：训练侧用它检查外来数据的卡牌覆盖率与卡包窗口。
 type envCardInfo struct {
-	ID    int    `json:"id"`
-	Pack  int    `json:"pack"`
-	Class string `json:"class,omitempty"`
-	Type  string `json:"type,omitempty"`
-	Name  string `json:"name,omitempty"`
+	ID   int    `json:"id"`
+	Pack int    `json:"pack"`
+	// Keywords 是卡牌的**固有**关键词（含由触发推导的 lastwords/engage/triggered）。
+	// 训练侧用它给手牌行补关键词：回放的场面行带打包状态位，而手牌行没有，
+	// 不补就会造成"训练时手牌没有关键词、推理时引擎却在手牌上给了关键词"的分布偏移。
+	Keywords []string `json:"keywords,omitempty"`
+	Class    string   `json:"class,omitempty"`
+	Type     string   `json:"type,omitempty"`
+	Name     string   `json:"name,omitempty"`
 }
 
 // envChoice 描述学习者当前待处理的选择请求与已累积的选择。
@@ -270,6 +274,7 @@ func runEnv(args []string) int {
 				pool = append(pool, envCardInfo{
 					ID: card.ID, Pack: card.Meta.Pack, Class: card.Meta.Class,
 					Type: card.CardType, Name: card.Locales["chs"].Name,
+					Keywords: intrinsicKeywords(card),
 				})
 			}
 			sort.Slice(pool, func(i, j int) bool { return pool[i].ID < pool[j].ID })
@@ -706,4 +711,32 @@ func cardPoolHash(cards *ir.CardPack) string {
 		fmt.Fprintf(hash, "%d\n", id)
 	}
 	return hex.EncodeToString(hash.Sum(nil))[:16]
+}
+
+// intrinsicKeywords 汇总一张牌的固有关键词（与 StateView 里实体关键词的口径一致）：
+// 固有列表 + 由触发种类推导的 lastwords/engage/triggered。
+func intrinsicKeywords(card *ir.Card) []string {
+	seen := map[string]bool{}
+	keywords := make([]string, 0, len(card.Intrinsic)+2)
+	add := func(name string) {
+		if name != "" && !seen[name] {
+			seen[name] = true
+			keywords = append(keywords, name)
+		}
+	}
+	for _, name := range card.Intrinsic {
+		add(name)
+	}
+	for _, ability := range card.Abilities {
+		switch ir.TriggerKind(ability.Trigger) {
+		case "lastwords":
+			add("lastwords")
+		case "engage":
+			add("engage")
+		case "fanfare", "evolve", "superevolve":
+		default:
+			add("triggered")
+		}
+	}
+	return keywords
 }
