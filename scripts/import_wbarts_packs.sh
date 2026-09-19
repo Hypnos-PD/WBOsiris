@@ -51,7 +51,10 @@ while IFS= read -r card; do
     for locale in chs eng jpn kor cht; do
       key="name_$locale"
       value=$(jq -r --arg key "$key" '.[$key] // ""' <<<"$card" | sed 's/\\/\\\\/g; s/"/\\"/g')
-      locale_text=$(jq -r --arg locale "$locale" '[.skill_texts[]?.["text_\($locale)"]] | join("\\n")' <<<"$card" | sed 's/\\/\\\\/g; s/"/\\"/g')
+      # 写成 `[]? | .["text_" + $locale]` 而不是 `[]?.["..."]`：后者在 jq 1.6
+      # （ubuntu-22.04 的 apt 版本，也就是 CI 跑的那套）里是语法错误，
+      # 会让导入器直接退出 3。
+      locale_text=$(jq -r --arg locale "$locale" '[.skill_texts[]? | .["text_" + $locale]] | join("\\n")' <<<"$card" | sed 's/\\/\\\\/g; s/"/\\"/g')
       printf '    locale %s {\n        name "%s";\n        text """\n%s\n""";\n    }\n\n' "$locale" "$value" "$locale_text"
     done
     printf '}\n'
