@@ -176,6 +176,10 @@ type PlayerView struct {
 	ExtraPPActive    bool         `json:"extraPPActive"`
 	AttackedThisTurn bool         `json:"attackedThisTurn"`
 	DeckCount        int          `json:"deckCount"`
+	// DeckRemaining 是**自己**牌组里剩下的卡牌 ID（多重集，顺序不公开——真人玩家也只知道
+	// 自己带了哪些牌、还剩哪些，不知道顺序）。对手的这一项永远为空：那是隐藏信息。
+	// 没有它，AI 无法判断"关键牌还在牌组里吗""还剩几张终结手段""牌组耗尽风险"。
+	DeckRemaining    []int        `json:"deckRemaining,omitempty"`
 	HandCount        int          `json:"handCount"`
 	Hand             []EntityView `json:"hand,omitempty"`
 	Field            []EntityView `json:"field"`
@@ -420,8 +424,21 @@ func playerView(p *player, revealHand bool, turn int, side, firstPlayer string, 
 	}
 	if revealHand {
 		view.Hand = entityViews(p.hand, true)
+		view.DeckRemaining = deckCardIDs(p.deck)
 	}
 	return view
+}
+
+// deckCardIDs 把牌组展开成卡牌 ID 的多重集（顺序不外发：真人也不知道自己的抽牌顺序）。
+func deckCardIDs(deck []*instance) []int {
+	ids := make([]int, 0, len(deck))
+	for _, card := range deck {
+		if card == nil || card.card == nil {
+			continue
+		}
+		ids = append(ids, card.card.ID)
+	}
+	return ids
 }
 
 func entityViews(instances []*instance, revealMaterials bool) []EntityView {
