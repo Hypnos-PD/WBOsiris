@@ -15,6 +15,7 @@ import (
 	"wbo/internal/ai"
 	"wbo/internal/ir"
 	"wbo/internal/project"
+	"wbo/internal/ruleset"
 	"wbo/internal/runner"
 )
 
@@ -31,6 +32,8 @@ import (
 const (
 	envProtocol = "wbo-env/3"
 	envEncoding = "wbo-obs/1"
+	// maxChoiceSteps 是同一个选择请求允许的子动作上限（正常最多几十次）。
+	maxChoiceSteps = 64
 )
 
 type envCommand struct {
@@ -86,6 +89,9 @@ type envEvent struct {
 	Reward   float64              `json:"reward,omitempty"`
 	Fault    string               `json:"fault,omitempty"`
 	Message  string               `json:"message,omitempty"`
+	// Cards 是 "deck" 命令的返回值：一副随机合法卡组。
+	Format string `json:"format,omitempty"`
+	Cards  []int  `json:"cards,omitempty"`
 }
 
 // envSession 把一局封在环境里：学习者侧 + 对手侧（内置策略）。
@@ -108,6 +114,9 @@ type envSession struct {
 	chosenInstances []string
 	chosenLeaders   []string
 	chosenOptions   []int
+	// choiceSteps 是同一个选择请求上的子动作计数：采样策略可能在 select/deselect
+	// 之间来回循环，必须有硬上限，否则一局永远走不完。
+	choiceSteps int
 }
 
 func runEnv(args []string) int {
@@ -194,6 +203,20 @@ func runEnv(args []string) int {
 			}
 			event.Seed = current.seed
 			send(event)
+		case "deck":
+			// 随机生成一副合法卡组：训练侧用它组卡组池，避免只练一副镜像卡组。
+			format, err := runner.FormatByID(cards, command.Format)
+			if err != nil {
+				fail(err)
+				continue
+			}
+			rng := ruleset.NewRNG(command.Seed)
+			deck, err := ai.RandomDeck(cards, format, rng)
+			if err != nil {
+				fail(err)
+				continue
+			}
+			send(envEvent{Type: "deck", Format: format.ID, Cards: deck})
 		default:
 			fail(fmt.Errorf("未知命令 %q", command.Cmd))
 		}
@@ -274,6 +297,11 @@ func (e *envSession) advance(cards *ir.CardPack) (envEvent, error) {
 				// v2：选择进入同一套动作列表（select/deselect/confirm）。
 				if e.choiceRequestID != pending.RequestID {
 					e.resetChoice(pending.RequestID)
+				}
+				if e.choiceSteps >= maxChoiceSteps {
+					return envEvent{}, fmt.Errorf(
+						"选择子步骤超过 %d 次（策略可能在 select/deselect 之间循环）request=%s",
+						maxChoiceSteps, pending.RequestID)
 				}
 				e.side = pending.PublicTo
 				if len(e.choiceLegal(*pending)) == 0 {
@@ -401,16 +429,17 @@ func (e *envSession) choiceState(view runner.StateView, side string, pending run
 	}
 }
 
-// choiceLegal 给出当前可用的选择动作：可选的候选、可撤销的已选项，
-// 以及"达到下限但未满上限"时的 confirm。选满上限会自动提交，因此不会出现
-// "想取消却已经提交"的情况；自由撤销保证任何合法组合都可达（递增顺序会走进死路）。
+// choiceLegal 给出当前可用的选择动作：还没选过的候选，以及"达到下限但未满上限"时的 confirm。
+//
+// 只允许"加选"、不允许撤销是刻意的：候选上限是有限的，于是子步骤数天然有界，
+// 采样策略不可能在 select/deselect 之间来回循环；同时任何合法组合都仍然可达
+// （逐个选中即可，选满上限自动提交）。
 func (e *envSession) choiceLegal(pending runner.ChoiceRequest) []runner.LegalAction {
 	actor := e.side
 	if actor != "own" && actor != "oppo" {
 		actor = e.learner
 	}
-	selected := e.selectedKeys()
-	legal := make([]runner.LegalAction, 0, len(pending.Candidates)+len(selected)+1)
+	legal := make([]runner.LegalAction, 0, len(pending.Candidates)+1)
 	if e.selectionCount() < pending.MaxSelections {
 		for _, candidate := range pending.Candidates {
 			key := choiceKey(candidate)
@@ -419,9 +448,6 @@ func (e *envSession) choiceLegal(pending runner.ChoiceRequest) []runner.LegalAct
 			}
 			legal = append(legal, runner.LegalAction{Kind: "select", Actor: actor, Source: key})
 		}
-	}
-	for _, key := range selected {
-		legal = append(legal, runner.LegalAction{Kind: "deselect", Actor: actor, Source: key})
 	}
 	if e.selectionCount() >= pending.MinSelections && e.selectionCount() < pending.MaxSelections {
 		legal = append(legal, runner.LegalAction{Kind: "confirm", Actor: actor})
@@ -443,13 +469,10 @@ func (e *envSession) choiceStep(pending runner.ChoiceRequest, index int) (runner
 	if action.Kind == "confirm" {
 		return e.choiceResponse(pending), true, nil
 	}
+	e.choiceSteps++
 	candidate, ok := findCandidate(pending, action.Source)
 	if !ok {
 		return runner.ChoiceResponse{}, false, fmt.Errorf("候选 %q 不存在", action.Source)
-	}
-	if action.Kind == "deselect" {
-		e.dropSelection(action.Source)
-		return runner.ChoiceResponse{}, false, nil
 	}
 	switch candidate.Kind {
 	case "entity":
@@ -506,6 +529,7 @@ func (e *envSession) resetChoice(requestID string) {
 	e.chosenInstances = nil
 	e.chosenLeaders = nil
 	e.chosenOptions = nil
+	e.choiceSteps = 0
 }
 
 // isSelected 按候选 key 判断是否已选。
@@ -516,37 +540,6 @@ func (e *envSession) isSelected(key string) bool {
 		}
 	}
 	return false
-}
-
-// dropSelection 撤销一个已选候选。
-func (e *envSession) dropSelection(key string) {
-	switch {
-	case strings.HasPrefix(key, "e:"):
-		e.chosenInstances = dropString(e.chosenInstances, strings.TrimPrefix(key, "e:"))
-	case strings.HasPrefix(key, "l:"):
-		e.chosenLeaders = dropString(e.chosenLeaders, strings.TrimPrefix(key, "l:"))
-	case strings.HasPrefix(key, "o:"):
-		option, err := strconv.Atoi(strings.TrimPrefix(key, "o:"))
-		if err != nil {
-			return
-		}
-		for index, item := range e.chosenOptions {
-			if item == option {
-				e.chosenOptions = append(e.chosenOptions[:index], e.chosenOptions[index+1:]...)
-				break
-			}
-		}
-	}
-}
-
-func dropString(items []string, want string) []string {
-	out := items[:0]
-	for _, item := range items {
-		if item != want {
-			out = append(out, item)
-		}
-	}
-	return out
 }
 
 func (e *envSession) selectedKeys() []string {

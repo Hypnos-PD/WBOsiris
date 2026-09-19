@@ -9,9 +9,9 @@ import (
 	"wbo/internal/runner"
 )
 
-// 多选选择的累积规则：可自由选择/撤销（保证任何合法组合都可达），
+// 多选选择的累积规则：只允许加选（子步骤数天然有界，不会来回循环），
 // 达到下限才能 confirm，达到上限自动提交。
-func TestEnvChoiceAccumulationSupportsSelectConfirmAndDeselect(t *testing.T) {
+func TestEnvChoiceAccumulationSupportsSelectAndConfirm(t *testing.T) {
 	pending := runner.ChoiceRequest{
 		RequestID: "req", ActionID: "act", StateRevision: 7,
 		Kind: "target", MinSelections: 1, MaxSelections: 3,
@@ -39,29 +39,19 @@ func TestEnvChoiceAccumulationSupportsSelectConfirmAndDeselect(t *testing.T) {
 	}
 
 	legal = session.choiceLegal(pending)
-	if countKind(legal, "select") != 3 || countKind(legal, "deselect") != 1 || countKind(legal, "confirm") != 1 {
-		t.Fatalf("选过 x2 后应剩 3 select + 1 deselect + 1 confirm，实际 %+v", legal)
+	if countKind(legal, "select") != 3 || countKind(legal, "confirm") != 1 {
+		t.Fatalf("选过 x2 后应剩 3 select + 1 confirm，实际 %+v", legal)
 	}
-	// 撤销刚才的选择，回到初始状态。
-	deselect := firstOfKind(legal, "deselect")
-	if legal[deselect].Source != "e:x2" {
-		t.Fatalf("撤销的应该是刚选的 x2：%+v", legal[deselect])
-	}
-	if _, complete, err := session.choiceStep(pending, deselect); err != nil || complete {
-		t.Fatalf("撤销后不应提交（err=%v complete=%v）", err, complete)
-	}
-	legal = session.choiceLegal(pending)
-	if countKind(legal, "select") != 4 || countKind(legal, "deselect") != 0 || countKind(legal, "confirm") != 0 {
-		t.Fatalf("撤销后应回到初始可用集合，实际 %+v", legal)
+	// 已选过的候选不能再选（否则可能无限循环）。
+	for _, action := range legal {
+		if action.Source == "e:x2" {
+			t.Fatalf("已选候选不应再次出现：%+v", action)
+		}
 	}
 
-	// 选两个后 confirm，应带着这两个选择提交。
+	// 再选一个（共两个）后 confirm，应带着这两个选择提交。
 	if _, complete, err := session.choiceStep(pending, firstOfKind(legal, "select")); err != nil || complete {
-		t.Fatalf("第一次选择不应提交（err=%v complete=%v）", err, complete)
-	}
-	legal = session.choiceLegal(pending)
-	if _, complete, err := session.choiceStep(pending, firstOfKind(legal, "select")); err != nil || complete {
-		t.Fatalf("第二次选择不应提交（err=%v complete=%v）", err, complete)
+		t.Fatalf("选到两个时不应提交（err=%v complete=%v）", err, complete)
 	}
 	legal = session.choiceLegal(pending)
 	response, complete, err := session.choiceStep(pending, firstOfKind(legal, "confirm"))

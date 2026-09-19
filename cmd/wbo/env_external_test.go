@@ -4,8 +4,11 @@ import (
 	"path/filepath"
 	"testing"
 
+	"wbo/internal/ai"
 	"wbo/internal/ir"
 	"wbo/internal/project"
+	"wbo/internal/ruleset"
+	"wbo/internal/runner"
 )
 
 type externalRun struct {
@@ -88,5 +91,43 @@ func TestEnvExternalDriveBothSides(t *testing.T) {
 	}
 	if totalOwn == 0 || totalOppo == 0 {
 		t.Fatalf("external 模式下双方都应有决定：own=%d oppo=%d", totalOwn, totalOppo)
+	}
+}
+
+// deck 命令给出的是合法卡组：长度 40、同名字段合法、能直接用于 reset。
+func TestEnvDeckCommandReturnsLegalDeck(t *testing.T) {
+	cards := loadEnvCards(t)
+	format, err := runner.FormatByID(cards, "rotation")
+	if err != nil {
+		t.Fatal(err)
+	}
+	seen := map[int]bool{}
+	for seed := uint64(1); seed <= 5; seed++ {
+		deck, err := ai.RandomDeck(cards, format, ruleset.NewRNG(seed))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(deck) != 40 {
+			t.Fatalf("seed %d：卡组 %d 张", seed, len(deck))
+		}
+		if err := runner.ValidateDeckForFormat(cards, deck, format); err != nil {
+			t.Fatalf("seed %d：卡组不合法 %v", seed, err)
+		}
+		// 同一 seed 必须给出同一副卡组（可复现）。
+		again, err := ai.RandomDeck(cards, format, ruleset.NewRNG(seed))
+		if err != nil {
+			t.Fatal(err)
+		}
+		for index := range deck {
+			if deck[index] != again[index] {
+				t.Fatalf("seed %d：同一 seed 两次生成的卡组不同", seed)
+			}
+		}
+		for _, card := range deck {
+			seen[card] = true
+		}
+	}
+	if len(seen) < 10 {
+		t.Fatalf("随机卡组覆盖太窄：只用到 %d 张不同卡", len(seen))
 	}
 }
