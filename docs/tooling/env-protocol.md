@@ -1,4 +1,4 @@
-# 训练环境协议（wbo-env/1）
+# 训练环境协议（wbo-env/2）
 
 `wbo env` 是给训练项目（WBDecima）用的**进程内、零 HTTP**的接口：
 引擎侧跑一个进程，训练侧通过 stdin/stdout 交换 JSON-lines。
@@ -17,7 +17,7 @@ stdin 每行一条命令，stdout 每行一个事件；诊断信息走 stderr。
 
 ```json
 {"cmd":"hello"}
-{"type":"ready","protocol":"wbo-env/1","engine":"25b6ab5","ruleset":"wbo-standard-0.3.0",
+{"type":"ready","protocol":"wbo-env/2","engine":"25b6ab5","ruleset":"wbo-standard-0.3.0",
  "poolHash":"3cd6f8ef32453426","encoding":"wbo-obs/1"}
 ```
 
@@ -57,7 +57,34 @@ stdin 每行一条命令，stdout 每行一个事件；诊断信息走 stderr。
 ```
 
 引擎会：① 结算该动作；② 让对手走到再次轮到学习者（或终局）；
-③ 需要选择（target/mode）时由环境按 greedy 规则自动回答（v1 不暴露）。
+③ 需要学习者做选择（target / mode / fusion_material）时，按下面的"选择"小节继续推进。
+
+## 选择（v2）
+
+学习者这一侧的选择不再由环境代答，而是拆成**自回归子动作**：
+
+- 需要选择时同样吐 `state` 事件，`view` 与主动作时一致，额外带 `choice` 字段；
+- `legal` 里是选择类动作：`select`（选一个候选）、`deselect`（撤销已选）、
+  `confirm`（达到下限且未满上限时提交）；
+- 选满 `maxSelections` 会**自动提交**，不需要 `confirm`；
+- 提交时返回的累积选择放在 `choice.selected`，key 形如 `e:<instanceId>`（实体）、
+  `l:<side>`（主战者）、`o:<optionId>`（模式选项）；
+- `choice.candidates[].cardId` 给出实体候选对应的卡牌 ID（查得到才有），方便观测编码。
+
+```json
+{"type":"state","side":"own","turn":5,"phase":"main","view":{ … },
+ "choice":{"requestId":"5b28…","kind":"target","minSelections":2,"maxSelections":2,
+           "selected":["e:ab12…"],
+           "candidates":[{"key":"e:ab12…","kind":"entity","instanceId":"ab12…","cardId":10001110},
+                         {"key":"l:oppo","kind":"leader","leaderSide":"oppo"}]},
+ "legal":[{"kind":"select","actor":"own","source":"l:oppo"},
+          {"kind":"deselect","actor":"own","source":"e:ab12…"}]}
+```
+
+训练侧仍然只按下标走：`{"cmd":"step","action":0}`。选择期间的下标指向 `legal` 中的选择类动作，
+不要与主动作混用。这样"主动作 + 选择序列"就是一套统一、可变长的动作空间，
+多选组合不会因为顺序而变得不可达（v2 的早期草案曾限制递增顺序，会在
+`min == max` 时走进死路，已废弃）。
 
 终局：
 
@@ -72,7 +99,8 @@ stdin 每行一条命令，stdout 每行一个事件；诊断信息走 stderr。
 
 ## 版本与兼容
 
-- `wbo-env/1`：命令/事件形状（本文）。
+- `wbo-env/2`：命令/事件形状（本文），学习者选择进入动作列表（select/deselect/confirm）。
+- `wbo-env/1`：历史版本，学习者选择由环境按 greedy 自动回答，训练侧无法学习目标与模式选择。
 - `wbo-obs/1`：`state.view` 的字段集合（即 `runner.StateView`）。
 - 破坏性改动必须升版本号；新增可选字段不升版本，训练侧要容忍未知字段。
 - 训练侧在 `engine.lock` 里固定引擎的 tag/commit 与 `poolHash`，每条样本、每个 checkpoint
