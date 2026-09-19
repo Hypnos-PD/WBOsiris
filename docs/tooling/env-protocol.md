@@ -1,4 +1,4 @@
-# 训练环境协议（wbo-env/2）
+# 训练环境协议（wbo-env/3）
 
 `wbo env` 是给训练项目（WBDecima）用的**进程内、零 HTTP**的接口：
 引擎侧跑一个进程，训练侧通过 stdin/stdout 交换 JSON-lines。
@@ -17,7 +17,7 @@ stdin 每行一条命令，stdout 每行一个事件；诊断信息走 stderr。
 
 ```json
 {"cmd":"hello"}
-{"type":"ready","protocol":"wbo-env/2","engine":"25b6ab5","ruleset":"wbo-standard-0.3.0",
+{"type":"ready","protocol":"wbo-env/3","engine":"25b6ab5","ruleset":"wbo-standard-0.3.0",
  "poolHash":"3cd6f8ef32453426","encoding":"wbo-obs/1"}
 ```
 
@@ -36,7 +36,7 @@ stdin 每行一条命令，stdout 每行一个事件；诊断信息走 stderr。
 | `deck` / `oppoDeck` | 40 张卡组；省略则用内置练习卡组 |
 | `format` | `rotation`（指定模式，默认）或 `unlimited` |
 | `firstPlayer` | `own`（学习者先手）/ `oppo`；省略时按 seed 决定 |
-| `opponent` | `greedy`（默认）或 `random` |
+| `opponent` | `greedy`（默认）、`random`，或 `external`（对手侧也交给训练侧，见下） |
 
 学习者固定在 `own` 侧；观察里的 `own`/`oppo` 都按学习者视角转换，对手手牌只给张数。
 
@@ -86,6 +86,26 @@ stdin 每行一条命令，stdout 每行一个事件；诊断信息走 stderr。
 多选组合不会因为顺序而变得不可达（v2 的早期草案曾限制递增顺序，会在
 `min == max` 时走进死路，已废弃）。
 
+## 外部对手与自对弈（v3）
+
+`opponent: "external"` 时不使用内置策略：**两边都由训练侧决定**。
+每次 `state` 事件用 `side`（`own` / `oppo`）标明这一步属于哪一方，
+该方的选择请求同样按上面的 select/deselect/confirm 暴露；
+`step` 提交的动作属于最近一次 `state` 事件的那一方。
+
+```json
+{"cmd":"reset","seed":7,"opponent":"external"}
+{"type":"state","side":"oppo","turn":3,"phase":"main","view":{…oppo 视角…},"legal":[…]}
+```
+
+规则与约定：
+
+- `view` 始终是**当前行动方**的视角，隐藏信息按引擎的脱敏规则处理；
+- `reward` 仍然只按 `own` 的立场给（赢 `+1` / 输 `-1`），对手侧的回报取相反数；
+- 同一次会话内动作 ID 递增，保证可复现；
+- 这样自对弈、联赛（对冻结快照）、以及人类参与都能走同一条路径，
+  训练侧不需要分叉出"对手是内置策略"的特例。
+
 终局：
 
 ```json
@@ -99,7 +119,8 @@ stdin 每行一条命令，stdout 每行一个事件；诊断信息走 stderr。
 
 ## 版本与兼容
 
-- `wbo-env/2`：命令/事件形状（本文），学习者选择进入动作列表（select/deselect/confirm）。
+- `wbo-env/3`：命令/事件形状（本文）。新增 `opponent: "external"`，两边都可由训练侧驱动。
+- `wbo-env/2`：学习者选择进入动作列表（select/deselect/confirm），对手固定为内置策略。
 - `wbo-env/1`：历史版本，学习者选择由环境按 greedy 自动回答，训练侧无法学习目标与模式选择。
 - `wbo-obs/1`：`state.view` 的字段集合（即 `runner.StateView`）。
 - 破坏性改动必须升版本号；新增可选字段不升版本，训练侧要容忍未知字段。

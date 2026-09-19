@@ -29,7 +29,7 @@ import (
 //     同一组合只沿候选下标递增的顺序可达，避免同一组合出现多种排列；
 //   - 结束一局吐 done 事件（终止奖励：赢 +1 / 输 -1）。
 const (
-	envProtocol = "wbo-env/2"
+	envProtocol = "wbo-env/3"
 	envEncoding = "wbo-obs/1"
 )
 
@@ -94,6 +94,14 @@ type envSession struct {
 	learner  string
 	opponent *ai.Driver
 	seed     uint64
+
+	// external=true 时不使用内置对手策略：对手侧的决定同样交给训练侧，
+	// 于是自对弈、联赛与人类参与都能走同一条路径。
+	external bool
+	// side 是"当前等着行动的一方"，由最近一次 state 事件决定。
+	side string
+	// serial 生成唯一动作 ID，保证同一次会话里不会重复。
+	serial uint64
 
 	// v2 选择的累积状态：同一 RequestID 期间有效。
 	choiceRequestID string
@@ -225,18 +233,23 @@ func newEnvSession(cards *ir.CardPack, command envCommand) (*envSession, error) 
 		return nil, err
 	}
 	policy := ai.Policy(&ai.Greedy{})
+	external := false
 	switch command.Opponent {
 	case "random":
 		policy = ai.NewRandom(command.Seed*2 + 1)
+	case "external":
+		external = true
 	case "greedy", "":
 	default:
-		return nil, fmt.Errorf("未知对手策略 %q（支持 random / greedy）", command.Opponent)
+		return nil, fmt.Errorf("未知对手策略 %q（支持 random / greedy / external）", command.Opponent)
 	}
 	return &envSession{
 		session:  session,
 		learner:  "own",
 		opponent: ai.NewDriver("oppo", policy, ai.Limits{}),
 		seed:     command.Seed,
+		external: external,
+		side:     "own",
 	}, nil
 }
 
@@ -257,11 +270,12 @@ func (e *envSession) advance(cards *ir.CardPack) (envEvent, error) {
 			return envEvent{Type: "done", Done: true, Winner: view.Winner, Reward: reward, Turn: view.Turn.Number, View: &view}, nil
 		}
 		if pending := e.session.PendingChoice(); pending != nil {
-			if pending.PublicTo == e.learner {
-				// v2：学习者的选择进入同一套动作列表（select/confirm）。
+			if pending.PublicTo == e.learner || e.external {
+				// v2：选择进入同一套动作列表（select/deselect/confirm）。
 				if e.choiceRequestID != pending.RequestID {
 					e.resetChoice(pending.RequestID)
 				}
+				e.side = pending.PublicTo
 				if len(e.choiceLegal(*pending)) == 0 {
 					// 没有可选项且下限为 0：直接以空选择提交，避免环境卡死。
 					if pending.MinSelections == 0 {
@@ -275,7 +289,7 @@ func (e *envSession) advance(cards *ir.CardPack) (envEvent, error) {
 						pending.Kind, pending.MinSelections, pending.MaxSelections, len(pending.Candidates),
 						e.selectionCount(), pending.RequestID)
 				}
-				return e.choiceState(view, *pending), nil
+				return e.choiceState(e.viewFor(pending.PublicTo), pending.PublicTo, *pending), nil
 			}
 			// 对手的选择由对手策略回答。
 			if _, err := e.opponent.Step(e.session); err != nil {
@@ -283,13 +297,19 @@ func (e *envSession) advance(cards *ir.CardPack) (envEvent, error) {
 			}
 			continue
 		}
-		if view.Turn.Active == "own" {
-			legal := e.session.LegalActionsFor(e.learner)
+		active := e.learner
+		if view.Turn.Active != "own" {
+			active = e.other(e.learner)
+		}
+		if active == e.learner || e.external {
+			legal := e.session.LegalActionsFor(active)
 			if len(legal) == 0 {
-				return envEvent{}, fmt.Errorf("学习者回合没有合法动作（引擎异常）")
+				return envEvent{}, fmt.Errorf("%s 回合没有合法动作（引擎异常）", active)
 			}
+			view := e.viewFor(active)
+			e.side = active
 			return envEvent{
-				Type: "state", Side: e.learner, Turn: view.Turn.Number, Phase: view.Phase,
+				Type: "state", Side: active, Turn: view.Turn.Number, Phase: view.Phase,
 				View: &view, Legal: legal,
 			}, nil
 		}
@@ -308,34 +328,56 @@ func (e *envSession) advance(cards *ir.CardPack) (envEvent, error) {
 }
 
 // step 按下标提交一个动作：待处理选择期间提交的是 select/confirm，否则是主动作。
+// 动作属于"最近一次 state 事件的那一方"（内置对手时永远是学习者，external 时两边都可能）。
 func (e *envSession) step(cards *ir.CardPack, index int) error {
-	view, err := e.session.View(e.learner)
+	side := e.side
+	if side != "own" && side != "oppo" {
+		side = e.learner
+	}
+	view, err := e.session.View(side)
 	if err != nil {
 		return err
 	}
 	if view.GameOver {
 		return fmt.Errorf("对局已结束")
 	}
-	if pending := e.session.PendingChoice(); pending != nil && pending.PublicTo == e.learner {
+	if pending := e.session.PendingChoice(); pending != nil && pending.PublicTo == side {
 		return e.stepChoice(*pending, index)
 	}
 	if view.Turn.Active != "own" {
-		return fmt.Errorf("现在不是学习者的回合")
+		return fmt.Errorf("现在不是 %s 的回合", side)
 	}
-	legal := e.session.LegalActionsFor(e.learner)
+	legal := e.session.LegalActionsFor(side)
 	if index < 0 || index >= len(legal) {
 		return fmt.Errorf("动作下标 %d 越界（合法动作 %d 个）", index, len(legal))
 	}
 	action := legal[index]
-	result := e.session.SubmitAs(envActionID(index), e.learner, ai.CommandFor(action))
+	e.serial++
+	result := e.session.SubmitAs(envActionID(int(e.serial)), side, ai.CommandFor(action))
 	if result.Status != runner.StatusCompleted && result.Status != runner.StatusSuspended {
 		return fmt.Errorf("动作 %s 被拒绝: %s", action.Kind, result.ErrorCode)
 	}
 	return nil
 }
 
-// choiceState 把待处理的选择渲染成一次 state 事件：合法动作是 select 与 confirm。
-func (e *envSession) choiceState(view runner.StateView, pending runner.ChoiceRequest) envEvent {
+// viewFor 取某一方视角的状态；出错时退回到自己的视角，避免状态事件缺失。
+func (e *envSession) viewFor(side string) runner.StateView {
+	if view, err := e.session.View(side); err == nil {
+		return view
+	}
+	view, _ := e.session.View(e.learner)
+	return view
+}
+
+func (e *envSession) other(side string) string {
+	if side == "own" {
+		return "oppo"
+	}
+	return "own"
+}
+
+// choiceState 把待处理的选择渲染成一次 state 事件：合法动作是 select/deslect/confirm。
+func (e *envSession) choiceState(view runner.StateView, side string, pending runner.ChoiceRequest) envEvent {
 	candidates := make([]envChoiceCandidate, 0, len(pending.Candidates))
 	for _, candidate := range pending.Candidates {
 		item := envChoiceCandidate{
@@ -349,7 +391,7 @@ func (e *envSession) choiceState(view runner.StateView, pending runner.ChoiceReq
 		candidates = append(candidates, item)
 	}
 	return envEvent{
-		Type: "state", Side: e.learner, Turn: view.Turn.Number, Phase: view.Phase,
+		Type: "state", Side: side, Turn: view.Turn.Number, Phase: view.Phase,
 		View: &view, Legal: e.choiceLegal(pending),
 		Choice: &envChoice{
 			RequestID: pending.RequestID, Kind: pending.Kind,
@@ -363,6 +405,10 @@ func (e *envSession) choiceState(view runner.StateView, pending runner.ChoiceReq
 // 以及"达到下限但未满上限"时的 confirm。选满上限会自动提交，因此不会出现
 // "想取消却已经提交"的情况；自由撤销保证任何合法组合都可达（递增顺序会走进死路）。
 func (e *envSession) choiceLegal(pending runner.ChoiceRequest) []runner.LegalAction {
+	actor := e.side
+	if actor != "own" && actor != "oppo" {
+		actor = e.learner
+	}
 	selected := e.selectedKeys()
 	legal := make([]runner.LegalAction, 0, len(pending.Candidates)+len(selected)+1)
 	if e.selectionCount() < pending.MaxSelections {
@@ -371,14 +417,14 @@ func (e *envSession) choiceLegal(pending runner.ChoiceRequest) []runner.LegalAct
 			if e.isSelected(key) {
 				continue
 			}
-			legal = append(legal, runner.LegalAction{Kind: "select", Actor: e.learner, Source: key})
+			legal = append(legal, runner.LegalAction{Kind: "select", Actor: actor, Source: key})
 		}
 	}
 	for _, key := range selected {
-		legal = append(legal, runner.LegalAction{Kind: "deselect", Actor: e.learner, Source: key})
+		legal = append(legal, runner.LegalAction{Kind: "deselect", Actor: actor, Source: key})
 	}
 	if e.selectionCount() >= pending.MinSelections && e.selectionCount() < pending.MaxSelections {
-		legal = append(legal, runner.LegalAction{Kind: "confirm", Actor: e.learner})
+		legal = append(legal, runner.LegalAction{Kind: "confirm", Actor: actor})
 	}
 	return legal
 }
