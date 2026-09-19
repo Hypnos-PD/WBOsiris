@@ -95,6 +95,9 @@ type envEvent struct {
 	Cards  []int  `json:"cards,omitempty"`
 	// Lookahead=true 表示这是一次"假想推进"的结果，真实对局没有被改变。
 	Lookahead bool `json:"lookahead,omitempty"`
+	// OK/Reason 是 deck_check 的判定结果。
+	OK     bool   `json:"ok,omitempty"`
+	Reason string `json:"reason,omitempty"`
 }
 
 // envSession 把一局封在环境里：学习者侧 + 对手侧（内置策略）。
@@ -234,6 +237,19 @@ func runEnv(args []string) int {
 			}
 			event.Seed = current.seed
 			send(event)
+		case "deck_check":
+			// 用引擎自己的赛制校验判断一副外部卡组（例如从 WBA 卡组库拉来的）能不能用。
+			// 卡池会随版本滚动，老卡组会被判为不合法——这一步是唯一真值来源。
+			format, err := runner.FormatByID(cards, command.Format)
+			if err != nil {
+				fail(err)
+				continue
+			}
+			if err := runner.ValidateDeckForFormat(cards, command.Deck, format); err != nil {
+				send(envEvent{Type: "deck_check", Format: format.ID, OK: false, Reason: err.Error()})
+				continue
+			}
+			send(envEvent{Type: "deck_check", Format: format.ID, OK: true})
 		default:
 			fail(fmt.Errorf("未知命令 %q", command.Cmd))
 		}

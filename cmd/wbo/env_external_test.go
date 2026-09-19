@@ -184,3 +184,34 @@ func TestEnvLookaheadDoesNotTouchTheRealSession(t *testing.T) {
 		t.Fatalf("同一候选两次假想推进结果不一致：%+v vs %+v", first, second)
 	}
 }
+
+// deck_check 用引擎自己的赛制校验判断外来卡组：合法通过，少牌必须被拒绝。
+func TestEnvDeckCheckUsesEngineFormatRules(t *testing.T) {
+	cards := loadEnvCards(t)
+	format, err := runner.FormatByID(cards, "rotation")
+	if err != nil {
+		t.Fatal(err)
+	}
+	legal, err := ai.RandomDeck(cards, format, ruleset.NewRNG(11))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := runner.ValidateDeckForFormat(cards, legal, format); err != nil {
+		t.Fatalf("随机卡组本身应当合法：%v", err)
+	}
+	short := append([]int(nil), legal[:len(legal)-1]...)
+	if err := runner.ValidateDeckForFormat(cards, short, format); err == nil {
+		t.Fatal("39 张卡组不应通过校验")
+	}
+	unlimited, err := runner.FormatByID(cards, "unlimited")
+	if err != nil {
+		t.Fatal(err)
+	}
+	rotated, err := ai.RandomDeck(cards, unlimited, ruleset.NewRNG(3))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := runner.ValidateDeckForFormat(cards, rotated, unlimited); err != nil {
+		t.Fatalf("无限制卡组应当合法：%v", err)
+	}
+}
