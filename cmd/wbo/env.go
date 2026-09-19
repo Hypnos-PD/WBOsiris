@@ -60,6 +60,15 @@ type envChoiceCandidate struct {
 	Labels     map[string]string `json:"labels,omitempty"`
 }
 
+// envCardInfo 是卡池清单里的一张卡：训练侧用它检查外来数据的卡牌覆盖率与卡包窗口。
+type envCardInfo struct {
+	ID    int    `json:"id"`
+	Pack  int    `json:"pack"`
+	Class string `json:"class,omitempty"`
+	Type  string `json:"type,omitempty"`
+	Name  string `json:"name,omitempty"`
+}
+
 // envChoice 描述学习者当前待处理的选择请求与已累积的选择。
 type envChoice struct {
 	RequestID     string               `json:"requestId"`
@@ -93,6 +102,8 @@ type envEvent struct {
 	// Cards 是 "deck" 命令的返回值：一副随机合法卡组。
 	Format string `json:"format,omitempty"`
 	Cards  []int  `json:"cards,omitempty"`
+	// Pool 是 "card_pool" 命令的返回值。
+	Pool []envCardInfo `json:"pool,omitempty"`
 	// Lookahead=true 表示这是一次"假想推进"的结果，真实对局没有被改变。
 	Lookahead bool `json:"lookahead,omitempty"`
 	// OK/Reason 是 deck_check 的判定结果。
@@ -250,6 +261,19 @@ func runEnv(args []string) int {
 				continue
 			}
 			send(envEvent{Type: "deck_check", Format: format.ID, OK: true})
+		case "card_pool":
+			// 卡池清单：训练侧用它检查外来数据（例如 WBC 回放）里的卡牌是否都在当前卡池里，
+			// 以及每张卡属于哪个卡包（用来判断赛制窗口）。
+			pool := make([]envCardInfo, 0, len(cards.Cards))
+			for n := range cards.Cards {
+				card := &cards.Cards[n]
+				pool = append(pool, envCardInfo{
+					ID: card.ID, Pack: card.Meta.Pack, Class: card.Meta.Class,
+					Type: card.CardType, Name: card.Locales["chs"].Name,
+				})
+			}
+			sort.Slice(pool, func(i, j int) bool { return pool[i].ID < pool[j].ID })
+			send(envEvent{Type: "card_pool", Pool: pool})
 		default:
 			fail(fmt.Errorf("未知命令 %q", command.Cmd))
 		}
