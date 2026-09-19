@@ -72,3 +72,22 @@ curl -s -X POST https://sva.hypd.asia/wbo/api/matches   # 401 login required（�
 ssh rain-1 'systemctl status wbosiris.service; journalctl -u wbosiris.service -n 50 --no-pager'
 # 部署脚本失败时会自动回滚到上一版二进制；手动回滚就用同一条命令重跑旧版本
 ```
+
+## CI 自动部署还缺什么（2026-09-19 核实）
+
+`.github/workflows/deploy-backend.yml` 的 `deploy` 任务要求仓库里存在：
+
+- 变量 `WBO_DEPLOY_ENABLED=true`（没有它，任务直接跳过，只有 `test` 会跑）；
+- 机密 `WBO_DEPLOY_SSH_KEY`（能登录部署机的私钥）。
+
+这两个**当前都不存在**（`gh api repos/Hypnos-PD/WBOsiris/actions/variables` 与 `.../secrets` 都是空），
+所以自动部署从来没跑成功过——线上版本要么是手动部署的，要么落后。现在补上变量与机密即可；
+在那之前，改完 `cards/`/`cmd/`/`internal/` 后要手动跑一次脚本，否则线上仍是旧规则：
+
+```bash
+scripts/deploy-backend.sh              # 本地测试 + 构建 + 上传 + 原子替换 + 健康检查（失败自动回滚）
+curl -s https://sva.hypd.asia/wbo/api/health   # 返回的 version 必须等于 git rev-parse --short HEAD
+```
+
+另外 `test` 任务会先构建 `web/` 前端（`desktop/` 用 `go:embed` 嵌它，而产物不进仓库），
+所以前端编译在 main 上也有门禁；触发路径包含 `web/**` 与 `desktop/**`。
