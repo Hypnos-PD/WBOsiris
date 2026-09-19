@@ -67,13 +67,15 @@ type Continuation struct {
 	CardPackHash    string                 `json:"cardPackHash"`
 	RulesetID       string                 `json:"rulesetId"`
 	RulesetHash     string                 `json:"rulesetHash"`
-	ActionID        string                 `json:"actionId"`
-	RequestID       string                 `json:"requestId"`
+	ActionID        string                 `json:"actionId,omitempty"`
+	RequestID       string                 `json:"requestId,omitempty"`
 	StateRevision   uint64                 `json:"stateRevision"`
 	RequestOrdinal  uint32                 `json:"requestOrdinal"`
 	Stack           []ContinuationFrame    `json:"stack"`
 	BindingFrames   []ContinuationBindings `json:"bindingFrames"`
-	Pending         ContinuationPending    `json:"pending"`
+	// Pending 为空表示这条续局记录是"决策点存档"（没有待处理选择），
+	// 用于搜索与重放时的克隆；非空则是原来的"挂起中存档"。
+	Pending         *ContinuationPending   `json:"pending,omitempty"`
 	Triggers        []ContinuationTrigger  `json:"triggers"`
 	DrainingTrigger bool                   `json:"drainingTrigger"`
 	TriggerBase     int                    `json:"triggerBase"`
@@ -168,15 +170,11 @@ func newSessionWithPack(index map[int]*ir.Card, state ir.State, seed uint64, pac
 			}
 		}
 	}
-	blocks, err := indexBlocks(index)
+	runtime, err := runtimeIndexFor(pack, index)
 	if err != nil {
 		return nil, err
 	}
-	hash, err := runtimeCardPackHash(pack, index)
-	if err != nil {
-		return nil, err
-	}
-	s := &Session{g: g, blocks: blocks, cardPackHash: hash, budgetPolicy: ruleset.Default().ExecutionBudget}
+	s := &Session{g: g, blocks: runtime.blocks, cardPackHash: runtime.packHash, budgetPolicy: ruleset.Default().ExecutionBudget}
 	s.budget.reset(s.budgetPolicy)
 	g.budget = &s.budget
 	return s, nil
@@ -397,10 +395,21 @@ func (s *Session) BudgetState() ExecutionBudgetState {
 }
 
 func (s *Session) Continuation() *Continuation {
-	if s.pending == nil {
+	if s.pending != nil {
+		return s.makeContinuation()
+	}
+	if !s.atDecisionPoint() {
 		return nil
 	}
-	return s.makeContinuation()
+	return s.makeIdleContinuation()
+}
+
+// atDecisionPoint 报告会话是否停在"某一方的主动作边界"：
+// 没有待处理选择、没有未结算的栈、没有未排空的触发。搜索与重放需要在这里克隆。
+func (s *Session) atDecisionPoint() bool {
+	return s != nil && s.g != nil && s.fault == "" && s.actionID == "" && len(s.stack) == 0 &&
+		len(s.g.triggers) == 0 && s.g.phase == "main" &&
+		(s.g.turn.Active == "own" || s.g.turn.Active == "oppo")
 }
 
 func (s *Session) run() StepResult {

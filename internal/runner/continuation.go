@@ -194,7 +194,7 @@ type ContinuationRNG struct {
 func (s *Session) EncodeContinuation() ([]byte, error) {
 	c := s.Continuation()
 	if c == nil {
-		return nil, fmt.Errorf("session is not suspended")
+		return nil, fmt.Errorf("session is not at a decision point")
 	}
 	data, err := json.Marshal(c)
 	if err != nil {
@@ -242,14 +242,11 @@ func RestoreSession(cards *ir.CardPack, c *Continuation) (*Session, error) {
 		}
 		index[card.ID] = card
 	}
-	blocks, err := indexBlocks(index)
+	runtime, err := runtimeIndexFor(cards, index)
 	if err != nil {
 		return nil, err
 	}
-	packHash, err := runtimeCardPackHash(cards, index)
-	if err != nil {
-		return nil, err
-	}
+	blocks, packHash := runtime.blocks, runtime.packHash
 	dependency := ruleset.DefaultDependency()
 	if c.Version != continuationVersion {
 		return nil, fmt.Errorf("unsupported continuation version %q", c.Version)
@@ -260,18 +257,28 @@ func RestoreSession(cards *ir.CardPack, c *Continuation) (*Session, error) {
 	if c.RulesetID != dependency.ID || c.RulesetHash != dependency.ContentHash {
 		return nil, fmt.Errorf("continuation ruleset mismatch")
 	}
-	if !validRuntimeID(c.ActionID) || !validRuntimeID(c.RequestID) || c.RequestOrdinal == 0 {
+	idle := c.Pending == nil
+	if idle {
+		if c.ActionID != "" || c.RequestID != "" || c.RequestOrdinal != 0 || len(c.Stack) != 0 {
+			return nil, fmt.Errorf("idle continuation must not carry request state")
+		}
+	} else if !validRuntimeID(c.ActionID) || !validRuntimeID(c.RequestID) || c.RequestOrdinal == 0 {
 		return nil, fmt.Errorf("invalid continuation identifiers")
 	}
 	g, err := restoreGame(index, c.Game)
 	if err != nil {
 		return nil, err
 	}
-	if c.StateRevision != g.revision || c.Pending.Request.StateRevision != g.revision || c.Pending.Request.ActionID != c.ActionID || c.Pending.Request.RequestID != c.RequestID {
-		return nil, fmt.Errorf("continuation state or request mismatch")
+	if c.StateRevision != g.revision {
+		return nil, fmt.Errorf("continuation state revision mismatch")
 	}
-	if deriveRuntimeID(c.ActionID, c.Pending.Request.NodeID, fmt.Sprint(c.RequestOrdinal)) != c.RequestID {
-		return nil, fmt.Errorf("continuation request ID mismatch")
+	if !idle {
+		if c.Pending.Request.StateRevision != g.revision || c.Pending.Request.ActionID != c.ActionID || c.Pending.Request.RequestID != c.RequestID {
+			return nil, fmt.Errorf("continuation state or request mismatch")
+		}
+		if deriveRuntimeID(c.ActionID, c.Pending.Request.NodeID, fmt.Sprint(c.RequestOrdinal)) != c.RequestID {
+			return nil, fmt.Errorf("continuation request ID mismatch")
+		}
 	}
 
 	bindings, err := restoreBindings(c.BindingFrames, g.instances)
@@ -335,62 +342,64 @@ func RestoreSession(cards *ir.CardPack, c *Continuation) (*Session, error) {
 		return nil, fmt.Errorf("continuation stack exceeds recorded budget state")
 	}
 
-	pendingBindings, ok := bindings[c.Pending.BindingFrameID]
-	if !ok {
-		return nil, fmt.Errorf("unknown pending binding frame %q", c.Pending.BindingFrameID)
-	}
-	pendingSelf, err := continuationInstance(g.instances, c.Pending.SelfInstanceID)
-	if err != nil {
-		return nil, err
-	}
-	pending := &pendingChoice{request: cloneChoiceRequest(c.Pending.Request), binding: c.Pending.Binding, bindings: pendingBindings, self: pendingSelf, options: map[int][]ir.Effect{}, optionBlockIDs: map[int]string{}}
-	if pending.request.Kind == "fusion_material" {
-		source := g.instances[c.Pending.FusionSourceID]
-		if source == nil || source != pendingSelf {
-			return nil, fmt.Errorf("invalid fusion continuation source")
+	if !idle {
+		pendingBindings, ok := bindings[c.Pending.BindingFrameID]
+		if !ok {
+			return nil, fmt.Errorf("unknown pending binding frame %q", c.Pending.BindingFrameID)
 		}
-		for n := range source.card.FusionAbilities {
-			if source.card.FusionAbilities[n].ID == c.Pending.FusionAbilityID {
-				pending.fusionSource = source
-				pending.fusion = &source.card.FusionAbilities[n]
-				break
+		pendingSelf, err := continuationInstance(g.instances, c.Pending.SelfInstanceID)
+		if err != nil {
+			return nil, err
+		}
+		pending := &pendingChoice{request: cloneChoiceRequest(c.Pending.Request), binding: c.Pending.Binding, bindings: pendingBindings, self: pendingSelf, options: map[int][]ir.Effect{}, optionBlockIDs: map[int]string{}}
+		if pending.request.Kind == "fusion_material" {
+			source := g.instances[c.Pending.FusionSourceID]
+			if source == nil || source != pendingSelf {
+				return nil, fmt.Errorf("invalid fusion continuation source")
+			}
+			for n := range source.card.FusionAbilities {
+				if source.card.FusionAbilities[n].ID == c.Pending.FusionAbilityID {
+					pending.fusionSource = source
+					pending.fusion = &source.card.FusionAbilities[n]
+					break
+				}
+			}
+			if pending.fusion == nil {
+				return nil, fmt.Errorf("invalid fusion continuation ability")
 			}
 		}
-		if pending.fusion == nil {
-			return nil, fmt.Errorf("invalid fusion continuation ability")
+		if err := validateChoiceRequest(pending.request, g.instances); err != nil {
+			return nil, err
 		}
-	}
-	if err := validateChoiceRequest(pending.request, g.instances); err != nil {
-		return nil, err
-	}
-	for _, option := range c.Pending.OptionBlockIDs {
-		body, ok := blocks[option.BlockID]
-		_, duplicate := pending.options[option.OptionID]
-		if !ok || option.OptionID == 0 || duplicate {
-			return nil, fmt.Errorf("invalid pending option block")
+		for _, option := range c.Pending.OptionBlockIDs {
+			body, ok := blocks[option.BlockID]
+			_, duplicate := pending.options[option.OptionID]
+			if !ok || option.OptionID == 0 || duplicate {
+				return nil, fmt.Errorf("invalid pending option block")
+			}
+			pending.options[option.OptionID] = body
+			pending.optionBlockIDs[option.OptionID] = option.BlockID
 		}
-		pending.options[option.OptionID] = body
-		pending.optionBlockIDs[option.OptionID] = option.BlockID
-	}
-	if pending.request.Kind == "target" {
-		if pending.binding == "" || len(pending.options) != 0 {
-			return nil, fmt.Errorf("invalid target continuation")
+		if pending.request.Kind == "target" {
+			if pending.binding == "" || len(pending.options) != 0 {
+				return nil, fmt.Errorf("invalid target continuation")
+			}
+		} else if pending.request.Kind == "mode" {
+			if pending.binding != "" || len(pending.options) != len(pending.request.Candidates) {
+				return nil, fmt.Errorf("invalid mode continuation")
+			}
+		} else if pending.request.Kind == "fusion_material" {
+			if pending.fusion == nil || pending.fusionSource == nil || pending.binding != "" || len(pending.options) != 0 {
+				return nil, fmt.Errorf("invalid fusion continuation")
+			}
+		} else {
+			return nil, fmt.Errorf("unsupported pending request kind %q", pending.request.Kind)
 		}
-	} else if pending.request.Kind == "mode" {
-		if pending.binding != "" || len(pending.options) != len(pending.request.Candidates) {
-			return nil, fmt.Errorf("invalid mode continuation")
+		if err := validatePendingNode(s, pending); err != nil {
+			return nil, err
 		}
-	} else if pending.request.Kind == "fusion_material" {
-		if pending.fusion == nil || pending.fusionSource == nil || pending.binding != "" || len(pending.options) != 0 {
-			return nil, fmt.Errorf("invalid fusion continuation")
-		}
-	} else {
-		return nil, fmt.Errorf("unsupported pending request kind %q", pending.request.Kind)
+		s.pending = pending
 	}
-	if err := validatePendingNode(s, pending); err != nil {
-		return nil, err
-	}
-	s.pending = pending
 
 	for _, saved := range c.Triggers {
 		body, ok := blocks[saved.BlockID]
@@ -451,10 +460,10 @@ func (s *Session) makeContinuation() *Continuation {
 		}
 		c.Stack = append(c.Stack, saved)
 	}
-	c.Pending = ContinuationPending{Request: *s.PendingChoice(), Binding: s.pending.binding, BindingFrameID: addBindings(s.pending.bindings), SelfInstanceID: instanceID(s.pending.self)}
+	pending := &ContinuationPending{Request: *s.PendingChoice(), Binding: s.pending.binding, BindingFrameID: addBindings(s.pending.bindings), SelfInstanceID: instanceID(s.pending.self)}
 	if s.pending.request.Kind == "fusion_material" {
-		c.Pending.FusionSourceID = instanceID(s.pending.fusionSource)
-		c.Pending.FusionAbilityID = s.pending.fusion.ID
+		pending.FusionSourceID = instanceID(s.pending.fusionSource)
+		pending.FusionAbilityID = s.pending.fusion.ID
 	}
 	optionIDs := make([]int, 0, len(s.pending.optionBlockIDs))
 	for optionID := range s.pending.optionBlockIDs {
@@ -462,12 +471,26 @@ func (s *Session) makeContinuation() *Continuation {
 	}
 	sort.Ints(optionIDs)
 	for _, optionID := range optionIDs {
-		c.Pending.OptionBlockIDs = append(c.Pending.OptionBlockIDs, ContinuationOption{OptionID: optionID, BlockID: s.pending.optionBlockIDs[optionID]})
+		pending.OptionBlockIDs = append(pending.OptionBlockIDs, ContinuationOption{OptionID: optionID, BlockID: s.pending.optionBlockIDs[optionID]})
 	}
+	c.Pending = pending
 	for _, trigger := range s.g.triggers {
 		c.Triggers = append(c.Triggers, ContinuationTrigger{BlockID: trigger.blockID, SelfInstanceID: instanceID(trigger.self), BindingFrameID: addBindings(trigger.bindings), Zone: trigger.zone})
 	}
 	return c
+}
+
+// makeIdleContinuation 生成"决策点存档"：栈与待处理选择都为空，
+// 没有请求标识，恢复出来就是一个停在某一方主动作边界的会话。
+// 搜索（克隆后推演）与重放对拍都靠它，不需要另写一份深拷贝。
+func (s *Session) makeIdleContinuation() *Continuation {
+	dependency := ruleset.DefaultDependency()
+	return &Continuation{
+		Version: continuationVersion, CardPackHash: s.cardPackHash,
+		RulesetID: dependency.ID, RulesetHash: dependency.ContentHash,
+		StateRevision: s.g.revision,
+		Game:          snapshotContinuationGame(s.g), Budget: s.budget.state,
+	}
 }
 
 func snapshotContinuationGame(g *game) ContinuationGame {
