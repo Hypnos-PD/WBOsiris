@@ -131,3 +131,56 @@ func TestEnvDeckCommandReturnsLegalDeck(t *testing.T) {
 		t.Fatalf("随机卡组覆盖太窄：只用到 %d 张不同卡", len(seen))
 	}
 }
+
+// lookahead 不能改变真实对局：revision 与后续走向都必须保持不变。
+func TestEnvLookaheadDoesNotTouchTheRealSession(t *testing.T) {
+	cards := loadEnvCards(t)
+	session, err := newEnvSession(cards, envCommand{Cmd: "reset", Seed: 5, Opponent: "greedy"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	event, err := session.advance(cards)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if event.Done {
+		t.Fatal("第 5 号种子第一手就结束了？")
+	}
+	before, err := session.session.View(session.learner)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// 对每个候选都做一次假想推进，真实会话必须纹丝不动。
+	for index := range event.Legal {
+		preview, err := session.lookahead(cards, index)
+		if err != nil {
+			t.Fatalf("候选 %d：%v", index, err)
+		}
+		if !preview.Lookahead {
+			t.Fatalf("候选 %d：返回的事件没有 lookahead 标记", index)
+		}
+		if preview.Type != "state" && preview.Type != "done" {
+			t.Fatalf("候选 %d：事件类型 %q", index, preview.Type)
+		}
+	}
+	after, err := session.session.View(session.learner)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if before.Revision != after.Revision || before.Turn.Number != after.Turn.Number {
+		t.Fatalf("假想推进污染了真实对局：revision %d→%d、turn %d→%d",
+			before.Revision, after.Revision, before.Turn.Number, after.Turn.Number)
+	}
+	// 假想推进是确定的：同一候选两次结果一致。
+	first, err := session.lookahead(cards, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := session.lookahead(cards, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if first.Turn != second.Turn || len(first.Legal) != len(second.Legal) {
+		t.Fatalf("同一候选两次假想推进结果不一致：%+v vs %+v", first, second)
+	}
+}

@@ -17,6 +17,7 @@ import (
 	"wbo/internal/project"
 	"wbo/internal/ruleset"
 	"wbo/internal/runner"
+	"wbo/internal/search"
 )
 
 // wbo env：给训练进程用的 JSON-lines 环境协议（stdin 收命令，stdout 发行事件）。
@@ -92,6 +93,8 @@ type envEvent struct {
 	// Cards 是 "deck" 命令的返回值：一副随机合法卡组。
 	Format string `json:"format,omitempty"`
 	Cards  []int  `json:"cards,omitempty"`
+	// Lookahead=true 表示这是一次"假想推进"的结果，真实对局没有被改变。
+	Lookahead bool `json:"lookahead,omitempty"`
 }
 
 // envSession 把一局封在环境里：学习者侧 + 对手侧（内置策略）。
@@ -217,6 +220,20 @@ func runEnv(args []string) int {
 				continue
 			}
 			send(envEvent{Type: "deck", Format: format.ID, Cards: deck})
+		case "lookahead":
+			// 假想推进：克隆当前局面、提交候选动作、让对手按内置策略回应，
+			// 返回"如果这么打会到哪里"。真实对局不被修改，训练侧可以据此给候选重新排序。
+			if current == nil {
+				fail(fmt.Errorf("先发送 reset"))
+				continue
+			}
+			event, err := current.lookahead(cards, command.Action)
+			if err != nil {
+				fail(err)
+				continue
+			}
+			event.Seed = current.seed
+			send(event)
 		default:
 			fail(fmt.Errorf("未知命令 %q", command.Cmd))
 		}
@@ -386,6 +403,46 @@ func (e *envSession) step(cards *ir.CardPack, index int) error {
 		return fmt.Errorf("动作 %s 被拒绝: %s", action.Kind, result.ErrorCode)
 	}
 	return nil
+}
+
+// lookahead 返回"如果现在提交第 index 个动作会到达哪个局面"：
+// 克隆当前会话、在克隆上走这一步、让对手按内置策略回应，然后返回克隆的事件。
+// 真实会话（revision、RNG、选择累积）完全不受影响。
+func (e *envSession) lookahead(cards *ir.CardPack, index int) (envEvent, error) {
+	view, err := e.session.View(e.side)
+	if err != nil {
+		return envEvent{}, err
+	}
+	if view.GameOver {
+		return envEvent{}, fmt.Errorf("对局已结束，无法假想推进")
+	}
+	if e.session.PendingChoice() != nil {
+		return envEvent{}, fmt.Errorf("有待处理选择时不能假想推进主动作")
+	}
+	legal := e.session.LegalActionsFor(e.side)
+	if index < 0 || index >= len(legal) {
+		return envEvent{}, fmt.Errorf("候选动作下标 %d 越界（合法动作 %d 个）", index, len(legal))
+	}
+	clone, err := search.Clone(cards, e.session)
+	if err != nil {
+		return envEvent{}, err
+	}
+	shadow := &envSession{
+		session:  clone,
+		learner:  e.learner,
+		opponent: e.opponent,
+		seed:     e.seed,
+		side:     e.side,
+	}
+	if err := shadow.step(cards, index); err != nil {
+		return envEvent{}, err
+	}
+	event, err := shadow.advance(cards)
+	if err != nil {
+		return envEvent{}, err
+	}
+	event.Lookahead = true
+	return event, nil
 }
 
 // viewFor 取某一方视角的状态；出错时退回到自己的视角，避免状态事件缺失。
