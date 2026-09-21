@@ -895,6 +895,10 @@ effect {
 （`SimulatorCommand{Kind: "crystallize"}`）。块内允许 `counter`、`countdown`、
 `lastwords`、`when` 与 `engage`：
 
+> **使用条件（与【激奏】同款）**：只有**支付不起本体费用**时才能结晶
+> （`pp < 卡牌的当前费用`）。付得起本体时 `crystallize` 不是合法动作，
+> 所以训练侧看到的合法动作列表里，`play` 与 `crystallize` **永远不会同时出现**。
+
 ```wbo
 effect {
     bane;

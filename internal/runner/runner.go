@@ -598,9 +598,14 @@ func (g *game) preflight(a ir.Action, budget *budgetTracker) string {
 		return sandbox.preflightRequirements(a.Body, sandboxSource, frame{}, true)
 	case "crystallize":
 		// 【结晶】：以结晶费用当作护符打出，使用衍生的护符卡面（吟唱/谢幕曲等）。
+		//
+		// 与【激奏】同款限制：**只有支付不起本体费用时**才能结晶（PP 够付原费用时不能结晶）。
+		// 这直接决定训练侧看到的合法动作列表：付得起本体时只出现 `play`，付不起时才出现
+		// `crystallize`，两者不会同时摆给模型选。
 		actor := g.player(x.Actor)
 		derived := i.card.CrystallizeCard()
-		if i.zone != "hand" || !contains(actor.hand, i) || derived == nil || actor.pp < derived.Cost {
+		if i.zone != "hand" || !contains(actor.hand, i) || derived == nil ||
+			actor.pp < derived.Cost || actor.pp >= i.cost {
 			return "cost"
 		}
 		for _, restriction := range i.card.Restrictions {
