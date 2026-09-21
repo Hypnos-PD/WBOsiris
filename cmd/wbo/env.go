@@ -45,6 +45,10 @@ type envCommand struct {
 	Format      string `json:"format,omitempty"`
 	FirstPlayer string `json:"firstPlayer,omitempty"`
 	Opponent    string `json:"opponent,omitempty"`
+	// Oracle=true 时，每次 state 事件附带特权信息（训练专用；客户端不要传）。
+	Oracle      bool   `json:"oracle,omitempty"`
+	// OracleDeckTop 限制特权信息里牌库给多少张（默认 8）。
+	OracleDeckTop int  `json:"oracleDeckTop,omitempty"`
 	Action      int    `json:"action,omitempty"`
 }
 
@@ -110,6 +114,8 @@ type envEvent struct {
 	Reward   float64              `json:"reward,omitempty"`
 	Fault    string               `json:"fault,omitempty"`
 	Message  string               `json:"message,omitempty"`
+	// Oracle 是训练专用特权信息（仅在 reset 时传 oracle=true 才出现）。
+	Oracle *runner.OracleView `json:"oracle,omitempty"`
 	// Cards 是 "deck" 命令的返回值：一副随机合法卡组。
 	Format string `json:"format,omitempty"`
 	Cards  []int  `json:"cards,omitempty"`
@@ -130,6 +136,9 @@ type envSession struct {
 	learner  string
 	opponent *ai.Driver
 	seed     uint64
+	// oracle=true 时，state 事件里额外附带**训练专用**的特权信息（对手手牌内容、
+	// 双方牌库的抽牌顺序）。默认关闭：客户端与回放路径永远拿不到这些隐藏信息。
+	oracle bool
 
 	// external=true 时不使用内置对手策略：对手侧的决定同样交给训练侧，
 	// 于是自对弈、联赛与人类参与都能走同一条路径。
@@ -216,6 +225,7 @@ func runEnv(args []string) int {
 				continue
 			}
 			event.Seed = current.seed
+			current.attachOracle(&event)
 			send(event)
 		case "step":
 			if current == nil {
@@ -232,6 +242,7 @@ func runEnv(args []string) int {
 				continue
 			}
 			event.Seed = current.seed
+			current.attachOracle(&event)
 			send(event)
 		case "deck":
 			// 随机生成一副合法卡组：训练侧用它组卡组池，避免只练一副镜像卡组。
@@ -350,8 +361,22 @@ func newEnvSession(cards *ir.CardPack, command envCommand) (*envSession, error) 
 		opponent: ai.NewDriver("oppo", policy, ai.Limits{}),
 		seed:     command.Seed,
 		external: external,
+		oracle:   command.Oracle,
 		side:     "own",
 	}, nil
+}
+
+// attachOracle 在训练模式（reset 时传了 oracle=true）下给 state 事件补上特权信息。
+// 默认关闭；这样客户端与回放路径在协议层面就拿不到对手手牌内容。
+func (e *envSession) attachOracle(event *envEvent) {
+	if !e.oracle || event == nil || event.View == nil {
+		return
+	}
+	view, err := e.session.Oracle(8)
+	if err != nil {
+		return
+	}
+	event.Oracle = &view
 }
 
 // advance 推进到"学习者要做决定"或终局：先让对手走完，再自动回答学习者的选择。

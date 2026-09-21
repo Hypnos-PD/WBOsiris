@@ -260,3 +260,57 @@ func TestEnvFormatsReportsPackWindows(t *testing.T) {
 		t.Fatalf("无限制模式的卡包不应少于指定模式：%d < %d", len(unlimited.Packs), len(format.Packs))
 	}
 }
+
+
+// oracle 是训练专用特权信息：默认关闭（客户端/回放路径拿不到），
+// 显式传 oracle=true 时才附带对手手牌内容与双方牌库顺序。
+func TestEnvOracleIsOptInAndCarriesHiddenInfo(t *testing.T) {
+	root := filepath.Join("..", "..")
+	loaded := project.LoadWithRoot([]string{filepath.Join(root, "cards")}, false, root)
+	if loaded.HasErrors() {
+		t.Fatal(loaded.Diagnostics)
+	}
+	cards, _, err := project.BuildRuntimePacks(loaded)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// 默认（不传 oracle）：事件里绝不能出现特权字段
+	plain, err := newEnvSession(cards, envCommand{Cmd: "reset", Seed: 7, Opponent: "external"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	event, err := plain.advance(cards)
+	if err != nil {
+		t.Fatal(err)
+	}
+	plain.attachOracle(&event)
+	if event.Oracle != nil {
+		t.Fatalf("未开启 oracle 时不应附带特权信息：%+v", event.Oracle)
+	}
+
+	// 开启 oracle：应能看到对手手牌内容与双方牌库前 8 张
+	session, err := newEnvSession(cards, envCommand{Cmd: "reset", Seed: 7, Opponent: "external", Oracle: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	event, err = session.advance(cards)
+	if err != nil {
+		t.Fatal(err)
+	}
+	event.Seed = session.seed
+	session.attachOracle(&event)
+	if event.Oracle == nil {
+		t.Fatal("开启 oracle 后应附带特权信息")
+	}
+	if len(event.Oracle.OppoHand) != event.View.Oppo.HandCount {
+		t.Fatalf("对手手牌张数不一致：oracle %d vs view %d",
+			len(event.Oracle.OppoHand), event.View.Oppo.HandCount)
+	}
+	if len(event.Oracle.OppoDeckTop) == 0 || len(event.Oracle.OwnDeckTop) == 0 {
+		t.Fatal("牌库顺序（前 8 张）不应为空")
+	}
+	if event.View.Oppo.Hand != nil {
+		t.Fatal("特权信息不应该泄漏进玩家视角的手牌字段")
+	}
+}

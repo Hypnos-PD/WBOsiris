@@ -137,6 +137,46 @@ type StateView struct {
 	Winner        string         `json:"winner,omitempty"`
 }
 
+// OracleView 是**训练专用**的特权信息：对手手牌内容 + 双方牌库接下来的抽牌顺序。
+//
+// 正常对局里这些都是隐藏信息，客户端/回放路径永远不会拿到（`env` 只在 reset 时显式
+// 传了 `oracle: true` 才附带）。用途是 oracle guiding / 信念建模：训练时用真值塑造表示，
+// 推理时模型只能靠自己从公开信息里推断。
+type OracleView struct {
+	OppoHand    []int `json:"oppoHand"`
+	OppoDeckTop []int `json:"oppoDeckTop"`
+	OwnDeckTop  []int `json:"ownDeckTop"`
+}
+
+// Oracle 返回特权视角；`deckTop` 是每方给出牌库前多少张（0 表示全部）。
+func (s *Session) Oracle(deckTop int) (OracleView, error) {
+	if s == nil || s.g == nil {
+		return OracleView{}, fmt.Errorf("session is required")
+	}
+	top := func(p *player) []int {
+		limit := len(p.deck)
+		if deckTop > 0 && limit > deckTop {
+			limit = deckTop
+		}
+		ids := make([]int, 0, limit)
+		for _, card := range p.deck[:limit] {
+			if card == nil || card.card == nil {
+				continue
+			}
+			ids = append(ids, card.card.ID)
+		}
+		return ids
+	}
+	hand := make([]int, 0, len(s.g.oppo.hand))
+	for _, card := range s.g.oppo.hand {
+		if card == nil || card.card == nil {
+			continue
+		}
+		hand = append(hand, card.card.ID)
+	}
+	return OracleView{OppoHand: hand, OppoDeckTop: top(&s.g.oppo), OwnDeckTop: top(&s.g.own)}, nil
+}
+
 func (s *Session) Events() []ir.RuntimeEvent {
 	if s == nil || s.g == nil {
 		return nil
