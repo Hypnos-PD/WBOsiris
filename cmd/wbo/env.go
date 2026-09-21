@@ -75,6 +75,14 @@ type envCardInfo struct {
 	Class    string   `json:"class,omitempty"`
 	Type     string   `json:"type,omitempty"`
 	Name     string   `json:"name,omitempty"`
+	// 结构化卡面数据（给训练侧做**具体**的结构特征，而不只是费用/身材）：
+	// 稀有度、费用、基础身材、效果语义标签（damage/destroy/summon/add_keyword/spellboost…）。
+	Rarity string   `json:"rarity,omitempty"`
+	Cost   int      `json:"cost,omitempty"`
+	Attack int      `json:"attack,omitempty"`
+	Life   int      `json:"life,omitempty"`
+	Traits []string `json:"traits,omitempty"`
+	Tags   []string `json:"tags,omitempty"`
 }
 
 // envFormatInfo 是一个赛制：ID/名称 + 允许的卡包窗口。
@@ -287,18 +295,8 @@ func runEnv(args []string) int {
 			send(envEvent{Type: "deck_check", Format: format.ID, OK: true})
 		case "card_pool":
 			// 卡池清单：训练侧用它检查外来数据（例如 WBC 回放）里的卡牌是否都在当前卡池里，
-			// 以及每张卡属于哪个卡包（用来判断赛制窗口）。
-			pool := make([]envCardInfo, 0, len(cards.Cards))
-			for n := range cards.Cards {
-				card := &cards.Cards[n]
-				pool = append(pool, envCardInfo{
-					ID: card.ID, Pack: card.Meta.Pack, Class: card.Meta.Class,
-					Type: card.CardType, Name: card.Locales["chs"].Name,
-					Keywords: intrinsicKeywords(card),
-				})
-			}
-			sort.Slice(pool, func(i, j int) bool { return pool[i].ID < pool[j].ID })
-			send(envEvent{Type: "card_pool", Pool: pool})
+			// 以及每张卡属于哪个卡包（用来判断赛制窗口），并拿到结构化卡面特征。
+			send(envEvent{Type: "card_pool", Pool: cardPool(cards)})
 		case "formats":
 			// 赛制与卡包窗口：训练/构筑侧要按赛制筛卡时，以引擎为准而不是自己推规则。
 			formats := make([]envFormatInfo, 0, 2)
