@@ -74,11 +74,11 @@ func cardFeatureTags(card *ir.Card) []string {
 		}
 	}
 	blob, err := json.Marshal(struct {
-		Abilities       []ir.Ability       `json:"abilities"`
-		Fusions         []ir.FusionAbility `json:"fusions"`
-		PlayEffects     []ir.Effect        `json:"playEffects"`
-		IntrinsicState  []ir.IntrinsicState `json:"intrinsicState"`
-		Restrictions    []ir.Restriction   `json:"restrictions"`
+		Abilities      []ir.Ability        `json:"abilities"`
+		Fusions        []ir.FusionAbility  `json:"fusions"`
+		PlayEffects    []ir.Effect         `json:"playEffects"`
+		IntrinsicState []ir.IntrinsicState `json:"intrinsicState"`
+		Restrictions   []ir.Restriction    `json:"restrictions"`
 	}{card.Abilities, card.FusionAbilities, card.PlayEffects, card.IntrinsicState, card.Restrictions})
 	if err != nil {
 		return nil
@@ -116,6 +116,7 @@ func cardFeatureTags(card *ir.Card) []string {
 	sort.Strings(tags)
 	return tags
 }
+
 // cardStats 返回基础攻击/生命；法术与护符没有身材时返回 0/0。
 func cardStats(card *ir.Card) [2]int {
 	if card == nil || card.Stats == nil {
@@ -146,6 +147,7 @@ func cardPool(cards *ir.CardPack) []envCardInfo {
 	sort.Slice(pool, func(i, j int) bool { return pool[i].ID < pool[j].ID })
 	return pool
 }
+
 // envEffectToken 是**效果程序**的一个步骤。
 //
 // 设计目标是"无损"：不手挑字段，而是把节点上的**所有数值字段与字符串字段**（按字段名排序）
@@ -155,15 +157,15 @@ func cardPool(cards *ir.CardPack) []envCardInfo {
 // `target` 是唯一被特殊处理的部分（它是选择器而不是效果本身）：抽成 Target* 字段，
 // 不再往里递归，否则会产出 leader/zone 这类噪声 token。
 type envEffectToken struct {
-	Kind     string    `json:"kind"`
-	Trigger  string    `json:"trigger,omitempty"`
-	Parent   int       `json:"parent"`
-	Depth    int       `json:"depth"`
-	Option   int       `json:"option,omitempty"`
-	NumKeys  []string  `json:"numKeys,omitempty"`
-	Nums     []float64 `json:"nums,omitempty"`
-	StrKeys  []string  `json:"strKeys,omitempty"`
-	Strs     []string  `json:"strs,omitempty"`
+	Kind    string    `json:"kind"`
+	Trigger string    `json:"trigger,omitempty"`
+	Parent  int       `json:"parent"`
+	Depth   int       `json:"depth"`
+	Option  int       `json:"option,omitempty"`
+	NumKeys []string  `json:"numKeys,omitempty"`
+	Nums    []float64 `json:"nums,omitempty"`
+	StrKeys []string  `json:"strKeys,omitempty"`
+	Strs    []string  `json:"strs,omitempty"`
 
 	TargetKind   string `json:"targetKind,omitempty"`
 	TargetSide   string `json:"targetSide,omitempty"`
@@ -172,7 +174,7 @@ type envEffectToken struct {
 	All          bool   `json:"all,omitempty"`
 }
 
-//: 每张卡最多发多少条效果 token（超出截断，训练侧靠截断标记识别）。
+// : 每张卡最多发多少条效果 token（超出截断，训练侧靠截断标记识别）。
 const maxEffectTokens = 24
 
 // cardEffectTokens 把一张卡的效果树展平成 token 序列。

@@ -15,12 +15,12 @@ import (
 //
 // 保真度与运行时一致：它用的是同一套 `.wbo` 解析器与 IR，而不是另写一个解析器。
 type cardFeaturesPayload struct {
-	Schema      string         `json:"schema"`
-	GeneratedAt int64          `json:"generatedAt"`
-	SourceRoot  string         `json:"sourceRoot"`
-	Count       int            `json:"count"`
-	PoolHash    string         `json:"poolHash"`
-	Cards       []envCardInfo  `json:"cards"`
+	Schema      string        `json:"schema"`
+	GeneratedAt int64         `json:"generatedAt"`
+	SourceRoot  string        `json:"sourceRoot"`
+	Count       int           `json:"count"`
+	PoolHash    string        `json:"poolHash"`
+	Cards       []envCardInfo `json:"cards"`
 }
 
 // runCardFeatures 导出卡面特征：`wbo card-features --out data/card_features.json cards`
