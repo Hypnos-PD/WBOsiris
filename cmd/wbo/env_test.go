@@ -306,11 +306,41 @@ func TestEnvOracleIsOptInAndCarriesHiddenInfo(t *testing.T) {
 		t.Fatalf("对手手牌张数不一致：oracle %d vs view %d",
 			len(event.Oracle.OppoHand), event.View.Oppo.HandCount)
 	}
-	if len(event.Oracle.OppoDeckTop) == 0 || len(event.Oracle.OwnDeckTop) == 0 {
-		t.Fatal("牌库顺序（前 8 张）不应为空")
+	// 特权信息要"完整"：双方牌库给的是**全序**（不是前几张的截断），
+	// 长度必须与公开视角的牌库张数对得上（手牌已经抽走了，所以两者相加而不是相等）。
+	if len(event.Oracle.OppoDeck) == 0 || len(event.Oracle.OwnDeck) == 0 {
+		t.Fatal("双方牌库全序不应为空")
+	}
+	if len(event.Oracle.OppoDeck) != event.View.Oppo.DeckCount {
+		t.Fatalf("对手牌库全序长度 %d 与公开张数 %d 不一致",
+			len(event.Oracle.OppoDeck), event.View.Oppo.DeckCount)
+	}
+	if len(event.Oracle.OwnDeck) != event.View.Own.DeckCount {
+		t.Fatalf("自己牌库全序长度 %d 与公开张数 %d 不一致",
+			len(event.Oracle.OwnDeck), event.View.Own.DeckCount)
 	}
 	if event.View.Oppo.Hand != nil {
 		t.Fatal("特权信息不应该泄漏进玩家视角的手牌字段")
+	}
+
+	// 顺序必须是**真顺序**：对手抽一张之后，新的全序应该正好是旧全序去掉头部。
+	before := append([]int(nil), event.Oracle.OppoDeck...)
+	if err := session.step(cards, 0); err != nil {
+		t.Fatal(err)
+	}
+	next, err := session.advance(cards)
+	if err != nil {
+		t.Fatal(err)
+	}
+	session.attachOracle(&next)
+	after := next.Oracle.OppoDeck
+	if len(after) == len(before)-1 {
+		for index, id := range after {
+			if id != before[index+1] {
+				t.Fatalf("牌库全序不是真顺序：抽牌后第 %d 张 %d ≠ 抽牌前第 %d 张 %d",
+					index, id, index+1, before[index+1])
+			}
+		}
 	}
 }
 

@@ -137,29 +137,36 @@ type StateView struct {
 	Winner        string         `json:"winner,omitempty"`
 }
 
-// OracleView 是**训练专用**的特权信息：对手手牌内容 + 双方牌库接下来的抽牌顺序。
+// OracleView 是**训练专用**的特权信息全集：玩家在正常对局里看不到、但引擎知道的真值。
 //
 // 正常对局里这些都是隐藏信息，客户端/回放路径永远不会拿到（`env` 只在 reset 时显式
 // 传了 `oracle: true` 才附带）。用途是 oracle guiding / 信念建模：训练时用真值塑造表示，
 // 推理时模型只能靠自己从公开信息里推断。
+//
+// 覆盖范围（与 `View` 的脱敏点一一对应）：
+//   - OppoHand：对手手牌内容（公开视角只有张数）；
+//   - OppoDeck / OwnDeck：双方牌库的**完整顺序**（公开视角连自己的顺序都看不到，
+//     只给"剩余内容的多集"）；
+//   - OppoMaterials：对手场上/墓地/放逐/待结算实体用掉的融合素材
+//     （`fusionView(reveal=false)` 对对手隐藏这部分）。
+//
+// 刻意**不包含**的：随机数状态。它虽然也是隐藏信息，但公开信息里几乎不可能推断，
+// 作为信念目标只会注入噪声；真正需要"未来随机结果"的实验可以单独用种子复现整局。
 type OracleView struct {
-	OppoHand    []int `json:"oppoHand"`
-	OppoDeckTop []int `json:"oppoDeckTop"`
-	OwnDeckTop  []int `json:"ownDeckTop"`
+	OppoHand      []int            `json:"oppoHand"`
+	OppoDeck      []int            `json:"oppoDeck"`
+	OwnDeck       []int            `json:"ownDeck"`
+	OppoMaterials map[string][]int `json:"oppoMaterials,omitempty"`
 }
 
-// Oracle 返回特权视角；`deckTop` 是每方给出牌库前多少张（0 表示全部）。
-func (s *Session) Oracle(deckTop int) (OracleView, error) {
+// Oracle 返回特权视角（完整）：对手手牌内容 + 双方牌库全序 + 对手融合素材。
+func (s *Session) Oracle() (OracleView, error) {
 	if s == nil || s.g == nil {
 		return OracleView{}, fmt.Errorf("session is required")
 	}
-	top := func(p *player) []int {
-		limit := len(p.deck)
-		if deckTop > 0 && limit > deckTop {
-			limit = deckTop
-		}
-		ids := make([]int, 0, limit)
-		for _, card := range p.deck[:limit] {
+	order := func(p *player) []int {
+		ids := make([]int, 0, len(p.deck))
+		for _, card := range p.deck {
 			if card == nil || card.card == nil {
 				continue
 			}
@@ -174,7 +181,28 @@ func (s *Session) Oracle(deckTop int) (OracleView, error) {
 		}
 		hand = append(hand, card.card.ID)
 	}
-	return OracleView{OppoHand: hand, OppoDeckTop: top(&s.g.oppo), OwnDeckTop: top(&s.g.own)}, nil
+	materials := map[string][]int{}
+	zones := [][]*instance{s.g.oppo.field, s.g.oppo.graveyard, s.g.oppo.banished, s.g.oppo.resolving}
+	for _, zone := range zones {
+		for _, item := range zone {
+			if item == nil || len(item.materials) == 0 {
+				continue
+			}
+			ids := make([]int, 0, len(item.materials))
+			for _, material := range item.materials {
+				if material == nil || material.card == nil {
+					continue
+				}
+				ids = append(ids, material.card.ID)
+			}
+			if len(ids) > 0 {
+				materials[item.id] = ids
+			}
+		}
+	}
+	return OracleView{
+		OppoHand: hand, OppoDeck: order(&s.g.oppo), OwnDeck: order(&s.g.own), OppoMaterials: materials,
+	}, nil
 }
 
 func (s *Session) Events() []ir.RuntimeEvent {

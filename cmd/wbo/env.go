@@ -382,7 +382,7 @@ func (e *envSession) attachOracle(event *envEvent) {
 	if !e.oracle || event == nil || event.View == nil {
 		return
 	}
-	view, err := e.session.Oracle(8)
+	view, err := e.session.Oracle()
 	if err != nil {
 		return
 	}
