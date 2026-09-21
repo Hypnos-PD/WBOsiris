@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"wbo/internal/ir"
 	"wbo/internal/project"
 )
 
@@ -60,6 +61,98 @@ func TestCardPoolExposesStructuredFeatures(t *testing.T) {
 	for _, tag := range []string{"damage", "destroy", "draw", "fanfare"} {
 		if tagKinds[tag] == 0 {
 			t.Fatalf("标签 %s 一张卡都没有，抽取可能有 bug", tag)
+		}
+	}
+}
+
+// 效果程序 token 化：必须能表达"mode 二选一 + 每支的具体效果 + 触发时机"。
+// 例子：禁牙的变貌·诺玛格达拉（7 费 5/6）——入场曲【模式】二选一：
+// (1) 抽 1 张、回复自己主战者 3 点；(2) 使对手全场随从 -0/-4。进化时重复同一段。
+func TestCardEffectTokensPreserveModeStructure(t *testing.T) {
+	root := filepath.Join("..", "..")
+	loaded := project.LoadWithRoot([]string{filepath.Join(root, "cards")}, false, root)
+	if loaded.HasErrors() {
+		t.Fatal(loaded.Diagnostics)
+	}
+	cards, _, err := project.BuildRuntimePacks(loaded)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var target *ir.Card
+	for n := range cards.Cards {
+		if cards.Cards[n].ID == 10944120 {
+			target = &cards.Cards[n]
+			break
+		}
+	}
+	if target == nil {
+		t.Fatal("卡池里没有 10944120")
+	}
+	tokens := cardEffectTokens(target, maxEffectTokens)
+
+	// 按 (trigger, kind, option) 找 token，并检查数值/字段名与目标
+	find := func(trigger, kind string, option int) *envEffectToken {
+		for index := range tokens {
+			token := &tokens[index]
+			if token.Trigger == trigger && token.Kind == kind && token.Option == option {
+				return token
+			}
+		}
+		return nil
+	}
+	numOf := func(token *envEffectToken, key string) (float64, bool) {
+		for index, name := range token.NumKeys {
+			if name == key {
+				return token.Nums[index], true
+			}
+		}
+		return 0, false
+	}
+	mode := find("fanfare", "mode", 0)
+	if mode == nil || mode.Parent < 0 {
+		t.Fatalf("入场曲缺少 mode 节点：%+v", mode)
+	}
+	draw := find("fanfare", "draw", 1)
+	if draw == nil {
+		t.Fatal("入场曲分支 1 缺少 draw")
+	}
+	if value, ok := numOf(draw, "count"); !ok || value != 1 {
+		t.Fatalf("draw 的 count 应为 1：%+v", draw)
+	}
+	if draw.Parent != 1 {
+		t.Fatalf("draw 的父节点应是 mode（下标 1），实际 %d", draw.Parent)
+	}
+	heal := find("fanfare", "heal", 1)
+	if heal == nil {
+		t.Fatal("入场曲分支 1 缺少 heal")
+	}
+	if value, ok := numOf(heal, "amount"); !ok || value != 3 {
+		t.Fatalf("heal 的 amount 应为 3：%+v", heal)
+	}
+	if heal.TargetKind != "leader" || heal.TargetSide != "own" {
+		t.Fatalf("heal 目标应是 own leader：%+v", heal)
+	}
+	buff := find("fanfare", "buff_stats", 2)
+	if buff == nil {
+		t.Fatal("入场曲分支 2 缺少 buff_stats")
+	}
+	if value, ok := numOf(buff, "lifeDelta"); !ok || value != -4 {
+		t.Fatalf("buff_stats 的 lifeDelta 应为 -4：%+v", buff)
+	}
+	if buff.TargetSide != "oppo" || buff.TargetZone != "field" || buff.TargetMember != "follower" {
+		t.Fatalf("buff_stats 目标应是 oppo.field.follower：%+v", buff)
+	}
+	if find("evolve", "buff_stats", 2) == nil {
+		t.Fatal("进化时应重复同一段（含 buff_stats 分支 2）")
+	}
+	// 字符串字段也要带全：draw 的 owner/sourceZone 是判断"从哪抽"的依据
+	if len(draw.StrKeys) == 0 || len(draw.Strs) == 0 {
+		t.Fatalf("draw 丢了字符串字段：%+v", draw)
+	}
+	// 分支编号必须真的把两支分开：不能出现"没有 option 的 buff_stats"（那会让模型以为两支都能做）
+	for _, token := range tokens {
+		if token.Kind == "buff_stats" && token.Option == 0 {
+			t.Fatalf("mode 内的效果丢了分支编号：%+v", token)
 		}
 	}
 }

@@ -83,6 +83,9 @@ type envCardInfo struct {
 	Life   int      `json:"life,omitempty"`
 	Traits []string `json:"traits,omitempty"`
 	Tags   []string `json:"tags,omitempty"`
+	// Effects 是效果程序的 token 序列（最多 24 条）：训练侧用它编码"这张牌具体怎么做事"，
+	// 连"mode 二选一"这类结构也保留（见 envEffectToken.option）。
+	Effects []envEffectToken `json:"effects,omitempty"`
 }
 
 // envFormatInfo 是一个赛制：ID/名称 + 允许的卡包窗口。
