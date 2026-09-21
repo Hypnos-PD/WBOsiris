@@ -46,10 +46,10 @@ type envCommand struct {
 	FirstPlayer string `json:"firstPlayer,omitempty"`
 	Opponent    string `json:"opponent,omitempty"`
 	// Oracle=true 时，每次 state 事件附带特权信息（训练专用；客户端不要传）。
-	Oracle      bool   `json:"oracle,omitempty"`
+	Oracle bool `json:"oracle,omitempty"`
 	// OracleDeckTop 限制特权信息里牌库给多少张（默认 8）。
-	OracleDeckTop int  `json:"oracleDeckTop,omitempty"`
-	Action      int    `json:"action,omitempty"`
+	OracleDeckTop int `json:"oracleDeckTop,omitempty"`
+	Action        int `json:"action,omitempty"`
 }
 
 // envChoiceCandidate 是一个可选候选：Key 是稳定标识，训练侧只需回传下标，
@@ -66,8 +66,8 @@ type envChoiceCandidate struct {
 
 // envCardInfo 是卡池清单里的一张卡：训练侧用它检查外来数据的卡牌覆盖率与卡包窗口。
 type envCardInfo struct {
-	ID   int    `json:"id"`
-	Pack int    `json:"pack"`
+	ID   int `json:"id"`
+	Pack int `json:"pack"`
 	// Keywords 是卡牌的**固有**关键词（含由触发推导的 lastwords/engage/triggered）。
 	// 训练侧用它给手牌行补关键词：回放的场面行带打包状态位，而手牌行没有，
 	// 不补就会造成"训练时手牌没有关键词、推理时引擎却在手牌上给了关键词"的分布偏移。
@@ -127,6 +127,13 @@ type envEvent struct {
 	Message  string               `json:"message,omitempty"`
 	// Oracle 是训练专用特权信息（仅在 reset 时传 oracle=true 才出现）。
 	Oracle *runner.OracleView `json:"oracle,omitempty"`
+	// History 是最近若干条**该视角可见**的对局事件（尾部窗口，旧的在前）。
+	//
+	// 观测里原本只有聚合量（墓地有哪些牌、这回合打过没有），没有"发生了什么"的序列：
+	// 「先出 A 再出 B」和「先出 B 再出 A」在模型眼里一模一样，而这在规则里常常不等价。
+	// 事件本身已经按视角裁剪（PrivateTo 不是本方的事件只剩 kind/side/count），
+	// 所以给训练侧的历史窗口和客户端从流里拿到的是同一份东西。
+	History []ir.RuntimeEvent `json:"history,omitempty"`
 	// Cards 是 "deck" 命令的返回值：一副随机合法卡组。
 	Format string `json:"format,omitempty"`
 	Cards  []int  `json:"cards,omitempty"`
@@ -237,6 +244,7 @@ func runEnv(args []string) int {
 			}
 			event.Seed = current.seed
 			current.attachOracle(&event)
+			current.attachHistory(&event)
 			send(event)
 		case "step":
 			if current == nil {
@@ -254,6 +262,7 @@ func runEnv(args []string) int {
 			}
 			event.Seed = current.seed
 			current.attachOracle(&event)
+			current.attachHistory(&event)
 			send(event)
 		case "deck":
 			// 随机生成一副合法卡组：训练侧用它组卡组池，避免只练一副镜像卡组。
@@ -378,6 +387,31 @@ func (e *envSession) attachOracle(event *envEvent) {
 		return
 	}
 	event.Oracle = &view
+}
+
+// envHistoryLimit 是 state 事件里携带的历史事件条数上限。
+//
+// 16 条足够覆盖"本回合发生过什么"（一次攻击 + 一两次出牌 + 触发结算），
+// 又不至于把协议消息撑大；训练侧只编码最近 HISTORY_EVENTS 条，多余的不影响模型。
+const envHistoryLimit = 16
+
+// attachHistory 给 state 事件补上"该视角可见的最近事件"。
+//
+// 每个决策点都带上尾部窗口，训练侧就不需要自己做状态差分去猜发生了什么；
+// 事件顺序与引擎的 Sequence 一致（旧的在前，最近的在后）。
+func (e *envSession) attachHistory(event *envEvent) {
+	if event == nil || event.View == nil || e.session == nil {
+		return
+	}
+	side := event.Side
+	if side != "own" && side != "oppo" {
+		side = e.learner
+	}
+	events := e.session.EventsFor(side)
+	if len(events) > envHistoryLimit {
+		events = events[len(events)-envHistoryLimit:]
+	}
+	event.History = events
 }
 
 // advance 推进到"学习者要做决定"或终局：先让对手走完，再自动回答学习者的选择。
@@ -529,6 +563,8 @@ func (e *envSession) lookahead(cards *ir.CardPack, index int) (envEvent, error) 
 		return envEvent{}, err
 	}
 	event.Lookahead = true
+	// 假想局面的历史 = 当前历史 + 这一步（以及对手回应）产生的事件，来自克隆会话。
+	shadow.attachHistory(&event)
 	return event, nil
 }
 

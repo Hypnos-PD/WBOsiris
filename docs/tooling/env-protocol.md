@@ -121,6 +121,30 @@ stdin 每行一条命令，stdout 每行一个事件；诊断信息走 stderr。
 `reward` 只在终局给（赢 `+1` / 输 `-1`），中间步为 0。出错给
 `{"type":"error","fault":"…"}`，训练侧应当记录并终止这一局。
 
+## 历史窗口
+
+每个 `state` 事件额外带 `history`：**最近 16 条该视角可见的对局事件**（旧的在前面）。
+事件就是流式接口里的 `ir.RuntimeEvent`：`Kind` / `Side` / `From` / `To` / `Reason` /
+`CardID` / `Count` / `Actual` / `Sequence`（以及实体/主战者指针）。
+
+```json
+{"type":"state","side":"own","turn":5,"phase":"main","view":{…},"legal":[…],
+ "history":[{"Kind":"turn_started","Side":"own","Sequence":41},
+            {"Kind":"card_drawn","Side":"own","Count":1,"Sequence":42},
+            {"Kind":"card_played","Side":"own","InstanceID":"ab12…","CardID":10001110,"Sequence":43},
+            {"Kind":"follower_summoned","Side":"own","From":"hand","To":"field","Sequence":44}]}
+```
+
+约定：
+
+- 只有**本视角看得见**的事件进窗口：`PrivateTo` 不是本方的事件会被脱敏成
+  `Kind`/`Side`/`Count`/`Sequence`（与 SSE 流一致），所以历史窗口不会泄露对手手牌；
+- 窗口按 `Sequence` 升序，长度不足时就是短窗口（开局第一步是空数组）；
+- `lookahead` 返回的假想局面同样带 `history`，内容是"假设这么打下去"的历史，
+  搜索/推演可以直接用同一套编码；
+- 为什么需要它：观测里原来只有聚合量（墓地有哪些牌、这回合是否攻击过），
+  「先出 A 再出 B」与「先出 B 再出 A」在模型眼里完全一样，而规则上常常不等价。
+
 `{"cmd":"quit"}` 结束进程。
 
 ## 版本与兼容

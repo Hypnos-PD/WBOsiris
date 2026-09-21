@@ -261,7 +261,6 @@ func TestEnvFormatsReportsPackWindows(t *testing.T) {
 	}
 }
 
-
 // oracle 是训练专用特权信息：默认关闭（客户端/回放路径拿不到），
 // 显式传 oracle=true 时才附带对手手牌内容与双方牌库顺序。
 func TestEnvOracleIsOptInAndCarriesHiddenInfo(t *testing.T) {
@@ -312,5 +311,67 @@ func TestEnvOracleIsOptInAndCarriesHiddenInfo(t *testing.T) {
 	}
 	if event.View.Oppo.Hand != nil {
 		t.Fatal("特权信息不应该泄漏进玩家视角的手牌字段")
+	}
+}
+
+// history 是每个 state 事件附带的"最近可见事件"窗口：训练侧靠它区分
+// 「先出 A 再出 B」与「先出 B 再出 A」，而这在聚合量观测里是完全一样的。
+func TestEnvStateCarriesVisibleHistoryWindow(t *testing.T) {
+	cards := loadEnvCards(t)
+	session, err := newEnvSession(cards, envCommand{Cmd: "reset", Seed: 3, Opponent: "external"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	event, err := session.advance(cards)
+	if err != nil {
+		t.Fatal(err)
+	}
+	session.attachHistory(&event)
+	if len(event.History) != 0 {
+		t.Fatalf("开局第一步还没有事件：%d 条", len(event.History))
+	}
+
+	// 走几步：历史必须单调变长（直到上限），且顺序与 Sequence 一致。
+	previous := 0
+	for step := 0; step < 6 && !event.Done; step++ {
+		if len(event.Legal) == 0 {
+			t.Fatal("state 事件必须有合法动作")
+		}
+		if err := session.step(cards, step%len(event.Legal)); err != nil {
+			t.Fatalf("step %d: %v", step, err)
+		}
+		event, err = session.advance(cards)
+		if err != nil {
+			t.Fatalf("step %d: %v", step, err)
+		}
+		session.attachHistory(&event)
+		if len(event.History) < previous {
+			t.Fatalf("历史窗口不应变短：%d → %d", previous, len(event.History))
+		}
+		if len(event.History) > envHistoryLimit {
+			t.Fatalf("历史窗口超过上限 %d：%d", envHistoryLimit, len(event.History))
+		}
+		previous = len(event.History)
+	}
+	if previous == 0 {
+		t.Fatal("走了几步之后历史窗口不应为空")
+	}
+	for index, item := range event.History {
+		if index == 0 {
+			continue
+		}
+		if item.Sequence < event.History[index-1].Sequence {
+			t.Fatalf("历史窗口必须按 Sequence 升序：%d 在 %d 之后",
+				event.History[index-1].Sequence, item.Sequence)
+		}
+	}
+
+	// 特权事件不许进窗口：开启 oracle 也不行（窗口走的是 EventsFor 的脱敏路径）。
+	for _, item := range event.History {
+		if item.PrivateTo != "" && item.PrivateTo != event.Side {
+			if item.InstanceID != "" || item.CardID != 0 {
+				t.Fatalf("对手私有事件的细节不该出现在窗口里：%+v", item)
+			}
+		}
 	}
 }
