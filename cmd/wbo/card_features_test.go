@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -153,6 +155,76 @@ func TestCardEffectTokensPreserveModeStructure(t *testing.T) {
 	for _, token := range tokens {
 		if token.Kind == "buff_stats" && token.Option == 0 {
 			t.Fatalf("mode 内的效果丢了分支编号：%+v", token)
+		}
+	}
+}
+
+// 离线导出：训练/客户端不必起引擎进程，但必须与运行时**同一套解析器**、同一个卡池指纹。
+func TestCardFeaturesExportMatchesRuntimePool(t *testing.T) {
+	root := filepath.Join("..", "..")
+	out := filepath.Join(t.TempDir(), "card_features.json")
+	if code := runCardFeatures([]string{"--out", out, "--source-root", root, filepath.Join(root, "cards")}); code != 0 {
+		t.Fatalf("导出失败，退出码 %d", code)
+	}
+	blob, err := os.ReadFile(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var payload cardFeaturesPayload
+	if err := json.Unmarshal(blob, &payload); err != nil {
+		t.Fatal(err)
+	}
+	if payload.Schema != "wbo-card-features/1" {
+		t.Fatalf("schema 不对：%s", payload.Schema)
+	}
+	if payload.Count != len(payload.Cards) || payload.Count < 900 {
+		t.Fatalf("卡数与列表不一致：count=%d cards=%d", payload.Count, len(payload.Cards))
+	}
+	// 指纹必须与运行时握手一致：否则特征表与引擎版本可能对不上
+	loaded := project.LoadWithRoot([]string{filepath.Join(root, "cards")}, false, root)
+	cards, _, err := project.BuildRuntimePacks(loaded)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if payload.PoolHash != cardPoolHash(cards) {
+		t.Fatalf("卡池指纹不一致：导出 %s vs 运行时 %s", payload.PoolHash, cardPoolHash(cards))
+	}
+	// 效果 token 必须带结构：每个 buff_stats 的父节点都应是同触发的 mode
+	for index := range payload.Cards {
+		card := &payload.Cards[index]
+		if card.ID != 10944120 {
+			continue
+		}
+		modes := map[string]int{}
+		for tokenIndex := range card.Effects {
+			token := &card.Effects[tokenIndex]
+			if token.Kind == "mode" {
+				modes[token.Trigger] = tokenIndex
+			}
+		}
+		if _, ok := modes["fanfare"]; !ok {
+			t.Fatalf("缺少入场曲 mode：%+v", modes)
+		}
+		buffs := 0
+		for tokenIndex := range card.Effects {
+			token := &card.Effects[tokenIndex]
+			if token.Kind != "buff_stats" {
+				continue
+			}
+			buffs++
+			if token.Option != 2 {
+				t.Fatalf("mode 内的 buff_stats 应带分支号 2：%+v", token)
+			}
+			parent := modes[token.Trigger]
+			if token.Parent != parent {
+				t.Fatalf("buff_stats 的父节点应是同触发的 mode（%d），实际 %d", parent, token.Parent)
+			}
+			if len(token.NumKeys) == 0 || len(token.Nums) == 0 {
+				t.Fatalf("buff_stats 丢了数值：%+v", token)
+			}
+		}
+		if buffs < 2 { // 入场曲 + 进化时各一次
+			t.Fatalf("buff_stats 数量不对：%d", buffs)
 		}
 	}
 }

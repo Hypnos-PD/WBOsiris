@@ -43,6 +43,8 @@ func main() {
 		code = runEnv(os.Args[2:])
 	case "serve":
 		code = runServe(os.Args[2:])
+	case "card-features":
+		code = runCardFeatures(os.Args[2:])
 	default:
 		usage()
 		code = 2
@@ -50,7 +52,7 @@ func main() {
 	os.Exit(code)
 }
 func usage() {
-	fmt.Fprintln(os.Stderr, "用法: wbo <check|format|compile|test|simulate|selfplay|env|serve> [选项] PATH...")
+	fmt.Fprintln(os.Stderr, "用法: wbo <check|format|compile|test|simulate|selfplay|env|serve|card-features> [选项] PATH...")
 }
 
 func runCheck(args []string) int {
