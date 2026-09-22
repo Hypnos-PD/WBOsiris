@@ -629,16 +629,12 @@ func (e *envSession) step(cards *ir.CardPack, index int) error {
 // 换来搜索在任何决策点都能分叉。原生 `Session.Clone()` 是这条路的终点（见
 // docs/tooling/search-and-clone.md 的"后续可选优化"）。
 func (e *envSession) clone(cards *ir.CardPack) (*envSession, error) {
+	// 首选原生深拷贝：任意状态都能克隆（战斗/结算中间态也行），且快得多。
+	if native, err := e.session.Clone(); err == nil {
+		return e.withSession(native), nil
+	}
 	if clone, err := search.Clone(cards, e.session); err == nil {
-		shadow := *e
-		shadow.session = clone
-		shadow.serial = 0
-		shadow.choiceRequestID = ""
-		shadow.chosenInstances = nil
-		shadow.chosenLeaders = nil
-		shadow.chosenOptions = nil
-		shadow.choiceSteps = 0
-		return &shadow, nil
+		return e.withSession(clone), nil
 	}
 	command := e.origin
 	command.Cmd = "reset"
@@ -662,6 +658,19 @@ func (e *envSession) clone(cards *ir.CardPack) (*envSession, error) {
 		}
 	}
 	return fresh, nil
+}
+
+// withSession 把"换了一份会话"的公共部分收在一处：动作 ID 与选择累积都从头开始。
+func (e *envSession) withSession(session *runner.Session) *envSession {
+	shadow := *e
+	shadow.session = session
+	shadow.serial = 0
+	shadow.choiceRequestID = ""
+	shadow.chosenInstances = nil
+	shadow.chosenLeaders = nil
+	shadow.chosenOptions = nil
+	shadow.choiceSteps = 0
+	return &shadow
 }
 
 // lookahead 返回"如果现在提交第 index 个动作会到达哪个局面"：

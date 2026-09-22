@@ -63,24 +63,24 @@ type ContinuationFrame struct {
 }
 
 type Continuation struct {
-	Version         string                 `json:"version"`
-	CardPackHash    string                 `json:"cardPackHash"`
-	RulesetID       string                 `json:"rulesetId"`
-	RulesetHash     string                 `json:"rulesetHash"`
-	ActionID        string                 `json:"actionId,omitempty"`
-	RequestID       string                 `json:"requestId,omitempty"`
-	StateRevision   uint64                 `json:"stateRevision"`
-	RequestOrdinal  uint32                 `json:"requestOrdinal"`
-	Stack           []ContinuationFrame    `json:"stack"`
-	BindingFrames   []ContinuationBindings `json:"bindingFrames"`
+	Version        string                 `json:"version"`
+	CardPackHash   string                 `json:"cardPackHash"`
+	RulesetID      string                 `json:"rulesetId"`
+	RulesetHash    string                 `json:"rulesetHash"`
+	ActionID       string                 `json:"actionId,omitempty"`
+	RequestID      string                 `json:"requestId,omitempty"`
+	StateRevision  uint64                 `json:"stateRevision"`
+	RequestOrdinal uint32                 `json:"requestOrdinal"`
+	Stack          []ContinuationFrame    `json:"stack"`
+	BindingFrames  []ContinuationBindings `json:"bindingFrames"`
 	// Pending 为空表示这条续局记录是"决策点存档"（没有待处理选择），
 	// 用于搜索与重放时的克隆；非空则是原来的"挂起中存档"。
-	Pending         *ContinuationPending   `json:"pending,omitempty"`
-	Triggers        []ContinuationTrigger  `json:"triggers"`
-	DrainingTrigger bool                   `json:"drainingTrigger"`
-	TriggerBase     int                    `json:"triggerBase"`
-	Game            ContinuationGame       `json:"game"`
-	Budget          ExecutionBudgetState   `json:"budget"`
+	Pending         *ContinuationPending  `json:"pending,omitempty"`
+	Triggers        []ContinuationTrigger `json:"triggers"`
+	DrainingTrigger bool                  `json:"drainingTrigger"`
+	TriggerBase     int                   `json:"triggerBase"`
+	Game            ContinuationGame      `json:"game"`
+	Budget          ExecutionBudgetState  `json:"budget"`
 }
 
 type StepResult struct {
@@ -1001,19 +1001,61 @@ func (g *game) clone() *game {
 		copy.grants = append([]ir.GrantEffect(nil), original.grants...)
 		copy.counters = maps.Clone(original.counters)
 		copy.usedTriggers = maps.Clone(original.usedTriggers)
+		copy.suppressed = maps.Clone(original.suppressed)
 		copy.temporaryKeywords = maps.Clone(original.temporaryKeywords)
 		copy.temporaryStats = maps.Clone(original.temporaryStats)
+		copy.temporaryCost = maps.Clone(original.temporaryCost)
+		if original.modeHistory != nil {
+			copy.modeHistory = make(map[string]map[int]bool, len(original.modeHistory))
+			for key, value := range original.modeHistory {
+				copy.modeHistory[key] = maps.Clone(value)
+			}
+		}
+		// 融合素材在克隆后的世界里也要指向**克隆**实例（否则两个世界共用同一个实例）。
+		if original.materials != nil {
+			copy.materials = make([]*instance, 0, len(original.materials))
+			for _, material := range original.materials {
+				if material == nil {
+					copy.materials = append(copy.materials, nil)
+					continue
+				}
+				copy.materials = append(copy.materials, nil) // 占位，下一轮按 id 填
+			}
+		}
 		copy.abilities = map[string]bool{}
 		for name, value := range original.abilities {
 			copy.abilities[name] = value
 		}
 		clone.instances[id] = &copy
 	}
+	// 第二轮：materials 的指针重映射（此时 clone.instances 已经装齐）。
+	for id, original := range g.instances {
+		copy := clone.instances[id]
+		for index, material := range original.materials {
+			if material == nil {
+				continue
+			}
+			copy.materials[index] = clone.instances[material.id]
+		}
+	}
 	clone.own = clonePlayer(g.own, clone.instances)
 	clone.oppo = clonePlayer(g.oppo, clone.instances)
 	clone.rebuildTriggerIndex()
+	// 事件日志里的 Target/Subject/Attacker/Defender 是共享指针：深拷贝一份，
+	// 免得克隆世界写事件时改到原世界的历史。
+	for index := range clone.events {
+		clone.events[index].Target = cloneEventTarget(clone.events[index].Target)
+		clone.events[index].Subject = cloneEventTarget(clone.events[index].Subject)
+		clone.events[index].Attacker = cloneEventTarget(clone.events[index].Attacker)
+		clone.events[index].Defender = cloneEventTarget(clone.events[index].Defender)
+	}
+	if g.budget != nil {
+		budget := *g.budget
+		clone.budget = &budget
+	}
 	for _, trigger := range g.triggers {
 		bindings := copyRepeatBindings(trigger.bindings)
+		bindings = cloneBindings(bindings)
 		var self *instance
 		if trigger.self != nil {
 			self = clone.instances[trigger.self.id]
@@ -1036,6 +1078,18 @@ func clonePlayer(original player, instances map[string]*instance) player {
 		attackedThisTurn: original.attackedThisTurn, leaderAttackedThisTurn: original.leaderAttackedThisTurn, leaderAttackedLastTurn: original.leaderAttackedLastTurn, evolvedThisTurn: original.evolvedThisTurn,
 		extraPPEarly: original.extraPPEarly, extraPPLate: original.extraPPLate, extraPPActive: original.extraPPActive,
 		enteredArtifacts: maps.Clone(original.enteredArtifacts),
+		// 下面这些是"本场对战中"的累计量（协作/进场记录/用过的费用/进化次数/主战者级关键词），
+		// 漏掉它们会让克隆世界在数回合后与原世界分叉（读作 `own.rally`、`own.entered`、
+		// `own.played has costs …` 的能力会算错）。
+		leaderAbilities:     maps.Clone(original.leaderAbilities),
+		leaderTemporary:     maps.Clone(original.leaderTemporary),
+		leaderDamageTakenUp: original.leaderDamageTakenUp,
+		rally:               original.rally,
+		pendingRally:        cloneInstances(original.pendingRally, instances),
+		entered:             cloneInstances(original.entered, instances),
+		playedCosts:         maps.Clone(original.playedCosts),
+		evolutionsThisMatch: original.evolutionsThisMatch,
+		deckOutcome:         original.deckOutcome,
 	}
 }
 
