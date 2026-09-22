@@ -174,6 +174,43 @@ stdin 每行一条命令，stdout 每行一个事件；诊断信息走 stderr。
 - 为什么需要它：观测里原来只有聚合量（墓地有哪些牌、这回合是否攻击过），
   「先出 A 再出 B」与「先出 B 再出 A」在模型眼里完全一样，而规则上常常不等价。
 
+## 规则场景（`scenarios` / `scenario`）
+
+场景是 `tests/` 里的 `.wbotest`：局面摆好、动作写死、结算后逐条断言，**引擎自己跑得过**。
+训练侧原本拿不到"这张卡在这里该怎么打"的真值（人类回放只是外部尺子，而且和"不加人类
+数据也要变强"的目标冲突），这两个命令把它接了出来。
+
+```json
+{"cmd":"scenarios"}
+{"type":"scenarios","scenarios":[{"id":"0144bb9e…","name":"高费随从进入战场时恶劣的天斧在手牌中减费",
+                                 "seed":"0x00000000000109a6","assertions":2,"actions":1}]}
+
+{"cmd":"scenario","scenario":"0144bb9e…"}          // 名字或 ID 都可以
+{"type":"state","side":"own","turn":6,"phase":"main","view":{…},"legal":[…],
+ "scenario":{"id":"0144bb9e…","name":"…","assertions":2,"actions":1,
+             "script":[{"kind":"play","actor":"own","source":"974eb3cd…"}],
+             "targetIndex":0,
+             "ownDeck":[…]}}
+```
+
+| 字段 | 说明 |
+| --- | --- |
+| `targetIndex` | 场景首动作（规则规定的打法）在当前 `legal` 里的下标 |
+| `script` | 场景脚本原文（调试/日志用；训练只吃 `targetIndex`） |
+| `ownDeck` | 场景里我方牌库的卡牌列表（补观测的"整套牌组多热"，别让场景样本与自对弈样本分布不一致） |
+| `actions` / `assertions` | 脚本长度与断言条数（`assertions` 越大，这个场景覆盖的规则越多） |
+
+约定：
+
+- 场景局面**不是**开局发牌：它是中局局面，学习者固定为**场景首动作的行动方**，
+  于是 `targetIndex` 就是"这一步该打哪张"；
+- `targetIndex = -1` 表示这一步没有一一对应（对手先行动、`advance`、或首动作是选择
+  子步骤）——训练侧应当**跳过**而不是猜；
+- 场景懒加载：显式只传 `cards` 的引擎（客户端/推理路径）启动时不会编译 `tests/`，
+  第一次收到这两个命令时才补上同级的 `tests` 目录（约 1500 条场景，编译几秒）；
+- 场景会话和普通会话一样可以 `clone`/`advance`/`state`/`free`，所以"从场景局面开始
+  搜索/自对弈"不需要新协议。
+
 `{"cmd":"quit"}` 结束进程。
 
 ## 版本与兼容
