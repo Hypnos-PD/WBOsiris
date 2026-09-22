@@ -8,7 +8,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -46,10 +45,6 @@ type envCommand struct {
 	Format      string `json:"format,omitempty"`
 	FirstPlayer string `json:"firstPlayer,omitempty"`
 	Opponent    string `json:"opponent,omitempty"`
-	// Scenario 是 "scenario" 命令的场景名或 ID：把对局**直接建在规则场景的初始状态上**。
-	// 这是训练侧唯一能拿到"这张卡在这里该怎么打"的规则真值的入口（场景来自 tests/ 的
-	// .wbotest，每一条都带引擎自己校验过的断言）。
-	Scenario string `json:"scenario,omitempty"`
 	// Oracle=true 时，每次 state 事件附带特权信息（训练专用；客户端不要传）。
 	Oracle bool `json:"oracle,omitempty"`
 	// OracleDeckTop 限制特权信息里牌库给多少张（默认 8）。
@@ -114,34 +109,6 @@ type envChoice struct {
 	Candidates    []envChoiceCandidate `json:"candidates"`
 }
 
-// envScenarioInfo 是一条**规则场景**（tests/ 里的 .wbotest）。
-//
-// 存在的理由：训练侧否则没有任何"这张卡在这里该怎么打"的真值——人类回放只是外部尺子，
-// 而场景是引擎自己**跑得过、断言过**的规则事实。拿它做两件事：
-//
-//   - 监督：场景首动作就是规则规定的打法，`TargetIndex` 是它在本次合法动作列表里的下标；
-//   - 探针：模型在场景上的命中率按卡分组，直接回答"哪几张卡的效果/联动没学会"。
-//
-// `Script` 是场景脚本里剩下的动作（原文），日志与调试用；训练只吃 TargetIndex。
-type envScenarioInfo struct {
-	ID         string            `json:"id"`
-	Name       string            `json:"name"`
-	Seed       string            `json:"seed,omitempty"`
-	Origin     string            `json:"origin,omitempty"`
-	Assertions int               `json:"assertions,omitempty"`
-	Actions    int               `json:"actions,omitempty"`
-	Script     []json.RawMessage `json:"script,omitempty"`
-	// TargetIndex 是场景首动作在当前合法动作列表里的下标；-1 表示这个决策点没有
-	// 一一对应的动作（例如场景首动作为 advance/选择子步骤，或对手先行动）。
-	TargetIndex int `json:"targetIndex"`
-	// OwnDeck 是场景里"我方牌库"的卡牌列表（按牌库顺序）。
-	//
-	// 观测里有一块"整套牌组多热"（只有自己知道自己的牌组）。自对弈时它来自训练侧
-	// 手上的卡组表；场景局面上没有这张表，不补的话场景样本会与自对弈样本**分布不一致**
-	// （同一个模型在两种输入上看到不同的特征）。
-	OwnDeck []int `json:"ownDeck,omitempty"`
-}
-
 type envEvent struct {
 	Type     string               `json:"type"`
 	Protocol string               `json:"protocol,omitempty"`
@@ -183,10 +150,6 @@ type envEvent struct {
 	// Handle 是决策点句柄：clone/advance 返回它，之后用 {cmd:"state"/"advance"/"free", handle:N}
 	// 继续操作。句柄把克隆会话留在引擎进程里，训练侧的 MCTS 靠它逐层展开。
 	Handle int `json:"handle,omitempty"`
-	// Scenario 是 "scenario" 命令附带回来的规则场景信息（含规则真值动作下标）。
-	Scenario *envScenarioInfo `json:"scenario,omitempty"`
-	// Scenarios 是 "scenarios" 命令的返回值：全部可用场景的清单。
-	Scenarios []envScenarioInfo `json:"scenarios,omitempty"`
 	// OK/Reason 是 deck_check 的判定结果。
 	OK     bool   `json:"ok,omitempty"`
 	Reason string `json:"reason,omitempty"`
@@ -222,10 +185,6 @@ type envSession struct {
 	// choiceSteps 是同一个选择请求上的子动作计数：采样策略可能在 select/deselect
 	// 之间来回循环，必须有硬上限，否则一局永远走不完。
 	choiceSteps int
-
-	// scenario 非空表示这是一台**规则场景**会话：局面来自场景初始状态，首动作的
-	// 下标就是规则真值。搜索/自对弈可以照常在它上面展开。
-	scenario *envScenarioInfo
 }
 
 func runEnv(args []string) int {
@@ -246,46 +205,10 @@ func runEnv(args []string) int {
 	if loaded.HasErrors() {
 		return 1
 	}
-	// 场景也一起编译：`scenario`/`scenarios` 命令靠它把训练侧接到规则真值上。
-	cards, testPacks, err := project.BuildRuntimePacks(loaded)
+	cards, _, err := project.BuildRuntimePacks(loaded)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "编译卡池失败:", err)
 		return 1
-	}
-
-	// 规则场景**懒编译**：客户端/推理路径只传 `cards`，而编译 1500 条 .wbotest 要几秒，
-	// 不该让每台引擎都为它付账。第一次用到场景命令时再把同级的 tests 目录补上。
-	var scenarioPacks *ir.TestPack
-	scenariosReady := false
-	ensureScenarios := func() (*ir.TestPack, error) {
-		if scenariosReady {
-			return scenarioPacks, nil
-		}
-		scenariosReady = true
-		if testPacks != nil && len(testPacks.Scenarios) > 0 {
-			scenarioPacks = testPacks
-			return scenarioPacks, nil
-		}
-		extra := append([]string{}, paths...)
-		hasTests := false
-		for _, path := range extra {
-			if filepath.Base(strings.TrimRight(path, "/")) == "tests" {
-				hasTests = true
-			}
-		}
-		if !hasTests {
-			extra = append(extra, "tests")
-		}
-		scenarioLoaded := load(extra, true, *root)
-		if scenarioLoaded.HasErrors() {
-			return nil, fmt.Errorf("场景目录编译失败（找过 %v）", extra)
-		}
-		_, packs, err := project.BuildRuntimePacks(scenarioLoaded)
-		if err != nil {
-			return nil, err
-		}
-		scenarioPacks = packs
-		return scenarioPacks, nil
 	}
 
 	encoder := json.NewEncoder(os.Stdout)
@@ -477,66 +400,6 @@ func runEnv(args []string) int {
 				continue
 			}
 			send(envEvent{Type: "deck_check", Format: format.ID, OK: true})
-		case "scenarios":
-			// 规则场景清单：训练侧的"效果课"与按卡探针先要知道有哪些场景可用。
-			// 按 ID 排序，保证多次运行/多 worker 的遍历顺序一致（可复现）。
-			packs, err := ensureScenarios()
-			if err != nil {
-				fail(err)
-				continue
-			}
-			send(envEvent{Type: "scenarios", Scenarios: scenarioCatalog(packs)})
-		case "scenario":
-			// 从规则场景的初始状态直接开一台会话：局面不是"开局发牌"，而是场景写好的
-			// 中局局面，返回的 TargetIndex 就是规则规定的那个动作在合法动作里的下标。
-			//
-			// 这条路让"卡牌的具体效果与联动"第一次有了**引擎自证的监督信号**：
-			// 人类回放只能当尺子，场景本身是断言过的规则事实。
-			packs, err := ensureScenarios()
-			if err != nil {
-				fail(err)
-				continue
-			}
-			scenario := findScenario(packs, command.Scenario)
-			if scenario == nil {
-				fail(fmt.Errorf("找不到场景 %q（先用 scenarios 列清单）", command.Scenario))
-				continue
-			}
-			seed, err := scenarioSeed(scenario.Seed)
-			if err != nil {
-				fail(err)
-				continue
-			}
-			session, err := runner.NewSession(cards, scenario.InitialState, seed)
-			if err != nil {
-				fail(fmt.Errorf("场景 %s 建会话失败: %w", scenario.ID, err))
-				continue
-			}
-			learner := scenarioActor(scenario.Actions)
-			current = &envSession{
-				session:  session,
-				learner:  learner,
-				opponent: ai.NewDriver("oppo", ai.Policy(&ai.Greedy{}), ai.Limits{}),
-				seed:     seed,
-				origin:   command,
-				oracle:   command.Oracle,
-				side:     learner,
-				scenario: describeScenario(scenario, -1),
-			}
-			event, err := current.advance(cards)
-			if err != nil {
-				fail(err)
-				continue
-			}
-			event.Seed = current.seed
-			current.attachOracle(&event)
-			current.attachHistory(&event)
-			// 场景首动作 -> 本次合法动作下标（对不上就 -1，训练侧会跳过这一步而不是学错）。
-			if info := describeScenario(scenario, scenarioTargetIndex(event.Legal, scenario.Actions)); info != nil {
-				current.scenario = info
-				event.Scenario = info
-			}
-			send(event)
 		case "card_pool":
 			// 卡池清单：训练侧用它检查外来数据（例如 WBC 回放）里的卡牌是否都在当前卡池里，
 			// 以及每张卡属于哪个卡包（用来判断赛制窗口），并拿到结构化卡面特征。
@@ -1073,183 +936,6 @@ func cardPoolHash(cards *ir.CardPack) string {
 		fmt.Fprintf(hash, "%d\n", id)
 	}
 	return hex.EncodeToString(hash.Sum(nil))[:16]
-}
-
-// scenarioCatalog 列出全部规则场景（按 ID 排序，跨进程顺序一致）。
-func scenarioCatalog(packs *ir.TestPack) []envScenarioInfo {
-	if packs == nil {
-		return nil
-	}
-	items := make([]envScenarioInfo, 0, len(packs.Scenarios))
-	for n := range packs.Scenarios {
-		item := packs.Scenarios[n]
-		info := envScenarioInfo{
-			ID:         item.ID,
-			Name:       item.Name,
-			Seed:       item.Seed,
-			Origin:     item.Origin.Primary.SourceID,
-			Assertions: len(item.Assertions),
-			Actions:    len(item.Actions),
-		}
-		items = append(items, info)
-	}
-	sort.Slice(items, func(i, j int) bool { return items[i].ID < items[j].ID })
-	return items
-}
-
-func findScenario(packs *ir.TestPack, name string) *ir.Scenario {
-	if packs == nil || strings.TrimSpace(name) == "" {
-		return nil
-	}
-	want := strings.TrimSpace(name)
-	for n := range packs.Scenarios {
-		candidate := &packs.Scenarios[n]
-		if candidate.ID == want || candidate.Name == want {
-			return candidate
-		}
-	}
-	return nil
-}
-
-// describeScenario 把场景 + 真值下标打包成协议里的场景信息。
-func describeScenario(scenario *ir.Scenario, target int) *envScenarioInfo {
-	if scenario == nil {
-		return nil
-	}
-	script := make([]json.RawMessage, 0, len(scenario.Actions))
-	for _, action := range scenario.Actions {
-		raw, err := json.Marshal(action)
-		if err != nil {
-			continue
-		}
-		script = append(script, raw)
-	}
-	return &envScenarioInfo{
-		ID:          scenario.ID,
-		Name:        scenario.Name,
-		Seed:        scenario.Seed,
-		Origin:      scenario.Origin.Primary.SourceID,
-		Assertions:  len(scenario.Assertions),
-		Actions:     len(scenario.Actions),
-		Script:      script,
-		TargetIndex: target,
-		OwnDeck:     zoneCardIDs(scenario.InitialState, "own", "deck"),
-	}
-}
-
-// zoneCardIDs 取某个玩家某个区域里的卡牌 ID（按区域内的声明顺序）。
-func zoneCardIDs(state ir.State, side, zone string) []int {
-	player, ok := state.Players[side]
-	if !ok {
-		return nil
-	}
-	items := player.Zones[zone]
-	ids := make([]int, 0, len(items))
-	for _, item := range items {
-		if item.CardID != 0 {
-			ids = append(ids, item.CardID)
-		}
-	}
-	return ids
-}
-
-// scenarioSeed 解析场景种子（十六进制，与 runner 的口径一致）。
-func scenarioSeed(raw string) (uint64, error) {
-	trimmed := strings.TrimSpace(raw)
-	if trimmed == "" {
-		return 0, nil
-	}
-	value, err := strconv.ParseUint(strings.TrimPrefix(trimmed, "0x"), 16, 64)
-	if err != nil {
-		return 0, fmt.Errorf("场景种子无效 %q: %w", raw, err)
-	}
-	return value, nil
-}
-
-// scenarioActor 是场景首动作的行动方：场景可能写"对手先动"，学习者就该是那一侧。
-func scenarioActor(actions []ir.Action) string {
-	if len(actions) == 0 {
-		return "own"
-	}
-	switch action := actions[0].(type) {
-	case ir.SourceAction:
-		if action.Actor == "oppo" {
-			return "oppo"
-		}
-	case ir.FusionAction:
-		if action.Actor == "oppo" {
-			return "oppo"
-		}
-	case ir.AttackAction:
-		if action.Actor == "oppo" {
-			return "oppo"
-		}
-	}
-	return "own"
-}
-
-// scenarioTargetIndex 把场景首动作对到本次合法动作列表的下标。
-//
-// 只做**保守**匹配：对不上就返回 -1，宁可少一条监督样本，也不要把错的动作当成真值。
-func scenarioTargetIndex(legal []runner.LegalAction, actions []ir.Action) int {
-	if len(actions) == 0 || len(legal) == 0 {
-		return -1
-	}
-	action := actions[0]
-	kind := ir.ActionKind(action)
-	if kind == "" {
-		return -1
-	}
-	match := func(source, defender string) int {
-		for index, item := range legal {
-			if item.Kind != kind {
-				continue
-			}
-			if source != "" && item.Source != source {
-				continue
-			}
-			if defender != "" && item.Defender != "" && item.Defender != defender {
-				continue
-			}
-			return index
-		}
-		return -1
-	}
-	switch typed := action.(type) {
-	case ir.SourceAction:
-		return match(typed.Source, "")
-	case ir.FusionAction:
-		return match(typed.Source, "")
-	case ir.AttackAction:
-		return match(typed.Attacker, typed.Defender)
-	case ir.SelectAction:
-		// 选择子步骤的合法动作 source 是候选 key（entity 前缀 e:）。
-		for _, target := range typed.InstanceIDs() {
-			if index := match("e:"+target, ""); index >= 0 {
-				return index
-			}
-			if index := match(target, ""); index >= 0 {
-				return index
-			}
-		}
-		for _, side := range typed.LeaderSides {
-			if index := match("l:"+side, ""); index >= 0 {
-				return index
-			}
-		}
-	case ir.ModeAction:
-		if typed.OptionID != 0 {
-			if index := match("o:"+strconv.Itoa(typed.OptionID), ""); index >= 0 {
-				return index
-			}
-		}
-		for _, option := range typed.OptionIDs {
-			if index := match("o:"+strconv.Itoa(option), ""); index >= 0 {
-				return index
-			}
-		}
-	}
-	return -1
 }
 
 // intrinsicKeywords 汇总一张牌的固有关键词（与 StateView 里实体关键词的口径一致）：
