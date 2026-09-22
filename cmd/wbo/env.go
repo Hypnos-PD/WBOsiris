@@ -288,11 +288,23 @@ func runEnv(args []string) int {
 		case "clone":
 			// 把**当前决策点**克隆成一个句柄：真实对局不受影响，句柄可以反复展开。
 			// 搜索要的是"从任意决策点分叉并继续走"，单发 lookahead 只能看一眼。
-			if current == nil {
+			//
+			// `handle>0` 时克隆的是**那个句柄的局面**（不是当前对局）：搜索要能"从克隆出来的
+			// 局面再分叉"——离线评估要在一个已保存的决策点上跑搜索，不带上这个就只能拿
+			// 当前对局当成根，搜出来的动作跟目标局面根本不是一件事（踩过）。
+			source := current
+			if command.Handle > 0 {
+				source = handles[command.Handle]
+				if source == nil {
+					fail(fmt.Errorf("句柄 %d 不存在", command.Handle))
+					continue
+				}
+			}
+			if source == nil {
 				fail(fmt.Errorf("先发送 reset"))
 				continue
 			}
-			shadow, err := current.clone(cards)
+			shadow, err := source.clone(cards)
 			if err != nil {
 				fail(err)
 				continue
