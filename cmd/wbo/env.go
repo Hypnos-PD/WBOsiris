@@ -50,6 +50,10 @@ type envCommand struct {
 	// OracleDeckTop 限制特权信息里牌库给多少张（默认 8）。
 	OracleDeckTop int `json:"oracleDeckTop,omitempty"`
 	Action        int `json:"action,omitempty"`
+	// Handle 指向一个**决策点句柄**（clone/advance 创建，state/free/advance 使用）。
+	// 搜索需要"从任意决策点分叉并继续走下去"，而 lookahead 只能看一眼就走：
+	// 句柄把克隆出来的会话留在引擎进程里，训练侧的 MCTS 才能反复展开、逐层深入。
+	Handle int `json:"handle,omitempty"`
 }
 
 // envChoiceCandidate 是一个可选候选：Key 是稳定标识，训练侧只需回传下标，
@@ -143,6 +147,9 @@ type envEvent struct {
 	Formats []envFormatInfo `json:"formats,omitempty"`
 	// Lookahead=true 表示这是一次"假想推进"的结果，真实对局没有被改变。
 	Lookahead bool `json:"lookahead,omitempty"`
+	// Handle 是决策点句柄：clone/advance 返回它，之后用 {cmd:"state"/"advance"/"free", handle:N}
+	// 继续操作。句柄把克隆会话留在引擎进程里，训练侧的 MCTS 靠它逐层展开。
+	Handle int `json:"handle,omitempty"`
 	// OK/Reason 是 deck_check 的判定结果。
 	OK     bool   `json:"ok,omitempty"`
 	Reason string `json:"reason,omitempty"`
@@ -154,6 +161,10 @@ type envSession struct {
 	learner  string
 	opponent *ai.Driver
 	seed     uint64
+	// origin 是这次 reset 的原始命令，actions 是这台会话提交过的动作序列。
+	// 两者只为一件事服务：**克隆失败时的重放回退**（见 clone）。
+	origin  envCommand
+	actions []int
 	// oracle=true 时，state 事件里额外附带**训练专用**的特权信息（对手手牌内容、
 	// 双方牌库的抽牌顺序）。默认关闭：客户端与回放路径永远拿不到这些隐藏信息。
 	oracle bool
@@ -205,6 +216,16 @@ func runEnv(args []string) int {
 	poolHash := cardPoolHash(cards)
 
 	var current *envSession
+	// 决策点句柄：克隆出来的会话留在引擎进程里，训练侧据此做真正的树搜索
+	// （clone→advance→state 逐层展开）。不带句柄就退化成"每次重新克隆"，
+	// 每层多付 5ms 的 encode/decode。
+	handles := map[int]*envSession{}
+	nextHandle := 0
+	newHandle := func(session *envSession) int {
+		nextHandle++
+		handles[nextHandle] = session
+		return nextHandle
+	}
 	send := func(event envEvent) {
 		if err := encoder.Encode(event); err != nil {
 			fmt.Fprintln(os.Stderr, "写出事件失败:", err)
@@ -264,6 +285,80 @@ func runEnv(args []string) int {
 			current.attachOracle(&event)
 			current.attachHistory(&event)
 			send(event)
+		case "clone":
+			// 把**当前决策点**克隆成一个句柄：真实对局不受影响，句柄可以反复展开。
+			// 搜索要的是"从任意决策点分叉并继续走"，单发 lookahead 只能看一眼。
+			if current == nil {
+				fail(fmt.Errorf("先发送 reset"))
+				continue
+			}
+			shadow, err := current.clone(cards)
+			if err != nil {
+				fail(err)
+				continue
+			}
+			event, err := shadow.advance(cards)
+			if err != nil {
+				fail(err)
+				continue
+			}
+			event.Seed = shadow.seed
+			event.Handle = newHandle(shadow)
+			shadow.attachOracle(&event)
+			shadow.attachHistory(&event)
+			send(event)
+		case "advance":
+			// 从句柄走一步（学习者主动作），再推进到下一个决策点/终局，返回**新句柄**。
+			// 父句柄保持原样，于是同一层可以展开任意多个候选（这就是树搜索的展开）。
+			parent := handles[command.Handle]
+			if parent == nil {
+				fail(fmt.Errorf("句柄 %d 不存在（先 clone）", command.Handle))
+				continue
+			}
+			child, err := parent.clone(cards)
+			if err != nil {
+				fail(err)
+				continue
+			}
+			if err := child.step(cards, command.Action); err != nil {
+				fail(err)
+				continue
+			}
+			event, err := child.advance(cards)
+			if err != nil {
+				fail(err)
+				continue
+			}
+			event.Seed = child.seed
+			event.Handle = newHandle(child)
+			child.attachOracle(&event)
+			child.attachHistory(&event)
+			send(event)
+		case "state":
+			// 取句柄当前的状态（不推进）：训练侧用它编码 + 让价值网评估叶子。
+			holder := handles[command.Handle]
+			if holder == nil {
+				fail(fmt.Errorf("句柄 %d 不存在（先 clone）", command.Handle))
+				continue
+			}
+			event, err := holder.advance(cards)
+			if err != nil {
+				fail(err)
+				continue
+			}
+			event.Seed = holder.seed
+			event.Handle = command.Handle
+			holder.attachOracle(&event)
+			holder.attachHistory(&event)
+			send(event)
+		case "free":
+			// 释放句柄：搜索每层展开都会留一个克隆会话，不回收会吃掉内存。
+			if _, ok := handles[command.Handle]; !ok {
+				fail(fmt.Errorf("句柄 %d 不存在", command.Handle))
+				continue
+			}
+			delete(handles, command.Handle)
+			send(envEvent{Type: "freed", Handle: command.Handle})
 		case "deck":
 			// 随机生成一副合法卡组：训练侧用它组卡组池，避免只练一副镜像卡组。
 			format, err := runner.FormatByID(cards, command.Format)
@@ -370,6 +465,7 @@ func newEnvSession(cards *ir.CardPack, command envCommand) (*envSession, error) 
 		learner:  "own",
 		opponent: ai.NewDriver("oppo", policy, ai.Limits{}),
 		seed:     command.Seed,
+		origin:   command,
 		external: external,
 		oracle:   command.Oracle,
 		side:     "own",
@@ -523,7 +619,49 @@ func (e *envSession) step(cards *ir.CardPack, index int) error {
 	if result.Status != runner.StatusCompleted && result.Status != runner.StatusSuspended {
 		return fmt.Errorf("动作 %s 被拒绝: %s", action.Kind, result.ErrorCode)
 	}
+	e.actions = append(e.actions, index)
 	return nil
+}
+
+// clone 复制这台会话。优先走 JSON 续局（5ms）；**战斗/结算中间态续局表达不了**
+// （`invalid continuation combat state`），那就退回"从 reset 重放到现在"：
+// 引擎是确定性的（同一 seed + 同一串动作 ⇒ 同一个局面），代价是 O(步数)，
+// 换来搜索在任何决策点都能分叉。原生 `Session.Clone()` 是这条路的终点（见
+// docs/tooling/search-and-clone.md 的"后续可选优化"）。
+func (e *envSession) clone(cards *ir.CardPack) (*envSession, error) {
+	if clone, err := search.Clone(cards, e.session); err == nil {
+		shadow := *e
+		shadow.session = clone
+		shadow.serial = 0
+		shadow.choiceRequestID = ""
+		shadow.chosenInstances = nil
+		shadow.chosenLeaders = nil
+		shadow.chosenOptions = nil
+		shadow.choiceSteps = 0
+		return &shadow, nil
+	}
+	command := e.origin
+	command.Cmd = "reset"
+	fresh, err := newEnvSession(cards, command)
+	if err != nil {
+		return nil, err
+	}
+	// reset 之后必须先 advance 一次：它决定"现在轮到谁"（先手可能是对手），
+	// 也是 e.side 的初始化来源。
+	if _, err := fresh.advance(cards); err != nil {
+		return nil, fmt.Errorf("重放初始化失败: %w", err)
+	}
+	for _, action := range e.actions {
+		if err := fresh.step(cards, action); err != nil {
+			return nil, fmt.Errorf("重放第 %d 个动作失败: %w", len(fresh.actions), err)
+		}
+		// 每一步之后都要 advance：它会推进到下一个决策点并**更新 e.side**
+		// （否则动作属于哪一方就对不上了 —— 重放第 2 步会报"现在不是 own 的回合"）。
+		if _, err := fresh.advance(cards); err != nil {
+			return nil, fmt.Errorf("重放第 %d 步推进失败: %w", len(fresh.actions), err)
+		}
+	}
+	return fresh, nil
 }
 
 // lookahead 返回"如果现在提交第 index 个动作会到达哪个局面"：
