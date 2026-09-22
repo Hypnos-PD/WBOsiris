@@ -156,3 +156,7 @@ loop:
 
 服务端内置的 `internal/ai` 就是这个循环的实现（`Policy` 接口 + `Driver`），
 `wbo selfplay` 用同一套代码批量自对弈，所以"陪练 AI"和"外部 bot"不会分叉。
+
+跑起来的细节（三种模式、观战、卡组、最容易写错的两条）见
+[外部 bot 运行手册](external-bot.md)；那边还指着 WBCapture 里那份能直接加载 ONNX
+模型的参考实现 `wbo-bot`。
