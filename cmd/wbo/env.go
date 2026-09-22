@@ -99,6 +99,26 @@ type envFormatInfo struct {
 	Packs []int  `json:"packs"`
 }
 
+// envActionEffect 是"学习者这一次动作**自己**造成了什么"：事件 + 双方计数变化。
+//
+// 为什么要有它：`advance` 会把对手的回应也一起走完，所以"上一个决策点 → 这个决策点"
+// 这段窗口里混着对手的动作。用观测差分去学"这张卡做什么"时，对手的还击会被算到我头上。
+// 这里把窗口在"对手即将行动"处切开，给出只属于我这一手的因果量。
+//
+// 字段与训练侧 `wbdecima/effects.py` 的 DELTA_FIELDS 一一对应；事件是
+// `ir.RuntimeEvent`（带 Side，所以"谁做的"也是明确的）。
+type envActionEffect struct {
+	Events []ir.RuntimeEvent `json:"events,omitempty"`
+	Own    map[string]int    `json:"own,omitempty"`
+	Oppo   map[string]int    `json:"oppo,omitempty"`
+	Turn   int               `json:"turn,omitempty"`
+}
+
+// effectFields 是要快照的计数字段（名字与训练侧一致）。
+var effectFields = []string{
+	"life", "pp", "ep", "sep", "hand", "field", "graveyard", "banished", "destroyed", "deck", "crests",
+}
+
 // envChoice 描述学习者当前待处理的选择请求与已累积的选择。
 type envChoice struct {
 	RequestID     string               `json:"requestId"`
@@ -138,6 +158,8 @@ type envEvent struct {
 	// 事件本身已经按视角裁剪（PrivateTo 不是本方的事件只剩 kind/side/count），
 	// 所以给训练侧的历史窗口和客户端从流里拿到的是同一份东西。
 	History []ir.RuntimeEvent `json:"history,omitempty"`
+	// ActionEffect 是"学习者这一次动作自己造成了什么"（见 envActionEffect）。
+	ActionEffect *envActionEffect `json:"actionEffect,omitempty"`
 	// Cards 是 "deck" 命令的返回值：一副随机合法卡组。
 	Format string `json:"format,omitempty"`
 	Cards  []int  `json:"cards,omitempty"`
@@ -185,6 +207,13 @@ type envSession struct {
 	// choiceSteps 是同一个选择请求上的子动作计数：采样策略可能在 select/deselect
 	// 之间来回循环，必须有硬上限，否则一局永远走不完。
 	choiceSteps int
+
+	// 归因窗口的基线：上一次吐出"学习者主动作"的 state 事件时的（事件序号, 双方计数, 回合）。
+	// 动作结算完就能算出"这一手自己造成了什么"（见 captureActionEffect）。
+	baselineSeq    uint64
+	baselineCounts map[string]map[string]int
+	baselineTurn   int
+	pendingEffect  *envActionEffect
 }
 
 func runEnv(args []string) int {
@@ -503,6 +532,92 @@ func (e *envSession) attachOracle(event *envEvent) {
 // 又不至于把协议消息撑大；训练侧只编码最近 HISTORY_EVENTS 条，多余的不影响模型。
 const envHistoryLimit = 16
 
+// countSnapshot 取双方的计数快照（字段名与训练侧 effects.DELTA_FIELDS 一致）。
+func (e *envSession) countSnapshot() (map[string]map[string]int, int, error) {
+	out := map[string]map[string]int{}
+	turn := 0
+	for _, side := range []string{"own", "oppo"} {
+		view, err := e.session.View(side)
+		if err != nil {
+			return nil, 0, err
+		}
+		counts := map[string]int{
+			"life":      view.Own.LeaderLife,
+			"pp":        view.Own.PP,
+			"ep":        view.Own.EP,
+			"sep":       view.Own.SEP,
+			"hand":      view.Own.HandCount,
+			"field":     len(view.Own.Field),
+			"graveyard": len(view.Own.Graveyard),
+			"banished":  len(view.Own.Banished),
+			"destroyed": len(view.Own.Destroyed),
+			"deck":      view.Own.DeckCount,
+			"crests":    len(view.Own.Crests),
+		}
+		out[side] = counts
+		if side == e.learner {
+			turn = view.Turn.Number
+		}
+	}
+	return out, turn, nil
+}
+
+// resetEffectBaseline 把归因窗口的起点推到当前局面。
+func (e *envSession) resetEffectBaseline() error {
+	counts, turn, err := e.countSnapshot()
+	if err != nil {
+		return err
+	}
+	e.baselineCounts = counts
+	e.baselineTurn = turn
+	e.baselineSeq = 0
+	for _, event := range e.session.EventsFor(e.learner) {
+		if event.Sequence > e.baselineSeq {
+			e.baselineSeq = event.Sequence
+		}
+	}
+	return nil
+}
+
+// captureActionEffect 结算"学习者这一手自己造成了什么"（切一次，重复调用是空操作）。
+func (e *envSession) captureActionEffect() error {
+	if e.pendingEffect != nil {
+		return nil
+	}
+	counts, turn, err := e.countSnapshot()
+	if err != nil {
+		return err
+	}
+	if e.baselineCounts == nil {
+		// 还没建过基线（例如第一手）：先补一个，归因就从这里开始算。
+		if err := e.resetEffectBaseline(); err != nil {
+			return err
+		}
+		e.baselineCounts = counts
+		e.baselineTurn = turn
+	}
+	effect := &envActionEffect{Turn: turn - e.baselineTurn}
+	for _, event := range e.session.EventsFor(e.learner) {
+		if event.Sequence > e.baselineSeq {
+			effect.Events = append(effect.Events, event)
+		}
+	}
+	for _, side := range []string{"own", "oppo"} {
+		delta := map[string]int{}
+		for _, field := range effectFields {
+			value := counts[side][field] - e.baselineCounts[side][field]
+			delta[field] = value
+		}
+		if side == "own" {
+			effect.Own = delta
+		} else {
+			effect.Oppo = delta
+		}
+	}
+	e.pendingEffect = effect
+	return nil
+}
+
 // attachHistory 给 state 事件补上"该视角可见的最近事件"。
 //
 // 每个决策点都带上尾部窗口，训练侧就不需要自己做状态差分去猜发生了什么；
@@ -528,6 +643,17 @@ func (e *envSession) advance(cards *ir.CardPack) (envEvent, error) {
 		view, err := e.session.View(e.learner)
 		if err != nil {
 			return envEvent{}, err
+		}
+		// 归因窗口在"对手即将行动"处切开：对手的选择/回合一旦被回答，事件与计数变化
+		// 就不该再算到学习者那一手上。切一次就够（pendingEffect 非空表示已经切过）。
+		if pending := e.session.PendingChoice(); pending != nil && pending.PublicTo != e.learner && !e.external {
+			if err := e.captureActionEffect(); err != nil {
+				return envEvent{}, err
+			}
+		} else if pending == nil && view.Turn.Active != "own" && !e.external {
+			if err := e.captureActionEffect(); err != nil {
+				return envEvent{}, err
+			}
 		}
 		if view.GameOver {
 			reward := 0.0
@@ -582,10 +708,22 @@ func (e *envSession) advance(cards *ir.CardPack) (envEvent, error) {
 			}
 			view := e.viewFor(active)
 			e.side = active
-			return envEvent{
+			// 这一段窗口里对手没动过（例如出一张牌后自己还能动）：这时整段都是学习者的，
+			// 直接把它当作这一手的归因结果。
+			if err := e.captureActionEffect(); err != nil {
+				return envEvent{}, err
+			}
+			event := envEvent{
 				Type: "state", Side: active, Turn: view.Turn.Number, Phase: view.Phase,
 				View: &view, Legal: legal,
-			}, nil
+			}
+			event.ActionEffect = e.pendingEffect
+			e.pendingEffect = nil
+			// 基线推进到这个决策点：下一次动作的归因从这里开始算。
+			if err := e.resetEffectBaseline(); err != nil {
+				return envEvent{}, err
+			}
+			return event, nil
 		}
 		// 轮到对手：让对手一路走到再次轮到学习者（或终局）。
 		if _, err := e.opponent.RunUntilBlocked(e.session); err != nil {
