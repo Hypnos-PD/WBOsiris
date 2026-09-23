@@ -247,14 +247,20 @@ type PlayerView struct {
 	// DeckRemaining 是**自己**牌组里剩下的卡牌 ID（多重集，顺序不公开——真人玩家也只知道
 	// 自己带了哪些牌、还剩哪些，不知道顺序）。对手的这一项永远为空：那是隐藏信息。
 	// 没有它，AI 无法判断"关键牌还在牌组里吗""还剩几张终结手段""牌组耗尽风险"。
-	DeckRemaining    []int        `json:"deckRemaining,omitempty"`
-	HandCount        int          `json:"handCount"`
-	Hand             []EntityView `json:"hand,omitempty"`
-	Field            []EntityView `json:"field"`
-	Graveyard        []EntityView `json:"graveyard"`
-	Resolving        []EntityView `json:"resolving,omitempty"`
-	Banished         []EntityView `json:"banished"`
-	Destroyed        []EntityView `json:"destroyed"`
+	DeckRemaining []int `json:"deckRemaining,omitempty"`
+	HandCount     int   `json:"handCount"`
+	// EvolutionsThisMatch 是"本场对战中自己的随从进化过几次"。
+	// 真人自己数得出来（而且有不少卡以它为条件），训练侧此前完全看不到——补上。
+	EvolutionsThisMatch int `json:"evolutionsThisMatch,omitempty"`
+	// PlayedCosts 是"本场对战中自己已使用过的卡牌**原始费用**"（按使用顺序）。
+	// 真人记得住自己打过什么费用的牌，规则里也有以它为条件的卡（"自己已使用过费用 N 的卡"）。
+	PlayedCosts []int        `json:"playedCosts,omitempty"`
+	Hand        []EntityView `json:"hand,omitempty"`
+	Field       []EntityView `json:"field"`
+	Graveyard   []EntityView `json:"graveyard"`
+	Resolving   []EntityView `json:"resolving,omitempty"`
+	Banished    []EntityView `json:"banished"`
+	Destroyed   []EntityView `json:"destroyed"`
 }
 
 type EntityView struct {
@@ -479,6 +485,8 @@ func playerView(p *player, revealHand bool, turn int, side, firstPlayer string, 
 		Crests:     entityViews(p.crests, false),
 		LeaderLife: p.leaderLife, LeaderMax: p.leaderMax, PP: p.pp, MaxPP: p.maxpp,
 		EP: p.ep, SEP: p.sep, Combo: p.combo, Shadows: p.shadows, Rally: p.rally, AttackedThisTurn: p.attackedThisTurn,
+		// 这两项是"人自己数得出来"的公开信息：本场进化次数、本场用过的费用序列。
+		EvolutionsThisMatch: p.evolutionsThisMatch, PlayedCosts: playedCostList(p.playedCosts),
 		DeckCount: len(p.deck), HandCount: len(p.hand), Field: entityViews(p.field, revealHand),
 		Graveyard: entityViews(p.graveyard, revealHand), Banished: entityViews(p.banished, revealHand), Destroyed: entityViews(historyInstances(p.destroyed, cards), false),
 		Resolving: entityViews(p.resolving, revealHand),
@@ -495,6 +503,22 @@ func playerView(p *player, revealHand bool, turn int, side, firstPlayer string, 
 		view.DeckRemaining = deckCardIDs(p.deck)
 	}
 	return view
+}
+
+// playedCostList 把"用过的费用集合"展开成有序列表（人数得出来的信息；顺序按费用升序，
+// 因为集合本身不带顺序，训练侧只需要"用过哪些费用、各几次"）。
+func playedCostList(costs map[int]bool) []int {
+	if len(costs) == 0 {
+		return nil
+	}
+	out := make([]int, 0, len(costs))
+	for cost := range costs {
+		if cost > 0 {
+			out = append(out, cost)
+		}
+	}
+	sort.Ints(out)
+	return out
 }
 
 // deckCardIDs 把牌组展开成卡牌 ID 的多重集（顺序不外发：真人也不知道自己的抽牌顺序）。

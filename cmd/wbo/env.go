@@ -539,9 +539,11 @@ func (e *envSession) attachOracle(event *envEvent) {
 
 // envHistoryLimit 是 state 事件里携带的历史事件条数上限。
 //
-// 16 条足够覆盖"本回合发生过什么"（一次攻击 + 一两次出牌 + 触发结算），
-// 又不至于把协议消息撑大；训练侧只编码最近 HISTORY_EVENTS 条，多余的不影响模型。
-const envHistoryLimit = 16
+// 原来是 16（"够覆盖本回合"），但训练侧现在不只用它做**有序槽位**（最近 16 条），
+// 还要做"带衰减的卡牌袋"（见 WBDecima 的 `HISTORY_BAG_EVENTS`）——袋子越大，
+// 模型越能看见"这几回合双方都打过什么"。48 条约等于 3–5 个回合的事件量，
+// 协议消息大概翻倍（仍远小于 view 里的场面），值得。
+const envHistoryLimit = 48
 
 // countSnapshot 取双方的计数快照（字段名与训练侧 effects.DELTA_FIELDS 一致）。
 func (e *envSession) countSnapshot() (map[string]map[string]int, int, error) {
