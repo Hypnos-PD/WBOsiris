@@ -133,9 +133,19 @@ func (s *Server) DecodeRequest(wire []byte, auth Auth) (*Request, error) {
 	sealed := append(append([]byte(nil), payloadCiphertext...), tag...)
 	plain, err := gcm.Open(nil, nonce, sealed, aad)
 	if err != nil {
-		// 认证失败最常见的原因不是"抓包坏了"，而是共享密钥不对：客户端用的还是
-		// 原来的静态公钥（没有换成我们的），或者常量/凭据与这一版对不上。
-		return nil, fmt.Errorf("nativeproto: 载荷认证失败（多半是共享密钥不对）: %w", err)
+		// 认证失败分两种，而它们要做的事完全相反，所以这里必须分清楚：
+		//
+		//   元数据那一步只用到 shared（X25519 的结果），不需要任何凭据。所以
+		//   "元数据解出来的凭据片段与 authKey 一致"就等价于"共享密钥是对的"。
+		//   那时候还失败，问题就在密钥派生（混淆/nonce/AAD）或 sid/uuid 上；
+		//   不一致才是"客户端用的对端公钥不是我们那把"。
+		//
+		// 不做这个区分的话，两种情况的报错一模一样，排查会往完全错误的方向走——
+		// mixed[0]/mixed[index] 那一处错就是这么被冤枉成"公钥没换成我们的"。
+		if string(metaPlain[2:34]) != string(auth.AuthKey[:32]) {
+			return nil, fmt.Errorf("nativeproto: 载荷认证失败，且元数据里的凭据对不上：客户端用的对端公钥很可能不是我们那把（共享密钥不对）: %w", err)
+		}
+		return nil, fmt.Errorf("nativeproto: 载荷认证失败，但共享密钥是对的（元数据里的凭据与 authKey 一致），问题在密钥派生或 sid/uuid: %w", err)
 	}
 	return &Request{
 		Plain:        plain,
@@ -195,10 +205,16 @@ func md5Of(parts ...[]byte) []byte {
 }
 
 // mix 复现客户端那段混淆：从 shared 前 16 字节出发，按 preMix 的每个字节三次寻址改写。
+//
+// 注意 v0 用的是 mixed[index] 而不是 mixed[0]：这一处差别是**照着 WBArts 的
+// server/ranking/codec.go 逐字对出来的**，写错的表现是元数据解得开（那一步只用到
+// shared）而载荷一律"认证失败"。原来这里是 mixed[0]，测试之所以没抓住，是因为当时
+// 只用本包自己写的客户端方向做对拍——两边同时错就永远对得上。现在有一条把客户端
+// 方向的输出钉在**原版 DLL 实测向量**上的测试（oracle_test.go）。
 func mix(shared, preMix, commonTail []byte) []byte {
 	mixed := append([]byte(nil), shared[:16]...)
-	for _, x := range preMix {
-		v0 := x ^ mixed[0]
+	for index, x := range preMix {
+		v0 := x ^ mixed[index]
 		i0 := int(v0 & 0x0F)
 		v1 := x ^ shared[i0]
 		i1 := int(v1 & 0x0F)
