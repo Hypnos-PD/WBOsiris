@@ -63,6 +63,11 @@ type envCommand struct {
 	// advance 往返约 1ms，K×K_d=128 次就是 128ms/决策，而其中有用的计算只有一小部分。
 	// 批量之后一次 write/read 就能推进这一层。
 	Items []envHandleItem `json:"items,omitempty"`
+	// Believe 配合 `clone`：用**外部给定的**对手隐藏牌多重集重排对手隐藏区
+	// （张数必须与当前手牌+牌库一致）。它来自"公开证据 + 卡组先验"推出来的范围，
+	// 而不是引擎里的真值——于是搜索看到的信息和一个真实玩家一样多。
+	// 不传就退回 `determinize`（重排真值多重集）。
+	Believe []int `json:"believe,omitempty"`
 }
 
 // envHandleItem 是 `advance_many` 里的一个展开请求：从句柄 Handle 走 Action 一步。
@@ -365,6 +370,15 @@ func runEnv(args []string) int {
 			// 搜索从此不再"偷看真牌"——这是不完全信息下正确的做法（见 docs/tooling/env-protocol.md）。
 			if command.Determinize > 0 {
 				if err := shadow.session.Determinize(command.Determinize); err != nil {
+					fail(err)
+					continue
+				}
+			}
+			// 信念（range）：用调用方给的对手隐藏牌多重集重排对手隐藏区。
+			// 这比 `determinize` 更诚实一层——后者用的是引擎真值多重集（上帝视角），
+			// 这一份来自"公开证据 + 卡组先验"。张数不对会报错（张数是公开信息）。
+			if len(command.Believe) > 0 {
+				if err := shadow.session.Believe(command.Determinize, command.Believe); err != nil {
 					fail(err)
 					continue
 				}

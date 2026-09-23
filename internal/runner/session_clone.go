@@ -67,6 +67,49 @@ func (s *Session) Determinize(seed uint64) error {
 	return nil
 }
 
+// Believe 用**外部给定的**对手隐藏牌多重集重排对手的隐藏槽位。
+//
+// 与 Determinize 的区别只有一处，但那一处正是"信息集"的全部内容：
+// Determinize 用的是引擎里的**真值多重集**——它知道"对手手牌+牌库里一共还剩这些牌"
+// （上帝视角）；Believe 用调用方给的多重集，那一份应该来自**公开证据 + 卡组先验**
+// 推断出来的范围（range）：一个真实玩家能看到的就是这些。
+//
+// 张数必须与对手隐藏区当前张数一致（手牌 + 牌库），否则直接报错——调用方算错了要早失败，
+// 不能悄悄改张数（张数是公开信息，改了就破坏了"公开信息逐位不变"这条硬要求）。
+func (s *Session) Believe(seed uint64, cards []int) error {
+	if s == nil || s.g == nil {
+		return fmt.Errorf("session is required")
+	}
+	oppo := s.g.oppo
+	hidden := len(oppo.hand) + len(oppo.deck)
+	if len(cards) != hidden {
+		return fmt.Errorf("对手隐藏区有 %d 张，给定 %d 张", hidden, len(cards))
+	}
+	// 先按种子把这些牌洗一遍：哪几张进手牌、哪几张留在牌库是随机的（张数固定）。
+	order := make([]int, len(cards))
+	copy(order, cards)
+	rng := ruleset.NewRNG(seed)
+	for i := len(order) - 1; i > 0; i-- {
+		j := rng.Index(i + 1)
+		if i != j {
+			order[i], order[j] = order[j], order[i]
+		}
+	}
+	// 复用现有实例（保持 id/位置），只换它们承载的卡牌并重置卡牌派生状态。
+	// 不新建实例：实例身份在引擎里被触发器、附着材料等引用，换掉容易留下悬挂引用。
+	instances := make([]*instance, 0, hidden)
+	instances = append(instances, oppo.hand...)
+	instances = append(instances, oppo.deck...)
+	for index, item := range instances {
+		card := s.g.cards[order[index]]
+		if card == nil {
+			return fmt.Errorf("卡牌 %d 不在卡池里", order[index])
+		}
+		resetCardState(item, card)
+	}
+	return nil
+}
+
 func shuffleInstances(rng *ruleset.RNG, items []*instance) {
 	// Fisher–Yates：与引擎其它洗牌（deck_replace.go）同一个 RNG，保证可复现。
 	for i := len(items) - 1; i > 0; i-- {
