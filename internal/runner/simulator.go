@@ -530,6 +530,11 @@ func deckCardIDs(deck []*instance) []int {
 		}
 		ids = append(ids, card.card.ID)
 	}
+	// **必须排序后再外发**：牌库顺序就是"接下来会抽到什么"，连自己都不知道（视角契约里
+	// 写的就是"多重集，顺序不公开"）。以前这里直接把 deck 的遍历顺序发出去了——
+	// 训练侧只按多重集分桶，所以一直没暴露；但客户端/回放拿它做提示就是作弊。
+	// 想要真顺序只有一条路：特权视图（oracle）里的 ownDeck，它只在训练时开。
+	sort.Ints(ids)
 	return ids
 }
 
