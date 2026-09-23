@@ -54,6 +54,9 @@ type envCommand struct {
 	// 搜索需要"从任意决策点分叉并继续走下去"，而 lookahead 只能看一眼就走：
 	// 句柄把克隆出来的会话留在引擎进程里，训练侧的 MCTS 才能反复展开、逐层深入。
 	Handle int `json:"handle,omitempty"`
+	// Determinize>0 时，克隆出来的局面会先做一次**确定化**（隐藏槽位重排，公开信息逐位不变）：
+	// 见 runner.Session.Determinize。用于让搜索不再"偷看对手的真手牌与真牌序"。
+	Determinize uint64 `json:"determinize,omitempty"`
 }
 
 // envChoiceCandidate 是一个可选候选：Key 是稳定标识，训练侧只需回传下标，
@@ -337,6 +340,14 @@ func runEnv(args []string) int {
 			if err != nil {
 				fail(err)
 				continue
+			}
+			// 确定化：隐藏槽位重排（对手手牌/牌库、己方牌库顺序），公开信息逐位不变。
+			// 搜索从此不再"偷看真牌"——这是不完全信息下正确的做法（见 docs/tooling/env-protocol.md）。
+			if command.Determinize > 0 {
+				if err := shadow.session.Determinize(command.Determinize); err != nil {
+					fail(err)
+					continue
+				}
 			}
 			event, err := shadow.advance(cards)
 			if err != nil {

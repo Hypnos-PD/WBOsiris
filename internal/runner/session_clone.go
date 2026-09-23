@@ -5,6 +5,7 @@ import (
 	"maps"
 
 	"wbo/internal/ir"
+	"wbo/internal/ruleset"
 )
 
 // Clone 深拷贝一份会话：原生实现，给"从任意决策点分叉"的树搜索用。
@@ -28,6 +29,52 @@ func (s *Session) Clone() (*Session, error) {
 		out.blocks = maps.Clone(s.blocks)
 	}
 	return &out, nil
+}
+
+// Determinize 把**只有隐藏信息不同**的一个等价局面做出来：在"未知槽位"之间重新分配卡牌。
+//
+// 为什么需要它（见 WBDecima 的 docs/determinized-search-design.md）：
+// `Clone()` 出来的局面里，对手手牌内容、双方牌库顺序都是真值，于是搜索在模拟里"偷看真牌"——
+// 叶子估值偏乐观、给策略的目标也是"看见了答案才给出的"。确定化把搜索改成
+// "用与真值同分布、但不知道具体是哪一种的状态"，这才是不完全信息下正确的做法。
+//
+// 重新分配的槽位（**只动隐藏的**）：
+//
+//   - 对手手牌：内容未知 ⇒ 与对手牌库一起做**联合置换**（两者张数不变、合计多重集不变）；
+//   - 己方牌库：内容是公开信息（构筑时就知道），顺序未知 ⇒ **只置换顺序**；
+//   - 场上/墓地/放逐/破坏/护符与一切计数：全部**逐位不动**（公开信息必须不变）。
+//
+// 种子由调用方给，同一个种子 ⇒ 同一个确定化样本（可复现）。
+func (s *Session) Determinize(seed uint64) error {
+	if s == nil || s.g == nil {
+		return fmt.Errorf("session is required")
+	}
+	rng := ruleset.NewRNG(seed)
+
+	// 对手手牌与对手牌库：联合置换（在"哪些牌在手上、哪些还在牌库"这件事上重新采样）。
+	// 注意两者的**张数**都不变，只是内容重新分配——公开信息里只有手牌张数。
+	oppo := s.g.oppo
+	if len(oppo.hand) > 0 || len(oppo.deck) > 0 {
+		pool := make([]*instance, 0, len(oppo.hand)+len(oppo.deck))
+		pool = append(pool, oppo.hand...)
+		pool = append(pool, oppo.deck...)
+		shuffleInstances(rng, pool)
+		copy(oppo.hand, pool[:len(oppo.hand)])
+		copy(oppo.deck, pool[len(oppo.hand):])
+	}
+	// 己方牌库顺序：自己知道牌库**内容**，但不知道顺序 ⇒ 只打乱顺序。
+	shuffleInstances(rng, s.g.own.deck)
+	return nil
+}
+
+func shuffleInstances(rng *ruleset.RNG, items []*instance) {
+	// Fisher–Yates：与引擎其它洗牌（deck_replace.go）同一个 RNG，保证可复现。
+	for i := len(items) - 1; i > 0; i-- {
+		j := rng.Index(i + 1)
+		if i != j {
+			items[i], items[j] = items[j], items[i]
+		}
+	}
 }
 
 func cloneExecFrames(in []execFrame) []execFrame {
