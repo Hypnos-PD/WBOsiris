@@ -19,14 +19,17 @@ import (
 	"wbo/internal/nativeclient"
 )
 
-// native launch 是 Steam 启动选项里那个包装器：
+// native launch 把"带本地服务端的原版客户端"整个起起来，用户不需要知道 Steam 有
+// 启动选项这回事：
 //
-//	/home/you/wbo native launch --broker -- %command%
+//	/home/you/wbo native launch --broker --capture ~/wbo-capture
 //
-// 它在挂载命名空间里把代理 DLL 盖到客户端的那个插件位置上，再执行 Steam 给的
-// 原始命令。**磁盘上什么都不改**：Steam 的文件一个字节都没动，代理只存在于这个
-// 命名空间里。这样就不用复制 27 GiB（本机是 ext4，没有 reflink），也不用碰
-// overlayfs（没加载）。
+// 它发现并核对客户端、推出该用哪个 Proton 与运行时、在挂载命名空间里把代理 DLL
+// 盖到客户端的那个插件位置上，最后执行自己拼出来的命令行。**磁盘上什么都不改**：
+// Steam 的文件一个字节都没动，代理只存在于这个命名空间里。这样就不用复制 27 GiB
+// （本机是 ext4，没有 reflink），也不用碰 overlayfs（没加载）。
+//
+// 想自己给命令（调试）时用 `-- 命令…`：那时环境变量原样继承，不再自己推导。
 //
 // 这套只在 Linux/Proton 上成立：它依赖 bubblewrap 的挂载命名空间。Windows 上
 // 需要另一套做法（同一个文件名的 DLL 无法在不改盘的情况下被覆盖），尚未实现。
@@ -86,6 +89,12 @@ func runNativeLaunch(args []string) int {
 	state := fs.String("state", "", "会话目录（放代理日志和现场生成的配置）；默认 ~/.local/state/wbo/launch")
 	dryRun := fs.Bool("dry-run", false, "只打印将要执行的命令")
 	noPatch := fs.Bool("no-patch", false, "对照实验用：不改写客户端内存里的公钥常量")
+	clientFlag := fs.String("client-dir", "", "客户端目录；省略时按 Steam 库自动发现并核对")
+	protonFlag := fs.String("proton", "", "Proton 目录或 proton 脚本的绝对路径；省略时按 Steam 配置推导")
+	runtimeFlag := fs.String("runtime", "", "Steam Linux Runtime 入口（如 .../_v2-entry-point）；省略时按 Proton 的声明推导")
+	sessionKeyFlag := fs.String("session-key", "", "会话私钥；省略时用会话目录里的 session-key（本轮启动刚生成的那把）")
+	uuidFlag := fs.String("uuid", "", "客户端凭据 uuid；给了才会解开加密的请求体")
+	authKeyFlag := fs.String("auth-key", "", "客户端凭据 auth key（base64）")
 	// flag 包遇到第一个非旗标参数就停，所以先把 "--" 之前的部分交给它，
 	// 之后的原样当作 Steam 给的命令。
 	separator := indexOf(args, "--")
@@ -106,21 +115,28 @@ func runNativeLaunch(args []string) int {
 		return 1
 	}
 	logf("会话目录 %s", stateDir)
-	if len(rest) == 0 {
-		logf("缺少要执行的命令。启动选项里必须带 %%command%%，例如：")
-		logf("  %s native launch --broker --capture /abs/path/capture -- %%command%%", os.Args[0])
-		return 2
-	}
 	if runtime.GOOS != "linux" {
 		logf("native launch 目前只实现了 Linux/Proton（依赖 bubblewrap 的挂载命名空间）")
 		return 1
 	}
-	clientDir, err := findClientDir(rest)
+	// 两条路：给了 "-- 命令" 就用 Steam 给的那条（启动选项模式，保留给调试），
+	// 没给就自己把 Steam 那条命令行拼出来（正常路径，用户不需要知道 Steam 启动
+	// 选项是什么东西）。
+	clientDir, tool, err := resolveTarget(rest, *clientFlag, *protonFlag, *runtimeFlag, logf)
 	if err != nil {
 		logf("%v", err)
 		return 1
 	}
 	logf("客户端目录 %s", clientDir)
+	if tool != nil {
+		logf("Proton %s（%s）", tool.Name, tool.Version)
+		logf("运行时 %s", tool.EntryPoint)
+		if tool.Mapping != "" {
+			logf("兼容工具由 config.vdf 指定：%s", tool.Mapping)
+		}
+	} else {
+		logf("命令由调用方提供，环境变量原样继承")
+	}
 	shimPath := *shim
 	if shimPath == "" {
 		var looked []string
@@ -195,18 +211,41 @@ func runNativeLaunch(args []string) int {
 	// 需要的是"主命令退出时把 broker 收掉"的写法。
 	var brokerProcess *exec.Cmd
 	if *broker {
-		brokerProcess, err = startBroker(self, *listen, *capture, logFile, logf)
+		brokerArgs := []string{"native", "broker", "--listen", *listen}
+		if *capture != "" {
+			brokerArgs = append(brokerArgs, "--capture", *capture)
+		}
+		// 会话私钥默认就是这次启动刚写下的那一把：代理改写的公钥与它配对，
+		// 不给的话 broker 只能录到密文。
+		sessionKey := *sessionKeyFlag
+		if sessionKey == "" {
+			sessionKey = filepath.Join(stateDir, "session-key")
+		}
+		if _, err := os.Stat(sessionKey); err == nil {
+			brokerArgs = append(brokerArgs, "--session-key", sessionKey)
+		}
+		if *uuidFlag != "" {
+			brokerArgs = append(brokerArgs, "--uuid", *uuidFlag)
+		}
+		if *authKeyFlag != "" {
+			brokerArgs = append(brokerArgs, "--auth-key", *authKeyFlag)
+		}
+		brokerProcess, err = startBroker(self, brokerArgs, *listen, logFile, logf)
 		if err != nil {
 			logf("%v", err)
 			return 1
 		}
 		defer stopBroker(brokerProcess, logf)
 	}
+	command := rest
+	if len(command) == 0 {
+		command = tool.GameCommand(clientDir)
+	}
 	line := buildLaunchCommand(launchPlan{
 		Bwrap:     bwrap,
 		ClientDir: clientDir,
 		Overlays:  overlays,
-		Command:   rest,
+		Command:   command,
 	})
 	if *dryRun {
 		logf("将执行 %s", strings.Join(line, " "))
@@ -221,7 +260,11 @@ func runNativeLaunch(args []string) int {
 	process.Stderr = io.MultiWriter(os.Stderr, logFile)
 	// 配置走环境变量，不往游戏目录里放文件：bwrap 的 --file 会在底层文件系统上
 	// 真的创建那个文件，等于改动了 Steam 的安装目录。环境变量会一路传到游戏进程。
-	process.Env = append(os.Environ(), "YAHA_SHIM_CONFIG="+windowsPath(confPath))
+	environment := append(os.Environ(), "YAHA_SHIM_CONFIG="+windowsPath(confPath))
+	if tool != nil {
+		environment = append(environment, tool.Environment(clientDir)...)
+	}
+	process.Env = environment
 	runErr := process.Run()
 	close(stopPatcher)
 	logf("子进程结束 %v", runErr)
@@ -297,11 +340,8 @@ type overlayBinding struct {
 //
 // 不等就返回的话，游戏可能在 broker 就绪前发出第一个请求，那一次就会失败——
 // 而"第一个请求"恰恰是我们最想录到的。
-func startBroker(self, listen, capture string, logFile *os.File, logf func(string, ...any)) (*exec.Cmd, error) {
-	arguments := []string{"native", "broker", "--listen", listen}
-	if capture != "" {
-		arguments = append(arguments, "--capture", capture)
-	}
+func startBroker(self string, arguments []string, listen string, logFile *os.File,
+	logf func(string, ...any)) (*exec.Cmd, error) {
 	command := exec.Command(self, arguments...)
 	command.Stdout = io.MultiWriter(os.Stdout, logFile)
 	command.Stderr = io.MultiWriter(os.Stderr, logFile)
@@ -453,7 +493,7 @@ func mirrorDirectory(source, target string, replacements map[string]string) erro
 			return err
 		}
 		if replacement, ok := replacements[name]; ok {
-			if err := os.Link(replacement, path); err != nil {
+			if err := linkFile(replacement, path); err != nil {
 				return err
 			}
 			continue
@@ -465,7 +505,7 @@ func mirrorDirectory(source, target string, replacements map[string]string) erro
 			}
 			continue
 		}
-		if err := os.Link(filepath.Join(source, name), path); err != nil {
+		if err := linkFile(filepath.Join(source, name), path); err != nil {
 			return err
 		}
 	}
@@ -504,13 +544,39 @@ func mirroredDirectories(realRoot, overlayRoot string) []overlayBinding {
 	return bindings
 }
 
-// linkFile 用硬链接让 target 与 source 是同一个文件。硬链接而不是软链接：原件要
-// 被 Windows 加载器按名字找到，普通文件比符号链接少一层不确定性。
+// linkFile 让 target 与 source 是同一个文件。硬链接而不是软链接：原件要被 Windows
+// 加载器按名字找到，普通文件比符号链接少一层不确定性。
+//
+// 会话目录和 Steam 库不在同一个文件系统时硬链接会以 EXDEV 失败（默认位置在
+// ~/.local/state，通常没事；用户把库放在别的盘就会碰上），这时退回真复制一份。
+// 替身目录只镜像客户端根目录和插件目录这两层，所以最坏情况下多复制的是
+// GameAssembly.dll 那一份大文件，不是整棵 27 GiB。
 func linkFile(source, target string) error {
 	if err := os.Remove(target); err != nil && !os.IsNotExist(err) {
 		return err
 	}
-	return os.Link(source, target)
+	if err := os.Link(source, target); err == nil {
+		return nil
+	}
+	return copyFile(source, target)
+}
+
+// copyFile 是硬链接不可用时的退路：逐字节复制。
+func copyFile(source, target string) error {
+	in, err := os.Open(source)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+	out, err := os.OpenFile(target, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o755)
+	if err != nil {
+		return err
+	}
+	if _, err := io.Copy(out, in); err != nil {
+		out.Close()
+		return err
+	}
+	return out.Close()
 }
 
 // findClientDir 从 Steam 给的命令里认出客户端目录。

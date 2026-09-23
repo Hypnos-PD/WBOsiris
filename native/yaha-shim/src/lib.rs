@@ -261,6 +261,12 @@ unsafe extern "system" {
 }
 
 #[cfg(windows)]
+unsafe extern "system" {
+    // 元数据那一块可能映射成只读：写入前临时放开，写完还原。
+    fn VirtualProtect(address: *const c_void, length: usize, new_protect: u32, old_protect: *mut u32) -> i32;
+}
+
+#[cfg(windows)]
 const MEM_COMMIT: u32 = 0x1000;
 #[cfg(windows)]
 const PAGE_READWRITE: u32 = 0x04;
@@ -275,15 +281,20 @@ const PAGE_EXECUTE_READWRITE: u32 = 0x40;
 ///
 /// 常量来自内嵌的加密元数据，磁盘上没有明文，只有运行时内存里才有；它所在的内存
 /// 是可写的，所以直接改即可。
+///
+/// 返回值是这次扫描改掉了多少处；0 表示现在内存里没有那份原文（可能还没出现，
+/// 也可能已经全改完了）。返回值而不是 bool 是必须的：实测第一遍扫描改到的 7 处
+/// 里有"临时副本"，元数据解开之后**又出现**了原文，只用 bool 会在第一次命中后
+/// 就收工，客户端照样拿原公钥加密。
 #[cfg(windows)]
-fn patch_peer_key() -> bool {
+fn patch_peer_key() -> usize {
     let config = config();
     let (Some(pattern), Some(peer)) = (config.pattern.as_ref(), config.peerkey.as_ref()) else {
-        return false;
+        return 0;
     };
     if pattern.len() < peer.len() || peer.len() != 32 {
         config.record("patch: pattern/peerkey 配置不合法，跳过");
-        return false;
+        return 0;
     }
     let mut patched = 0;
     let mut address = 0x10000usize;
@@ -330,22 +341,181 @@ fn patch_peer_key() -> bool {
         }
         address = base + size;
     }
-    if patched == 0 {
-        return false;
+    if patched > 0 {
+        // 一次扫描要遍历整个地址空间，很贵；所以只在真的改到时写一行汇总。
+        config.record(&format!("patch: 改写完成，共 {patched} 处"));
     }
-    // 一次扫描要遍历整个地址空间，很贵；所以只在真的改到时写一行汇总。
-    config.record(&format!("patch: 改写完成，共 {patched} 处"));
-    true
+    patched
 }
 
 #[cfg(not(windows))]
-fn patch_peer_key() -> bool {
-    false
+fn patch_peer_key() -> usize {
+    0
 }
 
 /// 已经改写过就置位，避免重复扫描。
 #[cfg(windows)]
 static PATCHED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// 常量在元数据里的偏移（1.9.1.18238 实测；换版本要重新提取）。
+///
+/// 为什么要按偏移改，而不是"在内存里找那 52 字节"：实测（1.9.5 客户端）按 32 字节
+/// 全内存搜索能改到若干份副本，唯独改不到客户端**真正用来协商密钥的那一份**——它在
+/// 内嵌元数据的字段默认值表里，客户端每次调用 CommonHeader() 都从这里重新拷一份。
+/// 只改副本的表现是：broker 一直报"载荷认证失败"，而 shim 日志显示改写成功。
+const METADATA_CONSTANT_OFFSET: usize = 0xFFC0C8;
+
+/// 用来确认"这真的是元数据"的类型名，与 delta/tools/patch_common_header.py 一致。
+#[cfg(windows)]
+const METADATA_NEEDLES: [&[u8]; 2] = [b"Wizard2.ServerShared", b"MessagePackObjects"];
+
+/// 判断 offset 处是不是一个合法的元数据头，是则返回它声明的总长度。
+///
+/// 直接照搬 delta 那边的判定：头部的 header_size 与区间表必须自洽。不对目标做这种
+/// 校验就会改错地方——踩过一次，所以这里的判断宁可严一点。
+#[cfg(windows)]
+fn metadata_size(buffer: &[u8], offset: usize) -> Option<usize> {
+    let read_u32 = |at: usize| -> Option<u32> {
+        let bytes = buffer.get(at..at + 4)?;
+        Some(u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]))
+    };
+    if offset + 0x1000 > buffer.len() {
+        return None;
+    }
+    let header_size = read_u32(offset + 8)? as usize;
+    if !(0x20..=0x2000).contains(&header_size) || header_size % 8 != 0 {
+        return None;
+    }
+    let count = (header_size - 8) / 8;
+    if !(8..=60).contains(&count) {
+        return None;
+    }
+    let mut previous_end = 0usize;
+    let mut first = true;
+    for index in 0..count {
+        let start = read_u32(offset + 8 + index * 8)? as usize;
+        let size = read_u32(offset + 12 + index * 8)? as usize;
+        if start > 0x4000_0000 || size > 0x4000_0000 {
+            return None;
+        }
+        if size > 0 {
+            if first {
+                if start != header_size {
+                    return None;
+                }
+                first = false;
+            } else if start != previous_end {
+                return None;
+            }
+            previous_end = start + size;
+        }
+    }
+    if first || !(0x0010_0000..=0x4000_0000).contains(&previous_end) {
+        return None;
+    }
+    Some(previous_end)
+}
+
+/// 在元数据声明的区间里找那两个类型名，确认这真的是我们认识的那份元数据。
+#[cfg(windows)]
+fn metadata_has_needles(buffer: &[u8], offset: usize, total: usize) -> bool {
+    let end = (offset + total).min(buffer.len());
+    METADATA_NEEDLES
+        .iter()
+        .all(|needle| buffer[offset..end].windows(needle.len()).any(|window| window == *needle))
+}
+
+/// 按偏移改写元数据里的常量——这是客户端真正会去读的那一份。
+#[cfg(windows)]
+fn patch_metadata_constant(pattern: &[u8], peer: &[u8]) -> usize {
+    let mut patched = 0;
+    let mut address = 0x10000usize;
+    let mut info = MemoryBasicInformation {
+        base_address: std::ptr::null_mut(),
+        allocation_base: std::ptr::null_mut(),
+        allocation_protect: 0,
+        _padding: 0,
+        region_size: 0,
+        state: 0,
+        protect: 0,
+        kind: 0,
+        _padding2: 0,
+    };
+    while address < 0x7fff_ffff_0000 {
+        let queried = unsafe {
+            VirtualQuery(address as *const c_void, &mut info, std::mem::size_of::<MemoryBasicInformation>())
+        };
+        if queried == 0 {
+            break;
+        }
+        let base = info.base_address as usize;
+        let size = info.region_size;
+        // 元数据是几十 MB 的匿名块；只看这个量级的区域，别去逐字节翻整个地址空间。
+        if info.state == MEM_COMMIT && (1 << 20..=64 << 20).contains(&size) {
+            let region = unsafe { std::slice::from_raw_parts(info.base_address as *const u8, size) };
+            let mut offset = 0;
+            while offset + METADATA_CONSTANT_OFFSET + pattern.len() <= region.len() {
+                let Some(total) = metadata_size(region, offset) else {
+                    offset += 8;
+                    continue;
+                };
+                if metadata_has_needles(region, offset, total) {
+                    let target = offset + METADATA_CONSTANT_OFFSET;
+                    if region[target..target + pattern.len()] == *pattern
+                        && write_protected(info.base_address, target, peer)
+                    {
+                        patched += 1;
+                    }
+                    offset += total;
+                    continue;
+                }
+                offset += 8;
+            }
+        }
+        address = base + size;
+    }
+    patched
+}
+
+/// 往可能只读的页里写 32 字节：临时放开写权限，写完立刻还原。
+#[cfg(windows)]
+fn write_protected(page_base: *mut c_void, offset: usize, value: &[u8]) -> bool {
+    const PAGE_READWRITE: u32 = 0x04;
+    let address = unsafe { (page_base as *mut u8).add(offset) };
+    let mut previous = 0u32;
+    let changed = unsafe {
+        VirtualProtect(address as *const c_void, value.len(), PAGE_READWRITE, &mut previous)
+    };
+    if changed == 0 {
+        config().record("patch: VirtualProtect 失败，这一处跳过");
+        return false;
+    }
+    unsafe {
+        std::ptr::copy_nonoverlapping(value.as_ptr(), address, value.len());
+    }
+    let mut ignored = 0u32;
+    unsafe {
+        VirtualProtect(address as *const c_void, value.len(), previous, &mut ignored);
+    }
+    true
+}
+
+/// 每一轮都先按偏移改元数据，再兜底扫全内存。
+#[cfg(windows)]
+fn patch_round() -> usize {
+    let config = config();
+    let (Some(pattern), Some(peer)) = (config.pattern.as_ref(), config.peerkey.as_ref()) else {
+        return 0;
+    };
+    let mut patched = patch_metadata_constant(pattern, peer);
+    patched += patch_peer_key();
+    patched
+}
+
+#[cfg(not(windows))]
+fn patch_round() -> usize {
+    0
+}
 
 /// 保证在返回之前公钥已经被换掉。
 ///
@@ -362,8 +532,10 @@ fn ensure_patched() {
         return;
     }
     for _ in 0..50 {
-        if patch_peer_key() {
+        let patched = patch_round();
+        if patched > 0 {
             PATCHED.store(true, Ordering::SeqCst);
+            config().record(&format!("patch: 返回前改写 {patched} 处"));
             return;
         }
         std::thread::sleep(std::time::Duration::from_millis(100));
@@ -375,24 +547,31 @@ fn ensure_patched() {
 fn ensure_patched() {}
 
 /// 启动一个后台线程做改写：常量可能在元数据解开之后才出现，所以隔一会儿多试几次。
+///
+/// 这里有意**不**在第一次命中后就收工：实测（1.9.5 客户端）第一遍扫描在启动早期
+/// 只改到若干份副本，元数据里那份权威的值是稍后才出现的，只扫一遍会漏掉它——表现
+/// 就是 broker 一直报"载荷认证失败"，而日志里写着"改写完成"。
+///
+/// 轮数是有上限的：每轮都要按元数据偏移找一遍、再兜底扫一遍全内存，很贵。20 轮
+/// （约 15 秒）足够覆盖"元数据晚出现"这个窗口；再往后重复改同一批副本没有意义。
 #[cfg(windows)]
 fn spawn_patcher() {
     std::thread::spawn(|| {
-        // 第一次必须立刻做：客户端建好处理栈之后马上就会发第一个请求，晚一步那批
-        // 包就是用原公钥加的密，解不开。找不到才退回重试。
         if !(config().pattern.is_some() && config().peerkey.is_some()) {
             return;
         }
-        // 一次扫描要几百毫秒到数秒，所以入口要在第一个请求之前就把它启动起来
-        // （见 DllMain）。扫不到就每 100ms 重来，给"元数据晚一点才解开"留余地。
-        for _ in 0..300 {
-            if patch_peer_key() {
+        let mut rounds = 0;
+        let mut total = 0;
+        while rounds < 20 {
+            rounds += 1;
+            let patched = patch_round();
+            if patched > 0 {
                 PATCHED.store(true, std::sync::atomic::Ordering::SeqCst);
-                return;
+                total += patched;
             }
-            std::thread::sleep(std::time::Duration::from_millis(100));
+            std::thread::sleep(std::time::Duration::from_millis(750));
         }
-        config().record("patch: 30 秒内没有在内存里找到那 52 字节常量");
+        config().record(&format!("patch: 监视结束（{rounds} 轮，累计改写 {total} 处）"));
     });
 }
 
@@ -412,18 +591,14 @@ pub extern "system" fn DllMain(_instance: *mut c_void, reason: u32, _reserved: *
     const DLL_PROCESS_ATTACH: u32 = 1;
     if reason == DLL_PROCESS_ATTACH {
         std::thread::spawn(|| {
+            // 线程里先等一小会儿再动手：DllMain 期间持有加载器锁，尽量别在锁里做事。
             std::thread::sleep(std::time::Duration::from_millis(200));
-            let ready = !config().no_patch && config().pattern.is_some() && config().peerkey.is_some();
-            if !ready {
+            // 改写逻辑只有一份：见 spawn_patcher。这里不放第二份副本——两处各写各的
+            // 最容易的就是"一处改成持续监视、另一处还是命中一次就收工"。
+            if config().no_patch {
                 return;
             }
-            for _ in 0..300 {
-                if patch_peer_key() {
-                    return;
-                }
-                std::thread::sleep(std::time::Duration::from_millis(100));
-            }
-            config().record("patch: 30 秒内没有在内存里找到那 52 字节常量");
+            spawn_patcher();
         });
     }
     1

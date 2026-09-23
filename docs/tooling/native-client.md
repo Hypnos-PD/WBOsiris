@@ -98,16 +98,60 @@ wbo native broker --listen 127.0.0.1:50172 --capture /tmp/wbo-capture
 都返回 501，它唯一的职责是把每个请求（方法、路径、头、**原始请求体**）完整录下来。
 先有真实流量，再决定实现哪条路由。
 
-把代理装进游戏同样不需要动磁盘，办法是 `wbo native launch`：把它写进 Steam 的
-启动选项，它会在挂载命名空间里把代理盖到插件位置上，再执行 Steam 给的原始命令。
+## 启动：用户不需要动 Steam 启动选项
+
+把代理装进游戏同样不需要动磁盘，也不需要用户去 Steam 里写启动项。一条命令：
+
+```bash
+wbo native launch --broker --capture ~/wbo-capture
+```
+
+`wbo native launch` 自己把这件事做完：
+
+1. 按 Steam 库发现客户端，用 profile 核对 `GameAssembly.dll` 的 SHA-256（不通过就
+   不启动，而不是让它去撞一堵看不懂的墙）；
+2. 推出这份客户端该用哪个 Proton、哪个 Steam Linux Runtime；
+3. 在 bubblewrap 的挂载命名空间里把代理 DLL 盖到插件位置上（**Steam 目录一个字节
+   都不改**）；
+4. 生成会话密钥、把它们写进现场生成的代理配置，按需起 `native broker`；
+5. 执行**自己拼出来的**命令行——和 Steam 在没有启动选项时给这个游戏拼的那条一模一样。
+
+换句话说：Steam 在这条路上只被**只读**地读了两次——客户端装在哪、用的是哪个兼容工具。
+要启动游戏也不需要在 Steam 界面里点，不存在"先设置启动项再启动"这一步。
+
+### 怎么推出 Proton 与运行时（都不是猜的）
+
+以 2026-09 本机实测为准，Steam 给这个游戏拼出的命令行是（从 `/proc/<pid>/cmdline`
+读出来的，不是推的）：
 
 ```
-/path/to/wbo native launch --broker --capture ~/wbo-capture -- %command%
+<steam>/ubuntu12_32/reaper SteamLaunch AppId=2584990 -- \
+<steam>/steamapps/common/SteamLinuxRuntime_4/_v2-entry-point --verb=waitforexitandrun -- \
+<steam>/steamapps/common/Proton - Experimental/proton waitforexitandrun <客户端>/ShadowverseWB.exe
 ```
+
+我们复现它用到的每一条依据都能追到文件：
+
+| 要素 | 依据 |
+| --- | --- |
+| 客户端目录 | Steam 库 + `appmanifest_2584990.acf` 的 `installdir` |
+| 用哪个 Proton | 先看 `config/config.vdf` 里 `CompatToolMapping` 给这个 app 的显式指定；没有就按 `compatdata/2584990/config_info` 里记的版本反推 |
+| 用哪个运行时 | 由选中的 Proton 在 `toolmanifest.vdf` 里声明的 `require_tool_appid`，再用对应 `appmanifest_<appid>.acf` 的 `installdir` 换出目录名 |
+| 环境变量 | 拿一个由 Steam 正常启动的游戏进程，读 `/proc/<pid>/environ` 对照出来的 |
+
+反推不中时**不会**自作主张挑一个：列出候选让人用 `--proton` 指定。挑错的后果是
+游戏起不来，而错误信息里看不出这件事跟 Proton 有关。
+
+已知行为：Proton 用 `compatdata/<appid>/pfx.lock` 把同一个前缀的实例串行化。已经有一份
+游戏在跑时，`native launch` 会**等它退出**再启动，不会和它抢前缀。
+
+给 `--` 后面跟一条现成命令的形式仍然保留（调试用），那时环境变量原样继承。
 
 这条路依赖 bubblewrap（挂载命名空间），所以目前只在 Linux/Proton 成立，并且要求
 客户端由 Proton 运行——本机是 ext4（没有 reflink），overlayfs 也没加载，所以
 "复制一份客户端"和"用 overlay 合并"都不划算，直接在命名空间里换一个文件是最省的。
+会话目录与 Steam 库不在同一个文件系统时（硬链接会以 EXDEV 失败），替身目录会自动
+退回真复制，最坏情况多复制的是 `GameAssembly.dll` 那一份大文件，不是整棵 27 GiB。
 
 ## 请求是加密的：信封这一层
 
