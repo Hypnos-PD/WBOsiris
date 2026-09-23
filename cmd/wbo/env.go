@@ -57,6 +57,24 @@ type envCommand struct {
 	// Determinize>0 时，克隆出来的局面会先做一次**确定化**（隐藏槽位重排，公开信息逐位不变）：
 	// 见 runner.Session.Determinize。用于让搜索不再"偷看对手的真手牌与真牌序"。
 	Determinize uint64 `json:"determinize,omitempty"`
+	// Items 配合 `advance_many`：一次往返展开多个（句柄, 动作）。
+	//
+	// 搜索每层要展开 K 个候选（再乘确定化份数），逐个往返会把延迟累乘：实测一次
+	// advance 往返约 1ms，K×K_d=128 次就是 128ms/决策，而其中有用的计算只有一小部分。
+	// 批量之后一次 write/read 就能推进这一层。
+	Items []envHandleItem `json:"items,omitempty"`
+}
+
+// envHandleItem 是 `advance_many` 里的一个展开请求：从句柄 Handle 走 Action 一步。
+type envHandleItem struct {
+	Handle int `json:"handle"`
+	Action int `json:"action"`
+}
+
+// envHandleEvent 是 `advance_many` 的一条结果：新句柄 + 它的状态事件。
+type envHandleEvent struct {
+	Handle int      `json:"handle"`
+	Event  envEvent `json:"event"`
 }
 
 // envChoiceCandidate 是一个可选候选：Key 是稳定标识，训练侧只需回传下标，
@@ -163,6 +181,8 @@ type envEvent struct {
 	History []ir.RuntimeEvent `json:"history,omitempty"`
 	// ActionEffect 是"学习者这一次动作自己造成了什么"（见 envActionEffect）。
 	ActionEffect *envActionEffect `json:"actionEffect,omitempty"`
+	// Results 是 `advance_many` 的回复内容：一次带回这一层所有子句柄（每个都带自己的状态）。
+	Results []envHandleEvent `json:"results,omitempty"`
 	// Cards 是 "deck" 命令的返回值：一副随机合法卡组。
 	Format string `json:"format,omitempty"`
 	Cards  []int  `json:"cards,omitempty"`
@@ -386,6 +406,52 @@ func runEnv(args []string) int {
 			child.attachOracle(&event)
 			child.attachHistory(&event)
 			send(event)
+		case "advance_many":
+			// 一次往返展开**多个**（句柄, 动作）：树搜索在同一层要展开 K 个候选
+			// （再乘确定化份数），逐个往返会把延迟累乘。实测每次 advance 往返约 1ms，
+			// K×K_d=128 次就是每秒上百毫秒的纯等待，而真正的推演只占其中一小部分。
+			if len(command.Items) == 0 {
+				fail(fmt.Errorf("advance_many 需要 items"))
+				continue
+			}
+			batch := envEvent{Type: "handles", Results: make([]envHandleEvent, 0, len(command.Items))}
+			var batchErr error
+			for _, item := range command.Items {
+				parent := handles[item.Handle]
+				if parent == nil {
+					batchErr = fmt.Errorf("句柄 %d 不存在（先 clone）", item.Handle)
+					break
+				}
+				child, err := parent.clone(cards)
+				if err != nil {
+					batchErr = err
+					break
+				}
+				if err := child.step(cards, item.Action); err != nil {
+					batchErr = err
+					break
+				}
+				event, err := child.advance(cards)
+				if err != nil {
+					batchErr = err
+					break
+				}
+				event.Seed = child.seed
+				event.Handle = newHandle(child)
+				child.attachOracle(&event)
+				child.attachHistory(&event)
+				batch.Results = append(batch.Results, envHandleEvent{Handle: event.Handle, Event: event})
+			}
+			// 半途失败：已经建出来的子句柄**全部释放**，别把半棵树留在引擎里
+			// （搜索每层都克隆，泄漏一份就是几十 MB）。
+			if batchErr != nil {
+				for _, result := range batch.Results {
+					delete(handles, result.Handle)
+				}
+				fail(batchErr)
+				continue
+			}
+			send(batch)
 		case "state":
 			// 取句柄当前的状态（不推进）：训练侧用它编码 + 让价值网评估叶子。
 			holder := handles[command.Handle]
