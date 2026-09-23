@@ -1,0 +1,590 @@
+{
+  "provenance": "Locally reconstructed responses. Key layouts from original MessagePack formatters and DTO field registrations; success code 1 from GetVersionInfoAsync @4ccb432. No official traffic captured. Resource version is an experiment label, not an official version.",
+  "responses": {
+    "/Title/index": {
+      "data_headers": {
+        "result_code": 1,
+        "sid": "00000000000000000000000000000001",
+        "servertime": 0,
+        "maintenance_task_ids": [],
+        "achievement_notification": [],
+        "mission_notification": [],
+        "mission_complete_notification": [],
+        "owned_base_card_ids": [],
+        "festival_notification": [],
+        "is_streamer_mode": false
+      },
+      "data": {
+        "title_list": []
+      }
+    },
+    "/Version/info": {
+      "data_headers": {
+        "result_code": 1,
+        "sid": "00000000000000000000000000000001",
+        "servertime": 0,
+        "maintenance_task_ids": [],
+        "achievement_notification": [],
+        "mission_notification": [],
+        "mission_complete_notification": [],
+        "owned_base_card_ids": [],
+        "festival_notification": [],
+        "is_streamer_mode": false
+      },
+      "data": {
+        "resource_version": "local-v1",
+        "epic_deployment_id": "",
+        "epic_sandbox_id": "",
+        "portal_endpoint_url": "http://127.0.0.1:50172/portal/"
+      }
+    },
+    "/Account/signUp": {
+      "data_headers": {
+        "result_code": 1,
+        "sid": "00000000000000000000000000000001",
+        "servertime": 0,
+        "maintenance_task_ids": [],
+        "achievement_notification": [],
+        "mission_notification": [],
+        "mission_complete_notification": [],
+        "owned_base_card_ids": [],
+        "festival_notification": [],
+        "is_streamer_mode": false
+      },
+      "data": {
+        "client_id": 1,
+        "auth_key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+      }
+    },
+    "/Session/start": {
+      "data_headers": {
+        "result_code": 1,
+        "sid": "00000000000000000000000000000001",
+        "servertime": 0,
+        "maintenance_task_ids": [],
+        "achievement_notification": [],
+        "mission_notification": [],
+        "mission_complete_notification": [],
+        "owned_base_card_ids": [],
+        "festival_notification": [],
+        "is_streamer_mode": false
+      },
+      "data": {
+        "result": true,
+        "request_integrity_token": false
+      }
+    },
+    "/StartUp/index": {
+      "data_headers": {
+        "result_code": 1,
+        "sid": "00000000000000000000000000000001",
+        "servertime": 0,
+        "maintenance_task_ids": [],
+        "achievement_notification": [],
+        "mission_notification": [],
+        "mission_complete_notification": [],
+        "owned_base_card_ids": [],
+        "festival_notification": [],
+        "is_streamer_mode": false
+      },
+      "data": {
+        "settings": {
+          "resident_country": 344,
+          "text_language": 4,
+          "voice_language": 1
+        },
+        "agreements": [],
+        "agreement_master": {
+          "agreement": [],
+          "display_setting": []
+        },
+        "name": "Offline Tester",
+        "birth": 19900101,
+        "is_allow_send_adjust": false,
+        "is_confirm_parent_consent": true,
+        "is_confirm_app_tracking_transparency": true
+      }
+    },
+    "/CrashLog/send": {
+      "data_headers": {
+        "result_code": 1,
+        "sid": "00000000000000000000000000000001",
+        "servertime": 0,
+        "maintenance_task_ids": [],
+        "achievement_notification": [],
+        "mission_notification": [],
+        "mission_complete_notification": [],
+        "owned_base_card_ids": [],
+        "festival_notification": [],
+        "is_streamer_mode": false
+      },
+      "data": {}
+    },
+    "/Load/index": {
+      "data_headers": {
+        "result_code": 1,
+        "sid": "00000000000000000000000000000001",
+        "servertime": 0,
+        "maintenance_task_ids": [],
+        "achievement_notification": [],
+        "mission_notification": [],
+        "mission_complete_notification": [],
+        "owned_base_card_ids": [],
+        "festival_notification": [],
+        "is_streamer_mode": false
+      },
+      "data": {
+        "user_info": {
+          "name": "Offline Tester",
+          "birth": 19900101,
+          "text_language": 4,
+          "voice_language": 1,
+          "is_child_account": false,
+          "is_parental_consent": false
+        },
+        "user_other_config": {
+          "is_receive_friend_apply": false,
+          "is_receive_guild_invite": false,
+          "profile_public_settings": 0,
+          "is_profile_private_for_block_user": false,
+          "receive_invite_room_match": false,
+          "receive_invite_room_match_in_battle": false,
+          "receive_invite_room_match_offline": false,
+          "is_display_compact_battle_pass_gauge": false,
+          "is_skip_novel_digest_dialog": false,
+          "is_mute_private_lobby_owner_announce": false,
+          "is_streamer_mode": false
+        },
+        "user_battle_config": {
+          "is_display_guild_info": false,
+          "battle_proficiency_type": 0,
+          "own_class_rating_display_status": 0,
+          "other_class_rating_display_status": 0
+        },
+        "battle_recovery": {
+          "status": 1,
+          "battle_result": null,
+          "is_require_battle_start": false,
+          "battle_type": 0,
+          "battle_id": 0,
+          "battle_url": "",
+          "win_reward_campaign_occurring_status": null,
+          "battle_tutorial_id": 0,
+          "story_id": 0,
+          "lobby_tournament_round": 0,
+          "mission_list": [],
+          "remain_revive_count": 0,
+          "is_special_stage_battle": false,
+          "special_stage_id": 0,
+          "special_stage_deck_id": 0,
+          "is_cross_device": false
+        },
+        "room_match_recovery": {
+          "status": 1,
+          "room_match_id": 0,
+          "room_match_url": "",
+          "is_cross_device": false,
+          "room_match_type": 0,
+          "is_settled": false
+        },
+        "metaverse_recovery": {
+          "status": 1,
+          "metaverse_id": 0,
+          "metaverse_type": 0,
+          "metaverse_url": "",
+          "is_cross_device": false,
+          "private_lobby_owner_announce": false
+        },
+        "lobby_tournament_recovery": {
+          "status": 1,
+          "metaverse_id": 0,
+          "metaverse_type": 0,
+          "metaverse_url": "",
+          "can_retire": false,
+          "exists_reward": false,
+          "is_cross_device": false,
+          "compensation_ticket_grant_time": 0
+        },
+        "share_play_recovery": {
+          "status": 1,
+          "user_role": 0,
+          "host_client_id": 0,
+          "is_cross_device": false
+        },
+        "watch_battle_recovery": {
+          "status": 1,
+          "battle_id": 0,
+          "battle_type": 0,
+          "battle_url": "",
+          "stage_id": 0,
+          "dungeon_mission_list": [],
+          "is_cross_device": false
+        },
+        "rpc_access_token": {
+          "token": "LOCAL-ONLY",
+          "expiration": 4102444800
+        },
+        "tutorial": {
+          "normal": {
+            "current_step": 0,
+            "is_complete": true
+          },
+          "metaverse": {
+            "current_step": 0,
+            "step_type": 0,
+            "is_complete": true
+          }
+        },
+        "first_tips": {
+          "unread_ids": []
+        },
+        "message_url": "",
+        "account_delete_reservation": null,
+        "shortcut_setting": {
+          "shortcut_list": []
+        },
+        "login_bonus_polling_interval": 3600,
+        "usable_transition_account_exists": false,
+        "message_connection_delay": 0,
+        "joined_voice_chat": {
+          "polling_interval": 0,
+          "voice_chat_id": "",
+          "team_id": 0,
+          "joined_client_ids": [],
+          "message_group_type": 0,
+          "message_group_id": 0
+        },
+        "owned_base_card_ids": []
+      }
+    },
+    "/User/logClientConfig": {
+      "data_headers": {
+        "result_code": 1,
+        "sid": "00000000000000000000000000000001",
+        "servertime": 0,
+        "maintenance_task_ids": [],
+        "achievement_notification": [],
+        "mission_notification": [],
+        "mission_complete_notification": [],
+        "owned_base_card_ids": [],
+        "festival_notification": [],
+        "is_streamer_mode": false
+      },
+      "data": {}
+    },
+    "/User/getIsAllowSendAdjust": {
+      "data_headers": {
+        "result_code": 1,
+        "sid": "00000000000000000000000000000001",
+        "servertime": 0,
+        "maintenance_task_ids": [],
+        "achievement_notification": [],
+        "mission_notification": [],
+        "mission_complete_notification": [],
+        "owned_base_card_ids": [],
+        "festival_notification": [],
+        "is_streamer_mode": false
+      },
+      "data": {
+        "is_allow_send_adjust": false
+      }
+    },
+    "/Account/getGameStartCountryAgeGroup": {
+      "data_headers": {
+        "result_code": 1,
+        "sid": "00000000000000000000000000000001",
+        "servertime": 0,
+        "maintenance_task_ids": [],
+        "achievement_notification": [],
+        "mission_notification": [],
+        "mission_complete_notification": [],
+        "owned_base_card_ids": [],
+        "festival_notification": [],
+        "is_streamer_mode": false
+      },
+      "data": {
+        "country_age_group": 1,
+        "is_child_account": false,
+        "is_parental_consent": false
+      }
+    },
+    "/User/updateIsAllowSendThirdParty": {
+      "data_headers": {
+        "result_code": 1,
+        "sid": "00000000000000000000000000000001",
+        "servertime": 0,
+        "maintenance_task_ids": [],
+        "achievement_notification": [],
+        "mission_notification": [],
+        "mission_complete_notification": [],
+        "owned_base_card_ids": [],
+        "festival_notification": [],
+        "is_streamer_mode": false
+      },
+      "data": {
+        "is_allow_send_third_party": false
+      }
+    },
+    "/Mypage/index": {
+      "data_headers": {
+        "result_code": 1,
+        "sid": "00000000000000000000000000000001",
+        "servertime": 0,
+        "maintenance_task_ids": [],
+        "achievement_notification": [],
+        "mission_notification": [],
+        "mission_complete_notification": [],
+        "owned_base_card_ids": [],
+        "festival_notification": [],
+        "is_streamer_mode": false
+      },
+      "data": {
+        "user_info": {
+          "user": {
+            "name": "Offline Tester",
+            "name_update_interval": 0,
+            "emblem_id": 100011100,
+            "degree_id": 0,
+            "display_user_privilege_type": 0,
+            "can_change_privilege_mark_display": false,
+            "is_child_account": false,
+            "is_parental_consent": false,
+            "is_coin_purchasable": false,
+            "is_restriction": false
+          },
+          "rank": {
+            "rank_id": 1,
+            "rank_type": 1,
+            "is_max_rank": false
+          },
+          "rank_gauge": {
+            "rank_id": 1,
+            "point_type": 1,
+            "point": 0,
+            "gauge_full_point": 150,
+            "gauge_point": 0
+          },
+          "class_rating_list": [],
+          "battle_group_list": [],
+          "coin_count": {
+            "paid_coin": 0,
+            "vd_coin": 0,
+            "red_ether": 0,
+            "rupy": 0,
+            "shadopay": 0,
+            "total_coin": 0
+          },
+          "promotion_battle": null,
+          "rank_battle_penalty": null
+        },
+        "notify": {
+          "gift_count": 0,
+          "battle_pass_reward_count": 0,
+          "achieved_achievement_count": 0,
+          "new_episode_exists": false,
+          "user_invite_mission_reward_receivable": false,
+          "collected_coin_notification": {
+            "collected_coin_num": 0,
+            "limit_flag": 0
+          },
+          "is_lobby_treasure_box_quest_reward_receivable": false,
+          "new_tutorial_exists": false,
+          "new_puzzle_exists": false,
+          "is_badge_battle_dungeon_mission": false,
+          "is_badge_battle_dungeon_shop": false,
+          "is_badge_explore_mission": false,
+          "exists_shop_new_products": false,
+          "is_novel_open": false,
+          "is_badge_novel": false
+        },
+        "official_tournament": null,
+        "missions": [],
+        "battle_pass": null,
+        "grandprix_info": null,
+        "next_grandprix_schedule": null,
+        "is_allowed_grandprix_free_entry": false,
+        "can_give_daily_login_bonus": false,
+        "mypage_display_setting": {
+          "mypage_display_type": 0,
+          "detail_id": 1003,
+          "card_style_id": 0,
+          "leader_skin_id_list": [
+            1003
+          ],
+          "illustration_id_list": [
+            1003
+          ]
+        },
+        "banner_list": [],
+        "campaign_list": [],
+        "campaign_list_banner": null,
+        "campaign_portal_list": [],
+        "account_transition_user_info": null,
+        "birth": "19900101",
+        "purchase_limitation": [],
+        "coin_charge": null,
+        "can_receive_coin_charge_bonus": false,
+        "beginner_mission": null,
+        "launch_mission": null,
+        "win_reward_campaign_info": null,
+        "story_info": {
+          "is_prologue_cleared": true,
+          "is_prologue_maintenance": false,
+          "background_episode_id": 0
+        },
+        "message_badge_info": {
+          "unread_message_list": [],
+          "voice_chat_list": []
+        },
+        "cygames_id": {
+          "is_chain": false,
+          "has_pending_order_product": false,
+          "has_pending_input_serial_code": false
+        },
+        "card_adjust_result": null,
+        "lobby_footer_campaign_info": null,
+        "free_gacha": {
+          "should_show_promotion": false,
+          "is_notification": false
+        },
+        "million_camnpaign": null,
+        "card_pack": {
+          "gacha_list": [
+            {
+              "gacha_id": 10001,
+              "pack_id": 10001,
+              "is_free": false,
+              "is_new": false,
+              "is_display_movie": false
+            }
+          ]
+        },
+        "card_collection": null,
+        "lobby_tournament_list": [],
+        "next_lobby_tournament_schedule": null,
+        "arena_two_pick_info": null,
+        "park_tab_info": {
+          "background_id": 0,
+          "panel_image_path": "",
+          "studio_event": null
+        },
+        "guild_treasure_box_campaign_info": null,
+        "is_arena_config_updatable": false,
+        "battle_field_ids": [],
+        "battle_tutorial_mypage_display": {
+          "clear_count": 0,
+          "battle_tutorial_count": 0
+        },
+        "puzzle_mypage_display": {
+          "clear_count": 0,
+          "puzzle_count": 0
+        },
+        "available_battle_formats": [],
+        "explore_info": null,
+        "dungeon_group_info": null,
+        "selected_battle_format": [],
+        "qualifier_info": null,
+        "my_access_type": 1,
+        "my_access_appeal_info": null,
+        "house_set_id": 1,
+        "open_metaverse_event_types": []
+      }
+    },
+    "/HomeDialog/dialog": {
+      "data_headers": {
+        "result_code": 1,
+        "sid": "00000000000000000000000000000001",
+        "servertime": 0,
+        "maintenance_task_ids": [],
+        "achievement_notification": [],
+        "mission_notification": [],
+        "mission_complete_notification": [],
+        "owned_base_card_ids": [],
+        "festival_notification": [],
+        "is_streamer_mode": false
+      },
+      "data": {
+        "home_dialog": null,
+        "event_alert_info": null
+      }
+    },
+    "/Payment/productList": {
+      "data_headers": {
+        "result_code": 1,
+        "sid": "00000000000000000000000000000001",
+        "servertime": 0,
+        "maintenance_task_ids": [],
+        "achievement_notification": [],
+        "mission_notification": [],
+        "mission_complete_notification": [],
+        "owned_base_card_ids": [],
+        "festival_notification": [],
+        "is_streamer_mode": false
+      },
+      "data": {
+        "product_list": [],
+        "coin_count": {
+          "paid_coin": 0,
+          "vd_coin": 0,
+          "red_ether": 0,
+          "rupy": 0,
+          "shadopay": 0,
+          "total_coin": 0
+        },
+        "coin_charge": {
+          "schedule_id": 0,
+          "point": 0,
+          "max_point": 0,
+          "receivable_count": 0
+        },
+        "is_alert_active": 0,
+        "this_month_purchase_coin": 0,
+        "purchase_alert_coin": 0,
+        "jpy_coin_unit_price": 0
+      }
+    },
+    "/Mission/info": {
+      "data_headers": {
+        "result_code": 1,
+        "sid": "00000000000000000000000000000001",
+        "servertime": 0,
+        "maintenance_task_ids": [],
+        "achievement_notification": [],
+        "mission_notification": [],
+        "mission_complete_notification": [],
+        "owned_base_card_ids": [],
+        "festival_notification": [],
+        "is_streamer_mode": false
+      },
+      "data": {
+        "missions": [],
+        "grandprix_missions": [],
+        "grandprix_mission_info": {
+          "grandprix_id": 0,
+          "display_character_id": 0
+        },
+        "battle_pass_mission_info": {
+          "battle_pass_info": {
+            "battle_pass_id": 0,
+            "display_character_id": 0,
+            "display_character_emote": ""
+          },
+          "normal_mission_list": [],
+          "limited_mission_list": []
+        },
+        "config": {
+          "is_mission_change_enabled": false,
+          "mission_change_wait_time": 0,
+          "next_mission_begin_time": 0
+        }
+      }
+    }
+  },
+  "localProfileNote": "Synthetic offline test profile only; these values are not the real user identity, birth date, location or consent. No values leave the D: experiment.",
+  "loadIndexEvidence": {
+    "sourceSHA256": "363d45dd94d9ad940bfcd8ead534657430f10ce8097170b129dfcde6c0cab3a3",
+    "consumer": "LoadIndexPresenter.LoadIndexAsync.MoveNext @0x4cbb010",
+    "behavior": "Synthetic empty offline profile; no active recovery; tutorials marked complete for approved scope.",
+    "limits": "DTO-compatible candidate. Native acceptance and downstream constraints require separate verification."
+  }
+}

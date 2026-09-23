@@ -139,3 +139,23 @@ wbo native broker --capture /tmp/cap \
 
 凭据（uuid / auth key）来自客户端存档，可用 WBArts 的 `tools/svwb-credentials` 提取；
 `Sid` 从请求头取。换版本时 `--common-header` 要跟着更新（只有第 32..52 字节参与密钥派生）。
+
+## 引导阶段的响应从哪来
+
+客户端启动时会问一批与规则无关的问题（版本、标题、账号初始化……）。这些响应对不上，
+它就走不到主界面；但它们也不需要规则引擎。这一层用**夹具**回答：
+`internal/nativeproto/contracts/startup-fixtures.json`，来自 delta 的
+`research/native-offline/startup-fixtures.json`，覆盖 15 条路由。
+
+**来源要说清楚**：这份夹具的 `provenance` 自己写明是"本地重建的响应"——字段布局取自
+原客户端的 MessagePack 序列化器与 DTO 注册、成功码取自客户端代码，**不是抓到的官方
+响应**。`wbo native broker` 启动时会把这句话原样打出来，不让人误以为是官方数据。
+
+`wbo native broker` 一旦启用解密，就会同时挂上夹具处理器：
+
+- 命中夹具的路由 → 编成 MessagePack → 用**本次会话**的密钥封成信封 → base64 → 200；
+- 没有会话（没解开报文）或路由不在夹具里 → 退回未实现（501），不凭空造响应。
+
+注意一个实现细节：夹具是 JSON，读的时候用 `UseNumber` 防止大整数被折成浮点，
+但编码成 MessagePack 之前必须把 `json.Number` 换回具体数值类型——它本质是字符串，
+直接编码出去会变成 `"1"` 而不是 `1`，客户端解析就会失败。

@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"strings"
@@ -295,6 +296,19 @@ func runNativeBroker(args []string) int {
 		options.Decoder = server
 		options.Auth = auth
 		fmt.Println("已启用请求解密（需要客户端已换成对应的公钥）")
+		// 能解密才谈得上应答：引导阶段的响应取自夹具，它们不依赖规则引擎，
+		// 作用只是让客户端走到主界面。
+		fixtures, err := nativeproto.LoadFixtures()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return 1
+		}
+		options.Handler = nativebroker.NewFixtureHandler(fixtures, log.Default())
+		fmt.Printf("已启用引导响应：覆盖 %d 条路由\n", len(fixtures.Routes()))
+		// 如实交代这批响应的来源——它们是本地重建的，不是抓到的官方响应。
+		if provenance := fixtures.Provenance(); provenance != "" {
+			fmt.Printf("  来源：%s\n", provenance)
+		}
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
