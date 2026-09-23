@@ -166,23 +166,36 @@ base64( [u32 小端 载荷长度][32B 客户端临时公钥][36B AES-CTR 元数�
 换掉（见 `delta/tools/patch_common_header.py`；常量源头在元数据里，不是就地构造的数组）。
 
 `internal/nativeproto` 是这条信封的服务端实现：`DecodeRequest` 解请求、`EncodeResponse`
-封响应。它不依赖客户端在场，测试自带一对密钥与一条独立实现的客户端方向做双向对拍；
-另外有一条反向对照，确认"客户端没换公钥时服务端解不开"这个前提成立。
+封响应。验证分三层，因为"自己写的编解码器两边对拍"这种测试**抓不住两边同错的 bug**：
 
-启用方式（`wbo native broker`）：
+| 层 | 内容 |
+| --- | --- |
+| 原版 oracle | 客户端方向的输出必须逐字节等于**原版 DLL 实测向量**（WBArts 的 `codec_test.go` 提供的输入/输出对） |
+| 独立参考编码器 | 服务端要用**另一份实现**（照 WBArts `codec.go` 重排的参考编码器）造的请求对拍，不共用生产代码里的 KDF |
+| 反向对照 | 客户端没换公钥时服务端解不开——这个前提本身也要成立 |
+
+第一层不是摆设：`mix()` 里 `mixed[i]` 被写成 `mixed[0]` 这个错，只有它抓得到。
+当时的表现极具误导性——元数据解得开（那一步只用到 `shared`），载荷一律"认证失败"，
+看起来像"客户端没用我们的公钥"，害得排查方向整个偏了一轮。这类问题现在在
+`DecodeRequest` 的报错里被直接分开：元数据只依赖 `shared`，所以"元数据里的凭据对得上"
+就等价于"共享密钥是对的"，那时该去查 KDF，而不是去查公钥改写。
+
+日常用 `wbo native launch` 就够了，它会**自己**把这次启动生成的会话私钥喂给 broker；
+缺的只有客户端凭据：
 
 ```bash
-wbo native broker --capture /tmp/cap \
-    --session-key ~/verify/session-key \
+wbo native launch --broker --capture ~/wbo-capture \
     --uuid 4466cfd0-323b-4a25-80e1-7056accada88 \
     --auth-key 'cGfMEcF57uS+DpXzovgT9YK4TmdJQ3sF0YcEgxuOwYIn6ejXlCGn9q3gom1utK19qn8='
 ```
 
-三个都给了才会尝试解密；缺任何一个就只录制密文（仍然有用）。解不开不算错误——
-那通常意味着这一版客户端还没换成我们的公钥，broker 会照常录制与回应。
-
 凭据（uuid / auth key）来自客户端存档，可用 WBArts 的 `tools/svwb-credentials` 提取；
-`Sid` 从请求头取。换版本时 `--common-header` 要跟着更新（只有第 32..52 字节参与密钥派生）。
+`Sid` 从请求头取。直接跑 `wbo native broker` 也一样能工作（多给一个 `--session-key`），
+那是调试用；三个凭据缺任何一个就只录制密文，仍然有用。解不开不算错误——客户端在
+公钥改写生效**之前**发出去的那些请求（实测是每次启动最先来的 `CrashLog/send`）
+本来就用的是原公钥，broker 会照常录制并如实报告是哪一种解不开。
+
+换版本时 `--common-header` 要跟着更新（只有第 32..52 字节参与密钥派生）。
 
 ## 引导阶段的响应从哪来
 
