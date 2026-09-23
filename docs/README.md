@@ -23,6 +23,7 @@
 - [桌面客户端](tooling/desktop-client.md)：Go + Wails 的客户端、素材放包内、AppImage 预处理与发布。
 - [训练环境协议](tooling/env-protocol.md)：`wbo env` 的 JSON-lines 协议（供 WBDecima 驱动）。
 - [决策点克隆与搜索预算](tooling/search-and-clone.md)：决策点存档、克隆实测成本与搜索规模结论。
+- [原版客户端](tooling/native-client.md)：`wbo native` 发现/校验/导入本机客户端的方式与已知问题。
 
 ## 规则
 

@@ -1,0 +1,19 @@
+[package]
+name = "yaha_shim"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "把原版客户端 HTTP 传输改写到本地实现的代理 DLL"
+build = "build.rs"
+
+[lib]
+name = "yaha_shim"
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = true
+strip = true
+panic = "abort"
+
+[profile.dev]
+strip = false

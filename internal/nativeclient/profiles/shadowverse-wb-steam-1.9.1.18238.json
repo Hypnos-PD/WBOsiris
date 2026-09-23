@@ -1,0 +1,204 @@
+{
+  "schema": 1,
+  "id": "shadowverse-wb-steam-1.9.1.18238",
+  "gameVersion": "1.9.1.18238",
+  "unityVersion": "2022.3.62f2",
+  "steamAppId": "2584990",
+  "processName": "ShadowverseWB.exe",
+  "moduleName": "GameAssembly.dll",
+  "gameAssemblySHA256": "363d45dd94d9ad940bfcd8ead534657430f10ce8097170b129dfcde6c0cab3a3",
+  "patchedGameAssemblySHA256": "9d8c40f00ad0e00153320d3343b36ce37ef8b581210b225b6673b908616243ad",
+  "requiredFiles": [
+    {
+      "path": "GameAssembly.dll",
+      "bytes": 195268504,
+      "sha256": "363d45dd94d9ad940bfcd8ead534657430f10ce8097170b129dfcde6c0cab3a3"
+    },
+    {
+      "path": "ShadowverseWB.exe",
+      "bytes": 322456,
+      "sha256": "4d2181c49216e2ac828eccdeca546de111812b8c732704a07094455e830e6078"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86/AudioDeviceMonitor.dll",
+      "bytes": 39424,
+      "sha256": "8ff561c37a01088cba699e6ac0cb6f10a7fb360401f8fd0dd8a858ac50fdb33b"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86/BacktraceCrashpadWindows.dll",
+      "bytes": 105472,
+      "sha256": "e545238a5b4ac11f2e4de0bc669dc62567051bd09e5d82c0e45f9f1e5e3bd22a"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86/EOSSDK-Win32-Shipping.dll",
+      "bytes": 14011864,
+      "sha256": "bc3750de00a87cdbea01285ba3c4ab46cdc92dbea134638f5de6982bad61a092"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86/EOSSDK-Win64-Shipping.dll",
+      "bytes": 18266584,
+      "sha256": "b0591a96e7daa4a1031fff1fc1ff4332285e1d38d9676c33ab32d9da2ff8f765"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86/WwiseProjectDatabase.dll",
+      "bytes": 826504,
+      "sha256": "d77b1b4af3544129685376334e0adbc41e4760e5666fa4b68f25bd27b58d3090"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86/crashpad_handler.dll",
+      "bytes": 619008,
+      "sha256": "6a05773105b10471c6d1b3ee9044b5d161bc6b5d2a9fbbde5d4bc217c58c003d"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86/cri_lips_unity.dll",
+      "bytes": 582144,
+      "sha256": "13c9a362aa7a693c7ecaf5cee188f63dd6bcfe7330617abebe026974cbbe83bf"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86/cri_mana_vpx.dll",
+      "bytes": 1863168,
+      "sha256": "4df1059ad47e6b6be5744f038a351bbbedd2918b2d383f6272db64f9e4c20a0b"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86/cri_ware_unity.dll",
+      "bytes": 1623552,
+      "sha256": "62fbfca4689d8106d34183fe244802a64e9b7b60613c41545fcd27a47b8d9085"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86/criafx_mcdsp.dll",
+      "bytes": 606720,
+      "sha256": "233b78e9701541ae75f1dcaeeb9f45ffbff7cca432e11cd01eabc81f4eac7540"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86/libnative.dll",
+      "bytes": 3241984,
+      "sha256": "3b6b9ff4d0ea6c4af2f24cc781ac4283f35c7e72347c31cd9f0319f3db79f588"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/AkUnitySoundEngine.dll",
+      "bytes": 3365352,
+      "sha256": "97cabc75a8465d2b332b6501b50c4e4b28034cda2711ffcc852e66e0fa16b848"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/AudioDeviceMonitor.dll",
+      "bytes": 39424,
+      "sha256": "8ff561c37a01088cba699e6ac0cb6f10a7fb360401f8fd0dd8a858ac50fdb33b"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/BacktraceCrashpadWindows.dll",
+      "bytes": 154624,
+      "sha256": "30029690767b0030cdf0caafcb7423994268489df107c7ea75305e5089d1c740"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/CySpringPlugin.dll",
+      "bytes": 671744,
+      "sha256": "97c74b5c6bb4bec7b37bf2725bce7c71cfce94e63c772a566d6b888e50a55ff3"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/Cysharp.Net.Http.YetAnotherHttpHandler.Native.dll",
+      "bytes": 3169280,
+      "sha256": "86117a864280bd3523f55db7804ba13a13177594ced852cb228f744c4b455da8"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/EOSSDK-Win32-Shipping.dll",
+      "bytes": 14011864,
+      "sha256": "bc3750de00a87cdbea01285ba3c4ab46cdc92dbea134638f5de6982bad61a092"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/EOSSDK-Win64-Shipping.dll",
+      "bytes": 18266584,
+      "sha256": "b0591a96e7daa4a1031fff1fc1ff4332285e1d38d9676c33ab32d9da2ff8f765"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/FirebaseCppAnalytics.dll",
+      "bytes": 133632,
+      "sha256": "cb05e6eed076600aecc91e7568f5f4e96ad4bcda4e39584ca9f5c33cad15943c"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/FirebaseCppApp-13_1_0.dll",
+      "bytes": 14722560,
+      "sha256": "cc84171ed1254e938e225ff28df823bb48acf218b2263e480c7e6278f8c2ed91"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/FirebaseCppAuth.dll",
+      "bytes": 1085440,
+      "sha256": "eb30038be6d2450eca261485825960ec3622746c4c000bc6dbfdd02fb19c421f"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/FirebaseCppMessaging.dll",
+      "bytes": 128000,
+      "sha256": "ed0667a8da6327df84d7b9b5dd586f92b4d295b85bbedfb8e4402021d7d299b7"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/TencentGME.dll",
+      "bytes": 230912,
+      "sha256": "92a0ef4443e84ddcba3cb0d40bf1ac3f177b438ffc805e2d0ddec33de0456e6b"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/WwiseProjectDatabase.dll",
+      "bytes": 826504,
+      "sha256": "d77b1b4af3544129685376334e0adbc41e4760e5666fa4b68f25bd27b58d3090"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/crashpad_handler.dll",
+      "bytes": 619008,
+      "sha256": "6a05773105b10471c6d1b3ee9044b5d161bc6b5d2a9fbbde5d4bc217c58c003d"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/cri_lips_unity.dll",
+      "bytes": 632832,
+      "sha256": "f94bff057d3a314954c459362e789fcf6e3e7ad7d31a9262e6c3ffb077054f9e"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/cri_mana_vpx.dll",
+      "bytes": 2202112,
+      "sha256": "14339648c729c34e626764aa1028f4a676ab9b26f7cadfa2d754a1c9bacb426b"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/cri_ware_unity.dll",
+      "bytes": 1864192,
+      "sha256": "c88efc49be2cdb1274f628ea209ee7568c5efae3f2723d195659b0e1c74df0c3"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/criafx_mcdsp.dll",
+      "bytes": 720896,
+      "sha256": "b97f2ac5d816c21d650227a728629af84d88d50df7820c357238aae2d75ddc45"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/cyAlgReverb.dll",
+      "bytes": 272896,
+      "sha256": "6996efbdfdc930b8c5b62bce40f57f74862da12e2b17f6a5a3fe4b805e44cecc"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/cyBinauralizer.dll",
+      "bytes": 334336,
+      "sha256": "bd74b2e4aa2a8df9fed732bdf10921f7001711762756d9cefab92baa17eaf1ba"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/gmesdk.dll",
+      "bytes": 3881472,
+      "sha256": "037cdd1172d7ef62aa1a8c064e92a0bbc37f0dfb97f4dcc42200688f664ae847"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/lib_burst_generated.dll",
+      "bytes": 216576,
+      "sha256": "868b51823313a754dda16353dabb592362329e0cf48ccc1dbf54100971b26217"
+    },
+    {
+      "path": "ShadowverseWB_Data/Plugins/x86_64/libnative.dll",
+      "bytes": 3241984,
+      "sha256": "3b6b9ff4d0ea6c4af2f24cc781ac4283f35c7e72347c31cd9f0319f3db79f588"
+    },
+    {
+      "path": "UnityPlayer.dll",
+      "bytes": 31006120,
+      "sha256": "f88053b9487558ca25105de0cfd5e79e7621b58749afa1b9a3a1b7c341e05fa6"
+    },
+    {
+      "path": "baselib.dll",
+      "bytes": 419760,
+      "sha256": "e4d1fc45c23b320496f851b8be98914a7507418c174e9a6567afcc4f92472894"
+    }
+  ],
+  "provenance": "Hashes recorded from the Steam build this project's wire contracts were extracted from. GameAssembly.dll is the patch target, so its source-side hash comes from the patch metadata rather than the packaging manifest. The authoritative identity is gameAssemblySHA256."
+}

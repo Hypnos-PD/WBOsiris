@@ -1,0 +1,51 @@
+EXPORTS
+    ; 45 个转发：协议、TLS、连接池、请求构造与响应读取全部由原版实现负责。
+    yaha_build_client = yaha_orig.yaha_build_client
+    yaha_client_config_add_client_auth_certificates = yaha_orig.yaha_client_config_add_client_auth_certificates
+    yaha_client_config_add_client_auth_key = yaha_orig.yaha_client_config_add_client_auth_key
+    yaha_client_config_add_override_server_name = yaha_orig.yaha_client_config_add_override_server_name
+    yaha_client_config_add_root_certificates = yaha_orig.yaha_client_config_add_root_certificates
+    yaha_client_config_connect_timeout = yaha_orig.yaha_client_config_connect_timeout
+    yaha_client_config_http2_adaptive_window = yaha_orig.yaha_client_config_http2_adaptive_window
+    yaha_client_config_http2_initial_connection_window_size = yaha_orig.yaha_client_config_http2_initial_connection_window_size
+    yaha_client_config_http2_initial_max_send_streams = yaha_orig.yaha_client_config_http2_initial_max_send_streams
+    yaha_client_config_http2_initial_stream_window_size = yaha_orig.yaha_client_config_http2_initial_stream_window_size
+    yaha_client_config_http2_keep_alive_interval = yaha_orig.yaha_client_config_http2_keep_alive_interval
+    yaha_client_config_http2_keep_alive_timeout = yaha_orig.yaha_client_config_http2_keep_alive_timeout
+    yaha_client_config_http2_keep_alive_while_idle = yaha_orig.yaha_client_config_http2_keep_alive_while_idle
+    yaha_client_config_http2_max_concurrent_reset_streams = yaha_orig.yaha_client_config_http2_max_concurrent_reset_streams
+    yaha_client_config_http2_max_frame_size = yaha_orig.yaha_client_config_http2_max_frame_size
+    yaha_client_config_http2_max_send_buf_size = yaha_orig.yaha_client_config_http2_max_send_buf_size
+    yaha_client_config_http2_only = yaha_orig.yaha_client_config_http2_only
+    yaha_client_config_pool_idle_timeout = yaha_orig.yaha_client_config_pool_idle_timeout
+    yaha_client_config_pool_max_idle_per_host = yaha_orig.yaha_client_config_pool_max_idle_per_host
+    yaha_client_config_set_server_certificate_verification_handler = yaha_orig.yaha_client_config_set_server_certificate_verification_handler
+    yaha_client_config_skip_certificate_verification = yaha_orig.yaha_client_config_skip_certificate_verification
+    yaha_complete_task = yaha_orig.yaha_complete_task
+    yaha_dispose_context = yaha_orig.yaha_dispose_context
+    yaha_dispose_runtime = yaha_orig.yaha_dispose_runtime
+    yaha_free_byte_buffer = yaha_orig.yaha_free_byte_buffer
+    yaha_get_last_error = yaha_orig.yaha_get_last_error
+    yaha_request_abort = yaha_orig.yaha_request_abort
+    yaha_request_begin = yaha_orig.yaha_request_begin
+    yaha_request_complete_body = yaha_orig.yaha_request_complete_body
+    yaha_request_destroy = yaha_orig.yaha_request_destroy
+    yaha_request_new = yaha_orig.yaha_request_new
+    yaha_request_response_get_header_key = yaha_orig.yaha_request_response_get_header_key
+    yaha_request_response_get_header_value = yaha_orig.yaha_request_response_get_header_value
+    yaha_request_response_get_headers_count = yaha_orig.yaha_request_response_get_headers_count
+    yaha_request_response_get_trailers_count = yaha_orig.yaha_request_response_get_trailers_count
+    yaha_request_response_get_trailers_key = yaha_orig.yaha_request_response_get_trailers_key
+    yaha_request_response_get_trailers_value = yaha_orig.yaha_request_response_get_trailers_value
+    yaha_request_set_has_body = yaha_orig.yaha_request_set_has_body
+    yaha_request_set_header = yaha_orig.yaha_request_set_header
+    yaha_request_set_method = yaha_orig.yaha_request_set_method
+    yaha_request_set_version = yaha_orig.yaha_request_set_version
+    yaha_request_write_body = yaha_orig.yaha_request_write_body
+
+    ; 由我们自己实现的导出。
+    ; yaha_init_context：转发之后启动内存改写（把客户端写死的对端公钥换成我们的）。
+    ; yaha_request_set_uri：改写 URI。
+    yaha_init_runtime
+    yaha_init_context
+    yaha_request_set_uri
