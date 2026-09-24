@@ -230,6 +230,8 @@ func runNativeLaunch(args []string) int {
 		if *authKeyFlag != "" {
 			brokerArgs = append(brokerArgs, "--auth-key", *authKeyFlag)
 		}
+		// 档案（牌组、收藏偏好）跟着会话目录走：换一个会话目录就是换一份档案。
+		brokerArgs = append(brokerArgs, "--profile", filepath.Join(stateDir, "profile.json"))
 		brokerProcess, err = startBroker(self, brokerArgs, *listen, logFile, logf)
 		if err != nil {
 			logf("%v", err)

@@ -13,10 +13,11 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
+	"os"
 	"sort"
 )
 
-//go:embed contracts/practice.json contracts/alternates.json
+//go:embed contracts/*.json
 var contractFiles embed.FS
 
 // Card 是 CardMaster 里的一行，只保留这一层判断需要的字段。
@@ -70,20 +71,47 @@ type Profile struct {
 	owned map[int64]Card
 	// ownedBase 是收藏里出现过的 base 卡 id，升序——就是 /Load/index 要的那份。
 	ownedBase []int64
+	// styles 管卡面样式，leaders 是"资源齐备"的主战者。
+	styles  *CardStyles
+	leaders map[int64]Leader
+	store   *store
+}
+
+// Leader 是一个可用主战者。只收 nativeResourceReady 的那些——客户端要用的 prefab、
+// 语音、立绘得有资源，否则选到就是黑屏或崩溃。
+type Leader struct {
+	ID        int64 `json:"id"`
+	CardClass int   `json:"cardClass"`
+	Ready     bool  `json:"nativeResourceReady"`
 }
 
 // Load 读内置契约并算出收藏。
+// Load 读内置契约并算出收藏。
 func Load() (*Profile, error) {
+	return LoadWithState("")
+}
+
+// LoadWithState 与 Load 相同，但把可变状态落到 statePath（空则只放在内存里）。
+func LoadWithState(statePath string) (*Profile, error) {
 	raw, err := contractFiles.ReadFile("contracts/practice.json")
 	if err != nil {
 		return nil, fmt.Errorf("nativeprofile: 读契约失败: %w", err)
 	}
 	var contract Contract
-	if err := json.Unmarshal(raw, &contract); err != nil {
+	// 契约里的模板是 JSON 字面量，数字必须先归一化再进 MessagePack（见 contract.go）。
+	if err := decodeInto(raw, &contract); err != nil {
 		return nil, fmt.Errorf("nativeprofile: 解析契约失败: %w", err)
 	}
 	if contract.Schema != 1 {
 		return nil, fmt.Errorf("nativeprofile: 契约 schema 是 %d，不认识", contract.Schema)
+	}
+	// 契约里的模板与路由基线是 JSON 字面量，解码后仍是 json.Number：它们是**要编给
+	// 客户端**的值，必须归一化成整数（否则客户端收到的是字符串）。
+	for _, template := range contract.Templates {
+		normalizeNumbers(template)
+	}
+	for _, route := range contract.Routes {
+		normalizeNumbers(route.Data)
 	}
 	alternateRaw, err := contractFiles.ReadFile("contracts/alternates.json")
 	if err != nil {
@@ -121,7 +149,82 @@ func Load() (*Profile, error) {
 	if len(profile.ownedBase) == 0 {
 		return nil, fmt.Errorf("nativeprofile: 契约里没有算出任何收藏卡")
 	}
+	stylesRaw, err := contractFiles.ReadFile("contracts/card-styles.json")
+	if err != nil {
+		return nil, fmt.Errorf("nativeprofile: 读卡面样式表失败: %w", err)
+	}
+	styles, err := loadStyles(stylesRaw, contract.GameAssemblySHA256())
+	if err != nil {
+		return nil, err
+	}
+	profile.styles = styles
+	leadersRaw, err := contractFiles.ReadFile("contracts/leaders.json")
+	if err != nil {
+		return nil, fmt.Errorf("nativeprofile: 读主战者表失败: %w", err)
+	}
+	var leaders struct {
+		Leaders []Leader `json:"leaders"`
+	}
+	if err := decodeInto(leadersRaw, &leaders); err != nil {
+		return nil, fmt.Errorf("nativeprofile: 解析主战者表失败: %w", err)
+	}
+	profile.leaders = map[int64]Leader{}
+	for _, leader := range leaders.Leaders {
+		if leader.Ready {
+			profile.leaders[leader.ID] = leader
+		}
+	}
+	if len(profile.leaders) == 0 {
+		return nil, fmt.Errorf("nativeprofile: 主战者表里没有资源齐备的条目")
+	}
+	state, err := profile.loadState(statePath)
+	if err != nil {
+		return nil, err
+	}
+	profile.store = &store{path: statePath, state: state}
 	return profile, nil
+}
+
+// GameAssemblySHA256 是契约对应的客户端 DLL 哈希；卡面样式表要对得上才用。
+func (c *Contract) GameAssemblySHA256() string { return c.SourceSHA256 }
+
+// loadState 读已有档案；没有就现造一份（seed）。
+func (p *Profile) loadState(path string) (*State, error) {
+	if path != "" {
+		raw, err := os.ReadFile(path)
+		if err == nil {
+			var state State
+			if err := decodeInto(raw, &state); err != nil {
+				return nil, fmt.Errorf("nativeprofile: 解析档案失败: %w", err)
+			}
+			if state.Schema != 1 || state.SourceSHA256 != p.contract.SourceSHA256 {
+				// 版本对不上就拒绝加载，**不要**覆盖用户已有的档案。
+				return nil, fmt.Errorf("nativeprofile: 档案版本与契约不符（%s），已保留原文件", path)
+			}
+			normalizeState(&state)
+			if state.LeaderSkinSettings == nil {
+				settings, err := p.defaultLeaderSettings()
+				if err != nil {
+					return nil, err
+				}
+				state.LeaderSkinSettings = settings
+			}
+			return &state, nil
+		}
+		if !os.IsNotExist(err) {
+			return nil, err
+		}
+	}
+	state, err := p.seedState()
+	if err != nil {
+		return nil, err
+	}
+	// 第一次就把档案写下去：之后重启游戏，牌组还是这些。
+	pending := &store{path: path, state: state}
+	if err := pending.save(); err != nil {
+		return nil, err
+	}
+	return state, nil
 }
 
 // collectible 判断一行 CardMaster 是不是"玩家收藏里的普通卡"。

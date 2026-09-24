@@ -1,0 +1,3773 @@
+{
+  "schema": 1,
+  "source": "D:\\coding\\shadowverse-local-lab\\extracted\\master-tables\\LeaderSkinMaster.json",
+  "sourceSHA256": "2cb921e7e30c968e3f9549d00a9fe5dba98524ea0834a0243e256276c8ad848e",
+  "nativeClientSHA256": "363d45dd94d9ad940bfcd8ead534657430f10ce8097170b129dfcde6c0cab3a3",
+  "basis": [
+    "Original LeaderSkinMaster field layout, 106 rows",
+    "Original DTO route bodies in research/native-practice/contract.json",
+    "DeckListEditModel.GetLeaderSkinListAsync -> HttpApi.GetLeaderSkinListAsync at 0x514ff8d",
+    "UIDialogLeaderSkinChoice.Initialize 0x62c70b0; LeaderSkinSpineObject.LoadResourceAsync 0x66d57d0 / MoveNext 0x66dbf00",
+    "InitLeaderSkinChoiceButtonAsync.MoveNext 0x64807d0 formats UI/ClassChar/utx_btn_leader_skin_{0}",
+    "DeckEditUtil.GetLeaderSkinPath 0x6ac02e0; BattleViewUtil.GetLeaderHeaderTexturePath 0x67e5f50"
+  ],
+  "notes": [
+    "Resource presence is not individual graphical animation acceptance",
+    "Six resource-only gallery entries without master definitions are not invented as selectable skins",
+    "Original redirects and Japanese-only voice metadata are retained"
+  ],
+  "leaders": [
+    {
+      "id": 1001,
+      "name": "ラヴサイン",
+      "cardClass": 1,
+      "emoteId": 1,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210001001,
+      "prefab": "Prefabs/LeaderSkin/class_1001",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1001",
+        "UI/ClassChar/utx_btn_leader_skin_1001",
+        "UI/Deck/utx_tex_deck_set_leader_1001",
+        "UI/ClassChar/utx_pict_leader_1001_00",
+        "Card/Header/log_leader_1001"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "43RYG3WYS2ESCTKQKGNCX7VD4Q",
+        "4HXXYBTWTSBLH3QP5X2R75J6JI",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "AVEAJ2NEWFVHXCYA4RG4YL6FIA",
+        "LG3U5UN5OAXVEBKPCNMAQCVEHU",
+        "P44I5NESQPHHVYFONPLGAUXBCM",
+        "QR5IW7M4T5K3UL7HPLJKM6G6LU"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1001.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1001.pck"
+      ]
+    },
+    {
+      "id": 1002,
+      "name": "マリア・マリス",
+      "cardClass": 2,
+      "emoteId": 2,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210002001,
+      "prefab": "Prefabs/LeaderSkin/class_1002",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1002",
+        "UI/ClassChar/utx_btn_leader_skin_1002",
+        "UI/Deck/utx_tex_deck_set_leader_1002",
+        "UI/ClassChar/utx_pict_leader_1002_00",
+        "Card/Header/log_leader_1002"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "CQJ5WNXQOCECKIAG7IVU342GUE",
+        "G4LMHRMXMYGGASA5PCQGZLPMOE",
+        "IR6C776SS7H5CVNX3JIG63FQ3I",
+        "M5SDSXCJPDR7MZON67F4LUFMWI",
+        "N5WETIZLDDAAISBQDGBTHDSWCE",
+        "NDIEEMTVXG3TED45J7O5TQTMIA"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1002.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1002.pck"
+      ]
+    },
+    {
+      "id": 1003,
+      "name": "歪原火織",
+      "cardClass": 3,
+      "emoteId": 3,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210003001,
+      "prefab": "Prefabs/LeaderSkin/class_1003",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1003",
+        "UI/ClassChar/utx_btn_leader_skin_1003",
+        "UI/Deck/utx_tex_deck_set_leader_1003",
+        "UI/ClassChar/utx_pict_leader_1003_00",
+        "Card/Header/log_leader_1003"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "7Q7NN3QL2ZAQSCUX3CBBCAPOGU",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "D4CLFNKIQKQIAASM5U4MBTXGLQ",
+        "K6CHIJTF4YD353PWUTMPF76IKU",
+        "TARLEIL2ORMKRXGNHXRHOWPUFM",
+        "TSI3TOCBT3KI35MQ66ZGYHEWE4",
+        "UHT4TGVVXH2XU5N25MRF3BEZ7M"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1003.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1003.pck"
+      ]
+    },
+    {
+      "id": 1004,
+      "name": "伽藍",
+      "cardClass": 4,
+      "emoteId": 4,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210004001,
+      "prefab": "Prefabs/LeaderSkin/class_1004",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1004",
+        "UI/ClassChar/utx_btn_leader_skin_1004",
+        "UI/Deck/utx_tex_deck_set_leader_1004",
+        "UI/ClassChar/utx_pict_leader_1004_00",
+        "Card/Header/log_leader_1004"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "2HIX2IMNRPRQITK7ECWGWTIPEM",
+        "736HGSMZJEWRJIGH5XNG37CPQU",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "GBCJTWHHHJ3LW5KRB2CUWMSQIM",
+        "L4URMAOLEFLU4M5Z3OVOWMSNWE",
+        "ON335WWIYXFWC22K7WAFRCLLGE",
+        "TQLYIKCYDTPQMPPE77DU3BX5YE"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1004.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1004.pck"
+      ]
+    },
+    {
+      "id": 1005,
+      "name": "ディアロジアーレ",
+      "cardClass": 5,
+      "emoteId": 5,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210005001,
+      "prefab": "Prefabs/LeaderSkin/class_1005",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1005",
+        "UI/ClassChar/utx_btn_leader_skin_1005",
+        "UI/Deck/utx_tex_deck_set_leader_1005",
+        "UI/ClassChar/utx_pict_leader_1005_00",
+        "Card/Header/log_leader_1005"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "3SIL4BBWHUV7JMQPDA23UHE74I",
+        "7EZ67KKTRW5U5URLW3GK42PZ54",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "AUP6HQ6ZHRTPGKDPJJDQWI6TGI",
+        "MU46W4NEWYNGMKZJ7GWGKFXO7U",
+        "PHRSWOBCRQZEXZDNVDGOCPY7OY",
+        "Q2ZEP35NBGKDXOIVHABRMQFRLA"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1005.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1005.pck"
+      ]
+    },
+    {
+      "id": 1006,
+      "name": "エスペランサ",
+      "cardClass": 6,
+      "emoteId": 6,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210006001,
+      "prefab": "Prefabs/LeaderSkin/class_1006",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1006",
+        "UI/ClassChar/utx_btn_leader_skin_1006",
+        "UI/Deck/utx_tex_deck_set_leader_1006",
+        "UI/ClassChar/utx_pict_leader_1006_00",
+        "Card/Header/log_leader_1006"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "GAIV5INMEIK5UHQJYRTCXBQT4M",
+        "HRXQAJGPYQMP3KFW65SHHUTXLY",
+        "KBLE2KJAERGKTFZUJY4KBXFURM",
+        "KR2QBEDIP46UBNCOK2DUWH5ZFE",
+        "NILLJ6RSRP55KDSQNBDTQMUVFI",
+        "NMV6FBMVY2CJ2VBRPVLDOQW6UM"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1006.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1006.pck"
+      ]
+    },
+    {
+      "id": 1007,
+      "name": "ドライツェーン",
+      "cardClass": 7,
+      "emoteId": 7,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210007001,
+      "prefab": "Prefabs/LeaderSkin/class_1007",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1007",
+        "UI/ClassChar/utx_btn_leader_skin_1007",
+        "UI/Deck/utx_tex_deck_set_leader_1007",
+        "UI/ClassChar/utx_pict_leader_1007_00",
+        "Card/Header/log_leader_1007"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "A6MJ5LSOENY6ZZFR6VZP26ENMU",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "E3LZN5EW37R7XI5YIDPKBQFUB4",
+        "G42TLLQMZIE7IW2LT4LKAGEQRA",
+        "JXXPLWAZE2OOVYY7UPMTJ24LNQ",
+        "Y4OWT6JACRVDF7VDN72XR5DF7Q",
+        "ZYKYVO5HIBMV7GZU6Y7O3QKJOU"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1007.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1007.pck"
+      ]
+    },
+    {
+      "id": 1017,
+      "name": "エース",
+      "cardClass": 7,
+      "emoteId": 7,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210017003,
+      "prefab": "Prefabs/LeaderSkin/class_1017",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1017",
+        "UI/ClassChar/utx_btn_leader_skin_1017",
+        "UI/Deck/utx_tex_deck_set_leader_1017",
+        "UI/ClassChar/utx_pict_leader_1017_00",
+        "Card/Header/log_leader_1017"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "5OTM6I4HI6AEWN7THJVJGMOPYA",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "L6S4W62GNGQNQIRYNHT3C7BNY4",
+        "LBLQIWGBWVDGOFBVJLLF6E5TSQ",
+        "OI7TUU5O6YSVYAW5UUH3RZQSZM",
+        "WKMQRJT4YVPWZDQSSTMDKUEMCI",
+        "YPLSMRY4JCQKUMA67F2FX2KWVM"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1017.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1017.pck"
+      ]
+    },
+    {
+      "id": 1101,
+      "name": "アリサ",
+      "cardClass": 1,
+      "emoteId": 1,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210011002,
+      "prefab": "Prefabs/LeaderSkin/class_1101",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1101",
+        "UI/ClassChar/utx_btn_leader_skin_1101",
+        "UI/Deck/utx_tex_deck_set_leader_1101",
+        "UI/ClassChar/utx_pict_leader_1101_00",
+        "Card/Header/log_leader_1101"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "5QAJBP2OD2OHHYLXQIVPHN5S3E",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "FUSRBSWTJCXJHRXR465CPCRQPM",
+        "IPAXQS4PRHQ7ULQP35QIKZRT7M",
+        "KRFPJVU5TFP34EE7ND7AXWKUQY",
+        "QMTEH3IHVSRVX6ENUR72U74LCQ",
+        "ULA6B7TRL56RADUCRI4BE6IXZ4"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1101.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1101.pck"
+      ]
+    },
+    {
+      "id": 1102,
+      "name": "エリカ",
+      "cardClass": 2,
+      "emoteId": 2,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210012002,
+      "prefab": "Prefabs/LeaderSkin/class_1102",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1102",
+        "UI/ClassChar/utx_btn_leader_skin_1102",
+        "UI/Deck/utx_tex_deck_set_leader_1102",
+        "UI/ClassChar/utx_pict_leader_1102_00",
+        "Card/Header/log_leader_1102"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "2IVUITDS5ZQ7JL6BPVOJRL2C5U",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "BFOVQM72ZNARYTB4VOIIFWVECA",
+        "JBT46ABZMT6B2DSASGLMQWWXLM",
+        "JE6EGJ2FSRVECARXGD6N7BH64A",
+        "XKOU6ZFEP3RLHLAEETLDKTN3BI",
+        "ZD7YWSNU6KCBKVWDK2XVLUKNHQ"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1102.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1102.pck"
+      ]
+    },
+    {
+      "id": 1103,
+      "name": "イザベル",
+      "cardClass": 3,
+      "emoteId": 3,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210013002,
+      "prefab": "Prefabs/LeaderSkin/class_1103",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1103",
+        "UI/ClassChar/utx_btn_leader_skin_1103",
+        "UI/Deck/utx_tex_deck_set_leader_1103",
+        "UI/ClassChar/utx_pict_leader_1103_00",
+        "Card/Header/log_leader_1103"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "M6L2QOADDWR65YB45H4X5AYEFY",
+        "MUTJV56ZL6DCTF7EGXB5HH2Q2A",
+        "U5SBM4EXU63ZHRN464Q5KBNL4Q",
+        "V76Y5L4PWNMTFVN3UQOSD3OOQI",
+        "XP6XWDL57KEBYHVG6PZEA2W3M4",
+        "YSPPA6YOGUCNM5NEYEOX4MVLXQ"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1103.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1103.pck"
+      ]
+    },
+    {
+      "id": 1104,
+      "name": "ローウェン",
+      "cardClass": 4,
+      "emoteId": 4,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210014002,
+      "prefab": "Prefabs/LeaderSkin/class_1104",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1104",
+        "UI/ClassChar/utx_btn_leader_skin_1104",
+        "UI/Deck/utx_tex_deck_set_leader_1104",
+        "UI/ClassChar/utx_pict_leader_1104_00",
+        "Card/Header/log_leader_1104"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "4KNPCIETQOMK6F35EBFAD4L6FE",
+        "7FOASHMBNCWDJZ5SE4S7B5YOAQ",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "E4ZSDJYHEITVIWTZXTXJZTF67Q",
+        "KWICAFBMJRD5JMQ5OIV5QJPTGE",
+        "QTB2VUGD7XKEDNYLNJSKCSUNXM",
+        "W6ICSBMVW7N5TWHUGSLY44NPRY"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1104.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1104.pck"
+      ]
+    },
+    {
+      "id": 1105,
+      "name": "ルナ",
+      "cardClass": 5,
+      "emoteId": 5,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210015003,
+      "prefab": "Prefabs/LeaderSkin/class_1105",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1105",
+        "UI/ClassChar/utx_btn_leader_skin_1105",
+        "UI/Deck/utx_tex_deck_set_leader_1105",
+        "UI/ClassChar/utx_pict_leader_1105_00",
+        "Card/Header/log_leader_1105"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "3NGALCYLP3AZKK3MF4MVLGPKEQ",
+        "44NBZKUCI7B5LZTQVRHHU7DINY",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "BNRSPS3UYFUQVQE3FWEXFKFD3A",
+        "FQKMTEUHKVHPDXJJXUETI2NZOQ",
+        "FTDEVI5JF2XDBRIMD5PQSSSCJM",
+        "NCP2AG5DVJ3S5RXNJTP7GTFLPQ"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1105.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1105.pck"
+      ]
+    },
+    {
+      "id": 1106,
+      "name": "イリス",
+      "cardClass": 6,
+      "emoteId": 6,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210016002,
+      "prefab": "Prefabs/LeaderSkin/class_1106",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1106",
+        "UI/ClassChar/utx_btn_leader_skin_1106",
+        "UI/Deck/utx_tex_deck_set_leader_1106",
+        "UI/ClassChar/utx_pict_leader_1106_00",
+        "Card/Header/log_leader_1106"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "5A5UPV634GFHB7AMEF46HADQSI",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "G3FVV5NOHMIGQJVS2CZVMAYMCI",
+        "IPG5HP64IHUEUX6KA2OWUPAPYA",
+        "IQP2HIP5T4BMC32IG6P2PLVWUM",
+        "TKCWASJZGBQ7DZHLOT3T2KV5FY",
+        "XVHNHM4JTB4NQMSNVUQCPDJHPI"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1106.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1106.pck"
+      ]
+    },
+    {
+      "id": 1107,
+      "name": "ユアン",
+      "cardClass": 7,
+      "emoteId": 7,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210017002,
+      "prefab": "Prefabs/LeaderSkin/class_1107",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1107",
+        "UI/ClassChar/utx_btn_leader_skin_1107",
+        "UI/Deck/utx_tex_deck_set_leader_1107",
+        "UI/ClassChar/utx_pict_leader_1107_00",
+        "Card/Header/log_leader_1107"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "3X6YJLMBRKOHDDXIAC6CM7XYJI",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "GBYTMTRJE3GC4QMFEXEVBYOEYY",
+        "M67Z2UDG2FLRIPCJEZGCSQ3MJQ",
+        "OWZA2GQDKW6FXE64ABL35LEI6E",
+        "TMSECJ7STYO6NLCIFCGZ7U64TI",
+        "WUPCFHR66PQ3AYETD7WKZIDXFU"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1107.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1107.pck"
+      ]
+    },
+    {
+      "id": 1115,
+      "name": "ユリアス",
+      "cardClass": 5,
+      "emoteId": 5,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210015004,
+      "prefab": "Prefabs/LeaderSkin/class_1115",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1115",
+        "UI/ClassChar/utx_btn_leader_skin_1115",
+        "UI/Deck/utx_tex_deck_set_leader_1115",
+        "UI/ClassChar/utx_pict_leader_1115_00",
+        "Card/Header/log_leader_1115"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "AUH5CYNFCZXAXDUINU2C3BPSBU",
+        "EHH5ZJJ2GVRFDZSXX3DUEQ2OSI",
+        "GTTTXK6MCGVC4DUFE33YOIVVPQ",
+        "VT35IK7DAMDJY5DN3DGFZEISW4",
+        "YEYLSQLRMCM2JQBGFMAYXFOE7Q",
+        "YPPQ2FFJ46CFZRLFMYQHEZRZ5U"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1115.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1115.pck"
+      ]
+    },
+    {
+      "id": 1201,
+      "name": "ティターニア",
+      "cardClass": 1,
+      "emoteId": 1,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 102141102,
+      "prefab": "Prefabs/LeaderSkin/class_1201",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1201",
+        "UI/ClassChar/utx_btn_leader_skin_1201",
+        "UI/Deck/utx_tex_deck_set_leader_1201",
+        "UI/ClassChar/utx_pict_leader_1201_00",
+        "Card/Header/log_leader_1201"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AM2TB3YEXDWOLOYAOYHKK2BIUA",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "APX2Q652RF4NQDUK377MLT64PQ",
+        "B5XJJHHCMY44OQBAGNG57VTOVY",
+        "BQT4EP7QWTYYSMIACZOPXQMFHQ",
+        "LBTXA35YHUZJZQDXQILGCMS5NI",
+        "NXU5X3SVVRGOUN5SZGXNZ3TFXA",
+        "YO2SMHQKPJF2I5PGKYM5QJ6EPY"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1201.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1201.pck"
+      ]
+    },
+    {
+      "id": 1202,
+      "name": "アルベール",
+      "cardClass": 2,
+      "emoteId": 2,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 101241102,
+      "prefab": "Prefabs/LeaderSkin/class_1202",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1202",
+        "UI/ClassChar/utx_btn_leader_skin_1202",
+        "UI/Deck/utx_tex_deck_set_leader_1202",
+        "UI/ClassChar/utx_pict_leader_1202_00",
+        "Card/Header/log_leader_1202"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "7VRWDGTVCXWLXWM3QTDIF2JIVQ",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "B5LYZ7V6ZJXA4FBNN2I747UE2Y",
+        "C374M75D25NGXKYPVVGMPAWHFI",
+        "GYYJT6NREAIAEBW4ZZ4F2YARPA",
+        "R2TAAHIK4PBDLDXWB4LRGJNSLI",
+        "Z3OS6U7TF6HDJ5GKRBOCBR3FHY",
+        "ZJZRFNNJWV6RG7O7KDLD2HZO34"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1202.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1202.pck"
+      ]
+    },
+    {
+      "id": 1203,
+      "name": "ドロシー",
+      "cardClass": 3,
+      "emoteId": 3,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 101343102,
+      "prefab": "Prefabs/LeaderSkin/class_1203",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1203",
+        "UI/ClassChar/utx_btn_leader_skin_1203",
+        "UI/Deck/utx_tex_deck_set_leader_1203",
+        "UI/ClassChar/utx_pict_leader_1203_00",
+        "Card/Header/log_leader_1203"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "63EOHU464YCINEOLHY4ZRKIUEA",
+        "7AV6L4JE2RU6HHJHZEOY4FBGC4",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "BBQEINWINCUZN5AQKQZTFYVFYU",
+        "FNZJV4DZ3Q5GNC7TTPA3MM4FAQ",
+        "G4PRDYHXMMIKRP4TVZETX7ETE4",
+        "HOWII3KKB4F3LVGRC3QCAEDFGM",
+        "QH2ZI5S3BVUPICVACVIMHI5IDI"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1203.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1203.pck"
+      ]
+    },
+    {
+      "id": 1204,
+      "name": "フィルレイン",
+      "cardClass": 4,
+      "emoteId": 4,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 102441102,
+      "prefab": "Prefabs/LeaderSkin/class_1204",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1204",
+        "UI/ClassChar/utx_btn_leader_skin_1204",
+        "UI/Deck/utx_tex_deck_set_leader_1204",
+        "UI/ClassChar/utx_pict_leader_1204_00",
+        "Card/Header/log_leader_1204"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "36GDPMYFEIUODJ6HL26HIGC3OY",
+        "3PBQNERPKN7CSCQ2ZB7QJ2IHCQ",
+        "6AE4BM7M7STTG6BLMFZOAOKGCU",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "EZPC4NLM7XLYNEYFXOK5K4PDME",
+        "IAHS23JJE5JYOJV24FGP5GTRLY",
+        "KVT3NBNSUBK5M45RGW75ZW5YQU",
+        "UJZI5ZUQXDY5M3QFCTC2FPVZYU"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1204.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1204.pck"
+      ]
+    },
+    {
+      "id": 1205,
+      "name": "ケルベロス",
+      "cardClass": 5,
+      "emoteId": 5,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 101541102,
+      "prefab": "Prefabs/LeaderSkin/class_1205",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1205",
+        "UI/ClassChar/utx_btn_leader_skin_1205",
+        "UI/Deck/utx_tex_deck_set_leader_1205",
+        "UI/ClassChar/utx_pict_leader_1205_00",
+        "Card/Header/log_leader_1205"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "BG25XPYI5CIJB23QY5FOX7IX6Q",
+        "I3464JJ35HXIEA2POPKTGIBHKU",
+        "OI2D4XYSJKJN74JZB3KV6ZTJZI",
+        "PSSISUIOW43QTD2HYGXFSLITHA",
+        "RQBQWN7SQTDQUROVWLV7E7DYSE",
+        "WDGAKMCCZOTQS3JTFDCTOXNBEM",
+        "YU2XHI35JZGXBXOCJ7RTOADIV4"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1205.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1205.pck"
+      ]
+    },
+    {
+      "id": 1206,
+      "name": "アイテール",
+      "cardClass": 6,
+      "emoteId": 6,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 102641102,
+      "prefab": "Prefabs/LeaderSkin/class_1206",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1206",
+        "UI/ClassChar/utx_btn_leader_skin_1206",
+        "UI/Deck/utx_tex_deck_set_leader_1206",
+        "UI/ClassChar/utx_pict_leader_1206_00",
+        "Card/Header/log_leader_1206"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "3H6MWLBWLFNLREJFQQ3CANPIZQ",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "ARLJHWF54KQZJSODHARCOAWWXI",
+        "B4LHAMTEPSHBIWJ35AIL6PKWWM",
+        "HRUQ6V6T2N25OPLPZYI2KMFFQM",
+        "MFSRCGYLCQT5MWZ36RVSQXTQRM",
+        "NSYMRG54SR5HPKCRGRFSE2I7OI",
+        "T7CEQC4MC2JLF4MVVXT3GL6JLU"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1206.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1206.pck"
+      ]
+    },
+    {
+      "id": 1207,
+      "name": "オーキス",
+      "cardClass": 7,
+      "emoteId": 7,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 101741202,
+      "prefab": "Prefabs/LeaderSkin/class_1207",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1207",
+        "UI/ClassChar/utx_btn_leader_skin_1207",
+        "UI/Deck/utx_tex_deck_set_leader_1207",
+        "UI/ClassChar/utx_pict_leader_1207_00",
+        "Card/Header/log_leader_1207"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "56Y32JSGMON3QWB2OSQQJOG74Y",
+        "7LORQKL4FYV2BXZAUJCJ5QFAJA",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "ATC5KRFHMTTIPRWYSW55LKFTFA",
+        "HNIYDBQCTXAQ3UYJBEIQBZIJHU",
+        "J3N3TV5IIMPQPJUTAMLAJO5YDI",
+        "XCANCOZD3YTODBT33HSX23JRFA",
+        "XEG6L7J5NOL2ZNHM2HOTS4IIGA"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1207.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1207.pck"
+      ]
+    },
+    {
+      "id": 1211,
+      "name": "マガチヨ",
+      "cardClass": 1,
+      "emoteId": 1,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 109141102,
+      "prefab": "Prefabs/LeaderSkin/class_1211",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1211",
+        "UI/ClassChar/utx_btn_leader_skin_1211",
+        "UI/Deck/utx_tex_deck_set_leader_1211",
+        "UI/ClassChar/utx_pict_leader_1211_00",
+        "Card/Header/log_leader_1211"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "3Q5JMXURU4W5FTOOWQTDE4HAN4",
+        "3Y4KDZEM4EGQHYMJSJOZMA3KZ4",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "APFM6GJJUTA6BFO2I2JAKGBMQA",
+        "BCYBX2BPLQ3KA3NXBGU5SQEHEQ",
+        "CM3TXFXISLS3INA2GN6YGGJBPY",
+        "MAVDDNG75O2SNOWA3LOIZCAQQI",
+        "NGBPOWSR445GJOVNDTD67VKLVU"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1211.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1211.pck"
+      ]
+    },
+    {
+      "id": 1212,
+      "name": "シンセライズ",
+      "cardClass": 2,
+      "emoteId": 2,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 103241102,
+      "prefab": "Prefabs/LeaderSkin/class_1212",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1212",
+        "UI/ClassChar/utx_btn_leader_skin_1212",
+        "UI/Deck/utx_tex_deck_set_leader_1212",
+        "UI/ClassChar/utx_pict_leader_1212_00",
+        "Card/Header/log_leader_1212"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "A3DSIRKHL4P7VKRYWUSYURGRK4",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "HVGXR4KWDSBTDZGFCQSMYCG2KE",
+        "L5BKOBO5266MUKNNKP3SRC77KQ",
+        "OY3MSRF2O7DOZBQ2PEGDSALLPY",
+        "UQ64HSKIE5YUDOC7RI5PVBDTAM",
+        "X34ZAGS5YGTED6DL47IFDBLJS4",
+        "Y5C7EAXJ5CIZCEXF2VDG4KMEWE"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1212.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1212.pck"
+      ]
+    },
+    {
+      "id": 1213,
+      "name": "シイム",
+      "cardClass": 3,
+      "emoteId": 3,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 106341102,
+      "prefab": "Prefabs/LeaderSkin/class_1213",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1213",
+        "UI/ClassChar/utx_btn_leader_skin_1213",
+        "UI/Deck/utx_tex_deck_set_leader_1213",
+        "UI/ClassChar/utx_pict_leader_1213_00",
+        "Card/Header/log_leader_1213"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "4Q263EQOOM3SUXV7VZDPZF4PXM",
+        "7RZPNL5VG7TWP4Z7TABLMTWYWE",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "BFHGCCTNY7F3L4QLGB7AROU5DU",
+        "CL45VQ73XL3RDIDANRXGHJGMWE",
+        "MRWRXNSCNLMR62JX3NCW2TVDVM",
+        "UO2UFYNEXBRANLRP22WCWQZCDM",
+        "XURGLFXP4G5YBT7K2U22GXBAQY"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1213.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1213.pck"
+      ]
+    },
+    {
+      "id": 1214,
+      "name": "ガルミーユ",
+      "cardClass": 4,
+      "emoteId": 4,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 103441202,
+      "prefab": "Prefabs/LeaderSkin/class_1214",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1214",
+        "UI/ClassChar/utx_btn_leader_skin_1214",
+        "UI/Deck/utx_tex_deck_set_leader_1214",
+        "UI/ClassChar/utx_pict_leader_1214_00",
+        "Card/Header/log_leader_1214"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "4HYVEOYJHQPBHLYGEM5PVHORUQ",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "J6HNWHX5TNTWZ6HRVAC2OOTUPA",
+        "JSQ54PI4NAB2LKFPZ5D2N5PIGY",
+        "PC5T5IXMFTGHTGXXAULKFP6DDA",
+        "QQE4FK6KXBAIX6MU3S2WLGNC4Y",
+        "VEZKSNT2G5YPM6ETXPRL2PYWFE",
+        "VQ7KQVQOXO4WLMLGIRLXEHTPCA"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1214.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1214.pck"
+      ]
+    },
+    {
+      "id": 1215,
+      "name": "徒姫",
+      "cardClass": 5,
+      "emoteId": 5,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 107541102,
+      "prefab": "Prefabs/LeaderSkin/class_1215",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1215",
+        "UI/ClassChar/utx_btn_leader_skin_1215",
+        "UI/Deck/utx_tex_deck_set_leader_1215",
+        "UI/ClassChar/utx_pict_leader_1215_00",
+        "Card/Header/log_leader_1215"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "5EWWV75YAWQD5ZRRCKLDL3P5CE",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "AVGGIOFIF4WWOMLPWZXZNPWWCM",
+        "DANYTKU56NUZXYNNXYXIH6KQ4Y",
+        "F26FWUKRKEDHYUUZ2HYAMOHB6U",
+        "F3YIDV7HQO4E4SSB2TJFMTPGGM",
+        "FF5HGJTX4QSNG4ZZKAPXGMHFLE",
+        "QJZ72JWMP5JZKU4C5CBWWMIV5M"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1215.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1215.pck"
+      ]
+    },
+    {
+      "id": 1216,
+      "name": "カンディマ",
+      "cardClass": 6,
+      "emoteId": 6,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 106641102,
+      "prefab": "Prefabs/LeaderSkin/class_1216",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1216",
+        "UI/ClassChar/utx_btn_leader_skin_1216",
+        "UI/Deck/utx_tex_deck_set_leader_1216",
+        "UI/ClassChar/utx_pict_leader_1216_00",
+        "Card/Header/log_leader_1216"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "5YZVMYLKS3THWA4TYLP3MDCGBI",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "CDWVNOELLWIGLGOKOHDZVZC6HQ",
+        "D2TZIVZVXMOYDCSX746QDSIZTY",
+        "HT7IHIRYZS76EHZCJI77D33HQE",
+        "XQ2EI6VR53XZVVOCQHA6FI6CMM",
+        "YAMMCDJXITJQ7GH5ZBSU76BC64",
+        "Z2XWKH6NVE6VIS3L6RVFROIYVU"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1216.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1216.pck"
+      ]
+    },
+    {
+      "id": 1217,
+      "name": "イマリ",
+      "cardClass": 7,
+      "emoteId": 7,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 105741202,
+      "prefab": "Prefabs/LeaderSkin/class_1217",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1217",
+        "UI/ClassChar/utx_btn_leader_skin_1217",
+        "UI/Deck/utx_tex_deck_set_leader_1217",
+        "UI/ClassChar/utx_pict_leader_1217_00",
+        "Card/Header/log_leader_1217"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "6SDNFYBQC6WXFKG5SWBF3IVXTQ",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "H233CVR2WT57TUD4CUIZEKQNYI",
+        "TMFRGYS6HDAYRZ2ZRCHXSMFXFQ",
+        "U7NU4TBLLW6PYD73UHFL5V7U54",
+        "UUKAN6CBI4DLNP66VZ4HRCH6LA",
+        "WSO4YYJSMUSM5XAY543LTK2NBA",
+        "ZP44QKJXFPRFOF6QSSRHQ5TPUE"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1217.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1217.pck"
+      ]
+    },
+    {
+      "id": 1222,
+      "name": "ウンケイ",
+      "cardClass": 2,
+      "emoteId": 2,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 105241202,
+      "prefab": "Prefabs/LeaderSkin/class_1222",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1222",
+        "UI/ClassChar/utx_btn_leader_skin_1222",
+        "UI/Deck/utx_tex_deck_set_leader_1222",
+        "UI/ClassChar/utx_pict_leader_1222_00",
+        "Card/Header/log_leader_1222"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "4ROHRRQNPFRWTSNGUNUJWKV3JI",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "C54ABXLB4PJCFXFUCLSPJVS774",
+        "JNOWF4PYNXILVDEDYGTG47YMZA",
+        "KEIS3JLOHLCSK6DC2L5SZIY3YM",
+        "PZSABIZX6IAFWANBNQHWIDYMCM",
+        "REWRO2Y7TI7IQ3664MD47Y5HVU",
+        "XMOQL3JIWVOZYMULYGMJHBY54M"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1222.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1222.pck"
+      ]
+    },
+    {
+      "id": 1223,
+      "name": "ララ・アンセム",
+      "cardClass": 3,
+      "emoteId": 3,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 107341102,
+      "prefab": "Prefabs/LeaderSkin/class_1223",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1223",
+        "UI/ClassChar/utx_btn_leader_skin_1223",
+        "UI/Deck/utx_tex_deck_set_leader_1223",
+        "UI/ClassChar/utx_pict_leader_1223_00",
+        "Card/Header/log_leader_1223"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "7SRFNPWVLHFV4ZZHQLLK5GGJR4",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "G4WW26AMXBA55SXXJDMGWGVSRI",
+        "GO6RCIZWYMMTZA2PSC2RKURWW4",
+        "INGDFX3SEQ3KXORNVAQW6Y4MAI",
+        "KO7CXQPGBQ24A2AAUPUVK34L6M",
+        "QTFHHNFPNILIL5BVXH5OZFFEIM",
+        "UKJMTMBC45KSO37DXODPLND5HQ",
+        "XFYC2D4EMDARUHLRG5TUSPKWL4"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1223.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1223.pck"
+      ]
+    },
+    {
+      "id": 1224,
+      "name": "リュミオール",
+      "cardClass": 4,
+      "emoteId": 4,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 108441202,
+      "prefab": "Prefabs/LeaderSkin/class_1224",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1224",
+        "UI/ClassChar/utx_btn_leader_skin_1224",
+        "UI/Deck/utx_tex_deck_set_leader_1224",
+        "UI/ClassChar/utx_pict_leader_1224_00",
+        "Card/Header/log_leader_1224"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "BBM4AAQ5BYAYVC6HFQHLCWG6TA",
+        "GKWURNBYAKYXU5N3366EH7MTJ4",
+        "I3DROTCMXOG44MOA3OSSHCX5GQ",
+        "JBAKZ5ZSZYHBENTNXWOIEEVOFY",
+        "L3YL6G7HVHDURFRNS4JEYOK5VA",
+        "MRE6KWBS2QQYH3BMTWZJ63EUJM",
+        "QK6QO2UHTGBWM4I3FZOWNG3LWM"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1224.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1224.pck"
+      ]
+    },
+    {
+      "id": 1226,
+      "name": "リテュエル",
+      "cardClass": 6,
+      "emoteId": 6,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 108641202,
+      "prefab": "Prefabs/LeaderSkin/class_1226",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1226",
+        "UI/ClassChar/utx_btn_leader_skin_1226",
+        "UI/Deck/utx_tex_deck_set_leader_1226",
+        "UI/ClassChar/utx_pict_leader_1226_00",
+        "Card/Header/log_leader_1226"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "4NSYU26BQZLVPMOTRUIS2NSHOU",
+        "4ZFJ6XCCQINZD243E5QOQMTHLU",
+        "6CEUTVLJZYSL7UFWUX4IU3WDZM",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "KQG6VDR7OLKN4Q7JEL3X6TRJXI",
+        "M6G2UUWBYMLZLRTC3XIDIHUP6A",
+        "NJGHQYQ4KNBQM6XQ34DTVYQXJU",
+        "WDGRMVLMG2ZTPD6ABEH6VFBFEQ"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1226.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1226.pck"
+      ]
+    },
+    {
+      "id": 1227,
+      "name": "エース",
+      "cardClass": 7,
+      "emoteId": 7,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 108741202,
+      "prefab": "Prefabs/LeaderSkin/class_1227",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1227",
+        "UI/ClassChar/utx_btn_leader_skin_1227",
+        "UI/Deck/utx_tex_deck_set_leader_1227",
+        "UI/ClassChar/utx_pict_leader_1227_00",
+        "Card/Header/log_leader_1227"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "4KH4OKBH6BCDUIWOKRFAC25JY4",
+        "4V3CINRVMSFCFGR7FGYNW6EXOE",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "CNSIFY6SNXAO5IWFHDKQ5C4WU4",
+        "DR7KLJRFIIVMCNHF74TALFTZTY",
+        "UVX4WL6CM25VSKDTT7V6V7TKDA",
+        "VKACFKCQGWNXFLCNOOUIEDQNKM",
+        "WLDNMXB6UH23PF2J7QGE2VTNHE"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1227.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1227.pck"
+      ]
+    },
+    {
+      "id": 1232,
+      "name": "ギルダリア",
+      "cardClass": 2,
+      "emoteId": 2,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 107241102,
+      "prefab": "Prefabs/LeaderSkin/class_1232",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1232",
+        "UI/ClassChar/utx_btn_leader_skin_1232",
+        "UI/Deck/utx_tex_deck_set_leader_1232",
+        "UI/ClassChar/utx_pict_leader_1232_00",
+        "Card/Header/log_leader_1232"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "ERK6HW577VSN563Q6Y5S5EGBS4",
+        "HTTKIR2Z4YGSM4ZJVDIUYOVUJ4",
+        "K35UOK2ML5YM3WQEEAGZ3INEOM",
+        "NOLIMVBTI26MNIA4VWZTDUQALI",
+        "PM226SKF5WLXZO2KGIGAULECCE",
+        "RDO3CWB3UN3CE7UIR5FZUHJREE",
+        "ZNUBZOYMUVL4M3D2YGKBCQFECI"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1232.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1232.pck"
+      ]
+    },
+    {
+      "id": 1242,
+      "name": "バルバロス",
+      "cardClass": 2,
+      "emoteId": 2,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 109241102,
+      "prefab": "Prefabs/LeaderSkin/class_1242",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1242",
+        "UI/ClassChar/utx_btn_leader_skin_1242",
+        "UI/Deck/utx_tex_deck_set_leader_1242",
+        "UI/ClassChar/utx_pict_leader_1242_00",
+        "Card/Header/log_leader_1242"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "C2E6IAZFPDPG3EB2KLWUURQUQQ",
+        "HV7YPSOIDWG54E3C7PMQQGQBIU",
+        "LQE62JED6F3W5SB4YTKK72T7TE",
+        "QKMACHRGHZ3ZZNIU23C22ERZKU",
+        "XIUGTMF73C356DUQ6EGO3J2ESI",
+        "ZSKAYUOMKWS6RFP2DNXG4VWTMA"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1242.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1242.pck"
+      ]
+    },
+    {
+      "id": 1301,
+      "name": "開花",
+      "cardClass": 1,
+      "emoteId": 1,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_1301",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_1301",
+        "UI/Deck/utx_tex_deck_set_leader_1301"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1301",
+        "UI/ClassChar/utx_btn_leader_skin_1301",
+        "UI/Deck/utx_tex_deck_set_leader_1301",
+        "UI/ClassChar/utx_pict_leader_1301_00",
+        "Card/Header/log_leader_1301"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "IIGKQPHHVNKT7GYBRWDSE2OE2E",
+        "ITW46QE233NPGJOEMBSOBMGHGU",
+        "KVMHZXIB2XYLE55DB7MUUAFXMY",
+        "V2YHCWTE5A337HGERPYY2DVYQI"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1301.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1301.pck"
+      ]
+    },
+    {
+      "id": 1302,
+      "name": "シルヴァリオス",
+      "cardClass": 2,
+      "emoteId": 2,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210052002,
+      "prefab": "Prefabs/LeaderSkin/class_1302",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1302",
+        "UI/ClassChar/utx_btn_leader_skin_1302",
+        "UI/Deck/utx_tex_deck_set_leader_1302",
+        "UI/ClassChar/utx_pict_leader_1302_00",
+        "Card/Header/log_leader_1302"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "6EYUVJ5ZVBJDDNOLW76DMFZQHI",
+        "7NPQDTP2WK47SOETM4PCGVNN6A",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "AZC6SKMKXP4F62YX3MJME3LRXY",
+        "IFTHGMU7IS4LIYBZ34S2WHEXAI",
+        "LGEJO22JDJO34U3PSTYRIUYBCM",
+        "TOH374FZ66HIEZXJYFORJMY54I"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1302.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1302.pck"
+      ]
+    },
+    {
+      "id": 1303,
+      "name": "フィーラ",
+      "cardClass": 3,
+      "emoteId": 3,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_1303",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_1303",
+        "UI/Deck/utx_tex_deck_set_leader_1303"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1303",
+        "UI/ClassChar/utx_btn_leader_skin_1303",
+        "UI/Deck/utx_tex_deck_set_leader_1303",
+        "UI/ClassChar/utx_pict_leader_1303_00",
+        "Card/Header/log_leader_1303"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "22FBZR36XQR6EOUBDFINUTKTME",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "DWWCX76IWYQSJDPYIM5VY2Z7WE",
+        "J2TOB5TJ7CNEXXBUG2Y45HRCXE",
+        "JBTAGQP3RGFBCOE7NYA46O32MU"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1303.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1303.pck"
+      ]
+    },
+    {
+      "id": 1304,
+      "name": "暁",
+      "cardClass": 4,
+      "emoteId": 4,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_1304",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_1304",
+        "UI/Deck/utx_tex_deck_set_leader_1304"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1304",
+        "UI/ClassChar/utx_btn_leader_skin_1304",
+        "UI/Deck/utx_tex_deck_set_leader_1304",
+        "UI/ClassChar/utx_pict_leader_1304_00",
+        "Card/Header/log_leader_1304"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "OWHENWFO6BLXAH7PZO76ELWLFM",
+        "S5C56F34AQ3I54KRFG66ST5XWI",
+        "TWJ6QZFUQMVY5KU5BD4GXZAOIE",
+        "WH5AZB22ZA4F6OCTFKPXZVSC4M"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1304.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1304.pck"
+      ]
+    },
+    {
+      "id": 1305,
+      "name": "ニオ",
+      "cardClass": 5,
+      "emoteId": 5,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210025002,
+      "prefab": "Prefabs/LeaderSkin/class_1305",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1305",
+        "UI/ClassChar/utx_btn_leader_skin_1305",
+        "UI/Deck/utx_tex_deck_set_leader_1305",
+        "UI/ClassChar/utx_pict_leader_1305_00",
+        "Card/Header/log_leader_1305"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "4U7UYSE5PX27DIX2L74UHH7LEI",
+        "5K6G6CRQNW73O5NOB46GX6WLPQ",
+        "6UFOB5YU7NADHRB3Z76PZ4COFU",
+        "ACTZHEPKQVULVH24O5MH3ODIT4",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "KLHPXLBKYLGTYGV4QGURBPXVJU",
+        "NHP2ADEKVM237TVWQQ67PGG7QM"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1305.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1305.pck"
+      ]
+    },
+    {
+      "id": 1306,
+      "name": "ミラリア",
+      "cardClass": 6,
+      "emoteId": 6,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210216004,
+      "prefab": "Prefabs/LeaderSkin/class_1306",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1306",
+        "UI/ClassChar/utx_btn_leader_skin_1306",
+        "UI/Deck/utx_tex_deck_set_leader_1306",
+        "UI/ClassChar/utx_pict_leader_1306_00",
+        "Card/Header/log_leader_1306"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "7TBD4QEEG3EC4ORS3PIRSYEVAU",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "FURV4WI3NAN7YP3ZEPTZAJUEMI",
+        "JWEN24QCNROCO7VY6SLQY347E4",
+        "NYGHYCX7T3Z5QDOMCXQBWRMWE4",
+        "XDBKZXNGXOTIUS4XZYT72VC3CM",
+        "ZFOYMETEY2MQMHKXBHQUO6XOMM"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1306.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1306.pck"
+      ]
+    },
+    {
+      "id": 1307,
+      "name": "エン",
+      "cardClass": 7,
+      "emoteId": 7,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_1307",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_1307",
+        "UI/Deck/utx_tex_deck_set_leader_1307"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1307",
+        "UI/ClassChar/utx_btn_leader_skin_1307",
+        "UI/Deck/utx_tex_deck_set_leader_1307",
+        "UI/ClassChar/utx_pict_leader_1307_00",
+        "Card/Header/log_leader_1307"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "4PRST5N2K53HEAOFZWJZDCXFSU",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "JTHXJEY7VEVNAIZIDKJXOYDYEI",
+        "QSVZCMDNOKLBTI55GJCVYRQEXE",
+        "XEXZZX33P5ES33B2MG6U5PBKYE"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1307.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1307.pck"
+      ]
+    },
+    {
+      "id": 1311,
+      "name": "ダストデイズ",
+      "cardClass": 1,
+      "emoteId": 1,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210201004,
+      "prefab": "Prefabs/LeaderSkin/class_1311",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1311",
+        "UI/ClassChar/utx_btn_leader_skin_1311",
+        "UI/Deck/utx_tex_deck_set_leader_1311",
+        "UI/ClassChar/utx_pict_leader_1311_00",
+        "Card/Header/log_leader_1311"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "6S3ZHIDOGZXRUER3ZSTW2MNMUA",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "BSXZL63D4XPCS4IY5FUWQVCYJM",
+        "EOM2HNYZA4RHWY7GB4BS664NBQ",
+        "IYMETHAW4L57HFUDE2IYLVK5S4",
+        "LXH4REA2GCHSL6S4773ZAH6DHM",
+        "UMQRSVY5MHXGFTFZKQNTIX2LY4"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1311.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1311.pck"
+      ]
+    },
+    {
+      "id": 1312,
+      "name": "煤木万裁",
+      "cardClass": 2,
+      "emoteId": 2,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_1312",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_1312",
+        "UI/Deck/utx_tex_deck_set_leader_1312"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1312",
+        "UI/ClassChar/utx_btn_leader_skin_1312",
+        "UI/Deck/utx_tex_deck_set_leader_1312",
+        "UI/ClassChar/utx_pict_leader_1312_00",
+        "Card/Header/log_leader_1312"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "HOOMJQSI6D6GRCFL7LHTMO5LT4",
+        "LGY6XCYADYG2YFZCHN75JSBAFQ",
+        "P4KYSJ4ZCOLIFZOGLRDPOPTL4I",
+        "R5QGLMQ6AUL6SSNHHZFLLI5LCU"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1312.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1312.pck"
+      ]
+    },
+    {
+      "id": 1313,
+      "name": "キース・ロストマン",
+      "cardClass": 3,
+      "emoteId": 3,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210083002,
+      "prefab": "Prefabs/LeaderSkin/class_1313",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1313",
+        "UI/ClassChar/utx_btn_leader_skin_1313",
+        "UI/Deck/utx_tex_deck_set_leader_1313",
+        "UI/ClassChar/utx_pict_leader_1313_00",
+        "Card/Header/log_leader_1313"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "47MCQMYP4RWOHSP4QUC33LAQQQ",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "F7RIM3LK2W3STG7IM6XT4565SY",
+        "K4S55XWX4VQKL5GKSEVNHBETX4",
+        "LBR2JYPSBS4PFGXNLXJUUGSZPY",
+        "SCNUQZFWVQIX3HDEI7QKDDF26I",
+        "VFV5HXZYPLKEZK7OBUSCK6NGKU"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1313.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1313.pck"
+      ]
+    },
+    {
+      "id": 1314,
+      "name": "エル",
+      "cardClass": 4,
+      "emoteId": 4,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210064002,
+      "prefab": "Prefabs/LeaderSkin/class_1314",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1314",
+        "UI/ClassChar/utx_btn_leader_skin_1314",
+        "UI/Deck/utx_tex_deck_set_leader_1314",
+        "UI/ClassChar/utx_pict_leader_1314_00",
+        "Card/Header/log_leader_1314"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "2HGHSKML3TXFRUFOZCJBFOB2W4",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "ND3OGTUFNKCGYAFBISB5SYSJ24",
+        "PVSJJWOLCPNVBY47YCLWQJA2BY",
+        "Q24FS3AXYAEBJSDPMCG5JISXM4",
+        "UVSODGGYMYQO2OCWFU2YVRUQTA",
+        "XNYJZJKXWFOFPGIWCK7KJR3RBQ"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1314.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1314.pck"
+      ]
+    },
+    {
+      "id": 1315,
+      "name": "断片囚",
+      "cardClass": 5,
+      "emoteId": 5,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_1315",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_1315",
+        "UI/Deck/utx_tex_deck_set_leader_1315"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1315",
+        "UI/ClassChar/utx_btn_leader_skin_1315",
+        "UI/Deck/utx_tex_deck_set_leader_1315",
+        "UI/ClassChar/utx_pict_leader_1315_00",
+        "Card/Header/log_leader_1315"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "2QJ7VTIHZEK5OD2HSE6YT7KMNM",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "D3DEOC4U6RMFCNDJAV724GZVXU",
+        "JLDMZU7IPKC2G7TLHVVRWSU42E",
+        "PZIRCXEU4Q4RF4NIMLBKNRUG4I"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1315.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1315.pck"
+      ]
+    },
+    {
+      "id": 1316,
+      "name": "エスペランサ",
+      "cardClass": 6,
+      "emoteId": 6,
+      "skinType": 0,
+      "baseSkinId": 1006,
+      "originalDeckRedirect": 1006,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_1316",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_1316"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1316",
+        "UI/ClassChar/utx_btn_leader_skin_1316",
+        "UI/Deck/utx_tex_deck_set_leader_1006",
+        "UI/ClassChar/utx_pict_leader_1006_00",
+        "Card/Header/log_leader_1006"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "HRXQAJGPYQMP3KFW65SHHUTXLY",
+        "KBLE2KJAERGKTFZUJY4KBXFURM",
+        "KR2QBEDIP46UBNCOK2DUWH5ZFE",
+        "XGI3MJQPICMCIBAQWVG7VJ6QWA"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1316.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1316.pck"
+      ]
+    },
+    {
+      "id": 1317,
+      "name": "スカーレット",
+      "cardClass": 7,
+      "emoteId": 7,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210197005,
+      "prefab": "Prefabs/LeaderSkin/class_1317",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1317",
+        "UI/ClassChar/utx_btn_leader_skin_1317",
+        "UI/Deck/utx_tex_deck_set_leader_1317",
+        "UI/ClassChar/utx_pict_leader_1317_00",
+        "Card/Header/log_leader_1317"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "6VYRDWR6MHJ52U3LNXRKPPVHRI",
+        "A2ZOFIYJBWE4PDDQWG2R35AHGA",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "OBWWM22RACNFNW446TJVLDPQRI",
+        "RXPGLZRN7DQXSSUDGOAZ23YCJA",
+        "XG3SJBJHLRAN6WMRSP62653HC4",
+        "ZZETFR4NIG6SMI6Y2YQBR53FDE"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1317.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1317.pck"
+      ]
+    },
+    {
+      "id": 1323,
+      "name": "ヴェハリヤー",
+      "cardClass": 3,
+      "emoteId": 3,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210183004,
+      "prefab": "Prefabs/LeaderSkin/class_1323",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1323",
+        "UI/ClassChar/utx_btn_leader_skin_1323",
+        "UI/Deck/utx_tex_deck_set_leader_1323",
+        "UI/ClassChar/utx_pict_leader_1323_00",
+        "Card/Header/log_leader_1323"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "BXLDIB4DMBD3FRRTDOIP2J7QL4",
+        "DQU4G4WAQIGOM7YPHRBEH3P5J4",
+        "EPOQPUH6WTKPMJ52KK4XK5FHI4",
+        "NMRRI46QHT7QCRP7E4H47FHEFA",
+        "QE6BUHAZWDKJA4QDGDG4D43PPA",
+        "QWYS3PCGXWXE34BG3G5TAAL6GE"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1323.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1323.pck"
+      ]
+    },
+    {
+      "id": 1324,
+      "name": "サガツマツ",
+      "cardClass": 4,
+      "emoteId": 4,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210174004,
+      "prefab": "Prefabs/LeaderSkin/class_1324",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1324",
+        "UI/ClassChar/utx_btn_leader_skin_1324",
+        "UI/Deck/utx_tex_deck_set_leader_1324",
+        "UI/ClassChar/utx_pict_leader_1324_00",
+        "Card/Header/log_leader_1324"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "3XV3CAZOX2ETN6X2O2OG746GME",
+        "5MYICMHTQDZAY27VWO5WJOTITM",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "E3SEIEYTSQNI2MU56ZH4M5RQNI",
+        "I7JUDRZ63XAETJK5RHHZPUMQOA",
+        "JRCR5JYESNGGMMOVSZ7BMGPSUY",
+        "M6ZEPCOJ7DFURDNIW5MXF7IBTQ"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1324.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1324.pck"
+      ]
+    },
+    {
+      "id": 1325,
+      "name": "愛李",
+      "cardClass": 5,
+      "emoteId": 5,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210135002,
+      "prefab": "Prefabs/LeaderSkin/class_1325",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1325",
+        "UI/ClassChar/utx_btn_leader_skin_1325",
+        "UI/Deck/utx_tex_deck_set_leader_1325",
+        "UI/ClassChar/utx_pict_leader_1325_00",
+        "Card/Header/log_leader_1325"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "BQWED5CYZLMNIHVRWDYKQXIKNU",
+        "F7ZVX47QTPHUGPKYJEUKRFH4YI",
+        "NN36S3BKWK566AYD4VTLAS3LX4",
+        "PO237RDCEMX336SDJHG7KSBHTU",
+        "SL36C4GC53UIAB3X6TD6MDHOWA",
+        "WGDGOOQ56XFCDDL4TR4GK6FFMY"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1325.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1325.pck"
+      ]
+    },
+    {
+      "id": 1334,
+      "name": "伽藍",
+      "cardClass": 4,
+      "emoteId": 4,
+      "skinType": 0,
+      "baseSkinId": 1004,
+      "originalDeckRedirect": 1004,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_1334",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_1334"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1334",
+        "UI/ClassChar/utx_btn_leader_skin_1334",
+        "UI/Deck/utx_tex_deck_set_leader_1004",
+        "UI/ClassChar/utx_pict_leader_1004_00",
+        "Card/Header/log_leader_1004"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "3ZUHKSOPJ57DNAW3ZKSBYEUZLU",
+        "736HGSMZJEWRJIGH5XNG37CPQU",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "L4URMAOLEFLU4M5Z3OVOWMSNWE",
+        "ON335WWIYXFWC22K7WAFRCLLGE"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1334.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1334.pck"
+      ]
+    },
+    {
+      "id": 1401,
+      "name": "イーウィヤ",
+      "cardClass": 1,
+      "emoteId": 1,
+      "skinType": 2,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 104141102,
+      "prefab": "Prefabs/LeaderSkin/class_1401",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1401",
+        "UI/ClassChar/utx_btn_leader_skin_1401",
+        "UI/Deck/utx_tex_deck_set_leader_1401",
+        "UI/ClassChar/utx_pict_leader_1401_00",
+        "Card/Header/log_leader_1401"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "2XMGCTRAYNRQGTR7IT3GPVT2SU",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "H2X7VRGZVWQGDLX5J2UUSX2MHE",
+        "OKWQMBJXQBBYG7Q5ZO5BTDMPYI",
+        "QDWYX5TYFOZU7K2UCP3NIA4IL4",
+        "XJG7FZJ3PEZVC26TRBQ26L4RBY",
+        "XKEEBWVTZGTVXHT7X2WV6MQ5KI"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1401.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1401.pck"
+      ]
+    },
+    {
+      "id": 1402,
+      "name": "ゼタ",
+      "cardClass": 2,
+      "emoteId": 2,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210102004,
+      "prefab": "Prefabs/LeaderSkin/class_1402",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1402",
+        "UI/ClassChar/utx_btn_leader_skin_1402",
+        "UI/Deck/utx_tex_deck_set_leader_1402",
+        "UI/ClassChar/utx_pict_leader_1402_00",
+        "Card/Header/log_leader_1402"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "74JVELMJRMQR33XKPBPOOMHPEA",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "ATPU2I5QVR2Z2OIB2UYTFCBD54",
+        "J22XGX5XKADADVTXSQUOEW6X7I",
+        "TLYBF5W7SNPZOVYMPSYPA76Y7M",
+        "TZMDLUQHHXNJ5ZRIBEFOK6PVEA",
+        "ZKL232FILIJDJ5NVLWJRLQOSY4"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1402.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1402.pck"
+      ]
+    },
+    {
+      "id": 1403,
+      "name": "ワムデュス",
+      "cardClass": 3,
+      "emoteId": 3,
+      "skinType": 2,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 104341102,
+      "prefab": "Prefabs/LeaderSkin/class_1403",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1403",
+        "UI/ClassChar/utx_btn_leader_skin_1403",
+        "UI/Deck/utx_tex_deck_set_leader_1403",
+        "UI/ClassChar/utx_pict_leader_1403_00",
+        "Card/Header/log_leader_1403"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "2GH5VU7CJUZIHTX7ZD6AXHGWPU",
+        "4Q7KR2KP3WQ2KGDG23YQ5ZBSDA",
+        "742T6I54O7SY7R76G6O6BH2QJY",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "BDMCNZON25FV7ZLVDM5XBFRJYU",
+        "BZFRBD7FKGZIVDEYE65UISYTOA",
+        "CJJSQV73NK2FJFFL3HQOLAWEME",
+        "UCODBBVN5IS2ZYEHKLZLH6NBXU",
+        "YXMFQ5ZTHRZZ6HJIU4XFKOV52U",
+        "ZVBURTC5RQVXAEF2NPS5OB7WUY"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1403.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1403.pck"
+      ]
+    },
+    {
+      "id": 1404,
+      "name": "ウィルナス",
+      "cardClass": 4,
+      "emoteId": 4,
+      "skinType": 2,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 104441102,
+      "prefab": "Prefabs/LeaderSkin/class_1404",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1404",
+        "UI/ClassChar/utx_btn_leader_skin_1404",
+        "UI/Deck/utx_tex_deck_set_leader_1404",
+        "UI/ClassChar/utx_pict_leader_1404_00",
+        "Card/Header/log_leader_1404"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "246VXMUAOSNRPOD2DMFNJD3HEU",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "C2BBF7M3WZ4HUXBKLYI3DR6BXQ",
+        "ML4PSDQI5IXGZARIC45J5K2TQU",
+        "SGNIFOAGCBYBIOPDCP4SFHYO44",
+        "TRENKW26KES3WPWBJBUTI66GQQ",
+        "ZSWELFQES627K4MJMJVROZNRII"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1404.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1404.pck"
+      ]
+    },
+    {
+      "id": 1405,
+      "name": "フェディエル",
+      "cardClass": 5,
+      "emoteId": 5,
+      "skinType": 2,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 104541102,
+      "prefab": "Prefabs/LeaderSkin/class_1405",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1405",
+        "UI/ClassChar/utx_btn_leader_skin_1405",
+        "UI/Deck/utx_tex_deck_set_leader_1405",
+        "UI/ClassChar/utx_pict_leader_1405_00",
+        "Card/Header/log_leader_1405"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "FKL74TZ4CKKCOMBSGXUFJC6VMA",
+        "ITTDA262OE5PNSKPKKPOU3NW6Q",
+        "LAM7S5ACPUS4SIM244T5EFELXM",
+        "NIKAIM4T4BCMM5SOJYEOPLOXWA",
+        "QKQBEQ3QLT4M4C3DULTBAZKYHM",
+        "XXNQSM5HT4P7ZMB64Y4T3X4TPA"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1405.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1405.pck"
+      ]
+    },
+    {
+      "id": 1406,
+      "name": "ガレヲン",
+      "cardClass": 6,
+      "emoteId": 6,
+      "skinType": 2,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 104641102,
+      "prefab": "Prefabs/LeaderSkin/class_1406",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1406",
+        "UI/ClassChar/utx_btn_leader_skin_1406",
+        "UI/Deck/utx_tex_deck_set_leader_1406",
+        "UI/ClassChar/utx_pict_leader_1406_00",
+        "Card/Header/log_leader_1406"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "4N7YWR5ZUF2EBRSJFNUVPY3KCU",
+        "6ZAN2NXQKQRGGXSMRIBO5U4XWA",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "FE7XLT55SUVZNJLR7YYBCZ7S5A",
+        "KKCMTTBFW5Y4CRLXHBD2G3QYVM",
+        "TIY2YDJXYOWG3V3HIUA6ZLHZLE",
+        "YEOGADZFNE36S3GFNZNLLYPPMU"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1406.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1406.pck"
+      ]
+    },
+    {
+      "id": 1407,
+      "name": "ル・オー",
+      "cardClass": 7,
+      "emoteId": 7,
+      "skinType": 2,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 104741102,
+      "prefab": "Prefabs/LeaderSkin/class_1407",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1407",
+        "UI/ClassChar/utx_btn_leader_skin_1407",
+        "UI/Deck/utx_tex_deck_set_leader_1407",
+        "UI/ClassChar/utx_pict_leader_1407_00",
+        "Card/Header/log_leader_1407"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "A5OX2XKWL5EPVR4BTML3RM6YPU",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "CVDWKKFN57DOUZ7IL52NGCISRY",
+        "N5XLWQ5JQ5T3E4NBGUHTBVHNKY",
+        "NVXHBN43JDFOMTAOKHDHWBAYTA",
+        "VUE6KWQKKUAZPG3V3WEOFX3HFM",
+        "XBOEVMPPZHRMNDDV5SU3F6TGV4"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1407.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1407.pck"
+      ]
+    },
+    {
+      "id": 1411,
+      "name": "クピタン",
+      "cardClass": 1,
+      "emoteId": 1,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210111002,
+      "prefab": "Prefabs/LeaderSkin/class_1411",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1411",
+        "UI/ClassChar/utx_btn_leader_skin_1411",
+        "UI/Deck/utx_tex_deck_set_leader_1411",
+        "UI/ClassChar/utx_pict_leader_1411_00",
+        "Card/Header/log_leader_1411"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "5PFGTMQ4YO5UADSME3DHGAFE7Y",
+        "5RMKYKSHPBX2ZPMXXDGONQBBXU",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "BXZ6NTHAO57TLGDHTINR2GYYJY",
+        "KJHETEG6UI7MBZEKW4GK7NHT6A",
+        "KKBA6AUZ36PWUGWZHA6AX7CQXM",
+        "NSMUBJI3VOOTZTIRVYKITNSTH4"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1411.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1411.pck"
+      ]
+    },
+    {
+      "id": 1415,
+      "name": "ベリアル",
+      "cardClass": 5,
+      "emoteId": 5,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 104541202,
+      "prefab": "Prefabs/LeaderSkin/class_1415",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1415",
+        "UI/ClassChar/utx_btn_leader_skin_1415",
+        "UI/Deck/utx_tex_deck_set_leader_1415",
+        "UI/ClassChar/utx_pict_leader_1415_00",
+        "Card/Header/log_leader_1415"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "3PJ4UGR2ZBIVQZC2EGHQ53VQUU",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "I2UU7RGSWEQUEGECKQ5BS4S2KI",
+        "IX6M72FFDZATJ5SHJTUNKG5FJQ",
+        "LMF4RPAXOVPQ2OEZTPLER4P3MI",
+        "MP25ZMI7DEZBOYZVEMVAFUQKB4",
+        "RUAWSIPP54ZVLM2YCC6FE5KTXY",
+        "WH42LHR3LJNFIAXRHN4YVO6ZU4"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1415.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1415.pck"
+      ]
+    },
+    {
+      "id": 1417,
+      "name": "ベルゼバブ",
+      "cardClass": 7,
+      "emoteId": 7,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 104741202,
+      "prefab": "Prefabs/LeaderSkin/class_1417",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1417",
+        "UI/ClassChar/utx_btn_leader_skin_1417",
+        "UI/Deck/utx_tex_deck_set_leader_1417",
+        "UI/ClassChar/utx_pict_leader_1417_00",
+        "Card/Header/log_leader_1417"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "EHKZXFIRZR4UN6H3MFXJYJJNR4",
+        "IQ3L2CJX5QKCWN54TYKIMHR6K4",
+        "JEOIVG2WTWAU4RWRMCPRMFBDRQ",
+        "K55OW4UNAMAWVZGNHVL5PYBZME",
+        "X25ZGXBFFM75O2XXZD47QPQDTU",
+        "Z6GLGPM3COMCAKQ3AME4UZC44M",
+        "ZE5VXA4K75GDP7JRAMEBSH4G3E"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1417.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1417.pck"
+      ]
+    },
+    {
+      "id": 1503,
+      "name": "セフィー",
+      "cardClass": 3,
+      "emoteId": 3,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210233002,
+      "prefab": "Prefabs/LeaderSkin/class_1503",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1503",
+        "UI/ClassChar/utx_btn_leader_skin_1503",
+        "UI/Deck/utx_tex_deck_set_leader_1503",
+        "UI/ClassChar/utx_pict_leader_1503_00",
+        "Card/Header/log_leader_1503"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "2DCEL6DWLQGJMXDGPN25A3T2NU",
+        "7Q5MHDCE5SLINUXJ52LHNJJZSI",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "DHPEMYATAOJO3MC6CKDBYNTU4Y",
+        "EOAITHAD7BRMOMI7Q3FPDQEHZA",
+        "HOPU2Y2R5QVL6ADKLYGS2P2SFU",
+        "VQ4JP5NGBZVVT4IIDLYA4NJH3E"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1503.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1503.pck"
+      ]
+    },
+    {
+      "id": 1505,
+      "name": "セレス",
+      "cardClass": 5,
+      "emoteId": 5,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 215055004,
+      "prefab": "Prefabs/LeaderSkin/class_1505",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1505",
+        "UI/ClassChar/utx_btn_leader_skin_1505",
+        "UI/Deck/utx_tex_deck_set_leader_1505",
+        "UI/ClassChar/utx_pict_leader_1505_00",
+        "Card/Header/log_leader_1505"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "24XH5BEMCKRHKTXX3RMRHXHKEQ",
+        "2PGVZPNKI5MM4DLOMWPF6ITSUA",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "AVIXU2HBY27VOIPNKKJQ34ESEE",
+        "FXQ6ZCGPUYOWW75YOWONOZK5PA",
+        "GUJAEBJPDQQDCPCNMPQ64TJSTU",
+        "L5CVCBFRRLRJHXPSVVY7KBOYV4",
+        "L76Y67MLMWN6JTYP7MNA6IXEXU",
+        "NLKMY2CHKQT6LFT7P6ZIULGKSM",
+        "RU7X6CX7HQ2PDIYQJ3DRUIW4DE",
+        "TKKLGOCWQNKXINVQ377OVZCMPY",
+        "WBZEVUNYTURFWOJBOWLWOQP4RY",
+        "Y3MEZIJF233N5F4HTPCFPJYRVQ",
+        "ZVKCZYZ6BY6QW3CSTQV52C5V4A"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1505.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1505.pck"
+      ]
+    },
+    {
+      "id": 1506,
+      "name": "ソフィーナ",
+      "cardClass": 6,
+      "emoteId": 6,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 210145002,
+      "prefab": "Prefabs/LeaderSkin/class_1506",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1506",
+        "UI/ClassChar/utx_btn_leader_skin_1506",
+        "UI/Deck/utx_tex_deck_set_leader_1506",
+        "UI/ClassChar/utx_pict_leader_1506_00",
+        "Card/Header/log_leader_1506"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "3YA32NM5YM7MNP2FGAD3GWQQDY",
+        "ABYGQVM7FMGT3ZMTY7BCRBHKMQ",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "DARHP74XUNDT6P37QMFOD4K7IY",
+        "N4MHIFYQW567GDWQSZ4SRTVVK4",
+        "SFEZF4F23SNYH6DFARK7GQTOLI",
+        "T3HNVIGNHD6FAVQPXILKCLFFLA"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1506.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1506.pck"
+      ]
+    },
+    {
+      "id": 1601,
+      "name": "フリーレン",
+      "cardClass": 1,
+      "emoteId": 1,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": true,
+      "emblemId": 105141202,
+      "prefab": "Prefabs/LeaderSkin/class_1601",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1601",
+        "UI/ClassChar/utx_btn_leader_skin_1601",
+        "UI/Deck/utx_tex_deck_set_leader_1601",
+        "UI/ClassChar/utx_pict_leader_1601_00",
+        "Card/Header/log_leader_1601"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "BI77CCWEWSTALXW7R3P3CYFGSU",
+        "EWO3ANY4PQFQMY3RO6MNSFAFH4",
+        "GVOMKYQWJPSAA5RLPOQK6OVJ5I",
+        "SIETICGCJWR2LCZCGSERWIGH34",
+        "SOF73ZA4DN232ICNOWDOE7JJ4I",
+        "T4IR2UMSTEYINULQHZSBV54YEU",
+        "WD2LCLC6PYWNEKFZQDHC2HRYZI"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1601.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1601.pck"
+      ]
+    },
+    {
+      "id": 1603,
+      "name": "フェルン",
+      "cardClass": 3,
+      "emoteId": 3,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": true,
+      "emblemId": 105341202,
+      "prefab": "Prefabs/LeaderSkin/class_1603",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1603",
+        "UI/ClassChar/utx_btn_leader_skin_1603",
+        "UI/Deck/utx_tex_deck_set_leader_1603",
+        "UI/ClassChar/utx_pict_leader_1603_00",
+        "Card/Header/log_leader_1603"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "5EO4IF7NNMUIGPX2LBAQ6MJTCQ",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "AZV44PRJUBQVKF7UPWO4K4R7XM",
+        "JAQTOCNC6MZUYZSGPUDIZIWKFE",
+        "JZT4BVAEKA3KC3NTOJVYDB2EU4",
+        "LGYYDO4ODFILCRZEWS4TFGWWOE",
+        "UIBU4IVRUDAYENPMLI2UIZE56U",
+        "UJCRNQK46RVHC2LFUBJSNP42A4"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1603.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1603.pck"
+      ]
+    },
+    {
+      "id": 1604,
+      "name": "シュタルク",
+      "cardClass": 4,
+      "emoteId": 4,
+      "skinType": 1,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": true,
+      "emblemId": 105441102,
+      "prefab": "Prefabs/LeaderSkin/class_1604",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1604",
+        "UI/ClassChar/utx_btn_leader_skin_1604",
+        "UI/Deck/utx_tex_deck_set_leader_1604",
+        "UI/ClassChar/utx_pict_leader_1604_00",
+        "Card/Header/log_leader_1604"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "7ABBINFCXVMIA5TSCPDOTG6B7E",
+        "7BNDB5KOQJKND2YRMU3PVSUT6U",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "CSLGXLUCGN5SZBUNL6J7ZKJ664",
+        "FNXGWDOQ542BDVX267AU663IWQ",
+        "H5FO7NY4UCCCXRSFFC5ENCDA4I",
+        "JDXW6DWQ4TBTVQJCZUS5MDLDE4",
+        "SOLWOZESVNTQPC5W2KH66CRFX4"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1604.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1604.pck"
+      ]
+    },
+    {
+      "id": 1605,
+      "name": "アウラ",
+      "cardClass": 5,
+      "emoteId": 5,
+      "skinType": 0,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": true,
+      "emblemId": 210125002,
+      "prefab": "Prefabs/LeaderSkin/class_1605",
+      "nativeResourceReady": true,
+      "missing": [],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_1605",
+        "UI/ClassChar/utx_btn_leader_skin_1605",
+        "UI/Deck/utx_tex_deck_set_leader_1605",
+        "UI/ClassChar/utx_pict_leader_1605_00",
+        "Card/Header/log_leader_1605"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "D7L42S73UYIUSDGPUIXXDMLHGU",
+        "QUVFXUXGNUA56EZYCN32MYVPLE",
+        "RRF232APTGSGGBTRAGTZMY2VGI",
+        "U5X6VIDFERQFEMDWU5P526NZRY",
+        "UDVGJOTV6GJRUCXJROYBWGMP4U",
+        "UFE5YBCFZAE7P6QS4XJPJGSFYY"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_1605.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_1605.pck"
+      ]
+    },
+    {
+      "id": 9012,
+      "name": "吉祥蛙",
+      "cardClass": 2,
+      "emoteId": 2,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9012",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9012",
+        "UI/Deck/utx_tex_deck_set_leader_9012"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9012",
+        "UI/ClassChar/utx_btn_leader_skin_9012",
+        "UI/Deck/utx_tex_deck_set_leader_9012",
+        "UI/ClassChar/utx_pict_leader_9012_00",
+        "Card/Header/log_leader_9012"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "73DPOHAGJKHPWNIVEQZ7MJ43MA",
+        "76QSOA6OLBCVH73BZU6RLZQHGI",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "ROARC34OK7HSRCE55O25HHHYII"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9012.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9012.pck"
+      ]
+    },
+    {
+      "id": 9014,
+      "name": "クラゲの舞姫",
+      "cardClass": 4,
+      "emoteId": 4,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9014",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9014",
+        "UI/Deck/utx_tex_deck_set_leader_9014"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9014",
+        "UI/ClassChar/utx_btn_leader_skin_9014",
+        "UI/Deck/utx_tex_deck_set_leader_9014",
+        "UI/ClassChar/utx_pict_leader_9014_00",
+        "Card/Header/log_leader_9014"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "BLUN5COCBE5ZRC33LJY5BSHHH4",
+        "EDNEFJUKWH2HFXQU2V6GP2OY2Q",
+        "GKPGTMAPHRWWFQHWUTWVQEB72Y"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9014.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9014.pck"
+      ]
+    },
+    {
+      "id": 9021,
+      "name": "森羽子板の匠",
+      "cardClass": 1,
+      "emoteId": 1,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9021",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9021",
+        "UI/Deck/utx_tex_deck_set_leader_9021"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9021",
+        "UI/ClassChar/utx_btn_leader_skin_9021",
+        "UI/Deck/utx_tex_deck_set_leader_9021",
+        "UI/ClassChar/utx_pict_leader_9021_00",
+        "Card/Header/log_leader_9021"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "72EACGHSJ6XV6B7ULRRZYYPEII",
+        "7GVJNQ6DJY5QQ2S7BF2OGLLHFI",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "HKZBL4WEALUVHUBUXXA6G2WNCU"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9021.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9021.pck"
+      ]
+    },
+    {
+      "id": 9022,
+      "name": "苛烈の参謀",
+      "cardClass": 2,
+      "emoteId": 2,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9022",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9022",
+        "UI/Deck/utx_tex_deck_set_leader_9022"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9022",
+        "UI/ClassChar/utx_btn_leader_skin_9022",
+        "UI/Deck/utx_tex_deck_set_leader_9022",
+        "UI/ClassChar/utx_pict_leader_9022_00",
+        "Card/Header/log_leader_9022"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "2Z4X677XLRQMXNDIB6KEU2246E",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "IAUQXLSIPB4GLI52ZA7DU4WTAQ",
+        "Q2TJBKRE6LHRETBXBYD4GZU4EQ"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9022.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9022.pck"
+      ]
+    },
+    {
+      "id": 9023,
+      "name": "流動の符操師",
+      "cardClass": 3,
+      "emoteId": 3,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9023",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9023",
+        "UI/Deck/utx_tex_deck_set_leader_9023"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9023",
+        "UI/ClassChar/utx_btn_leader_skin_9023",
+        "UI/Deck/utx_tex_deck_set_leader_9023",
+        "UI/ClassChar/utx_pict_leader_9023_00",
+        "Card/Header/log_leader_9023"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "2SRX5AITD5W3D7SQ7YRNLXMGTA",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "DOGPBDKDC3O22ZLLE7YUIA5IWY",
+        "TF7NXFBYKV2I5AQQGB3TQU5SME"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9023.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9023.pck"
+      ]
+    },
+    {
+      "id": 9024,
+      "name": "果断のドラゴニュート",
+      "cardClass": 4,
+      "emoteId": 4,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9024",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9024",
+        "UI/Deck/utx_tex_deck_set_leader_9024"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9024",
+        "UI/ClassChar/utx_btn_leader_skin_9024",
+        "UI/Deck/utx_tex_deck_set_leader_9024",
+        "UI/ClassChar/utx_pict_leader_9024_00",
+        "Card/Header/log_leader_9024"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "37FMY7H6FZFKVAWP2FJT3NDIZQ",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "FTDLP3HJNAE2PXRGSSOKB77MVA",
+        "GPMVBPMH2STVZPD2JECDIXBE5E"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9024.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9024.pck"
+      ]
+    },
+    {
+      "id": 9025,
+      "name": "橋渡しの青鬼",
+      "cardClass": 5,
+      "emoteId": 5,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9025",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9025",
+        "UI/Deck/utx_tex_deck_set_leader_9025"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9025",
+        "UI/ClassChar/utx_btn_leader_skin_9025",
+        "UI/Deck/utx_tex_deck_set_leader_9025",
+        "UI/ClassChar/utx_pict_leader_9025_00",
+        "Card/Header/log_leader_9025"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "EZSSDMCTFWS6TAHNSVBXTHEAS4",
+        "ILVOSAQZFTUHCBNHAUJLL3CDUQ",
+        "L6FDUIEKWBBHTAVYKVWQHDVECE"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9025.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9025.pck"
+      ]
+    },
+    {
+      "id": 9026,
+      "name": "結びの使徒",
+      "cardClass": 6,
+      "emoteId": 6,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9026",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9026",
+        "UI/Deck/utx_tex_deck_set_leader_9026"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9026",
+        "UI/ClassChar/utx_btn_leader_skin_9026",
+        "UI/Deck/utx_tex_deck_set_leader_9026",
+        "UI/ClassChar/utx_pict_leader_9026_00",
+        "Card/Header/log_leader_9026"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "GV4SE5CS56P3PHXNV2NWRUV2H4",
+        "XN355GCEXN3U5ULAISH2CFIAEY",
+        "YIGNNILONBEFKVFQ5M6RTRJG5I"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9026.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9026.pck"
+      ]
+    },
+    {
+      "id": 9027,
+      "name": "清宵の偶兎",
+      "cardClass": 7,
+      "emoteId": 7,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9027",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9027",
+        "UI/Deck/utx_tex_deck_set_leader_9027"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9027",
+        "UI/ClassChar/utx_btn_leader_skin_9027",
+        "UI/Deck/utx_tex_deck_set_leader_9027",
+        "UI/ClassChar/utx_pict_leader_9027_00",
+        "Card/Header/log_leader_9027"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "6LPTMPKHNGFHTP4MSEFHYJ6HYY",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "KAWPSIWM7WZMJJM22CUY2S7AIY",
+        "QL46YH5CJ7SMSQU5QMTGCNXPUQ"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9027.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9027.pck"
+      ]
+    },
+    {
+      "id": 9031,
+      "name": "慈育の森人",
+      "cardClass": 1,
+      "emoteId": 1,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9031",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9031",
+        "UI/Deck/utx_tex_deck_set_leader_9031"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9031",
+        "UI/ClassChar/utx_btn_leader_skin_9031",
+        "UI/Deck/utx_tex_deck_set_leader_9031",
+        "UI/ClassChar/utx_pict_leader_9031_00",
+        "Card/Header/log_leader_9031"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "BSKH5HIRCULT5V73SV26MAKZWQ",
+        "EFT6N5K34E25QQC4WHS2DE6PVU",
+        "ROEKBQPCMERBIUOC5SMBTCOFAY"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9031.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9031.pck"
+      ]
+    },
+    {
+      "id": 9033,
+      "name": "魔境の生徒",
+      "cardClass": 3,
+      "emoteId": 3,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9033",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9033",
+        "UI/Deck/utx_tex_deck_set_leader_9033"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9033",
+        "UI/ClassChar/utx_btn_leader_skin_9033",
+        "UI/Deck/utx_tex_deck_set_leader_9033",
+        "UI/ClassChar/utx_pict_leader_9033_00",
+        "Card/Header/log_leader_9033"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "SZICAA3G4JFL3ZW6LTZ2LME33U",
+        "WK4HTIZSKEIKDB2BLJDSLF7VCI",
+        "YEOMYDWXQGENXY62KHLXB6MZTI"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9033.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9033.pck"
+      ]
+    },
+    {
+      "id": 9034,
+      "name": "即断の剣聖",
+      "cardClass": 4,
+      "emoteId": 4,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9034",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9034",
+        "UI/Deck/utx_tex_deck_set_leader_9034"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9034",
+        "UI/ClassChar/utx_btn_leader_skin_9034",
+        "UI/Deck/utx_tex_deck_set_leader_9034",
+        "UI/ClassChar/utx_pict_leader_9034_00",
+        "Card/Header/log_leader_9034"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "2XW6A7A32CASISJ2I3QLKUFQRU",
+        "6G2GMY2UMPUYJMA2Z4FJRNSW3E",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "DXA2UX2D7RV2OAMLVY7AOSZDTA"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9034.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9034.pck"
+      ]
+    },
+    {
+      "id": 9035,
+      "name": "渇仰の悪魔",
+      "cardClass": 5,
+      "emoteId": 5,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9035",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9035",
+        "UI/Deck/utx_tex_deck_set_leader_9035"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9035",
+        "UI/ClassChar/utx_btn_leader_skin_9035",
+        "UI/Deck/utx_tex_deck_set_leader_9035",
+        "UI/ClassChar/utx_pict_leader_9035_00",
+        "Card/Header/log_leader_9035"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "6QIKFK37VQQVW7Q6OGH5YD3SFA",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "IUFXX7TLOFTDRBWLF3ZFNVDBMI",
+        "QQCKMHW4EFT724F3BMFODRQ3EA"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9035.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9035.pck"
+      ]
+    },
+    {
+      "id": 9036,
+      "name": "窮鼠の斎女",
+      "cardClass": 6,
+      "emoteId": 6,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9036",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9036",
+        "UI/Deck/utx_tex_deck_set_leader_9036"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9036",
+        "UI/ClassChar/utx_btn_leader_skin_9036",
+        "UI/Deck/utx_tex_deck_set_leader_9036",
+        "UI/ClassChar/utx_pict_leader_9036_00",
+        "Card/Header/log_leader_9036"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "DKA3PIGAHWQTHM6BHPAA7WPPWY",
+        "IRE5UGAFQXFUPYLQZEXO6HKYTE",
+        "R2P7WSAFXDFJGF3NFXALMACY4I"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9036.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9036.pck"
+      ]
+    },
+    {
+      "id": 9037,
+      "name": "愚劣の兵器",
+      "cardClass": 7,
+      "emoteId": 7,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9037",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9037",
+        "UI/Deck/utx_tex_deck_set_leader_9037"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9037",
+        "UI/ClassChar/utx_btn_leader_skin_9037",
+        "UI/Deck/utx_tex_deck_set_leader_9037",
+        "UI/ClassChar/utx_pict_leader_9037_00",
+        "Card/Header/log_leader_9037"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "GVDOYNRCRMTSPG3FOAAEWDZSOE",
+        "JDYYKQX6P3UNTWZNTCOHS2GRQA",
+        "RNDHLUOG2FL7Y6RGNP5PH5KO24"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9037.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9037.pck"
+      ]
+    },
+    {
+      "id": 9041,
+      "name": "緑風のレイピア使い",
+      "cardClass": 1,
+      "emoteId": 1,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9041",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9041",
+        "UI/Deck/utx_tex_deck_set_leader_9041"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9041",
+        "UI/ClassChar/utx_btn_leader_skin_9041",
+        "UI/Deck/utx_tex_deck_set_leader_9041",
+        "UI/ClassChar/utx_pict_leader_9041_00",
+        "Card/Header/log_leader_9041"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "5G76JBVMI2MBXLJO6IFPSXCQ5E",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "UCJSRAITSFV7WRQSV2LU5BKDD4",
+        "X6HULGVCSHACMJFJR2IUJWFMEQ"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9041.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9041.pck"
+      ]
+    },
+    {
+      "id": 9042,
+      "name": "ジェイルブレイク・カッツェ",
+      "cardClass": 2,
+      "emoteId": 2,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9042",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9042",
+        "UI/Deck/utx_tex_deck_set_leader_9042"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9042",
+        "UI/ClassChar/utx_btn_leader_skin_9042",
+        "UI/Deck/utx_tex_deck_set_leader_9042",
+        "UI/ClassChar/utx_pict_leader_9042_00",
+        "Card/Header/log_leader_9042"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "43UWDC6BTHD6V7NSANAQX5G34M",
+        "6P7TDNXLF5VTBVLTJYOADUTMCQ",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "DVTO6DR3HXD2DNPPURDEZTSQJU"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9042.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9042.pck"
+      ]
+    },
+    {
+      "id": 9043,
+      "name": "ディンキークリーチャー",
+      "cardClass": 3,
+      "emoteId": 3,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9043",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9043",
+        "UI/Deck/utx_tex_deck_set_leader_9043"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9043",
+        "UI/ClassChar/utx_btn_leader_skin_9043",
+        "UI/Deck/utx_tex_deck_set_leader_9043",
+        "UI/ClassChar/utx_pict_leader_9043_00",
+        "Card/Header/log_leader_9043"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "3N6BSLWUMXXBW3R3YS6DLDFGIQ",
+        "5P44ESL7LVBDLSEQ37YDSRBTCI",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "LEFOR4GRKRWBRMMTBGNRIGTKUQ"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9043.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9043.pck"
+      ]
+    },
+    {
+      "id": 9044,
+      "name": "喧伝の龍人",
+      "cardClass": 4,
+      "emoteId": 4,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9044",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9044",
+        "UI/Deck/utx_tex_deck_set_leader_9044"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9044",
+        "UI/ClassChar/utx_btn_leader_skin_9044",
+        "UI/Deck/utx_tex_deck_set_leader_9044",
+        "UI/ClassChar/utx_pict_leader_9044_00",
+        "Card/Header/log_leader_9044"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "2WELTR2ZJ22KRKRPHH4JBAIPTA",
+        "4BKK3HA3LOEHCW7Z44J64XR25U",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "QJTEJ4XMUKHEMWZCCA4UR3TPWU"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9044.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9044.pck"
+      ]
+    },
+    {
+      "id": 9046,
+      "name": "崇敬の塗布者",
+      "cardClass": 6,
+      "emoteId": 6,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9046",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9046",
+        "UI/Deck/utx_tex_deck_set_leader_9046"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9046",
+        "UI/ClassChar/utx_btn_leader_skin_9046",
+        "UI/Deck/utx_tex_deck_set_leader_9046",
+        "UI/ClassChar/utx_pict_leader_9046_00",
+        "Card/Header/log_leader_9046"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "2OXDPF54VHRXXEQY3GYXOCCBUQ",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "D74JKPCKGUYJFIV74IPYMDUUDA",
+        "QQZ7PGL2GZQAONMA6WY6NTEZA4"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9046.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9046.pck"
+      ]
+    },
+    {
+      "id": 9047,
+      "name": "ワイルドキャスター",
+      "cardClass": 7,
+      "emoteId": 7,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9047",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9047",
+        "UI/Deck/utx_tex_deck_set_leader_9047"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9047",
+        "UI/ClassChar/utx_btn_leader_skin_9047",
+        "UI/Deck/utx_tex_deck_set_leader_9047",
+        "UI/ClassChar/utx_pict_leader_9047_00",
+        "Card/Header/log_leader_9047"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "CEY22X7TJPIILMKLUFJLOIXEAM",
+        "GAW6MBVCOW47XSC53MDGIEIZNQ",
+        "PYUW4RBORN34V52QGPRGZELZNI"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9047.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9047.pck"
+      ]
+    },
+    {
+      "id": 9055,
+      "name": "誠実なる呪い屋・スージー",
+      "cardClass": 5,
+      "emoteId": 5,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9055",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9055",
+        "UI/Deck/utx_tex_deck_set_leader_9055"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9055",
+        "UI/ClassChar/utx_btn_leader_skin_9055",
+        "UI/Deck/utx_tex_deck_set_leader_9055",
+        "UI/ClassChar/utx_pict_leader_9055_00",
+        "Card/Header/log_leader_9055"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "6OYR5Y74VLFRUAPQZW3Q5JZ73U",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "L5CT5EE3EMGGMSGMDY4NHNBLWA",
+        "R43ECAXXLWUWUQIQXCBLAJFPMQ"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9055.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9055.pck"
+      ]
+    },
+    {
+      "id": 9056,
+      "name": "営利の支援者",
+      "cardClass": 6,
+      "emoteId": 6,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9056",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9056",
+        "UI/Deck/utx_tex_deck_set_leader_9056"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9056",
+        "UI/ClassChar/utx_btn_leader_skin_9056",
+        "UI/Deck/utx_tex_deck_set_leader_9056",
+        "UI/ClassChar/utx_pict_leader_9056_00",
+        "Card/Header/log_leader_9056"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "B5AAF43TK2GVTO2BLNELLQTCHE",
+        "EBWDUBN4AKULNFA4LURDBYPJA4",
+        "K5LSRHZ5NL2XRTH4FRDAN2YZJM"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9056.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9056.pck"
+      ]
+    },
+    {
+      "id": 9061,
+      "name": "ヘレティックハーミット・シトラス",
+      "cardClass": 1,
+      "emoteId": 1,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9061",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9061",
+        "UI/Deck/utx_tex_deck_set_leader_9061"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9061",
+        "UI/ClassChar/utx_btn_leader_skin_9061",
+        "UI/Deck/utx_tex_deck_set_leader_9061",
+        "UI/ClassChar/utx_pict_leader_9061_00",
+        "Card/Header/log_leader_9061"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "HZG5UEHEOIMHTIRKS2J7BTNEVU",
+        "JZYL6R5RNAROKCZ25IR23DF56Q",
+        "TBGZNI24YODXZTHV463Z3SKPUM"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9061.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9061.pck"
+      ]
+    },
+    {
+      "id": 9063,
+      "name": "マナリアクラーク・ポピー",
+      "cardClass": 3,
+      "emoteId": 3,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9063",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9063",
+        "UI/Deck/utx_tex_deck_set_leader_9063"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9063",
+        "UI/ClassChar/utx_btn_leader_skin_9063",
+        "UI/Deck/utx_tex_deck_set_leader_9063",
+        "UI/ClassChar/utx_pict_leader_9063_00",
+        "Card/Header/log_leader_9063"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "A6CFDAKX6EKORQU5BJH53A6QTY",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "BKEEAGM34IKU6D4ETWFW3KTVRA",
+        "H6L44K6RFSX5PNK3OGBPRI7PA4"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9063.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9063.pck"
+      ]
+    },
+    {
+      "id": 9064,
+      "name": "笑顔の調理・キミカ",
+      "cardClass": 4,
+      "emoteId": 4,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9064",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9064",
+        "UI/Deck/utx_tex_deck_set_leader_9064"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9064",
+        "UI/ClassChar/utx_btn_leader_skin_9064",
+        "UI/Deck/utx_tex_deck_set_leader_9064",
+        "UI/ClassChar/utx_pict_leader_9064_00",
+        "Card/Header/log_leader_9064"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "3AWWXT6D6W5N3H3LPIHUS7ID2A",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "XDFSOLVWVMMNQAORGDFR3WBHFA",
+        "XX4OHDHLIJ5PAISKJKW2I6JS6Y"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9064.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9064.pck"
+      ]
+    },
+    {
+      "id": 9065,
+      "name": "激烈の副総長",
+      "cardClass": 5,
+      "emoteId": 5,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9065",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9065",
+        "UI/Deck/utx_tex_deck_set_leader_9065"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9065",
+        "UI/ClassChar/utx_btn_leader_skin_9065",
+        "UI/Deck/utx_tex_deck_set_leader_9065",
+        "UI/ClassChar/utx_pict_leader_9065_00",
+        "Card/Header/log_leader_9065"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "6MXYZDLHZGWKKHDGX3LCZ6XFZY",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "FWWYEC7ZUL5NFSXWG2DLFIFILI",
+        "GO5PI3SIPK5F256WRT3E3YL7J4"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9065.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9065.pck"
+      ]
+    },
+    {
+      "id": 9067,
+      "name": "デバイスマニピュレーター・ジルク",
+      "cardClass": 7,
+      "emoteId": 7,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9067",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9067",
+        "UI/Deck/utx_tex_deck_set_leader_9067"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9067",
+        "UI/ClassChar/utx_btn_leader_skin_9067",
+        "UI/Deck/utx_tex_deck_set_leader_9067",
+        "UI/ClassChar/utx_pict_leader_9067_00",
+        "Card/Header/log_leader_9067"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "4V52DURGTUK53ZSEV4QMESAVOM",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "II6CUUYSKEOJTJG7JZVSEG6E4M",
+        "QQCTAOE7HT3W6RB23PBDPEZ4BA"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9067.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9067.pck"
+      ]
+    },
+    {
+      "id": 9073,
+      "name": "マナリアスクリプター・ティコ",
+      "cardClass": 3,
+      "emoteId": 3,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9073",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9073",
+        "UI/Deck/utx_tex_deck_set_leader_9073"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9073",
+        "UI/ClassChar/utx_btn_leader_skin_9073",
+        "UI/Deck/utx_tex_deck_set_leader_9073",
+        "UI/ClassChar/utx_pict_leader_9073_00",
+        "Card/Header/log_leader_9073"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "EY5U27F5MQDTZNTS24JFVRGXBM",
+        "GVL5UB66XTAUDR2LFZXNRBTSPA",
+        "GVYE6A6NGDSQSMW2N2LODR756M"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9073.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9073.pck"
+      ]
+    },
+    {
+      "id": 9074,
+      "name": "絶倒の襲撃者",
+      "cardClass": 4,
+      "emoteId": 4,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9074",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9074",
+        "UI/Deck/utx_tex_deck_set_leader_9074"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9074",
+        "UI/ClassChar/utx_btn_leader_skin_9074",
+        "UI/Deck/utx_tex_deck_set_leader_9074",
+        "UI/ClassChar/utx_pict_leader_9074_00",
+        "Card/Header/log_leader_9074"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "4BYX4DUI3Q5HKWEI3KW7GTMC7Q",
+        "6LGL5W2P6X2OLXVZWOBL6ITPGQ",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "PRZCEE3XJECCR4QPG7GLVN3MZY"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9074.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9074.pck"
+      ]
+    },
+    {
+      "id": 9076,
+      "name": "誓言の幹部",
+      "cardClass": 6,
+      "emoteId": 6,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9076",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9076",
+        "UI/Deck/utx_tex_deck_set_leader_9076"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9076",
+        "UI/ClassChar/utx_btn_leader_skin_9076",
+        "UI/Deck/utx_tex_deck_set_leader_9076",
+        "UI/ClassChar/utx_pict_leader_9076_00",
+        "Card/Header/log_leader_9076"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "CXZXJKSZPDHTVIVGWXZQGPYX3I",
+        "KYG6PUD7X237WAM4TSPYJJHTRQ",
+        "OP3HJFQ7OIBGMZWBRI7LNBMO6E"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9076.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9076.pck"
+      ]
+    },
+    {
+      "id": 9077,
+      "name": "レシプロケイト・ミリアム",
+      "cardClass": 7,
+      "emoteId": 7,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9077",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9077",
+        "UI/Deck/utx_tex_deck_set_leader_9077"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9077",
+        "UI/ClassChar/utx_btn_leader_skin_9077",
+        "UI/Deck/utx_tex_deck_set_leader_9077",
+        "UI/ClassChar/utx_pict_leader_9077_00",
+        "Card/Header/log_leader_9077"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "2WOAEQEI2WJCMZVOVWM24ZM5PE",
+        "5I2T7RM43KYTMEGOW2JX45TUGM",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "ZHWLH2VOGGZB6YZZ5FREQ4QP5Q"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9077.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9077.pck"
+      ]
+    },
+    {
+      "id": 9083,
+      "name": "没入の実験体",
+      "cardClass": 3,
+      "emoteId": 3,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9083",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9083",
+        "UI/Deck/utx_tex_deck_set_leader_9083"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9083",
+        "UI/ClassChar/utx_btn_leader_skin_9083",
+        "UI/Deck/utx_tex_deck_set_leader_9083",
+        "UI/ClassChar/utx_pict_leader_9083_00",
+        "Card/Header/log_leader_9083"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "JMK73NTHJSX3Y3SEJRXPRCP5II",
+        "OS5JINQ665I55DRGVQ6AHESHXY",
+        "UDUOYMHCPWMPIN3RHOO4GWBBDI"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9083.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9083.pck"
+      ]
+    },
+    {
+      "id": 9087,
+      "name": "鋳鉄の腹心",
+      "cardClass": 7,
+      "emoteId": 7,
+      "skinType": 3,
+      "baseSkinId": 0,
+      "originalDeckRedirect": null,
+      "japaneseOnly": false,
+      "emblemId": 0,
+      "prefab": "Prefabs/LeaderSkin/class_9087",
+      "nativeResourceReady": false,
+      "missing": [
+        "UI/ClassChar/utx_btn_leader_skin_9087",
+        "UI/Deck/utx_tex_deck_set_leader_9087"
+      ],
+      "requiredPaths": [
+        "Prefabs/LeaderSkin/class_9087",
+        "UI/ClassChar/utx_btn_leader_skin_9087",
+        "UI/Deck/utx_tex_deck_set_leader_9087",
+        "UI/ClassChar/utx_pict_leader_9087_00",
+        "Card/Header/log_leader_9087"
+      ],
+      "battlePrefabReady": true,
+      "dependencyHashes": [
+        "6HIMKWDIJY6M7F2MJG5VC2HKIU",
+        "AMNCNAP5R5AJFTJUQW2HTJ24RY",
+        "OOUXA2USRWNYCXIRWLZDSS3ONQ",
+        "SWS5I2YFK6OIKRDA3UMEMO2J5M"
+      ],
+      "voiceBanks": [
+        "sound/Windows/d/English(US)/dx_btl_9087.pck",
+        "sound/Windows/d/Japanese(JP)/dx_btl_9087.pck"
+      ]
+    }
+  ]
+}

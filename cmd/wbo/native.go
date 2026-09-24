@@ -281,6 +281,7 @@ func runNativeBroker(args []string) int {
 	sessionKey := fs.String("session-key", "", "会话私钥（32 字节）；给了它才会尝试解开加密的请求体")
 	uuid := fs.String("uuid", "", "客户端凭据 uuid（解报文需要）")
 	authKey := fs.String("auth-key", "", "客户端凭据 auth key（base64，解报文需要）")
+	profilePath := fs.String("profile", "", "档案状态文件（牌组等）；省略时只放在内存里，重启即回到初始档案")
 	commonHeader := fs.String("common-header", defaultCommonHeaderHex,
 		"52 字节常量（hex）；只有第 32..52 字节参与密钥派生，换版本要更新")
 	if fs.Parse(args) != nil {
@@ -306,7 +307,7 @@ func runNativeBroker(args []string) int {
 		}
 		// 档案层要放在夹具前面：/Load/index 虽然夹具里也有，但那一份的收藏是空的，
 		// 客户端拿空收藏会退回标题界面。
-		profile, err := nativeprofile.Load()
+		profile, err := nativeprofile.LoadWithState(*profilePath)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			return 1
@@ -318,6 +319,8 @@ func runNativeBroker(args []string) int {
 		fmt.Printf("已启用引导响应：覆盖 %d 条路由\n", len(fixtures.Routes()))
 		fmt.Printf("已启用档案层：收藏 %d 个 base 卡（契约 %s）\n",
 			len(profile.OwnedBaseCardIDs()), profile.SourceSHA256()[:12])
+		fmt.Printf("  档案路由 %d 条，状态文件 %s\n", len(profile.RouteNames()),
+			describeProfilePath(*profilePath))
 		// 如实交代这批响应的来源——它们是本地重建的，不是抓到的官方响应。
 		if provenance := fixtures.Provenance(); provenance != "" {
 			fmt.Printf("  来源：%s\n", provenance)
@@ -335,6 +338,14 @@ func runNativeBroker(args []string) int {
 		return 1
 	}
 	return 0
+}
+
+// describeProfilePath 把"档案存哪儿"写成一句人话。
+func describeProfilePath(path string) string {
+	if path == "" {
+		return "（未指定，只在内存里）"
+	}
+	return path
 }
 
 // defaultCommonHeaderHex 是 1.9.1.18238 的 52 字节常量。

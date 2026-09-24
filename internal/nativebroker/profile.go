@@ -77,6 +77,28 @@ func (h *ProfileHandler) Route(request *Request) (Response, bool) {
 		data["owned_base_card_ids"] = h.profile.OwnedBaseCardIDs()
 		payload = fixture
 	default:
+		if !h.profile.HandledRoute(route) {
+			return Response{}, false
+		}
+		// 档案路由的响应外壳沿用 /Load/index 那一份：data_headers 是通用的，
+		// 只有 data 按请求算——这是 delta 的做法，客户端也接受。
+		envelope, ok := h.fixtures.Lookup("/Load/index")
+		if !ok {
+			return Response{}, false
+		}
+		answer, err := h.profile.Handle(route, decodeRequest(request.Plain))
+		if err != nil {
+			// 请求不合法就如实拒绝：伪造一个"成功"会让客户端进到更奇怪的状态。
+			h.logger.Printf("档案 %s 拒绝：%v", route, err)
+			return Response{}, false
+		}
+		if answer == nil {
+			return Response{}, false
+		}
+		envelope["data"] = answer
+		payload = envelope
+	}
+	if payload == nil {
 		return Response{}, false
 	}
 	if headers, ok := payload["data_headers"].(map[string]any); ok {
