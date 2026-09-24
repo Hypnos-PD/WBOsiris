@@ -183,6 +183,10 @@ func (g *gateway) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 				head, value := decoded.CheckAuth(auth)
 				g.logger.Printf("信封：解出 %d 字节明文（凭据自检 head=%v value=%v）",
 					len(decoded.Plain), head, value)
+				// 明文是 MessagePack 编码的请求体。把它解成 JSON 记一行——排查
+				// "客户端为什么走不到下一步"时，能直接看到它这一问要了什么，
+				// 不用再去翻内存或猜。
+				g.logger.Printf("  请求 %s → %s", message.Path, describePlain(decoded.Plain))
 			}
 		}
 	}

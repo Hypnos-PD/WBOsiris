@@ -216,3 +216,34 @@ wbo native launch --broker --capture ~/wbo-capture \
 注意一个实现细节：夹具是 JSON，读的时候用 `UseNumber` 防止大整数被折成浮点，
 但编码成 MessagePack 之前必须把 `json.Number` 换回具体数值类型——它本质是字符串，
 直接编码出去会变成 `"1"` 而不是 `1`，客户端解析就会失败。
+
+## 客户端现在走到哪一步（1.9.5 实测）
+
+在标题界面点"点击开始游戏"之后，客户端**按顺序**问这些（broker 日志里有原样记录）：
+
+| 顺序 | 路由 | 我们的回应 |
+| --- | --- | --- |
+| 1 | `/Version/info` | 夹具 |
+| 2 | `/Session/start` | 夹具 |
+| 3 | `/StartUp/index` | 夹具 |
+| 4 | `/Load/index` | **档案层**（带玩家收藏）+ 夹具 |
+| 5 | `/User/getIsAllowSendAdjust` | 夹具 |
+| 6 | `/Account/getGameStartCountryAgeGroup` | 夹具 |
+| 7 | `/StartUp/index`（第二次） | 夹具 |
+| 8 | `/User/updateIsAllowSendThirdParty` | 夹具 |
+
+八条全部 200，客户端没有报错——然后它弹一个 **"推荐进行账号关联"** 对话框，问题就卡在
+这里：**还没有看到 `/Mypage/index`**，也就是还没进主界面。这是当前唯一的拦路石。
+
+顺带记两条实测到的客户端错误码含义（截图里会显示"错误代码: N"）：
+
+| 代码 | 实测触发条件 |
+| --- | --- |
+| 2 | 连不上 broker（本机实测：端口被上一轮的 broker 占着，新的没起来） |
+| 3 | 响应体不是 base64 文本（本档第一版档案处理器直接回了二进制信封） |
+
+调试时有两件趁手的工具，都不是产品的一部分：`wbo native broker` 会把解开的请求体
+打印成一行 JSON（`internal/nativebroker/describe.go`）；驱动客户端不需要人坐在那儿
+——XTEST 合成点击能点动标题界面（注意 `ButtonRelease` 的 detail 必须是按钮号，
+写 0 会让客户端只看到"一直按着"）。但**这个对话框上的按钮，合成点击点不动**，
+所以这一步仍然需要真人点一次。
