@@ -295,6 +295,28 @@ delta 的 `GameAssembly.delta` 是一份 133 段的二进制补丁。把补丁�
 - 或者在启动沙箱里把 CDN 域名指向本地，用一份我们自己的清单把下载接过去
   （需要在沙箱内提供 HTTPS 并让客户端信任我们的证书，工程量大）。
 
+### delta 的补丁长什么样（可复现）
+
+`tools/inspect-delta-patch.py` 把这个补丁摊开：`list` 列出补了哪些方法，`apply` 把
+补丁打到原件的副本上（**别指向 Steam 目录**），`code` 反汇编指定的地址。
+
+补丁的形状：**把目标方法的前 5 字节改成 `jmp`（或把调用点改成 `call`），跳到附加的
+新节 `.offlab`（约 6 MB）里的替换实现**。注意 `jmp` 的目标是运行时地址，直接拿文件
+偏移反汇编会看到一堆"数据"——脚本里按节表换算过了。
+
+已经读出来的几个替换（都能对上 delta 当年那套 `D:\coding\shadowverse-battle-lab`）：
+
+| 被替换的方法 | 替换成什么 |
+| --- | --- |
+| `ClientServerConfiguration.set_ShadowversePortalEndpointUrl` | 无视参数，强制设成 `http://127.0.0.1:50172/assets/` |
+| `persistentWinDataPath` | 强制设成 `…\runtime\native-offline\state\Persistent` |
+| `ManifestDB` 里的两处调用 | 改成读本地文件：`…\state\resource-cache.sql` 与一份缓存资源 |
+| `TitleAccountLinkDialogBinary.RunAsync` | 直接跳到 `.offlab` 里的实现（账号关联对话框被接管） |
+
+换句话说，delta 让客户端**吃他们准备好的本地资源缓存**，而不是去网上取清单。这条路
+能走通，但需要那份缓存（`resource-cache.sql`）的格式；delta 的仓库里只有路径字符串，
+文件本身没带出来。
+
 顺带记两条实测到的客户端错误码含义（截图里会显示"错误代码: N"）：
 
 | 代码 | 实测触发条件 |
