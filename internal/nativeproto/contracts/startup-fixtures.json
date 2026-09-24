@@ -1,5 +1,5 @@
 {
-  "provenance": "Locally reconstructed responses. Key layouts from original MessagePack formatters and DTO field registrations; success code 1 from GetVersionInfoAsync @4ccb432. No official traffic captured. Resource version is an experiment label, not an official version.",
+  "provenance": "Locally reconstructed responses. Key layouts from original MessagePack formatters and DTO field registrations; success code 1 from GetVersionInfoAsync @4ccb432. No official traffic captured. resource_version is the official CDN manifest version for this build (674095648147 for 1.9.5, taken from the client's own CDN URL / wbunpacker's config) because the client puts it straight into the manifest URL https://shadowverse-wb.akamaized.net/dl/manifests/Windows/<version>/assetbundle.<variant>.manifest.",
   "responses": {
     "/Title/index": {
       "data_headers": {
