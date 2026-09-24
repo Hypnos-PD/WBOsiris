@@ -317,6 +317,36 @@ delta 的 `GameAssembly.delta` 是一份 133 段的二进制补丁。把补丁�
 能走通，但需要那份缓存（`resource-cache.sql`）的格式；delta 的仓库里只有路径字符串，
 文件本身没带出来。
 
+### 资源清单：格式、来源，以及怎么让它工作
+
+清单文件是客户端自己去网上取的那个 `assetbundle.<语言>.manifest`。它其实是一份
+**MemoryDatabase**：开头是 MessagePack 的 `map<表名, [int32 偏移, int32 长度]>`，
+偏移相对表头结束处，后面跟着各张表的 MessagePack 数据。真文件里的表名是短的四个：
+
+| 表名 | 行类型 |
+| --- | --- |
+| `asset` | `ManifestAsset{ name, hash, assetId, allDependencies[], key, size, category, group, checksum }` |
+| `raw_asset` | `ManifestRawAsset{ name, hash, size, category, group, checksum }` |
+| `assetname` | `AssetBundleLoadName{ assetName, name }` |
+| `config` | `ManifestConfig{ key, value }` |
+
+（C# 侧的 `ManifestAssetTable` 之类只是视图类，DB 里的键是上面这些短名——照视图类名
+去造文件会被判成 `manifest is invalid`。）
+
+**真清单本来就在手边**：`~/Data/wbunpacker_files/manifests/raw/assetbundle.<语言>.manifest`
+（wbunpacker 当年从客户端下载目录里解出来的，五种语言都在）。启动器现在可以把任意
+文件塞进沙箱里的客户端目录，所以直接用：
+
+```bash
+wbo native launch --broker --capture ~/wbo-capture \
+    --inject ShadowverseWB_Data/StreamingAssets/PreinResource/manifests/assetbundle.Chs.manifest=\
+~/Data/wbunpacker_files/manifests/raw/assetbundle.Chs.manifest
+```
+
+实测效果：客户端不再报 `Manifest Load Error`，并且**开始更新自己的资源库**
+（`ShadowverseWB_Data/Persistent/meta` 在启动后立刻被改写）——说明资源这一层通了。
+注意 `--inject` 走的是替身目录：**Steam 的安装目录一个字节都不动**。
+
 顺带记两条实测到的客户端错误码含义（截图里会显示"错误代码: N"）：
 
 | 代码 | 实测触发条件 |
