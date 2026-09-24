@@ -251,6 +251,50 @@ wbo native launch --broker --capture ~/wbo-capture \
 "没关联"——本地存档里没有这个标志，那么要么在某个响应字段里，要么是一条我们还没
 实现的查询路由。
 
+### 真正的拦路石：资源清单（assetbundle manifest）
+
+继续追下去，发现上面那个对话框只是**表面**。把它应付过去之后，客户端会去下载资源
+清单，而这一步**不走我们的插件**（它用的是 Unity 自己的 HTTP，不经过
+`Cysharp...Native.dll`），所以 broker 完全看不到；下载失败的表现就是弹"网络连接错误"，
+然后退回标题。
+
+证据是三步对上的：
+
+1. 给客户端进程做 `strace -e trace=sendto`，看到它解析 `shadowverse-wb.akamaized.net`；
+2. 扫客户端内存，拿到它真正拼出来的 URL（连请求头里的 `res-ver: local-v1` 都在旁边）：
+
+   ```
+   https://shadowverse-wb.akamaized.net/dl/manifests/Windows/assetbundle.Chs.manifest
+   ```
+
+3. 用宿主机直接请求这个地址：**302 → /404.html**（Akamai 的 404 页），也就是说这份
+   清单在 CDN 上根本不存在。客户端拿到 404，于是报网络错误。
+
+`Chs` 与它请求头里的语言设置对得上（`TextLanguage=4`），`Windows` 与平台对得上，所以
+这不是拼错名字，而是**路径/鉴权方式与官方不一样**——多半要客户端先向游戏服务器要一个
+签过名的地址（我们的 `/Version/info`、`/Load/index` 都是本地夹具，给不了这个）。
+
+### delta 是怎么绕过这两个坑的
+
+delta 的 `GameAssembly.delta` 是一份 133 段的二进制补丁。把补丁段映射回 dump 里的方法
+（`GameAssembly.delta` 的段是文件偏移，dump 里每个方法都带 Offset），可以看到它**直接
+改了客户端代码**：
+
+| 被改的方法 | 说明 |
+| --- | --- |
+| `TitleAccountLinkDialogBinary.RunAsync` | 就是那个"推荐进行账号关联"对话框 |
+| `ClientServerConfiguration.set_ShadowversePortalEndpointUrl` / `get_Current` | 把 portal 地址改成自己的 |
+| `ManifestDB..ctor`、`PathResolver`、`persistentWinDataPath` | 资源清单与路径 |
+| `BattleCenter/RoomMatchCenter.ConnectAsync` 等 | 对局通道 |
+
+也就是说：**delta 的可用状态是靠改 `GameAssembly.dll` 换来的**，不是靠服务端应答。
+我们的插件路线（不改 GameAssembly、只换 `Cysharp...Native.dll`）在这两处会撞墙：
+对话框是客户端逻辑，资源清单走的是另一套 HTTP。下一步要在两条路里选一条——
+
+- 把这两处也做成"最小补丁"，打在导入出来的副本上（不是 Steam 的原件）；
+- 或者在启动沙箱里把 CDN 域名指向本地，用一份我们自己的清单把下载接过去
+  （需要在沙箱内提供 HTTPS 并让客户端信任我们的证书，工程量大）。
+
 顺带记两条实测到的客户端错误码含义（截图里会显示"错误代码: N"）：
 
 | 代码 | 实测触发条件 |
