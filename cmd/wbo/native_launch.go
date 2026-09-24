@@ -90,6 +90,7 @@ func runNativeLaunch(args []string) int {
 	dryRun := fs.Bool("dry-run", false, "只打印将要执行的命令")
 	noPatch := fs.Bool("no-patch", false, "对照实验用：不改写客户端内存里的公钥常量")
 	clientFlag := fs.String("client-dir", "", "客户端目录；省略时按 Steam 库自动发现并核对")
+	assemblyFlag := fs.String("game-assembly", "", "用这份 GameAssembly.dll 覆盖客户端里那一份（例如导入目录里的已打补丁副本）；省略时用原件")
 	protonFlag := fs.String("proton", "", "Proton 目录或 proton 脚本的绝对路径；省略时按 Steam 配置推导")
 	runtimeFlag := fs.String("runtime", "", "Steam Linux Runtime 入口（如 .../_v2-entry-point）；省略时按 Proton 的声明推导")
 	sessionKeyFlag := fs.String("session-key", "", "会话私钥；省略时用会话目录里的 session-key（本轮启动刚生成的那把）")
@@ -175,6 +176,20 @@ func runNativeLaunch(args []string) int {
 	if err != nil {
 		logf("搭替身目录失败 %v", err)
 		return 1
+	}
+	// 需要替换 GameAssembly.dll 时（例如换成打过补丁的副本），把这份文件挂在最后——
+	// bwrap 按顺序挂载，后挂的盖住先挂的。仍然只在命名空间里，磁盘一个字节都不动。
+	if *assemblyFlag != "" {
+		info, err := os.Stat(*assemblyFlag)
+		if err != nil || !info.Mode().IsRegular() {
+			logf("--game-assembly 指向的不是普通文件：%s", *assemblyFlag)
+			return 1
+		}
+		overlays.Bindings = append(overlays.Bindings, overlayBinding{
+			Source: *assemblyFlag,
+			Target: filepath.Join(clientDir, "GameAssembly.dll"),
+		})
+		logf("用 %s 覆盖 GameAssembly.dll", *assemblyFlag)
 	}
 	// 生成会话密钥对。客户端写死的"对端公钥"会被换成我们这把公钥，于是它加密出来的
 	// 东西只有拿着私钥的 broker 能解开——这是能当服务器的唯一办法，因为原公钥对应的
