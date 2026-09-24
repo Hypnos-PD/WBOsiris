@@ -66,6 +66,11 @@ struct Config {
     peerkey: Option<Vec<u8>>,
     /// 只为了做对照实验：置为 true 时完全不碰内存。
     no_patch: bool,
+    /// 是否在按元数据偏移改写之外，再扫全内存改掉所有 32 字节副本。
+    ///
+    /// 默认关：那是一次"广撒网"，会碰到只是碰巧相同的无关数据，实测能把客户端改崩。
+    /// 留着这个开关是为了做对照实验（也为了在新版本上先摸清副本分布）。
+    copy_scan: bool,
     /// 原件 DLL 的完整路径。
     ///
     /// 默认是在自己旁边找 `yaha_orig.dll`，但挂载命名空间那套做法只覆盖了插件本名，
@@ -82,6 +87,7 @@ impl Config {
             pattern: None,
             peerkey: None,
             no_patch: false,
+            copy_scan: false,
             original: None,
             // 默认不写日志：模块目录就是游戏的插件目录，往那里写文件等于改动
             // Steam 的安装目录。只有明确配置了 log 才落盘。
@@ -117,6 +123,7 @@ impl Config {
                 "pattern" if !value.is_empty() => config.pattern = decode_hex(value),
                 "peerkey" if !value.is_empty() => config.peerkey = decode_hex(value),
                 "no-patch" => config.no_patch = value.eq_ignore_ascii_case("true") || value == "1",
+                "copy-scan" => config.copy_scan = value.eq_ignore_ascii_case("true") || value == "1",
                 "log" if !value.is_empty() => {
                     let candidate = PathBuf::from(value);
                     config.log = Some(if candidate.is_absolute() {
@@ -500,7 +507,16 @@ fn write_protected(page_base: *mut c_void, offset: usize, value: &[u8]) -> bool 
     true
 }
 
-/// 每一轮都先按偏移改元数据，再兜底扫全内存。
+/// 每一轮按元数据偏移改那一份真正的来源。
+///
+/// 这里**故意不再**顺带扫全内存改所有 32 字节副本。那样做过，代价是：32 字节的
+/// 模式在进程里出现 5~8 次，其中有些只是碰巧相同的数据，改掉它们等于随机破坏内存
+/// ——实机观察到客户端在启动十几秒后崩在 HTTP 插件里（栈回溯落在 cysharp 那个模块）。
+/// 而"按偏移改元数据"这一条已经足够：客户端每次调用 CommonHeader() 都从元数据里
+/// 现拷一份，改了这一份，之后所有请求用的都是我们的公钥（实测请求能被 broker 解开）。
+///
+/// 要重新打开全内存扫描做对照实验时，把 config 里的 copy-scan 设成 true（见
+/// patch_peer_key 的调用点）。
 #[cfg(windows)]
 fn patch_round() -> usize {
     let config = config();
@@ -508,7 +524,9 @@ fn patch_round() -> usize {
         return 0;
     };
     let mut patched = patch_metadata_constant(pattern, peer);
-    patched += patch_peer_key();
+    if config.copy_scan {
+        patched += patch_peer_key();
+    }
     patched
 }
 
