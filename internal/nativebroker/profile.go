@@ -4,8 +4,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/vmihailenco/msgpack/v5"
-
 	"wbo/internal/nativeprofile"
 	"wbo/internal/nativeproto"
 )
@@ -58,8 +56,8 @@ func (h *ProfileHandler) Route(request *Request) (Response, bool) {
 	if h == nil || h.profile == nil || h.fixtures == nil || request == nil {
 		return Response{}, false
 	}
-	if request.Envelope == nil {
-		// 没有会话就封不出客户端解得开的响应。
+	if request.Envelope == nil && !request.PlainMessagePack {
+		// 既没有会话、也不是明文模式，就封不出客户端解得开的响应。
 		return Response{}, false
 	}
 	route := nativeproto.NormalizeRoute(request.Path)
@@ -80,9 +78,9 @@ func (h *ProfileHandler) Route(request *Request) (Response, bool) {
 		if !h.profile.HandledRoute(route) {
 			return Response{}, false
 		}
-		// 档案路由要看请求体（改的是玩家的牌组），载荷没解开就不能瞎答：
-		// 那等于用一个空请求去改状态。
-		if request.Envelope == nil || !request.Envelope.PayloadDecoded {
+		// 档案路由要看请求体（改的是玩家的牌组）。明文模式下 body 本身就是请求体，
+		// 有信封时则要求载荷真的解开了——不能拿一个空请求去改状态。
+		if !request.PlainMessagePack && (request.Envelope == nil || !request.Envelope.PayloadDecoded) {
 			return Response{}, false
 		}
 		// 档案路由的响应外壳沿用 /Load/index 那一份：data_headers 是通用的，
@@ -107,14 +105,10 @@ func (h *ProfileHandler) Route(request *Request) (Response, bool) {
 		return Response{}, false
 	}
 	if headers, ok := payload["data_headers"].(map[string]any); ok {
+		nativeproto.CompleteHeaders(headers)
 		headers["servertime"] = time.Now().Unix()
 	}
-	plain, err := msgpack.Marshal(payload)
-	if err != nil {
-		h.logger.Printf("档案 %s 编码失败：%v", route, err)
-		return Response{}, false
-	}
-	body, err := sealResponse(request.Envelope, plain)
+	body, err := encodePayload(request, payload)
 	if err != nil {
 		h.logger.Printf("档案 %s 封包失败：%v", route, err)
 		return Response{}, false

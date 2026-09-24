@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/vmihailenco/msgpack/v5"
 	"io"
 	"log"
 	"net"
@@ -31,6 +32,19 @@ type Request struct {
 	Plain []byte
 	// Envelope 是解开后的信封信息（凭据片段、客户端公钥等），便于诊断。
 	Envelope *nativeproto.Request
+	// BinaryBody 表示这次请求体是**原始二进制**而不是 base64 文本。
+	//
+	// 正常客户端发 base64 文本；但把客户端里那个"压缩请求体"的函数改成直通
+	// （delta 的做法，也是我们绕开它 LZ4 崩溃的唯一办法）之后，base64 这一步也跟着
+	// 没了，body 直接是二进制。响应必须按同样的形式回，否则客户端解不开。
+	BinaryBody bool
+	// PlainMessagePack 表示这次请求体就是明文 MessagePack，**没有信封**。
+	//
+	// 客户端里那个"压缩请求体"的函数被改成直通之后（delta 的做法：`mov rax,rdx;ret`），
+	// 压缩、加密、base64 三步一起没了——实测客户端直接发
+	// `82 a4 "uuid" a0 a9 "client_id" 01` 这样的裸 MessagePack。那种情况下服务端
+	// 就用明文应答（同样不带信封），既省掉整套密码学，也不用再去猜注册包的密钥派生。
+	PlainMessagePack bool
 }
 
 // Response 是路由的结果。ContentType 留空时按 MessagePack 返回。
@@ -178,26 +192,34 @@ func (g *gateway) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 		default:
 			auth := g.auth
 			auth.SID = sid
-			if decoded, err := decodeBody(g.decoder, body, auth); err != nil {
-				g.logger.Printf("信封：解不开（%v）", err)
-				// 载荷解不开不代表答不上话：响应密钥只由 shared/sid/selector 派生，
-				// 这三样在解载荷之前就齐了。夹具类路由（不含请求体）照样能给出正确
-				// 的响应——注册那条请求就是这种情况。
-				if partial, _ := g.decoder.DecodeEnvelope(mustDecodeBase64(body), auth); partial != nil {
-					message.Plain = nil
-					message.Envelope = partial
-					g.logger.Printf("  请求 %s → 只凭元数据应答（请求体没解开）", message.Path)
-				}
-			} else {
+			wire, binary := unwrapBody(body)
+			message.BinaryBody = binary
+			// 先按信封解（正常客户端）；解不开再看是不是"裸 MessagePack"——客户端里
+			// 那个压缩函数被改成直通之后，压缩/加密/base64 三步一起没了，body 就是
+			// 明文的请求体本身。顺序不能反：明文判断只看首字节，撞上信封的几率虽小，
+			// 但"先解信封"永远更可靠。
+			if decoded, err := decodeBody(g.decoder, wire, auth); err == nil {
 				message.Plain = decoded.Plain
 				message.Envelope = decoded
 				head, value := decoded.CheckAuth(auth)
 				g.logger.Printf("信封：解出 %d 字节明文（凭据自检 head=%v value=%v）",
 					len(decoded.Plain), head, value)
-				// 明文是 MessagePack 编码的请求体。把它解成 JSON 记一行——排查
-				// "客户端为什么走不到下一步"时，能直接看到它这一问要了什么，
-				// 不用再去翻内存或猜。
 				g.logger.Printf("  请求 %s → %s", message.Path, describePlain(decoded.Plain))
+			} else if isPlainMessagePack(wire) {
+				message.Plain = wire
+				message.PlainMessagePack = true
+				g.logger.Printf("信封：没有信封（明文 MessagePack，%d 字节）", len(wire))
+				g.logger.Printf("  请求 %s → %s", message.Path, describePlain(wire))
+			} else {
+				g.logger.Printf("信封：解不开（%v）", err)
+				// 载荷解不开不代表答不上话：响应密钥只由 shared/sid/selector 派生，
+				// 这三样在解载荷之前就齐了。夹具类路由（不含请求体）照样能给出正确
+				// 的响应——注册那条请求就是这种情况。
+				if partial, _ := g.decoder.DecodeEnvelope(wire, auth); partial != nil {
+					message.Plain = nil
+					message.Envelope = partial
+					g.logger.Printf("  请求 %s → 只凭元数据应答（请求体没解开）", message.Path)
+				}
 			}
 		}
 	}
@@ -266,42 +288,48 @@ func decodeSID(value string) ([]byte, error) {
 	return raw, nil
 }
 
-// decodeBody 把请求体（十六进制文本形式的 base64）转回信封并解开。
+// unwrapBody 认出请求体是 base64 文本还是原始二进制。
 //
-// 客户端发的是 base64 **文本**，不是二进制——这一点容易看错。
+// 正常客户端发 base64 文本；客户端被打了"压缩直通"补丁之后（见 Request.BinaryBody）
+// 就是二进制。两种都要认，否则换了客户端就"什么都收不到"。
+func unwrapBody(body []byte) ([]byte, bool) {
+	trimmed := bytes.TrimSpace(body)
+	wire := make([]byte, base64.StdEncoding.DecodedLen(len(trimmed)))
+	count, err := base64.StdEncoding.Strict().Decode(wire, trimmed)
+	if err == nil {
+		return wire[:count], false
+	}
+	return trimmed, true
+}
+
+// isPlainMessagePack 判断这段字节是不是一个可以解开的 MessagePack 对象。
+//
+// 判据很保守：能解成 map[string]any 才算。加密信封是随机字节，几乎不可能通过。
+func isPlainMessagePack(raw []byte) bool {
+	if len(raw) == 0 || raw[0] < 0x80 || raw[0] > 0x8F { // 只认固定长度的 map
+		return false
+	}
+	var value map[string]any
+	return msgpack.Unmarshal(raw, &value) == nil && value != nil
+}
+
+// decodeBody 解开一个已经拆掉外层编码的报文。
 //
 // 解不开时会用"全零 uuid"再试一次：**注册（/Account/signUp）那次请求就是这个形状**
 // ——客户端还没有账号，密钥派生里用的是一个全零 uuid，而调用方手里只有配对后那份
 // 凭据。实测注册包里 "元数据里的凭据与 authKey 一致、共享密钥也对"，只是 uuid 不同，
 // 所以这里补一次重试是有依据的，不是碰运气。
-func decodeBody(decoder Decoder, body []byte, auth nativeproto.Auth) (*nativeproto.Request, error) {
-	trimmed := bytes.TrimSpace(body)
-	wire := make([]byte, base64.StdEncoding.DecodedLen(len(trimmed)))
-	count, err := base64.StdEncoding.Strict().Decode(wire, trimmed)
-	if err != nil {
-		return nil, fmt.Errorf("请求体不是合法 base64: %w", err)
-	}
-	request, err := decoder.DecodeRequest(wire[:count], auth)
+func decodeBody(decoder Decoder, wire []byte, auth nativeproto.Auth) (*nativeproto.Request, error) {
+	request, err := decoder.DecodeRequest(wire, auth)
 	if err == nil {
 		return request, nil
 	}
 	fresh := auth
 	fresh.UUID = make([]byte, 16)
-	if retried, retryErr := decoder.DecodeRequest(wire[:count], fresh); retryErr == nil {
+	if retried, retryErr := decoder.DecodeRequest(wire, fresh); retryErr == nil {
 		return retried, nil
 	}
 	return nil, err
-}
-
-// mustDecodeBase64 只用于"已经确认是 base64 文本"的报文；失败时回空。
-func mustDecodeBase64(body []byte) []byte {
-	trimmed := bytes.TrimSpace(body)
-	wire := make([]byte, base64.StdEncoding.DecodedLen(len(trimmed)))
-	count, err := base64.StdEncoding.Strict().Decode(wire, trimmed)
-	if err != nil {
-		return nil
-	}
-	return wire[:count]
 }
 
 func handledTag(handled bool) string {

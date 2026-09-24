@@ -29,6 +29,7 @@ type Record struct {
 	Status    int         `json:"status"`
 	Handled   bool        `json:"handled"`
 	Responded int         `json:"respondedBytes"`
+	Response  string      `json:"response,omitempty"` // 原始响应体的相对路径
 }
 
 // capture 把请求按顺序落盘：一份可读的 JSONL 索引，加一份原始请求体。
@@ -62,6 +63,17 @@ func (c *capture) write(record *Record, body []byte, response []byte) error {
 			return err
 		}
 		record.Body = name
+	}
+	// 响应体也留一份：排查"客户端说解析失败"时，唯一能对的就是我们自己发出去的那串字节。
+	if len(response) > 0 {
+		if err := os.MkdirAll(filepath.Join(c.directory, "responses"), 0o755); err != nil {
+			return err
+		}
+		name := fmt.Sprintf("responses/%06d.bin", c.sequence)
+		if err := os.WriteFile(filepath.Join(c.directory, filepath.FromSlash(name)), response, 0o644); err != nil {
+			return err
+		}
+		record.Response = name
 	}
 	encoded, err := json.Marshal(record)
 	if err != nil {

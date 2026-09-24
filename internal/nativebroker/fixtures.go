@@ -4,8 +4,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/vmihailenco/msgpack/v5"
-
 	"wbo/internal/nativeproto"
 )
 
@@ -32,8 +30,8 @@ func (h *FixtureHandler) Route(request *Request) (Response, bool) {
 	if h == nil || h.fixtures == nil || request == nil {
 		return Response{}, false
 	}
-	if request.Envelope == nil {
-		// 没有会话就封不出客户端能解的响应——如实说"没实现"，不要发一个空包。
+	if request.Envelope == nil && !request.PlainMessagePack {
+		// 既没有会话、也不是明文模式，就封不出客户端能解的响应——如实说"没实现"。
 		return Response{}, false
 	}
 	fixture, ok := h.fixtures.Lookup(request.Path)
@@ -42,14 +40,10 @@ func (h *FixtureHandler) Route(request *Request) (Response, bool) {
 	}
 	// 运行期字段：客户端会用它判断服务器时间是否合理。
 	if headers, ok := fixture["data_headers"].(map[string]any); ok {
+		nativeproto.CompleteHeaders(headers)
 		headers["servertime"] = time.Now().Unix()
 	}
-	plain, err := msgpack.Marshal(fixture)
-	if err != nil {
-		h.logger.Printf("夹具 %s 编码失败：%v", request.Path, err)
-		return Response{}, false
-	}
-	body, err := sealResponse(request.Envelope, plain)
+	body, err := encodePayload(request, fixture)
 	if err != nil {
 		h.logger.Printf("夹具 %s 封包失败：%v", request.Path, err)
 		return Response{}, false

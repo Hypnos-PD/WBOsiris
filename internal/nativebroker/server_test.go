@@ -189,7 +189,8 @@ func TestBrokerDecodesEnvelopeWhenConfigured(t *testing.T) {
 	address := <-ready
 
 	// 客户端发的是 base64 文本形式的报文，Sid 头是 16 字节十六进制。
-	wire := []byte{0x81, 0xA1, 'x', 0xC3}
+	// 随便一段像信封的字节（首字节不是 MessagePack 的 map，避免被当成明文）。
+	wire := []byte{0x2a, 0x00, 0x00, 0x00, 0x11, 0x22, 0x33, 0x44}
 	body := base64.StdEncoding.EncodeToString(wire)
 	request, err := http.NewRequest(http.MethodPost, "http://"+address+"/cygames/Version/info", strings.NewReader(body))
 	if err != nil {

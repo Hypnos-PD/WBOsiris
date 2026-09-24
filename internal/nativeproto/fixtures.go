@@ -88,6 +88,39 @@ func (f *Fixtures) Lookup(path string) (map[string]any, bool) {
 	return cloned, true
 }
 
+// CompleteHeaders 把 DataHeader 里夹具没覆盖到的字段补上默认值。
+//
+// 为什么必须补：夹具是从 delta 那份本地重建的数据来的，它比 1.9.5 的
+// `Wizard2.Domain.DataHeader` 少了几个字段（maintenance / restriction /
+// maintenance_notification / store_url / card_collection_notification）。客户端的
+// MessagePack 反序列化是全字段的，少一个就整条响应解析失败，日志里只有一句
+// "Failed to deserialize Wizard2.Domain.XxxResponse value."——表现是"客户端悄悄退回
+// 标题"，极难查。默认值取"没有公告、没有维护、没有限制"。
+func CompleteHeaders(headers map[string]any) {
+	defaults := map[string]any{
+		"result_code":                   1,
+		"sid":                           "",
+		"servertime":                    int64(0),
+		"maintenance":                   nil,
+		"maintenance_task_ids":          []any{},
+		"restriction":                   nil,
+		"achievement_notification":      []any{},
+		"mission_notification":          []any{},
+		"mission_complete_notification": []any{},
+		"maintenance_notification":      nil,
+		"store_url":                     "",
+		"card_collection_notification":  nil,
+		"owned_base_card_ids":           []any{},
+		"festival_notification":         []any{},
+		"is_streamer_mode":              false,
+	}
+	for key, value := range defaults {
+		if _, ok := headers[key]; !ok {
+			headers[key] = value
+		}
+	}
+}
+
 // NormalizeRoute 去掉客户端请求路径里的 API 前缀。
 //
 // 实测客户端请求的是 `/cygames/<route>`（例如 `/cygames/Version/info`），而契约与夹具
