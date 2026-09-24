@@ -258,6 +258,11 @@ func decodeSID(value string) ([]byte, error) {
 // decodeBody 把请求体（十六进制文本形式的 base64）转回信封并解开。
 //
 // 客户端发的是 base64 **文本**，不是二进制——这一点容易看错。
+//
+// 解不开时会用"全零 uuid"再试一次：**注册（/Account/signUp）那次请求就是这个形状**
+// ——客户端还没有账号，密钥派生里用的是一个全零 uuid，而调用方手里只有配对后那份
+// 凭据。实测注册包里 "元数据里的凭据与 authKey 一致、共享密钥也对"，只是 uuid 不同，
+// 所以这里补一次重试是有依据的，不是碰运气。
 func decodeBody(decoder Decoder, body []byte, auth nativeproto.Auth) (*nativeproto.Request, error) {
 	trimmed := bytes.TrimSpace(body)
 	wire := make([]byte, base64.StdEncoding.DecodedLen(len(trimmed)))
@@ -265,7 +270,16 @@ func decodeBody(decoder Decoder, body []byte, auth nativeproto.Auth) (*nativepro
 	if err != nil {
 		return nil, fmt.Errorf("请求体不是合法 base64: %w", err)
 	}
-	return decoder.DecodeRequest(wire[:count], auth)
+	request, err := decoder.DecodeRequest(wire[:count], auth)
+	if err == nil {
+		return request, nil
+	}
+	fresh := auth
+	fresh.UUID = make([]byte, 16)
+	if retried, retryErr := decoder.DecodeRequest(wire[:count], fresh); retryErr == nil {
+		return retried, nil
+	}
+	return nil, err
 }
 
 func handledTag(handled bool) string {
