@@ -6,6 +6,39 @@ import (
 	"testing"
 )
 
+// 注入必须在替身里发生：真目录（这里扮演 Steam 的安装目录）一个字节都不能多出来。
+// 这条测试是补一个真实事故——直接把源文件 bind 到不存在的目标路径时，bwrap 会在
+// 宿主机上把目标建出来，等于往游戏目录里写了文件。
+func TestInjectFileDoesNotTouchTheRealDirectory(t *testing.T) {
+	clientDir := filepath.Join(t.TempDir(), "ShadowverseWB")
+	if err := os.MkdirAll(filepath.Join(clientDir, "ShadowverseWB_Data", "PreinResource"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	source := filepath.Join(t.TempDir(), "assetbundle.Chs.manifest")
+	if err := os.WriteFile(source, []byte("manifest"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	state := t.TempDir()
+	var overlays overlays
+	relative := filepath.Join("ShadowverseWB_Data", "PreinResource", "manifests", "assetbundle.Chs.manifest")
+	if err := injectFile(state, clientDir, relative, source, &overlays); err != nil {
+		t.Fatalf("注入失败: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(clientDir, relative)); !os.IsNotExist(err) {
+		t.Fatalf("真目录里不该出现被注入的文件")
+	}
+	want := filepath.Join(clientDir, "ShadowverseWB_Data", "PreinResource")
+	if len(overlays.Bindings) == 0 || overlays.Bindings[0].Target != want {
+		t.Fatalf("替身该挂在最近的已存在目录 %s 上，实际 %v", want, overlays.Bindings)
+	}
+	injected := filepath.Join(overlays.Bindings[0].Source, "manifests", "assetbundle.Chs.manifest")
+	if content, err := os.ReadFile(injected); err != nil {
+		t.Fatalf("替身里没有注入的文件: %v", err)
+	} else if string(content) != "manifest" {
+		t.Errorf("替身里的内容不对: %q", content)
+	}
+}
+
 func TestPreparePluginOverlayLinksEverythingAndProvidesOriginal(t *testing.T) {
 	client := t.TempDir()
 	real := filepath.Join(client, filepath.FromSlash(pluginDirectory))

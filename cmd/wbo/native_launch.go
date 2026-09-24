@@ -64,6 +64,16 @@ const peerPatternHex = "5EBB1B7E66F37753855EAEE1D9F9EFFEE740591A306A1BBC034A9569
 // 所以配置也要出现在那里；launcher 用 bwrap 的 --file 现场生成，不往游戏目录写东西。
 const confRelative = "ShadowverseWB_Data/Plugins/x86_64/yaha-shim.conf"
 
+// stringList 是一个可以给多次的字符串旗标。
+type stringList []string
+
+func (l *stringList) String() string { return strings.Join(*l, ",") }
+
+func (l *stringList) Set(value string) error {
+	*l = append(*l, value)
+	return nil
+}
+
 func runNativeLaunch(args []string) int {
 	// 日志要最先建立：从 Steam 启动时出错是看不见的，唯一能查的就是这个文件。
 	stateDir, logFile, err := openLaunchLog(args)
@@ -91,6 +101,8 @@ func runNativeLaunch(args []string) int {
 	noPatch := fs.Bool("no-patch", false, "对照实验用：不改写客户端内存里的公钥常量")
 	clientFlag := fs.String("client-dir", "", "客户端目录；省略时按 Steam 库自动发现并核对")
 	assemblyFlag := fs.String("game-assembly", "", "用这份 GameAssembly.dll 覆盖客户端里那一份（例如导入目录里的已打补丁副本）；省略时用原件")
+	var injections stringList
+	fs.Var(&injections, "inject", "往客户端目录里塞一个文件，写成 <客户端内相对路径>=<宿主机文件>；可以给多次")
 	protonFlag := fs.String("proton", "", "Proton 目录或 proton 脚本的绝对路径；省略时按 Steam 配置推导")
 	runtimeFlag := fs.String("runtime", "", "Steam Linux Runtime 入口（如 .../_v2-entry-point）；省略时按 Proton 的声明推导")
 	sessionKeyFlag := fs.String("session-key", "", "会话私钥；省略时用会话目录里的 session-key（本轮启动刚生成的那把）")
@@ -190,6 +202,25 @@ func runNativeLaunch(args []string) int {
 			Target: filepath.Join(clientDir, "GameAssembly.dll"),
 		})
 		logf("用 %s 覆盖 GameAssembly.dll", *assemblyFlag)
+	}
+	for _, injection := range injections {
+		relative, source, ok := strings.Cut(injection, "=")
+		if !ok || relative == "" || source == "" || strings.Contains(relative, "..") {
+			logf("--inject 的写法应是 <客户端内相对路径>=<宿主机文件>，收到 %q", injection)
+			return 1
+		}
+		if info, err := os.Stat(source); err != nil || !info.Mode().IsRegular() {
+			logf("--inject 的源文件不存在或不是普通文件：%s", source)
+			return 1
+		}
+		// 不能直接把源文件 bind 到目标路径上：目标不存在时 bwrap 会在**宿主机**上把它
+		// 建出来，等于往 Steam 的目录里塞文件（踩过一次——幸好是空文件，删掉了）。
+		// 正确做法与插件那套一样：把目标所在目录做一份替身，文件放进替身里，再挂替身。
+		if err := injectFile(stateDir, clientDir, filepath.FromSlash(relative), source, &overlays); err != nil {
+			logf("注入 %s 失败：%v", relative, err)
+			return 1
+		}
+		logf("注入 %s ← %s", relative, source)
 	}
 	// 生成会话密钥对。客户端写死的"对端公钥"会被换成我们这把公钥，于是它加密出来的
 	// 东西只有拿着私钥的 broker 能解开——这是能当服务器的唯一办法，因为原公钥对应的
@@ -559,6 +590,52 @@ func mirroredDirectories(realRoot, overlayRoot string) []overlayBinding {
 		})
 	}
 	return bindings
+}
+
+// injectFile 往客户端目录里"加"一个文件，仍然只在命名空间里。
+//
+// 做法与插件那套一致：把目标所在的那一级**已存在**目录整体做一份替身（文件硬链接、
+// 子目录留空稍后挂真内容），把源文件放进替身里对应的位置，再把替身挂上去。
+//
+// 为什么不能直接把源文件 bind 到目标路径上：目标不存在时 bwrap 会在**宿主机**上把它
+// 建出来——等于往 Steam 的安装目录里写文件。踩过一次（空 manifest 被建到
+// StreamingAssets/PreinResource/manifests/ 里），所以这里宁可贵一点也要走替身。
+func injectFile(stateDir, clientDir, relative, source string, overlays *overlays) error {
+	target := filepath.Join(clientDir, relative)
+	parent := filepath.Dir(target)
+	for !isDirectory(parent) {
+		next := filepath.Dir(parent)
+		if next == parent {
+			return fmt.Errorf("客户端目录里没有可以放 %s 的位置", relative)
+		}
+		parent = next
+	}
+	insideParent, err := filepath.Rel(parent, target)
+	if err != nil {
+		return err
+	}
+	mirror := filepath.Join(stateDir, "inject", strings.ReplaceAll(relative, string(filepath.Separator), "_"))
+	if err := os.RemoveAll(mirror); err != nil {
+		return err
+	}
+	if err := mirrorDirectory(parent, mirror, nil); err != nil {
+		return err
+	}
+	destination := filepath.Join(mirror, insideParent)
+	if err := os.MkdirAll(filepath.Dir(destination), 0o755); err != nil {
+		return err
+	}
+	if err := linkFile(source, destination); err != nil {
+		return err
+	}
+	overlays.Bindings = append(overlays.Bindings, overlayBinding{mirror, parent})
+	overlays.Bindings = append(overlays.Bindings, mirroredDirectories(parent, mirror)...)
+	return nil
+}
+
+func isDirectory(path string) bool {
+	info, err := os.Stat(path)
+	return err == nil && info.IsDir()
 }
 
 // linkFile 让 target 与 source 是同一个文件。硬链接而不是软链接：原件要被 Windows
