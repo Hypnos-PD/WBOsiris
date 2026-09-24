@@ -16,6 +16,7 @@ import (
 
 	"wbo/internal/nativebroker"
 	"wbo/internal/nativeclient"
+	"wbo/internal/nativeprofile"
 	"wbo/internal/nativeproto"
 )
 
@@ -303,8 +304,20 @@ func runNativeBroker(args []string) int {
 			fmt.Fprintln(os.Stderr, err)
 			return 1
 		}
-		options.Handler = nativebroker.NewFixtureHandler(fixtures, log.Default())
+		// 档案层要放在夹具前面：/Load/index 虽然夹具里也有，但那一份的收藏是空的，
+		// 客户端拿空收藏会退回标题界面。
+		profile, err := nativeprofile.Load()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return 1
+		}
+		options.Handler = nativebroker.Chain(
+			nativebroker.NewProfileHandler(profile, fixtures, log.Default()),
+			nativebroker.NewFixtureHandler(fixtures, log.Default()),
+		)
 		fmt.Printf("已启用引导响应：覆盖 %d 条路由\n", len(fixtures.Routes()))
+		fmt.Printf("已启用档案层：收藏 %d 个 base 卡（契约 %s）\n",
+			len(profile.OwnedBaseCardIDs()), profile.SourceSHA256()[:12])
 		// 如实交代这批响应的来源——它们是本地重建的，不是抓到的官方响应。
 		if provenance := fixtures.Provenance(); provenance != "" {
 			fmt.Printf("  来源：%s\n", provenance)

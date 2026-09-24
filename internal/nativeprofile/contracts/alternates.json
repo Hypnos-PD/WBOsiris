@@ -1,0 +1,1022 @@
+{
+  "schema": 1,
+  "status": "ORIGINAL_DATA_ONLY_NOT_ENABLED",
+  "sources": {
+    "D:\\coding\\shadowverse-local-lab\\extracted\\master-tables\\CardMaster.json": "0343e41d8a96095a711cbbe44d56566e4a30c83e3f499dc8cf0e9fcfbc6eb71d",
+    "D:\\coding\\shadowverse-local-lab\\extracted\\master-tables\\BaseCardMaster.json": "9c67ea80bb0d1e1f7453d137e6f1e5303a7a7ad245c66ff81d7611bb6f4dc3ca",
+    "D:\\coding\\shadowverse-local-lab\\extracted\\master-tables\\CardText.json": "e24200c990f49324b9813d5d2a653af413f1c2d7a9a991a346bd908a7128be04",
+    "D:\\coding\\shadowverse-local-lab\\extracted\\master-tables\\MasterTextLabel.json": "68defd66fcc2799e1f5ea3191b8a655df8513518743fbab2eed624722ea2a2de",
+    "D:\\coding\\shadowverse-local-lab\\extracted\\master-tables\\SkillMaster.json": "5ca421eebc3196589ef9b9985c62d216961748dde671650897140e2f656ddc34",
+    "D:\\coding\\shadowverse-local-lab\\extracted\\master-tables\\SkillResourceMaster.json": "2e4269935f1494c210e8c00ce2e14f922e6334f346c907f9352997108e7ee303",
+    "D:\\coding\\shadowverse-battle-lab\\data-source\\cards.json": "31bba7d3bd82814b5902940d3b3c86f7fe28509c5cd35eb383d2b0252cd4e65f",
+    "D:\\coding\\shadowverse-battle-lab\\research\\native-practice\\contract.json": "48e46870cccdc6cb9d94e39684730cf4b8e1e8b731c6c545ece75d1a19a27ee2",
+    "D:\\coding\\shadowverse-workbench\\research\\client-static\\types.jsonl": "3e3595ae193c836a98da38936f8f4a72114af56462a7426e458e64f7814420e1"
+  },
+  "cardMasterSHA256": "0343e41d8a96095a711cbbe44d56566e4a30c83e3f499dc8cf0e9fcfbc6eb71d",
+  "cards": {
+    "10661112": {
+      "parentCardId": 10661110,
+      "kind": "crystallize",
+      "cost": 2,
+      "cardType": 3,
+      "countdown": 3,
+      "tribes": [
+        0
+      ],
+      "nameJpn": "<rub=\"すうほう\">崇奉</rub>の<rub=\"きょうしゃ\">怯者</rub>",
+      "nameChs": "崇奉的懦者",
+      "originalTextChs": [
+        "【<color=Keyword>吟唱</color>_3】\n【<color=Keyword>谢幕曲</color>】召唤1个『<color=Keyword>崇奉的懦者</color>』。"
+      ],
+      "originalTextCht": [
+        "【<color=Keyword>倒數</color>_3】\n【<color=Keyword>謝幕曲</color>】召喚1張『<color=Keyword>崇奉的怯懦者</color>』到自己的戰場上。"
+      ],
+      "skillIds": [
+        106611121
+      ],
+      "masterRow": {
+        "BaseCardId": 10661112,
+        "Type": 3,
+        "Class": 6,
+        "Tribes": [
+          0
+        ],
+        "Cost": 2,
+        "Atk": 0,
+        "Life": 0,
+        "ChantCount": 3,
+        "Rarity": 1,
+        "RelatedBaseCardIds": [
+          10661110
+        ],
+        "SpecificEffectCardIds": [],
+        "FaithRelatedBaseCardIds": []
+      },
+      "skillResourceRows": []
+    },
+    "10662112": {
+      "parentCardId": 10662110,
+      "kind": "crystallize",
+      "cost": 1,
+      "cardType": 3,
+      "countdown": 3,
+      "tribes": [
+        0
+      ],
+      "nameJpn": "<rub=\"すうけい\">崇敬</rub>の<rub=\"とふしゃ\">塗布者</rub>",
+      "nameChs": "崇敬的涂描者",
+      "originalTextChs": [
+        "【<color=Keyword>吟唱</color>_3】\n【<color=Keyword>谢幕曲</color>】召唤1个『<color=Keyword>崇敬的涂描者</color>』。"
+      ],
+      "originalTextCht": [
+        "【<color=Keyword>倒數</color>_3】\n【<color=Keyword>謝幕曲</color>】召喚1張『<color=Keyword>崇敬的塗抹者</color>』到自己的戰場上。"
+      ],
+      "skillIds": [
+        106621121
+      ],
+      "masterRow": {
+        "BaseCardId": 10662112,
+        "Type": 3,
+        "Class": 6,
+        "Tribes": [
+          0
+        ],
+        "Cost": 1,
+        "Atk": 0,
+        "Life": 0,
+        "ChantCount": 3,
+        "Rarity": 2,
+        "RelatedBaseCardIds": [
+          10662110
+        ],
+        "SpecificEffectCardIds": [],
+        "FaithRelatedBaseCardIds": []
+      },
+      "skillResourceRows": []
+    },
+    "10663112": {
+      "parentCardId": 10663110,
+      "kind": "crystallize",
+      "cost": 1,
+      "cardType": 3,
+      "countdown": 3,
+      "tribes": [
+        0
+      ],
+      "nameJpn": "<rub=\"すうはい\">崇拝</rub>の<rub=\"せいきし\">聖騎士</rub>",
+      "nameChs": "崇拜的圣骑士",
+      "originalTextChs": [
+        "【<color=Keyword>吟唱</color>_3】\n【<color=Keyword>谢幕曲</color>】召唤1个『<color=Keyword>崇拜的圣骑士</color>』。"
+      ],
+      "originalTextCht": [
+        "【<color=Keyword>倒數</color>_3】\n【<color=Keyword>謝幕曲</color>】召喚1張『<color=Keyword>崇拜的聖騎士</color>』到自己的戰場上。"
+      ],
+      "skillIds": [
+        106631121
+      ],
+      "masterRow": {
+        "BaseCardId": 10663112,
+        "Type": 3,
+        "Class": 6,
+        "Tribes": [
+          0
+        ],
+        "Cost": 1,
+        "Atk": 0,
+        "Life": 0,
+        "ChantCount": 3,
+        "Rarity": 3,
+        "RelatedBaseCardIds": [
+          10663110
+        ],
+        "SpecificEffectCardIds": [],
+        "FaithRelatedBaseCardIds": []
+      },
+      "skillResourceRows": []
+    },
+    "10671112": {
+      "parentCardId": 10671110,
+      "kind": "accelerate",
+      "cost": 2,
+      "cardType": 4,
+      "countdown": 0,
+      "tribes": [
+        0
+      ],
+      "nameJpn": "<rub=\"ていれつ\">低劣</rub>の<rub=\"がんぐ\">玩具</rub>",
+      "nameChs": "低劣的玩具",
+      "originalTextChs": [
+        "召唤1个『<color=Keyword>低劣的玩具</color>』。"
+      ],
+      "originalTextCht": [
+        "召喚1張『<color=Keyword>粗劣的玩具</color>』到自己的戰場上。"
+      ],
+      "skillIds": [
+        106711121
+      ],
+      "masterRow": {
+        "BaseCardId": 10671112,
+        "Type": 4,
+        "Class": 7,
+        "Tribes": [
+          0
+        ],
+        "Cost": 2,
+        "Atk": 0,
+        "Life": 0,
+        "ChantCount": 0,
+        "Rarity": 1,
+        "RelatedBaseCardIds": [
+          10671110
+        ],
+        "SpecificEffectCardIds": [],
+        "FaithRelatedBaseCardIds": []
+      },
+      "skillResourceRows": []
+    },
+    "10672112": {
+      "parentCardId": 10672110,
+      "kind": "accelerate",
+      "cost": 3,
+      "cardType": 4,
+      "countdown": 0,
+      "tribes": [
+        0
+      ],
+      "nameJpn": "<rub=\"せつれつ\">拙劣</rub>の<rub=\"にんぎょう\">人形</rub>",
+      "nameChs": "拙劣的人偶",
+      "originalTextChs": [
+        "召唤2个『<color=Keyword>拙劣的人偶</color>』。"
+      ],
+      "originalTextCht": [
+        "召喚2張『<color=Keyword>拙劣的人偶</color>』到自己的戰場上。"
+      ],
+      "skillIds": [
+        106721121
+      ],
+      "masterRow": {
+        "BaseCardId": 10672112,
+        "Type": 4,
+        "Class": 7,
+        "Tribes": [
+          0
+        ],
+        "Cost": 3,
+        "Atk": 0,
+        "Life": 0,
+        "ChantCount": 0,
+        "Rarity": 2,
+        "RelatedBaseCardIds": [
+          10672110
+        ],
+        "SpecificEffectCardIds": [],
+        "FaithRelatedBaseCardIds": []
+      },
+      "skillResourceRows": []
+    },
+    "10673112": {
+      "parentCardId": 10673110,
+      "kind": "accelerate",
+      "cost": 4,
+      "cardType": 4,
+      "countdown": 0,
+      "tribes": [
+        0
+      ],
+      "nameJpn": "<rub=\"ぐれつ\">愚劣</rub>の<rub=\"へいき\">兵器</rub>",
+      "nameChs": "愚劣的兵器",
+      "originalTextChs": [
+        "召唤1个『<color=Keyword>愚劣的兵器</color>』。"
+      ],
+      "originalTextCht": [
+        "召喚1張『<color=Keyword>愚劣的兵器</color>』到自己的戰場上。"
+      ],
+      "skillIds": [
+        106731121
+      ],
+      "masterRow": {
+        "BaseCardId": 10673112,
+        "Type": 4,
+        "Class": 7,
+        "Tribes": [
+          0
+        ],
+        "Cost": 4,
+        "Atk": 0,
+        "Life": 0,
+        "ChantCount": 0,
+        "Rarity": 3,
+        "RelatedBaseCardIds": [
+          10673110
+        ],
+        "SpecificEffectCardIds": [],
+        "FaithRelatedBaseCardIds": []
+      },
+      "skillResourceRows": []
+    },
+    "10844122": {
+      "parentCardId": 10844120,
+      "kind": "accelerate",
+      "cost": 3,
+      "cardType": 4,
+      "countdown": 0,
+      "tribes": [
+        0
+      ],
+      "nameJpn": "<rub=\"きんぎんけんらん\">金銀絢爛</rub>・リュミオール＆アルジャンテ",
+      "nameChs": "金银绚烂·璐米欧儿&雅尔贞特",
+      "originalTextChs": [
+        "使自己的能量点最大值+1。"
+      ],
+      "originalTextCht": [
+        "使自己的PP最大值+1。"
+      ],
+      "skillIds": [
+        108441221
+      ],
+      "masterRow": {
+        "BaseCardId": 10844122,
+        "Type": 4,
+        "Class": 4,
+        "Tribes": [
+          0
+        ],
+        "Cost": 3,
+        "Atk": 0,
+        "Life": 0,
+        "ChantCount": 0,
+        "Rarity": 4,
+        "RelatedBaseCardIds": [],
+        "SpecificEffectCardIds": [],
+        "FaithRelatedBaseCardIds": []
+      },
+      "skillResourceRows": []
+    },
+    "10901112": {
+      "parentCardId": 10901110,
+      "kind": "accelerate",
+      "cost": 1,
+      "cardType": 4,
+      "countdown": 0,
+      "tribes": [
+        0
+      ],
+      "nameJpn": "<rub=\"さいこ\">最古</rub>の<rub=\"ごくそつ\">獄卒</rub>",
+      "nameChs": "最古老的狱卒",
+      "originalTextChs": [
+        "对对手的战场上的随机1个随从造成2点伤害。"
+      ],
+      "originalTextCht": [
+        "隨機給予1張敵方戰場上的從者卡2點傷害。"
+      ],
+      "skillIds": [
+        109011121,
+        109011122
+      ],
+      "masterRow": {
+        "BaseCardId": 10901112,
+        "Type": 4,
+        "Class": 0,
+        "Tribes": [
+          0
+        ],
+        "Cost": 1,
+        "Atk": 0,
+        "Life": 0,
+        "ChantCount": 0,
+        "Rarity": 1,
+        "RelatedBaseCardIds": [],
+        "SpecificEffectCardIds": [],
+        "FaithRelatedBaseCardIds": []
+      },
+      "skillResourceRows": [
+        [
+          109011122,
+          0,
+          [
+            "btl_holy_slash_1"
+          ],
+          [
+            "DIRECT"
+          ],
+          0.20000000298023224,
+          false,
+          2,
+          [],
+          [
+            "fx_btl_holy_slash_1"
+          ],
+          [],
+          [],
+          0,
+          0,
+          [
+            "btl_common_attack_1"
+          ],
+          [
+            "DIRECT"
+          ],
+          0.0,
+          [
+            "fx_btl_common_attack_1"
+          ]
+        ]
+      ]
+    },
+    "10952112": {
+      "parentCardId": 10952110,
+      "kind": "crystallize",
+      "cost": 2,
+      "cardType": 3,
+      "countdown": 4,
+      "tribes": [
+        0
+      ],
+      "nameJpn": "<rub=\"えんてい\">淵底</rub>の<rub=\"たいさ\">大佐</rub>",
+      "nameChs": "渊底上校",
+      "originalTextChs": [
+        "【<color=Keyword>吟唱</color>_4】\n【<color=Keyword>谢幕曲</color>】召唤1个『<color=Keyword>渊底上校</color>』。"
+      ],
+      "originalTextCht": [
+        "【<color=Keyword>倒數</color>_4】\n【<color=Keyword>謝幕曲</color>】召喚1張『<color=Keyword>淵底上校</color>』到自己的戰場上。"
+      ],
+      "skillIds": [
+        109521121
+      ],
+      "masterRow": {
+        "BaseCardId": 10952112,
+        "Type": 3,
+        "Class": 5,
+        "Tribes": [
+          0
+        ],
+        "Cost": 2,
+        "Atk": 0,
+        "Life": 0,
+        "ChantCount": 4,
+        "Rarity": 2,
+        "RelatedBaseCardIds": [
+          10952110
+        ],
+        "SpecificEffectCardIds": [],
+        "FaithRelatedBaseCardIds": []
+      },
+      "skillResourceRows": []
+    },
+    "10962122": {
+      "parentCardId": 10962120,
+      "kind": "crystallize",
+      "cost": 1,
+      "cardType": 3,
+      "countdown": 3,
+      "tribes": [
+        0
+      ],
+      "nameJpn": "ミラクルアルミラージ",
+      "nameChs": "奇迹独角兔",
+      "originalTextChs": [
+        "【<color=Keyword>吟唱</color>_3】\n【<color=Keyword>谢幕曲</color>】召唤1个『<color=Keyword>奇迹独角兔</color>』。\n<hr>费用1【<color=Keyword>启动</color>】本护符的倒计数-1。"
+      ],
+      "originalTextCht": [
+        "【<color=Keyword>倒數</color>_3】\n【<color=Keyword>謝幕曲</color>】召喚1張『<color=Keyword>奇蹟的月兔妖</color>』到自己的戰場上。\n<hr>消費1【<color=Keyword>策動</color>】使這張卡片的倒數回合數-1。"
+      ],
+      "skillIds": [
+        109621221,
+        109621222,
+        109621223,
+        109621224
+      ],
+      "masterRow": {
+        "BaseCardId": 10962122,
+        "Type": 3,
+        "Class": 6,
+        "Tribes": [
+          0
+        ],
+        "Cost": 1,
+        "Atk": 0,
+        "Life": 0,
+        "ChantCount": 3,
+        "Rarity": 2,
+        "RelatedBaseCardIds": [
+          10962120
+        ],
+        "SpecificEffectCardIds": [],
+        "FaithRelatedBaseCardIds": []
+      },
+      "skillResourceRows": []
+    }
+  },
+  "printings": {
+    "10661112": {
+      "parent": 10661110,
+      "normal": 10661112,
+      "cardMasterRow": {
+        "CardId": 10661112,
+        "BaseCardId": 10661112,
+        "CardResourceId": 106611120,
+        "CardSetId": 10006,
+        "CardTextId": 106611120,
+        "FoilType": 0,
+        "NormalCardId": 10661112,
+        "FoilCardId": 10661113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70661112,
+        "PreConvertId": 10661110,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "egpu"
+      }
+    },
+    "10661113": {
+      "parent": 10661111,
+      "normal": 10661112,
+      "cardMasterRow": {
+        "CardId": 10661113,
+        "BaseCardId": 10661112,
+        "CardResourceId": 106611130,
+        "CardSetId": 10006,
+        "CardTextId": 106611120,
+        "FoilType": 1,
+        "NormalCardId": 10661112,
+        "FoilCardId": 10661113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70661112,
+        "PreConvertId": 10661111,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "egpu"
+      }
+    },
+    "70661112": {
+      "parent": 70661110,
+      "normal": 10661112,
+      "cardMasterRow": {
+        "CardId": 70661112,
+        "BaseCardId": 10661112,
+        "CardResourceId": 106611120,
+        "CardSetId": 10006,
+        "CardTextId": 106611120,
+        "FoilType": 3,
+        "NormalCardId": 10661112,
+        "FoilCardId": 10661113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70661112,
+        "PreConvertId": 70661110,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "egpu"
+      }
+    },
+    "10662112": {
+      "parent": 10662110,
+      "normal": 10662112,
+      "cardMasterRow": {
+        "CardId": 10662112,
+        "BaseCardId": 10662112,
+        "CardResourceId": 106621120,
+        "CardSetId": 10006,
+        "CardTextId": 106621120,
+        "FoilType": 0,
+        "NormalCardId": 10662112,
+        "FoilCardId": 10662113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70662112,
+        "PreConvertId": 10662110,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "eh3W"
+      }
+    },
+    "10662113": {
+      "parent": 10662111,
+      "normal": 10662112,
+      "cardMasterRow": {
+        "CardId": 10662113,
+        "BaseCardId": 10662112,
+        "CardResourceId": 106621130,
+        "CardSetId": 10006,
+        "CardTextId": 106621120,
+        "FoilType": 1,
+        "NormalCardId": 10662112,
+        "FoilCardId": 10662113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70662112,
+        "PreConvertId": 10662111,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "eh3W"
+      }
+    },
+    "70662112": {
+      "parent": 70662110,
+      "normal": 10662112,
+      "cardMasterRow": {
+        "CardId": 70662112,
+        "BaseCardId": 10662112,
+        "CardResourceId": 106621120,
+        "CardSetId": 10006,
+        "CardTextId": 106621120,
+        "FoilType": 3,
+        "NormalCardId": 10662112,
+        "FoilCardId": 10662113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70662112,
+        "PreConvertId": 70662110,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "eh3W"
+      }
+    },
+    "10663112": {
+      "parent": 10663110,
+      "normal": 10663112,
+      "cardMasterRow": {
+        "CardId": 10663112,
+        "BaseCardId": 10663112,
+        "CardResourceId": 106631120,
+        "CardSetId": 10006,
+        "CardTextId": 106631120,
+        "FoilType": 0,
+        "NormalCardId": 10663112,
+        "FoilCardId": 10663113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70663112,
+        "PreConvertId": 10663110,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "ehJ8"
+      }
+    },
+    "10663113": {
+      "parent": 10663111,
+      "normal": 10663112,
+      "cardMasterRow": {
+        "CardId": 10663113,
+        "BaseCardId": 10663112,
+        "CardResourceId": 106631130,
+        "CardSetId": 10006,
+        "CardTextId": 106631120,
+        "FoilType": 1,
+        "NormalCardId": 10663112,
+        "FoilCardId": 10663113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70663112,
+        "PreConvertId": 10663111,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "ehJ8"
+      }
+    },
+    "70663112": {
+      "parent": 70663110,
+      "normal": 10663112,
+      "cardMasterRow": {
+        "CardId": 70663112,
+        "BaseCardId": 10663112,
+        "CardResourceId": 106631120,
+        "CardSetId": 10006,
+        "CardTextId": 106631120,
+        "FoilType": 3,
+        "NormalCardId": 10663112,
+        "FoilCardId": 10663113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70663112,
+        "PreConvertId": 70663110,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "ehJ8"
+      }
+    },
+    "10671112": {
+      "parent": 10671110,
+      "normal": 10671112,
+      "cardMasterRow": {
+        "CardId": 10671112,
+        "BaseCardId": 10671112,
+        "CardResourceId": 106711120,
+        "CardSetId": 10006,
+        "CardTextId": 106711120,
+        "FoilType": 0,
+        "NormalCardId": 10671112,
+        "FoilCardId": 10671113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70671112,
+        "PreConvertId": 10671110,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "ejG8"
+      }
+    },
+    "10671113": {
+      "parent": 10671111,
+      "normal": 10671112,
+      "cardMasterRow": {
+        "CardId": 10671113,
+        "BaseCardId": 10671112,
+        "CardResourceId": 106711130,
+        "CardSetId": 10006,
+        "CardTextId": 106711120,
+        "FoilType": 1,
+        "NormalCardId": 10671112,
+        "FoilCardId": 10671113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70671112,
+        "PreConvertId": 10671111,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "ejG8"
+      }
+    },
+    "70671112": {
+      "parent": 70671110,
+      "normal": 10671112,
+      "cardMasterRow": {
+        "CardId": 70671112,
+        "BaseCardId": 10671112,
+        "CardResourceId": 106711120,
+        "CardSetId": 10006,
+        "CardTextId": 106711120,
+        "FoilType": 3,
+        "NormalCardId": 10671112,
+        "FoilCardId": 10671113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70671112,
+        "PreConvertId": 70671110,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "ejG8"
+      }
+    },
+    "10672112": {
+      "parent": 10672110,
+      "normal": 10672112,
+      "cardMasterRow": {
+        "CardId": 10672112,
+        "BaseCardId": 10672112,
+        "CardResourceId": 106721120,
+        "CardSetId": 10006,
+        "CardTextId": 106721120,
+        "FoilType": 0,
+        "NormalCardId": 10672112,
+        "FoilCardId": 10672113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70672112,
+        "PreConvertId": 10672110,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "ejVm"
+      }
+    },
+    "10672113": {
+      "parent": 10672111,
+      "normal": 10672112,
+      "cardMasterRow": {
+        "CardId": 10672113,
+        "BaseCardId": 10672112,
+        "CardResourceId": 106721130,
+        "CardSetId": 10006,
+        "CardTextId": 106721120,
+        "FoilType": 1,
+        "NormalCardId": 10672112,
+        "FoilCardId": 10672113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70672112,
+        "PreConvertId": 10672111,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "ejVm"
+      }
+    },
+    "70672112": {
+      "parent": 70672110,
+      "normal": 10672112,
+      "cardMasterRow": {
+        "CardId": 70672112,
+        "BaseCardId": 10672112,
+        "CardResourceId": 106721120,
+        "CardSetId": 10006,
+        "CardTextId": 106721120,
+        "FoilType": 3,
+        "NormalCardId": 10672112,
+        "FoilCardId": 10672113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70672112,
+        "PreConvertId": 70672110,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "ejVm"
+      }
+    },
+    "10673112": {
+      "parent": 10673110,
+      "normal": 10673112,
+      "cardMasterRow": {
+        "CardId": 10673112,
+        "BaseCardId": 10673112,
+        "CardResourceId": 106731120,
+        "CardSetId": 10006,
+        "CardTextId": 106731120,
+        "FoilType": 0,
+        "NormalCardId": 10673112,
+        "FoilCardId": 10673113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70673112,
+        "PreConvertId": 10673110,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "ejlO"
+      }
+    },
+    "10673113": {
+      "parent": 10673111,
+      "normal": 10673112,
+      "cardMasterRow": {
+        "CardId": 10673113,
+        "BaseCardId": 10673112,
+        "CardResourceId": 106731130,
+        "CardSetId": 10006,
+        "CardTextId": 106731120,
+        "FoilType": 1,
+        "NormalCardId": 10673112,
+        "FoilCardId": 10673113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70673112,
+        "PreConvertId": 10673111,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "ejlO"
+      }
+    },
+    "70673112": {
+      "parent": 70673110,
+      "normal": 10673112,
+      "cardMasterRow": {
+        "CardId": 70673112,
+        "BaseCardId": 10673112,
+        "CardResourceId": 106731120,
+        "CardSetId": 10006,
+        "CardTextId": 106731120,
+        "FoilType": 3,
+        "NormalCardId": 10673112,
+        "FoilCardId": 10673113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70673112,
+        "PreConvertId": 70673110,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "ejlO"
+      }
+    },
+    "10844122": {
+      "parent": 10844120,
+      "normal": 10844122,
+      "cardMasterRow": {
+        "CardId": 10844122,
+        "BaseCardId": 10844122,
+        "CardResourceId": 108441220,
+        "CardSetId": 10008,
+        "CardTextId": 108441220,
+        "FoilType": 0,
+        "NormalCardId": 10844122,
+        "FoilCardId": 10844123,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70844122,
+        "PreConvertId": 10844120,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "fNVQ"
+      }
+    },
+    "10844123": {
+      "parent": 10844121,
+      "normal": 10844122,
+      "cardMasterRow": {
+        "CardId": 10844123,
+        "BaseCardId": 10844122,
+        "CardResourceId": 108441230,
+        "CardSetId": 10008,
+        "CardTextId": 108441220,
+        "FoilType": 1,
+        "NormalCardId": 10844122,
+        "FoilCardId": 10844123,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70844122,
+        "PreConvertId": 10844121,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "fNVQ"
+      }
+    },
+    "70844122": {
+      "parent": 70844120,
+      "normal": 10844122,
+      "cardMasterRow": {
+        "CardId": 70844122,
+        "BaseCardId": 10844122,
+        "CardResourceId": 108441220,
+        "CardSetId": 10008,
+        "CardTextId": 108441220,
+        "FoilType": 3,
+        "NormalCardId": 10844122,
+        "FoilCardId": 10844123,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70844122,
+        "PreConvertId": 70844120,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "fNVQ"
+      }
+    },
+    "10901112": {
+      "parent": 10901110,
+      "normal": 10901112,
+      "cardMasterRow": {
+        "CardId": 10901112,
+        "BaseCardId": 10901112,
+        "CardResourceId": 109011120,
+        "CardSetId": 10009,
+        "CardTextId": 109011120,
+        "FoilType": 0,
+        "NormalCardId": 10901112,
+        "FoilCardId": 10901113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70901112,
+        "PreConvertId": 10901110,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "fbPu"
+      }
+    },
+    "10901113": {
+      "parent": 10901111,
+      "normal": 10901112,
+      "cardMasterRow": {
+        "CardId": 10901113,
+        "BaseCardId": 10901112,
+        "CardResourceId": 109011130,
+        "CardSetId": 10009,
+        "CardTextId": 109011120,
+        "FoilType": 1,
+        "NormalCardId": 10901112,
+        "FoilCardId": 10901113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70901112,
+        "PreConvertId": 10901111,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "fbPu"
+      }
+    },
+    "70901112": {
+      "parent": 70901110,
+      "normal": 10901112,
+      "cardMasterRow": {
+        "CardId": 70901112,
+        "BaseCardId": 10901112,
+        "CardResourceId": 109011120,
+        "CardSetId": 10009,
+        "CardTextId": 109011120,
+        "FoilType": 3,
+        "NormalCardId": 10901112,
+        "FoilCardId": 10901113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70901112,
+        "PreConvertId": 70901110,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "fbPu"
+      }
+    },
+    "10952112": {
+      "parent": 10952110,
+      "normal": 10952112,
+      "cardMasterRow": {
+        "CardId": 10952112,
+        "BaseCardId": 10952112,
+        "CardResourceId": 109521120,
+        "CardSetId": 10009,
+        "CardTextId": 109521120,
+        "FoilType": 0,
+        "NormalCardId": 10952112,
+        "FoilCardId": 10952113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70952112,
+        "PreConvertId": 10952110,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "fnsm"
+      }
+    },
+    "10952113": {
+      "parent": 10952111,
+      "normal": 10952112,
+      "cardMasterRow": {
+        "CardId": 10952113,
+        "BaseCardId": 10952112,
+        "CardResourceId": 109521130,
+        "CardSetId": 10009,
+        "CardTextId": 109521120,
+        "FoilType": 1,
+        "NormalCardId": 10952112,
+        "FoilCardId": 10952113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70952112,
+        "PreConvertId": 10952111,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "fnsm"
+      }
+    },
+    "70952112": {
+      "parent": 70952110,
+      "normal": 10952112,
+      "cardMasterRow": {
+        "CardId": 70952112,
+        "BaseCardId": 10952112,
+        "CardResourceId": 109521120,
+        "CardSetId": 10009,
+        "CardTextId": 109521120,
+        "FoilType": 3,
+        "NormalCardId": 10952112,
+        "FoilCardId": 10952113,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70952112,
+        "PreConvertId": 70952110,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "fnsm"
+      }
+    },
+    "10962122": {
+      "parent": 10962120,
+      "normal": 10962122,
+      "cardMasterRow": {
+        "CardId": 10962122,
+        "BaseCardId": 10962122,
+        "CardResourceId": 109621220,
+        "CardSetId": 10009,
+        "CardTextId": 109621220,
+        "FoilType": 0,
+        "NormalCardId": 10962122,
+        "FoilCardId": 10962123,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70962122,
+        "PreConvertId": 10962120,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "fqJA"
+      }
+    },
+    "10962123": {
+      "parent": 10962121,
+      "normal": 10962122,
+      "cardMasterRow": {
+        "CardId": 10962123,
+        "BaseCardId": 10962122,
+        "CardResourceId": 109621230,
+        "CardSetId": 10009,
+        "CardTextId": 109621220,
+        "FoilType": 1,
+        "NormalCardId": 10962122,
+        "FoilCardId": 10962123,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70962122,
+        "PreConvertId": 10962121,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "fqJA"
+      }
+    },
+    "70962122": {
+      "parent": 70962120,
+      "normal": 10962122,
+      "cardMasterRow": {
+        "CardId": 70962122,
+        "BaseCardId": 10962122,
+        "CardResourceId": 109621220,
+        "CardSetId": 10009,
+        "CardTextId": 109621220,
+        "FoilType": 3,
+        "NormalCardId": 10962122,
+        "FoilCardId": 10962123,
+        "HighRankFoilCardId": 0,
+        "WelcomeCardId": 70962122,
+        "PreConvertId": 70962120,
+        "LeaderAreaOwnerId": 0,
+        "HashId": "fqJA"
+      }
+    }
+  }
+}

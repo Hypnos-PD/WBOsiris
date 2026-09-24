@@ -1,7 +1,6 @@
 package nativebroker
 
 import (
-	"encoding/base64"
 	"log"
 	"time"
 
@@ -50,7 +49,7 @@ func (h *FixtureHandler) Route(request *Request) (Response, bool) {
 		h.logger.Printf("夹具 %s 编码失败：%v", request.Path, err)
 		return Response{}, false
 	}
-	sealed, err := request.Envelope.EncodeResponse(plain)
+	body, err := sealResponse(request.Envelope, plain)
 	if err != nil {
 		h.logger.Printf("夹具 %s 封包失败：%v", request.Path, err)
 		return Response{}, false
@@ -58,6 +57,6 @@ func (h *FixtureHandler) Route(request *Request) (Response, bool) {
 	return Response{
 		Status:      200,
 		ContentType: "application/octet-stream",
-		Body:        []byte(base64.StdEncoding.EncodeToString(sealed)),
+		Body:        body,
 	}, true
 }
