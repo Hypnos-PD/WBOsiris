@@ -155,7 +155,7 @@ wbo selfplay --source-root . --games 60 --policy greedy --random-deck --format r
 wbo selfplay --source-root . --games 60 --policy greedy --random-deck --format unlimited
 ```
 
-`selfplay` 用 `internal/ai` 的策略让双方自动打完若干局，报告先手/后手胜、平均回合与动作数，
+`selfplay` 用 `internal/engine/ai` 的策略让双方自动打完若干局，报告先手/后手胜、平均回合与动作数，
 以及卡池覆盖。它不看胜负，只看**能不能一直跑完**：崩溃、非法动作、回合上限、执行预算
 超限都会让退出码变成 1。`--random-deck` 按赛制随机生成双方卡组，是覆盖整个卡池的关键
 （固定练习卡组只用到 14 张卡）。

@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	"wbo/internal/nativeclient"
+	"wbo/native/client"
 )
 
 // native launch 把"带本地服务端的原版客户端"整个起起来，用户不需要知道 Steam 有
@@ -162,7 +162,7 @@ func runNativeLaunch(args []string) int {
 				logf("  %s", candidate)
 			}
 			logf("把构建产物拷到其中一个位置，或者用 --shim 指定绝对路径：")
-			logf("  cp native/yaha-shim/target/x86_64-pc-windows-gnu/release/yaha_shim.dll %s", firstDirOf(looked))
+			logf("  cp native/shim/target/x86_64-pc-windows-gnu/release/yaha_shim.dll %s", firstDirOf(looked))
 			logf("  %v", err)
 			return 1
 		}

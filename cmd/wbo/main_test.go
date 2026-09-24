@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"wbo/internal/ir"
-	"wbo/internal/runner"
+	"wbo/internal/engine/ir"
+	"wbo/internal/engine/runner"
 )
 
 func TestSimulationInputCannotAnswerOpponentChoice(t *testing.T) {

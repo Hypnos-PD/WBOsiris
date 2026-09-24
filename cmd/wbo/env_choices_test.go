@@ -6,10 +6,10 @@ import (
 	"reflect"
 	"testing"
 
-	"wbo/internal/ai"
-	"wbo/internal/project"
-	"wbo/internal/ruleset"
-	"wbo/internal/runner"
+	"wbo/internal/engine/ai"
+	"wbo/internal/engine/project"
+	"wbo/internal/engine/ruleset"
+	"wbo/internal/engine/runner"
 )
 
 // 随机卡组才能碰到多选（mode / fusion_material / 多目标）这类选择请求：

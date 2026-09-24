@@ -4,11 +4,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	"wbo/internal/ai"
-	"wbo/internal/ir"
-	"wbo/internal/project"
-	"wbo/internal/ruleset"
-	"wbo/internal/runner"
+	"wbo/internal/engine/ai"
+	"wbo/internal/engine/ir"
+	"wbo/internal/engine/project"
+	"wbo/internal/engine/ruleset"
+	"wbo/internal/engine/runner"
 )
 
 type externalRun struct {

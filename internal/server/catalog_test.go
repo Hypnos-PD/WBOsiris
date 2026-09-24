@@ -10,7 +10,7 @@ import (
 	"reflect"
 	"testing"
 
-	"wbo/internal/runner"
+	"wbo/internal/engine/runner"
 )
 
 func TestPublicCatalogMatchesConstructedDeckRules(t *testing.T) {

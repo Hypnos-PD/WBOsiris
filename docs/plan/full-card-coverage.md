@@ -79,63 +79,63 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-12 | ~~纹章块内的集合条件 / 按目标自身数值成倍~~ **已解决** | 已解锁 10204120 格里姆尼尔（纹章里 `if count(own.field.followers where form super_evolved) >= 1`）与 10233310 帕梅拉的舞蹈（`double stats own.field.followers;`） | 前半在 S-04 之后其实已经可用（纹章块走同一套效果校验），我此前误判为缺口；后半新增 `DoubleStats` 节点：按每个目标自己的当前数值翻倍。 |
 | S-13 | ~~`add card … to hand` 不产生绑定~~ **已解决**：`added` 绑定 | 已解锁 10271120 猫偶；全卡另有约 7 张"加入手牌后立即修改"的卡（10641310、10643310、10844110、10922310 等），后续卡包直接使用 | `add 1 card X to hand` 现在把成功进入手牌的实例绑成 `added`（手牌满被丢弃的不计入），Go 测试同时验证只有新卡被强化、手里的同名旧卡不受影响。 |
 | S-11 | `.wbotest` 无法声明先手 | 影响"抽牌耗尽判负"这类与先手有关的规则验证 | 规则本身已实现（`execute.go` 在无法满足抽牌时让对方获胜），但触发条件是 `firstPlayer != ""`，而场景测试不提供先手信息，这条路径只能由 Go 侧测试覆盖，场景测试写不出来。 |
-| S-18 | ~~条件里判断绑定对象的受伤状态~~ **已解决**：`if <绑定> damaged { … }` | 已解锁 10223110 剑士公主·萝泽（`attack { if opponent damaged { destroy opponent; } }`） | `internal/ir` 新增 `IsDamagedCondition`，条件求值新增 `conditionIn(c, self, bindings)`（执行与预检两处都带当前帧），绑定缺失或对象不是随从时为假。 |
+| S-18 | ~~条件里判断绑定对象的受伤状态~~ **已解决**：`if <绑定> damaged { … }` | 已解锁 10223110 剑士公主·萝泽（`attack { if opponent damaged { destroy opponent; } }`） | `internal/engine/ir` 新增 `IsDamagedCondition`，条件求值新增 `conditionIn(c, self, bindings)`（执行与预检两处都带当前帧），绑定缺失或对象不是随从时为假。 |
 | S-19 | ~~随从与主战者混合的随机集合~~ **已解决**：`field.followers [other] or leaders` | 已解锁 10524110 威猛的《战车》·奥辂昂 | `CharacterSetRef` 的 `side` 允许为空（双方战场随从 + 双方主战者），并新增 `excludeSelf` 对应 `other`；`random`/`choose`/`require`/`first` 共用这套混合集合。 |
 
 ## 已完成的语言扩展
 
 | 编号 | 扩展 | 改动 | 验证 |
 | --- | --- | --- | --- |
-| S-04 | `if count(集合 [where …]) 比较 整数` —— 集合计数条件 | `internal/ir/model.go`（新增 `CountCondition`）、`internal/project/typed_ir.go`（解析，含集合与筛选）、`internal/project/validate.go` 与 `strict_validate.go`（形状校验，复用 `parseEffectAmount` 处理括号）、`internal/runner/execute.go`（求值并比较）、`internal/ir/decode.go`（容器解码）、文档 | Go 单测 `internal/project/count_condition_test.go`（带筛选/不带筛选、拒绝缺比较符与多余 token）；7 张卡共 10 个场景 |
-| S-05 | `enhance N replaces { ... }` —— 爆能强化的"改为"档 | `internal/project/validate.go`（允许 `replaces`）、`internal/project/typed_ir.go`（写入 `Ability.Relation`）、`internal/runner/runner.go`（`commitPlay` 在支付该档时跳过基础效果与入场曲）、`docs/language/cards.md`/`grammar.md` | Go 单测 `internal/project/enhance_replaces_test.go`（关系被保留、fanfare 不受影响、拒绝 `extends`/缺档位等错误形状）；卡片 10222310 + 2 个场景（普通档只打 1 个，爆能档恰好打 3 个且没有多出一次基础伤害） |
-| S-02 | `draw N for own\|oppo` —— 让对方抽牌 | `internal/project/validate.go`（接受可选 `for` 子句）、`internal/project/typed_ir.go`（写入 `DrawEffect.Owner`）、`docs/language/cards.md`、`docs/language/grammar.md` | Go 单测 `internal/project/draw_owner_test.go`（默认仍是自己、`for oppo` 生效、保留过滤器、拒绝 `for self`/重复 `for`/`draw all for oppo` 无过滤器、格式稳定）；卡片 10221310 + 2 个场景 |
-| S-14 | `fused.cost` / `fused.distinct` 的作用域 | 原实现只允许在 `fusion` 块内读，但"若已与本卡牌融合，则改为抽取 2 张"这类文本的判断点在打出/入场结算时。`internal/project/strict_validate.go` 新增 `effectContext.materials`：卡牌只要声明了 `fusion`，其任意效果块（含 `when … if …`）都可读 `fused`；没声明融合的卡牌读它仍然报错。文档同步 `cards.md` / `grammar.md` | Go 单测 `internal/project/fused_scalar_scope_test.go`（法术 `effect` 内可读且条件被完整保留、无融合声明时拒绝）；卡片 10213310 + 2 个场景，并由 `internal/runner/fused_play_effect_test.go` 用真实卡表端到端覆盖"融合后抽 2 / 未融合抽 1" |
-| S-14b | `fused.cost` / `fused.distinct` 作为数值 | S-14 只让它们在条件里可读；`damage oppo.field.followers fused.distinct;` 这类把融合数当伤害值的文本还需要数值入口。`internal/project/numeric.go`（`fused.` → `Scalar{Kind:"fusion_material_scalar"}`）、`internal/project/validate.go`（`parseEffectAmount` 接受 `fused.`）、`internal/ir/amount.go`（`validNumericExpr` 与容器解码）、`internal/runner/numeric.go`（按材料求值） | Go 单测 `internal/project/fused_amount_test.go`；卡片 10324110 篡夺的继承者·辛瑟莱兹按融合种类造成伤害 + 2 个场景 |
-| S-15 | 测试 DSL 的实例字段断言 | 新增 `alias.attack_limit`（取 `attackLimit()`，"1 回合可以攻击 N 次"）与 `alias.damage_reduction`；`internal/project/validate.go`、`strict_validate.go`、`internal/ir/test_decode.go`、`internal/runner/assert.go` 四处白名单同步，写错字段名从"静默不相等"改成检查期报错 | 卡片 10274120 场景直接断言 `source.attack_limit == 2`；全量 444 个场景回归 |
-| S-01 | `remove lastwords from …` / `remove all abilities from …`（实例级失去能力） | `internal/project/validate.go`（`remove` 新增两种形状）、`typed_ir.go` + `keyword_effect.go`（解析成 `remove_ability`，`Keyword` 取 `lastwords`/`all`）、`internal/ir/encode.go`/`decode.go`（新效果种类）、`internal/runner/grant.go`（`suppressed`/`suppressAll`、剔除已排队触发、重新索引）、`internal/runner/execute.go`（派发）、`internal/runner/continuation.go`（连击快照保存抑制状态）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/ability_removal_test.go`（两种形状编成 `remove_ability`、拒绝 `remove fanfare`/漏 `from`/`add lastwords`/带 `until`）与 `internal/runner/ability_removal_test.go`（僵尸链在第二次死亡后停止、`remove all abilities` 同时清掉固有关键词与谢幕曲）；卡片 90051140、10252120、10251310 + 3 个场景 |
-| S-42 | `damage_cap N`（实例伤害上限）与主战者 `damage_taken_up`（受到的伤害 +1） | `internal/project/validate.go`（固有词形状与 `abilities` 集合）、`strict_validate.go`（固有能力/关键词形状表）、`typed_ir.go`（写入 `IntrinsicState`）、`internal/ir/decode.go`（固有状态与关键词白名单）、`internal/runner/runner.go`（`instance.damageCap`、`resetCardState`、`modifyDamage` 在减伤之后压上限；`damageLeaderFrom`/`damageLeaders` 在屏障判定前加一）、`internal/runner/continuation.go`（`DamageCap` 快照与恢复）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/damage_cap_test.go`（8/3/2 三种输入、"受伤 +1"、与屏障同时存在时为 0）；卡片 10401110、10464120、10474120、10444110 + 7 个场景 |
-| S-43 | `own.crests` / `oppo.crests` 作为可操作目标集合 | `internal/project/validate.go`（目标集合接受 `crests`）、`typed_ir.go`（纹章集合的成员固定为 `card`）、`internal/ir/decode.go`（只接受 `zone:"crests"` 且 `member:"card"`）、`internal/runner/history.go`（`crestZoneRef`：只有显式纹章集合才把纹章纳入目标）、`internal/runner/runner.go`（`destroyTargets` 对纹章走 `expireCrest`）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/crest_target_and_play_frame_test.go`、`internal/ir/crest_test.go`（拒绝泛化的纹章区域引用）、`internal/runner/crest_test.go`（纹章不会被当成普通卡移动或变身）；卡片 10453310、10454120 + 4 个场景 |
-| S-44 | 一次打出的效果块共享打出帧 | `internal/runner/runner.go`（`commitPlay` 为外层效果、入场曲与爆能强化创建同一个 `frame`）、`internal/project/validate.go`（把入场曲的输出并入后续 `enhance` 的可见绑定；`producedBindings` 补上 `added`；登记 `played` 事件绑定）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/crest_target_and_play_frame_test.go`（声明顺序两侧）、`internal/runner/enhance_play_frame_test.go`（爆能强化的复制体获得【毁灭】且本体没有）；卡片 10424110 + 2 个场景 |
-| S-45 | `add copies of … to hand`（复制同名卡加入手牌） | `internal/project/validate.go`（`add` 形状）、`typed_ir.go`（`add_copies`）、`internal/ir/encode.go`/`decode.go`、`internal/runner/execute.go`（按目标卡牌定义创建实例并用 `putInHandOrOverdraw` 加入手牌）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/copies_and_hand_summon_test.go`（形状、目标绑定、拒绝未知目的地）；卡片 10443310 + 3 个场景 |
-| S-46 | `summon <绑定>`（把手牌对象召唤到战场） | `internal/project/validate.go`（`summon` 两 token 形状）、`typed_ir.go`（`summon_from_hand`）、`internal/ir/encode.go`/`decode.go`、`internal/runner/execute.go`（`move` 到手牌之外的战场、置入场等待、发 `summoned` 事件）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/copies_and_hand_summon_test.go`（形状、拒绝未定义绑定）；卡片 10412110 + 2 个场景 |
-| S-47 | 筛选器 `attacked this turn` / `not attacked this turn` | `internal/project/validate.go`（`parseWhere` 词条）、`typed_ir.go`（`filterIR` 谓词）、`internal/ir/encode.go`/`decode.go`（谓词白名单）、`internal/runner/execute.go`（`matches` 读取 `attacksUsed`）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/attacked_filter_test.go`（合取保留两个词条、两种极性、拒绝其它 `not` 形状）；卡片 10464110 + 3 个场景 |
-| S-50 | `<绑定>.attack\|life\|cost` 数值 | `internal/ir/amount.go`（`validNumericExpr`、`decodeNumericValue`）、`internal/ir/counters.go`（`ValidBindingName`）、`internal/project/numeric.go`（生成 `binding_scalar`）、`internal/project/validate.go`（`parseEffectAmount` 形状）、`internal/runner/numeric.go`（按绑定求值）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/binding_scalar_test.go`（生成 `binding_scalar`、拒绝不支持的字段）；卡片 10473110 + 2 个场景 |
-| S-53 | `raise countdown <集合> N` | `internal/project/validate.go`（`raise` 接受 `countdown`）、`typed_ir.go`（沿用 `adjust_entity_field` 的正增量） | Go 单测 `internal/project/binding_scalar_test.go`（`Field=countdown`、拒绝缺增量）；卡片 90064310 + 1 个场景 |
-| S-54 | `set_attack_limit <目标> N` | `internal/project/validate.go`（`set_attack_limit` 由 `self` 放宽为任意 `value_ref`） | Go 单测 `internal/project/binding_scalar_test.go`（目标保留为绑定）；卡片 90034350 + 1 个场景 |
-| S-55 | 护符固有关键词 `aura` | `internal/project/strict_validate.go`（非随从只对 `aura` 开例外） | Go 单测 `internal/project/amulet_aura_test.go`（`aura` 编入 intrinsic、护符上的 `ward` 仍被拒绝）；卡片 90064210 + 1 个场景 |
-| S-56 | `raise\|reduce cost T N until …`（带期限的费用修改） | `internal/ir/model.go`（`AdjustEffect.Until`）、`internal/ir/encode.go`/`decode.go`（形状与期限白名单）、`internal/project/validate.go`/`typed_ir.go`（解析）、`internal/runner/execute.go`（按到期侧记录差量）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/temporary_cost_test.go`（到期只撤销自己的差量）；卡片 90044310 + 2 个场景 |
-| S-59 | `add N card C to deck`（加入牌组） | `internal/project/validate.go`/`typed_ir.go`（目的地放宽到 `deck`）、`internal/ir/decode.go`（`add_card`/`add_copies` 允许 `deck`）、`internal/runner/execute.go`（随机位置插入牌组）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/add_to_deck_test.go`（目的地与 `added` 输出、拒绝未知目的地）；卡片 10551310 + 1 个场景 |
-| S-68 | `during own\|oppo turn` 用于回复事件 | `internal/project/strict_validate.go`（事件模式放宽到玩家侧事件）、`internal/ir/decode.go`（`duringTurn` 允许 `healed`） | Go 单测 `internal/project/healed_turn_event_test.go`（回复事件带上回合窗口、`self survives damage during …` 未回归）；卡片 10563110 + 2 个场景 |
-| S-62 | 抽牌事件 `card_drawn` | `internal/project/strict_validate.go`（`card drawn` / `self drawn` 事件形状）、`typed_ir.go`（映射到 `card_drawn`、`self drawn` 隐式 `sourceZone=hand`）、`validate.go`（登记 `drawn` 绑定）、`internal/ir/decode.go`（事件白名单与自身监听的形状）、`internal/runner/execute.go`（`triggerDrawn` 按每张抽到的卡派发）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/drawn_event_test.go`（双方抽牌、`during` 窗口、`self drawn`、`drawn.cost` 作为数值）；卡片 10561120、10522110、10562120 + 8 个场景 |
-| S-70 | `summon random N card A or card B [for own\|oppo]`（随机池召唤） | `internal/ir/summon_pool.go`（新节点与池校验）、`internal/ir/decode.go`（解码与卡牌引用检查）、`internal/project/summon_pool.go`/`typed_ir.go`/`validate.go`（解析与形状）、`internal/runner/summon_pool.go` + `session.go`（随机抽取并召唤）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/summon_pool_test.go`（池内容、`for oppo`、拒绝单卡池）；卡片 10564120 + 3 个场景 |
-| S-58 | `own\|oppo.hand\|deck has N same cost`（同费用张数） | `internal/ir/model.go`（`SameCostCondition`）、`internal/ir/decode.go`、`internal/project/strict_validate.go`/`validate.go`/`typed_ir.go`、`internal/runner/execute.go`（按当前费用统计最多同费张数）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/same_cost_and_summoned_all_test.go`；卡片 10553310 + 2 个场景 |
-| S-71 | `when own\|oppo follower attacks [leader]`（宣告攻击事件） | `internal/ir/model.go`（`EventTrigger.TargetKind`）、`internal/ir/decode.go`（事件白名单与目标种类校验）、`internal/project/strict_validate.go`/`typed_ir.go`/`validate.go`（事件形状与 `attacker` 绑定）、`internal/runner/runner.go`（事件带上攻击方一侧、绑定名 `attacker`）、`internal/runner/trigger_index.go`（按目标种类过滤）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/attack_event_test.go`（双方、`attacks leader`、筛选与临时增益）；卡片 10474110、10544120 + 8 个场景 |
-| S-73 | `mode random N { … }`（随机模式） | `internal/ir/model.go`（`ModeEffect.Random`）、`internal/ir/decode.go`、`internal/project/validate.go`/`strict_validate.go`/`typed_ir.go`、`internal/runner/session.go`（`pushRandomMode`：随机选 N 个不同选项并按编号入栈）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/random_mode_test.go`（编译保留 `random` 与数量、拒绝 0 与单选项）；卡片 10532310 + 2 个场景 |
-| S-75 | `where not <词条>`（否定筛选） | `internal/ir/model.go`（`NotPredicate`）、`internal/ir/decode.go`（解码、卡牌引用检查）、`internal/project/validate.go`（`negatedWhereTerm`）、`typed_ir.go`（`filterIR`）、`internal/runner/execute.go`（`matches` 取反）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/not_filter_test.go`；卡片 10603210 + 1 个场景 |
-| S-77 | `where enhanced`（本次通过爆能强化打出） | `internal/runner/runner.go`（`instance.enhancedPlay` 在 `applyPlaySetup` 前设置）、`internal/project/validate.go`/`typed_ir.go`（筛选词条）、`internal/ir/decode.go`/`encode.go`（谓词白名单）、`internal/runner/execute.go`（求值）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/enhanced_filter_test.go`；卡片 10622310 + 3 个场景 |
-| S-78 | `where lastwords`（拥有【谢幕曲】筛选） | `internal/project/validate.go`（`parseWhere`/`negatedWhereTerm` 接受 `lastwords`）、`typed_ir.go`（`has_lastwords` 谓词）、`internal/ir/decode.go`/`encode.go`（谓词白名单）、`internal/runner/execute.go`（按卡牌定义的 `lastwords` 触发判定）；文档 `cards.md`/`grammar.md` | 卡片 10663210、10664110 + 3 个场景（含"只破坏过同一种护符时只召唤一张"）。局限：只看卡牌定义的固有能力，`grant` 临时获得的【谢幕曲】不算 |
-| S-79 | 破坏历史召唤的 `distinct names`（随机 N 种各 1 张） | `internal/ir/history_summon.go`（`DistinctNames`）、`internal/ir/decode.go`（解码并写回效果）、`internal/project/history_summon.go`（解析 `distinct names`）、`internal/runner/history_summon.go`（每抽一张后按卡牌 ID 排除同名候选）；文档 `cards.md` | Go 单测 + 卡片 10664110 + 2 个场景。解码器最初漏了 `DistinctNames` 回填，运行期恒为 `false`，被"只有一种护符时只召唤一张"的场景抓住 |
+| S-04 | `if count(集合 [where …]) 比较 整数` —— 集合计数条件 | `internal/engine/ir/model.go`（新增 `CountCondition`）、`internal/engine/project/typed_ir.go`（解析，含集合与筛选）、`internal/engine/project/validate.go` 与 `strict_validate.go`（形状校验，复用 `parseEffectAmount` 处理括号）、`internal/engine/runner/execute.go`（求值并比较）、`internal/engine/ir/decode.go`（容器解码）、文档 | Go 单测 `internal/engine/project/count_condition_test.go`（带筛选/不带筛选、拒绝缺比较符与多余 token）；7 张卡共 10 个场景 |
+| S-05 | `enhance N replaces { ... }` —— 爆能强化的"改为"档 | `internal/engine/project/validate.go`（允许 `replaces`）、`internal/engine/project/typed_ir.go`（写入 `Ability.Relation`）、`internal/engine/runner/runner.go`（`commitPlay` 在支付该档时跳过基础效果与入场曲）、`docs/language/cards.md`/`grammar.md` | Go 单测 `internal/engine/project/enhance_replaces_test.go`（关系被保留、fanfare 不受影响、拒绝 `extends`/缺档位等错误形状）；卡片 10222310 + 2 个场景（普通档只打 1 个，爆能档恰好打 3 个且没有多出一次基础伤害） |
+| S-02 | `draw N for own\|oppo` —— 让对方抽牌 | `internal/engine/project/validate.go`（接受可选 `for` 子句）、`internal/engine/project/typed_ir.go`（写入 `DrawEffect.Owner`）、`docs/language/cards.md`、`docs/language/grammar.md` | Go 单测 `internal/engine/project/draw_owner_test.go`（默认仍是自己、`for oppo` 生效、保留过滤器、拒绝 `for self`/重复 `for`/`draw all for oppo` 无过滤器、格式稳定）；卡片 10221310 + 2 个场景 |
+| S-14 | `fused.cost` / `fused.distinct` 的作用域 | 原实现只允许在 `fusion` 块内读，但"若已与本卡牌融合，则改为抽取 2 张"这类文本的判断点在打出/入场结算时。`internal/engine/project/strict_validate.go` 新增 `effectContext.materials`：卡牌只要声明了 `fusion`，其任意效果块（含 `when … if …`）都可读 `fused`；没声明融合的卡牌读它仍然报错。文档同步 `cards.md` / `grammar.md` | Go 单测 `internal/engine/project/fused_scalar_scope_test.go`（法术 `effect` 内可读且条件被完整保留、无融合声明时拒绝）；卡片 10213310 + 2 个场景，并由 `internal/engine/runner/fused_play_effect_test.go` 用真实卡表端到端覆盖"融合后抽 2 / 未融合抽 1" |
+| S-14b | `fused.cost` / `fused.distinct` 作为数值 | S-14 只让它们在条件里可读；`damage oppo.field.followers fused.distinct;` 这类把融合数当伤害值的文本还需要数值入口。`internal/engine/project/numeric.go`（`fused.` → `Scalar{Kind:"fusion_material_scalar"}`）、`internal/engine/project/validate.go`（`parseEffectAmount` 接受 `fused.`）、`internal/engine/ir/amount.go`（`validNumericExpr` 与容器解码）、`internal/engine/runner/numeric.go`（按材料求值） | Go 单测 `internal/engine/project/fused_amount_test.go`；卡片 10324110 篡夺的继承者·辛瑟莱兹按融合种类造成伤害 + 2 个场景 |
+| S-15 | 测试 DSL 的实例字段断言 | 新增 `alias.attack_limit`（取 `attackLimit()`，"1 回合可以攻击 N 次"）与 `alias.damage_reduction`；`internal/engine/project/validate.go`、`strict_validate.go`、`internal/engine/ir/test_decode.go`、`internal/engine/runner/assert.go` 四处白名单同步，写错字段名从"静默不相等"改成检查期报错 | 卡片 10274120 场景直接断言 `source.attack_limit == 2`；全量 444 个场景回归 |
+| S-01 | `remove lastwords from …` / `remove all abilities from …`（实例级失去能力） | `internal/engine/project/validate.go`（`remove` 新增两种形状）、`typed_ir.go` + `keyword_effect.go`（解析成 `remove_ability`，`Keyword` 取 `lastwords`/`all`）、`internal/engine/ir/encode.go`/`decode.go`（新效果种类）、`internal/engine/runner/grant.go`（`suppressed`/`suppressAll`、剔除已排队触发、重新索引）、`internal/engine/runner/execute.go`（派发）、`internal/engine/runner/continuation.go`（连击快照保存抑制状态）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/ability_removal_test.go`（两种形状编成 `remove_ability`、拒绝 `remove fanfare`/漏 `from`/`add lastwords`/带 `until`）与 `internal/engine/runner/ability_removal_test.go`（僵尸链在第二次死亡后停止、`remove all abilities` 同时清掉固有关键词与谢幕曲）；卡片 90051140、10252120、10251310 + 3 个场景 |
+| S-42 | `damage_cap N`（实例伤害上限）与主战者 `damage_taken_up`（受到的伤害 +1） | `internal/engine/project/validate.go`（固有词形状与 `abilities` 集合）、`strict_validate.go`（固有能力/关键词形状表）、`typed_ir.go`（写入 `IntrinsicState`）、`internal/engine/ir/decode.go`（固有状态与关键词白名单）、`internal/engine/runner/runner.go`（`instance.damageCap`、`resetCardState`、`modifyDamage` 在减伤之后压上限；`damageLeaderFrom`/`damageLeaders` 在屏障判定前加一）、`internal/engine/runner/continuation.go`（`DamageCap` 快照与恢复）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/runner/damage_cap_test.go`（8/3/2 三种输入、"受伤 +1"、与屏障同时存在时为 0）；卡片 10401110、10464120、10474120、10444110 + 7 个场景 |
+| S-43 | `own.crests` / `oppo.crests` 作为可操作目标集合 | `internal/engine/project/validate.go`（目标集合接受 `crests`）、`typed_ir.go`（纹章集合的成员固定为 `card`）、`internal/engine/ir/decode.go`（只接受 `zone:"crests"` 且 `member:"card"`）、`internal/engine/runner/history.go`（`crestZoneRef`：只有显式纹章集合才把纹章纳入目标）、`internal/engine/runner/runner.go`（`destroyTargets` 对纹章走 `expireCrest`）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/crest_target_and_play_frame_test.go`、`internal/engine/ir/crest_test.go`（拒绝泛化的纹章区域引用）、`internal/engine/runner/crest_test.go`（纹章不会被当成普通卡移动或变身）；卡片 10453310、10454120 + 4 个场景 |
+| S-44 | 一次打出的效果块共享打出帧 | `internal/engine/runner/runner.go`（`commitPlay` 为外层效果、入场曲与爆能强化创建同一个 `frame`）、`internal/engine/project/validate.go`（把入场曲的输出并入后续 `enhance` 的可见绑定；`producedBindings` 补上 `added`；登记 `played` 事件绑定）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/engine/project/crest_target_and_play_frame_test.go`（声明顺序两侧）、`internal/engine/runner/enhance_play_frame_test.go`（爆能强化的复制体获得【毁灭】且本体没有）；卡片 10424110 + 2 个场景 |
+| S-45 | `add copies of … to hand`（复制同名卡加入手牌） | `internal/engine/project/validate.go`（`add` 形状）、`typed_ir.go`（`add_copies`）、`internal/engine/ir/encode.go`/`decode.go`、`internal/engine/runner/execute.go`（按目标卡牌定义创建实例并用 `putInHandOrOverdraw` 加入手牌）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/copies_and_hand_summon_test.go`（形状、目标绑定、拒绝未知目的地）；卡片 10443310 + 3 个场景 |
+| S-46 | `summon <绑定>`（把手牌对象召唤到战场） | `internal/engine/project/validate.go`（`summon` 两 token 形状）、`typed_ir.go`（`summon_from_hand`）、`internal/engine/ir/encode.go`/`decode.go`、`internal/engine/runner/execute.go`（`move` 到手牌之外的战场、置入场等待、发 `summoned` 事件）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/copies_and_hand_summon_test.go`（形状、拒绝未定义绑定）；卡片 10412110 + 2 个场景 |
+| S-47 | 筛选器 `attacked this turn` / `not attacked this turn` | `internal/engine/project/validate.go`（`parseWhere` 词条）、`typed_ir.go`（`filterIR` 谓词）、`internal/engine/ir/encode.go`/`decode.go`（谓词白名单）、`internal/engine/runner/execute.go`（`matches` 读取 `attacksUsed`）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/engine/project/attacked_filter_test.go`（合取保留两个词条、两种极性、拒绝其它 `not` 形状）；卡片 10464110 + 3 个场景 |
+| S-50 | `<绑定>.attack\|life\|cost` 数值 | `internal/engine/ir/amount.go`（`validNumericExpr`、`decodeNumericValue`）、`internal/engine/ir/counters.go`（`ValidBindingName`）、`internal/engine/project/numeric.go`（生成 `binding_scalar`）、`internal/engine/project/validate.go`（`parseEffectAmount` 形状）、`internal/engine/runner/numeric.go`（按绑定求值）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/binding_scalar_test.go`（生成 `binding_scalar`、拒绝不支持的字段）；卡片 10473110 + 2 个场景 |
+| S-53 | `raise countdown <集合> N` | `internal/engine/project/validate.go`（`raise` 接受 `countdown`）、`typed_ir.go`（沿用 `adjust_entity_field` 的正增量） | Go 单测 `internal/engine/project/binding_scalar_test.go`（`Field=countdown`、拒绝缺增量）；卡片 90064310 + 1 个场景 |
+| S-54 | `set_attack_limit <目标> N` | `internal/engine/project/validate.go`（`set_attack_limit` 由 `self` 放宽为任意 `value_ref`） | Go 单测 `internal/engine/project/binding_scalar_test.go`（目标保留为绑定）；卡片 90034350 + 1 个场景 |
+| S-55 | 护符固有关键词 `aura` | `internal/engine/project/strict_validate.go`（非随从只对 `aura` 开例外） | Go 单测 `internal/engine/project/amulet_aura_test.go`（`aura` 编入 intrinsic、护符上的 `ward` 仍被拒绝）；卡片 90064210 + 1 个场景 |
+| S-56 | `raise\|reduce cost T N until …`（带期限的费用修改） | `internal/engine/ir/model.go`（`AdjustEffect.Until`）、`internal/engine/ir/encode.go`/`decode.go`（形状与期限白名单）、`internal/engine/project/validate.go`/`typed_ir.go`（解析）、`internal/engine/runner/execute.go`（按到期侧记录差量）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/runner/temporary_cost_test.go`（到期只撤销自己的差量）；卡片 90044310 + 2 个场景 |
+| S-59 | `add N card C to deck`（加入牌组） | `internal/engine/project/validate.go`/`typed_ir.go`（目的地放宽到 `deck`）、`internal/engine/ir/decode.go`（`add_card`/`add_copies` 允许 `deck`）、`internal/engine/runner/execute.go`（随机位置插入牌组）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/engine/project/add_to_deck_test.go`（目的地与 `added` 输出、拒绝未知目的地）；卡片 10551310 + 1 个场景 |
+| S-68 | `during own\|oppo turn` 用于回复事件 | `internal/engine/project/strict_validate.go`（事件模式放宽到玩家侧事件）、`internal/engine/ir/decode.go`（`duringTurn` 允许 `healed`） | Go 单测 `internal/engine/project/healed_turn_event_test.go`（回复事件带上回合窗口、`self survives damage during …` 未回归）；卡片 10563110 + 2 个场景 |
+| S-62 | 抽牌事件 `card_drawn` | `internal/engine/project/strict_validate.go`（`card drawn` / `self drawn` 事件形状）、`typed_ir.go`（映射到 `card_drawn`、`self drawn` 隐式 `sourceZone=hand`）、`validate.go`（登记 `drawn` 绑定）、`internal/engine/ir/decode.go`（事件白名单与自身监听的形状）、`internal/engine/runner/execute.go`（`triggerDrawn` 按每张抽到的卡派发）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/engine/project/drawn_event_test.go`（双方抽牌、`during` 窗口、`self drawn`、`drawn.cost` 作为数值）；卡片 10561120、10522110、10562120 + 8 个场景 |
+| S-70 | `summon random N card A or card B [for own\|oppo]`（随机池召唤） | `internal/engine/ir/summon_pool.go`（新节点与池校验）、`internal/engine/ir/decode.go`（解码与卡牌引用检查）、`internal/engine/project/summon_pool.go`/`typed_ir.go`/`validate.go`（解析与形状）、`internal/engine/runner/summon_pool.go` + `session.go`（随机抽取并召唤）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/summon_pool_test.go`（池内容、`for oppo`、拒绝单卡池）；卡片 10564120 + 3 个场景 |
+| S-58 | `own\|oppo.hand\|deck has N same cost`（同费用张数） | `internal/engine/ir/model.go`（`SameCostCondition`）、`internal/engine/ir/decode.go`、`internal/engine/project/strict_validate.go`/`validate.go`/`typed_ir.go`、`internal/engine/runner/execute.go`（按当前费用统计最多同费张数）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/same_cost_and_summoned_all_test.go`；卡片 10553310 + 2 个场景 |
+| S-71 | `when own\|oppo follower attacks [leader]`（宣告攻击事件） | `internal/engine/ir/model.go`（`EventTrigger.TargetKind`）、`internal/engine/ir/decode.go`（事件白名单与目标种类校验）、`internal/engine/project/strict_validate.go`/`typed_ir.go`/`validate.go`（事件形状与 `attacker` 绑定）、`internal/engine/runner/runner.go`（事件带上攻击方一侧、绑定名 `attacker`）、`internal/engine/runner/trigger_index.go`（按目标种类过滤）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/attack_event_test.go`（双方、`attacks leader`、筛选与临时增益）；卡片 10474110、10544120 + 8 个场景 |
+| S-73 | `mode random N { … }`（随机模式） | `internal/engine/ir/model.go`（`ModeEffect.Random`）、`internal/engine/ir/decode.go`、`internal/engine/project/validate.go`/`strict_validate.go`/`typed_ir.go`、`internal/engine/runner/session.go`（`pushRandomMode`：随机选 N 个不同选项并按编号入栈）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/random_mode_test.go`（编译保留 `random` 与数量、拒绝 0 与单选项）；卡片 10532310 + 2 个场景 |
+| S-75 | `where not <词条>`（否定筛选） | `internal/engine/ir/model.go`（`NotPredicate`）、`internal/engine/ir/decode.go`（解码、卡牌引用检查）、`internal/engine/project/validate.go`（`negatedWhereTerm`）、`typed_ir.go`（`filterIR`）、`internal/engine/runner/execute.go`（`matches` 取反）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/not_filter_test.go`；卡片 10603210 + 1 个场景 |
+| S-77 | `where enhanced`（本次通过爆能强化打出） | `internal/engine/runner/runner.go`（`instance.enhancedPlay` 在 `applyPlaySetup` 前设置）、`internal/engine/project/validate.go`/`typed_ir.go`（筛选词条）、`internal/engine/ir/decode.go`/`encode.go`（谓词白名单）、`internal/engine/runner/execute.go`（求值）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/engine/project/enhanced_filter_test.go`；卡片 10622310 + 3 个场景 |
+| S-78 | `where lastwords`（拥有【谢幕曲】筛选） | `internal/engine/project/validate.go`（`parseWhere`/`negatedWhereTerm` 接受 `lastwords`）、`typed_ir.go`（`has_lastwords` 谓词）、`internal/engine/ir/decode.go`/`encode.go`（谓词白名单）、`internal/engine/runner/execute.go`（按卡牌定义的 `lastwords` 触发判定）；文档 `cards.md`/`grammar.md` | 卡片 10663210、10664110 + 3 个场景（含"只破坏过同一种护符时只召唤一张"）。局限：只看卡牌定义的固有能力，`grant` 临时获得的【谢幕曲】不算 |
+| S-79 | 破坏历史召唤的 `distinct names`（随机 N 种各 1 张） | `internal/engine/ir/history_summon.go`（`DistinctNames`）、`internal/engine/ir/decode.go`（解码并写回效果）、`internal/engine/project/history_summon.go`（解析 `distinct names`）、`internal/engine/runner/history_summon.go`（每抽一张后按卡牌 ID 排除同名候选）；文档 `cards.md` | Go 单测 + 卡片 10664110 + 2 个场景。解码器最初漏了 `DistinctNames` 回填，运行期恒为 `false`，被"只有一种护符时只召唤一张"的场景抓住 |
 | S-80 | 非法术卡的选择不该阻塞打出／进化：`require` → `choose` | 29 张随从/护符卡的 34 处 `require`（入场曲、爆能强化、进化时、超进化时）改写为 `choose`；`engage`（启动能力）与法术顶层的 `require` 保留；文档 `cards.md` 写明适用边界 | 官方 QA：[随从/护符没有可选择的手牌也能使用、能力也发动，法术不能](https://shadowverse-wb.com/chs/usersupport/?tab=2#q2lo-vv80cvw)、[卡西乌斯没有创造物随从时照样打出并造成 0 点伤害](https://shadowverse-wb.com/chs/usersupport/?tab=2#49odoxq3_z)。新增 `tests/10004/batch-73-target-availability.wbotest` 7 个场景（打出、进化、抽牌、破坏、启动能力仍不可用） |
-| S-63 | `draw N from deck where … distinct names`（抽取 N 种） | `internal/ir/model.go`（`DrawEffect.DistinctNames`）、`internal/ir/encode.go`/`decode.go`（编解码与形状校验）、`internal/project/typed_ir.go`/`validate.go`（解析与形状）、`internal/runner/execute.go`（每抽一张排除同名候选，张数上限取不同卡名数）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/draw_owner_test.go`（编译保留标记、编码解码后仍在、拒绝无筛选/`all`/缺 `names`）；卡片 10574120 + 4 个场景 |
-| S-67 | `raise maxlife` / `reduce maxlife`（主战者生命上限增减） | `internal/ir/deck_replace.go`（`Delta`）、`internal/ir/decode.go`（新 kind 与增量范围校验）、`internal/project/deck_replace.go`（`raise|reduce maxlife` 解析）、`typed_ir.go`/`validate.go`（语句分发）、`internal/runner/deck_replace.go`（夹在 1..65535 并把当前生命降到上限）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/deck_replace_test.go`（增量编译、编解码保留、拒绝负数/越界/绑定量）；卡片 10534110 + 4 个场景 |
-| S-84 | 入场监听加回合窗口：`when own follower summoned during own turn` | `internal/ir/decode.go`（`duringTurn` 允许 `follower_summoned`；运行时的 `triggerTurnMatches` 本来就通用，项目校验也早已接受这种写法，只有解码白名单没跟上）；文档 `cards.md` | 卡片 10754120 + 2 个场景（三个僵尸各触发一次"入场时打击对手主战者1点"，以及 10724110 后续直接可用） |
-| S-83 | `entered_artifacts`（本场对战中进入过战场的创造物·随从种类数） | `internal/runner/runner.go`（`player.enteredArtifacts`、初始状态记录）、`internal/runner/execute.go`（`triggerSummoned` 里 `recordEnteredArtifact`）、`internal/runner/numeric.go`/`assert.go`（数值与断言）、`internal/ir/amount.go`/`test_decode.go`、`internal/project/strict_validate.go`、`internal/runner/session.go`/`continuation.go`（克隆与存档）；文档 `cards.md`/`tests.md` | 卡片 10771120、10771310、10772120、10773310、10774110、10774120 + 9 个场景（含"种类不足/达标"两侧与超进化后检查顺序） |
-| S-57 | 归属判断（`count(own.<区域> where card <绑定>)`） | 无需新节点：`same_card` 谓词 + 区域计数；但修好了 `conditionIn` 里 `CountCondition` 丢帧的问题（`internal/runner/execute.go`） | 卡片 90064320 + 2 个场景（敌方随从时不加牌、自己的护符时追加 2 点伤害并加牌） |
-| S-66 | `banish` 输出 `banished` | `internal/project/typed_ir.go`（写入输出）、`validate.go`（登记绑定）、`internal/ir/encode.go`/`decode.go`（形状白名单）、`internal/runner/execute.go`（记录实际消失的实例）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/banish_output_test.go`（输出保留、`count(banished)` 作为分配伤害量）；卡片 10543110 + 2 个场景 |
-| S-61 | `summoned_all`（一次结算的全部召唤） | `internal/runner/bindings.go`（`bindSummoned`）、`internal/runner/execute.go`/`session.go`（所有召唤类效果改为写入累计绑定）、`internal/project/validate.go`（登记 `summoned_all`）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/project/same_cost_and_summoned_all_test.go`；卡片 10571110 + 3 个场景 |
+| S-63 | `draw N from deck where … distinct names`（抽取 N 种） | `internal/engine/ir/model.go`（`DrawEffect.DistinctNames`）、`internal/engine/ir/encode.go`/`decode.go`（编解码与形状校验）、`internal/engine/project/typed_ir.go`/`validate.go`（解析与形状）、`internal/engine/runner/execute.go`（每抽一张排除同名候选，张数上限取不同卡名数）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/draw_owner_test.go`（编译保留标记、编码解码后仍在、拒绝无筛选/`all`/缺 `names`）；卡片 10574120 + 4 个场景 |
+| S-67 | `raise maxlife` / `reduce maxlife`（主战者生命上限增减） | `internal/engine/ir/deck_replace.go`（`Delta`）、`internal/engine/ir/decode.go`（新 kind 与增量范围校验）、`internal/engine/project/deck_replace.go`（`raise|reduce maxlife` 解析）、`typed_ir.go`/`validate.go`（语句分发）、`internal/engine/runner/deck_replace.go`（夹在 1..65535 并把当前生命降到上限）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/deck_replace_test.go`（增量编译、编解码保留、拒绝负数/越界/绑定量）；卡片 10534110 + 4 个场景 |
+| S-84 | 入场监听加回合窗口：`when own follower summoned during own turn` | `internal/engine/ir/decode.go`（`duringTurn` 允许 `follower_summoned`；运行时的 `triggerTurnMatches` 本来就通用，项目校验也早已接受这种写法，只有解码白名单没跟上）；文档 `cards.md` | 卡片 10754120 + 2 个场景（三个僵尸各触发一次"入场时打击对手主战者1点"，以及 10724110 后续直接可用） |
+| S-83 | `entered_artifacts`（本场对战中进入过战场的创造物·随从种类数） | `internal/engine/runner/runner.go`（`player.enteredArtifacts`、初始状态记录）、`internal/engine/runner/execute.go`（`triggerSummoned` 里 `recordEnteredArtifact`）、`internal/engine/runner/numeric.go`/`assert.go`（数值与断言）、`internal/engine/ir/amount.go`/`test_decode.go`、`internal/engine/project/strict_validate.go`、`internal/engine/runner/session.go`/`continuation.go`（克隆与存档）；文档 `cards.md`/`tests.md` | 卡片 10771120、10771310、10772120、10773310、10774110、10774120 + 9 个场景（含"种类不足/达标"两侧与超进化后检查顺序） |
+| S-57 | 归属判断（`count(own.<区域> where card <绑定>)`） | 无需新节点：`same_card` 谓词 + 区域计数；但修好了 `conditionIn` 里 `CountCondition` 丢帧的问题（`internal/engine/runner/execute.go`） | 卡片 90064320 + 2 个场景（敌方随从时不加牌、自己的护符时追加 2 点伤害并加牌） |
+| S-66 | `banish` 输出 `banished` | `internal/engine/project/typed_ir.go`（写入输出）、`validate.go`（登记绑定）、`internal/engine/ir/encode.go`/`decode.go`（形状白名单）、`internal/engine/runner/execute.go`（记录实际消失的实例）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/banish_output_test.go`（输出保留、`count(banished)` 作为分配伤害量）；卡片 10543110 + 2 个场景 |
+| S-61 | `summoned_all`（一次结算的全部召唤） | `internal/engine/runner/bindings.go`（`bindSummoned`）、`internal/engine/runner/execute.go`/`session.go`（所有召唤类效果改为写入累计绑定）、`internal/engine/project/validate.go`（登记 `summoned_all`）；文档 `cards.md`/`grammar.md` | Go 单测 `internal/engine/project/same_cost_and_summoned_all_test.go`；卡片 10571110 + 3 个场景 |
 
-| S-16 | `ability_destruction_guard`（不会被能力破坏） | 新固有关键词：`internal/ir/decode.go` 的 `validKeyword`、`internal/project/validate.go` 的 `abilities`、`strict_validate.go` 的固有能力形状表、`internal/runner/runner.go`（`destroyByEffect` 受保护，必杀改走新的 `destroyByCombat` 不受保护）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/runner/granted_ability_flow_test.go`（能力破坏被挡下、战斗破坏照样生效）；卡片 10273110 + 2 个场景 |
-| S-07 | `when own\|oppo follower evolved\|super_evolved [other]` —— 其他随从的进化事件 | `internal/ir/model.go`（`EventTrigger.ExcludeSelf`）、`internal/ir/decode.go`（校验 `other` 只用于带对象的非受伤事件）、`internal/project/strict_validate.go`（基础事件模式接受进化动词与 `other`）、`internal/project/typed_ir.go`（事件名映射与 `ExcludeSelf`）、`internal/project/validate.go`（`evolved` 绑定）、`internal/runner/runner.go`（进化事件改为把改名随从绑成 `evolved`）、`internal/runner/trigger_index.go`（按实例排除自身）；文档 `grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/evolution_event_test.go`（`other`/绑定/来源区域、拒绝重复 `other` 与 `self … other`）；卡片 10241110、10212120、10252110 + 6 个场景（含"不因普通进化触发"与"不响应自己超进化"两个反向场景） |
-| S-17 | `set cost T N;` —— 把费用设为固定值 | `internal/project/validate.go`（`set` 接受 `cost`）、`typed_ir.go`（`set_cost`）、`internal/ir/encode.go`/`decode.go`、`internal/runner/execute.go`（写 `i.cost`）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/evolution_event_test.go` 覆盖 `set cost self 1;` 与错误形状；卡片 10212120 场景断言 `source.cost == 1`。"费用变为 N"的全卡需求还有 15 张，本项是通用原语 |
-| S-08 | `where damaged` / `where attack 比较 整数` —— 筛选器补两个词条 | `internal/project/validate.go`（`parseWhere` 接受 `damaged` 与 `attack`）、`typed_ir.go`（`filterIR` 生成 `is_damaged` / `compare field:"attack"`）、`internal/ir/decode.go`（谓词白名单）、`internal/runner/execute.go`（`matches` 求值：`damageTaken > 0`、`currentAttack()`）；文档 `grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/filter_and_added_test.go`；卡片 10272120 + 2 个场景（含"攻击力 5 以上不在范围内"的反向场景） |
-| S-13 | `add card … to hand` 产出 `added` 绑定 | `internal/project/typed_ir.go`（写入 `Output`）、`internal/project/validate.go`（`added` 可见性）、`internal/ir/encode.go`/`decode.go`（`add_card.output` 必填 `added`）、`internal/runner/execute.go`（把真正进入手牌的实例绑成 `added`）；文档 `cards.md`/`compiler/ir.md` | Go 单测 `internal/project/filter_and_added_test.go`（`added` 只在 `add` 之后可见）与 `internal/runner/added_binding_test.go`（只强化新加入的那张，手里同名旧卡保持 1/1）；卡片 10271120 + 2 个场景 |
-| S-18 | `if <绑定> damaged { … }` —— 条件读取绑定实例的受伤状态 | `internal/ir/model.go`（`IsDamagedCondition`）、`internal/ir/decode.go`（容器解码）、`internal/project/typed_ir.go`/`validate.go`/`strict_validate.go`（`<标识符> damaged` 形状）、`internal/runner/execute.go`（`conditionIn` 带帧求值）、`internal/runner/session.go` 与 `runner.go`（执行与预检改用 `conditionIn`）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/damaged_binding_condition_test.go`（条件形状被保留、拒绝多 token 与无绑定写法）；卡片 10223110 + 4 个场景（爆能/非爆能、攻击受伤/未受伤四个方面） |
-| S-06 | `halve cost 集合;` —— 牌组内卡牌费用减半 | `internal/project/validate.go`（`halve` 语句形状）、`typed_ir.go`（`halve_cost`）、`internal/ir/encode.go`/`decode.go`（新节点与形状校验）、`internal/runner/execute.go`（`ceil(cost/2)`，按集合逐个结算）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/halve_cost_test.go`（目标保留为牌组集合、拒绝 `halve cost`/`halve deck`/多余 token/`countdown`）与 `internal/runner/deck_cost_test.go`（5→3→2 的重复减半、`followers` 不碰法术、整副牌组 `reduce` 夹在 0）；卡片 10244120 + 2 个场景（奇数向上取整、只影响发动时在牌组里的卡） |
-| S-03 | 复查：`field.followers` 选择双方战场随从 | 无需改代码，只补文档与测试：`internal/project/cross_side_selection_test.go`（`field.followers other` 保持 `Side=""` 且排除自身、`own.field.followers` 不变） | 卡片 10201310 + 2 个场景（指定对手随从并降到 0 生命、指定自己的随从）。`grammar.md` 早已写明 `field` 是双方战场合并集合，我此前误判为缺口 |
-| S-12 | `double stats 集合;` —— 按目标自身数值翻倍 | `internal/project/validate.go`（`double` 语句形状）、`typed_ir.go`（`double_stats`）、`internal/ir/encode.go`/`decode.go`、`internal/runner/execute.go`（攻击力、当前生命、已受伤害各 ×2）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/project/double_stats_test.go`、`internal/runner/double_stats_test.go`（3/6 且已受 4 点伤害 → 6/4、伤害 8；护符不受影响）；卡片 10233310 + 3 个场景（土之印 +1 与获得纹章、土之秘术 10 足够时翻倍并抽牌、不足时只抽牌） |
-| S-20 | `other 绑定名` —— 从集合里排除一个绑定 | 原 `other` 只能排除来源自身；`internal/project/keyword_effect.go`/`validate.go` 新增 `otherExclusion`/`otherExclusionEnd`，`choose/require/random` 与 `add/remove/buff` 的目标集合都接受可选绑定名。运行时不需要改动：`ExcludeRef` 早就按任意 Ref 求值 | Go 单测 `internal/project/other_binding_test.go`（`other opponent` 指向绑定、裸 `other` 仍排除自身）；卡片 10263110 + 2 个场景（破坏非交战对手、护符不足时不破坏） |
-| S-21 | `rally`（协作）计数器与 `rally >= N` 条件 | `internal/runner/runner.go`（`player.rally`、`pendingRally`、打出随从先挂起）、`internal/runner/execute.go`（`countRally`/`creditRally`）、`internal/runner/session.go`（结算结束、触发队列之前入账）、`internal/runner/numeric.go`/`assert.go`/`simulator.go`/`continuation.go`、`internal/ir/model.go`/`amount.go`/`test_decode.go`、测试状态 `rally N;`；文档 `cards.md`/`grammar.md`/`tests.md`/`compiler/ir.md` | Go 单测 `internal/project/rally_test.go` 与 `internal/runner/rally_test.go`（法术不计入、打出在结算后入账、能力召唤立即计入）；卡片 10224110 + 3 个场景（协作 19 不发动、协作 20 发动并召唤两个骑士、手动进化同样召唤） |
-| S-22 | `summon N card X for own\|oppo;` —— 在指定一方战场召唤 | `internal/project/validate.go`（`summon` 接受 `for` 子句）、`typed_ir.go`（写入 `CardEffect.Owner`）；运行时本来就按 `Owner` 处理 | `internal/project/rally_test.go` 覆盖目标归属；卡片 10224120 + 2 个场景（在对手战场召唤 2 个骑士并各触发一次监听、对手满场时只召唤 1 个） |
+| S-16 | `ability_destruction_guard`（不会被能力破坏） | 新固有关键词：`internal/engine/ir/decode.go` 的 `validKeyword`、`internal/engine/project/validate.go` 的 `abilities`、`strict_validate.go` 的固有能力形状表、`internal/engine/runner/runner.go`（`destroyByEffect` 受保护，必杀改走新的 `destroyByCombat` 不受保护）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/runner/granted_ability_flow_test.go`（能力破坏被挡下、战斗破坏照样生效）；卡片 10273110 + 2 个场景 |
+| S-07 | `when own\|oppo follower evolved\|super_evolved [other]` —— 其他随从的进化事件 | `internal/engine/ir/model.go`（`EventTrigger.ExcludeSelf`）、`internal/engine/ir/decode.go`（校验 `other` 只用于带对象的非受伤事件）、`internal/engine/project/strict_validate.go`（基础事件模式接受进化动词与 `other`）、`internal/engine/project/typed_ir.go`（事件名映射与 `ExcludeSelf`）、`internal/engine/project/validate.go`（`evolved` 绑定）、`internal/engine/runner/runner.go`（进化事件改为把改名随从绑成 `evolved`）、`internal/engine/runner/trigger_index.go`（按实例排除自身）；文档 `grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/evolution_event_test.go`（`other`/绑定/来源区域、拒绝重复 `other` 与 `self … other`）；卡片 10241110、10212120、10252110 + 6 个场景（含"不因普通进化触发"与"不响应自己超进化"两个反向场景） |
+| S-17 | `set cost T N;` —— 把费用设为固定值 | `internal/engine/project/validate.go`（`set` 接受 `cost`）、`typed_ir.go`（`set_cost`）、`internal/engine/ir/encode.go`/`decode.go`、`internal/engine/runner/execute.go`（写 `i.cost`）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/evolution_event_test.go` 覆盖 `set cost self 1;` 与错误形状；卡片 10212120 场景断言 `source.cost == 1`。"费用变为 N"的全卡需求还有 15 张，本项是通用原语 |
+| S-08 | `where damaged` / `where attack 比较 整数` —— 筛选器补两个词条 | `internal/engine/project/validate.go`（`parseWhere` 接受 `damaged` 与 `attack`）、`typed_ir.go`（`filterIR` 生成 `is_damaged` / `compare field:"attack"`）、`internal/engine/ir/decode.go`（谓词白名单）、`internal/engine/runner/execute.go`（`matches` 求值：`damageTaken > 0`、`currentAttack()`）；文档 `grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/filter_and_added_test.go`；卡片 10272120 + 2 个场景（含"攻击力 5 以上不在范围内"的反向场景） |
+| S-13 | `add card … to hand` 产出 `added` 绑定 | `internal/engine/project/typed_ir.go`（写入 `Output`）、`internal/engine/project/validate.go`（`added` 可见性）、`internal/engine/ir/encode.go`/`decode.go`（`add_card.output` 必填 `added`）、`internal/engine/runner/execute.go`（把真正进入手牌的实例绑成 `added`）；文档 `cards.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/filter_and_added_test.go`（`added` 只在 `add` 之后可见）与 `internal/engine/runner/added_binding_test.go`（只强化新加入的那张，手里同名旧卡保持 1/1）；卡片 10271120 + 2 个场景 |
+| S-18 | `if <绑定> damaged { … }` —— 条件读取绑定实例的受伤状态 | `internal/engine/ir/model.go`（`IsDamagedCondition`）、`internal/engine/ir/decode.go`（容器解码）、`internal/engine/project/typed_ir.go`/`validate.go`/`strict_validate.go`（`<标识符> damaged` 形状）、`internal/engine/runner/execute.go`（`conditionIn` 带帧求值）、`internal/engine/runner/session.go` 与 `runner.go`（执行与预检改用 `conditionIn`）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/damaged_binding_condition_test.go`（条件形状被保留、拒绝多 token 与无绑定写法）；卡片 10223110 + 4 个场景（爆能/非爆能、攻击受伤/未受伤四个方面） |
+| S-06 | `halve cost 集合;` —— 牌组内卡牌费用减半 | `internal/engine/project/validate.go`（`halve` 语句形状）、`typed_ir.go`（`halve_cost`）、`internal/engine/ir/encode.go`/`decode.go`（新节点与形状校验）、`internal/engine/runner/execute.go`（`ceil(cost/2)`，按集合逐个结算）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/halve_cost_test.go`（目标保留为牌组集合、拒绝 `halve cost`/`halve deck`/多余 token/`countdown`）与 `internal/engine/runner/deck_cost_test.go`（5→3→2 的重复减半、`followers` 不碰法术、整副牌组 `reduce` 夹在 0）；卡片 10244120 + 2 个场景（奇数向上取整、只影响发动时在牌组里的卡） |
+| S-03 | 复查：`field.followers` 选择双方战场随从 | 无需改代码，只补文档与测试：`internal/engine/project/cross_side_selection_test.go`（`field.followers other` 保持 `Side=""` 且排除自身、`own.field.followers` 不变） | 卡片 10201310 + 2 个场景（指定对手随从并降到 0 生命、指定自己的随从）。`grammar.md` 早已写明 `field` 是双方战场合并集合，我此前误判为缺口 |
+| S-12 | `double stats 集合;` —— 按目标自身数值翻倍 | `internal/engine/project/validate.go`（`double` 语句形状）、`typed_ir.go`（`double_stats`）、`internal/engine/ir/encode.go`/`decode.go`、`internal/engine/runner/execute.go`（攻击力、当前生命、已受伤害各 ×2）；文档 `cards.md`/`grammar.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/double_stats_test.go`、`internal/engine/runner/double_stats_test.go`（3/6 且已受 4 点伤害 → 6/4、伤害 8；护符不受影响）；卡片 10233310 + 3 个场景（土之印 +1 与获得纹章、土之秘术 10 足够时翻倍并抽牌、不足时只抽牌） |
+| S-20 | `other 绑定名` —— 从集合里排除一个绑定 | 原 `other` 只能排除来源自身；`internal/engine/project/keyword_effect.go`/`validate.go` 新增 `otherExclusion`/`otherExclusionEnd`，`choose/require/random` 与 `add/remove/buff` 的目标集合都接受可选绑定名。运行时不需要改动：`ExcludeRef` 早就按任意 Ref 求值 | Go 单测 `internal/engine/project/other_binding_test.go`（`other opponent` 指向绑定、裸 `other` 仍排除自身）；卡片 10263110 + 2 个场景（破坏非交战对手、护符不足时不破坏） |
+| S-21 | `rally`（协作）计数器与 `rally >= N` 条件 | `internal/engine/runner/runner.go`（`player.rally`、`pendingRally`、打出随从先挂起）、`internal/engine/runner/execute.go`（`countRally`/`creditRally`）、`internal/engine/runner/session.go`（结算结束、触发队列之前入账）、`internal/engine/runner/numeric.go`/`assert.go`/`simulator.go`/`continuation.go`、`internal/engine/ir/model.go`/`amount.go`/`test_decode.go`、测试状态 `rally N;`；文档 `cards.md`/`grammar.md`/`tests.md`/`compiler/ir.md` | Go 单测 `internal/engine/project/rally_test.go` 与 `internal/engine/runner/rally_test.go`（法术不计入、打出在结算后入账、能力召唤立即计入）；卡片 10224110 + 3 个场景（协作 19 不发动、协作 20 发动并召唤两个骑士、手动进化同样召唤） |
+| S-22 | `summon N card X for own\|oppo;` —— 在指定一方战场召唤 | `internal/engine/project/validate.go`（`summon` 接受 `for` 子句）、`typed_ir.go`（写入 `CardEffect.Owner`）；运行时本来就按 `Owner` 处理 | `internal/engine/project/rally_test.go` 覆盖目标归属；卡片 10224120 + 2 个场景（在对手战场召唤 2 个骑士并各触发一次监听、对手满场时只召唤 1 个） |
 | S-23 | ~~条件里读 `self.cost` / `self.attack` / `self.life`~~ **已解决**：`if self.cost != 2` | 已解锁 10331110 真理的肯定者、10332110 真理的祈祷者；后续"若本卡牌的费用/生命值…"直接可用 | 解析成 `Scalar{Kind:"self_scalar"}`。条件求值的 `CompareCondition` 分支原本只把 `self_counter`/`scalar` 交给 `numericValue`，漏了 `self_scalar`，于是它落进融合材料分支恒为 0——场景测试第一次跑就抓到了这个 bug。 |
 | S-24 | ~~牌组"没有重复卡牌"条件~~ **已解决**：`own|oppo.deck has [no] duplicates` | 已解锁 10301310 至高的凌驾 | 新增 `DeckDuplicatesCondition`：按卡牌 ID 扫描该玩家牌组，第二次出现即判定有重复；带 `no` 的形式取反，空牌组视为没有重复。 |
 | S-25 | ~~费用增加（`+N`）~~ **已解决**：`raise cost T N;` | 已解锁 10333310 虚假的术式；90044310 等后续卡包直接可用 | 复用 `AdjustEntityField(delta=+N, minimum=0)`，没有新增 IR 节点。顺带给 `damage`/`heal` 补上 `other [绑定]`，写法与 `buff`/`add` 一致。 |
@@ -176,15 +176,15 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 
 | S-72 | ~~返回张数与按返回张数抽牌~~ **已解决**：`return` 输出 `returned`、`draw <数值表达式>` | 已解锁 10554120 奥夜花·释藤、10932120 高洁哲学家 | `return <集合> to hand\|deck` 把实际移动的实例写入绑定 `returned`；`draw` 的数量改为接受数值表达式（`draw count(returned);`），编解码、运行期求值与测试 DSL 同步。 |
 | S-62 | ~~抽牌事件~~ **已解决**：`when own\|oppo card drawn [during … turn]` 与 `when self drawn` | 已解锁 10561120 连结的使徒、10522110 迅猛的武术家、10562120 穷途末路的巫女 | 绑定 `drawn` 指向被抽到的实例；运行时按每张抽到的卡派发监听（公开事实仍是聚合事件），`during` 回合窗口同时扩展到此事件。 |
-| S-63 | ~~抽牌去重~~ **已解决**：`draw N from deck where … distinct names` | 已解锁 10574120 尽小花·伊鞠 | 与牌组召唤同义：每抽中一张就排除同卡名的其余候选，张数上限是候选里不同卡名的数量；只允许与筛选搭配（不能配 `draw all` 或裸 `draw N`）。`DrawEffect.DistinctNames` 参与编解码，`internal/project/draw_owner_test.go` 覆盖编译、解码回填与错误形状。 |
+| S-63 | ~~抽牌去重~~ **已解决**：`draw N from deck where … distinct names` | 已解锁 10574120 尽小花·伊鞠 | 与牌组召唤同义：每抽中一张就排除同卡名的其余候选，张数上限是候选里不同卡名的数量；只允许与筛选搭配（不能配 `draw all` 或裸 `draw N`）。`DrawEffect.DistinctNames` 参与编解码，`internal/engine/project/draw_owner_test.go` 覆盖编译、解码回填与错误形状。 |
 | S-64 | ~~从破坏历史复制同名卡~~ **已解决**：`add random N copies from 破坏历史 [where …] [highest\|lowest 属性] [distinct names] to hand\|deck;` | 已解锁 10572310 苏生调律、10803110 遗忘的纯真·爱卡、10871130 器械操纵者·吉尔克、10901310 轮回转冲 | 复用 `HistorySummonEffect`：`Destination` 为空时照旧召唤到战场，为 `hand`/`deck` 时按记录复制新实例放进目标区域（输出绑定 `added`）。抽选逻辑与历史召唤一致，`distinct names` 用于"随机 2 种各 1 张"。 |
 | S-65 | 从手牌按位置批量选择 | 10502110 星辉女神（"将自己的手牌中从左起的3张卡牌的复制卡牌各1张…加入手牌"） | 选择只有随机、极值与玩家指定；没有"手牌从左起 N 张"。 |
 | S-66 | ~~本次操作的消失数量~~ **已解决**：`banish` 输出 `banished` | 已解锁 10543110 破灭屠戮者 | 与 `destroyed` 同构；数量用 `count(banished)` 读取，可当伤害量或增益量。 |
 | S-67 | ~~主战者生命上限的增减~~ **已解决**：`raise maxlife own\|oppo.leader N` / `reduce maxlife …` | 已解锁 10534110 漫步的《愚者》·琳库露的纹章 | 增量形式 `kind: "adjust_leader_max_life"`（`delta=true`），上限夹在 1..65535，当前生命高于新上限时降到上限——与既有 `set maxlife` 及 SWB-RL 的 `change_leader_max_health` 同一口径。 |
 | S-81 | ~~取前 N 张的求和与求和比较~~ **已解决**：`sum(集合, 字段) highest\|lowest N` + 表达式之间的比较 | 已解锁 10502120 手持军配团扇的伟丈夫 | `SumExpr` 新增 `limit`/`direction`（先按字段排序再取 N 张求和，不足 N 张按现有张数）；`CompareCondition` 新增 `LeftExpr`，两侧都可以是 `count`/`sum` 表达式，`count(A) > count(B)` 也随之成立。 |
-| S-82 | ~~"自己发动【土之秘术】时"事件~~ **已解决**：`when own\|oppo earthrite [while self in hand]` | 已解锁 10731310 召唤仆从、10733310 饕餮魔咒；卡包 10007 因此收满 | 新事件 `earthrite`：`internal/runner/session.go` 在土之印实际扣除成功后派发（不足时整块跳过，不派发），`internal/project/strict_validate.go`/`typed_ir.go` 解析事件头，`internal/ir/decode.go` 加入白名单；监听可挂在手牌卡上（沿用 `while self in hand`）。 |
-| S-83 | ~~"本次对战中进入战场的自己的创造物·随从的种类数"~~ **已解决**：`own\|oppo.entered_artifacts` | 已解锁 10771120 炫酷舞者、10771310 跑酷、10772120 大胆的涂鸦师、10773310 瞬移斩击、10774110 虚刻的安纳提玛·斯卡雷特、10774120 奋厉追赶·米乌；10008 的 10873310 直接可用 | 新玩家标量：随从进入战场时按卡牌 ID 去重记录"创造物·随从"种类（`internal/runner/execute.go` 的 `triggerSummoned`/`recordEnteredArtifact`），数值、断言、存档快照都接上；测试状态里 `field`/`destroyed` 中已存在的创造物视作本场入场过。 |
-| S-85 | ~~"可以无视【守护】进行攻击"~~ **已解决**：固有关键词 `ignore_ward` | 已解锁 10851110 通透的信念·安瑟珠 | 新关键词 `ignore_ward`（`internal/ir/decode.go` 的 `validKeyword`、`internal/project/validate.go` 的 `abilities`）；攻击合法性检查的两处守护限制（攻击主战者、攻击非守护随从）都加上 `!attacker.abilities["ignore_ward"]`。场景测试覆盖"越过守护打主战者"与"没有该关键词时必须先打守护"两侧。 |
+| S-82 | ~~"自己发动【土之秘术】时"事件~~ **已解决**：`when own\|oppo earthrite [while self in hand]` | 已解锁 10731310 召唤仆从、10733310 饕餮魔咒；卡包 10007 因此收满 | 新事件 `earthrite`：`internal/engine/runner/session.go` 在土之印实际扣除成功后派发（不足时整块跳过，不派发），`internal/engine/project/strict_validate.go`/`typed_ir.go` 解析事件头，`internal/engine/ir/decode.go` 加入白名单；监听可挂在手牌卡上（沿用 `while self in hand`）。 |
+| S-83 | ~~"本次对战中进入战场的自己的创造物·随从的种类数"~~ **已解决**：`own\|oppo.entered_artifacts` | 已解锁 10771120 炫酷舞者、10771310 跑酷、10772120 大胆的涂鸦师、10773310 瞬移斩击、10774110 虚刻的安纳提玛·斯卡雷特、10774120 奋厉追赶·米乌；10008 的 10873310 直接可用 | 新玩家标量：随从进入战场时按卡牌 ID 去重记录"创造物·随从"种类（`internal/engine/runner/execute.go` 的 `triggerSummoned`/`recordEnteredArtifact`），数值、断言、存档快照都接上；测试状态里 `field`/`destroyed` 中已存在的创造物视作本场入场过。 |
+| S-85 | ~~"可以无视【守护】进行攻击"~~ **已解决**：固有关键词 `ignore_ward` | 已解锁 10851110 通透的信念·安瑟珠 | 新关键词 `ignore_ward`（`internal/engine/ir/decode.go` 的 `validKeyword`、`internal/engine/project/validate.go` 的 `abilities`）；攻击合法性检查的两处守护限制（攻击主战者、攻击非守护随从）都加上 `!attacker.abilities["ignore_ward"]`。场景测试覆盖"越过守护打主战者"与"没有该关键词时必须先打守护"两侧。 |
 | S-86 | ~~玩家标量之间的比较~~ **已解决**：比较右值放宽到数值表达式 | 已解锁 10851130 兔耳恶魔·莉蜜儿 | `CompareCondition.RightExpr` 让 `own.life > oppo.life` 成立（编解码、运行期求值与条件形状同步）；集合计数之间的比较仍未支持，`count(A) > count(B)` 会在检查阶段报错。 |
 | S-90 | ~~按卡牌 ID 的入场张数~~ **已解决**：`count(own\|oppo.entered [other] [where …])` | 已解锁 10931110 沉溺的实验体、10844110 反照的赤红·德莱克&亚瑞札特 | `player.entered` 按入场顺序记录本场对战进入过战场的随从与护符（打出、召唤、变身都算），只作为计数集合使用；`other` 排除正在结算的来源实例，正好表达"其他『同名卡』的张数"。与 SWB-RL 的 `controller_entered_follower_count`（含自己再减一）等价。 |
 | S-91 | 效果加入手牌后的费用断言 | 10641310、10643310、10844110、10922310、10923110 等"将1张…加入手牌，使其费用变为 N"的卡 | 测试 DSL 只能断言已声明别名的实例字段，效果新建的卡没有别名，因此 `set cost added N` 目前无法在场景里验证；需要给区域计数断言加费用筛选（例如 `own.hand cost card X == N`）。 |
@@ -193,9 +193,9 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 | S-94 | ~~按集合顺序取前 N 个（"从左起"）~~ **已解决**：`first <绑定> from <集合> [where …] [count N]` | 已解锁 10423310 骁勇骑士、10502110 星辉女神 | 新的选择语句：不询问玩家、不消费随机决策，按区域顺序（战场=入场顺序，手牌=获得顺序）取前 N 个；候选不足时少取，空集合绑定空集合。不走目标保护（潜行/不可选中）判定。 |
 | S-95 | ~~顺序发动能力的循环计数~~ **已解决**：`add 1 counter NAME modulo M` | 已解锁 10964120 翼天的变貌·奥梅里欧 | 计数器加完取模，走完最后一个能力自动回到第一个；`adjust_counter` 新增 `modulo`，运行期按取模写入，编解码同步。 |
 | S-96 | ~~"本场对战中使用过的卡牌原始费用"~~ **已解决**：`own\|oppo.played has costs N to M` 与 `<绑定>.base.cost` | 已解锁 10503210 大游戏世界、10903210 混沌监狱·阿兹弗特 | 玩家新增 `playedCosts` 台账（打出时记录卡牌定义的原始费用，跨回合与续局保留）；条件由 `PlayedCostsCondition` 表达。顺带让绑定标量支持 `base.attack/life/cost`，并允许筛选比较的右侧写标量（`base.cost == played.base.cost`）。 |
-| S-87 | ~~"上一回合中攻击过主战者"~~ **已解决**：`own\|oppo.attacked_leader_last_turn` | 已解锁 10942110 绝倒的袭击者、10943110 尘土的不法者、10943310 利牙、10944110 穿孔的罪人·安缇马丽亚 | 玩家新增"本回合/上一回合攻击过主战者"两个标记：攻击主战者时置位本回合标记，进入该玩家回合时结转并清空。场景状态可直接写 `attacked_leader_last_turn;`；Go 单测 `internal/runner/leader_attack_history_test.go` 覆盖结转、清空与续局保存。 |
-| S-88 | ~~【激奏】（accelerate）打出模式~~ **已解决**：`accelerate N { … }` | 10671110 低劣的玩具（激奏 2：召唤 1 个自己）、10672110 拙劣的人偶（激奏 3：召唤 2 个自己）、10673110 愚劣的兵器（激奏 4：召唤 1 个自己）、10844120 金银绚烂·璐米欧儿&雅尔贞特（激奏 3：能量点上限 +1）、10901110 最古老的狱卒（激奏 1：随机随从 2 点伤害） | 新打出模式：`internal/project/typed_ir.go`/`validate.go`/`strict_validate.go` 解析 `accelerate N { … }` 块（CostTrigger），`internal/ir/decode.go`/`test_decode.go` 接受 `accelerate` 触发器与动作，`internal/runner/runner.go` 新增 `accelerate` 动作：付激奏费用、把卡牌放进"结算中"区域（不入场、不发动入场曲）、只结算激奏能力，结算后按法术流程进入墓场；测试 DSL 与模拟器命令同步。场景测试覆盖"激奏召唤/加能量上限/打伤害"与"正常打出仍走本体和入场曲""费用不足不能激奏" |
-| S-89 | ~~【结晶】（crystallize）打出模式~~ **已解决**：`crystallize N { … }` | 10661110 崇奉的懦者（结晶 2）、10662110 崇敬的涂描者（结晶 1）、10663110 崇拜的圣骑士（结晶 1）、10952110 渊底上校（结晶 2）、10962120 奇迹独角兔（结晶 1，含启动推进吟唱） | 新打出模式与衍生卡面：`project/crest.go` 的 `validateCrystallize`（允许 counter/countdown/lastwords/when/engage）、`ir/crest.go` 的 `CrystallizeDefinition` + `CrystallizeCard()`（派生为护符卡面）、编解码与 `runner.commitCrystallize`（付结晶费用→换卡面→进入战场→只结算衍生护符的打出效果，本体入场曲不发动）；测试 DSL 与模拟器命令同步。Go 单测 `internal/runner/crystallize_test.go` 覆盖吟唱归零后由谢幕曲召唤本体 |
+| S-87 | ~~"上一回合中攻击过主战者"~~ **已解决**：`own\|oppo.attacked_leader_last_turn` | 已解锁 10942110 绝倒的袭击者、10943110 尘土的不法者、10943310 利牙、10944110 穿孔的罪人·安缇马丽亚 | 玩家新增"本回合/上一回合攻击过主战者"两个标记：攻击主战者时置位本回合标记，进入该玩家回合时结转并清空。场景状态可直接写 `attacked_leader_last_turn;`；Go 单测 `internal/engine/runner/leader_attack_history_test.go` 覆盖结转、清空与续局保存。 |
+| S-88 | ~~【激奏】（accelerate）打出模式~~ **已解决**：`accelerate N { … }` | 10671110 低劣的玩具（激奏 2：召唤 1 个自己）、10672110 拙劣的人偶（激奏 3：召唤 2 个自己）、10673110 愚劣的兵器（激奏 4：召唤 1 个自己）、10844120 金银绚烂·璐米欧儿&雅尔贞特（激奏 3：能量点上限 +1）、10901110 最古老的狱卒（激奏 1：随机随从 2 点伤害） | 新打出模式：`internal/engine/project/typed_ir.go`/`validate.go`/`strict_validate.go` 解析 `accelerate N { … }` 块（CostTrigger），`internal/engine/ir/decode.go`/`test_decode.go` 接受 `accelerate` 触发器与动作，`internal/engine/runner/runner.go` 新增 `accelerate` 动作：付激奏费用、把卡牌放进"结算中"区域（不入场、不发动入场曲）、只结算激奏能力，结算后按法术流程进入墓场；测试 DSL 与模拟器命令同步。场景测试覆盖"激奏召唤/加能量上限/打伤害"与"正常打出仍走本体和入场曲""费用不足不能激奏" |
+| S-89 | ~~【结晶】（crystallize）打出模式~~ **已解决**：`crystallize N { … }` | 10661110 崇奉的懦者（结晶 2）、10662110 崇敬的涂描者（结晶 1）、10663110 崇拜的圣骑士（结晶 1）、10952110 渊底上校（结晶 2）、10962120 奇迹独角兔（结晶 1，含启动推进吟唱） | 新打出模式与衍生卡面：`project/crest.go` 的 `validateCrystallize`（允许 counter/countdown/lastwords/when/engage）、`ir/crest.go` 的 `CrystallizeDefinition` + `CrystallizeCard()`（派生为护符卡面）、编解码与 `runner.commitCrystallize`（付结晶费用→换卡面→进入战场→只结算衍生护符的打出效果，本体入场曲不发动）；测试 DSL 与模拟器命令同步。Go 单测 `internal/engine/runner/crystallize_test.go` 覆盖吟唱归零后由谢幕曲召唤本体 |
 | S-68 | ~~回合窗口事件~~ **已解决**：`during own\|oppo turn` 可用于回复事件 | 已解锁 10563110 至圣威仪 | 检查器原先只允许"受到伤害时"带 `during`；运行时的回合匹配本来就通用。 |
 | S-69 | ~~跨方混合随机集合~~ **已解决**：同 S-19 | 已解锁 10524110 威猛的《战车》·奥辂昂 | 与 S-19 合并处理：双方随从用无 side 的 `field.followers`，双方主战者用 `leaders`。 |
 | S-70 | ~~从两种指定卡中随机召唤~~ **已解决**：`summon random N card A or card B [...] [for own\|oppo];` | 已解锁 10564120 雾卷花·茎白 | 新 IR 节点 `SummonPoolEffect`：每次抽取消费一次对局随机数，池内卡牌定义必须互不相同（2..16 种）。 |
@@ -220,7 +220,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 
 | QA | 结论 | 落地 |
 | --- | --- | --- |
-| 0vrc9nkxfkx1 | 重发【入场曲】的上限是 20 次，不是引擎里的 12 | `internal/runner/runner.go` 的 `fanfareReplayLimit` 改成 20，Go 单测断言 21 次强化后停手 |
+| 0vrc9nkxfkx1 | 重发【入场曲】的上限是 20 次，不是引擎里的 12 | `internal/engine/runner/runner.go` 的 `fanfareReplayLimit` 改成 20，Go 单测断言 21 次强化后停手 |
 | 2hv4yt1j8 | 「能力结算时已经离开战场的卡牌的能力不会发动」 | `triggerInvocation` 记录来源区域，出队时校验；Go 单测覆盖被入场曲破坏后不发动、存活时照常发动两侧 |
 | 4gt8z-3dnxk | 爆能强化被纹章压制时不发动，因此按基础费用支付 | `playCost`/`commitPlay` 在 `suppress_enhance` 时跳过爆能档；场景断言只消耗 2 点能量点 |
 | 75wdwp8ysf / 0stcr3cyb / zov-4dbr6tlx | 「回合结束时」的条件在按下回合结束按钮时判定 | 18 张卡的「若…则…」从能力体上移到触发条件（`when … turn ends if …`），新增 2 个判别场景 |
@@ -391,7 +391,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   牌组替换为 76 张麦哲佩恩牌组、牌组耗尽改为胜利；纹章在自己的回合结束时舍弃
   除『绝大的证明』以外的手牌并抽 6 张）。
 - 新增 3 个场景（`tests/10003/batch-116-mjerrabaine-deck.wbotest`）与 Go 单测
-  `internal/runner/empty_deck_outcome_test.go`（常规牌组耗尽败北 / 胜利的卡牌改为胜利）。
+  `internal/engine/runner/empty_deck_outcome_test.go`（常规牌组耗尽败北 / 胜利的卡牌改为胜利）。
 - 全量回归：`check` 0 错 0 警；`test` 1415 全绿；`go test ./...` 全绿；语料快照更新为 1415 个场景。
 - **进度：`node scripts/card_worklist.mjs` 显示 904/904 已完成（0 张骨架）**，
   全卡覆盖目标达成；后续只剩语义层面的挂起项（S-19 之后的新登记见下）。
@@ -421,7 +421,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 - 完成 1 张：10502120 手持军配团扇的伟丈夫（进化时若自己手牌中原始费用最大的 3 张合计
   大于对手的同类合计，则破坏对手战场上的所有随从）。卡包 10005 因此收满。
 - 新增 3 个场景（`tests/10005/batch-114-top-cost-sum.wbotest`），覆盖"合计更大"、
-  "合计不更大"与"手牌不足三张"；Go 单测 `internal/project/top_sum_condition_test.go`。
+  "合计不更大"与"手牌不足三张"；Go 单测 `internal/engine/project/top_sum_condition_test.go`。
 - 全量回归：`check` 0 错 0 警；`test` 1408 全绿；`go test ./...` 全绿；语料快照更新为 1408 个场景。
 
 ### 批次 113（持续性规则改动的纹章）
@@ -449,7 +449,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   负面纹章在自己的回合开始时从未发动的负面能力里随机发动 1 个。
 - 新增 6 个场景（`tests/10005/batch-112-wheel-of-fortune.wbotest`），用不同种子分别覆盖
   本体的三个能力与纹章的三个负面能力，以及"进化才给纹章"；Go 单测
-  `internal/runner/mode_history_test.go`（连续三次回合开始后三个能力各发动一次，
+  `internal/engine/runner/mode_history_test.go`（连续三次回合开始后三个能力各发动一次，
   第四次不再发动）。
 - 全量回归：`check` 0 错 0 警；`test` 1398 全绿；`go test ./...` 全绿；语料快照更新为 1398 个场景。
 
@@ -465,7 +465,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   超进化时重发入场曲）。卡包 10006 因此收满。
 - 新增 2 个场景（`tests/10006/batch-111-replay-fanfare.wbotest`，用例锁定两个种子下的
   具体随机链：重发次数、主战者掉血、能量点与敌方随从存活情况）；Go 单测
-  `internal/project/replay_fanfare_test.go`。
+  `internal/engine/project/replay_fanfare_test.go`。
 - 全量回归：`check` 0 错 0 警；`test` 1390 全绿；`go test ./...` 全绿；语料快照更新为 1390 个场景。
 
 ### 批次 110（S-51 主战者临时"受到的伤害变为 0"）
@@ -482,7 +482,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   本随从获得【疾驰】、主战者生命上限变为 1、对手回合结束前主战者受到的 1 点以上伤害变为 0）。
   卡包 10004 因此收满。
 - 新增 2 个场景（`tests/10004/batch-110-leader-abilities.wbotest`）与
-  `internal/runner/leader_keyword_test.go`（到期时点、归零不消耗屏障、解除后屏障照常吸收）。
+  `internal/engine/runner/leader_keyword_test.go`（到期时点、归零不消耗屏障、解除后屏障照常吸收）。
 - 全量回归：`check` 0 错 0 警；`test` 1388 全绿；`go test ./...` 全绿；语料快照更新为 1388 个场景。
 
 ### 批次 109（S-19 / S-69 跨方混合随机集合）
@@ -496,7 +496,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   进化后 3 次随机 7 点，目标为双方其他随从或双方主战者）。
 - 新增 2 个场景（`tests/10005/batch-109-mixed-targets.wbotest`），覆盖"进化前打全体"与
   "进化后三次随机且不包含自己"（用例锁定该种子下的具体分配：我方 7 点、对手 14 点）；
-  Go 单测 `internal/project/mixed_character_set_test.go`。
+  Go 单测 `internal/engine/project/mixed_character_set_test.go`。
 - 全量回归：`check` 0 错 0 警；`test` 1386 全绿；`go test ./...` 全绿；语料快照更新为 1386 个场景。
 
 ### 批次 108（S-52 牌组中发动与【瞬念召唤】）
@@ -519,7 +519,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 - 新增 8 个场景（`tests/10004/batch-108-invoke.wbotest`、
   `tests/10009/batch-108-invoke.wbotest`），覆盖进化次数门槛、正常打出不给纹章、
   解放奥义的随机目标、纹章回复、费用不全不瞬念召唤；Go 单测
-  `internal/project/invoke_test.go`。
+  `internal/engine/project/invoke_test.go`。
 - 全量回归：`check` 0 错 0 警；`test` 1384 全绿；`go test ./...` 全绿；语料快照更新为 1384 个场景。
 
 ### 批次 107（S-96 "使用过的卡牌原始费用"台账）
@@ -537,7 +537,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   则破坏自己；谢幕曲召唤 4 种被破坏随从的同名卡并把全体随从 +3/+3）。
 - 新增 5 个场景（`tests/10005/batch-107-played-costs.wbotest`、
   `tests/10009/batch-107-played-costs.wbotest`），覆盖"护符自身的原始费用也算在内"、
-  费用不全时不破坏、谢幕曲抽牌；Go 单测 `internal/project/played_costs_test.go`。
+  费用不全时不破坏、谢幕曲抽牌；Go 单测 `internal/engine/project/played_costs_test.go`。
 - 全量回归：`check` 0 错 0 警；`test` 1376 全绿；`go test ./...` 全绿；语料快照更新为 1376 个场景。
 
 ### 批次 106（S-95 循环计数 + S-60 随机复制变身）
@@ -554,7 +554,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 - 新增 4 个场景（`tests/10009/batch-106-amulet-cycle.wbotest`、
   `tests/10005/batch-106-deck-transform.wbotest`），覆盖一次破坏 3 个护符走完一轮、
   计数器覆盖为 2 时"第三项→第一项"的回绕、候选唯一时不消费随机决策、
-  多目标各消费一次；Go 单测 `internal/project/counter_modulo_test.go`。
+  多目标各消费一次；Go 单测 `internal/engine/project/counter_modulo_test.go`。
 - 全量回归：`check` 0 错 0 警；`test` 1371 全绿；`go test ./...` 全绿；语料快照更新为 1371 个场景。
 
 ### 批次 105（S-94 "从左起"：按集合顺序取前 N 个）
@@ -570,7 +570,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 - 新增 6 个场景（`tests/10004/batch-105-leftmost.wbotest`、
   `tests/10005/batch-105-leftmost.wbotest`），覆盖"最左边的中立随从要先被筛选掉"、
   "不消费随机决策"、舍弃后不足 3 张只复制现有的；Go 单测
-  `internal/project/first_selection_test.go`。
+  `internal/engine/project/first_selection_test.go`。
 - 全量回归：`check` 0 错 0 警；`test` 1367 全绿；`go test ./...` 全绿；语料快照更新为 1367 个场景。
 
 ### 批次 104（S-92 从对手手牌/牌组复制 + S-93 随机复制变身）
@@ -589,7 +589,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   卡包 10008 因此收满。
 - 新增 8 个场景（`tests/10005/`、`tests/10006/`、`tests/10008/`、`tests/10009/` 的
   `batch-104-copy-from-opponent.wbotest`），覆盖对手手牌为空、对手牌组为空、
-  连击加成与舍弃全部手牌；Go 单测 `internal/project/copy_random_test.go`。
+  连击加成与舍弃全部手牌；Go 单测 `internal/engine/project/copy_random_test.go`。
 - 全量回归：`check` 0 错 0 警；`test` 1361 全绿；`go test ./...` 全绿；语料快照更新为 1361 个场景。
 
 ### 批次 103（S-41 数值相减 + S-86 玩家标量比较 + S-90 入场张数）
@@ -614,7 +614,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 - 新增 14 个场景（`tests/10008/batch-103-numeric-conditions.wbotest`、
   `tests/10008/batch-103-entered-count.wbotest`、`tests/10009/batch-103-entered-count.wbotest`），
   覆盖"自己生命值更高/不高"、"差为负"、"不把自己算进其他同名卡"、纹章吟唱到期等边界；
-  Go 单测 `internal/project/numeric_condition_test.go`（三种新形状 + 两个必须报错的形状）。
+  Go 单测 `internal/engine/project/numeric_condition_test.go`（三种新形状 + 两个必须报错的形状）。
 - 新登记缺口：S-91 效果加入手牌后的费用断言（`set cost added N` 目前没有可断言的入口）。
 - 全量回归：`check` 0 错 0 警；`test` 1353 全绿；`go test ./...` 全绿；语料快照更新为 1353 个场景。
 
@@ -646,15 +646,15 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   与 `destroyed`/`banished` 同构）。`draw` 的数量从"只接受整数"扩展到接受数值表达式，
   于是"抽取X张卡牌，X为因本能力返回牌组的张数"写成
   `return own.hand to deck; draw count(returned);`。
-  改动面：`internal/project/typed_ir.go`（输出绑定与数量表达式）、`validate.go`
-  （语句形状与绑定作用域）、`internal/ir/{model,encode,decode}.go`（`DrawEffect.CountExpr`
-  与 `output: "returned"` 白名单）、`internal/runner/execute.go`（运行期求值）。
+  改动面：`internal/engine/project/typed_ir.go`（输出绑定与数量表达式）、`validate.go`
+  （语句形状与绑定作用域）、`internal/engine/ir/{model,encode,decode}.go`（`DrawEffect.CountExpr`
+  与 `output: "returned"` 白名单）、`internal/engine/runner/execute.go`（运行期求值）。
 - 完成 2 张：10554120 奥夜花·释藤（"发动2次"的整段能力，含超进化时复制入场曲）、
   10932120 高洁哲学家。
 - 新增 6 个场景（`tests/10009/batch-101-returned-count.wbotest`、
   `tests/10005/batch-101-returned-count.wbotest`），覆盖"抽牌张数=返回张数而不是牌组张数"、
   返回 0 张不抽牌、四张同费用才追加伤害、超进化分支；Go 单测
-  `internal/project/draw_count_test.go`（输出绑定、数量表达式、未定义绑定被拒绝）。
+  `internal/engine/project/draw_count_test.go`（输出绑定、数量表达式、未定义绑定被拒绝）。
 - 全量回归：`check` 0 错 0 警；`test` 1339 全绿；`go test ./...` 全绿；语料快照更新为 1339 个场景。
 
 ### 批次 100（卡包 10009 第五批 10 张 + 能量点支付块）
@@ -683,7 +683,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   10663110 崇拜的圣骑士（结晶 1）、10952110 渊底上校（结晶 2）、10962120 奇迹独角兔（结晶 1）。
   **这批是照 S-88 的办法复查 `alt_modes` 的 `crystallize` 条目发现的同类缺口。**
 - 新增 5 个场景（`tests/10006/batch-99-crystallize.wbotest`）与 Go 单测
-  `internal/runner/crystallize_test.go`（吟唱归零 → 谢幕曲召唤本体）。
+  `internal/engine/runner/crystallize_test.go`（吟唱归零 → 谢幕曲召唤本体）。
 - 全量回归：`check` 0 错 0 警；`test` 1317 全绿；`go test ./...` 全绿；语料快照更新为 1317 个场景。
 
 ### 批次 98（S-88 激奏打出模式 + 5 张补齐）
@@ -722,7 +722,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   复用 `HistorySummonEffect` 并新增 `Destination`：为空时照旧召唤到战场，
   为 `hand`/`deck` 时把记录里的卡面复制成新实例放进目标区域（输出绑定 `added`）。
   抽选方式与历史召唤完全一致（每次消费一次随机数、支持 `where`、`highest|lowest 属性`
-  与 `distinct names`）。Go 单测 `internal/project/history_summon_test.go` 覆盖形状与错误写法。
+  与 `distinct names`）。Go 单测 `internal/engine/project/history_summon_test.go` 覆盖形状与错误写法。
 - 完成 4 张：10572310 苏生调律（随机 2 种各 1 张）、10803110 遗忘的纯真·爱卡、
   10871130 器械操纵者·吉尔克（限定创造物）、10901310 轮回转冲（按原始费用最高复制到牌组后抽 1）。
 - 新增 5 个场景（`tests/10005/batch-96-history-copies.wbotest`）。
@@ -733,7 +733,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 - **S-87 `own|oppo.attacked_leader_last_turn`**：跨回合的攻击历史。攻击主战者时置位
   "本回合攻击过主战者"，进入该玩家的回合时把它结转成"上一回合"标记并清空本回合标记；
   数值/条件/续局快照都接上。场景测试可以在玩家状态写 `attacked_leader_last_turn;`
-  直接摆出历史，Go 单测 `internal/runner/leader_attack_history_test.go` 覆盖真实结转、
+  直接摆出历史，Go 单测 `internal/engine/runner/leader_attack_history_test.go` 覆盖真实结转、
   清空与续局保存。
 - 完成 4 张：10942110 绝倒的袭击者、10943110 尘土的不法者、10943310 利牙、
   10944110 穿孔的罪人·安缇马丽亚（同时用到 S-85 的 `ignore_ward`）。
@@ -810,7 +810,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   同时给突进并增幅手牌）、10854120 日月的蔷薇·赛蕾丝（唤灵 20 给手牌梦魇卡减费；交战时
   打 4；回合结束回复 4）。
 - **语言扩展**：`reduce cost <集合> where <筛选> N [minimum M]`（`raise` 同步支持），
-  筛选紧跟在集合之后；Go 单测 `internal/project/reduce_filter_test.go` 固定形状并拒绝
+  筛选紧跟在集合之后；Go 单测 `internal/engine/project/reduce_filter_test.go` 固定形状并拒绝
   缺 `minimum`、筛选位置错误等写法。
 - 新增 10 个场景（`tests/10008/batch-89-basics.wbotest`）。
 - 全量回归：`check` 0 错 0 警；`test` 1207 全绿；`go test ./...` 全绿；语料快照更新为 1207 个场景。
@@ -873,7 +873,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 - **修正进化点上限**：`gain own.ep` / `gain own.sep` 现在夹在 2（此前只保证不为负）。
   依据是[官方 QA](https://shadowverse-wb.com/chs/usersupport/?tab=2#dzyifirn1cll)：
   『高洁的黑翼·奥莉薇』在只剩 1 点超进化点时只会回复 1 点，因为上限是 2；
-  本作初始 EP/SEP 都是 2（`internal/runner/match.go`），所以两者的上限一致地取 2。
+  本作初始 EP/SEP 都是 2（`internal/engine/runner/match.go`），所以两者的上限一致地取 2。
 - 新登记缺口：S-85 "可以无视【守护】进行攻击"（10851110 通透的信念·安瑟珠）——
   现有语言只有守护本身与"不能被选中"的保护，没有攻击时忽略守护的写法。
 - 新增 14 个场景（`tests/10008/batch-85-basics.wbotest`）。
@@ -895,7 +895,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 - 完成最后 2 张：10731310 召唤仆从、10733310 饕餮魔咒（都在手牌中随土之秘术发动减费，
   之后分别抽 2 张 / 破坏 1 张敌方随从并增加土之印）。**卡包 10007 至此 77/77 收满。**
 - 新增 5 个场景（`tests/10007/batch-83-earthrite-event.wbotest`）与
-  `internal/project/earthrite_event_test.go`（事件形状 + 拒绝非法写法）。
+  `internal/engine/project/earthrite_event_test.go`（事件形状 + 拒绝非法写法）。
 - 全量回归：`check` 0 错 0 警；`test` 1128 全绿；`go test ./...` 全绿；语料快照更新为 1128 个场景。
 
 ### 批次 82（卡包 10007 第八批 8 张）
@@ -1065,7 +1065,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   官方 QA 明确了结算顺序：先从全部历史记录里等概率抽 1 张，再从"与第 1 张不同种类"
   的剩余候选里抽第 2 张，因此同名记录多的更容易被选中；候选耗尽时少召唤。
   与牌组召唤的 `distinct names` 语义一致。
-- 修好一处自己写出来的 bug：`internal/ir/decode.go` 解出 `distinctNames` 却忘了
+- 修好一处自己写出来的 bug：`internal/engine/ir/decode.go` 解出 `distinctNames` 却忘了
   回填到 `HistorySummonEffect`，运行期恒为 `false`。补的"只破坏过同一种护符时
   只召唤一张"场景立刻抓到了它——**编解码白名单加字段时，解码分支必须真的把字段
   传进效果结构体，`check` 不会覆盖这条路径**。
@@ -1087,7 +1087,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   10624120 古旧天剑·伊德梅塔（入场曲加入天剑深渊；进化时信仰值-5 并让信仰获得
   "通过爆能强化使用卡牌时，自己战场所有随从 +1/+1"；信仰随爆能强化使用卡牌 +1）。
 - 新增 7 个场景（`tests/10006/batch-71-faith-abilities.wbotest`）与 Go 单测
-  `internal/runner/faith_grant_test.go`（授权后的事件确实由信仰触发）。
+  `internal/engine/runner/faith_grant_test.go`（授权后的事件确实由信仰触发）。
 - 全量回归：`check` 0 错 0 警；`test` 979 全绿；`go test ./...` 全绿；语料快照更新为 979 个场景。
 
 ### 批次 70（信仰值作为数值 + 90034330 天晶深渊）
@@ -1097,7 +1097,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   每个分配到的点执行一次能力；信仰值本身不消费。
 - 完成 90034330 天晶深渊：召唤 1 个天晶魔手，然后按信仰值逐点随机加身材 / 回复主战者 / 打击对手主战者。
 - 新增 2 个场景（`tests/90000/batch-70-faith-distribution.wbotest`）与 Go 单测
-  `internal/runner/faith_distribution_test.go`（逐点分配合计等于信仰值、且不消费信仰值）。
+  `internal/engine/runner/faith_distribution_test.go`（逐点分配合计等于信仰值、且不消费信仰值）。
 - 全量回归：`check` 0 错 0 警；`test` 972 全绿；`go test ./...` 全绿；语料快照更新为 972 个场景。
 
 ### 批次 69（S-35 信仰机制第一阶段 + 卡包 10006）
@@ -1211,7 +1211,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   现在只有选到自己的护符时才追加 2 点伤害并加回手牌。
   **教训**：中文文本的句号不保证条件范围，遇到"若…则…。…"的写法必须核对日文/英文原文。
 - 新增 5 个场景（`tests/10006/batch-67-enhanced-and-own-amulet.wbotest`）；Go 单测
-  `internal/project/enhanced_filter_test.go`。
+  `internal/engine/project/enhanced_filter_test.go`。
 - 全量回归：`check` 0 错 0 警；`test` 956 全绿；`go test ./...` 全绿；语料快照更新为 956 个场景。
 
 ### 批次 66（S-75 否定筛选 + 卡包 10006）
@@ -1221,7 +1221,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   卡牌引用检查、运行时可不像；解析在 `parseWhere` 与 `filterIR` 两处）。
 - 完成 10603210 黑暗次元：吟唱 2，自己的回合结束时对战场上的所有**非侵蚀者**随从造成 2 点伤害。
 - 新增 1 个场景（`tests/10006/batch-66-negated-filter.wbotest`）；Go 单测
-  `internal/project/not_filter_test.go`（取反保留、`not attacked this turn` 未回归、拒绝不支持的词条）。
+  `internal/engine/project/not_filter_test.go`（取反保留、`not attacked this turn` 未回归、拒绝不支持的词条）。
 - 全量回归：`check` 0 错 0 警；`test` 951 全绿；`go test ./...` 全绿；语料快照更新为 951 个场景。
 
 ### 批次 65（卡包 10006 第三批，8 张）
@@ -1284,7 +1284,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 - 完成 10543110 破灭屠戮者：超进化时让自己的牌组里费用 1/3/5/7/9 的卡牌全部消失，
   并按消失张数对对手全体随从分配伤害。
 - 新增 2 个场景（`tests/10005/batch-62-banish-count.wbotest`）；Go 单测
-  `internal/project/banish_output_test.go`。
+  `internal/engine/project/banish_output_test.go`。
 - 全量回归：`check` 0 错 0 警；`test` 881 全绿；`go test ./...` 全绿；语料快照更新为 881 个场景。
 
 ### 批次 61（S-73 随机模式 + 卡包 10005 第七批）
@@ -1295,7 +1295,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 - 完成 10532310 魔猫戏法：【土之秘术_2】后从"召唤泥尘巨像 / 回复主战者 2 点 / 土之印 +3"
   中随机发动 2 个；土之秘术不足时整段不发动。
 - 新增 2 个场景（`tests/10005/batch-61-random-modes.wbotest`）；Go 单测
-  `internal/project/random_mode_test.go`。
+  `internal/engine/project/random_mode_test.go`。
 - 全量回归：`check` 0 错 0 警；`test` 879 全绿；`go test ./...` 全绿；语料快照更新为 879 个场景。
 
 ### 批次 60（S-71 宣告攻击事件 + 卡包 10004 / 10005）
@@ -1310,7 +1310,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   - 10544120 波摇花·夕夜（入场曲召唤大海虎鲸、进化时舍弃一张手牌并获得纹章；
     纹章让自己的海洋随从攻击时 +1/+0，并且每回合一次把大海虎鲸加入手牌）。
 - 新增 8 个场景（`tests/10005/batch-60-attack-events.wbotest`）；Go 单测
-  `internal/project/attack_event_test.go`。
+  `internal/engine/project/attack_event_test.go`。
 - 全量回归：`check` 0 错 0 警；`test` 877 全绿；`go test ./...` 全绿；语料快照更新为 877 个场景。
 
 ### 批次 59（S-58 同费用手牌判断 + S-61 召唤累计输出 + 卡包 10005 第六批）
@@ -1323,7 +1323,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 - 完成 2 张：10553310 严酷的奥夜花（纹章：回合结束抽 1 张，若手牌有 4 张以上同费卡牌则召唤带【守护】的骸骨士兵）、
   10571110 舞台缔造者（入场曲召唤改良型·悬丝傀儡与悬丝傀儡；爆能强化 7 让这两个傀儡都获得【疾驰】）。
 - 新增 5 个场景（`tests/10005/batch-59-same-cost-and-puppets.wbotest`）；Go 单测
-  `internal/project/same_cost_and_summoned_all_test.go`。
+  `internal/engine/project/same_cost_and_summoned_all_test.go`。
 - 新登记缺口：S-72 "返回张数/按返回张数抽牌"（10554120 奥夜花·释藤的入场曲）。
 - 全量回归：`check` 0 错 0 警；`test` 869 全绿；`go test ./...` 全绿；语料快照更新为 869 个场景。
 
@@ -1336,7 +1336,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   纹章在自己回合抽到 1/3/5 费卡牌时在本方战场、抽到 2/4/6 费卡牌时在对手战场
   随机召唤『纯洁白狐』或『神圣猎鹰』。
 - 新增 3 个场景（`tests/10005/batch-58-pool-summon.wbotest`）；Go 单测
-  `internal/project/summon_pool_test.go`。
+  `internal/engine/project/summon_pool_test.go`。
 - 全量回归：`check` 0 错 0 警；`test` 864 全绿；`go test ./...` 全绿；语料快照更新为 864 个场景。
 
 ### 批次 57（S-62 抽牌事件 + 卡包 10005 第四批）
@@ -1350,7 +1350,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   10522110 迅猛的武术家（抽到本卡牌时费用变为 3；入场曲抽牌并回复）、
   10562120 穷途末路的巫女（入场曲与进化时抽牌；自己抽牌时打击敌方全体）。
 - 新增 8 个场景（`tests/10005/batch-57-draw-triggers.wbotest`）；Go 单测
-  `internal/project/drawn_event_test.go`。
+  `internal/engine/project/drawn_event_test.go`。
 - 新登记缺口：S-70 从两种指定卡中随机召唤（10564120 雾卷花·茎白的纹章要"随机1个纯洁白狐或神圣猎鹰"）、
   S-71 其他随从的宣告攻击事件（10544120 波摇花·夕夜的纹章）。
 - 全量回归：`check` 0 错 0 警；`test` 861 全绿；`go test ./...` 全绿；语料快照更新为 861 个场景。
@@ -1364,7 +1364,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   10563110 至圣威仪（回复主战者时召唤纯洁白狐）、10544110 约束的《正义》·伊兰翠、
   10564110 思念的《力量》·索菲娜、10514120 虫风花·魅禄（入场曲与进化时都发动【模式】）。
 - 新增 15 个场景（`tests/10005/batch-56-mysteria.wbotest`）；Go 单测
-  `internal/project/healed_turn_event_test.go`。
+  `internal/engine/project/healed_turn_event_test.go`。
 - 新登记缺口：S-66 消失数量（`banish` 没有输出绑定）、S-67 主战者生命上限的增减
   （10534110 愚者的纹章）、S-69 混合同侧目标集合之外的单次随机选择
   （10524110 战车要同时随机"其他随从或双方主战者"）。
@@ -1385,7 +1385,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   10521120 烟管美玉、10511120 森林羽子板工匠、10513110 引路船工、10563210 坚固的雾卷花、
   10572110 新时代地理学者、10524120 丽金花·云庆（纹章）。
 - 新增 34 个场景（`tests/10005/batch-55-effects.wbotest`）；Go 单测
-  `internal/project/add_to_deck_test.go`。
+  `internal/engine/project/add_to_deck_test.go`。
 - 新登记缺口：S-61 同一次打出的多个召唤输出、S-62 抽牌事件、S-63 抽牌去重（"抽取2种…"）、
   S-64 从破坏历史复制同名卡加入手牌、S-65 从手牌按位置批量选择。
 - 全量回归：`check` 0 错 0 警；`test` 838 全绿；`go test ./...` 全绿；语料快照更新为 838 个场景。
@@ -1418,7 +1418,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   `expireTurnEffects` 按差量还原；支持 `until [own|oppo] turn ends`。原先只有 `set cost` 能写期限。
 - 完成 90044310 银冰吐息（模式一破坏对手所有受伤随从；模式二到对手回合结束前让对手手牌费用 +1）。
 - 新增 2 个场景（`tests/90000/batch-53-temporary-cost.wbotest`）与 Go 单测
-  `internal/runner/temporary_cost_test.go`（临时加费到期只撤销自己的差量，不吞掉期间的永久加费）。
+  `internal/engine/runner/temporary_cost_test.go`（临时加费到期只撤销自己的差量，不吞掉期间的永久加费）。
 - 新登记缺口：S-57 "判断选中的卡牌属于哪一方"（90064320 天书深渊"若选择了自己的护符"）；
   90034330 天晶深渊同时卡在 S-35（信仰值）与未导入的 10006 卡（天晶魔手）。
 - 全量回归：`check` 0 错 0 警；`test` 769 全绿；`go test ./...` 全绿；语料快照更新为 769 个场景。
@@ -1437,7 +1437,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   90054130 一尾狐、90021350 闪耀的金币、90023110 安静的女仆·诺嘉、90044330 天刀深渊、
   90064210 月影指环、90014320 绝命的痛击、90074320 天斧深渊，以及上面两张核心卡。
 - 新增 15 个场景（`tests/90000/batch-52-amulets-and-triggers.wbotest`）；Go 单测
-  `internal/project/amulet_aura_test.go`。
+  `internal/engine/project/amulet_aura_test.go`。
 - 全量回归：`check` 0 错 0 警；`test` 767 全绿；`go test ./...` 全绿；语料快照更新为 767 个场景。
 
 ### 批次 51（语言扩展 S-50 / S-53 / S-54 + 卡包 10004 / 90000）
@@ -1459,7 +1459,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
     90074150 击针看守、90072130 屠戮人偶、90032110 洋葱军团兵、90034350 宏大的回归、
     90064310 绝望的奔流（消失 + `raise countdown own.crests 1`）。
 - 新增 16 个场景（`tests/90000/batch-51-tokens-and-spells.wbotest`）；Go 单测
-  `internal/project/binding_scalar_test.go`。
+  `internal/engine/project/binding_scalar_test.go`。
 - 全量回归：`check` 0 错 0 警；`test` 752 全绿；`go test ./...` 全绿；语料快照更新为 752 个场景。
 
 ### 批次 50（语言扩展 S-47 + 卡包 10004 第七批）
@@ -1473,7 +1473,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   10434110 水之法则·瓦姆杜斯（魔力增幅时 +1/+1、入场曲增幅手牌、超进化模式二按攻击力分配伤害）、
   10464110 土之法则·伽莱翁（守护、无法攻击、超进化已解禁的回合结束时让未攻击过的进化前随从进化）。
 - 新增 8 个场景（`tests/10004/batch-50-basics.wbotest`）；Go 单测
-  `internal/project/attacked_filter_test.go`。
+  `internal/engine/project/attacked_filter_test.go`。
 - **踩坑（重要）**：`filterIR` 的 `case "spellboost"` 漏掉 `j++` 会让编译卡包时死循环，
   而 `check` 只做语法/形状校验、不跑 `filterIR`，所以 `check` 全绿也发现不了——
   表现为 `wbo test` 卡死、`go run` 进程被 SIGKILL。教训：改 `filterIR` 这类带手工索引的
@@ -1489,7 +1489,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 - 完成 2 张：10443310 星晶兽吸收之力（选择敌方 1 张卡牌，使其消失并把同名卡加入手牌）、
   10412110 美妆少女·克洛伊（爆能强化 8：选择手牌中的 1 张随从召唤，本随从返回手牌）。
 - 新增 5 个场景（`tests/10004/batch-49-basics.wbotest`）；Go 单测
-  `internal/project/copies_and_hand_summon_test.go`。
+  `internal/engine/project/copies_and_hand_summon_test.go`。
 - 全量回归：`check` 0 错 0 警；`test` 728 全绿；`go test ./...` 全绿；语料快照更新为 728 个场景。
 
 ### 批次 48（卡包 10004 第五批）
@@ -1524,28 +1524,28 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   10424110 真红与群青·塞达&贝阿朵丽丝、10472120 严厉的教官·伊尔莎、10452130 元素共鸣·巴尔，
   以及三张纹章卡 10414120 调和的舞者·尤艾尔&苏丝雅、10453310 堕落、10454120 狡诈的堕天司·彼列。
 - 新增 28 个场景（`tests/10004/batch-47-basics.wbotest`、`batch-47-crests.wbotest`）；
-  Go 单测 `internal/project/crest_target_and_play_frame_test.go`、
-  `internal/runner/enhance_play_frame_test.go`。
+  Go 单测 `internal/engine/project/crest_target_and_play_frame_test.go`、
+  `internal/engine/runner/enhance_play_frame_test.go`。
 - 修正两处既有实现：`producedBindings` 漏掉 `add` 的 `added` 输出；检查器漏登记 `played` 绑定。
 - 全量回归：`check` 0 错 0 警；`test` 700 全绿；`go test ./...` 全绿；语料快照更新为 700 个场景。
 
 ### 批次 46（语言扩展 S-42：伤害上限与主战者受伤 +1 + 卡包 10004 第三批）
 
 - **新固有关键词 `damage_cap N`**：实例每次受到的伤害最多为 `N`，对应卡面
-  "受到的 N+1 点或以上的伤害变为 N 点"。`internal/project/validate.go`（与 `damage_reduction` 同一形状）、
+  "受到的 N+1 点或以上的伤害变为 N 点"。`internal/engine/project/validate.go`（与 `damage_reduction` 同一形状）、
   `strict_validate.go`（固有能力形状表）、`typed_ir.go`（写入 `IntrinsicState`）、
-  `internal/ir/decode.go`（固有状态白名单）、`internal/runner/runner.go`（`instance.damageCap`、
-  `resetCardState`、`modifyDamage` 在减伤之后压上限）、`internal/runner/continuation.go`（`DamageCap` 快照与恢复）。
+  `internal/engine/ir/decode.go`（固有状态白名单）、`internal/engine/runner/runner.go`（`instance.damageCap`、
+  `resetCardState`、`modifyDamage` 在减伤之后压上限）、`internal/engine/runner/continuation.go`（`DamageCap` 快照与恢复）。
 - **主战者关键词 `damage_taken_up`**："受到的伤害 +1"，在 `damageLeaderFrom` 与 `damageLeaders`
   的屏障判定前先加一（因此与【屏障】同时存在时下一次伤害仍为 0，符合官方 QA）。
-  `internal/ir/decode.go` 的 `validKeyword`、`validate.go` 的 `abilities`、`strict_validate.go`
+  `internal/engine/ir/decode.go` 的 `validKeyword`、`validate.go` 的 `abilities`、`strict_validate.go`
   的形状表三处同步；卡牌用 `add damage_taken_up to oppo.leader;` 赋予。
 - 完成 4 张：10401110 驰骋天空的守护者·卡塔莉娜（奥义随机 2×5 + 守护 + 伤害上限）、
   10464120 威严的星晶骑士·薇拉（消失 2 个随从 + 解放奥义超进化 + 守护 + 伤害上限）、
   10474120 唯一王者·别西卜（选 2 个随从失去所有能力并各受 9 点伤害，对手主战者受伤 +1）、
   10444110 炎之法则·威尔纳斯（选 1 个随从 8 点伤害 + 威慑 + 进化时重复入场曲）。
 - 新增 7 个场景（`tests/10004/batch-46-basics.wbotest`）；Go 单测
-  `internal/runner/damage_cap_test.go` 覆盖伤害上限的三种输入、主战者受伤 +1、
+  `internal/engine/runner/damage_cap_test.go` 覆盖伤害上限的三种输入、主战者受伤 +1、
   以及"受伤 +1 与屏障同时存在时下一次伤害为 0"。
 - 全量回归：`check` 0 错 0 警；`test` 672 全绿；`go test ./...` 全绿；语料快照更新为 672 个场景。
 
@@ -1764,7 +1764,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   主战者）、10364120 绝望的显现·玛温（入场曲加入绝望的奔流；进化获得纹章，纹章在自己
   未攻击的回合结束时按纹章数分配伤害）。
 - 新增 6 个场景（`tests/10003/batch-30-extremum-and-crests.wbotest`）+ 1 组 Go 测试
-  （`internal/project/extremum_damage_test.go`）。
+  （`internal/engine/project/extremum_damage_test.go`）。
 - 全量回归：`check` 0 错 0 警；`test` 541 全绿；语料快照更新为 541 个场景。
 
 ### 批次 29（语言扩展 S-23/S-25 + 卡包 10003）
@@ -1777,7 +1777,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   同时把 `other [绑定]` 推广到 `damage`/`heal`，这样"对战场上的其他所有随从造成 3 点伤害"能直写。
 - 完成 3 张卡：10331110 真理的肯定者、10332110 真理的祈祷者、10333310 虚假的术式。
 - 新增 5 个场景（`tests/10003/batch-29-cost-conditions.wbotest`）+ 1 组 Go 测试
-  （`internal/project/self_cost_and_raise_test.go`）。
+  （`internal/engine/project/self_cost_and_raise_test.go`）。
 - 全量回归：`check` 0 错 0 警；`test` 535 全绿；语料快照更新为 535 个场景。
 
 ### 批次 28（卡包 10003）
@@ -1806,7 +1806,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   `repeat own.combo`、`remove lastwords from summoned`、纹章 + 吟唱 + 谢幕曲、
   `not own.attacked_this_turn` 条件、`engage` 与倒计时都直接可用——正是前几批扩语言的回报。
 - 新增 17 个场景（`tests/10003/batch-26-basics.wbotest`、`batch-27-spells-and-crests.wbotest`）
-  + 1 个 Go 测试（`internal/runner/opponent_evolution_test.go`：手牌里的
+  + 1 个 Go 测试（`internal/engine/runner/opponent_evolution_test.go`：手牌里的
   "对手随从超进化时"触发需要对手行动，场景测试做不到）。
 - 全量回归：`check` 0 错 0 警；`test` 509 全绿；语料快照更新为 509 个场景。
 
@@ -1831,7 +1831,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   给它"到对手回合结束为止无法攻击"，并对敌方主战者造成 1 点、回复自己 1 点）。
 - **卡包 10002 全部 77 张完成**，接下来开始导入 10003 并继续铺开。
 - 新增 5 个场景（`tests/10002/batch-23-rally.wbotest`、`batch-24-enemy-summon.wbotest`）
-  + 2 组 Go 测试（`internal/project/rally_test.go`、`internal/runner/rally_test.go`）。
+  + 2 组 Go 测试（`internal/engine/project/rally_test.go`、`internal/engine/runner/rally_test.go`）。
 - 全量回归：`check` 0 错 0 警；`test` 492 全绿；语料快照更新为 492 个场景。
 
 ### 批次 22（卡包 10002）
@@ -1840,7 +1840,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   无法攻击；超进化时给敌方 2 个随从附加"回合结束时对自己的主战者造成 1 点、
   对本随从造成 2 点伤害"）。
 - 新增 2 个场景（`tests/10002/batch-22-long-grant.wbotest`）+ 1 个流程测试
-  （`internal/runner/granted_ability_flow_test.go` 里的丽梅格用例：附加能力只在
+  （`internal/engine/runner/granted_ability_flow_test.go` 里的丽梅格用例：附加能力只在
   对手自己的回合结束时发动，场景测试走不到对手回合结束）。
 - 10002 只剩 2 张：10224110（【协作_20】关键词）、10224120（在对手战场召唤 + 监听对手入场）。
 - 全量回归：`check` 0 错 0 警；`test` 487 全绿；语料快照更新为 487 个场景。
@@ -1881,7 +1881,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 - 完成 1 张卡：10201310 逆向变化（选择战场上的 1 个随从，使其 +2/-2）。
 - 新增 2 个场景（`tests/10002/batch-18-cross-side.wbotest`）：指定对手随从（降到 0 生命被破坏）
   与指定自己的随从（10/10 → 12/8）。
-- 新增 `internal/project/cross_side_selection_test.go` 固定集合形状，
+- 新增 `internal/engine/project/cross_side_selection_test.go` 固定集合形状，
   避免以后有人"顺手"给空 Side 加限制。
 - 全量回归：`check` 0 错 0 警；`test` 472 全绿；语料快照更新为 472 个场景。
 
@@ -1894,7 +1894,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   只影响发动瞬间在牌组里的卡——后者决定实现必须是"结算时遍历集合"，而不是给牌组挂持续效果。
 - 完成 1 张卡：10244120 绚丽凤凰·小凤（入场曲使牌组中所有卡牌费用减半）。
 - 新增 2 个场景（`tests/10002/batch-17-deck-costs.wbotest`）+ 2 组 Go 测试
-  （`internal/project/halve_cost_test.go`、`internal/runner/deck_cost_test.go`）。
+  （`internal/engine/project/halve_cost_test.go`、`internal/engine/runner/deck_cost_test.go`）。
 - 10002 只剩 10 张未实现，全部卡在已登记缺口（S-03 跨方选择、S-12 纹章内集合条件等）。
 - 全量回归：`check` 0 错 0 警；`test` 470 全绿；语料快照更新为 470 个场景。
 
@@ -1919,8 +1919,8 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 - 完成 2 张卡：10271120 猫偶（有超进化随从时把强化过的悬丝傀儡加入手牌）、
   10272120 绝望之王·阿基姆（进化时让攻击力 ≤4 的随从消失并召唤复制）。
 - 新增 4 个场景（`tests/10002/batch-15-filters-and-added.wbotest`），
-  另有 `internal/project/filter_and_added_test.go` 与
-  `internal/runner/added_binding_test.go` 覆盖数值与绑定细节
+  另有 `internal/engine/project/filter_and_added_test.go` 与
+  `internal/engine/runner/added_binding_test.go` 覆盖数值与绑定细节
   （场景只能数手牌张数，强化数值必须在 Go 侧断言）。
 - 全量回归：`check` 0 错 0 警；`test` 464 全绿；语料快照更新为 464 个场景。
 
@@ -1950,7 +1950,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   复制体获得"对手回合结束时破坏"）、10273110 暗狱的余晖·贾丝珀（入场曲加过往核心；
   进化时给手牌创造物守护与不会被能力破坏）。
 - 新增 7 个场景（`tests/10002/batch-13-granted-abilities.wbotest`）+ 3 个 Go 测试
-  （`internal/runner/granted_ability_flow_test.go`）。场景能直接观察到的只有
+  （`internal/engine/runner/granted_ability_flow_test.go`）。场景能直接观察到的只有
   "获得关键词 / 加入手牌 / 复制体入场"，附加能力的发动时点、谢幕曲抽牌与
   "不会被能力破坏"必须由 Go 测试走完整流程：出牌 → 附加 → 回合结束 / 破坏。
 - 记录一个换算：文本里的"召唤对应数量的复制随从"是「そのコピー1枚」的简中误译，
@@ -1966,7 +1966,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   10252120 尸兵（入场曲召唤 2 个腐臭的僵尸）、10251310 诅咒派对（把怨灵、骸骨士兵、
   腐臭的僵尸各 1 张加入手牌）。90051140 之前因为 S-01 挂起，连带卡的这两张也一并解锁。
 - 新增 3 个场景（`tests/10002/batch-12-lastwords-removal.wbotest`）。场景只能观察
-  "死后场上剩下 1 个僵尸"，链是否真的停止由 `internal/runner/ability_removal_test.go`
+  "死后场上剩下 1 个僵尸"，链是否真的停止由 `internal/engine/runner/ability_removal_test.go`
   连杀两次验证（第二次死亡不再产生新个体，墓场资源停在 2）。
 - 全量回归：`check` 0 错 0 警；`test` 447 全绿；语料快照更新为 447 个场景。
 
@@ -1982,7 +1982,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
   加入手牌）、10274120 精神武艺·迦尔拉（入场曲复制手牌里的创造物随从 + 超进化后可攻击 2 次）。
 - 新增 13 个场景（`tests/10002/batch-11-effects.wbotest`）。融合的两个分支被拆开：
   场景测试覆盖"未融合抽 1"与"融合指令合法 / 无合法材料时非法"，"融合后抽 2"由
-  `internal/runner/fused_play_effect_test.go` 端到端覆盖
+  `internal/engine/runner/fused_play_effect_test.go` 端到端覆盖
   （`.wbotest` 一个 `action` 只能有一个主动作，`fuse` 与 `play` 无法连写）。
 - 两个新踩到的坑记在场景注释里：`own.shadows` 按规则把**被破坏的护符**也算一点
   （见 `docs/rules/turn-combat.md`）；没有合法材料时 `fuse` 直接是
@@ -2035,7 +2035,7 @@ node scripts/card_worklist.mjs --pack 10002 --limit 20
 - 完成 1 张：10221310 商谈成立（自己抽 2 张、对方抽 1 张）。
 - 新增 2 个场景（`tests/10002/batch-06-draw-owner.wbotest`），其中一个断言**对方手牌**
   确实增加了 1 张（用 `oppo.hand count card …` 验证，而不是只验证自己）。
-- 语料快照测试（`internal/ir/decode_test.go`、`internal/project/integration_test.go`）
+- 语料快照测试（`internal/engine/ir/decode_test.go`、`internal/engine/project/integration_test.go`）
   里的卡数与场景数需要随批次更新：253 → 379、354 → 411。已在注释里写明这是全卡覆盖
   工作的固定维护项。
 - 新登记 S-11：`.wbotest` 不能声明先手，所以"抽牌耗尽判负"只能由 Go 测试覆盖。

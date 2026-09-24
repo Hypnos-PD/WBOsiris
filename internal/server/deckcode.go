@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"wbo/internal/deckcode"
-	"wbo/internal/runner"
+	"wbo/internal/engine/deckcode"
+	"wbo/internal/engine/runner"
 )
 
 // deckCodeRequest 既用于编码（给 cards）也用于解码（给 code）。

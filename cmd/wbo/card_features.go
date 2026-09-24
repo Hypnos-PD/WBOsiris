@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"wbo/internal/ir"
+	"wbo/internal/engine/ir"
 )
 
 // semanticEffectKinds 是**真正描述"这张牌做什么"**的效果种类白名单。

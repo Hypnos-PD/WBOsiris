@@ -1,25 +1,11 @@
 *.wbos
 /wbo
 temp/
-/web/node_modules/
-/web/dist/
-/web/.vite/
 *.log
 *.tsbuildinfo
-
-# 主界面插图素材：逐字节复制、不压缩，全部 40 张约 675 MB。
-# 由 scripts/bundle_illustrations.mjs 在打包机上生成；仓库里只保留内置默认那张。
-/web/public/assets/home/*/
-!/web/public/assets/home/hi_1001/
-# 清单由同一个脚本生成（列出的素材多数不在仓库里），内置默认那张用 hi_1001.json。
-/web/public/assets/home/index.json
 
 # 部署时的本地构建产物
 /build/
 
-# 桌面客户端构建产物
-/desktop/frontend/dist/
-/desktop/build/bin/
-/desktop/frontend/wailsjs/
 /dist/
 /.cache/

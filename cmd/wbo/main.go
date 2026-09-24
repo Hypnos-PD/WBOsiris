@@ -13,11 +13,11 @@ import (
 	"strconv"
 	"strings"
 
-	"wbo/internal/ir"
-	"wbo/internal/project"
-	"wbo/internal/ruleset"
-	"wbo/internal/runner"
-	"wbo/internal/syntax"
+	"wbo/internal/engine/ir"
+	"wbo/internal/engine/project"
+	"wbo/internal/engine/ruleset"
+	"wbo/internal/engine/runner"
+	"wbo/internal/engine/syntax"
 )
 
 func main() {

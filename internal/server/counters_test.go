@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"wbo/internal/ir"
-	"wbo/internal/runner"
+	"wbo/internal/engine/ir"
+	"wbo/internal/engine/runner"
 )
 
 func TestCounterMatchAndReplayVisibility(t *testing.T) {

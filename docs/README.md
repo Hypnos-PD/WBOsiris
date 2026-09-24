@@ -15,12 +15,10 @@
 ## 工具
 
 - [命令行工具](tooling/cli.md)：`check`、`format`、`compile`、`test` 与 `selfplay`。
-- [网页牌组库](tooling/deck-library.md)：命名构筑、导入导出、本地保存与网络对战选牌。
 - [网络房间与恢复](tooling/network-rooms.md)：邀请对手、恢复席位、连接状态与本地凭据。
 - [对局线协议](tooling/wire-protocol.md)：状态/动作/选择/推送流，以及写外部 bot 的最小循环。
 - [外部 bot：陪练与自对弈观战](tooling/external-bot.md)：用玩家凭据占席位，三种模式、观战与卡组。
 - [部署](tooling/deployment.md)：规则服务挂在 WBA 的 `/wbo/` 前缀、账号沿用 WBArts JWT、单实例约束。
-- [桌面客户端](tooling/desktop-client.md)：Go + Wails 的客户端、素材放包内、AppImage 预处理与发布。
 - [训练环境协议](tooling/env-protocol.md)：`wbo env` 的 JSON-lines 协议（供 WBDecima 驱动）。
 - [决策点克隆与搜索预算](tooling/search-and-clone.md)：决策点存档、克隆实测成本与搜索规模结论。
 - [原版客户端](tooling/native-client.md)：`wbo native` 发现/校验/导入本机客户端的方式与已知问题。

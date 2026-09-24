@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"wbo/internal/nativeclient"
+	"wbo/native/client"
 )
 
 // resolveTarget 决定这次启动跑哪一份客户端、以及（自己启动时）用哪个 Proton。

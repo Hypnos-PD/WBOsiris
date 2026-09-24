@@ -1,5 +1,5 @@
 // Package wbo 只在仓库根提供一份"把卡池嵌进二进制"的入口，
-// 桌面客户端（desktop/）用它做到脱机可用：卡牌规则是纯文本，约 4 MB。
+// 让调用方脱机可用：卡牌规则是纯文本，约 4 MB。
 package wbo
 
 import "embed"

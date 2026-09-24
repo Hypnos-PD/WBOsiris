@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"wbo/internal/runner"
+	"wbo/internal/engine/runner"
 )
 
 func TestDeckCodeEndpointRoundTrip(t *testing.T) {

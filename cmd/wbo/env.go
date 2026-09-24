@@ -12,12 +12,12 @@ import (
 	"strconv"
 	"strings"
 
-	"wbo/internal/ai"
-	"wbo/internal/ir"
-	"wbo/internal/project"
-	"wbo/internal/ruleset"
-	"wbo/internal/runner"
-	"wbo/internal/search"
+	"wbo/internal/engine/ai"
+	"wbo/internal/engine/ir"
+	"wbo/internal/engine/project"
+	"wbo/internal/engine/ruleset"
+	"wbo/internal/engine/runner"
+	"wbo/internal/engine/search"
 )
 
 // wbo env：给训练进程用的 JSON-lines 环境协议（stdin 收命令，stdout 发行事件）。

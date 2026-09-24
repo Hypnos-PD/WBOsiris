@@ -13,10 +13,10 @@ import (
 	"strings"
 	"sync"
 
-	"wbo/internal/ai"
-	"wbo/internal/ir"
-	"wbo/internal/project"
-	"wbo/internal/runner"
+	"wbo/internal/engine/ai"
+	"wbo/internal/engine/ir"
+	"wbo/internal/engine/project"
+	"wbo/internal/engine/runner"
 )
 
 type Server struct {

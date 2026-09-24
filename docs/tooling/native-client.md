@@ -15,7 +15,7 @@ wbo native import   # 复制成工作目录里的副本（--dry-run 只看计划
 `GameAssembly.dll`。所以"支持哪些客户端"只有一个判据：这个文件的 SHA-256。
 `gameVersion` 只是给人看的标签，任何判定都不依赖它。
 
-profile 在 `internal/nativeclient/profiles/`，一条对应一个受支持的构建。改游戏或
+profile 在 `native/client/profiles/`，一条对应一个受支持的构建。改游戏或
 换版本之后，要么重新提取契约并新增一条 profile，要么明确报告"不支持"。
 
 核对结果分两级：
@@ -76,7 +76,7 @@ ShadowverseWB_Data/Plugins/x86_64/Cysharp.Net.Http.YetAnotherHttpHandler.Native.
 
 它是上游 Cysharp/YetAnotherHttpHandler 的 Rust cdylib，导出 45 个 C ABI 函数。所以
 客户端改造不需要动 195 MiB 的 `GameAssembly.dll`，只要把这个插件换成
-[`native/yaha-shim`](../../native/yaha-shim/README.md)：44 个导出原样转发给改名后的
+[`native/shim`](../../native/shim/README.md)：44 个导出原样转发给改名后的
 原件，只接管 `yaha_request_set_uri`，在那里把 URI 改写到本地。
 
 ```
@@ -165,7 +165,7 @@ base64( [u32 小端 载荷长度][32B 客户端临时公钥][36B AES-CTR 元数�
 所以服务端要能解开，前提是客户端用的是**我们的**公钥——这需要把客户端里那个常量
 换掉（见 `delta/tools/patch_common_header.py`；常量源头在元数据里，不是就地构造的数组）。
 
-`internal/nativeproto` 是这条信封的服务端实现：`DecodeRequest` 解请求、`EncodeResponse`
+`native/proto` 是这条信封的服务端实现：`DecodeRequest` 解请求、`EncodeResponse`
 封响应。验证分三层，因为"自己写的编解码器两边对拍"这种测试**抓不住两边同错的 bug**：
 
 | 层 | 内容 |
@@ -201,7 +201,7 @@ wbo native launch --broker --capture ~/wbo-capture \
 
 客户端启动时会问一批与规则无关的问题（版本、标题、账号初始化……）。这些响应对不上，
 它就走不到主界面；但它们也不需要规则引擎。这一层用**夹具**回答：
-`internal/nativeproto/contracts/startup-fixtures.json`，来自 delta 的
+`native/proto/contracts/startup-fixtures.json`，来自 delta 的
 `research/native-offline/startup-fixtures.json`，覆盖 15 条路由。
 
 **来源要说清楚**：这份夹具的 `provenance` 自己写明是"本地重建的响应"——字段布局取自
@@ -399,7 +399,7 @@ ArgumentOutOfRangeException: Non-negative number required. Parameter name: newSi
 | 3 | 响应体不是 base64 文本（本档第一版档案处理器直接回了二进制信封） |
 
 调试时有两件趁手的工具，都不是产品的一部分：`wbo native broker` 会把解开的请求体
-打印成一行 JSON（`internal/nativebroker/describe.go`）；驱动客户端不需要人坐在那儿
+打印成一行 JSON（`native/broker/describe.go`）；驱动客户端不需要人坐在那儿
 ——XTEST 合成点击能点动标题界面（注意 `ButtonRelease` 的 detail 必须是按钮号，
 写 0 会让客户端只看到"一直按着"）。但**这个对话框上的按钮，合成点击点不动**，
 所以这一步仍然需要真人点一次。

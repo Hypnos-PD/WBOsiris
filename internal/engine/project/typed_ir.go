@@ -1,0 +1,1622 @@
+package project
+
+import (
+	"fmt"
+	"sort"
+	"strconv"
+	"strings"
+
+	"wbo/internal/engine/ir"
+	"wbo/internal/engine/ruleset"
+	"wbo/internal/engine/syntax"
+)
+
+type idScope struct {
+	parent string
+	seen   map[string]int
+	ids    map[string]bool
+}
+
+func spanIR(sp syntax.Span, sid string) ir.SourceSpan {
+	return ir.SourceSpan{
+		SourceID: sid, StartByte: uint32(sp.Start.Byte), EndByte: uint32(sp.End.Byte),
+		StartLine: uint32(sp.Start.Line), StartColumn: uint32(sp.Start.Column),
+		EndLine: uint32(sp.End.Line), EndColumn: uint32(sp.End.Column),
+	}
+}
+
+func originIR(sp syntax.Span, sid string) ir.Origin {
+	return ir.Origin{Primary: spanIR(sp, sid)}
+}
+
+func newScope(parent string, ids map[string]bool) *idScope {
+	return &idScope{parent: parent, seen: map[string]int{}, ids: ids}
+}
+func (s *idScope) next(st *syntax.Statement) (string, error) {
+	fp := statementFingerprint(st)
+	n := s.seen[fp]
+	s.seen[fp]++
+	id := nodeID(s.parent, fp, strconv.Itoa(n))
+	if s.ids[id] {
+		return "", fmt.Errorf("WBO-E015-ID-COLLISION: 节点 ID 碰撞")
+	}
+	s.ids[id] = true
+	return id, nil
+}
+func statementFingerprint(s *syntax.Statement) string {
+	var b strings.Builder
+	b.WriteString(words(tokenValues(s)))
+	for _, block := range s.Blocks() {
+		b.WriteByte('{')
+		for _, x := range block {
+			b.WriteString(statementFingerprint(x))
+			b.WriteByte(';')
+		}
+		b.WriteByte('}')
+	}
+	return contentHash([]byte(b.String()))
+}
+
+func compileCardsTyped(l *Loaded) (ir.CardPack, error) {
+	cards := append([]*Card(nil), l.Cards...)
+	sort.Slice(cards, func(i, j int) bool { return cards[i].ID < cards[j].ID })
+	sources := []ir.Source{}
+	out := []ir.Card{}
+	ids := map[string]bool{}
+	for _, c := range cards {
+		path := sourcePath(l, c.Path)
+		sid := sourceID(path)
+		sources = append(sources, ir.Source{SourceID: sid, Path: path, ContentHash: contentHash(c.File.Source), Span: spanIR(fileSpan(c.File), sid)})
+		card, err := compileTypedCard(c, sid, ids)
+		if err != nil {
+			return ir.CardPack{}, err
+		}
+		out = append(out, card)
+	}
+	return ir.CardPack{Format: ir.Format, ContainerVersion: ir.ContainerVersion, Encoding: ir.Encoding, Kind: "card-pack", IRVersion: ir.IRVersion, SourceLanguageVersion: ir.SourceLanguageVersion, RequiredFeatures: []string{}, UnresolvedReferences: []string{}, Sources: sources, Cards: out}, nil
+}
+
+func compileTypedCard(c *Card, sid string, ids map[string]bool) (ir.Card, error) {
+	counters := map[string]int{}
+	intrinsic := []string{}
+	passives := []string{}
+	restrictions := []ir.Restriction{}
+	states := []ir.IntrinsicState{}
+	abilitiesIR := []ir.Ability{}
+	fusion := []ir.FusionAbility{}
+	play := []ir.Effect{}
+	kind := "card"
+	if c.Type == "crest" {
+		kind = "crest"
+	}
+	scope := newScope(nodeID(kind, c.ID), ids)
+	evolveIDs := []string{}
+	superIDs := []struct{ id, relation string }{}
+	for _, s := range c.Effect {
+		h := s.Word(0)
+		switch {
+		case h == "counter":
+			counters[s.Word(1)] = intAt(s, 2)
+		case abilities[h] && len(s.Blocks()) == 0:
+			intrinsic = append(intrinsic, h)
+		case h == "unplayable":
+			restrictions = append(restrictions, ir.Restriction{Kind: "unplayable"})
+		case h == "countdown":
+			states = append(states, ir.IntrinsicState{Kind: "countdown", Initial: intAt(s, 1)})
+		case h == "damage_reduction":
+			states = append(states, ir.IntrinsicState{Kind: "damage_reduction", Initial: intAt(s, 1)})
+		case h == "damage_cap":
+			states = append(states, ir.IntrinsicState{Kind: "damage_cap", Initial: intAt(s, 1)})
+		case h == "attack_limit":
+			states = append(states, ir.IntrinsicState{Kind: "attack_limit", Initial: intAt(s, 1)})
+		case h == "earthsigil":
+			states = append(states, ir.IntrinsicState{Kind: "earthsigil", Initial: 1})
+		case h == "passive" && len(s.Blocks()) == 0:
+			// `passive suppress_fanfare;`：纹章/信仰持有者的持续性规则改动。
+			passives = append(passives, s.Word(1))
+		case h == "fusion":
+			n, err := compileFusion(s, sid, scope, ids)
+			if err != nil {
+				return ir.Card{}, err
+			}
+			fusion = append(fusion, n)
+		case len(s.Blocks()) > 0 && set("fanfare", "lastwords", "attack", "clash", "evolve", "superevolve", "engage", "enhance", "accelerate", "spellboost", "when", "replace")[h]:
+			n, err := compileAbility(s, sid, scope, ids)
+			if err != nil {
+				return ir.Card{}, err
+			}
+			abilitiesIR = append(abilitiesIR, n)
+			id := n.ID
+			if h == "evolve" {
+				evolveIDs = append(evolveIDs, id)
+			}
+			if h == "superevolve" {
+				rel := "independent"
+				if len(s.Tokens()) == 3 {
+					rel = s.Word(1)
+				}
+				superIDs = append(superIDs, struct{ id, relation string }{id, rel})
+			}
+		default:
+			n, err := compileEffect(s, sid, scope, ids)
+			if err != nil {
+				return ir.Card{}, err
+			}
+			play = append(play, n)
+		}
+	}
+	plans := []ir.ActionPlan{}
+	if len(evolveIDs) == 1 {
+		plans = append(plans, ir.ActionPlan{Action: "evolve", Steps: []ir.PlanStep{{AbilityID: evolveIDs[0], Frame: "new"}}})
+		if len(superIDs) == 0 {
+			plans = append(plans, ir.ActionPlan{Action: "superevolve", Steps: []ir.PlanStep{{AbilityID: evolveIDs[0], Frame: "new"}}})
+		}
+	}
+	for _, x := range superIDs {
+		steps := []ir.PlanStep{}
+		switch x.relation {
+		case "replaces":
+			steps = append(steps, ir.PlanStep{AbilityID: x.id, Frame: "new"})
+		case "extends":
+			steps = append(steps, ir.PlanStep{AbilityID: evolveIDs[0], Frame: "new"}, ir.PlanStep{AbilityID: x.id, Frame: "continue"})
+		default:
+			if len(evolveIDs) == 1 {
+				steps = append(steps, ir.PlanStep{AbilityID: evolveIDs[0], Frame: "new"})
+			}
+			steps = append(steps, ir.PlanStep{AbilityID: x.id, Frame: "new"})
+		}
+		plans = append(plans, ir.ActionPlan{Action: "superevolve", Steps: steps})
+	}
+	loc := map[string]ir.Locale{}
+	for _, code := range locales {
+		x := c.Locales[code]
+		loc[code] = ir.Locale{Name: x.Name, Text: x.Text}
+	}
+	m := ir.Card{ID: mustInt(c.ID), CardType: c.Type, Cost: c.Cost, Traits: unique(c.Traits), Intrinsic: intrinsic, IntrinsicState: states, Restrictions: restrictions, Abilities: abilitiesIR, FusionAbilities: fusion, PlayEffects: play, ActionPlans: plans, Meta: ir.Meta{Pack: c.Meta.Pack, Class: c.Meta.Class, Rarity: c.Meta.Rarity}, Locales: loc, Origin: originIR(c.Decl.Span, sid)}
+	m.Passives = passives
+	m.Counters = counters
+	if c.Stats != nil {
+		m.Stats = &ir.Stats{Attack: c.Stats[0], Life: c.Stats[1]}
+	}
+	if c.Crest != nil {
+		crest, err := compileTypedCard(c.Crest, sid, ids)
+		if err != nil {
+			return ir.Card{}, err
+		}
+		m.Crest = &ir.CrestDefinition{Counters: crest.Counters, Abilities: crest.Abilities, Passives: crest.Passives, Locales: crest.Locales, Origin: crest.Origin}
+		for _, state := range crest.IntrinsicState {
+			if state.Kind == "countdown" {
+				m.Crest.Countdown = state.Initial
+			}
+		}
+	}
+	if c.Faith != nil {
+		faith, err := compileTypedCard(c.Faith, sid, ids)
+		if err != nil {
+			return ir.Card{}, err
+		}
+		m.Faith = &ir.CrestDefinition{Counters: faith.Counters, Abilities: faith.Abilities, Passives: faith.Passives, Locales: faith.Locales, Origin: faith.Origin}
+	}
+	if c.Crystallize != nil {
+		// 结晶形态沿用本体卡面的本地化文本（护符形态的说明由卡表提供）。
+		c.Crystallize.Locales = c.Locales
+		derived, err := compileTypedCard(c.Crystallize, sid, ids)
+		if err != nil {
+			return ir.Card{}, err
+		}
+		m.Crystallize = &ir.CrystallizeDefinition{Cost: derived.Cost, Counters: derived.Counters, Intrinsic: derived.Intrinsic,
+			IntrinsicState: derived.IntrinsicState, Abilities: derived.Abilities, PlayEffects: derived.PlayEffects,
+			Locales: derived.Locales, Origin: derived.Origin}
+	}
+	return m, nil
+}
+
+func compileAbility(s *syntax.Statement, sid string, scope *idScope, ids map[string]bool) (ir.Ability, error) {
+	id, err := scope.next(s)
+	if err != nil {
+		return ir.Ability{}, err
+	}
+	h := s.Word(0)
+	var trigger ir.Trigger = ir.SimpleTrigger{Kind: h}
+	if h == "engage" || h == "enhance" || h == "accelerate" {
+		trigger = ir.CostTrigger{Kind: h, Cost: intAt(s, 1)}
+	}
+	if h == "when" {
+		trigger = eventPatternIR(s.Tokens())
+	}
+	if h == "replace" {
+		trigger = ir.ReplacementTrigger{Kind: "replacement", Subject: valueRefIR(s.Tokens(), 1), From: "field", Phase: "before"}
+	}
+	rel := "independent"
+	if h == "superevolve" && len(s.Tokens()) == 3 {
+		rel = s.Word(1)
+	}
+	if h == "enhance" && len(s.Tokens()) == 3 {
+		rel = s.Word(2)
+	}
+	body, err := compileEffectBlock(s.Blocks()[0], sid, id, ids)
+	if err != nil {
+		return ir.Ability{}, err
+	}
+	return ir.Ability{ID: id, Trigger: trigger, Relation: rel, Body: body, Origin: originIR(s.Span, sid)}, nil
+}
+func compileFusion(s *syntax.Statement, sid string, scope *idScope, ids map[string]bool) (ir.FusionAbility, error) {
+	id, err := scope.next(s)
+	if err != nil {
+		return ir.FusionAbility{}, err
+	}
+	source, end := setExprIR(s.Tokens(), 3)
+	var pred ir.Predicate
+	if end < len(s.Tokens()) {
+		pred, _ = filterIR(s.Tokens(), end)
+	}
+	body, err := compileEffectBlock(s.Blocks()[0], sid, id, ids)
+	if err != nil {
+		return ir.FusionAbility{}, err
+	}
+	return ir.FusionAbility{ID: id, MaterialFilter: ir.MaterialFilter{Kind: "material_filter", Source: source, Predicate: pred, ExcludeSource: true, Minimum: 1}, Body: body, Origin: originIR(s.Span, sid)}, nil
+}
+func compileEffectBlock(body []*syntax.Statement, sid, parent string, ids map[string]bool) ([]ir.Effect, error) {
+	scope := newScope(parent, ids)
+	out := make([]ir.Effect, 0, len(body))
+	for _, s := range body {
+		n, err := compileEffect(s, sid, scope, ids)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, n)
+	}
+	return out, nil
+}
+
+func compileEffect(s *syntax.Statement, sid string, scope *idScope, ids map[string]bool) (ir.Effect, error) {
+	id, err := scope.next(s)
+	if err != nil {
+		return nil, err
+	}
+	t := s.Tokens()
+	h := s.Word(0)
+	base := ir.NodeBase{ID: id, Origin: originIR(s.Span, sid)}
+	switch h {
+	case "repeat":
+		times, expr := numericIR(t, 1)
+		body, err := compileEffectBlock(s.Blocks()[0], sid, id+"/body", ids)
+		return ir.RepeatEffect{NodeBase: base, Kind: "repeat", Times: times, TimesExpr: expr, Body: body}, err
+	case "choose", "require", "random", "first":
+		src, end := setExprIR(t, 3)
+		if mixed, mixedEnd, ok := mixedCharacterSetIR(t, 3); ok {
+			src, end = mixed, mixedEnd
+		}
+		if end < len(t) && t[end].Value == "other" {
+			value, next := otherExclusion(t, end)
+			src = ir.ExcludeRef{Kind: "exclude", Source: src, Value: value}
+			end = next
+		}
+		if end < len(t) && t[end].Value == "where" {
+			pred, next := filterIR(t, end)
+			src = ir.FilterRef{Kind: "filter", Source: src, Predicate: pred}
+			end = next
+		}
+		extremum, end, _ := parseExtremum(t, end)
+		count := 0
+		var countExpr ir.NumericExpr
+		if end < len(t) && t[end].Value == "count" {
+			value, expr := numericIR(t, end+1)
+			if expr == nil {
+				count = value
+			} else {
+				// `random target … count X`：X 可以是纹章数、集合计数等动态数值。
+				countExpr = expr
+			}
+		}
+		kind := h
+		if h == "random" {
+			kind = "random_choose"
+		}
+		return ir.SelectionEffect{NodeBase: base, Kind: kind, Policy: map[string]string{"choose": "optional", "require": "required", "random": "random", "first": "first"}[h], Binding: t[1].Value, Source: src, Count: count, CountExpr: countExpr, Extremum: extremum}, nil
+	case "if":
+		blocks := s.Blocks()
+		then, err := compileEffectBlock(blocks[0], sid, id+"/then", ids)
+		if err != nil {
+			return nil, err
+		}
+		els := []ir.Effect{}
+		if len(blocks) == 2 {
+			els, err = compileEffectBlock(blocks[1], sid, id+"/else", ids)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return ir.IfEffect{NodeBase: base, Kind: "if", Condition: conditionIR(t[1:]), Then: then, Else: els}, nil
+	case "mode":
+		count := 0
+		random := false
+		history := ""
+		if len(t) == 5 && t[1].Value == "random" && t[3].Value == "history" {
+			// `mode random N history <名字>`：从尚未发动过的选项里随机选（"从以下未发动的能力中随机发动1个"）。
+			random = true
+			count = intToken(t[2])
+			history = t[4].Value
+		} else if len(t) == 3 && t[1].Value == "random" {
+			random = true
+			count = intToken(t[2])
+		} else if len(t) > 1 {
+			count = intToken(t[1])
+		}
+		opts := []ir.ModeOption{}
+		for _, o := range s.Blocks()[0] {
+			labels, statements, err := modeOptionParts(o.Blocks()[0])
+			if err != nil {
+				return nil, err
+			}
+			body, err := compileEffectBlock(statements, sid, id+"/option/"+o.Word(1), ids)
+			if err != nil {
+				return nil, err
+			}
+			opts = append(opts, ir.ModeOption{ID: intAt(o, 1), Body: body, Origin: originIR(o.Span, sid), Labels: labels})
+		}
+		return ir.ModeEffect{NodeBase: base, Kind: "mode", Count: count, Random: random, History: history, Options: opts}, nil
+	case "earthrite", "necromancy", "faith", "pp":
+		resource := "shadows"
+		if h == "earthrite" {
+			resource = "earthsigil"
+		} else if h == "faith" {
+			resource = "faith"
+		} else if h == "pp" {
+			// `pp N { … }`：支付 N 点能量点后执行块内效果（不够则整块跳过）。
+			resource = "pp"
+		}
+		body, err := compileEffectBlock(s.Blocks()[0], sid, id, ids)
+		if err != nil {
+			return nil, err
+		}
+		return ir.PayResourceEffect{NodeBase: base, Kind: "pay_resource", Resource: resource, Amount: intAt(s, 1), OnPaid: body}, nil
+	case "distribute":
+		// `distribute faith <卡牌ID> { option N { ... } ... }`：把信仰值逐点随机分配给若干能力。
+		if len(t) != 3 || t[1].Value != "faith" || !isCardID(t[2]) {
+			return nil, fmt.Errorf("distribute 语句必须写成 distribute faith <卡牌ID> { option 1 { ... } ... }")
+		}
+		effect := ir.DistributeFaithEffect{NodeBase: base, Kind: "distribute_faith", FaithID: intToken(t[2])}
+		for _, o := range s.Blocks()[0] {
+			labels, statements, err := modeOptionParts(o.Blocks()[0])
+			if err != nil {
+				return nil, err
+			}
+			body, err := compileEffectBlock(statements, sid, id+"/option/"+o.Word(1), ids)
+			if err != nil {
+				return nil, err
+			}
+			effect.Options = append(effect.Options, ir.ModeOption{ID: intAt(o, 1), Body: body, Origin: originIR(o.Span, sid), Labels: labels})
+		}
+		return effect, nil
+	case "draw":
+		owner, offset := "own", 2
+		if len(t) >= 4 && t[2].Value == "for" {
+			owner, offset = t[3].Value, 4
+		}
+		if set("count", "sum")[t[1].Value] {
+			// `draw count(<绑定>)`：动态抽牌数量，运行期求值。
+			if end, ok := parseEffectAmount(t, 1); ok {
+				offset = end
+				if len(t) >= end+2 && t[end].Value == "for" {
+					owner, offset = t[end+1].Value, end+2
+				}
+			}
+		}
+		e := ir.DrawEffect{NodeBase: base, Kind: "draw", Owner: owner, SourceZone: "deck", All: t[1].Value == "all", Output: "drawn"}
+		if t[1].Value != "all" {
+			e.Count, e.CountExpr = numericIR(t, 1)
+		}
+		if len(t) > offset {
+			e.Predicate, _ = filterIR(t, offset+2)
+			// `draw N from deck where … distinct names`：抽到的卡名两两不同。
+			if len(t) >= offset+2 && values(t[len(t)-2:]) == "distinct names" {
+				e.DistinctNames = true
+			}
+		}
+		return e, nil
+	case "add":
+		if len(t) >= 9 && t[1].Value == "random" && t[3].Value == "copies" && t[4].Value == "from" {
+			// `add random N copies from <破坏历史> … to hand|deck;`
+			if e, ok := historySummonIR(t, base); ok {
+				return e, nil
+			}
+			// `add random N copies from oppo.hand|oppo.deck … to hand|deck;`
+			if e, ok := copyRandomIR(t, base); ok {
+				return e, nil
+			}
+		}
+		if len(t) == 4 && t[2].Value == "counter" {
+			return ir.AdjustEffect{NodeBase: base, Kind: "adjust_counter", Field: t[3].Value, Delta: intToken(t[1])}, nil
+		}
+		if len(t) == 6 && t[2].Value == "counter" && t[4].Value == "modulo" {
+			// `add 1 counter step modulo 3;`：加完再取模，用于"按顺序循环发动"。
+			return ir.AdjustEffect{NodeBase: base, Kind: "adjust_counter", Field: t[3].Value, Delta: intToken(t[1]), Modulo: intToken(t[5])}, nil
+		}
+		if len(t) >= 6 && t[1].Value == "copies" && t[2].Value == "of" {
+			// `add copies of 集合 to hand`：复制集合里每个对象的同名卡并加入手牌。
+			return ir.CardEffect{NodeBase: base, Kind: "add_copies", Owner: "own", Destination: t[len(t)-1].Value, Target: valueRefIR(t, 3), Output: "added"}, nil
+		}
+		if t[1].Kind == syntax.Integer && t[2].Value == "card" {
+			// 加入手牌的成功实例绑定为 added，便于"加入后立即修改"的文本。
+			destination := "hand"
+			if len(t) >= 6 {
+				destination = t[5].Value
+			}
+			return ir.CardEffect{NodeBase: base, Kind: "add_card", Owner: "own", Count: intAt(s, 1), CardID: intToken(t[3]), Destination: destination, Output: "added"}, nil
+		} else if t[1].Value == "combo" {
+			return ir.AdjustEffect{NodeBase: base, Kind: "adjust_resource", Owner: "own", Resource: "combo", Delta: intToken(t[2])}, nil
+		} else if t[2].Value == "earthsigil" {
+			return ir.AdjustEffect{NodeBase: base, Kind: "adjust_earthsigil", Owner: "own", Delta: intToken(t[1])}, nil
+		} else {
+			return keywordEffectIR(base, "add_keyword", t), nil
+		}
+	case "summon":
+		if t[1].Value == "random" {
+			if e, ok := summonPoolIR(t, base); ok {
+				return e, nil
+			}
+			if e, ok := historySummonIR(t, base); ok {
+				return e, nil
+			}
+			e, _ := deckSummonIR(t, base)
+			return e, nil
+		}
+		if t[1].Value == "copies" {
+			target := valueRefIR(t, 3)
+			if end := valueRefEnd(t, 3); end < len(t) {
+				predicate, _ := filterIR(t, end)
+				target = ir.FilterRef{Kind: "filter", Source: target, Predicate: predicate}
+			}
+			return ir.CardEffect{NodeBase: base, Kind: "summon_copies", Owner: "own", Target: target, Output: "summoned"}, nil
+		}
+		if len(t) == 2 {
+			// `summon target`：把已经存在于手牌的对象直接放到战场（不发动入场曲）。
+			return ir.CardEffect{NodeBase: base, Kind: "summon_from_hand", Owner: "own", Target: valueRefIR(t, 1), Output: "summoned"}, nil
+		}
+		owner := "own"
+		if len(t) >= 6 && t[4].Value == "for" {
+			owner = t[5].Value
+		}
+		return ir.CardEffect{NodeBase: base, Kind: "summon", Owner: owner, Count: intAt(s, 1), CardID: intToken(t[3]), Output: "summoned"}, nil
+	case "grant":
+		if len(t) == 4 && t[1].Value == "faith" && t[2].Value == "modes" {
+			// `grant faith modes 1;`：使自己的信仰获得"自己选择的【模式】数 +1"。
+			return ir.FaithModesEffect{NodeBase: base, Kind: "grant_faith_modes", Owner: "own", Amount: intAt(s, 3)}, nil
+		}
+		target := valueRefIR(t, 1)
+		if end := valueRefEnd(t, 1); end < len(t) {
+			predicate, _ := filterIR(t, end)
+			target = ir.FilterRef{Kind: "filter", Source: target, Predicate: predicate}
+		}
+		labels, statement, err := grantParts(s)
+		if err != nil {
+			return nil, err
+		}
+		ability, err := compileAbility(statement, sid, newScope(base.ID, ids), ids)
+		return ir.GrantEffect{NodeBase: base, Kind: "grant_ability", Target: target, Ability: ability, Labels: labels}, err
+	case "damage", "heal":
+		end := valueRefEnd(t, 1)
+		target := valueRefIR(t, 1)
+		if end < len(t) && t[end].Value == "other" {
+			value, next := otherExclusion(t, end)
+			target = ir.ExcludeRef{Kind: "exclude", Source: target, Value: value}
+			end = next
+		}
+		e := ir.TargetEffect{NodeBase: base, Kind: h, Target: target}
+		e.Amount, e.AmountExpr = numericIR(t, end)
+		end, _ = parseEffectAmount(t, end)
+		if end < len(t) && t[end].Value == "distributed" {
+			e.Distribution = "field_entry_order"
+			end++
+			if end < len(t) && t[end].Value == "overflow" {
+				e.Overflow = valueRefIR(t, end+1)
+				end += 4
+			}
+		}
+		if extremum, next, ok := parseExtremum(t, end); ok && extremum != nil {
+			// `damage 集合 数值 highest life`：只作用于生命值最大的那些目标。
+			e.Extremum = extremum
+			end = next
+		}
+		if end < len(t) {
+			e.Predicate, _ = filterIR(t, end)
+		}
+		if h == "damage" {
+			e.DamageType = "effect"
+		}
+		return e, nil
+	case "buff":
+		end := valueRefEnd(t, 1)
+		target := valueRefIR(t, 1)
+		if end < len(t) && t[end].Value == "other" {
+			target = ir.ExcludeRef{Kind: "exclude", Source: target, Value: ir.SelfRef{Kind: "self"}}
+			end++
+		}
+		e := ir.TargetEffect{NodeBase: base, Kind: "buff_stats", Target: target}
+		e.AttackDelta, e.AttackExpr, end = signedNumericIR(t, end)
+		e.LifeDelta, e.LifeExpr, end = signedNumericIR(t, end+1)
+		if end < len(t) && t[end].Value == "where" {
+			e.Predicate, end = filterIR(t, end)
+		}
+		if end < len(t) {
+			e.Until = effectDurationIR(t, end)
+		}
+		return e, nil
+	case "gain":
+		if len(t) >= 4 && t[1].Value == "skybound" {
+			// `gain skybound own.hand N`：让集合中的卡牌奥义槽 +N。
+			end := valueRefEnd(t, 2)
+			return ir.AdjustEffect{NodeBase: base, Kind: "adjust_skybound", Target: valueRefIR(t, 2), Times: intToken(t[end])}, nil
+		}
+		if len(t) == 4 && t[2].Value == "crest" {
+			return ir.CardEffect{NodeBase: base, Kind: "gain_crest", Owner: t[1].Value, CardID: intToken(t[3])}, nil
+		}
+		return ir.AdjustEffect{NodeBase: base, Kind: "adjust_resource", Owner: t[1].Value, Resource: t[3].Value, Delta: intToken(t[4])}, nil
+	case "restore":
+		return ir.AdjustEffect{NodeBase: base, Kind: "restore_resource", Owner: t[1].Value, Resource: "pp"}, nil
+	case "destroy", "banish", "discard":
+		if h == "banish" && len(t) == 6 && t[1].Value == "duplicates" && t[2].Value == "in" && set("own", "oppo")[t[3].Value] && t[4].Value == "." && t[5].Value == "deck" {
+			return ir.CardEffect{NodeBase: base, Kind: "banish_duplicates", Owner: t[3].Value, Destination: "deck"}, nil
+		}
+		e := ir.TargetEffect{NodeBase: base, Kind: h, Target: valueRefIR(t, 1)}
+		if h == "destroy" {
+			e.Output = "destroyed"
+			if targets, batch := destructionBatchTargets(t); batch {
+				ref := ir.DestructionBatchRef{Kind: "destruction_batch"}
+				for _, target := range targets {
+					ref.Targets = append(ref.Targets, valueRefIR([]syntax.Token{target}, 0))
+				}
+				e.Target = ref
+				return e, nil
+			}
+		} else if h == "banish" {
+			// 输出本次实际消失的实例，便于"因本能力消失的卡牌的张数"。
+			e.Output = "banished"
+		}
+		end := valueRefEnd(t, 1)
+		if end < len(t) && t[end].Value == "other" {
+			value, next := otherExclusion(t, end)
+			e.Target = ir.ExcludeRef{Kind: "exclude", Source: e.Target, Value: value}
+			end = next
+		}
+		if end < len(t) {
+			e.Predicate, _ = filterIR(t, end)
+		}
+		return e, nil
+	case "remove":
+		if t[1].Value == "lastwords" {
+			return removeAbilityIR(base, "lastwords", t, 3), nil
+		}
+		if values(t[1:3]) == "all abilities" {
+			return removeAbilityIR(base, "all", t, 4), nil
+		}
+		return keywordEffectIR(base, "remove_keyword", t), nil
+	case "set_attack_limit":
+		return ir.TargetEffect{NodeBase: base, Kind: "set_attack_limit", Target: valueRefIR(t, 1), Amount: intToken(t[2])}, nil
+	case "set_damage_reduction":
+		end := valueRefEnd(t, 1)
+		return ir.TargetEffect{NodeBase: base, Kind: "set_damage_reduction", Target: valueRefIR(t, 1), Amount: intToken(t[end])}, nil
+	case "set":
+		if len(t) == 5 && values(t[1:3]) == "empty deck" && set("own", "oppo")[t[3].Value] && set("victory", "defeat")[t[4].Value] {
+			// `set empty deck own victory;`：牌组耗尽时改为胜利（胜利的卡牌）。
+			return ir.EmptyDeckOutcomeEffect{NodeBase: base, Kind: "set_empty_deck_outcome", Side: t[3].Value, Outcome: t[4].Value}, nil
+		}
+		if t[1].Value == "maxlife" {
+			e, _ := leaderMaxLifeIR(t, base)
+			return e, nil
+		}
+		end := valueRefEnd(t, 2)
+		amount, expr := numericIR(t, end)
+		end, _ = parseEffectAmount(t, end)
+		kind := "set_life"
+		if t[1].Value == "cost" {
+			kind = "set_cost"
+		} else if t[1].Value == "attack" {
+			kind = "set_attack"
+		}
+		e := ir.TargetEffect{NodeBase: base, Kind: kind, Target: valueRefIR(t, 2), Amount: amount, AmountExpr: expr}
+		if end < len(t) && t[end].Value == "until" {
+			// `set cost T N until own turn ends`：临时费用修改。
+			e.Until = effectDurationIR(t, end)
+		}
+		return e, nil
+	case "return":
+		end := valueRefEnd(t, 1)
+		// `return T to deck` 把实际返回的实例绑定成 `returned`，
+		// 用于"抽取X张卡牌，X为因本能力返回牌组的张数"。
+		e := ir.TargetEffect{NodeBase: base, Kind: "return", Target: valueRefIR(t, 1), Destination: t[end+1].Value, Output: "returned"}
+		if t[end+1].Value == "deck" {
+			e.DeckInsertion = "uniform_random_position"
+		}
+		return e, nil
+	case "replace":
+		e, _ := deckReplaceIR(t, base)
+		return e, nil
+	case "evolve", "superevolve":
+		form := "evolved"
+		if h == "superevolve" {
+			form = "super_evolved"
+		}
+		return ir.TargetEffect{NodeBase: base, Kind: "silent_evolve", Target: valueRefIR(t, 1), Form: form}, nil
+	case "reanimate":
+		return ir.CardEffect{NodeBase: base, Kind: "reanimate", Owner: "own", MaxCost: intAt(s, 1), TieBreak: "random", Output: "summoned"}, nil
+	case "reduce":
+		if len(t) > 1 && t[1].Value == "maxlife" {
+			e, _ := leaderMaxLifeIR(t, base)
+			return e, nil
+		}
+		end := valueRefEnd(t, 2)
+		target := valueRefIR(t, 2)
+		// `reduce cost|countdown <集合> where <筛选> N …`：筛选紧跟在集合之后。
+		if end < len(t) && t[end].Value == "where" {
+			predicate, next := filterIR(t, end)
+			target = ir.FilterRef{Kind: "filter", Source: target, Predicate: predicate}
+			end = next
+		}
+		amount, expr := numericIR(t, end)
+		e := ir.AdjustEffect{NodeBase: base, Kind: "adjust_entity_field", Field: t[1].Value, Target: target, Delta: -amount}
+		if expr != nil {
+			e.Delta = 0
+			e.DeltaExpr = &ir.NegateExpr{Kind: "negate", Value: expr}
+		}
+		if t[1].Value == "cost" {
+			if end+2 < len(t) && t[end+2].Value == "minimum" {
+				e.Minimum = intToken(t[end+3])
+			} else if end+2 < len(t) && t[end+2].Value == "until" {
+				e.Until = effectDurationIR(t, end+2)
+			}
+		}
+		return e, nil
+	case "spellboost":
+		end := valueRefEnd(t, 1)
+		return ir.AdjustEffect{NodeBase: base, Kind: "spellboost", Target: valueRefIR(t, 1), Times: intToken(t[end])}, nil
+
+	case "halve":
+		// halve cost <集合>：把目标的当前费用变为向上取整的一半（官方 FAQ：9 → 5）。
+		return ir.AdjustEffect{NodeBase: base, Kind: "halve_cost", Field: "cost", Target: valueRefIR(t, 2)}, nil
+	case "raise":
+		if len(t) > 1 && t[1].Value == "maxlife" {
+			e, _ := leaderMaxLifeIR(t, base)
+			return e, nil
+		}
+		// raise cost|countdown <集合> N：给目标加费或推进倒计数；与 reduce 共用同一 IR 节点。
+		end := valueRefEnd(t, 2)
+		target := valueRefIR(t, 2)
+		if end < len(t) && t[end].Value == "where" {
+			predicate, next := filterIR(t, end)
+			target = ir.FilterRef{Kind: "filter", Source: target, Predicate: predicate}
+			end = next
+		}
+		e := ir.AdjustEffect{NodeBase: base, Kind: "adjust_entity_field", Field: t[1].Value, Target: target, Delta: intToken(t[end])}
+		if end+1 < len(t) && t[end+1].Value == "until" {
+			e.Until = effectDurationIR(t, end+1)
+		}
+		return e, nil
+	case "double":
+		// double stats <集合>：按每个目标自己的当前数值翻倍（攻击力与生命值）。
+		return ir.AdjustEffect{NodeBase: base, Kind: "double_stats", Target: valueRefIR(t, 2)}, nil
+	case "invoke":
+		// `invoke self;`：瞬念召唤牌组里的本卡牌。
+		return ir.InvokeEffect{NodeBase: base, Kind: "invoke", Target: valueRefIR(t, 1)}, nil
+	case "replay":
+		// `replay fanfare self;`：重新发动本随从的【入场曲】。
+		if len(t) >= 3 && t[1].Value == "fanfare" {
+			return ir.ReplayFanfareEffect{NodeBase: base, Kind: "replay_fanfare", Target: valueRefIR(t, 2)}, nil
+		}
+		return nil, fmt.Errorf("WBO-E017-IR-INCOMPATIBLE: 无法编译效果构造 %q", h)
+	case "transform":
+		end := valueRefEnd(t, 1)
+		target := valueRefIR(t, 1)
+		if end < len(t) && t[end].Value == "other" {
+			// `transform 集合 other into card C`：排除来源实例自身。
+			value, next := otherExclusion(t, end)
+			target = ir.ExcludeRef{Kind: "exclude", Source: target, Value: value}
+			end = next
+		}
+		e := ir.CardEffect{NodeBase: base, Kind: "transform", Target: target, PreserveInstanceID: true, PreserveMaterials: true}
+		if end < len(t) && t[end].Value == "into" && end+4 < len(t) && t[end+1].Value == "random" && t[end+2].Value == "card" && t[end+3].Value == "from" {
+			// `transform <目标> into random card from <集合>`：变身为随机一张卡的复制。
+			source, next := setExprIR(t, end+4)
+			e.CopySource = source
+			end = next
+		} else {
+			e.CardID = intToken(t[end+2])
+			end += 3
+		}
+		if end < len(t) && t[end].Value == "preserving" {
+			end += 2
+		}
+		if end < len(t) {
+			predicate, _ := filterIR(t, end)
+			e.Target = ir.FilterRef{Kind: "filter", Source: e.Target, Predicate: predicate}
+		}
+		return e, nil
+	default:
+		return nil, fmt.Errorf("WBO-E017-IR-INCOMPATIBLE: 无法编译效果构造 %q", h)
+	}
+}
+
+func valueRefIR(t []syntax.Token, i int) ir.Ref {
+	if i >= len(t) {
+		return nil
+	}
+	if i+2 < len(t) && t[i].Value == "all" && t[i+1].Value == "." && t[i+2].Value == "leaders" {
+		return ir.LeaderSetRef{Kind: "leaders", ValueType: "leaders"}
+	}
+	if t[i].Value == "self" {
+		return ir.SelfRef{Kind: "self", ValueType: "entity"}
+	}
+	if t[i].Value == "faith" {
+		// "本卡牌定义的信仰"（与纹章共用主战者区域）。
+		return ir.FaithRef{Kind: "faith", ValueType: "entity"}
+	}
+	if set("target", "summoned", "drawn", "engaged")[t[i].Value] || t[i].Kind == syntax.Identifier && !set("own", "oppo", "field")[t[i].Value] {
+		return ir.BindingRef{Kind: "binding", Name: t[i].Value}
+	}
+	if i+2 < len(t) && set("own", "oppo")[t[i].Value] && t[i+1].Value == "." && t[i+2].Value == "leader" {
+		return ir.LeaderRef{Kind: "leader", Side: t[i].Value, ValueType: "leader"}
+	}
+	x, _ := setExprIR(t, i)
+	return x
+}
+func valueRefEnd(t []syntax.Token, i int) int {
+	end, ok := parseValueRef(t, i)
+	if !ok {
+		return i
+	}
+	return end
+}
+func setExprIR(t []syntax.Token, i int) (ir.Ref, int) {
+	start := i
+	// 这里允许 `entered`（"本场对战中进入过战场的卡牌"）；语句形状的校验
+	// 仍然只把它当作计数集合，见 parseCountSource。
+	end, ok := parseTargetSetWith(t, i, true)
+	if !ok {
+		return nil, start
+	}
+	side := ""
+	zone := t[start].Value
+	member := "card"
+	if zone == "own" || zone == "oppo" {
+		side = zone
+		zone = t[start+2].Value
+	}
+	memberEnd := end
+	thisTurn := end >= 2 && values(t[end-2:end]) == "this turn"
+	if thisTurn {
+		memberEnd -= 2
+	}
+	if memberEnd >= 2 && set("followers", "spells", "amulets")[t[memberEnd-1].Value] {
+		member = strings.TrimSuffix(t[memberEnd-1].Value, "s")
+	}
+	if zone == "crests" {
+		// 纹章区域只在"自己的纹章"这类显式集合里出现，成员固定为纹章实体。
+		member = "card"
+	}
+	if thisTurn {
+		return ir.HistoryRef{Kind: "history", Side: side, Member: member, Window: "this_turn"}, end
+	}
+	return ir.ZoneRef{Kind: "zone", Side: side, Zone: zone, Member: member}, end
+}
+
+// whereScalarIR 解析筛选比较里的右值；返回 (nil, end, true) 表示整数。
+// 支持玩家标量、自己标量、绑定标量与绑定的原始数值（`played.base.cost`）。
+func whereScalarIR(t []syntax.Token, i int) (*ir.Scalar, int, bool) {
+	if i >= len(t) {
+		return nil, i, false
+	}
+	if t[i].Kind == syntax.Integer {
+		return nil, i + 1, true
+	}
+	if i+2 < len(t) && t[i+1].Value == "." {
+		switch {
+		case set("own", "oppo")[t[i].Value] && ir.ValidPlayerScalar(t[i+2].Value):
+			return &ir.Scalar{Kind: "scalar", Side: t[i].Value, Field: t[i+2].Value}, i + 3, true
+		case set("self", "own", "oppo", "field", "all", "leaders")[t[i].Value]:
+			return nil, i, false
+		case t[i].Kind == syntax.Identifier && set("attack", "life", "cost")[t[i+2].Value]:
+			return &ir.Scalar{Kind: "binding_scalar", Side: t[i].Value, Field: t[i+2].Value}, i + 3, true
+		case t[i].Kind == syntax.Identifier && t[i+2].Value == "base" && i+4 < len(t) && t[i+3].Value == "." && set("attack", "life", "cost")[t[i+4].Value]:
+			return &ir.Scalar{Kind: "binding_scalar", Side: t[i].Value, Field: "base_" + t[i+4].Value}, i + 5, true
+		}
+	}
+	return nil, i, false
+}
+
+// mixedCharacterSetIR 解析"随从或主战者"的混合选择集合：
+//   - `<own|oppo>.field.followers or <own|oppo>.leader`
+//   - `field.followers [other] or leaders`（双方战场的随从 + 双方的主战者）
+func mixedCharacterSetIR(t []syntax.Token, i int) (ir.CharacterSetRef, int, bool) {
+	if i+9 <= len(t) && set("own", "oppo")[t[i].Value] && values(t[i+1:i+5]) == ". field . followers" &&
+		t[i+5].Value == "or" && t[i+6].Value == t[i].Value && values(t[i+7:i+9]) == ". leader" {
+		return ir.CharacterSetRef{Kind: "characters", Side: t[i].Value}, i + 9, true
+	}
+	if i+3 <= len(t) && values(t[i:i+3]) == "field . followers" {
+		j := i + 3
+		exclude := false
+		if j < len(t) && t[j].Value == "other" {
+			exclude, j = true, j+1
+		}
+		if j+2 <= len(t) && t[j].Value == "or" && t[j+1].Value == "leaders" {
+			return ir.CharacterSetRef{Kind: "characters", Side: "", ExcludeSelf: exclude}, j + 2, true
+		}
+	}
+	return ir.CharacterSetRef{}, i, false
+}
+
+func filterIR(t []syntax.Token, i int) (ir.Predicate, int) {
+	end, ok := parseWhere(t, i)
+	if !ok {
+		return nil, i
+	}
+	terms := []ir.Predicate{}
+	groups := []ir.Predicate{}
+	flush := func() {
+		if len(terms) == 1 {
+			groups = append(groups, terms[0])
+		} else {
+			groups = append(groups, ir.AndPredicate{Kind: "and", Terms: terms})
+		}
+		terms = nil
+	}
+	j := i + 1
+	for j < end {
+		switch t[j].Value {
+		case "spellboost":
+			terms = append(terms, ir.FieldPredicate{Kind: "has_spellboost"})
+			j++
+		case "attacked":
+			terms = append(terms, ir.FieldPredicate{Kind: "attacked_this_turn"})
+			j += 3
+		case "not":
+			if j+3 < len(t) && values(t[j+1:j+4]) == "attacked this turn" {
+				terms = append(terms, ir.FieldPredicate{Kind: "not_attacked_this_turn"})
+				j += 4
+				break
+			}
+			var inner ir.Predicate
+			switch {
+			case t[j+1].Value == "damaged":
+				inner = ir.FieldPredicate{Kind: "is_damaged"}
+				j += 2
+			case t[j+1].Value == "trait":
+				inner = ir.FieldPredicate{Kind: "has_trait", Trait: t[j+2].Value}
+				j += 3
+			case t[j+1].Value == "type":
+				inner = ir.FieldPredicate{Kind: "has_type", CardType: t[j+2].Value}
+				j += 3
+			case t[j+1].Value == "class":
+				inner = ir.FieldPredicate{Kind: "has_class", Class: t[j+2].Value}
+				j += 3
+			case t[j+1].Value == "form":
+				inner = ir.FieldPredicate{Kind: "has_form", Form: t[j+2].Value}
+				j += 3
+			case t[j+1].Value == "keyword":
+				inner = ir.FieldPredicate{Kind: "has_keyword", Keyword: t[j+2].Value}
+				j += 3
+			case t[j+1].Value == "card" && j+2 < len(t) && isCardID(t[j+2]):
+				// `where not card <ID>`：排除指定卡牌定义。
+				inner = ir.FieldPredicate{Kind: "has_card", CardID: intToken(t[j+2])}
+				j += 3
+			default:
+				j++
+				continue
+			}
+			terms = append(terms, ir.NotPredicate{Kind: "not", Term: inner})
+		case "damaged":
+			terms = append(terms, ir.FieldPredicate{Kind: "is_damaged"})
+			j++
+		case "lastwords":
+			terms = append(terms, ir.FieldPredicate{Kind: "has_lastwords"})
+			j++
+		case "enhanced":
+			terms = append(terms, ir.FieldPredicate{Kind: "was_enhanced"})
+			j++
+		case "keyword":
+			terms = append(terms, ir.FieldPredicate{Kind: "has_keyword", Keyword: t[j+1].Value})
+			j += 2
+		case "card":
+			if t[j+1].Kind == syntax.Integer {
+				terms = append(terms, ir.FieldPredicate{Kind: "has_card", CardID: intToken(t[j+1])})
+			} else {
+				// `where card target`：与某个绑定同一卡牌定义（同名的动态写法）。
+				terms = append(terms, ir.FieldPredicate{Kind: "same_card", CardRef: ir.BindingRef{Kind: "binding", Name: t[j+1].Value}})
+			}
+			j += 2
+		case "type":
+			terms = append(terms, ir.FieldPredicate{Kind: "has_type", CardType: t[j+1].Value})
+			j += 2
+		case "class":
+			terms = append(terms, ir.FieldPredicate{Kind: "has_class", Class: t[j+1].Value})
+			j += 2
+		case "trait":
+			terms = append(terms, ir.FieldPredicate{Kind: "has_trait", Trait: t[j+1].Value})
+			j += 2
+		case "form":
+			terms = append(terms, ir.FieldPredicate{Kind: "has_form", Form: t[j+1].Value})
+			j += 2
+		case "base":
+			// `base . cost|attack|life 比较 整数`：按原始定义比较。
+			predicate := ir.FieldPredicate{Kind: "compare", Field: "base_" + t[j+2].Value, Op: compareOp(t[j+3].Value)}
+			scalar, next, ok := whereScalarIR(t, j+4)
+			if !ok {
+				return nil, i
+			}
+			if scalar == nil {
+				predicate.Value = intToken(t[j+4])
+			} else {
+				predicate.ValueScalar = scalar
+			}
+			j = next
+			terms = append(terms, predicate)
+		case "life", "cost", "attack":
+			if t[j].Value == "cost" && j+1 < len(t) && t[j+1].Value == "changed" {
+				terms = append(terms, ir.FieldPredicate{Kind: "cost_changed"})
+				j += 2
+				break
+			}
+			predicate := ir.FieldPredicate{Kind: "compare", Field: t[j].Value, Op: compareOp(t[j+1].Value)}
+			scalar, next, ok := whereScalarIR(t, j+2)
+			if !ok {
+				return nil, i
+			}
+			if scalar == nil {
+				predicate.Value = intToken(t[j+2])
+			} else {
+				predicate.ValueScalar = scalar
+			}
+			j = next
+			terms = append(terms, predicate)
+		}
+		if j < end && t[j].Value == "and" {
+			j++
+		} else if j < end && t[j].Value == "or" {
+			flush()
+			j++
+		}
+	}
+	flush()
+	if len(groups) == 1 {
+		return groups[0], end
+	}
+	return ir.OrPredicate{Kind: "or", Terms: groups}, end
+}
+func conditionIR(t []syntax.Token) ir.Condition {
+	if len(t) == 0 {
+		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "scalar", Side: "own", Field: "combo"}}
+	}
+	// `if 条件 { ... } else { ... }`：条件部分在 else 之前，先截断再解析。
+	for i, x := range t {
+		if x.Value == "else" {
+			t = t[:i]
+			break
+		}
+	}
+	if damagedBindingCondition(t) {
+		return ir.IsDamagedCondition{Kind: "is_damaged", Name: t[0].Value}
+	}
+	if len(t) == 1 && (t[0].Value == "skybound_art" || t[0].Value == "super_skybound_art") {
+		level := 10
+		if t[0].Value == "super_skybound_art" {
+			level = 15
+		}
+		return ir.SkyboundArtCondition{Kind: "skybound_art", Level: level}
+	}
+	if deckDuplicatesCondition(t) {
+		return ir.DeckDuplicatesCondition{Kind: "deck_duplicates", Side: t[0].Value, Unique: len(t) == 6}
+	}
+	if sameCostCondition(t) {
+		return ir.SameCostCondition{Kind: "same_cost", Side: t[0].Value, Zone: t[2].Value, Count: intToken(t[4])}
+	}
+	if playedCostsCondition(t) {
+		from, _ := integer(t[5])
+		to, _ := integer(t[7])
+		return ir.PlayedCostsCondition{Kind: "played_costs", Side: t[0].Value, From: from, To: to}
+	}
+	if t[0].Value == "count" || t[0].Value == "sum" {
+		source := valueRefIR(t, 2)
+		next, _ := parseCountSource(t, 2)
+		if next < len(t) && t[next].Value == "other" {
+			// count(集合 other)：统计时排除来源实例（"若战场上有其他…"）。
+			value, after := otherExclusion(t, next)
+			source = ir.ExcludeRef{Kind: "exclude", Source: source, Value: value}
+			next = after
+		}
+		if next < len(t) && t[next].Value == "where" {
+			predicate, end := filterIR(t, next)
+			source = ir.FilterRef{Kind: "filter", Source: source, Predicate: predicate}
+			next = end
+		}
+		if next < len(t) && t[next].Value == ")" {
+			next++
+		}
+		// `sum(集合, base.cost) highest 3` 的尾巴也算在左操作数里。
+		if operandEnd, ok := parseEffectAmount(t, 0); ok {
+			next = operandEnd
+		}
+		if next+1 < len(t) && isUnsigned(t[next+1]) && next+2 == len(t) {
+			return ir.CountCondition{Kind: "count_compare", Source: source, Op: compareOp(t[next].Value), Right: intToken(t[next+1])}
+		}
+		// `count(A) 比较 count(B)` / `sum(...) highest 3 比较 sum(...) highest 3`：
+		// 两侧都是数值表达式，走通用的比较条件。
+		_, leftExpr := numericIR(t, 0)
+		right, rightExpr := numericIR(t, next+1)
+		return ir.CompareCondition{Kind: "compare", Op: compareOp(t[next].Value), LeftExpr: leftExpr, Right: right, RightExpr: rightExpr}
+	}
+	if counterRef(t, 0) {
+		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "self_counter", Field: t[4].Value}, Op: compareOp(t[5].Value), Right: intToken(t[6])}
+	}
+	if attackHistoryCondition(t) {
+		attacked := t[0].Value != "not"
+		if !attacked {
+			t = t[1:]
+		}
+		return ir.AttackHistoryCondition{Kind: "attack_history", Side: t[0].Value, Attacked: attacked,
+			LeaderLastTurn: t[2].Value == "attacked_leader_last_turn"}
+	}
+	if len(t) == 1 {
+		return ir.OverflowCondition{Kind: "overflow", Side: "own"}
+	}
+	if len(t) == 3 {
+		if t[0].Value == "self" {
+			return ir.SelfFormCondition{Kind: "self_form", Form: t[2].Value}
+		}
+		if t[1].Value == "." {
+			form := "evolved"
+			if t[2].Value == "superevolve_unlocked" {
+				form = "super_evolved"
+			}
+			return ir.EvolutionUnlockedCondition{Kind: "evolution_unlocked", Side: t[0].Value, Form: form}
+		}
+	}
+	// `左 比较 右`：右侧可以是整数，也可以是数值表达式（`own.life > oppo.life`）。
+	index := -1
+	depth := 0
+	for i, x := range t {
+		switch x.Value {
+		case "(":
+			depth++
+			continue
+		case ")":
+			depth--
+			continue
+		}
+		if depth == 0 && set("==", "!=", "<", "<=", ">", ">=")[x.Value] {
+			index = i
+			break
+		}
+	}
+	if index < 1 {
+		// `combo >= 3` 与 `rally >= 20` 都是"本方计数器 比较 整数"。
+		return ir.CompareCondition{Kind: "compare", Left: ir.Scalar{Kind: "scalar", Side: "own", Field: t[0].Value}}
+	}
+	right, rightExpr := numericIR(t, index+1)
+	return ir.CompareCondition{Kind: "compare", Left: conditionOperandIR(t[:index]), Op: compareOp(t[index].Value), Right: right, RightExpr: rightExpr}
+}
+
+// conditionOperandIR 把条件里的数值操作数编译成标量。
+func conditionOperandIR(t []syntax.Token) ir.Scalar {
+	switch {
+	case len(t) >= 5 && counterRef(t, 0):
+		return ir.Scalar{Kind: "self_counter", Field: t[4].Value}
+	case len(t) >= 1 && set("combo", "rally")[t[0].Value]:
+		return ir.Scalar{Kind: "scalar", Side: "own", Field: t[0].Value}
+	case len(t) >= 3 && set("own", "oppo")[t[0].Value]:
+		return ir.Scalar{Kind: "scalar", Side: t[0].Value, Field: t[2].Value}
+	case len(t) >= 3 && t[0].Value == "self":
+		// `self.cost != 2` 这类条件读来源实例自己的数值。
+		return ir.Scalar{Kind: "self_scalar", Field: t[2].Value}
+	case len(t) >= 3 && t[0].Value == "fused":
+		return ir.Scalar{Kind: "fusion_material_scalar", Field: t[2].Value}
+	}
+	return ir.Scalar{}
+}
+func eventPatternIR(t []syntax.Token) ir.Trigger {
+	survivesDamage := len(t) >= 4 && values(t[:4]) == "when self survives damage"
+	if t[1].Value == "self" && !survivesDamage {
+		if t[2].Value == "discarded" {
+			return ir.EventTrigger{Kind: "event", Event: "card_discarded", Side: "own", SelfOnly: true}
+		}
+		if t[2].Value == "drawn" {
+			// "抽到本卡牌时"：本实例从牌组进入手牌的瞬间；监听在持有者手牌中生效。
+			return ir.EventTrigger{Kind: "event", Event: "card_drawn", Side: "own", SelfOnly: true, SourceZone: "hand"}
+		}
+		if t[2].Value == "summoned" {
+			return ir.EventTrigger{Kind: "event", Event: "follower_summoned", Side: "own", SubjectType: "follower", SelfOnly: true}
+		}
+		if t[2].Value == "invoked" {
+			// "被【瞬念召唤】时"：本实例从牌组被瞬念召唤到战场后。
+			return ir.EventTrigger{Kind: "event", Event: "card_invoked", Side: "own", SelfOnly: true}
+		}
+		if t[2].Value == "stats" || t[2].Value == "life" {
+			return ir.EventTrigger{Kind: "event", Event: map[string]string{"stats": "stats_increased", "life": "life_decreased"}[t[2].Value], Side: "own", SubjectType: "follower", SelfOnly: true}
+		}
+		return ir.EventTrigger{Kind: "event", Event: t[2].Value, Side: "own", SubjectType: "follower", SelfOnly: true}
+	}
+	m := ir.EventTrigger{Kind: "event", Side: t[1].Value}
+	if survivesDamage {
+		m.Side, m.Event, m.SubjectType, m.SelfOnly = "own", "damaged", "follower", true
+	} else if t[2].Value == "turn" {
+		m.Event = map[string]string{"starts": "turn_started", "ends": "turn_ended"}[t[3].Value]
+	} else if t[2].Value == "earthrite" {
+		// "自己发动【土之秘术】时"：监听土之印支付成功的那一刻。
+		m.Event = "earthrite"
+	} else if t[2].Value == "mode" && t[3].Value == "selected" {
+		// "自己选择【模式】时"：一次"选择【模式】"的动作派发一次（官方 QA qrpt1xyqmvgf）。
+		m.Event = "mode_selected"
+	} else {
+		m.SubjectType = t[2].Value
+		if m.SubjectType == "card" {
+			m.SubjectType = ""
+		}
+		if len(t) >= 5 && m.SubjectType == "follower" && (values(t[3:5]) == "stats increased" || values(t[3:5]) == "life decreased") {
+			m.Event = map[string]string{"stats increased": "stats_increased", "life decreased": "life_decreased"}[values(t[3:5])]
+		} else if m.SubjectType == "follower" && t[3].Value == "attacks" {
+			m.Event = "attacked"
+			if len(t) >= 5 && t[4].Value == "leader" {
+				m.TargetKind = "leader"
+			}
+		} else {
+			m.Event = map[string]string{"summoned": "follower_summoned", "leaves": "follower_left", "survives": "damaged", "destroyed": "destroyed", "healed": "healed", "fused": "card_fused", "engaged": "amulet_engaged", "discarded": "card_discarded", "played": "card_played", "drawn": "card_drawn", "evolved": "evolved", "super_evolved": "super_evolved", "increased": "stats_increased", "decreased": "life_decreased"}[t[3].Value]
+		}
+		if m.Event == "follower_summoned" && m.SubjectType == "amulet" {
+			m.Event = "amulet_summoned"
+		}
+	}
+	baseEnd, _, _ := parseBaseEventPattern(t)
+	if baseEnd < len(t) && t[baseEnd].Value == "other" {
+		m.ExcludeSelf = true
+		baseEnd++
+	}
+	end, _, _ := parseEventPattern(t)
+	if baseEnd < len(t) && t[baseEnd].Value == "during" {
+		m.DuringTurn = t[baseEnd+1].Value
+		baseEnd += 3
+	}
+	if baseEnd < len(t) && t[baseEnd].Value == "while" {
+		m.SourceZone = t[baseEnd+3].Value
+		baseEnd += 4
+	}
+	if baseEnd < len(t) && t[baseEnd].Value == "once" {
+		m.OncePerTurn = "any"
+		if t[baseEnd+2].Value != "turn" {
+			m.OncePerTurn = t[baseEnd+2].Value
+		}
+	}
+	if len(t) > end && t[end].Value == "where" {
+		m.Predicate, end = filterIR(t, end)
+	}
+	if len(t) > end && t[end].Value == "if" {
+		m.Condition = conditionIR(t[end+1:])
+	}
+	return m
+}
+func compareOp(s string) string {
+	return map[string]string{"==": "eq", "!=": "ne", "<": "lt", "<=": "le", ">": "gt", ">=": "ge"}[s]
+}
+func intAt(s *syntax.Statement, i int) int { return intToken(s.Tokens()[i]) }
+func intToken(t syntax.Token) int          { n, _ := strconv.Atoi(t.Value); return n }
+func signedAt(t []syntax.Token, i int) int {
+	n := intToken(t[i+1])
+	if t[i].Value == "-" {
+		return -n
+	}
+	return n
+}
+
+func compileTestsTyped(l *Loaded) (ir.TestPack, error) {
+	files := append([]*TestFile(nil), l.Tests...)
+	sort.Slice(files, func(i, j int) bool { return files[i].Path < files[j].Path })
+	sources := []ir.Source{}
+	scenarios := []ir.Scenario{}
+	ids := map[string]bool{}
+	for _, tf := range files {
+		path := sourcePath(l, tf.Path)
+		sid := sourceID(path)
+		sources = append(sources, ir.Source{SourceID: sid, Path: path, ContentHash: contentHash(tf.File.Source), Span: spanIR(fileSpan(tf.File), sid)})
+		for _, s := range tf.Scenarios {
+			x, err := compileTypedScenario(s, sid, ids)
+			if err != nil {
+				return ir.TestPack{}, err
+			}
+			scenarios = append(scenarios, x)
+		}
+	}
+	r := ruleset.DefaultDependency()
+	dep := ir.RulesetDependency{
+		ID: r.ID, ContentHash: r.ContentHash,
+		RNG: ir.RNGPolicy{Algorithm: r.RNG.Algorithm, Version: r.RNG.Version},
+		OrderingPolicy: ir.OrderingPolicy{
+			Collections: r.OrderingPolicy.Collections, ReplacementAbilities: r.OrderingPolicy.ReplacementAbilities,
+			SimultaneousTriggers: r.OrderingPolicy.SimultaneousTriggers, DeathBatchLastwords: r.OrderingPolicy.DeathBatchLastwords,
+		},
+		ExecutionBudget: ir.ExecutionBudgetPolicy{
+			Instructions: r.ExecutionBudget.Instructions, QueryVisits: r.ExecutionBudget.QueryVisits,
+			StackDepth: r.ExecutionBudget.StackDepth, Candidates: r.ExecutionBudget.Candidates,
+			Events: r.ExecutionBudget.Events, Triggers: r.ExecutionBudget.Triggers,
+			CreatedInstances: r.ExecutionBudget.CreatedInstances, ContinuationBytes: r.ExecutionBudget.ContinuationBytes,
+		},
+	}
+	return ir.TestPack{Format: ir.Format, ContainerVersion: ir.ContainerVersion, Encoding: ir.Encoding, Kind: "test-pack", IRVersion: ir.IRVersion, RequiredFeatures: []string{}, UnresolvedReferences: []string{}, Ruleset: dep, Sources: sources, Scenarios: scenarios}, nil
+}
+
+func compileTypedScenario(s *syntax.Statement, sid string, ids map[string]bool) (ir.Scenario, error) {
+	name := s.Tokens()[1].Value
+	id := nodeID(sid, name)
+	if ids[id] {
+		return ir.Scenario{}, fmt.Errorf("WBO-E015-ID-COLLISION: 场景 ID 碰撞")
+	}
+	ids[id] = true
+	b := s.Blocks()[0]
+	seed, _ := strconv.ParseUint(b[0].Word(1), 10, 64)
+	state, aliases := compileInitialState(b[1], id)
+	actions, err := compileActions(b[2], aliases, instanceOwners(state))
+	if err != nil {
+		return ir.Scenario{}, err
+	}
+	assertions, err := compileAssertions(b[3], aliases, sid)
+	if err != nil {
+		return ir.Scenario{}, err
+	}
+	return ir.Scenario{ID: id, Name: name, Seed: fmt.Sprintf("0x%016x", seed), InitialState: state, Actions: actions, Assertions: assertions, Origin: originIR(s.Span, sid)}, nil
+}
+func defaultPlayer() ir.PlayerState {
+	return ir.PlayerState{Leader: ir.Leader{Life: 20, MaxLife: 20}, Zones: map[string][]ir.TestInstance{"deck": {}, "hand": {}, "field": {}, "graveyard": {}, "banished": {}, "destroyed": {}}}
+}
+func compileInitialState(s *syntax.Statement, scenarioID string) (ir.State, map[string]string) {
+	players := map[string]ir.PlayerState{"own": defaultPlayer(), "oppo": defaultPlayer()}
+	state := ir.State{Turn: ir.Turn{Active: "own", Number: 1}, Phase: "main", Players: players}
+	aliases := map[string]string{}
+	for _, x := range s.Blocks()[0] {
+		t := x.Tokens()
+		switch x.Word(0) {
+		case "turn":
+			state.Turn = ir.Turn{Active: t[1].Value, Number: intToken(t[2])}
+		case "phase":
+			state.Phase = t[1].Value
+		case "player":
+			p := players[t[1].Value]
+			compilePlayerState(x, &p, aliases, scenarioID)
+			players[t[1].Value] = p
+		}
+	}
+	state.Aliases = aliases
+	return state, aliases
+}
+func compilePlayerState(s *syntax.Statement, p *ir.PlayerState, a map[string]string, scenarioID string) {
+	for _, x := range s.Blocks()[0] {
+		t := x.Tokens()
+		switch x.Word(0) {
+		case "leader":
+			p.Leader = ir.Leader{Life: intToken(t[1]), MaxLife: intToken(t[3])}
+		case "pp":
+			p.PP = intToken(t[1])
+			p.MaxPP = intToken(t[3])
+		case "ep":
+			p.EP = intToken(t[1])
+		case "sep":
+			p.SEP = intToken(t[1])
+		case "combo":
+			p.Combo = intToken(t[1])
+		case "shadows":
+			p.Shadows = intToken(t[1])
+		case "rally":
+			p.Rally = intToken(t[1])
+		case "evolutions":
+			// `evolutions 6;`：场景测试直接摆出"本场对战中自己的随从进化次数"。
+			p.EvolutionsThisMatch = intToken(t[1])
+		case "attacked_leader_last_turn":
+			if len(t) == 1 {
+				p.LeaderAttackedLastTurn = true
+			}
+		case "played":
+			// `played costs 1 to 8;`：场景测试直接摆出已使用卡牌的原始费用。
+			if len(t) == 5 && t[1].Value == "costs" && t[3].Value == "to" {
+				from, to := intToken(t[2]), intToken(t[4])
+				for cost := from; cost <= to; cost++ {
+					p.PlayedCosts = append(p.PlayedCosts, cost)
+				}
+			}
+		default:
+			zone := x.Word(0)
+			items := []ir.TestInstance{}
+			for _, inst := range x.Blocks()[0] {
+				it := inst.Tokens()
+				alias := it[1].Value
+				iid := nodeID(scenarioID, "instance", alias)
+				a[alias] = iid
+				over := ir.InstanceOverrides{}
+				if len(inst.Blocks()) == 1 {
+					for _, o := range inst.Blocks()[0] {
+						ot := o.Tokens()
+						switch o.Word(0) {
+						case "counter":
+							if over.Counters == nil {
+								over.Counters = map[string]int{}
+							}
+							over.Counters[ot[1].Value] = intToken(ot[2])
+						case "cost":
+							v := intToken(ot[1])
+							over.Cost = &v
+						case "stats":
+							over.Stats = &ir.Stats{Attack: intToken(ot[1]), Life: intToken(ot[3])}
+						case "damage_taken":
+							v := intToken(ot[1])
+							over.DamageTaken = &v
+						case "evolved":
+							v := true
+							over.Evolved = &v
+						case "super_evolved":
+							v := true
+							over.SuperEvolved = &v
+						case "earthsigil":
+							v := intToken(ot[1])
+							over.Earthsigil = &v
+						case "countdown":
+							v := intToken(ot[1])
+							over.Countdown = &v
+						case "engaged":
+							v := ot[1].Value == "true"
+							over.Engaged = &v
+						default:
+							over.Keywords = append(over.Keywords, o.Word(0))
+						}
+					}
+				}
+				items = append(items, ir.TestInstance{InstanceID: iid, Alias: alias, CardID: intToken(it[3]), DeclaredType: it[0].Value, Overrides: over})
+			}
+			p.Zones[zone] = items
+		}
+	}
+}
+// instanceOwners 把实例别名映射到持有它的玩家。测试动作用它决定由哪一方执行：
+// 例如把随从放在对手战场，就可以在对手的回合让对手超进化它，
+// 以触发"对手的随从超进化时"这类手牌监听。
+func instanceOwners(state ir.State) map[string]string {
+	owners := map[string]string{}
+	for side, p := range state.Players {
+		for _, items := range p.Zones {
+			for _, item := range items {
+				if item.Alias != "" {
+					owners[item.Alias] = side
+				}
+			}
+		}
+	}
+	return owners
+}
+
+func compileActions(s *syntax.Statement, a map[string]string, owners map[string]string) ([]ir.Action, error) {
+	out := []ir.Action{}
+	actor := func(alias string) string {
+		if side := owners[alias]; side != "" {
+			return side
+		}
+		return "own"
+	}
+	for _, x := range s.Blocks()[0] {
+		t := x.Tokens()
+		var action ir.Action
+		switch x.Word(0) {
+		case "play", "engage", "evolve", "superevolve", "accelerate", "crystallize":
+			action = ir.SourceAction{Kind: x.Word(0), Actor: actor(t[1].Value), Source: a[t[1].Value]}
+		case "fuse":
+			action = ir.FusionAction{Kind: "fusion", Actor: actor(t[1].Value), Source: a[t[1].Value]}
+		case "select":
+			selection := ir.SelectAction{Kind: "select"}
+			entities, leaders, _ := parseSelectionResponse(t)
+			if len(entities) == 1 {
+				selection.Target = a[entities[0].Value]
+			} else {
+				for _, entity := range entities {
+					selection.Targets = append(selection.Targets, a[entity.Value])
+				}
+			}
+			for _, leader := range leaders {
+				selection.LeaderSides = append(selection.LeaderSides, leader.Value)
+			}
+			action = selection
+		case "mode":
+			// `mode 1;` 单选，`mode 1, 3;` 对应「模式」选择多个能力。
+			ids := []int{}
+			for n := 1; n < len(t); n++ {
+				if t[n].Kind == syntax.Integer {
+					ids = append(ids, intToken(t[n]))
+				}
+			}
+			if len(ids) > 1 {
+				action = ir.ModeAction{Kind: "select_mode", OptionIDs: ids}
+			} else {
+				optionID := 0
+				if len(ids) == 1 {
+					optionID = ids[0]
+				}
+				action = ir.ModeAction{Kind: "select_mode", OptionID: optionID}
+			}
+		case "end_turn":
+			action = ir.SourceAction{Kind: "end_turn", Actor: "own"}
+		case "advance":
+			action = ir.AdvanceAction{Kind: "advance", Timing: t[1].Value, Side: t[2].Value}
+		case "attack":
+			kind := "attack_leader"
+			defender := t[3].Value
+			if len(t) == 4 {
+				kind = "attack_entity"
+				defender = a[t[3].Value]
+			}
+			action = ir.AttackAction{Kind: kind, Actor: "own", Attacker: a[t[1].Value], Defender: defender}
+		default:
+			return nil, fmt.Errorf("WBT-E005-ACTION-ORDER: 无法编译动作 %q", x.Word(0))
+		}
+		out = append(out, action)
+	}
+	return out, nil
+}
+func compileAssertions(s *syntax.Statement, a map[string]string, sid string) ([]ir.Assertion, error) {
+	out := []ir.Assertion{}
+	for _, x := range s.Blocks()[0] {
+		t := x.Tokens()
+		h := x.Word(0)
+		origin := originIR(x.Span, sid)
+		var assertion ir.Assertion
+		switch h {
+		case "legal", "unchanged":
+			assertion = ir.BasicAssertion{Kind: h, Origin: origin}
+		case "illegal":
+			assertion = ir.BasicAssertion{Kind: "illegal", Code: t[1].Value, Origin: origin}
+		case "events":
+			facts := []ir.EventMatcher{}
+			for _, f := range x.Blocks()[0] {
+				facts = append(facts, eventMatcherIR(f, a))
+			}
+			assertion = ir.EventsAssertion{Kind: "events", Mode: map[string]string{"contains": "contains_ordered", "excludes": "excludes", "exact": "exact"}[t[1].Value], Expected: facts, Origin: origin}
+		case "all":
+			src, end := setExprIR(t, 1)
+			pred, end := filterIR(t, end)
+			assertion = ir.KeywordAssertion{Kind: "all_have_keyword", Source: ir.FilterRef{Kind: "filter", Source: src, Predicate: pred}, Keyword: t[end+1].Value, Origin: origin}
+		default:
+			if len(t) == 5 && set("own", "oppo")[t[0].Value] && values(t[1:3]) == ". leader" && set("has", "lacks")[t[3].Value] {
+				// `own.leader has damage_to_zero`：主战者级关键词断言（含临时状态）。
+				assertion = ir.KeywordAssertion{Kind: "leader_keyword", Side: t[0].Value, Keyword: t[4].Value, Expected: t[3].Value == "has", Origin: origin}
+			} else if len(t) == 3 && a[t[0].Value] != "" && set("has", "lacks")[t[1].Value] {
+				assertion = ir.KeywordAssertion{Kind: "has_keyword", Target: a[t[0].Value], Keyword: t[2].Value, Expected: t[1].Value == "has", Origin: origin}
+			} else if isCountTokens(t) {
+				assertion = ir.ZoneAssertion{Kind: "zone_count", Side: t[0].Value, Zone: t[2].Value, CardID: intToken(t[5]), Op: "eq", Count: intToken(t[7]), Origin: origin}
+			} else if containsToken(t, "[") {
+				assertion = orderAssertionIR(t, a, origin)
+			} else {
+				eq := tokenIndex(t, "==")
+				left := testRefIR(t[:eq], a)
+				right := testLiteralIR(t[eq+1:])
+				if left.Kind == "player_pp_pair" {
+					right.Kind = "pp"
+					right.Current = right.Attack
+					right.Maximum = right.Life
+					right.Attack = 0
+					right.Life = 0
+				}
+				assertion = ir.CompareAssertion{Kind: "compare_value", Left: left, Op: "eq", Right: right, Origin: origin}
+			}
+		}
+		out = append(out, assertion)
+	}
+	return out, nil
+}
+func eventMatcherIR(s *syntax.Statement, a map[string]string) ir.EventMatcher {
+	t := s.Tokens()
+	h := t[0].Value
+	m := ir.EventMatcher{Kind: map[string]string{"damage": "damaged", "heal": "healed", "draw": "card_drawn", "destroy": "destroyed", "banish": "banished", "summon": "follower_summoned", "move": "zone_moved", "evolve": "evolved", "superevolve": "super_evolved", "engage": "amulet_engaged", "attack": "attacked", "turn_start": "turn_started", "turn_end": "turn_ended", "game_end": "game_ended", "gain": "resource_changed", "spend": "resource_changed", "return": "zone_moved"}[h]}
+	if h == "summon" {
+		m.Kind = "card_summoned"
+	}
+	if h == "discard" {
+		m.Kind = "card_discarded"
+	}
+	switch h {
+	case "damage", "heal":
+		end, _ := factObject(t, 1, a, new([]syntax.Diagnostic))
+		v := eventTarget(t[1:end], a)
+		m.Target = &v
+		m.Actual = intToken(t[end])
+	case "draw":
+		m.Side = t[1].Value
+		m.Count = intToken(t[2])
+	case "destroy", "banish", "discard":
+		v := eventTarget(t[1:], a)
+		m.Subject = &v
+	case "summon":
+		if t[1].Value == "card" {
+			m.CardID = intToken(t[2])
+			m.Count = intToken(t[4])
+		} else {
+			m.InstanceID = a[t[1].Value]
+		}
+	case "move":
+		m.InstanceID = a[t[1].Value]
+		m.To = t[3].Value
+	case "evolve", "superevolve", "engage":
+		m.InstanceID = a[t[1].Value]
+	case "turn_start", "turn_end":
+		m.Side = t[1].Value
+	case "game_end":
+		m.Side = t[1].Value
+	case "gain", "spend":
+		m.Side = t[1].Value
+		m.Resource = t[3].Value
+		m.Direction = h
+		m.Amount = intToken(t[4])
+	case "attack":
+		attacker, defender := eventTarget(t[1:2], a), eventTarget(t[3:], a)
+		m.Attacker, m.Defender = &attacker, &defender
+	case "return":
+		end, _ := factObject(t, 1, a, new([]syntax.Diagnostic))
+		v := eventTarget(t[1:end], a)
+		m.Reason, m.Subject, m.Destination = "return", &v, t[end+1].Value
+	}
+	return m
+}
+func eventTarget(t []syntax.Token, a map[string]string) ir.EventTarget {
+	if len(t) == 1 {
+		return ir.EventTarget{Kind: "instance", InstanceID: a[t[0].Value]}
+	}
+	if t[0].Value == "card" {
+		return ir.EventTarget{Kind: "card", CardID: intToken(t[1])}
+	}
+	return ir.EventTarget{Kind: "leader", Side: t[0].Value}
+}
+func testRefIR(t []syntax.Token, a map[string]string) ir.TestRef {
+	if values(t) == "rng . consumed" {
+		return ir.TestRef{Kind: "rng_consumed"}
+	}
+	if a[t[0].Value] != "" {
+		if len(t) == 5 && t[2].Value == "counter" {
+			return ir.TestRef{Kind: "instance_counter", InstanceID: a[t[0].Value], Field: t[4].Value}
+		}
+		return ir.TestRef{Kind: "instance_field", InstanceID: a[t[0].Value], Field: t[2].Value}
+	}
+	field := t[len(t)-1].Value
+	if len(t) == 5 {
+		field = "leader." + field
+	}
+	if field == "pp" && len(t) == 3 {
+		return ir.TestRef{Kind: "player_pp_pair", Side: t[0].Value}
+	}
+	return ir.TestRef{Kind: "player_field", Side: t[0].Value, Field: field}
+}
+func testLiteralIR(t []syntax.Token) ir.Literal {
+	if len(t) == 3 {
+		return ir.Literal{Kind: "stats", Attack: intToken(t[0]), Life: intToken(t[2])}
+	}
+	if set("true", "false")[t[0].Value] {
+		return ir.Literal{Kind: "boolean", Boolean: t[0].Value == "true"}
+	}
+	if isUnsigned(t[0]) {
+		return ir.Literal{Kind: "integer", Integer: intToken(t[0])}
+	}
+	return ir.Literal{Kind: "zone", Value: t[0].Value}
+}
+func orderAssertionIR(t []syntax.Token, a map[string]string, origin ir.Origin) ir.Assertion {
+	start := tokenIndex(t, "[")
+	end, _ := aliasList(t, start, a, new([]syntax.Diagnostic))
+	expected := []string{}
+	for i := start + 1; i < end-1; i += 2 {
+		expected = append(expected, a[t[i].Value])
+	}
+	zone := t[2].Value
+	containment := "exact"
+	if t[len(t)-1].Value == "ordered" {
+		containment = "subsequence"
+	}
+	return ir.ZoneAssertion{Kind: "ordered_instances", Source: ir.ZoneRef{Kind: "zone", Side: t[0].Value, Zone: zone}, Expected: expected, Containment: containment, Origin: origin}
+}
+func containsToken(t []syntax.Token, s string) bool { return tokenIndex(t, s) >= 0 }
+func tokenIndex(t []syntax.Token, s string) int {
+	for i, x := range t {
+		if x.Value == s {
+			return i
+		}
+	}
+	return -1
+}
+func isCountTokens(t []syntax.Token) bool { return len(t) == 8 && t[3].Value == "count" }

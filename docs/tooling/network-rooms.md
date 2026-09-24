@@ -59,15 +59,10 @@
 会按窗口比例挑 `aspectLayouts` 里最接近的一套。选中的插图作为整个内容区的背景，
 可以像游戏主界面那样随时更换（大厅的「更换主界面」，选择记在本机）。
 
-立绘有两个来源，前端优先用打包进来的那份：
-
-1. **打包素材**：`node scripts/bundle_illustrations.mjs` 把 WBArts 的主界面插图
-   （默认 `home` 类型 40 张，约 675 MB）**逐字节**复制进 `web/public/assets/home/`，
-   并生成 `index.json` 清单。素材不压缩、不转码，图集页名保持原始 PNG。
-2. **规则服务**：内置的 `hi_1001` 永远可用；`wbo serve` 另外扫描
-   `--illustration-root`（默认 `../WBArts/data`）里的 `home-illustration/*`，
-   通过 `GET /api/illustrations` 列出、`/illustration-assets/…` 只读地提供素材
-   （含 `home-illustration-picts` 的缩略图）。
+插图由规则服务提供：内置的 `hi_1001` 永远可用；`wbo serve` 另外扫描
+`--illustration-root`（默认 `../WBArts/data`）里的 `home-illustration/*`，
+通过 `GET /api/illustrations` 列出、`/illustration-assets/…` 只读地提供素材
+（含 `home-illustration-picts` 的缩略图）。
 
 spine 运行时在加载阶段会把 logo 与转圈画进 canvas，因此前端在加载完成前不显示
 canvas，避免那个加载圈。
@@ -81,10 +76,8 @@ canvas，避免那个加载圈。
 ```bash
 go test ./internal/server
 go test -race ./internal/server
-node --test scripts/match-storage.test.mjs scripts/match_connection.test.mjs
 ```
 
-服务端测试检查房主恢复邀请码、公开信息与客方权限边界；前端测试检查旧凭据恢复、
-双席位选择、邀请地址、状态修订同步和失效房间停止轮询。
+服务端测试检查房主恢复邀请码、公开信息与客方权限边界。
 开局回归还覆盖等待期间不泄露起手、随机初始化失败后重试、并发加入只发牌一次、
 两种先后手及换牌确认顺序无关性。模拟器仍可显式指定种子和先手，用于可复现的规则测试。

@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"wbo/internal/ir"
-	"wbo/internal/runner"
+	"wbo/internal/engine/ir"
+	"wbo/internal/engine/runner"
 )
 
 // streamInterval 是推送流的取样间隔。规则服务把整局状态放在内存里，

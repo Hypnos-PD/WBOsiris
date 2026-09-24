@@ -6,10 +6,10 @@ import (
 	"os"
 	"strings"
 
-	"wbo/internal/ai"
-	"wbo/internal/project"
-	"wbo/internal/ruleset"
-	"wbo/internal/runner"
+	"wbo/internal/engine/ai"
+	"wbo/internal/engine/project"
+	"wbo/internal/engine/ruleset"
+	"wbo/internal/engine/runner"
 )
 
 // runSelfplay 批量自对弈：不看胜负，看"能不能一直跑完"。

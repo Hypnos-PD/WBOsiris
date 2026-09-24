@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"wbo/internal/project"
+	"wbo/internal/engine/project"
 )
 
 // cardFeaturesPayload 是离线卡面特征快照：训练、评测与客户端都读它，**不需要起引擎进程**。

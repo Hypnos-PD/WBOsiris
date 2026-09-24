@@ -12,7 +12,7 @@
 - 恢复出来的会话直接停在某一方的主动作边界，`LegalActionsFor` 立刻可用；
 - 原挂起形态的编码/恢复路径未改动，行为与校验保持原样。
 
-`internal/search.Clone(cards, session)` 就是"编码 → 解码 → 恢复"这条路径的封装。
+`internal/engine/search.Clone(cards, session)` 就是"编码 → 解码 → 恢复"这条路径的封装。
 
 ## 实测成本（i9-11900H，单线程）
 

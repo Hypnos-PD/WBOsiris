@@ -4,9 +4,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"wbo/internal/ir"
-	"wbo/internal/project"
-	"wbo/internal/runner"
+	"wbo/internal/engine/ir"
+	"wbo/internal/engine/project"
+	"wbo/internal/engine/runner"
 )
 
 // 多选选择的累积规则：只允许加选（子步骤数天然有界，不会来回循环），

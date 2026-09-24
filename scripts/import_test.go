@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"wbo/internal/project"
+	"wbo/internal/engine/project"
 )
 
 func TestCardImportPreservesTraits(t *testing.T) {

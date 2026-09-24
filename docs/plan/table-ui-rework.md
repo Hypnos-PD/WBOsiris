@@ -8,7 +8,7 @@
 
 ## 一、引擎 ↔ 界面契约对照（现状）
 
-引擎在 `internal/runner/simulator.go` 的 `LegalActionsFor` 里列出的合法动作，与界面能
+引擎在 `internal/engine/runner/simulator.go` 的 `LegalActionsFor` 里列出的合法动作，与界面能
 表达的动作对比如下：
 
 | 引擎会发 | 含义 | 界面 | 结论 |
@@ -25,7 +25,7 @@
 
 两条容易踩的契约：
 
-1. **激奏/结晶与本体互斥**。引擎按官方 QA（`internal/runner/runner.go` 的
+1. **激奏/结晶与本体互斥**。引擎按官方 QA（`internal/engine/runner/runner.go` 的
    `case "accelerate"` 注释，QA `npml0tn71d`）实现成 `激奏费用 ≤ PP < 本体费用`：
    付得起本体时只出现 `play`，付不起时才出现替身动作。所以界面**不需要**给玩家一个
    "本体还是激奏"的菜单，只要"哪个合法发哪个"。

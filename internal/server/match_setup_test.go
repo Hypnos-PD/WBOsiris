@@ -12,7 +12,7 @@ import (
 	"sync"
 	"testing"
 
-	"wbo/internal/runner"
+	"wbo/internal/engine/runner"
 )
 
 func setupServer(t *testing.T) *Server {

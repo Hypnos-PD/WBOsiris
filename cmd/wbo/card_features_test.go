@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"wbo/internal/ir"
-	"wbo/internal/project"
+	"wbo/internal/engine/ir"
+	"wbo/internal/engine/project"
 )
 
 // 卡池要给出**具体**的结构化卡面特征：稀有度/费用/基础身材/效果语义标签。

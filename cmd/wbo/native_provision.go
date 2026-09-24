@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"wbo/internal/nativeclient"
+	"wbo/native/client"
 )
 
 // native provision：把一份本地资源铺进客户端，让它能离线跑到主界面。

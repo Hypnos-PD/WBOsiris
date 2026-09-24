@@ -14,10 +14,10 @@ import (
 	"syscall"
 	"time"
 
-	"wbo/internal/nativebroker"
-	"wbo/internal/nativeclient"
-	"wbo/internal/nativeprofile"
-	"wbo/internal/nativeproto"
+	"wbo/native/broker"
+	"wbo/native/client"
+	"wbo/native/profile"
+	"wbo/native/proto"
 )
 
 // native 这一组子命令是"游戏导入器"的前半段：发现本地客户端、核对它是不是我们

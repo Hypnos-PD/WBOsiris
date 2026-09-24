@@ -7,10 +7,8 @@ on:
     paths:
       - 'cmd/**'
       - 'internal/**'
+      - 'native/**'
       - 'cards/**'
-      - 'web/**'
-      - 'desktop/**'
-      - 'scripts/release/**'
       - 'scripts/deploy-backend.sh'
       - '.github/workflows/deploy-backend.yml'
 
@@ -31,18 +29,6 @@ jobs:
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-      # desktop/ 用 go:embed 嵌前端产物，而那份产物是构建期生成的（不进仓库）。
-      # 所以先按发布时同样的方式构建前端，`go build ./...` 才有东西可嵌——
-      # 顺带让前端编译在 main 上就有门禁，而不是等到发版才发现坏了。
-      - name: Install frontend dependencies
-        run: npm --prefix web ci
-      - name: Build the embedded frontend
-        run: node scripts/release/build-frontend.mjs
       - name: Compile and test the rule pack
         run: |
           go build ./...

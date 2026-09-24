@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"wbo/internal/ai"
-	"wbo/internal/runner"
+	"wbo/internal/engine/ai"
+	"wbo/internal/engine/runner"
 )
 
 func postMatch(t *testing.T, handler http.Handler, path, token string, payload any) (int, response) {

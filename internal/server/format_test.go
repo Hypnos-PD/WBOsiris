@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"wbo/internal/runner"
+	"wbo/internal/engine/runner"
 )
 
 // 指定模式不接受已经轮换出去的卡包；同一副牌组在无限制模式里可以建局。

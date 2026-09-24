@@ -5,7 +5,7 @@ import (
 	"encoding/binary"
 	"io"
 
-	"wbo/internal/runner"
+	"wbo/internal/engine/runner"
 )
 
 func randomMatchSetup() (uint64, string, error) {
