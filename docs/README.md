@@ -22,6 +22,7 @@
 - [训练环境协议](tooling/env-protocol.md)：`wbo env` 的 JSON-lines 协议（供 WBDecima 驱动）。
 - [决策点克隆与搜索预算](tooling/search-and-clone.md)：决策点存档、克隆实测成本与搜索规模结论。
 - [原版客户端](tooling/native-client.md)：`wbo native` 发现/校验/导入本机客户端的方式与已知问题。
+- [原版客户端功能盘点](tooling/native-feature-survey.md)：登录、BGM、界面更换、抽卡、商店、网络对战、赛程与广场的可行性结论。
 
 ## 规则
 
