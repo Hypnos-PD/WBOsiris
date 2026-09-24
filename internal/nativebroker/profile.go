@@ -80,6 +80,11 @@ func (h *ProfileHandler) Route(request *Request) (Response, bool) {
 		if !h.profile.HandledRoute(route) {
 			return Response{}, false
 		}
+		// 档案路由要看请求体（改的是玩家的牌组），载荷没解开就不能瞎答：
+		// 那等于用一个空请求去改状态。
+		if request.Envelope == nil || !request.Envelope.PayloadDecoded {
+			return Response{}, false
+		}
 		// 档案路由的响应外壳沿用 /Load/index 那一份：data_headers 是通用的，
 		// 只有 data 按请求算——这是 delta 的做法，客户端也接受。
 		envelope, ok := h.fixtures.Lookup("/Load/index")

@@ -54,6 +54,9 @@ type Handler interface {
 // *nativeproto.Server 就是它的实现。
 type Decoder interface {
 	DecodeRequest(wire []byte, auth nativeproto.Auth) (*nativeproto.Request, error)
+	// DecodeEnvelope 在载荷解不开时也能给出"只差载荷"的那份请求：响应密钥只由
+	// shared/sid/selector 派生，夹具类路由不需要请求体，照样答得出来。
+	DecodeEnvelope(wire []byte, auth nativeproto.Auth) (*nativeproto.Request, error)
 }
 
 // Options 是启动参数。
@@ -177,6 +180,14 @@ func (g *gateway) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 			auth.SID = sid
 			if decoded, err := decodeBody(g.decoder, body, auth); err != nil {
 				g.logger.Printf("信封：解不开（%v）", err)
+				// 载荷解不开不代表答不上话：响应密钥只由 shared/sid/selector 派生，
+				// 这三样在解载荷之前就齐了。夹具类路由（不含请求体）照样能给出正确
+				// 的响应——注册那条请求就是这种情况。
+				if partial, _ := g.decoder.DecodeEnvelope(mustDecodeBase64(body), auth); partial != nil {
+					message.Plain = nil
+					message.Envelope = partial
+					g.logger.Printf("  请求 %s → 只凭元数据应答（请求体没解开）", message.Path)
+				}
 			} else {
 				message.Plain = decoded.Plain
 				message.Envelope = decoded
@@ -280,6 +291,17 @@ func decodeBody(decoder Decoder, body []byte, auth nativeproto.Auth) (*nativepro
 		return retried, nil
 	}
 	return nil, err
+}
+
+// mustDecodeBase64 只用于"已经确认是 base64 文本"的报文；失败时回空。
+func mustDecodeBase64(body []byte) []byte {
+	trimmed := bytes.TrimSpace(body)
+	wire := make([]byte, base64.StdEncoding.DecodedLen(len(trimmed)))
+	count, err := base64.StdEncoding.Strict().Decode(wire, trimmed)
+	if err != nil {
+		return nil
+	}
+	return wire[:count]
 }
 
 func handledTag(handled bool) string {

@@ -347,6 +347,35 @@ wbo native launch --broker --capture ~/wbo-capture \
 （`ShadowverseWB_Data/Persistent/meta` 在启动后立刻被改写）——说明资源这一层通了。
 注意 `--inject` 走的是替身目录：**Steam 的安装目录一个字节都不动**。
 
+### 注册那条请求：解不开也能答
+
+把 `TitleUtil.IsCreatedClientId()` 强制成 false（3 字节补丁 `31 C4 C3` 的等价物：
+`31 C0 C3` = `xor eax,eax; ret`，用 `--game-assembly` 覆盖）之后，登录链变成
+`/Version/info → /Account/signUp`。**注册那条请求的解不开**：元数据能解、凭据自检
+也过（说明共享密钥和 authKey 都对），只有载荷的密钥派生对不上；离线穷举
+`uuid × selector × sid` 共 120 组都没有命中，所以客户端注册时用的那一项还没认定。
+
+但**不需要解开它也能答**：响应密钥只由 `shared + sid + selector` 派生，这三样都在
+解载荷之前就拿到了。所以 `nativeproto` 增加了 `DecodeEnvelope`：载荷解不开时返回
+"只差载荷"的 Request，broker 用它照常应答夹具路由（档案层那些需要请求体的路由则会
+拒绝——不能拿空请求去改玩家的牌组）。实测 `/Account/signUp` 因此拿到 200，客户端
+**进入了"正在加载"**——比之前又往前走了一步。
+
+紧接着客户端在自己的代码里崩了：
+
+```
+ArgumentOutOfRangeException: Non-negative number required. Parameter name: newSize
+  at System.Array.Resize[T]
+  at LibNative.LZ4.SimpleLZ4Frame.Compress (System.Byte[] content)
+  at Wizard2.Application.HttpEndPointGameAPI.CompressRequest (System.Byte[] requestData)
+  at Cute.Http.HttpTask`2[TRequest,TResponse].Send (System.String url)
+```
+
+也就是说它在**构造下一条请求**时，拿一个空载荷去跑自己的 LZ4 帧压缩，把自己跑崩了
+——请求还没发出去，所以 broker 那边看不到。下一步要查的就是"注册成功之后它想发的
+第一条请求是什么、为什么载荷是空的"（多半与 signUp 响应里给的账号形状有关：
+夹具给的是 `client_id=1, auth_key=全零`，而真实账号是另一组凭据）。
+
 顺带记两条实测到的客户端错误码含义（截图里会显示"错误代码: N"）：
 
 | 代码 | 实测触发条件 |

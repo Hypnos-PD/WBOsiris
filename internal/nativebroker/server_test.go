@@ -158,6 +158,11 @@ type stubDecoder struct {
 	err     error
 }
 
+// DecodeEnvelope 在测试桩里与 DecodeRequest 同义：桩的失败就是"整个解不开"。
+func (s *stubDecoder) DecodeEnvelope(wire []byte, auth nativeproto.Auth) (*nativeproto.Request, error) {
+	return s.DecodeRequest(wire, auth)
+}
+
 func (s *stubDecoder) DecodeRequest(wire []byte, auth nativeproto.Auth) (*nativeproto.Request, error) {
 	s.gotBody = wire
 	s.gotAuth = auth

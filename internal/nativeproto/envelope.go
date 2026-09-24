@@ -81,14 +81,40 @@ type Request struct {
 	// AuthHead / AuthValue 是元数据里携带的凭据片段，可用于识别客户端。
 	AuthHead  []byte
 	AuthValue []byte
+	// PayloadDecoded 表示载荷真的解开了。注册（/Account/signUp）那条请求用的是
+	// 注册前的凭据组合，我们至今没能解开它的载荷，但**元数据**那一步只需要 shared，
+	// 所以响应密钥（shared+sid+selector）照样拼得出来——夹具类路由不需要请求体，
+	// 这条标志让上层自己决定"能不能只凭元数据应答"。
+	PayloadDecoded bool
 
 	shared   []byte
 	sid      []byte
 	selector []byte
 }
 
-// DecodeRequest 解开一个请求信封。
+// DecodeEnvelope 只解信封的前半段：协商密钥、解元数据、拼出响应所需的状态。
+//
+// 载荷解不开时它**照样返回**一个可用的 Request（Plain 为空、PayloadDecoded=false），
+// 并把错误一并交给调用方。用途很具体：/Account/signUp 的请求体我们解不开，但它的
+// 响应是固定夹具，而响应只需要 shared/sid/selector——这三样在解密载荷之前就齐了。
+// 调用方必须自己判断：需要请求体的路由（档案层那些）不能拿这种半成品去用。
+func (s *Server) DecodeEnvelope(wire []byte, auth Auth) (*Request, error) {
+	request, err := s.decode(wire, auth, false)
+	if request != nil && !request.PayloadDecoded {
+		// 半成品也返回，让上层决定；错误照旧带出去。
+		return request, err
+	}
+	return request, err
+}
+
+// DecodeRequest 解开一个请求信封；载荷解不开就返回错误、不返回半成品。
 func (s *Server) DecodeRequest(wire []byte, auth Auth) (*Request, error) {
+	return s.decode(wire, auth, true)
+}
+
+// decode 是解信封的本体。payloadRequired 为假时，载荷认证失败也会把"只差载荷"的
+// Request 一起返回（见 DecodeEnvelope 的说明）。
+func (s *Server) decode(wire []byte, auth Auth, payloadRequired bool) (*Request, error) {
 	if len(wire) < wireOverhead {
 		return nil, fmt.Errorf("nativeproto: 报文只有 %d 字节，短于信封开销", len(wire))
 	}
@@ -108,6 +134,12 @@ func (s *Server) DecodeRequest(wire []byte, auth Auth) (*Request, error) {
 	if err != nil {
 		return nil, fmt.Errorf("nativeproto: 协商失败: %w", err)
 	}
+	partial := &Request{
+		ClientPublic: append([]byte(nil), clientPublic...),
+		shared:       append([]byte(nil), shared...),
+		sid:          append([]byte(nil), auth.SID...),
+		selector:     append([]byte(nil), auth.AuthKey[34:50]...),
+	}
 
 	block, err := aes.NewCipher(shared)
 	if err != nil {
@@ -115,6 +147,8 @@ func (s *Server) DecodeRequest(wire []byte, auth Auth) (*Request, error) {
 	}
 	metaPlain := make([]byte, metaSize)
 	cipher.NewCTR(block, clientPublic[:aes.BlockSize]).XORKeyStream(metaPlain, metaCiphertext)
+	partial.AuthHead = append([]byte(nil), metaPlain[2:34]...)
+	partial.AuthValue = append([]byte(nil), metaPlain[34:36]...)
 
 	selector := auth.AuthKey[34:50]
 	preMix := md5Of(auth.SID, selector, auth.UUID)
@@ -145,17 +179,16 @@ func (s *Server) DecodeRequest(wire []byte, auth Auth) (*Request, error) {
 		if string(metaPlain[2:34]) != string(auth.AuthKey[:32]) {
 			return nil, fmt.Errorf("nativeproto: 载荷认证失败，且元数据里的凭据对不上：客户端用的对端公钥很可能不是我们那把（共享密钥不对）: %w", err)
 		}
-		return nil, fmt.Errorf("nativeproto: 载荷认证失败，但共享密钥是对的（元数据里的凭据与 authKey 一致），问题在密钥派生或 sid/uuid: %w", err)
+		failure := fmt.Errorf("nativeproto: 载荷认证失败，但共享密钥是对的（元数据里的凭据与 authKey 一致），问题在密钥派生或 sid/uuid: %w", err)
+		if payloadRequired {
+			return nil, failure
+		}
+		partial.PayloadDecoded = false
+		return partial, failure
 	}
-	return &Request{
-		Plain:        plain,
-		ClientPublic: append([]byte(nil), clientPublic...),
-		AuthHead:     append([]byte(nil), metaPlain[2:34]...),
-		AuthValue:    append([]byte(nil), metaPlain[34:36]...),
-		shared:       shared,
-		sid:          append([]byte(nil), auth.SID...),
-		selector:     append([]byte(nil), selector...),
-	}, nil
+	partial.Plain = plain
+	partial.PayloadDecoded = true
+	return partial, nil
 }
 
 // EncodeResponse 用同一次会话的密钥封一个响应。
