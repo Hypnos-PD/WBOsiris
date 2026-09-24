@@ -719,7 +719,13 @@ pub unsafe extern "C" fn yaha_request_set_uri(
             drop(rewritten);
             result
         }
-        None => original(ctx, request, value),
+        None => {
+            // 没改写也要记：相对 URI、被放行的主机、带用户信息的 URI 都会走到这里。
+            // 这些请求会按原样发出去（也就是发到真服务器），失败起来只表现为客户端
+            // 弹"网络连接错误"，从 broker 那边完全看不到——不记的话根本无从下手。
+            config.record(&format!("pass-through {uri}"));
+            original(ctx, request, value)
+        }
     }
 }
 
