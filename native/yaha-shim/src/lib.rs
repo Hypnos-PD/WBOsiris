@@ -71,6 +71,13 @@ struct Config {
     /// 默认关：那是一次"广撒网"，会碰到只是碰巧相同的无关数据，实测能把客户端改崩。
     /// 留着这个开关是为了做对照实验（也为了在新版本上先摸清副本分布）。
     copy_scan: bool,
+    /// 内存里的字符串重定向：`(旧, 新)`，长度必须相同。
+    ///
+    /// 用途是那些**不走本插件**的请求：客户端从元数据里解出一串 CDN 地址，资源下载
+    /// 走的是 Unity 自己的 HTTP，我们拦不到。把内存里那个字面量换成我们自己的地址，
+    /// 下载就会打到本地——字面量在磁盘上搜不到（元数据是加密的），只能在运行时改。
+    /// 长度必须相等：il2cpp 的字符串带长度前缀，换长了会把后面的字节读进来。
+    redirects: Vec<(Vec<u8>, Vec<u8>)>,
     /// 原件 DLL 的完整路径。
     ///
     /// 默认是在自己旁边找 `yaha_orig.dll`，但挂载命名空间那套做法只覆盖了插件本名，
@@ -88,6 +95,7 @@ impl Config {
             peerkey: None,
             no_patch: false,
             copy_scan: false,
+            redirects: Vec::new(),
             original: None,
             // 默认不写日志：模块目录就是游戏的插件目录，往那里写文件等于改动
             // Steam 的安装目录。只有明确配置了 log 才落盘。
@@ -124,6 +132,21 @@ impl Config {
                 "peerkey" if !value.is_empty() => config.peerkey = decode_hex(value),
                 "no-patch" => config.no_patch = value.eq_ignore_ascii_case("true") || value == "1",
                 "copy-scan" => config.copy_scan = value.eq_ignore_ascii_case("true") || value == "1",
+                "redirect" => {
+                    let Some((from, to)) = value.split_once('=') else {
+                        config.record("config: redirect 要写成 <旧十六进制>=<新十六进制>，跳过");
+                        continue;
+                    };
+                    let (Some(from), Some(to)) = (decode_hex(from), decode_hex(to)) else {
+                        config.record("config: redirect 里有不是十六进制的内容，跳过");
+                        continue;
+                    };
+                    if from.len() != to.len() || from.is_empty() {
+                        config.record("config: redirect 的两边长度必须相同（il2cpp 字符串带长度前缀），跳过");
+                        continue;
+                    }
+                    config.redirects.push((from, to));
+                }
                 "log" if !value.is_empty() => {
                     let candidate = PathBuf::from(value);
                     config.log = Some(if candidate.is_absolute() {
@@ -521,13 +544,83 @@ fn write_protected(page_base: *mut c_void, offset: usize, value: &[u8]) -> bool 
 fn patch_round() -> usize {
     let config = config();
     let (Some(pattern), Some(peer)) = (config.pattern.as_ref(), config.peerkey.as_ref()) else {
-        return 0;
+        return patch_redirects();
     };
     let mut patched = patch_metadata_constant(pattern, peer);
     if config.copy_scan {
         patched += patch_peer_key();
     }
+    patched += patch_redirects();
     patched
+}
+
+/// 把内存里的地址字面量换成我们自己的（等长）。
+///
+/// 资源下载走的是 Unity 自己的 HTTP，不经过本插件；把元数据里那串 CDN 地址改成本地
+/// 地址，下载就会打到我们这边。只扫可读写区域，找不到不算错（有些版本可能没有）。
+#[cfg(windows)]
+fn patch_redirects() -> usize {
+    let config = config();
+    if config.redirects.is_empty() {
+        return 0;
+    }
+    let mut patched = 0;
+    let mut address = 0x10000usize;
+    let mut info = MemoryBasicInformation {
+        base_address: std::ptr::null_mut(),
+        allocation_base: std::ptr::null_mut(),
+        allocation_protect: 0,
+        _padding: 0,
+        region_size: 0,
+        state: 0,
+        protect: 0,
+        kind: 0,
+        _padding2: 0,
+    };
+    while address < 0x7fff_ffff_0000 {
+        let queried = unsafe {
+            VirtualQuery(address as *const c_void, &mut info, std::mem::size_of::<MemoryBasicInformation>())
+        };
+        if queried == 0 {
+            break;
+        }
+        let base = info.base_address as usize;
+        let size = info.region_size;
+        if info.state == MEM_COMMIT
+            && (info.protect == PAGE_READWRITE || info.protect == PAGE_EXECUTE_READWRITE)
+            && size < 512 << 20
+        {
+            let region = unsafe { std::slice::from_raw_parts_mut(info.base_address as *mut u8, size) };
+            for (from, to) in &config.redirects {
+                if size < from.len() {
+                    continue;
+                }
+                let mut offset = 0;
+                while offset + from.len() <= region.len() {
+                    let Some(found) = region[offset..]
+                        .windows(from.len())
+                        .position(|window| window == from.as_slice())
+                    else {
+                        break;
+                    };
+                    let at = offset + found;
+                    region[at..at + to.len()].copy_from_slice(to);
+                    patched += 1;
+                    offset = at + from.len();
+                }
+            }
+        }
+        address = base + size;
+    }
+    if patched > 0 {
+        config.record(&format!("redirect: 改写完成，共 {patched} 处"));
+    }
+    patched
+}
+
+#[cfg(not(windows))]
+fn patch_redirects() -> usize {
+    0
 }
 
 #[cfg(not(windows))]
@@ -546,7 +639,9 @@ fn ensure_patched() {
     if PATCHED.load(Ordering::SeqCst) || config().no_patch {
         return;
     }
-    if !(config().pattern.is_some() && config().peerkey.is_some()) {
+    let have_work = (config().pattern.is_some() && config().peerkey.is_some())
+        || !config().redirects.is_empty();
+    if !have_work {
         return;
     }
     for _ in 0..50 {
@@ -575,7 +670,9 @@ fn ensure_patched() {}
 #[cfg(windows)]
 fn spawn_patcher() {
     std::thread::spawn(|| {
-        if !(config().pattern.is_some() && config().peerkey.is_some()) {
+        let have_work = (config().pattern.is_some() && config().peerkey.is_some())
+            || !config().redirects.is_empty();
+        if !have_work {
             return;
         }
         let mut rounds = 0;

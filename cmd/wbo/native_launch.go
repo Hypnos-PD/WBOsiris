@@ -103,6 +103,8 @@ func runNativeLaunch(args []string) int {
 	assemblyFlag := fs.String("game-assembly", "", "用这份 GameAssembly.dll 覆盖客户端里那一份（例如导入目录里的已打补丁副本）；省略时用原件")
 	var injections stringList
 	fs.Var(&injections, "inject", "往客户端目录里塞一个文件，写成 <客户端内相对路径>=<宿主机文件>；可以给多次")
+	var redirects stringList
+	fs.Var(&redirects, "shim-redirect", "内存里的字符串重定向 <旧>=<新>（等长，常用于把 CDN 地址换成本地）；可以给多次")
 	protonFlag := fs.String("proton", "", "Proton 目录或 proton 脚本的绝对路径；省略时按 Steam 配置推导")
 	runtimeFlag := fs.String("runtime", "", "Steam Linux Runtime 入口（如 .../_v2-entry-point）；省略时按 Proton 的声明推导")
 	sessionKeyFlag := fs.String("session-key", "", "会话私钥；省略时用会话目录里的 session-key（本轮启动刚生成的那把）")
@@ -237,7 +239,7 @@ func runNativeLaunch(args []string) int {
 		logf("保存会话密钥失败 %v", err)
 		return 1
 	}
-	confPath, err := writeShimConfig(stateDir, *listen, keyBytes, *noPatch)
+	confPath, err := writeShimConfig(stateDir, *listen, keyBytes, *noPatch, redirects)
 	if err != nil {
 		logf("%v", err)
 		return 1
@@ -430,7 +432,18 @@ func stopBroker(command *exec.Cmd, logf func(string, ...any)) {
 //
 // 日志写在会话目录：游戏目录是 Steam 的，不该往里丢文件。原件不需要在这里指定，
 // 替身目录里已经按代理期待的名字放好了。
-func writeShimConfig(stateDir, listen string, peerKey []byte, noPatch bool) (string, error) {
+func writeShimConfig(stateDir, listen string, peerKey []byte, noPatch bool, redirects []string) (string, error) {
+	redirectLines := make([]string, 0, len(redirects))
+	for _, redirect := range redirects {
+		from, to, ok := strings.Cut(redirect, "=")
+		if !ok || from == "" || to == "" {
+			return "", fmt.Errorf("--shim-redirect 要写成 <旧>=<新>，收到 %q", redirect)
+		}
+		if len(from) != len(to) {
+			return "", fmt.Errorf("--shim-redirect 的两边必须等长（il2cpp 字符串带长度前缀）：%q", redirect)
+		}
+		redirectLines = append(redirectLines, "redirect = "+hex.EncodeToString([]byte(from))+"="+hex.EncodeToString([]byte(to)))
+	}
 	path := filepath.Join(stateDir, "yaha-shim.conf")
 	if noPatch {
 		lines := []string{
@@ -438,6 +451,7 @@ func writeShimConfig(stateDir, listen string, peerKey []byte, noPatch bool) (str
 			"log = " + filepath.Join(stateDir, "yaha-shim.log"),
 			"no-patch = true",
 		}
+		lines = append(lines, redirectLines...)
 		content := strings.Join(lines, "\n") + "\n"
 		if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
 			return "", err
@@ -451,6 +465,7 @@ func writeShimConfig(stateDir, listen string, peerKey []byte, noPatch bool) (str
 		"pattern = " + peerPatternHex,
 		"peerkey = " + hex.EncodeToString(peerKey),
 	}
+	lines = append(lines, redirectLines...)
 	content := strings.Join(lines, "\n") + "\n"
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
 		return "", err
