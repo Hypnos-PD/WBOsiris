@@ -481,6 +481,26 @@ wbo native provision --source ~/Data/wbunpacker_files --lang Chs
 `wbo native import`（复制成工作目录里的副本）→ `wbo native provision`（对副本铺资源）。
 本机做实验才用 `--write-steam` 明知故犯。
 
+### 客户端的四处最小补丁（可复现）
+
+跑到主界面用的 `--game-assembly` 是**改过客户端的**：`tools/patch-native-client.py`
+把四处字节改掉（原版 → 工作副本，别指向 Steam 目录）：
+
+| 文件偏移 | 方法 | 改成 | 为什么 |
+| --- | --- | --- | --- |
+| 0x6D270C0 | `TitleUtil.IsCreatedClientId()` | `31 C0 C3` | 强制 false，登录链走 `/Account/signUp` |
+| 0xA3B1A0 | `HttpEndPointGameAPI.CompressRequest` | `48 8B C2 C3` | 请求不再 LZ4 压缩（空载荷时它会自己崩） |
+| 0xA3B6D0 | `HttpEndPointGameAPI.DecompressResponse` | `48 8B C1 C3` | 响应直通 |
+| 0xBBD5A9 | `ManifestSynchronizer.SynchronizeManifestDB` 的下载调用 | `31 C0 90 90 90` | 断掉"联网取清单"，改由 provision 摆好 |
+
+```bash
+python3 tools/patch-native-client.py <原版 GameAssembly.dll> /tmp/GameAssembly.patched.dll
+wbo native launch --broker --game-assembly /tmp/GameAssembly.patched.dll …
+```
+
+（这四处和 delta 的思路一样，但 delta 是打 133 段、还往 `.offlab` 里塞替换实现；
+这里只要四处的就地字节。）
+
 ### ⚠️ 本机这次实验动过什么
 
 - `Persistent/dat/`：被客户端清空过一次（见上一节），随后用 wbunpacker 的
