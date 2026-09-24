@@ -347,6 +347,10 @@ wbo native launch --broker --capture ~/wbo-capture \
 （`ShadowverseWB_Data/Persistent/meta` 在启动后立刻被改写）——说明资源这一层通了。
 注意 `--inject` 走的是替身目录：**Steam 的安装目录一个字节都不动**。
 
+（后来发现这一步只做了一半：清单还要在 `Persistent/dat` 下有一份，资源本身也不能
+只放在 `Persistent/dat`。见文末「里程碑：客户端跑到了主界面」和
+`wbo native provision`。）
+
 ### 注册那条请求：解不开也能答
 
 把 `TitleUtil.IsCreatedClientId()` 强制成 false（3 字节补丁 `31 C4 C3` 的等价物：
@@ -399,3 +403,99 @@ ArgumentOutOfRangeException: Non-negative number required. Parameter name: newSi
 ——XTEST 合成点击能点动标题界面（注意 `ButtonRelease` 的 detail 必须是按钮号，
 写 0 会让客户端只看到"一直按着"）。但**这个对话框上的按钮，合成点击点不动**，
 所以这一步仍然需要真人点一次。
+
+## 里程碑：客户端跑到了主界面（2026-09-24 实测）
+
+到这里为止，链条是完整的：
+
+```
+wbo native provision --source ~/Data/wbunpacker_files   # 铺资源（一次性）
+wbo native launch --broker --uuid … --auth-key …        # 起本地服务 + 起客户端
+```
+
+客户端的标题界面点「开始游戏」→ 账号关联对话框点「稍后设置」→ **主界面**
+（`/Mypage/index`、`/HomeDialog/dialog`、`/Payment/productList` 全部由本机的档案层
+应答，`Player.log` 里没有异常）。全程离线，没有任何请求走到官方服务器。
+
+关键发现是**资源分成两份**，而这一点此前搞错了：
+
+| 位置 | 是什么 | 谁写 |
+| --- | --- | --- |
+| `ShadowverseWB_Data/StreamingAssets/PreinResource/AssetBundle/<前两位>/<hname>` | 客户端**真正加载**的那一份 | 资源规整（本节的 `provision`） |
+| `ShadowverseWB_Data/Persistent/dat/<前两位>/<hname>` | 下载缓存 | 客户端的下载器 |
+
+证据链（按发生顺序，全部是本机实测）：
+
+1. `Persistent/dat` 铺满（49911 个文件、40 GiB）、`PreinResource/AssetBundle` 空着时，
+   客户端在 `Wizard2.Domain.MasterData.LoadAsync` 上抛
+   `DirectoryNotFoundException: …\StreamingAssets\PreinResource\AssetBundle\4Y\4YHDWV…`
+   ——`4YHDWV…` 正是清单里 `Master/mastermemory.bytes` 的 hname，**它在 dat 里明明有**。
+2. 只往 Prein 补 `group == 1` 的 75 个资源（含 mastermemory），错误换成下一个：
+   读字体时缺 `…\AssetBundle\AM\AMNCNAP5R5AJFTJUQW2HTJ24RY`（清单里名字就叫 `shader`）。
+   所以"哪些算 Prein"不是 `group` 一个位能概括的，别照那 75 个裁。
+3. 把整套资源都铺进 `PreinResource/AssetBundle` 之后，一路到主界面，`Player.log` 干净。
+4. 官网 depot 的 `SizeOnDisk` 是 1,290,056,428 字节，而客户端目录**除 `Persistent`
+   之外**正好 1.3 GiB —— 说明 Prein 里的资源是运行时铺的，不是 Steam 装的。
+
+### 清单自己也要两份，而且 dat 那份名字是客户端算的
+
+两处清单的**文件名不一样**：
+
+| 位置 | 文件名 |
+| --- | --- |
+| `StreamingAssets/PreinResource/manifests/` | `assetbundle.<语言>.manifest`（固定名） |
+| `Persistent/dat/<前两位>/` | 客户端算出来的 32 位 base32 名字，例如 `RJKAM6CYLA7Q3GV3746GJZVN2SR3XTYD` |
+
+那个 32 位名字来自 `Cute.AssetBundle` 的
+`CalcHName(SHA1CryptoServiceProvider sha1, ulong checksum, ulong size, byte[] name)`
+（RVA 0xBB8D40）：把 `checksum`、`size` 各按大端 8 字节写在前面，接上 `name`，
+做 SHA-1，再 base32（20 字节刚好 32 个字符，不需要填充）。**但三个输入还没认定**：
+试过的输入（版本号字符串、URL、`assetbundle.<语言>.manifest`、清单文件本身、
+16 零字节前缀、各种 `checksum`/`size` 组合）都没有命中我们的实测名，
+所以**不要**照上面这段去实现，它只说明“名字是算出来的、不是内容寻址”。
+对照组：资源本体是 `base32(MD5(内容))`，实测逐字节对得上。
+
+名字怎么拿？**让客户端自己说**。它找不到文件时会把完整路径写进 `Player.log`：
+
+```
+Manifest Load Error:Could not find file "S:\…\Persistent\dat\RJ\RJKAM6CYLA7Q3GV3746GJZVN2SR3XTYD"
+```
+
+`nativeclient.LearnManifestHname` 就是读这一行（要求 32 位、base32 字母表，
+顺带把 26 位的资源名排除掉）。代价是第一次要跑一次客户端把日志留下；换来的是
+换版本、换语言都不用重新逆向。
+
+### `wbo native provision`
+
+```bash
+wbo native provision --source ~/Data/wbunpacker_files --lang Chs --dry-run
+wbo native provision --source ~/Data/wbunpacker_files --lang Chs
+```
+
+它做三件事：把清单放进 `PreinResource/manifests/`、把同一份清单按学到的名字放进
+`Persistent/dat/<前两位>/`、把资源库里的 blob 全部铺进 `PreinResource/AssetBundle/`。
+文件优先**硬链接**（同一文件系统上零拷贝），跨文件系统退回真复制；已经铺好且大小
+一致的文件跳过，所以重复执行是廉价的。
+
+它是**写操作**，默认拒绝写 Steam 的安装目录：正式流程是
+`wbo native import`（复制成工作目录里的副本）→ `wbo native provision`（对副本铺资源）。
+本机做实验才用 `--write-steam` 明知故犯。
+
+### ⚠️ 本机这次实验动过什么
+
+- `Persistent/dat/`：被客户端清空过一次（见上一节），随后用 wbunpacker 的
+  `blobs/raw` 硬链接恢复（49911 个文件）。
+- `Persistent/meta`、`meta-journal`：挪走过（备份在 `~/Data/svwb_state_backup/`）。
+  客户端会在下一次启动时重建；`meta` 是加密库（SQLite3MC），重建后 19 MiB。
+- `StreamingAssets/PreinResource/AssetBundle/`：新建并铺满（本来不存在，见上面第 4 条）。
+- `StreamingAssets/PreinResource/manifests/assetbundle.Chs.manifest`：新建。
+
+要回到「Steam 认为干净」的状态：Steam → 该游戏 → 属性 → 已安装文件 →
+验证游戏文件的完整性。`Persistent/` 与 `PreinResource/AssetBundle/` 都是可再生的
+（重新 provision，或让游戏联网自己下）。
+
+### 那个「推荐进行账号关联」对话框
+
+资源齐了以后它就不再是拦路石：点「稍后设置」可以正常进主界面（此前点它只会绕回
+资源下载那一步失败）。delta 当年是直接改 `TitleAccountLinkDialogBinary.RunAsync`
+跳过它；现在不需要。

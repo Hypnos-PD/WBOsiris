@@ -26,7 +26,7 @@ import (
 
 func runNative(args []string) int {
 	if len(args) < 1 {
-		fmt.Fprintln(os.Stderr, "用法: wbo native <probe|import|broker|launch> [选项]")
+		fmt.Fprintln(os.Stderr, "用法: wbo native <probe|import|provision|broker|launch> [选项]")
 		return 2
 	}
 	switch args[0] {
@@ -34,12 +34,14 @@ func runNative(args []string) int {
 		return runNativeProbe(args[1:])
 	case "import":
 		return runNativeImport(args[1:])
+	case "provision":
+		return runNativeProvision(args[1:])
 	case "broker":
 		return runNativeBroker(args[1:])
 	case "launch":
 		return runNativeLaunch(args[1:])
 	default:
-		fmt.Fprintln(os.Stderr, "用法: wbo native <probe|import|broker|launch> [选项]")
+		fmt.Fprintln(os.Stderr, "用法: wbo native <probe|import|provision|broker|launch> [选项]")
 		return 2
 	}
 }
