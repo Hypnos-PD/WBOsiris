@@ -75,6 +75,8 @@ type Profile struct {
 	styles  *CardStyles
 	leaders map[int64]Leader
 	store   *store
+	// battleURL 是 /Practice/battleStart 交给客户端的对局通道地址（见 battle.go）。
+	battleURL string
 }
 
 // Leader 是一个可用主战者。只收 nativeResourceReady 的那些——客户端要用的 prefab、

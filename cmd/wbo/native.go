@@ -286,6 +286,8 @@ func runNativeBroker(args []string) int {
 	profilePath := fs.String("profile", "", "档案状态文件（牌组等）；省略时只放在内存里，重启即回到初始档案")
 	commonHeader := fs.String("common-header", defaultCommonHeaderHex,
 		"52 字节常量（hex）；只有第 32..52 字节参与密钥派生，换版本要更新")
+	battleURLFlag := fs.String("battle-url", "",
+		"对局通道地址（/Practice/battleStart 交给客户端的 battle_url）；省略时指回本次监听地址")
 	if fs.Parse(args) != nil {
 		return 2
 	}
@@ -314,6 +316,9 @@ func runNativeBroker(args []string) int {
 			fmt.Fprintln(os.Stderr, err)
 			return 1
 		}
+		// 对局通道默认指回本机 broker：客户端拿到 battle_url 之后走的是同一条
+		// HTTP/2 传输，所以它接下来的请求会落在我们这里，能被完整录下来。
+		profile.SetBattleURL(battleURL(*listen, *battleURLFlag))
 		options.Handler = nativebroker.Chain(
 			nativebroker.NewProfileHandler(profile, fixtures, log.Default()),
 			nativebroker.NewFixtureHandler(fixtures, log.Default()),
@@ -340,6 +345,25 @@ func runNativeBroker(args []string) int {
 		return 1
 	}
 	return 0
+}
+
+// battleURL 决定 /Practice/battleStart 交给客户端的对局通道地址。
+//
+// 默认指回本次监听地址（不是 delta 的 50171）：客户端连对局通道走的是同一条
+// HTTP/2 传输，指回我们自己就能把它的请求完整录下来，先看清协议再决定怎么实现。
+func battleURL(listen, explicit string) string {
+	if explicit != "" {
+		return explicit
+	}
+	return "http://" + defaultHost(listen)
+}
+
+// defaultHost 把 ":50172" / "127.0.0.1:50172" 统一成"host:port"。
+func defaultHost(listen string) string {
+	if strings.HasPrefix(listen, ":") {
+		return "127.0.0.1" + listen
+	}
+	return listen
 }
 
 // describeProfilePath 把"档案存哪儿"写成一句人话。

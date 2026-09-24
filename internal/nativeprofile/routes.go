@@ -12,13 +12,29 @@ import (
 //   - 契约里没有的路由返回 (nil, nil)，由上层交回"未实现"——不猜；
 //   - 请求不合法返回 ProfileError，同样如实拒绝。
 //
-// 对局相关的两条（/Practice/battleStart、/Practice/battleFinish）不在这里：它们要引擎
-// 参与，属于另一层。
+// 对局入口 `/Practice/battleStart` 单独走 startPracticeBattle（见 battle.go）：它要
+// 决定先后手、发牌，并把初始快照落盘；`/Practice/battleFinish` 还不在这里——那要等
+// 对局层能真的打完一局。
 func (p *Profile) Handle(path string, request map[string]any) (map[string]any, error) {
 	if !p.HandledRoute(path) {
 		return nil, nil
 	}
-	if path == "/Practice/battleStart" || path == "/Practice/battleFinish" {
+	if path == "/Practice/battleStart" {
+		var result map[string]any
+		err := p.store.Current(func(state *State) error {
+			data, err := p.startPracticeBattle(state, request)
+			if err != nil {
+				return err
+			}
+			result = data
+			return nil
+		})
+		if err != nil {
+			return nil, err
+		}
+		return result, nil
+	}
+	if path == "/Practice/battleFinish" {
 		return nil, nil
 	}
 	var result map[string]any
